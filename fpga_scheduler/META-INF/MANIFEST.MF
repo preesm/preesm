@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Preesm FPGA scheduler plug-in
+Bundle-SymbolicName: org.ietr.preesm.plugin.fpga_scheduler;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.ietr.preesm.plugin.fpga_scheduler.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.preesm.core
+Eclipse-LazyStart: true

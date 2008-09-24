@@ -1,0 +1,19 @@
+\chapter{Introduction}
+\fancyhead[L,RO]{Introduction}
+
+Preesm stands for Parallel \& Real-time Embedded Executives Scheduling Method. It aims at generating source code for embedded processors from a high-level description of an algorithm and an architecture.
+
+Algorithms are described by Static Dataflow (SDF) graphs. A vertex of this graph is an executable operation (a C function, an IP), that consumes and produces a fixed number of tokens per iteration. Tokens may be integers, floats, characters, or any other type. SDF edges mean data transfers between vertices. SDF graphs exhibit the potential parallelism of algorithms that is not useable using traditional means (eg sequential C programming).
+
+Architectures are expressed in the SPIRIT IP-XACT format. It is assumed that an architecture is an undirected graph whose vertices are components and edges are buses.
+
+Generating code from a particular algorithm and architecture is done in several steps. First the algorithm graph is flattened. Next, the graph is scheduled and mapped onto the architecture. This means that the operations of the SDF algorithm graph are distributed to the architecture processors, and executed so as to maximize the parallelism. Finally, the resulting graph is transformed to several compilable source files (as many as the number of processors).
+
+It is possible:
+\begin{enumerate}
+	\item to specify constraints to force certain operations to execute on certain processors
+	\item to use different scheduling algorithms depending on the user needs
+	\item to add optimization steps to the process
+\end{enumerate}
+
+To this end, Preesm is centered around the notion of workflow. A workflow is a series of steps that are applied to an algorithm, an architecture, or both. Technical details are provided in section \ref{sec:specifs}.

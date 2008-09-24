@@ -1,0 +1,85 @@
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{ifpdf}
+
+% Pour pouvoir compiler avec latex et pdflatex 
+\ifpdf
+ \pdftrue
+ \pdfoutput=1
+ \pdfcompresslevel=9
+
+ \usepackage{aecompl} % Permet d'utiliser des fontes PostScript T1
+ \usepackage[pdftex]{color}                  %for colors
+ \usepackage[pdftex]{graphicx}               %for importing graphics
+ \usepackage[pdftex,a4paper,colorlinks,citecolor=blue,pagebackref,
+plainpages=false]{hyperref} %for hyperlinking and other pdf effects
+
+% Pour compiler en pdf latex
+ \hypersetup{
+   pdftitle={PREESM documentation},
+   pdfsubject={}
+   pdfauthor={Médéric Blestel, Maxime Pelcat, Jonathan Piat, Matthieu Wipliez},
+   pdfkeywords={},
+%  pdfpagemode={FullScreen},  %make the pdf start in full-screen
+   pdfpagemode={},
+   linkcolor=blue,       %make all the links cyan instead of red
+%  citecolor=cyan,
+   urlcolor=cyan
+   }
+  \DeclareGraphicsExtensions{.jpg,.pdf,.mps,.png}
+\else
+ \usepackage[T1]{fontenc}
+ \usepackage{url}
+ \usepackage{graphicx,color}
+ \DeclareGraphicsExtensions{.eps,.pslatex,ps}
+\fi
+
+%%%%%%%%%%%%%%% Entetes et pieds de pages %%%%%%%%%%%%%%%%%%
+\pagestyle{fancy} % Ceci permet d'avoir les noms de chapitre et de section en minuscules
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{} % Supprime les entetes et pieds existants
+\fancyfoot[C,CO]{\bfseries\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\addtolength{\headheight}{0.5pt} % Espace pour le filet
+\fancypagestyle{plain}{ % Pages de tetes de chapitre
+\fancyhead{} % Supprime l entete
+\renewcommand{\headrulewidth}{0pt}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dimensions du document :
+
+\setlength{\voffset} {-0.54cm}
+\setlength{\hoffset} {-0,04cm}
+\setlength{\textwidth} {14,3cm}
+\setlength{\textheight} {24cm}
+\setlength{\oddsidemargin} {0,7cm}
+\setlength{\evensidemargin} {0,7cm}
+\setlength{\marginparsep} {0cm}
+\setlength{\marginparwidth} {0cm}
+\setlength{\topmargin} {0cm}
+\setlength{\headheight} {0,45cm}
+\setlength{\headsep} {0,57cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Style du document :
+
+%\pagestyle{myheadings}
+%\bibliographystyle{plain}
+
+\setcounter{tocdepth}{3}   % Niveau jusqu'où numéroter les titres (table des mat)
+\setcounter{secnumdepth}{4}% Niveau jusqu'où numéroter les titres (dans texte)
+
+\sloppy % Baisse le taux des césures
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

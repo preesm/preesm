@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="tasks" name="%tasksName" schema="schema/tasks.exsd"/>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.ietr.preesm.core.ui.propertyTesters.PreesmPropertyTester"
+            id="org.ietr.preesm.core.natureTester"
+            namespace="org.ietr.preesm.core"
+            properties="hasNature"
+            type="org.eclipse.core.resources.IFile">
+      </propertyTester>
+      <propertyTester
+            class="org.ietr.preesm.core.ui.propertyTesters.PreesmPropertyTester"
+            id="org.ietr.preesm.core.workflowTester"
+            namespace="org.ietr.preesm.core"
+            properties="isWorkflow"
+            type="org.eclipse.core.resources.IFile">
+      </propertyTester>
+   </extension>
+   <extension
+         id="org.ietr.preesm.core.natures.PreesmProjectNature"
+         name="Preesm Project"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.ietr.preesm.core.ui.natures.PreesmProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/preesmProjectNature.png"
+            id="org.ietr.preesm.core.projectNatureImage"
+            natureId="org.ietr.preesm.core.natures.PreesmProjectNature">
+         <description>
+            A Preesm project.
+         </description>
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.ietr.preesm.core.category"
+            name="Preesm">
+      </category>
+      <wizard
+            category="org.ietr.preesm.core.category"
+            class="org.ietr.preesm.core.ui.wizards.NewPreesmProjectWizard"
+            hasPages="true"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
+            name="Preesm Project"
+            project="true">
+         <description>
+            Create a new Preesm project
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.ietr.preesm.core.ui.launch.WorkflowLaunchConfigurationDelegate"
+            id="org.ietr.preesm.core.workflowLaunchConfigurationType"
+            modes="run,debug"
+            name="Preesm Workflow"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.ietr.preesm.core.ui.launch.WorkflowLaunchConfigurationTabGroup"
+            id="org.ietr.preesm.core.workflowLaunchConfigurationTabGroup"
+            type="org.ietr.preesm.core.workflowLaunchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.ietr.preesm.core.workflowLaunchConfigurationType"
+            icon="icons/preesmProjectNature.png"
+            id="org.ietr.preesm.core.workflowLaunchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.ietr.preesm.core.ui.launch.WorkflowLaunchShortcut"
+            icon="icons/preesmProjectNature.png"
+            id="org.ietr.preesm.core.workflowLaunchShortcut"
+            label="Preesm Workflow"
+            modes="run,debug">
+        
+                        <description
+                              description="Create a Preesm workflow"
+                              mode="run,debug">
+                        </description> <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     
+                     <and><test
+                           property="org.ietr.preesm.core.hasNature"
+                           value="org.ietr.preesm.core.natures.PreesmProjectNature">
+                     </test>
+                     <test
+                                property="org.ietr.preesm.core.isWorkflow">
+                          </test>
+                          </and>
+                          </iterate>
+                          </with>
+                          </enablement>
+                          </contextualLaunch>
+                          </shortcut>
+                          </extension>
+
+
+</plugin>

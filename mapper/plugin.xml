@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.ietr.preesm.core.tasks">
+      <task
+            id="org.ietr.preesm.plugin.mapper.fast"
+            name="Kwok FAST algorithm"
+            type="org.ietr.preesm.plugin.mapper.FASTTransformation">
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.pfast"
+            name="Kwok PFAST algorithm (parallel version of FAST)"
+            type="org.ietr.preesm.plugin.mapper.PFASTTransformation">
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.listscheduling"
+            name="Kwok list scheduling algorithm"
+            type="org.ietr.preesm.plugin.mapper.ListSchedulingTransformation">
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.pgenetic"
+            name="Parallel genetic scheduling algorithm"
+            type="org.ietr.preesm.plugin.mapper.PGeneticTransformation">
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.standardgenetic"
+            name="Standard genetic scheduling algorithm"
+            type="org.ietr.preesm.plugin.mapper.StandardGeneticTransformation">
+      </task>
+   </extension>
+
+</plugin>

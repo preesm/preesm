@@ -1,0 +1,320 @@
+/**
+ * 
+ */
+package org.ietr.preesm.plugin.mapper.fastalgo;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.ietr.preesm.core.architecture.Examples;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.constraints.Scenario;
+import org.ietr.preesm.core.constraints.Timing;
+import org.ietr.preesm.core.constraints.TimingManager;
+import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
+import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
+import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.DirectedNeighborIndex;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFGraph;
+
+/**
+ * List scheduler
+ * 
+ * @author pmenuet
+ */
+public class ListScheduler {
+
+	/**
+	 * constructor
+	 */
+	public ListScheduler() {
+		super();
+	}
+
+	/**
+	 * dagimplanteddisplay: Display the DAG with the vertex name and the
+	 * operator of this vertex
+	 * 
+	 * @param : threadName
+	 * @param : MapperDAG
+	 * @param : simu
+	 * 
+	 * @return : void
+	 */
+	public void dagimplanteddisplay(String threadName, MapperDAG dag,
+			IAbc simu) {
+
+		// Variables
+		TopologicalDAGIterator iter = new TopologicalDAGIterator(dag);
+		MapperDAGVertex currentvertex;
+		Logger logger = PreesmLogger.getLogger();
+		// check all the DAG
+		while (iter.hasNext()) {
+			currentvertex = (MapperDAGVertex)iter.next();
+
+			logger.log(Level.FINER, threadName + "Vertex "
+					+ currentvertex.getName() + " operator "
+					+ simu.getEffectiveComponent(currentvertex).getName());
+
+		}
+	}
+
+	/**
+	 * dagimplanteddisplay: Display the DAG with the vertex name and the
+	 * operator of this vertex
+	 * 
+	 * @param : MapperDAG
+	 * @param : simu
+	 * 
+	 * @return : void
+	 */
+	public void dagimplanteddisplay(MapperDAG dag, IAbc simu) {
+
+		dagimplanteddisplay("", dag, simu);
+	}
+
+	/**
+	 * operatorvertexstarttime: Return the date when the operator is ready to
+	 * process the vertex
+	 * 
+	 * @param : MapperDAG, MapperDAGVertex, Operator, IArchitectureSimulator
+	 * @return : integer
+	 */
+	public int operatorvertexstarttime(MapperDAG dag, MapperDAGVertex vertex,
+			Operator operator, IAbc simu) {
+
+		// Variables
+		int temptime;
+		int starttime = 0;
+		MapperDAGVertex preccurrentvertex;
+		Set<DAGVertex> predset = new HashSet<DAGVertex>();
+
+		// check the vertex is into the DAG
+		vertex = dag.getMapperDAGVertex(vertex.getName());
+
+		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
+		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
+				castDag);
+
+		predset.addAll(neighborindex.predecessorListOf(vertex));
+		Iterator<DAGVertex> iter = predset.iterator();
+		Logger logger = PreesmLogger.getLogger();
+
+		logger.log(Level.FINEST, " entering operator/vertex start time ");
+
+		// implant the vertex with the operator
+		simu.implant(vertex, operator, true);
+		logger
+				.log(Level.FINEST, " implant the vertex on "
+						+ operator.getName());
+
+		// check if the vertex is a source vertex with no predecessors
+		if (predset.isEmpty())
+			return simu.getFinalTime(operator);
+
+		// Search the predecessors to find when the data will be available
+		while (iter.hasNext()) {
+			preccurrentvertex = (MapperDAGVertex)iter.next();
+			logger.log(Level.FINEST, " test parent time ");
+			temptime = 0;
+			simu.retrieveTotalOrder();
+			temptime = simu.getFinalTime(preccurrentvertex);
+			logger.log(Level.FINEST, " time parent " + temptime);
+
+			// test if the data are already available in this operator
+			if (!(simu.getEffectiveComponent(preccurrentvertex)
+					.equals(operator))) {
+				temptime = Math.max(temptime
+						+ simu.getCost((MapperDAGEdge)dag.getEdge(preccurrentvertex, vertex)),
+						simu.getFinalTime(operator));
+			} else {
+				temptime = Math.max(temptime, simu.getFinalTime(operator));
+			}
+			logger.log(Level.FINEST, " time with edge " + temptime);
+			if (temptime > starttime) {
+				starttime = temptime;
+				logger.log(Level.FINEST, " start time " + starttime);
+			}
+
+		}
+
+		return starttime;
+	}
+
+	/**
+	 * schedule: Do a mapping with the help of the lists (CPN-Dominant list,
+	 * Blocking node list and the FCP list) and the architecture. It can take
+	 * one vertex already implanted with a particular operator chosen by the
+	 * user and only one.
+	 * 
+	 * @param : MapperDAG, List<MapperDAGVertex>, List<MapperDAGVertex>,
+	 *        List<MapperDAGVertex>,IArchitectureSimulator,
+	 *        Operator,MapperDAGVertex
+	 * 
+	 * @return : Implemented MapperDAG
+	 */
+
+	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
+			List<MapperDAGVertex> blockingnodelist,
+			List<MapperDAGVertex> fcplist, IAbc archisimu,
+			Operator operatorfcp, MapperDAGVertex fcpvertex) {
+
+		// Variables
+
+		MapperDAGVertex currentvertex = null;
+		Operator currentoperator = null;
+		Operator chosenoperator = null;
+		Iterator<MapperDAGVertex> iter = orderlist.iterator();
+		List<Operator> operatorlist = new ArrayList<Operator>();
+		Logger logger = PreesmLogger.getLogger();
+
+		// Implant the fastest one to be ready among the operators in the vertex
+		// check the vertex by priority in the CPN-Dominant list
+		logger.log(Level.FINEST, " entering schedule ");
+		while (iter.hasNext()) {
+			currentvertex = iter.next();
+			logger.log(Level.FINEST, " vertex to implant "
+					+ currentvertex.getName());
+
+			// Implanting forced by the user or the Fast algorithm
+			if (currentvertex.equals(fcpvertex)) {
+				archisimu.implant(currentvertex, operatorfcp, true);
+				logger.log(Level.FINEST, " vertex " + currentvertex.getName()
+						+ " already implanted ");
+
+			} else {
+
+				int time = Integer.MAX_VALUE;
+				// Choose the operator
+				OperatorIterator iterop = new OperatorIterator(currentvertex,
+						archisimu.getArchitecture());
+
+				while (iterop.hasNext()) {
+
+					currentoperator = iterop.next();
+					logger.log(Level.FINEST, " Considering operator "
+							+ currentoperator.getName() + " on the vertex "
+							+ currentvertex.getName());
+
+					int test = operatorvertexstarttime(dag, currentvertex,
+							currentoperator, archisimu);
+					// test the earliest ready operator
+					if (test < time) {
+						chosenoperator = currentoperator;
+						logger.log(Level.FINEST, " Chosen operator is : "
+								+ chosenoperator.getName());
+						time = test;
+					}
+
+				}
+				// Implant the chosen operator in the CPN-Dominant list
+				archisimu.implant(currentvertex, chosenoperator, true);
+				
+				if(chosenoperator != null)
+					logger.log(Level.FINEST, " Chosen operator "
+							+ chosenoperator.getName() + " is implanted ");
+
+				chosenoperator = null;
+				operatorlist.clear();
+
+			}
+		}
+
+		archisimu.retrieveTotalOrder();
+
+		return dag;
+	}
+
+	/**
+	 * Main for test
+	 */
+	public static void main(String[] args) {
+
+		Logger logger = PreesmLogger.getLogger();
+		logger.setLevel(Level.FINEST);
+
+		// PreesmLogger.getLogger().setLevel(Level.FINER);
+		DAGCreator dagCreator = new DAGCreator();
+
+		// Generating archi
+		MultiCoreArchitecture archi = Examples.get4C64Archi();
+
+		// Generating random sdf dag
+		int nbVertex = 10, minInDegree = 1, maxInDegree = 5, minOutDegree = 1, maxOutDegree = 5;
+		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
+				maxInDegree, minOutDegree, maxOutDegree, 50,true);
+
+		// Generating scenario
+		IScenario scenario = new Scenario();
+
+		TimingManager tmgr = scenario.getTimingManager();
+
+		for (int i = 1; i <= nbVertex; i++) {
+			String name = String.format("Vertex %d", i);
+			Timing newt = new Timing(archi.getOperatorDefinition("c64x"), graph
+					.getVertex(name), 100);
+			tmgr.addTiming(newt);
+		}
+
+		// Converting sdf dag in mapper dag
+		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
+
+		IAbc simu = new InfiniteHomogeneousAbc(
+				dag, archi);
+
+		logger.log(Level.FINEST, "Evaluating DAG");
+
+		InitialLists initial = new InitialLists();
+
+		logger.log(Level.FINEST, "Evaluating constructInitialList ");
+		initial.constructInitialLists(dag, simu);
+
+		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
+		initial.orderlistdisplay(initial.getCpnDominantList());
+
+		logger.log(Level.FINEST, "Displaying blockingNodes ");
+		initial.orderlistdisplay(initial.getBlockingNodesList());
+
+		logger.log(Level.FINEST, "Displaying fcp ");
+		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+
+		ListScheduler scheduler = new ListScheduler();
+		simu.resetImplementation();
+		IAbc simu2 = new LooselyTimedAbc(
+				dag, archi);
+
+		logger.log(Level.FINEST, "Evaluating first scheduling ");
+		scheduler.schedule(dag, initial.getCpnDominantList(), initial
+				.getBlockingNodesList(), initial.getFinalcriticalpathList(),
+				simu2, null, null);
+
+		logger.log(Level.FINEST, "Displaying dag implanted ");
+		scheduler.dagimplanteddisplay(dag, simu2);
+
+		logger.log(Level.FINEST, "Evaluating time : " + simu2.getFinalTime());
+		// simu2.setImplementation(dag);
+		simu2.plotImplementation();
+
+		logger.log(Level.FINEST, "Test finished");
+	}
+
+}
