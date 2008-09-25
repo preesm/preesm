@@ -9,6 +9,7 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 
 /**
  * A loosely timed architecture simulator associates a simple cost to
@@ -27,6 +28,12 @@ public class LooselyTimedAbc extends
 	protected CommunicationRouter router;
 
 	/**
+	 * Current precedence edge adder: called exclusively by simulator to schedule
+	 * vertices on the different operators
+	 */
+	protected PrecedenceEdgeAdder precedenceEdgeAdder;
+	
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
@@ -35,6 +42,7 @@ public class LooselyTimedAbc extends
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
+		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
 	@Override
@@ -58,9 +66,9 @@ public class LooselyTimedAbc extends
 
 			// precedenceEdgeAdder.deleteScheduleIncomingEdges(implementation,
 			// vertex);
-			precedenceEdgeAdder.deletePrecedenceEdges(implementation);
+			transactionManager.undoTransactionList();
 
-			precedenceEdgeAdder.addPrecedenceEdges(implementation);
+			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 			// precedenceEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
 			// this);
 

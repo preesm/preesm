@@ -4,8 +4,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * A schedule edge is automatically generated and expresses the sequential
- * execution of the joined vertices
+ * A precedence edge is automatically generated and expresses the sequential
+ * execution of successive vertices
  * 
  * @author mpelcat   
  */
@@ -21,7 +21,7 @@ public class PrecedenceEdge extends MapperDAGEdge {
 		if (getSource() != null)
 			destName = getTarget().getName();
 
-		return "schedule(" + sourceName + "," + destName + ")";
+		return "precedence(" + sourceName + "," + destName + ")";
 	}
 
 	/**

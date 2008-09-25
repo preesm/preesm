@@ -12,6 +12,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertexAdder;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
 
 /**
@@ -26,6 +27,12 @@ public class AccuratelyTimedAbc extends
 	 * simulator of the transfers
 	 */
 	protected CommunicationRouter router;
+
+	/**
+	 * Current precedence edge adder: called exclusively by simulator to schedule
+	 * vertices on the different operators
+	 */
+	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
 	/**
 	 * Transfer vertex adder for edge scheduling
@@ -49,8 +56,8 @@ public class AccuratelyTimedAbc extends
 		router = new CommunicationRouter(archi);
 
 		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
-
 		overtexAdder = new OverheadVertexAdder(orderManager);
+		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
 	/**
@@ -75,11 +82,11 @@ public class AccuratelyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			precedenceEdgeAdder.deletePrecedenceEdges(implementation);
 			transactionManager.undoTransactionList();
+			
 			tvertexAdder.addTransferVertices(implementation,transactionManager);
 			overtexAdder.addOverheadVertices(implementation,transactionManager);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation);
+			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 
 		}
 	}

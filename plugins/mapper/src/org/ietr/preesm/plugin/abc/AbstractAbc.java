@@ -77,12 +77,6 @@ public abstract class AbstractAbc implements
 	protected MapperDAG implementation;
 
 	/**
-	 * Current schedule edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-
-	/**
 	 * Current time keeper: called exclusively by simulator to update the useful
 	 * time tags in DAG
 	 */
@@ -132,8 +126,6 @@ public abstract class AbstractAbc implements
 
 		this.archi = archi;
 
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
-
 		// currentRank = 0;
 	}
 
@@ -147,7 +139,6 @@ public abstract class AbstractAbc implements
 		this.implementation = dag.clone();
 
 		this.timekeeper = new GraphTimeKeeper();
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		timekeeper.resetTimings(implementation);
 

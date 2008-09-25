@@ -10,6 +10,10 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.Transaction;
+import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -36,11 +40,12 @@ public class PrecedenceEdgeAdder {
 	 * Adds all necessary schedule edges to an implementation respecting
 	 * the order given by the scheduling order manager.
 	 */
-	public void addPrecedenceEdges(MapperDAG implementation) {
+	public void addPrecedenceEdges(MapperDAG implementation, TransactionManager transactionManager) {
 
 		Iterator<ArchitectureComponent> schedIt = orderManager.getArchitectureComponents()
 				.iterator();
 
+		// Iterates the schedules
 		while (schedIt.hasNext()) {
 			List<MapperDAGVertex> schedule = orderManager
 					.getScheduleList(schedIt.next());
@@ -49,6 +54,7 @@ public class PrecedenceEdgeAdder {
 
 			MapperDAGVertex src;
 
+			// Iterates all vertices in each schedule
 			if (schedit.hasNext()) {
 				MapperDAGVertex dst = schedit.next();
 
@@ -58,52 +64,16 @@ public class PrecedenceEdgeAdder {
 					dst = schedit.next();
 
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
-						PrecedenceEdge sEdge = new PrecedenceEdge();
-						sEdge.getTimingEdgeProperty().setCost(0);
-						implementation.addEdge(src, dst, sEdge);
+						// Adds a transaction
+						Transaction transaction = new AddPrecedenceEdgeTransaction(implementation,src,dst);
+						transactionManager.add(transaction);
 					}
 				}
 			}
 		}
 
-	}
-
-	/**
-	 * Deletes all the edges of implementation with type PrecedenceEdgeAdderEdge
-	 */
-	public void deletePrecedenceEdges(MapperDAG implementation) {
-
-		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
-		Set<MapperDAGEdge> edgeset = new HashSet<MapperDAGEdge>();
-		MapperDAGEdge currentEdge;
-
-		while (iterator.hasNext()) {
-			currentEdge = (MapperDAGEdge) iterator.next();
-			if (currentEdge instanceof PrecedenceEdge)
-				edgeset.add(currentEdge);
-		}
-
-		implementation.removeAllEdges(edgeset);
-	}
-
-	/**
-	 * Deletes all the incoming edges of vertex with type PrecedenceEdgeAdderEdge
-	 */
-	public void deletePrecedenceIncomingEdges(MapperDAG implementation,
-			MapperDAGVertex vertex) {
-
-		Iterator<DAGEdge> iterator = vertex.incomingEdges().iterator();
-		Set<MapperDAGEdge> edgeset = new HashSet<MapperDAGEdge>();
-		MapperDAGEdge currentEdge;
-
-		while (iterator.hasNext()) {
-			currentEdge = (MapperDAGEdge) iterator.next();
-
-			if (currentEdge instanceof PrecedenceEdge)
-				edgeset.add(currentEdge);
-		}
-
-		implementation.removeAllEdges(edgeset);
+		// Executes the transactions
+		transactionManager.executeTransactionList();
 	}
 
 }

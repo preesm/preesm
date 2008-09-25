@@ -8,6 +8,7 @@ import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
 
 /**
@@ -33,6 +34,12 @@ public class ApproximatelyTimedAbc extends
 	protected TransferVertexAdder tvertexAdder;
 
 	/**
+	 * Current precedence edge adder: called exclusively by simulator to schedule
+	 * vertices on the different operators
+	 */
+	protected PrecedenceEdgeAdder precedenceEdgeAdder;
+
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
@@ -42,8 +49,8 @@ public class ApproximatelyTimedAbc extends
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-
 		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
+		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
 	/**
@@ -68,10 +75,10 @@ public class ApproximatelyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			precedenceEdgeAdder.deletePrecedenceEdges(implementation);
 			transactionManager.undoTransactionList();
+			
 			tvertexAdder.addTransferVertices(implementation,transactionManager);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation);
+			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 		}
 	}
 
