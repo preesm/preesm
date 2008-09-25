@@ -3,6 +3,7 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -44,7 +45,7 @@ public class VertexType {
 		
 		// If the communication operation is an intermediate step of a route
 		if(vType.isReceive()){
-			SDFEdge outEdge = (SDFEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
+			DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
 			VertexType nextVType = (VertexType)outEdge.getTarget().getPropertyBean().getValue(VertexType.propertyBeanName);
 			
 			if(nextVType.isSend())
@@ -63,7 +64,7 @@ public class VertexType {
 		
 		// If the communication operation is an intermediate step of a route
 		if(vType.isSend()){
-			SDFEdge inEdge = (SDFEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
+			DAGEdge inEdge = (DAGEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
 			VertexType prevVType = (VertexType)inEdge.getSource().getPropertyBean().getValue(VertexType.propertyBeanName);
 			
 			if(prevVType.isReceive())

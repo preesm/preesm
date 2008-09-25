@@ -3,6 +3,8 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+
 
 /**
  * Declaration of a thread for code generation. Threads can be communication or

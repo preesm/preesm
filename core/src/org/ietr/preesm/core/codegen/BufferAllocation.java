@@ -3,6 +3,8 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+
 
 /**
  * A buffer allocation is necessary for every input and

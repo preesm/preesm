@@ -3,6 +3,8 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+
 
 /**
  * Each thread runs indefinitely. It contains a for loop.

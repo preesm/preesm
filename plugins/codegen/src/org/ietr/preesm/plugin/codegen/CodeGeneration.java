@@ -3,6 +3,8 @@
  */
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,16 +21,12 @@ import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.codegen.print.C64Printer;
+import org.ietr.preesm.plugin.codegen.print.PrinterChooser;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFAbstractGraph;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFDefaultEdgePropertyType;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Code generation.
@@ -395,9 +393,12 @@ public class CodeGeneration implements ICodeGeneration {
 		DirectedAcyclicGraph algorithm = gen.implanteddagexample2_multi_with_routes(architecture);
 		
 		// Input file list
-		SourceFileList list = new SourceFileList();
 
-		gen.transform(algorithm, architecture,null);
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("sourcePath","d:/Test");
+		TextParameters params = new TextParameters(map);
+		
+		gen.transform(algorithm, architecture,params);
 
 		logger.log(Level.FINER, "Code generated");
 		
@@ -412,7 +413,8 @@ public class CodeGeneration implements ICodeGeneration {
 		
 		generateSourceFiles(algorithm, architecture, list);
 
-		list.accept(new C64Printer(sourcePath));
+		PrinterChooser printerChooser = new PrinterChooser(sourcePath);
+		printerChooser.printList(list);
 		
 		result.setSourcefilelist(list);
 		return result;

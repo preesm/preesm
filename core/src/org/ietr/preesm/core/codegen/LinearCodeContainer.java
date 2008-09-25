@@ -3,6 +3,8 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+
 /**
  * Code container executed once (no loop)
  * 

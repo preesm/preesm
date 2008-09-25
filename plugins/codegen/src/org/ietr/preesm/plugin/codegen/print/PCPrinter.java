@@ -34,14 +34,14 @@ import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 
 /**
- * Visitor that generates C code from source files for a C64 target
+ * Visitor that generates C code from source files for a PC target
  * 
  * @author mpelcat
  */
-public class C64Printer extends AbstractPrinter {
+public class PCPrinter extends AbstractPrinter {
 
 	
-	public C64Printer() {
+	public PCPrinter() {
 		super();
 	}
 

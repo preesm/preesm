@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -34,20 +35,6 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	 * 
 	 */
 	public SourceFileList() {
-	}
-
-	/**
-	 * Accepts a printer visitor
-	 */
-	public void accept(AbstractPrinter printer) {
-
-		printer.visit(this, 0); // Visit self
-		Iterator<SourceFile> iterator = iterator();
-		// Displays every files
-		while(iterator.hasNext()){
-			iterator.next().accept(printer); // Accepts each source file
-		}
-		printer.visit(this, 1); // Visit self
 	}
 
 	/**

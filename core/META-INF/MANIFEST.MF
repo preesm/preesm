@@ -21,6 +21,7 @@ Bundle-ClassPath: .,
  lib/jgraph.jar
 Export-Package: org.ietr.preesm.core.architecture,
  org.ietr.preesm.core.codegen;uses:="org.ietr.preesm.core.architecture,org.ietr.preesm.core.codegen.sdfProperties,org.sdf4j.model.sdf",
+ org.ietr.preesm.core.codegen.printer,
  org.ietr.preesm.core.codegen.sdfProperties,
  org.ietr.preesm.core.constraints;uses:="org.ietr.preesm.core.architecture,org.sdf4j.model.sdf",
  org.ietr.preesm.core.expression;uses:="org.nfunk.jep.function,org.nfunk.jep",

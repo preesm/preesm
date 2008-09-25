@@ -3,7 +3,9 @@
  */
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
+import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -28,7 +30,7 @@ public class SemaphorePend extends CodeElement {
 
 		SemaphoreContainer semContainer = globalContainer.getSemaphoreContainer();
 		
-		SDFEdge outEdge = (SDFEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
+		DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
 		BufferAggregate agg = (BufferAggregate)outEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
 		
 		// The pending semaphore of a full buffer will be put before the send

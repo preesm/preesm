@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -50,6 +51,10 @@ public class SourceFile extends AbstractBufferContainer {
 		threads = new ArrayList<ThreadDeclaration>();
 	}
 
+	public Operator getOperator() {
+		return operator;
+	}
+	
 	/**
 	 * Accepts a printer visitor
 	 */
