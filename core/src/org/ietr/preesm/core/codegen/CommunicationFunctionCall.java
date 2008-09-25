@@ -19,7 +19,7 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mpelcat
  */
-public class CommunicationFunctionCall extends CodeElement {
+public class CommunicationFunctionCall extends AbstractCodeElement {
 
 	/**
 	 * creates a send or a receive depending on the vertex type

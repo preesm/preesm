@@ -44,7 +44,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 			
 			if(!ownComVertices.isEmpty()){
 
-				CodeElement taskElement = loopCode.getCodeElement(task);
+				ICodeElement taskElement = loopCode.getCodeElement(task);
 				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
 
 				while (comIterator.hasNext()) {
@@ -69,7 +69,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 			
 			if(!ownComVertices.isEmpty()){
 
-				CodeElement taskElement = loopCode.getCodeElement(task);
+				ICodeElement taskElement = loopCode.getCodeElement(task);
 				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
 
 				while (comIterator.hasNext()) {

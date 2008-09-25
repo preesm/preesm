@@ -20,7 +20,7 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mpelcat
  */
-public class UserFunctionCall extends CodeElement {
+public class UserFunctionCall extends AbstractCodeElement {
 	
 	/**
 	 * The buffer set contains all the buffers usable by the user function

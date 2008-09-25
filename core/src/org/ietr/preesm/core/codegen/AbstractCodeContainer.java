@@ -22,21 +22,21 @@ public abstract class AbstractCodeContainer {
 	/**
 	 * List of the elements that are not included in the main loop
 	 */
-	private List<CodeElement> codeElements;
+	private List<ICodeElement> codeElements;
 	
 
 	public AbstractCodeContainer(){
-		codeElements = new ArrayList<CodeElement>();
+		codeElements = new ArrayList<ICodeElement>();
 	}
 
 	public void accept(AbstractPrinter printer) {
 
 		printer.visit(this,0); // Visit self
 		
-		Iterator<CodeElement> iterator = codeElements.iterator();
+		Iterator<ICodeElement> iterator = codeElements.iterator();
 		
 		while(iterator.hasNext()){
-			CodeElement elt = iterator.next();
+			ICodeElement elt = iterator.next();
 			printer.visit(this,1); // Visit self
 			elt.accept(printer);
 			printer.visit(this,2); // Visit self
@@ -44,11 +44,11 @@ public abstract class AbstractCodeContainer {
 		printer.visit(this,3); // Visit self
 	}
 
-	public void addCodeElement(CodeElement element) {
+	public void addCodeElement(ICodeElement element) {
 		codeElements.add(element);
 	}
 
-	public void addCodeElementAfter(CodeElement oldElement, CodeElement newElement) {
+	public void addCodeElementAfter(ICodeElement oldElement, ICodeElement newElement) {
 		
 		int index = codeElements.indexOf(oldElement);
 		
@@ -58,7 +58,7 @@ public abstract class AbstractCodeContainer {
 			codeElements.add(newElement);
 	}
 
-	public void addCodeElementBefore(CodeElement oldElement, CodeElement newElement) {
+	public void addCodeElementBefore(ICodeElement oldElement, ICodeElement newElement) {
 		
 		int index = codeElements.indexOf(oldElement);
 		
@@ -68,12 +68,12 @@ public abstract class AbstractCodeContainer {
 			codeElements.add(newElement);
 	}
 
-	public CodeElement getCodeElement(DAGVertex vertex) {
+	public ICodeElement getCodeElement(DAGVertex vertex) {
 		
-		Iterator<CodeElement> iterator = codeElements.iterator();
+		Iterator<ICodeElement> iterator = codeElements.iterator();
 		
 		while(iterator.hasNext()){
-			CodeElement elt = iterator.next();
+			ICodeElement elt = iterator.next();
 
 			DAGVertex currentVertex = elt.getCorrespondingVertex();
 			if(elt.getCorrespondingVertex() != null && currentVertex.equals(vertex)){
@@ -93,10 +93,10 @@ public abstract class AbstractCodeContainer {
 
 		code += "\n";
 		
-		Iterator<CodeElement> iterator = codeElements.iterator();
+		Iterator<ICodeElement> iterator = codeElements.iterator();
 		
 		while(iterator.hasNext()){
-			CodeElement elt = iterator.next();
+			ICodeElement elt = iterator.next();
 
 			code += elt.toString() + "\n";
 		}

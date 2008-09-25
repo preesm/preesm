@@ -411,8 +411,10 @@ public class CodeGeneration implements ICodeGeneration {
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
 		
+		// Generate source file class
 		generateSourceFiles(algorithm, architecture, list);
 
+		// Generates the code
 		PrinterChooser printerChooser = new PrinterChooser(sourcePath);
 		printerChooser.printList(list);
 		

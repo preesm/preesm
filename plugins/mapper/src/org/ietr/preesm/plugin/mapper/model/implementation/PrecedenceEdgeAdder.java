@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.plugin.abc.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -18,7 +18,7 @@ import org.sdf4j.model.dag.DAGEdge;
 /**
  * The edge adder automatically generates edges between vertices
  * successive on a single operator. It can also remove all the edges of
- * type PrecedenceEdgeAdderEdge from the graph
+ * type PrecedenceEdgeAdder from the graph
  * 
  * @author mpelcat   
  */

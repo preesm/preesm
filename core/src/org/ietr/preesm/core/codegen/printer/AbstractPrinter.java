@@ -16,7 +16,7 @@ import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.CodeElement;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
@@ -56,7 +56,7 @@ public abstract class AbstractPrinter {
 	public abstract void visit(AbstractCodeContainer element, int index);
 	public abstract void visit(Buffer element, int index);
 	public abstract void visit(BufferAllocation element, int index);
-	public abstract void visit(CodeElement element, int index);
+	public abstract void visit(AbstractCodeElement element, int index);
 	public abstract void visit(CommunicationFunctionCall element, int index);
 	public abstract void visit(ForLoop element, int index);
 	public abstract void visit(LinearCodeContainer element, int index);

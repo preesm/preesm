@@ -15,7 +15,7 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mpelcat
  */
-public class SemaphorePend extends CodeElement {
+public class SemaphorePend extends AbstractCodeElement {
 
 	private Semaphore semaphore;
 	

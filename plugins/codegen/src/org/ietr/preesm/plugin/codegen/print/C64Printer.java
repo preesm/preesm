@@ -18,7 +18,7 @@ import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.CodeElement;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
@@ -158,7 +158,7 @@ public class C64Printer extends AbstractPrinter {
 	}
 
 	@Override
-	public void visit(CodeElement element, int index) {
+	public void visit(AbstractCodeElement element, int index) {
 		if (index == 0) {
 			currentSource += element.getName();
 		}

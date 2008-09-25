@@ -14,7 +14,7 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
  * @author mwipliez
  * @author mpelcat
  */
-public class ForLoop extends AbstractCodeContainer {
+public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 	
 	/**
 	 * 

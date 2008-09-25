@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.log.PreesmLogger;
-import org.ietr.preesm.plugin.abc.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;

@@ -30,7 +30,7 @@ public class CommunicationThreadDeclaration extends ThreadDeclaration {
 
 		while (iterator.hasNext()) {
 			DAGVertex vertex = iterator.next();
-			CodeElement com = loopCode.getCodeElement(vertex);
+			ICodeElement com = loopCode.getCodeElement(vertex);
 
 			AbstractBufferContainer container = getGlobalContainer();
 			

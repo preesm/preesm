@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;

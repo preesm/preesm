@@ -2,7 +2,7 @@ package org.ietr.preesm.plugin.mapper.model.implementation;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.plugin.abc.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;

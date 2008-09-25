@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc;
+package org.ietr.preesm.plugin.abc.order;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,92 +26,6 @@ import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 public class SchedulingOrderManager {
 
 	/**
-	 * A schedule is a list of successive vertices executed on a single
-	 * processor
-	 */
-	private class Schedule {
-
-		/**
-		 * List of the vertices in schedule
-		 */
-		private LinkedList<MapperDAGVertex> vertices;
-
-		public Schedule() {
-
-			vertices = new LinkedList<MapperDAGVertex>();
-		}
-
-		/**
-		 * Test if the vertex belongs to this schedule
-		 */
-		public boolean hasVertex(MapperDAGVertex vertex) {
-			return (vertices.contains(vertex));
-		}
-
-		/**
-		 * Gets the previous vertex in the current schedule
-		 */
-		public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
-			if (vertices.indexOf(vertex) <= 0)
-				return null;
-			return (vertices.get(vertices.indexOf(vertex) - 1));
-		}
-
-		/**
-		 * Appends a vertex at the end of the schedule
-		 */
-		public void addVertex(MapperDAGVertex vertex) {
-			if (!vertices.contains(vertex))
-				vertices.addLast(vertex);
-		}
-
-		/**
-		 * Inserts a vertex at the beginning of the schedule
-		 */
-		public void addVertexFirst(MapperDAGVertex vertex) {
-			if (!vertices.contains(vertex))
-				vertices.addFirst(vertex);
-		}
-
-		/**
-		 * Inserts a vertex after the given one
-		 */
-		public void insertVertexAfter(MapperDAGVertex previous,
-				MapperDAGVertex vertex) {
-
-			if (!vertices.contains(vertex))
-				if (vertices.indexOf(previous) >= 0) {
-					if (vertices.indexOf(previous) + 1 < vertices.size())
-						vertices.add(vertices.indexOf(previous) + 1, vertex);
-					else
-						vertices.addLast(vertex);
-				}
-		}
-
-		/**
-		 * Returns the order of the given vertex
-		 */
-		public int orderOf(MapperDAGVertex vertex) {
-
-			return vertices.indexOf(vertex);
-		}
-
-		/**
-		 * Removes the given vertex
-		 */
-		public void removeVertex(MapperDAGVertex vertex) {
-
-			vertices.remove(vertex);
-
-		}
-
-		@Override
-		public String toString() {
-			return "{" + vertices.toString() + "}";
-		}
-	}
-
-	/**
 	 * Contains the rank list of all the vertices in an implantation
 	 */
 	private Map<ArchitectureComponent, Schedule> schedules = null;
@@ -120,11 +34,13 @@ public class SchedulingOrderManager {
 	 * total order of the vertices in the implantation
 	 */
 	private LinkedList<MapperDAGVertex> totalOrder = null;
+	Schedule totalOrder2 = null;
 
 	public SchedulingOrderManager() {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
 		totalOrder = new LinkedList<MapperDAGVertex>();
+		totalOrder2 = new Schedule();
 	}
 
 	/**
@@ -139,16 +55,18 @@ public class SchedulingOrderManager {
 				.getImplementationVertexProperty();
 
 		if (currImpProp.hasEffectiveComponent()) {
-
+			// Retrieves the schedule corresponding to the vertex
 			Schedule currentSched = getSchedule(currImpProp
 					.getEffectiveComponent());
 
-			Iterator<MapperDAGVertex> it = currentSched.vertices.iterator();
+			// Iterates the schedule
+			Iterator<MapperDAGVertex> it = currentSched.getVertices().iterator();
 			int maxPrec = -1;
 
 			while (it.hasNext()) {
 				MapperDAGVertex current = it.next();
 
+				// Adds the vertex after the first found vertex
 				int currentTotalOrder = getSchedulingTotalOrder(current);
 
 				if (currentTotalOrder >= 0
@@ -263,7 +181,7 @@ public class SchedulingOrderManager {
 	 */
 	public List<MapperDAGVertex> getScheduleList(ArchitectureComponent cmp) {
 
-		return getSchedule(cmp).vertices;
+		return getSchedule(cmp).getVertices();
 
 	}
 
@@ -325,10 +243,13 @@ public class SchedulingOrderManager {
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
 
+		// Gets the component corresponding to the vertex
 		if (currImpProp.hasEffectiveComponent()) {
 			ArchitectureComponent effectiveCmp = currImpProp
 					.getEffectiveComponent();
 
+			// If no schedule exists for this component, 
+			// adds a schedule for it
 			if (getSchedule(effectiveCmp) == null)
 				schedules.put(effectiveCmp, new Schedule());
 		}

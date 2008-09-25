@@ -15,7 +15,7 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  * 
  * @author mpelcat
  */
-public abstract class CodeElement {
+public abstract class AbstractCodeElement implements ICodeElement {
 
 	/**
 	 * The vertex generating this function call
@@ -30,7 +30,7 @@ public abstract class CodeElement {
 	private AbstractBufferContainer parentContainer;
 
 
-	public CodeElement(String name,AbstractBufferContainer parentContainer, DAGVertex correspondingVertex) {
+	public AbstractCodeElement(String name,AbstractBufferContainer parentContainer, DAGVertex correspondingVertex) {
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
