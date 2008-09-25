@@ -90,8 +90,8 @@ public class TagDAG {
 
 				bean.setValue(VertexType.propertyBeanName, VertexType.receive);
 				bean.setValue(Operator.propertyBeanName,
-						((SendVertex) currentVertex).getRouteStep().getReceiver());
-				bean.setValue(Medium.propertyBeanName, ((SendVertex) currentVertex).getRouteStep().getMedium());
+						((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
+				bean.setValue(Medium.propertyBeanName, ((ReceiveVertex) currentVertex).getRouteStep().getMedium());
 			}
 			else{
 	
