@@ -53,13 +53,13 @@ public abstract class ImplantationIterator extends
 	@Override
 	public abstract int compare(MapperDAGVertex arg0, MapperDAGVertex arg1);
 
-	public void createOrderedList(MapperDAG implantation) {
+	public void createOrderedList(MapperDAG implementation) {
 		// Creating a sorted list using the current class as a comparator
 		SortedSet<MapperDAGVertex> vertexSet = new ConcurrentSkipListSet<MapperDAGVertex>(
 				this);
 		MapperDAGVertex currentvertex;
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
-				implantation);
+				implementation);
 
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex)iterator.next();

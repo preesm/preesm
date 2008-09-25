@@ -152,9 +152,9 @@ public class AddSendReceiveTransaction extends Transaction {
 		implementation.removeEdge(newEdge2);
 		implementation.removeEdge(newEdge3);
 		implementation.removeVertex(sendVertex);
-		orderManager.removeVertex(sendVertex, true);
+		orderManager.remove(sendVertex, true);
 		implementation.removeVertex(receiveVertex);
-		orderManager.removeVertex(receiveVertex, true);
+		orderManager.remove(receiveVertex, true);
 	}
 
 

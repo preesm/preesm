@@ -117,7 +117,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(oVertex);
-		orderManager.removeVertex(oVertex, true);
+		orderManager.remove(oVertex, true);
 	}
 
 }

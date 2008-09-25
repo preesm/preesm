@@ -20,7 +20,7 @@ public class MapperDAGVertex extends DAGVertex {
 	/**
 	 * Properties set by mapper algorithm via architecture model
 	 */
-	protected ImplementationVertexProperty implantationVertexProperty;
+	protected ImplementationVertexProperty implementationVertexProperty;
 
 	/**
 	 * Properties set when converting sdf to dag
@@ -49,7 +49,7 @@ public class MapperDAGVertex extends DAGVertex {
 		this.setName(name);
 		this.initialVertexProperty = new InitialVertexProperty();
 		this.initialVertexProperty.setParentVertex(this);
-		this.implantationVertexProperty = new ImplementationVertexProperty();
+		this.implementationVertexProperty = new ImplementationVertexProperty();
 		this.timingVertexProperty = new TimingVertexProperty();
 
 		this.setBase(base);
@@ -74,7 +74,7 @@ public class MapperDAGVertex extends DAGVertex {
 	}
 	
 	public ImplementationVertexProperty getImplementationVertexProperty() {
-		return implantationVertexProperty;
+		return implementationVertexProperty;
 	}
 
 	public InitialVertexProperty getInitialVertexProperty() {
@@ -86,8 +86,8 @@ public class MapperDAGVertex extends DAGVertex {
 	}
 
 	public void setImplantationVertexProperty(
-			ImplementationVertexProperty implantationVertexProperty) {
-		this.implantationVertexProperty = implantationVertexProperty;
+			ImplementationVertexProperty implementationVertexProperty) {
+		this.implementationVertexProperty = implementationVertexProperty;
 	}
 
 	public void setInitialVertexProperty(
@@ -113,13 +113,13 @@ public class MapperDAGVertex extends DAGVertex {
 
 	public String toString() {
 
-		if (implantationVertexProperty.hasEffectiveComponent()) {
+		if (implementationVertexProperty.hasEffectiveComponent()) {
 			// If the vertex is implanted, displays its component and rank
 			return getName()
 					+ "("
-					+ implantationVertexProperty.getEffectiveComponent()
+					+ implementationVertexProperty.getEffectiveComponent()
 							.toString() + ","
-					+ implantationVertexProperty.getSchedulingTotalOrder()
+					+ implementationVertexProperty.getSchedulingTotalOrder()
 					+ ")";
 		} else {
 			// If the vertex is not implanted, displays its weight

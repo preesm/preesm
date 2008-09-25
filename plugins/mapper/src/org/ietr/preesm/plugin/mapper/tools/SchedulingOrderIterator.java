@@ -8,15 +8,15 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Iterates an implantation in the rank order
+ * Iterates an implementation in the rank order
  * 
  * @author mpelcat
  */
 public class SchedulingOrderIterator extends ImplantationIterator {
 
-	public SchedulingOrderIterator(MapperDAG implantation,
+	public SchedulingOrderIterator(MapperDAG implementation,
 			IAbc simulator, boolean directOrder) {
-		super(implantation, simulator, directOrder);
+		super(implementation, simulator, directOrder);
 		// TODO Auto-generated constructor stub
 	}
 

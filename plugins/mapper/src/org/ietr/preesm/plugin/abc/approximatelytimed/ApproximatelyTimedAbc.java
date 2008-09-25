@@ -33,7 +33,7 @@ public class ApproximatelyTimedAbc extends
 	protected TransferVertexAdder tvertexAdder;
 
 	/**
-	 * Constructor of the simulator from a "blank" implantation where every
+	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
 	public ApproximatelyTimedAbc(MapperDAG dag,

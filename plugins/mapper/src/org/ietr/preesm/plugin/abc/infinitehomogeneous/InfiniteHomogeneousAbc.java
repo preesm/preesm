@@ -27,7 +27,7 @@ public class InfiniteHomogeneousAbc extends
 		AbstractAbc {
 
 	/**
-	 * Constructor of the simulator from a "blank" implantation where every
+	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
 	public InfiniteHomogeneousAbc(MapperDAG dag,
@@ -56,7 +56,7 @@ public class InfiniteHomogeneousAbc extends
 		 */
 		if (effectiveOp == Operator.NO_COMPONENT) {
 			PreesmLogger.getLogger().severe(
-					"implantation of " + vertex.getName() + " failed");
+					"implementation of " + vertex.getName() + " failed");
 		} else {
 			// Setting vertex time
 			int vertextime = vertex.getInitialVertexProperty().getTime(

@@ -135,7 +135,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(tVertex);
-		orderManager.removeVertex(tVertex, true);
+		orderManager.remove(tVertex, true);
 	}
 
 }

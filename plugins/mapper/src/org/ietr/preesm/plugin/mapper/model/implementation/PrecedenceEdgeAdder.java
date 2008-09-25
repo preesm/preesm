@@ -33,12 +33,12 @@ public class PrecedenceEdgeAdder {
 	}
 
 	/**
-	 * Adds all necessary schedule edges to an implantation respecting
+	 * Adds all necessary schedule edges to an implementation respecting
 	 * the order given by the scheduling order manager.
 	 */
-	public void addPrecedenceEdges(MapperDAG implantation) {
+	public void addPrecedenceEdges(MapperDAG implementation) {
 
-		Iterator<ArchitectureComponent> schedIt = orderManager.getComponents()
+		Iterator<ArchitectureComponent> schedIt = orderManager.getArchitectureComponents()
 				.iterator();
 
 		while (schedIt.hasNext()) {
@@ -57,10 +57,10 @@ public class PrecedenceEdgeAdder {
 					src = dst;
 					dst = schedit.next();
 
-					if (implantation.getAllEdges(src, dst).isEmpty()) {
+					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						PrecedenceEdge sEdge = new PrecedenceEdge();
 						sEdge.getTimingEdgeProperty().setCost(0);
-						implantation.addEdge(src, dst, sEdge);
+						implementation.addEdge(src, dst, sEdge);
 					}
 				}
 			}
@@ -69,11 +69,11 @@ public class PrecedenceEdgeAdder {
 	}
 
 	/**
-	 * Deletes all the edges of implantation with type PrecedenceEdgeAdderEdge
+	 * Deletes all the edges of implementation with type PrecedenceEdgeAdderEdge
 	 */
-	public void deletePrecedenceEdges(MapperDAG implantation) {
+	public void deletePrecedenceEdges(MapperDAG implementation) {
 
-		Iterator<DAGEdge> iterator = implantation.edgeSet().iterator();
+		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
 		Set<MapperDAGEdge> edgeset = new HashSet<MapperDAGEdge>();
 		MapperDAGEdge currentEdge;
 
@@ -83,13 +83,13 @@ public class PrecedenceEdgeAdder {
 				edgeset.add(currentEdge);
 		}
 
-		implantation.removeAllEdges(edgeset);
+		implementation.removeAllEdges(edgeset);
 	}
 
 	/**
 	 * Deletes all the incoming edges of vertex with type PrecedenceEdgeAdderEdge
 	 */
-	public void deletePrecedenceIncomingEdges(MapperDAG implantation,
+	public void deletePrecedenceIncomingEdges(MapperDAG implementation,
 			MapperDAGVertex vertex) {
 
 		Iterator<DAGEdge> iterator = vertex.incomingEdges().iterator();
@@ -103,7 +103,7 @@ public class PrecedenceEdgeAdder {
 				edgeset.add(currentEdge);
 		}
 
-		implantation.removeAllEdges(edgeset);
+		implementation.removeAllEdges(edgeset);
 	}
 
 }

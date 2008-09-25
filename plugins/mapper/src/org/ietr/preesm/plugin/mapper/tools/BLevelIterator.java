@@ -11,9 +11,9 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class BLevelIterator extends ImplantationIterator {
 
-	public BLevelIterator(MapperDAG implantation,
+	public BLevelIterator(MapperDAG implementation,
 			IAbc simulator, boolean directOrder) {
-		super(implantation, simulator, directOrder);
+		super(implementation, simulator, directOrder);
 		// TODO Auto-generated constructor stub
 	}
 

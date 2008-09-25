@@ -317,7 +317,7 @@ public abstract class AbstractAbc implements
 			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
 
 				// Vertex schedule order is reset but not total order
-				orderManager.removeVertex(impvertex, false);
+				orderManager.remove(impvertex, false);
 
 				// Implantation property is set in both DAG and implementation
 				dagprop.setEffectiveOperator((Operator) Operator.NO_COMPONENT);
@@ -521,7 +521,7 @@ public abstract class AbstractAbc implements
 		impvertex.getImplementationVertexProperty().setEffectiveOperator(
 				(Operator) Operator.NO_COMPONENT);
 
-		orderManager.removeVertex(impvertex, false);
+		orderManager.remove(impvertex, false);
 
 		dirtyVertices.add(impvertex);
 		dirtyTimings = true;
