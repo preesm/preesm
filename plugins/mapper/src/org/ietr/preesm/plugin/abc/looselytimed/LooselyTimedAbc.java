@@ -56,12 +56,12 @@ public class LooselyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			// scheduleEdgeAdder.deleteScheduleIncomingEdges(implementation,
+			// precedenceEdgeAdder.deleteScheduleIncomingEdges(implementation,
 			// vertex);
-			scheduleEdgeAdder.deleteScheduleEdges(implementation);
+			precedenceEdgeAdder.deletePrecedenceEdges(implementation);
 
-			scheduleEdgeAdder.addScheduleEdges(implementation);
-			// scheduleEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
+			precedenceEdgeAdder.addPrecedenceEdges(implementation);
+			// precedenceEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
 			// this);
 
 		}

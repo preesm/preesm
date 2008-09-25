@@ -75,11 +75,11 @@ public class AccuratelyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			scheduleEdgeAdder.deleteScheduleEdges(implementation);
+			precedenceEdgeAdder.deletePrecedenceEdges(implementation);
 			transactionManager.undoTransactionList();
 			tvertexAdder.addTransferVertices(implementation,transactionManager);
 			overtexAdder.addOverheadVertices(implementation,transactionManager);
-			scheduleEdgeAdder.addScheduleEdges(implementation);
+			precedenceEdgeAdder.addPrecedenceEdges(implementation);
 
 		}
 	}

@@ -19,8 +19,8 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.ScheduleEdge;
-import org.ietr.preesm.plugin.mapper.model.implementation.ScheduleEdgeAdder;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 import org.ietr.preesm.plugin.mapper.timekeeper.ITimeKeeper;
@@ -79,7 +79,7 @@ public abstract class AbstractAbc implements
 	 * Current schedule edge adder: called exclusively by simulator to schedule
 	 * vertices on the different operators
 	 */
-	protected ScheduleEdgeAdder scheduleEdgeAdder;
+	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
 	/**
 	 * Current time keeper: called exclusively by simulator to update the useful
@@ -131,7 +131,7 @@ public abstract class AbstractAbc implements
 
 		this.archi = archi;
 
-		scheduleEdgeAdder = new ScheduleEdgeAdder(orderManager);
+		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		// currentRank = 0;
 	}
@@ -146,7 +146,7 @@ public abstract class AbstractAbc implements
 		this.implementation = dag.clone();
 
 		this.timekeeper = new GraphTimeKeeper();
-		scheduleEdgeAdder = new ScheduleEdgeAdder(orderManager);
+		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		timekeeper.resetTimings(implementation);
 
@@ -423,7 +423,7 @@ public abstract class AbstractAbc implements
 		while (iterator.hasNext()) {
 
 			MapperDAGEdge edge = (MapperDAGEdge)iterator.next();
-			if (!(edge instanceof ScheduleEdge))
+			if (!(edge instanceof PrecedenceEdge))
 				edge.getTimingEdgeProperty().resetCost();
 		}
 	}
@@ -563,7 +563,7 @@ public abstract class AbstractAbc implements
 		while (iterator.hasNext()) {
 			MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
 
-			if (!(edge instanceof ScheduleEdge))
+			if (!(edge instanceof PrecedenceEdge))
 				setEdgeCost(edge);
 		}
 	}

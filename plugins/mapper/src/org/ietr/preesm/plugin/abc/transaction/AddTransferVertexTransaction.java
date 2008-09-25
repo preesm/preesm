@@ -13,7 +13,7 @@ import org.ietr.preesm.plugin.abc.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.ScheduleEdge;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
 
 /**
@@ -90,7 +90,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		
 		Medium currentMedium = step.getMedium();
 
-		if (edge instanceof ScheduleEdge) {
+		if (edge instanceof PrecedenceEdge) {
 			PreesmLogger.getLogger().log(Level.INFO,
 					"no transfer vertex corresponding to a schedule edge");
 			return;

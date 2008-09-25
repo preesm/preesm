@@ -9,7 +9,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * 
  * @author mpelcat   
  */
-public class ScheduleEdge extends MapperDAGEdge {
+public class PrecedenceEdge extends MapperDAGEdge {
 
 	@Override
 	public String toString() {
@@ -29,11 +29,11 @@ public class ScheduleEdge extends MapperDAGEdge {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ScheduleEdge() {
+	public PrecedenceEdge() {
 		this(null, null);
 	}
 
-	public ScheduleEdge(MapperDAGVertex source, MapperDAGVertex destination) {
+	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
 		super(source, destination);
 
 		getTimingEdgeProperty().setCost(0);

@@ -52,7 +52,7 @@ public class TransferVertexAdder {
 		while (iterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
 
-			if (!(currentEdge instanceof ScheduleEdge)) {
+			if (!(currentEdge instanceof PrecedenceEdge)) {
 				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex)currentEdge
 						.getSource()).getImplementationVertexProperty();
 				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex)currentEdge

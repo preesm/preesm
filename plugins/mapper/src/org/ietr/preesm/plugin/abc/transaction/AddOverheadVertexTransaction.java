@@ -13,7 +13,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.ScheduleEdge;
+import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
@@ -76,7 +76,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 		MediumDefinition mediumDef = (MediumDefinition) step.getMedium()
 				.getDefinition();
 
-		if (edge instanceof ScheduleEdge) {
+		if (edge instanceof PrecedenceEdge) {
 			PreesmLogger.getLogger().log(Level.INFO,
 					"no overhead vertex corresponding to a schedule edge");
 			return;

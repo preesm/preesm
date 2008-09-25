@@ -74,7 +74,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		}
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.ApproximatelyTimed);
+		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.AccuratelyTimed);
 		
 		
 		transformation.transform(graph, architecture, parameters.textParameters(), scenario);

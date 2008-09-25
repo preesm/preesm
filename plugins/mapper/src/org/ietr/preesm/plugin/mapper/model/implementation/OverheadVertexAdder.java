@@ -35,7 +35,7 @@ public class OverheadVertexAdder {
 		while (iterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
 
-			if (!(currentEdge instanceof ScheduleEdge)
+			if (!(currentEdge instanceof PrecedenceEdge)
 					&& currentEdge.getTarget() instanceof TransferVertex) {
 
 				TransferVertex tvertex = (TransferVertex) currentEdge
