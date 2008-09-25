@@ -4,6 +4,7 @@
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.sdf4j.model.dag.DAGVertex;
 
 
 /**
@@ -41,5 +42,11 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 		code += "\n\n}\n";
 		
 		return code;
+	}
+
+	@Override
+	public DAGVertex getCorrespondingVertex() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
