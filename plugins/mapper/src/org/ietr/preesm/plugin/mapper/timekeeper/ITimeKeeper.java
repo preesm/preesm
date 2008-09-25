@@ -44,13 +44,7 @@ public interface ITimeKeeper {
 	 * Updates the whole timing info of the implementation
 	 */
 	public void updateTandBLevels(MapperDAG implementation);
-
-	/**
-	 * Updates the timing info of the implementation relative to the given vertex
-	 * and its successors
-	 */
 	public void updateTandBLevels(MapperDAG implementation, MapperDAGVertex vertex);
-
 	/**
 	 * Resets the time keeper timings of the whole DAG
 	 */

@@ -21,7 +21,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 import org.ietr.preesm.plugin.mapper.timekeeper.ITimeKeeper;

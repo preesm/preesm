@@ -36,6 +36,8 @@ public class InitialVertexProperty {
 	public InitialVertexProperty() {
 		super();
 		timings = new ArrayList<Timing>();
+		this.nbRepeat = 1;
+		parentVertex = null;
 	}
 
 	public void setNbRepeat(int nbRepeat) {
@@ -98,7 +100,11 @@ public class InitialVertexProperty {
 					.getDefinition());
 			
 			if(returntiming != Timing.UNAVAILABLE){
-				time = returntiming.getTime() * this.nbRepeat;
+				
+				if(returntiming.getTime() != 0)
+					time = returntiming.getTime() * this.nbRepeat;
+				else
+					time = Timing.DEFAULTTASKTIME;
 			}
 		}
 

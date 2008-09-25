@@ -12,6 +12,7 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class Timing {
 
 	public static final Timing UNAVAILABLE = null;
+	public static final int DEFAULTTASKTIME = 100;
 
 	public static void main(String[] args) {
 		Variable test = new Parameter("test");

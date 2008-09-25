@@ -5,7 +5,6 @@ package org.ietr.preesm.plugin.abc.order;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +14,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a

@@ -112,6 +112,7 @@ public class ApproximatelyTimedAbc extends
 
 		if (dirtyTimings) {
 
+			// Only T level necessary. No update of B Level
 			timekeeper.updateTLevels(this.implementation);
 
 			dirtyVertices.clear();

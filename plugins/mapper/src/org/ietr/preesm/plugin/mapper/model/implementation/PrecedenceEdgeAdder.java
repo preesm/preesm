@@ -3,21 +3,16 @@
  */
 package org.ietr.preesm.plugin.mapper.model.implementation;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * The edge adder automatically generates edges between vertices

@@ -4,7 +4,6 @@
 package org.ietr.preesm.plugin.abc.transaction;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
 

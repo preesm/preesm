@@ -51,7 +51,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		MultiCoreArchitecture architecture = Examples.get4C64Archi();
 
 		// Generating random sdf dag
-		int nbVertex = 200, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
+		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
 				maxInDegree, minOutDegree, maxOutDegree, 50,true);
 		
