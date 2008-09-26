@@ -60,10 +60,10 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
-import org.ietr.preesm.plugin.mapper.timekeeper.ITimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Architecture simulators common features An architecture simulator
@@ -85,26 +85,10 @@ public abstract class AbstractAbc implements
 	protected SchedulingOrderManager orderManager = null;
 
 	/**
-	 * Flag true if the timings are dirty and need to be reprocessed before
-	 * sending them.
-	 */
-	protected boolean dirtyTimings;
-
-	/**
-	 * Stores the vertices that have changed after last timing update. This is
-	 * used to partially update the timekeeper if possible. If dirtyVertex is
-	 * empty and dirtyTimings true, the whole dag timings are recalculated
-	 */
-	protected List<MapperDAGVertex> dirtyVertices;
-
-	/**
 	 * Current directed acyclic graph. It is the external dag graph
 	 */
 	protected MapperDAG dag;
 
-	public MapperDAG getDAG() {
-		return dag;
-	}
 
 	/**
 	 * Current implementation: the internal model that will be used to add
@@ -116,7 +100,7 @@ public abstract class AbstractAbc implements
 	 * Current time keeper: called exclusively by simulator to update the useful
 	 * time tags in DAG
 	 */
-	protected ITimeKeeper timekeeper;
+	protected GraphTimeKeeper timeKeeper;
 
 	/**
 	 * Transactions are used to add/remove vertices in the implementation
@@ -154,17 +138,18 @@ public abstract class AbstractAbc implements
 		// implementation is a duplicate from dag
 		this.implementation = dag.clone();
 
-		this.timekeeper = new GraphTimeKeeper();
-		timekeeper.resetTimings(implementation);
-
-		dirtyTimings = false;
-		dirtyVertices = new ArrayList<MapperDAGVertex>();
+		this.timeKeeper = new GraphTimeKeeper();
+		timeKeeper.resetTimings(implementation);
 
 		this.archi = archi;
 
 		// currentRank = 0;
 	}
 
+	public MapperDAG getDAG() {
+		return dag;
+	}
+	
 	/**
 	 * Sets the DAG as current DAG and retrieves all implementation to calculate
 	 * timings
@@ -174,9 +159,9 @@ public abstract class AbstractAbc implements
 		this.dag = dag;
 		this.implementation = dag.clone();
 
-		this.timekeeper = new GraphTimeKeeper();
+		this.timeKeeper = new GraphTimeKeeper();
 
-		timekeeper.resetTimings(implementation);
+		timeKeeper.resetTimings(implementation);
 
 		orderManager.reconstructTotalOrderFromDAG(dag, implementation);
 
@@ -188,9 +173,6 @@ public abstract class AbstractAbc implements
 			implant(vertex, vertex.getImplementationVertexProperty()
 					.getEffectiveOperator(), true);
 		}
-
-		dirtyTimings = true;
-		dirtyVertices.clear();
 	}
 
 	/**
@@ -232,10 +214,10 @@ public abstract class AbstractAbc implements
 		// visualize results
 		// monitor.render(new SimpleTextRenderer());
 
-		int finalTime = timekeeper.getFinalTime(implementation);
+		int finalTime = timeKeeper.getFinalTime(implementation);
 
 		if (finalTime < 0) {
-			timekeeper.getFinalTime(implementation);
+			timeKeeper.getFinalTime(implementation);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final time");
 		}
@@ -249,10 +231,10 @@ public abstract class AbstractAbc implements
 
 		updateTimings();
 
-		int finalTime = timekeeper.getFinalTime(vertex);
+		int finalTime = timeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
-			timekeeper.getFinalTime(vertex);
+			timeKeeper.getFinalTime(vertex);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
 		}
@@ -266,10 +248,10 @@ public abstract class AbstractAbc implements
 
 		updateTimings();
 
-		int finalTime = timekeeper.getFinalTime(implementation, component);
+		int finalTime = timeKeeper.getFinalTime(implementation, component);
 
 		if (finalTime < 0) {
-			timekeeper.getFinalTime(implementation, component);
+			timeKeeper.getFinalTime(implementation, component);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative component final time");
 		}
@@ -306,8 +288,8 @@ public abstract class AbstractAbc implements
 	 * Gets the time keeper
 	 */
 	@Override
-	public final ITimeKeeper getTimeKeeper() {
-		return this.timekeeper;
+	public final GraphTimeKeeper getTimeKeeper() {
+		return this.timeKeeper;
 	}
 
 	@Override
@@ -360,8 +342,7 @@ public abstract class AbstractAbc implements
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
-				dirtyVertices.add(impvertex);
-				dirtyTimings = true;
+				timeKeeper.setAsDirty(impvertex);
 
 				if (updateRank) {
 					orderManager.addVertex(impvertex);
@@ -502,15 +483,11 @@ public abstract class AbstractAbc implements
 	 */
 	public void resetImplementation() {
 
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
-				implementation);
+		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
 
 		while (iterator.hasNext()) {
 			unimplant((MapperDAGVertex) iterator.next());
 		}
-
-		dirtyTimings = true;
-		dirtyVertices.clear();
 	}
 
 	/**
@@ -524,14 +501,11 @@ public abstract class AbstractAbc implements
 
 		resetImplementation();
 
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
+		Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
 
 		while (iterator.hasNext()) {
 			unimplant((MapperDAGVertex) iterator.next());
 		}
-
-		dirtyTimings = true;
-		dirtyVertices.clear();
 	}
 
 	/**
@@ -550,8 +524,7 @@ public abstract class AbstractAbc implements
 
 		orderManager.remove(impvertex, false);
 
-		dirtyVertices.add(impvertex);
-		dirtyTimings = true;
+		timeKeeper.setAsDirty(impvertex);
 	}
 
 	/**

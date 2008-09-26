@@ -156,13 +156,12 @@ public class AccuratelyTimedAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		if (dirtyTimings) {
+		if (timeKeeper.areDirtyTimings()) {
 
 			// Only T level necessary. No update of B Level
-			timekeeper.updateTLevels(this.implementation);
-			dirtyVertices.clear();
+			timeKeeper.updateTLevels(this.implementation);
 
-			dirtyTimings = false;
+			timeKeeper.setAsClean();
 		}
 	}
 

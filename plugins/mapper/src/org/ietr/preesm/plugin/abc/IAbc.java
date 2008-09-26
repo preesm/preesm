@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.timekeeper.ITimeKeeper;
+import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 
 /**
  * Clarifies the simulator API
@@ -102,7 +102,7 @@ public interface IAbc {
 	/**
 	 * Internal time keeper. Should be used for tests only
 	 */
-	public ITimeKeeper getTimeKeeper();
+	public GraphTimeKeeper getTimeKeeper();
 
 	/**
 	 * Gives the B level of the given vertex in the current implementation. If

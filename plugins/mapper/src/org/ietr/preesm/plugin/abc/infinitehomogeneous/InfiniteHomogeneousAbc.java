@@ -75,8 +75,6 @@ public class InfiniteHomogeneousAbc extends
 		// to implant all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
-
-		updateTimings();
 	}
 
 	@Override
@@ -174,19 +172,11 @@ public class InfiniteHomogeneousAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		if (dirtyTimings) {
+		if (timeKeeper.areDirtyTimings()) {
 
-			if (!dirtyVertices.isEmpty()) {
-				Iterator<MapperDAGVertex> it = dirtyVertices.iterator();
+			timeKeeper.updateTandBLevels(this.implementation);
 
-				while (it.hasNext())
-					timekeeper.updateTandBLevels(this.implementation, it.next());
-				dirtyVertices.clear();
-			} else {
-				timekeeper.updateTandBLevels(this.implementation);
-			}
-
-			dirtyTimings = false;
+			timeKeeper.setAsClean();
 		}
 	}
 
