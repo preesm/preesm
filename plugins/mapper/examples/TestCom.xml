@@ -33,6 +33,14 @@
          <data key="graph_desc"/>
          <data key="arguments"/>
       </node>
+      <node id="ParallelTest" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="ParallelTest2" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
       <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
@@ -52,6 +60,21 @@
          <data key="edge_prod">0</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">0</data>
+      </edge>
+      <edge source="Sensor" sourceport="o2" target="ParallelTest" targetport="i1">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+      </edge>
+      <edge source="ParallelTest" sourceport="o1" target="ParallelTest2" targetport="i1">
+         <data key="edge_prod"/>
+         <data key="edge_delay"/>
+         <data key="edge_cons"/>
+      </edge>
+      <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
+         <data key="edge_prod"/>
+         <data key="edge_delay"/>
+         <data key="edge_cons"/>
       </edge>
    </graph>
 </graphml>

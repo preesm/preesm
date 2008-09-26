@@ -50,8 +50,7 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fpgasched" taskId="FPGA scheduling">
       <data key="variables"/>
    </preesm:task>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="codegen"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="FAST scheduler"/>
-   <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
-   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="FPGA scheduling"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="FPGA scheduling"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="FPGA scheduling"/>
 </preesm:workflow>

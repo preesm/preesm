@@ -318,7 +318,7 @@ public abstract class AbstractAbc implements
 
 			ImplementationVertexProperty impprop = impvertex
 					.getImplementationVertexProperty();
-
+			
 			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
 
 				// Vertex schedule order is reset but not total order
@@ -338,8 +338,6 @@ public abstract class AbstractAbc implements
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
-				timeKeeper.setAsDirty(impvertex);
-
 				if (updateRank) {
 					orderManager.addVertex(impvertex);
 				} else {
@@ -358,6 +356,8 @@ public abstract class AbstractAbc implements
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Operator asked may not exist");
 		}
+
+		timeKeeper.setAsDirty(impvertex);
 	}
 
 	/**

@@ -137,6 +137,10 @@ public class TimingVertexProperty {
 		this.tLevel = tlevel;
 	}
 
+	public void resetTlevel() {
+		this.tLevel = UNAVAILABLE;
+	}
+
 	public String toString() {
 		return "";
 	}

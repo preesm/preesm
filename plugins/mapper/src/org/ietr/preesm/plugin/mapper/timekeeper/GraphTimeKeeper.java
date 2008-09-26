@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -71,7 +70,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class GraphTimeKeeper{
+public class GraphTimeKeeper {
 
 	/**
 	 * Flag true if the timings are dirty and need to be reprocessed before
@@ -91,7 +90,6 @@ public class GraphTimeKeeper{
 	 */
 	protected MapperDAG implementation;
 
-	
 	/**
 	 * Constructor
 	 */
@@ -103,10 +101,14 @@ public class GraphTimeKeeper{
 	}
 
 	/**
-	 * Specifying that vertex has no more the right timings in its cost attribute
+	 * Specifying that vertex has no more the right timings in its cost
+	 * attribute
 	 */
 	public void setAsDirty(MapperDAGVertex vertex) {
-		dirtyVertices.add(vertex);
+
+		if (!dirtyVertices.contains(vertex)) {
+			dirtyVertices.add(vertex);
+		}
 		dirtyTimings = true;
 	}
 
@@ -114,7 +116,7 @@ public class GraphTimeKeeper{
 	 * Specifying that all timings are clean
 	 */
 	public void setAsClean() {
-		
+
 		dirtyVertices.clear();
 		dirtyTimings = false;
 	}
@@ -126,23 +128,32 @@ public class GraphTimeKeeper{
 
 		return !(dirtyVertices.isEmpty());
 	}
-	
 
 	/**
-	 * calculating top times of each vertex in dirty vertices set. 
-	 * The parallelism is limited by the edges
+	 * calculating top times of each vertex in dirty vertices set. The
+	 * parallelism is limited by the edges
 	 */
 	public void calculateTLevel() {
 
 		MapperDAGVertex currentvertex;
-		Iterator<DAGVertex> it = implementation.vertexSet().iterator();
+
+		Iterator<DAGVertex> it = dirtyVertices.iterator();
+
+		// We iterate the dirty vertices to reset their t-levels
+		while (it.hasNext()) {
+			currentvertex = (MapperDAGVertex) it.next();
+
+			currentvertex.getTimingVertexProperty().resetTlevel();
+		}
+
+		it = implementation.vertexSet().iterator();
 
 		// We iterate the dag tree in topological order to calculate t-level
 
 		while (it.hasNext()) {
 			currentvertex = (MapperDAGVertex) it.next();
-			
-			if(dirtyVertices.contains(currentvertex)){
+
+			if (dirtyVertices.contains(currentvertex)) {
 				calculateTLevel(currentvertex);
 			}
 		}
@@ -161,9 +172,10 @@ public class GraphTimeKeeper{
 
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
-			
-			// Starting from end vertices, sets the b-levels of the preceding tasks
-			if(currentvertex.outgoingEdges().isEmpty())
+
+			// Starting from end vertices, sets the b-levels of the preceding
+			// tasks
+			if (currentvertex.outgoingEdges().isEmpty())
 				calculateBLevel(currentvertex);
 
 		}
@@ -172,8 +184,7 @@ public class GraphTimeKeeper{
 	/**
 	 * calculating top time of modified vertex.
 	 */
-	public void calculateTLevel(
-			MapperDAGVertex modifiedvertex) {
+	public void calculateTLevel(MapperDAGVertex modifiedvertex) {
 
 		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
 
@@ -207,15 +218,14 @@ public class GraphTimeKeeper{
 			// If the current vertex has no effective component
 			currenttimingproperty.setTlevel(TimingVertexProperty.UNAVAILABLE);
 		}
-		
+
 		dirtyVertices.remove(modifiedvertex);
 	}
 
 	/**
 	 * calculating bottom time of modified vertex.
 	 */
-	public void calculateBLevel(
-			MapperDAGVertex modifiedvertex) {
+	public void calculateBLevel(MapperDAGVertex modifiedvertex) {
 
 		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
 
@@ -293,7 +303,7 @@ public class GraphTimeKeeper{
 
 			// If we lack information on predecessors, path calculation fails
 			// No recalculation of predecessor T Level if already calculated
-			if (!vertexTProperty.hasTlevel() || dirtyVertices.contains(vertex)) {
+			if (!vertexTProperty.hasTlevel()) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
 					calculateTLevel(vertex);
@@ -329,16 +339,18 @@ public class GraphTimeKeeper{
 				.getTimingVertexProperty();
 
 		Iterator<DAGVertex> iterator = predset.iterator();
-		
+
 		// Sets the b-levels of each predecessor not considering the precedence
 		// edges
 		while (iterator.hasNext()) {
 
 			MapperDAGVertex currentvertex = (MapperDAGVertex) iterator.next();
 
-			TimingVertexProperty currenttimingproperty = currentvertex.getTimingVertexProperty();
-			int edgeweight = ((MapperDAGEdge) implementation.getEdge(currentvertex,
-					startvertex)).getTimingEdgeProperty().getCost();
+			TimingVertexProperty currenttimingproperty = currentvertex
+					.getTimingVertexProperty();
+			int edgeweight = ((MapperDAGEdge) implementation.getEdge(
+					currentvertex, startvertex)).getTimingEdgeProperty()
+					.getCost();
 
 			// If we lack information on successor, b-level calculation fails
 			if (!starttimingproperty.hasBlevel()
@@ -349,8 +361,7 @@ public class GraphTimeKeeper{
 			} else {
 
 				currentBLevel = starttimingproperty.getValidBlevel()
-						+ currenttimingproperty.getCost()
-						+ edgeweight;
+						+ currenttimingproperty.getCost() + edgeweight;
 			}
 
 			currenttimingproperty.setBlevel(Math.max(currenttimingproperty
@@ -364,11 +375,12 @@ public class GraphTimeKeeper{
 				MapperDAGVertex succ = (MapperDAGVertex) succIt.next();
 				allSuccessorsBLevel = allSuccessorsBLevel
 						&& succ.getTimingVertexProperty().hasBlevel();
-				
+
 				allSuccessorsBLevel = allSuccessorsBLevel
-						&& ((MapperDAGEdge) implementation.getEdge(currentvertex,
-								succ)).getTimingEdgeProperty().hasCost();
-				
+						&& ((MapperDAGEdge) implementation.getEdge(
+								currentvertex, succ)).getTimingEdgeProperty()
+								.hasCost();
+
 			}
 
 			currenttimingproperty.setBlevelValidity(allSuccessorsBLevel);
@@ -426,6 +438,10 @@ public class GraphTimeKeeper{
 				finaltime = Math.max(finaltime, nextFinalTime);
 		}
 
+		if (finaltime == 0) {
+			finaltime = 0;
+		}
+
 		return finaltime;
 	}
 
@@ -460,7 +476,7 @@ public class GraphTimeKeeper{
 	}
 
 	public void updateTLevels() {
-		
+
 		dirtyVertices.addAll(implementation.vertexSet());
 		if (areDirtyTimings()) {
 			calculateTLevel();
