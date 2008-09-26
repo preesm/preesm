@@ -138,8 +138,8 @@ public abstract class AbstractAbc implements
 		// implementation is a duplicate from dag
 		this.implementation = dag.clone();
 
-		this.timeKeeper = new GraphTimeKeeper();
-		timeKeeper.resetTimings(implementation);
+		this.timeKeeper = new GraphTimeKeeper(implementation);
+		timeKeeper.resetTimings();
 
 		this.archi = archi;
 
@@ -159,9 +159,8 @@ public abstract class AbstractAbc implements
 		this.dag = dag;
 		this.implementation = dag.clone();
 
-		this.timeKeeper = new GraphTimeKeeper();
-
-		timeKeeper.resetTimings(implementation);
+		this.timeKeeper = new GraphTimeKeeper(implementation);
+		timeKeeper.resetTimings();
 
 		orderManager.reconstructTotalOrderFromDAG(dag, implementation);
 
@@ -214,10 +213,9 @@ public abstract class AbstractAbc implements
 		// visualize results
 		// monitor.render(new SimpleTextRenderer());
 
-		int finalTime = timeKeeper.getFinalTime(implementation);
+		int finalTime = timeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
-			timeKeeper.getFinalTime(implementation);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final time");
 		}
@@ -234,7 +232,6 @@ public abstract class AbstractAbc implements
 		int finalTime = timeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
-			timeKeeper.getFinalTime(vertex);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
 		}
@@ -248,10 +245,9 @@ public abstract class AbstractAbc implements
 
 		updateTimings();
 
-		int finalTime = timeKeeper.getFinalTime(implementation, component);
+		int finalTime = timeKeeper.getFinalTime(component);
 
 		if (finalTime < 0) {
-			timeKeeper.getFinalTime(implementation, component);
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative component final time");
 		}

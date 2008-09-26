@@ -85,14 +85,21 @@ public class GraphTimeKeeper{
 	 * empty and dirtyTimings true, the whole dag timings are recalculated
 	 */
 	protected List<DAGVertex> dirtyVertices;
+
+	/**
+	 * Current implementation: the same as in the ABC
+	 */
+	protected MapperDAG implementation;
+
 	
 	/**
 	 * Constructor
 	 */
-	public GraphTimeKeeper() {
+	public GraphTimeKeeper(MapperDAG implementation) {
 
-		dirtyTimings = false;
-		dirtyVertices = new ArrayList<DAGVertex>();
+		this.dirtyTimings = false;
+		this.dirtyVertices = new ArrayList<DAGVertex>();
+		this.implementation = implementation;
 	}
 
 	/**
@@ -100,19 +107,6 @@ public class GraphTimeKeeper{
 	 */
 	public void setAsDirty(MapperDAGVertex vertex) {
 		dirtyVertices.add(vertex);
-		dirtyTimings = true;
-	}
-
-	/**
-	 * Specifying that all timings in dag are dirty
-	 */
-	public void setAsDirty(MapperDAG dag) {
-		Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
-
-		while (iterator.hasNext()) {
-			dirtyVertices.add(iterator.next());
-		}
-			
 		dirtyTimings = true;
 	}
 
@@ -135,20 +129,22 @@ public class GraphTimeKeeper{
 	
 
 	/**
-	 * calculating top times of each vertex not considering the number of
-	 * processors. The parallelism is limited by the edges
+	 * calculating top times of each vertex in dirty vertices set. 
+	 * The parallelism is limited by the edges
 	 */
-	public void calculateTLevel(MapperDAG algorithm) {
+	public void calculateTLevel() {
 
 		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(algorithm);
+		Iterator<DAGVertex> it = implementation.vertexSet().iterator();
 
 		// We iterate the dag tree in topological order to calculate t-level
 
-		while (iterator.hasNext()) {
-			currentvertex = (MapperDAGVertex) iterator.next();
-			calculateTLevel(algorithm, currentvertex);
-
+		while (it.hasNext()) {
+			currentvertex = (MapperDAGVertex) it.next();
+			
+			if(dirtyVertices.contains(currentvertex)){
+				calculateTLevel(currentvertex);
+			}
 		}
 	}
 
@@ -156,16 +152,19 @@ public class GraphTimeKeeper{
 	 * calculating bottom times of each vertex not considering the number of
 	 * processors. The parallelism is limited by the edges
 	 */
-	public void calculateBLevel(MapperDAG algorithm) {
+	public void calculateBLevel() {
 
 		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(algorithm);
+		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
 
 		// We iterate the dag tree in topological order to calculate b-level
 
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
-			calculateBLevel(algorithm, currentvertex);
+			
+			// Starting from end vertices, sets the b-levels of the preceding tasks
+			if(currentvertex.outgoingEdges().isEmpty())
+				calculateBLevel(currentvertex);
 
 		}
 	}
@@ -173,10 +172,10 @@ public class GraphTimeKeeper{
 	/**
 	 * calculating top time of modified vertex.
 	 */
-	public void calculateTLevel(MapperDAG algorithm,
+	public void calculateTLevel(
 			MapperDAGVertex modifiedvertex) {
 
-		DirectedGraph<DAGVertex, DAGEdge> castAlgo = algorithm;
+		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
 
 		TimingVertexProperty currenttimingproperty = modifiedvertex
 				.getTimingVertexProperty();
@@ -201,22 +200,24 @@ public class GraphTimeKeeper{
 			} else {
 				// The T level is the time of the longest preceding path
 				currenttimingproperty.setTlevel(getLongestPrecedingPath(
-						predset, modifiedvertex, algorithm));
+						predset, modifiedvertex));
 			}
 
 		} else {
 			// If the current vertex has no effective component
 			currenttimingproperty.setTlevel(TimingVertexProperty.UNAVAILABLE);
 		}
+		
+		dirtyVertices.remove(modifiedvertex);
 	}
 
 	/**
 	 * calculating bottom time of modified vertex.
 	 */
-	public void calculateBLevel(MapperDAG algorithm,
+	public void calculateBLevel(
 			MapperDAGVertex modifiedvertex) {
 
-		DirectedGraph<DAGVertex, DAGEdge> castAlgo = algorithm;
+		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
 
 		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
 				castAlgo);
@@ -246,8 +247,7 @@ public class GraphTimeKeeper{
 
 				if (!predset.isEmpty())
 					// Sets recursively the BLevel of its predecessors
-					setPrecedingBlevel(modifiedvertex, predset, neighborindex,
-							algorithm);
+					setPrecedingBlevel(modifiedvertex, predset, neighborindex);
 			}
 		} else {
 
@@ -260,8 +260,7 @@ public class GraphTimeKeeper{
 			if (succset.isEmpty()) {
 
 				if (!predset.isEmpty())
-					setPrecedingBlevel(modifiedvertex, predset, neighborindex,
-							algorithm);
+					setPrecedingBlevel(modifiedvertex, predset, neighborindex);
 			}
 		}
 	}
@@ -273,7 +272,7 @@ public class GraphTimeKeeper{
 	 * @return last finishing time
 	 */
 	private int getLongestPrecedingPath(Set<DAGVertex> graphset,
-			MapperDAGVertex inputvertex, MapperDAG algorithm) {
+			MapperDAGVertex inputvertex) {
 
 		int timing = TimingVertexProperty.UNAVAILABLE;
 
@@ -288,16 +287,16 @@ public class GraphTimeKeeper{
 			MapperDAGVertex vertex = (MapperDAGVertex) iterator.next();
 			TimingVertexProperty vertexTProperty = vertex
 					.getTimingVertexProperty();
-			MapperDAGEdge edge = (MapperDAGEdge) algorithm.getEdge(vertex,
+			MapperDAGEdge edge = (MapperDAGEdge) implementation.getEdge(vertex,
 					inputvertex);
 			int edgeCost = edge.getTimingEdgeProperty().getCost();
 
 			// If we lack information on predecessors, path calculation fails
 			// No recalculation of predecessor T Level if already calculated
-			if (!vertexTProperty.hasTlevel()) {
+			if (!vertexTProperty.hasTlevel() || dirtyVertices.contains(vertex)) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
-					calculateTLevel(algorithm, vertex);
+					calculateTLevel(vertex);
 				}
 			}
 
@@ -323,8 +322,7 @@ public class GraphTimeKeeper{
 	 */
 	private void setPrecedingBlevel(MapperDAGVertex startvertex,
 			Set<DAGVertex> predset,
-			DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex,
-			MapperDAG algorithm) {
+			DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex) {
 
 		int currentBLevel = 0;
 		TimingVertexProperty starttimingproperty = startvertex
@@ -339,7 +337,7 @@ public class GraphTimeKeeper{
 			MapperDAGVertex currentvertex = (MapperDAGVertex) iterator.next();
 
 			TimingVertexProperty currenttimingproperty = currentvertex.getTimingVertexProperty();
-			int edgeweight = ((MapperDAGEdge) algorithm.getEdge(currentvertex,
+			int edgeweight = ((MapperDAGEdge) implementation.getEdge(currentvertex,
 					startvertex)).getTimingEdgeProperty().getCost();
 
 			// If we lack information on successor, b-level calculation fails
@@ -368,7 +366,7 @@ public class GraphTimeKeeper{
 						&& succ.getTimingVertexProperty().hasBlevel();
 				
 				allSuccessorsBLevel = allSuccessorsBLevel
-						&& ((MapperDAGEdge) algorithm.getEdge(currentvertex,
+						&& ((MapperDAGEdge) implementation.getEdge(currentvertex,
 								succ)).getTimingEdgeProperty().hasCost();
 				
 			}
@@ -380,8 +378,7 @@ public class GraphTimeKeeper{
 
 			if (!newPredSet.isEmpty())
 				// Recursively sets the preceding b levels
-				setPrecedingBlevel(currentvertex, newPredSet, neighborindex,
-						algorithm);
+				setPrecedingBlevel(currentvertex, newPredSet, neighborindex);
 		}
 	}
 
@@ -410,7 +407,7 @@ public class GraphTimeKeeper{
 	 * implementation information is not enough to calculate this timing,
 	 * returns UNAVAILABLE
 	 */
-	public int getFinalTime(MapperDAG implementation) {
+	public int getFinalTime() {
 
 		int finaltime = TimingVertexProperty.UNAVAILABLE;
 
@@ -437,8 +434,7 @@ public class GraphTimeKeeper{
 	 * considers a partially implanted graph and ignores the non implanted
 	 * vertices
 	 */
-	public int getFinalTime(MapperDAG implementation,
-			ArchitectureComponent component) {
+	public int getFinalTime(ArchitectureComponent component) {
 		int finaltime = 0;
 
 		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
@@ -463,27 +459,26 @@ public class GraphTimeKeeper{
 		return finaltime;
 	}
 
-	public void updateTLevels(MapperDAG implementation) {
-		calculateTLevel(implementation);
+	public void updateTLevels() {
+		if (areDirtyTimings()) {
+			calculateTLevel();
+			setAsClean();
+		}
 
 	}
 
-	public void updateTandBLevels(MapperDAG implementation) {
-		calculateTLevel(implementation);
-		calculateBLevel(implementation);
-
-	}
-
-	public void updateTandBLevels(MapperDAG implementation, MapperDAGVertex vertex) {
-		calculateTLevel(implementation);
-		calculateBLevel(implementation);
-
+	public void updateTandBLevels() {
+		if (areDirtyTimings()) {
+			calculateTLevel();
+			calculateBLevel();
+			setAsClean();
+		}
 	}
 
 	/**
 	 * Resets the time keeper timings of the whole DAG
 	 */
-	public void resetTimings(MapperDAG implementation) {
+	public void resetTimings() {
 		Iterator<DAGVertex> it = implementation.vertexSet().iterator();
 
 		while (it.hasNext()) {

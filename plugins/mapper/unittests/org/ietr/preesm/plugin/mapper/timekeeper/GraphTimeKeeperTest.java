@@ -60,8 +60,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
  */
 public class GraphTimeKeeperTest extends TestCase {
 
-	GraphTimeKeeper timekeeper = null;
-
 	/**
 	 * @param name
 	 */
@@ -77,7 +75,6 @@ public class GraphTimeKeeperTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		timekeeper = new GraphTimeKeeper();
 	}
 
 	/*
@@ -88,11 +85,9 @@ public class GraphTimeKeeperTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 
-		timekeeper = null;
 	}
 
 	public void testForCreation() {
-		assertNotNull("timekeeper must be created", timekeeper);
 	}
 
 	public void testGetFinalTimeExample1() {

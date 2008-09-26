@@ -140,12 +140,7 @@ public class LooselyTimedAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		if (timeKeeper.areDirtyTimings()) {
-
-			// Only T level necessary. No update of B Level
-			timeKeeper.updateTLevels(this.implementation);
-			timeKeeper.setAsClean();
-		}
+		timeKeeper.updateTandBLevels();
 	}
 
 	/**

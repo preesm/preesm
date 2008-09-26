@@ -171,13 +171,7 @@ public class InfiniteHomogeneousAbc extends
 	 */
 	@Override
 	protected final void updateTimings() {
-
-		if (timeKeeper.areDirtyTimings()) {
-
-			timeKeeper.updateTandBLevels(this.implementation);
-
-			timeKeeper.setAsClean();
-		}
+		timeKeeper.updateTandBLevels();
 	}
 
 	@Override
