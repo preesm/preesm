@@ -460,6 +460,8 @@ public class GraphTimeKeeper{
 	}
 
 	public void updateTLevels() {
+		
+		dirtyVertices.addAll(implementation.vertexSet());
 		if (areDirtyTimings()) {
 			calculateTLevel();
 			setAsClean();
