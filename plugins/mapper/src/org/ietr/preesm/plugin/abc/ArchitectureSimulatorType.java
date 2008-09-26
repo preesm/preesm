@@ -53,7 +53,11 @@ public enum ArchitectureSimulatorType {
 
 	ApproximatelyTimed,
 
-	AccuratelyTimed;
+	AccuratelyTimed,
+	
+	FpgaSched,
+	
+	SendReceive;
 
 	@Override
 	public String toString() {
@@ -69,6 +73,14 @@ public enum ArchitectureSimulatorType {
 		}
 		else if(this == AccuratelyTimed){
 			return "AccuratelyTimed";
+			
+		}
+		else if(this == FpgaSched){
+			return "FpgaSched";
+			
+		}
+		else if(this == SendReceive){
+			return "SendReceive";
 			
 		}
 		
@@ -88,6 +100,12 @@ public enum ArchitectureSimulatorType {
 		}
 		else if(type.equalsIgnoreCase("AccuratelyTimed")){
 			return AccuratelyTimed;
+		}
+		else if(type.equalsIgnoreCase("FpgaSched")){
+			return FpgaSched;
+		}
+		else if(type.equalsIgnoreCase("SendReceive")){
+			return SendReceive;
 		}
 		
 		return null;

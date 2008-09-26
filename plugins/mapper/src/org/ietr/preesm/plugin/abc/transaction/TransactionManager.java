@@ -43,16 +43,21 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+
 /**
  * This is a transaction container that enables the consecutive
  * execution of several listed transactions.
  * 
  * @author mpelcat
  */
-public class TransactionManager extends LinkedList<Transaction> {
-
+public class TransactionManager {
+	
+	LinkedList<Transaction> transactionList = new LinkedList<Transaction>();
+	LinkedList<MapperDAGVertex> refVertexList = new LinkedList<MapperDAGVertex>();
+	
 	public void executeTransactionList(){
-		Iterator<Transaction> it = iterator();
+		Iterator<Transaction> it = transactionList.iterator();
 		
 		while(it.hasNext()){
 			Transaction currentT = it.next();
@@ -63,11 +68,33 @@ public class TransactionManager extends LinkedList<Transaction> {
 	
 	public void undoTransactionList(){
 		
-		while(!this.isEmpty()){
-			Transaction currentT = this.getLast();
+		while(!transactionList.isEmpty()){
+			Transaction currentT = transactionList.getLast();
 			if(currentT.isExecuted())
 				currentT.undo();
-			this.removeLast();
+			transactionList.removeLast();
 		}
+	}
+	
+	public void undoTransactions(MapperDAGVertex refVertex){
+		
+		Iterator<MapperDAGVertex> it = refVertexList.descendingIterator();
+		
+		while(it.hasNext()){
+			MapperDAGVertex currentV = it.next();
+			if(currentV.equals(refVertex)){
+				int index = refVertexList.indexOf(currentV);
+				Transaction currentT = transactionList.get(index);
+				if(currentT.isExecuted())
+					currentT.undo();
+				transactionList.remove(index);
+				it.remove();
+			}
+		}
+	}
+	
+	public void add(Transaction transaction, MapperDAGVertex refVertex){
+		transactionList.add(transaction);
+		refVertexList.add(refVertex);
 	}
 }

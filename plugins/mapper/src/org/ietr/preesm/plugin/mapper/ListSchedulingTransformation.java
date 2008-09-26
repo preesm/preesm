@@ -66,6 +66,7 @@ import org.ietr.preesm.plugin.mapper.fastalgo.ListSchedulingParameters;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -82,7 +83,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 	public static void main(String[] args) {
 		// FASTTransformation transformation = new FASTTransformation();
 		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
+		logger.setLevel(Level.FINEST);
 
 		// Generating archi
 		MultiCoreArchitecture architecture = Examples.get4C64Archi();
@@ -110,7 +111,9 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
 		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.AccuratelyTimed);
-		
+
+		SDFAdapterDemo applet1 = new SDFAdapterDemo();
+		applet1.init(graph);
 		
 		transformation.transform(graph, architecture, parameters.textParameters(), scenario);
 

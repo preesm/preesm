@@ -37,9 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -49,9 +47,11 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.accuratelytimed.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.approximatelytimed.ApproximatelyTimedAbc;
+import org.ietr.preesm.plugin.abc.fpgasched.FpgaSchedAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.sendreceive.SendReceiveAbc;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -122,6 +122,10 @@ public abstract class AbstractAbc implements
 			return new ApproximatelyTimedAbc(dag, archi);
 		} else if (simulatorType == ArchitectureSimulatorType.AccuratelyTimed) {
 			return new AccuratelyTimedAbc(dag, archi);
+		} else if (simulatorType == ArchitectureSimulatorType.FpgaSched) {
+			return new FpgaSchedAbc(dag, archi);
+		} else if (simulatorType == ArchitectureSimulatorType.SendReceive) {
+			return new SendReceiveAbc(dag, archi);
 		}
 
 		return null;

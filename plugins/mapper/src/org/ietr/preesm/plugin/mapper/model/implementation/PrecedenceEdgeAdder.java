@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
@@ -66,6 +67,27 @@ public class PrecedenceEdgeAdder {
 		super();
 
 		this.orderManager = orderManager;
+	}
+
+	/**
+	 * Adds all necessary schedule edges to an implementation respecting
+	 * the order given by the scheduling order manager.
+	 */
+	public void addPrecedenceEdge(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
+
+			Schedule schedule = orderManager
+					.getSchedule(refVertex.getImplementationVertexProperty().getEffectiveComponent());
+
+			MapperDAGVertex prevVertex = schedule.getPreviousVertex(refVertex);
+
+			if (implementation.getAllEdges(prevVertex, refVertex).isEmpty()) {
+				// Adds a transaction
+				Transaction transaction = new AddPrecedenceEdgeTransaction(implementation,prevVertex,refVertex);
+				transactionManager.add(transaction,refVertex);
+			}
+
+		// Executes the transactions
+		transactionManager.executeTransactionList();
 	}
 
 	/**
@@ -98,7 +120,7 @@ public class PrecedenceEdgeAdder {
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
 						Transaction transaction = new AddPrecedenceEdgeTransaction(implementation,src,dst);
-						transactionManager.add(transaction);
+						transactionManager.add(transaction,null);
 					}
 				}
 			}

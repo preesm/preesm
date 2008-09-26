@@ -37,13 +37,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.implementation;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
@@ -64,7 +67,7 @@ public class OverheadVertexAdder {
 	 * Adds all necessary overhead vertices
 	 */
 	public void addOverheadVertices(MapperDAG implementation, TransactionManager transactionManager) {
-
+		
 		// We iterate the edges and process the ones with a transfer vertex as
 		// destination
 		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
@@ -78,7 +81,41 @@ public class OverheadVertexAdder {
 				TransferVertex tvertex = (TransferVertex) currentEdge
 						.getTarget();
 
-				transactionManager.add(new AddOverheadVertexTransaction(currentEdge,implementation, tvertex.getRouteStep(), orderManager));
+				transactionManager.add(new AddOverheadVertexTransaction(currentEdge,implementation, tvertex.getRouteStep(), orderManager),null);
+				
+			}
+		}
+
+		transactionManager.executeTransactionList();
+	}
+
+	/**
+	 * Adds all necessary overhead vertices
+	 */
+	public void addOverheadVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
+
+		Set<DAGEdge> edgeSet = new HashSet<DAGEdge>();
+		
+		for(DAGEdge edge:refVertex.incomingEdges()){
+			edgeSet.addAll(edge.getSource().incomingEdges());
+		}
+		
+		edgeSet.addAll(refVertex.outgoingEdges());
+		
+		// We iterate the edges and process the ones with a transfer vertex as
+		// destination
+		Iterator<DAGEdge> iterator = edgeSet.iterator();
+
+		while (iterator.hasNext()) {
+			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
+
+			if (!(currentEdge instanceof PrecedenceEdge)
+					&& currentEdge.getTarget() instanceof TransferVertex) {
+
+				TransferVertex tvertex = (TransferVertex) currentEdge
+						.getTarget();
+
+				transactionManager.add(new AddOverheadVertexTransaction(currentEdge,implementation, tvertex.getRouteStep(), orderManager),refVertex);
 				
 			}
 		}

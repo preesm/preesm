@@ -59,7 +59,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -124,7 +123,7 @@ public class GraphTimeKeeper {
 	/**
 	 * true if there are some dirty timings
 	 */
-	public boolean areDirtyTimings() {
+	public boolean areTimingsDirty() {
 
 		return !(dirtyVertices.isEmpty());
 	}
@@ -478,7 +477,7 @@ public class GraphTimeKeeper {
 	public void updateTLevels() {
 
 		dirtyVertices.addAll(implementation.vertexSet());
-		if (areDirtyTimings()) {
+		if (areTimingsDirty()) {
 			calculateTLevel();
 			setAsClean();
 		}
@@ -486,7 +485,7 @@ public class GraphTimeKeeper {
 	}
 
 	public void updateTandBLevels() {
-		if (areDirtyTimings()) {
+		if (areTimingsDirty()) {
 			calculateTLevel();
 			calculateBLevel();
 			setAsClean();

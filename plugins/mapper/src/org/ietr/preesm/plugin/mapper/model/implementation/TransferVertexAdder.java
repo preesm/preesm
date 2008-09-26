@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.implementation;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
@@ -82,7 +84,7 @@ public class TransferVertexAdder {
 	 * Adds all necessary transfer vertices
 	 */
 	public void addTransferVertices(MapperDAG implementation, TransactionManager transactionManager) {
-
+		
 		// We iterate the edges and process the ones with different allocations
 		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
 
@@ -101,7 +103,44 @@ public class TransferVertexAdder {
 							.getEffectiveOperator()) {
 						// Adds several transfers for one edge depending on the route steps
 						addTransferVertices(currentEdge, implementation,
-								 transactionManager);
+								 transactionManager,null);
+					}
+				}
+			}
+		}
+
+		transactionManager.executeTransactionList();
+	}
+
+	/**
+	 * Adds all necessary transfer vertices
+	 */
+	public void addTransferVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
+
+		Set<DAGEdge> edgeSet = new HashSet<DAGEdge>();
+		edgeSet.addAll(refVertex.incomingEdges());
+		edgeSet.addAll(refVertex.outgoingEdges());
+		
+		// We iterate the edges and process the ones with different allocations
+		//Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
+		Iterator<DAGEdge> iterator = edgeSet.iterator();
+
+		while (iterator.hasNext()) {
+			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
+
+			if (!(currentEdge instanceof PrecedenceEdge)) {
+				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex)currentEdge
+						.getSource()).getImplementationVertexProperty();
+				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex)currentEdge
+						.getTarget()).getImplementationVertexProperty();
+
+				if (currentSourceProp.hasEffectiveOperator()
+						&& currentDestProp.hasEffectiveOperator()) {
+					if (currentSourceProp.getEffectiveOperator() != currentDestProp
+							.getEffectiveOperator()) {
+						// Adds several transfers for one edge depending on the route steps
+						addTransferVertices(currentEdge, implementation,
+								 transactionManager,refVertex);
 					}
 				}
 			}
@@ -115,7 +154,7 @@ public class TransferVertexAdder {
 	 * edge
 	 */
 	public void addTransferVertices(MapperDAGEdge edge, MapperDAG implementation,
-			TransactionManager transactionManager) {
+			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
 		MapperDAGVertex currentSource = (MapperDAGVertex)edge.getSource();
 		MapperDAGVertex currentDest = (MapperDAGVertex)edge.getTarget();
@@ -132,17 +171,22 @@ public class TransferVertexAdder {
 		while (it.hasNext()) {
 			RouteStep step = it.next();
 			
-			int transferCost = router.evaluateTransfer(edge, step.getSender(), step
-					.getReceiver());
 			
 			Transaction transaction = null;
 			
-			if(sendReceive)
-				transaction = new AddSendReceiveTransaction(edge,implementation,orderManager,i,step,transferCost);
-			else
-				transaction = new AddTransferVertexTransaction(edge,implementation,orderManager,i,step,transferCost);
+			if(sendReceive){
+				// TODO: set a size to send and receive. From medium definition?
+				transaction = new AddSendReceiveTransaction(edge,implementation,orderManager,i,step,100);
+			}
+			else{
 				
-			transactionManager.add(transaction);
+				int transferCost = router.evaluateTransfer(edge, step.getSender(), step
+						.getReceiver());
+				
+				transaction = new AddTransferVertexTransaction(edge,implementation,orderManager,i,step,transferCost);
+			}
+			
+			transactionManager.add(transaction,refVertex);
 			
 			i++;
 		}

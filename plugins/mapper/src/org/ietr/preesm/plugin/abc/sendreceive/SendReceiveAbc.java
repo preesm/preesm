@@ -35,10 +35,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-/**
- * 
- */
-package org.ietr.preesm.plugin.abc.accuratelytimed;
+package org.ietr.preesm.plugin.abc.sendreceive;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
@@ -48,16 +45,15 @@ import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
 
 /**
- * The accurately timed ABC schedules edges and set-up times
- * 
- * @author mpelcat
+ * A send receive abc adds send and receive operations for each inter-core operations
+ *         
+ * @author mpelcat   
  */
-public class AccuratelyTimedAbc extends
+public class SendReceiveAbc extends
 		AbstractAbc {
 
 	/**
@@ -66,34 +62,27 @@ public class AccuratelyTimedAbc extends
 	protected CommunicationRouter router;
 
 	/**
+	 * Transfer vertex adder for edge scheduling
+	 */
+	protected TransferVertexAdder tvertexAdder;
+
+	/**
 	 * Current precedence edge adder: called exclusively by simulator to schedule
 	 * vertices on the different operators
 	 */
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
 	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected TransferVertexAdder tvertexAdder;
-
-	/**
-	 * Overhead vertex adder for edge scheduling
-	 */
-	protected OverheadVertexAdder overtexAdder;
-
-	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(MapperDAG dag,
+	public SendReceiveAbc(MapperDAG dag,
 			IArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
-		overtexAdder = new OverheadVertexAdder(orderManager);
+		tvertexAdder = new TransferVertexAdder(router, orderManager, true);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
@@ -120,11 +109,9 @@ public class AccuratelyTimedAbc extends
 			setEdgesCosts(vertex.outgoingEdges());
 
 			transactionManager.undoTransactionList();
-
+			
 			tvertexAdder.addTransferVertices(implementation,transactionManager);
-			overtexAdder.addOverheadVertices(implementation,transactionManager);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
-
 		}
 	}
 
@@ -147,7 +134,6 @@ public class AccuratelyTimedAbc extends
 			PreesmLogger.getLogger().severe(
 					"unimplementation of " + vertex.getName() + " failed");
 		}
-		
 	}
 
 	/**
@@ -157,7 +143,6 @@ public class AccuratelyTimedAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		// Only T level necessary. No update of B Level
 		timeKeeper.updateTLevels();
 	}
 
