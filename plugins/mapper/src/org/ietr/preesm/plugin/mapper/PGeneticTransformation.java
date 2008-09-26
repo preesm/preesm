@@ -107,7 +107,7 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		parameters = new PGeneticAlgoParameters(textParameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, true);
+		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(
 				dag, architecture);

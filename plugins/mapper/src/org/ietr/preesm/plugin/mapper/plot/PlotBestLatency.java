@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -258,6 +259,12 @@ public class PlotBestLatency extends ApplicationFrame implements
 
 	public void setSUBPLOT_COUNT(int subplot_count) {
 		SUBPLOT_COUNT = subplot_count;
+	}
+	
+	public void windowClosing(WindowEvent event){
+		if(event.equals(WindowEvent.WINDOW_CLOSING)){
+			
+		}
 	}
 
 }

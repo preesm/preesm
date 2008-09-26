@@ -1,6 +1,7 @@
 package org.ietr.preesm.plugin.mapper.plot;
 
 import java.awt.Color;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JPanel;
 
@@ -166,6 +167,11 @@ public class TimePlotter extends ApplicationFrame {
 		chartPanel.setMouseZoomable(true, false);
 		setContentPane(chartPanel);
 
+	}
+	public void windowClosing(WindowEvent event){
+		if(event.equals(WindowEvent.WINDOW_CLOSING)){
+			
+		}
 	}
 
 }
