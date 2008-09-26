@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -51,6 +50,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a
@@ -182,7 +182,7 @@ public class SchedulingOrderManager {
 
 			Schedule sch = getSchedule(vertex.getImplementationVertexProperty()
 					.getEffectiveComponent());
-			if (sch != null){
+			if (sch != null) {
 				return sch.indexOf(vertex);
 			}
 		}
@@ -226,8 +226,7 @@ public class SchedulingOrderManager {
 	/**
 	 * Removes a given vertex
 	 */
-	public void remove(MapperDAGVertex vertex,
-			boolean removeFromTotalOrder) {
+	public void remove(MapperDAGVertex vertex, boolean removeFromTotalOrder) {
 
 		// If the vertex has an effective component,
 		// removes it from the corresponding scheduling
@@ -287,10 +286,14 @@ public class SchedulingOrderManager {
 			MapperDAG implementation) {
 
 		resetTotalOrder();
-		
+
 		ConcurrentSkipListSet<MapperDAGVertex> newTotalOrder = new ConcurrentSkipListSet<MapperDAGVertex>(
 				new SchedulingOrderComparator());
 		
+		Iterator<DAGVertex> it = dag.vertexSet().iterator();
+		while(it.hasNext())
+			newTotalOrder.add((MapperDAGVertex)it.next());
+
 		totalOrder.addAll(newTotalOrder);
 	}
 
