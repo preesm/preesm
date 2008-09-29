@@ -64,6 +64,7 @@ import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
+import org.ietr.preesm.core.codegen.VariableAllocation;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 
 /**
@@ -121,9 +122,13 @@ public class C64Printer extends AbstractPrinter {
 		if (index == 0) {
 			currentSource += "\n//Buffer allocation for " + element.getName()
 					+ "\n";
-		} else if (index == 1) {
+		}if (index == 1) {
+			currentSource += "\n//Variables allocation for " + element.getName()
+			+ "\n";
+		} 
+		else if (index == 2) {
 			currentSource += "\n";
-		} else if (index == 2) {
+		} else if (index == 3) {
 			currentSource += "\n";
 		}
 
@@ -169,6 +174,9 @@ public class C64Printer extends AbstractPrinter {
 	@Override
 	public void visit(ForLoop element, int index) {
 		if (index == 0) {
+			currentSource += "\n\nfor(;;)";
+		}
+		else if (index == 0) {
 			currentSource += "\n\nfor(;;)";
 		} else if (index == 1) {
 			currentSource += "\n\n";
@@ -280,9 +288,9 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(FiniteForLoop element, int index) {
-		if (index == 0) {
-			currentSource +="for("+element.getIndex()+"="+element.getStartIndex()+"; "+element.getIndex()+" < "+element.getStopIndex()+" ; "+element.getIndex()+"+="+element.getIncrement()+"){\n";
-		} else if (index == 1) {
+		if (index == 1) {
+			currentSource +="for("+element.getIndex()+" = "+element.getStartIndex()+"; "+element.getIndex()+" < "+element.getStopIndex()+" ; "+element.getIndex()+" += "+element.getIncrement()+"){\n";
+		} else if (index == 2) {
 			currentSource += "\n\t}";
 		}
 	}
@@ -299,6 +307,15 @@ public class C64Printer extends AbstractPrinter {
 		for(int i = hierarchy.size()-1 ; i >= 0 ; i --){
 			currentSource += "["+hierarchy.get(i).getIndex()+"] ";
 		}
+	}
+
+
+	@Override
+	public void visit(VariableAllocation element, int index) {
+		currentSource += element.getBuffer().getType().getTypeName();
+		currentSource += " ";
+		currentSource += element.getBuffer().toString();
+		currentSource += ";";
 	}
 
 
