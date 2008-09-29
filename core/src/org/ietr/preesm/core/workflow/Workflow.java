@@ -42,7 +42,17 @@ package org.ietr.preesm.core.workflow;
 
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorRegistry;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.constraints.IScenario;
@@ -118,45 +128,48 @@ public class Workflow {
 	 * @param monitor
 	 * @param algorithmFileName
 	 */
-	public void execute(IProgressMonitor monitor, AlgorithmConfiguration algorithmConfiguration,
-			ArchitectureConfiguration architectureConfiguration, ScenarioConfiguration scenarioConfiguration, Map<String,String> envVars ) {
-		
-		monitor.beginTask("Executing workflow",workflow.vertexSet().size());
+	public void execute(IProgressMonitor monitor,
+			AlgorithmConfiguration algorithmConfiguration,
+			ArchitectureConfiguration architectureConfiguration,
+			ScenarioConfiguration scenarioConfiguration,
+			Map<String, String> envVars) {
+
+		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
 		int numberOfTasksDone = 0;
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
-		IArchitecture architecture = null ;
-		IScenario scenario = null ;
-		SourceFileList sourceFiles = null ;
+		IArchitecture architecture = null;
+		IScenario scenario = null;
+		SourceFileList sourceFiles = null;
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
 		while (it.hasNext()) {
 			IWorkflowNode node = it.next();
-			
+
 			for (WorkflowEdge edge : workflow.incomingEdgesOf(node)) {
 				if (edge.getCarriedDataType().equals(WorkflowEdgeType.SDF)) {
 					sdf = edge.getCarriedData().getSDF();
-				}
-				else if (edge.getCarriedDataType().equals(WorkflowEdgeType.DAG)) {
+				} else if (edge.getCarriedDataType().equals(
+						WorkflowEdgeType.DAG)) {
 					dag = edge.getCarriedData().getDAG();
-				}
-				else if (edge.getCarriedDataType().equals(WorkflowEdgeType.ARCHITECTURE)) {
+				} else if (edge.getCarriedDataType().equals(
+						WorkflowEdgeType.ARCHITECTURE)) {
 					architecture = edge.getCarriedData().getArchitecture();
-				}
-				else if (edge.getCarriedDataType().equals(WorkflowEdgeType.SCENARIO)) {
+				} else if (edge.getCarriedDataType().equals(
+						WorkflowEdgeType.SCENARIO)) {
 					scenario = edge.getCarriedData().getScenario();
-				}else{
-					if(edge.getCarriedData().getSDF() != null){
+				} else {
+					if (edge.getCarriedData().getSDF() != null) {
 						sdf = edge.getCarriedData().getSDF();
 					}
-					if(edge.getCarriedData().getDAG() != null){
+					if (edge.getCarriedData().getDAG() != null) {
 						dag = edge.getCarriedData().getDAG();
 					}
-					if(edge.getCarriedData().getArchitecture() != null){
+					if (edge.getCarriedData().getArchitecture() != null) {
 						architecture = edge.getCarriedData().getArchitecture();
 					}
-					if(edge.getCarriedData().getScenario() != null){
+					if (edge.getCarriedData().getScenario() != null) {
 						scenario = edge.getCarriedData().getScenario();
 					}
 				}
@@ -187,12 +200,14 @@ public class Workflow {
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
 
-			/*	ScenarioRetriever retriever = new ScenarioRetriever(
-						scenarioConfiguration);
-				theScenario = retriever.getScenario();*/
-				
-				IScenario theScenario = ScenarioRetriever.RandomScenario(
-						sdf, architecture);
+				/*
+				 * ScenarioRetriever retriever = new ScenarioRetriever(
+				 * scenarioConfiguration); theScenario =
+				 * retriever.getScenario();
+				 */
+
+				IScenario theScenario = ScenarioRetriever.RandomScenario(sdf,
+						architecture);
 				// TODO: load the scenario
 				nodeResult.setScenario(theScenario);
 
@@ -205,10 +220,10 @@ public class Workflow {
 
 					TextParameters parameters = new TextParameters(
 							((TaskNode) node).getVariables());
-					
+
 					// Replacing environment variables by their values
 					parameters.resolveEnvironmentVars(envVars);
-	
+
 					if (transformation instanceof IMapping) {
 						monitor.subTask("scheduling");
 						numberOfTasksDone++;
@@ -217,8 +232,8 @@ public class Workflow {
 						// mapping
 						IMapping mapping = (IMapping) transformation;
 
-						nodeResult = mapping.transform(sdf,
-								architecture, parameters, scenario);
+						nodeResult = mapping.transform(sdf, architecture,
+								parameters, scenario);
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
@@ -228,7 +243,7 @@ public class Workflow {
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
 
-						nodeResult= tranform.transform(sdf, parameters);
+						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
 						numberOfTasksDone++;
@@ -236,8 +251,8 @@ public class Workflow {
 
 						// generic code generation
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
-						nodeResult= codeGen.transform(dag,
-								architecture, parameters);
+						nodeResult = codeGen.transform(dag, architecture,
+								parameters);
 						sourceFiles = nodeResult.getSourcefilelist();
 
 					} else if (transformation instanceof ICodeTranslation) {
@@ -252,10 +267,23 @@ public class Workflow {
 						monitor.subTask(" content exporter");
 						numberOfTasksDone++;
 						monitor.worked(numberOfTasksDone);
-
 						// code translation
 						IExporter exporter = (IExporter) transformation;
 						exporter.transform(sdf, parameters);
+						IWorkspace workspace = ResourcesPlugin.getWorkspace();
+						try {
+							workspace.getRoot().refreshLocal(10, monitor);
+						} catch (CoreException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						IResource resource = workspace.getRoot().findMember(
+								parameters.getVariable("path"));
+						if (resource != null) {
+							FileEditorInput input = new FileEditorInput(
+									(IFile) resource);
+							openEditor(((IFile) resource).getName(), input);
+						}
 					}
 				}
 
@@ -280,6 +308,34 @@ public class Workflow {
 	 */
 	public void parse(String fileName) {
 		new WorkflowParser(fileName, workflow);
+	}
+
+	/**
+	 * Opens an editor on the given {@link IEditorInput}.
+	 * 
+	 * @param input
+	 *            An {@link IEditorInput}.
+	 */
+	private void openEditor(String fileName, IEditorInput input) {
+		IEditorRegistry registry = PlatformUI.getWorkbench()
+				.getEditorRegistry();
+		IEditorDescriptor[] editors = registry.getEditors(fileName);
+		IEditorDescriptor editor;
+		if (editors.length == 0) {
+			editor = registry.getDefaultEditor(fileName);
+
+			// if no editor found, use the default text editor
+			if (editor == null) {
+				final String editorId = "org.eclipse.ui.DefaultTextEditor";
+				editor = registry.findEditor(editorId);
+			}
+		} else if (editors.length == 1) {
+			editor = editors[0];
+		} else {
+			editor = editors[0];
+		}
+		PlatformUI.getWorkbench().getDisplay().asyncExec(
+				new OpenWorkflowOutput(input, editor.getId()));
 	}
 
 }
