@@ -73,6 +73,9 @@ import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.sdf4j.model.AbstractGraph;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -269,10 +272,12 @@ public class Workflow {
 						monitor.worked(numberOfTasksDone);
 						// code translation
 						IExporter exporter = (IExporter) transformation;
+						exporter.getClass().getMethods()[0].getParameterTypes()[0].getClass().equals(DAGVertex.class);
+						
 						exporter.transform(sdf, parameters);
 						IWorkspace workspace = ResourcesPlugin.getWorkspace();
 						try {
-							workspace.getRoot().refreshLocal(10, monitor);
+							workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 						} catch (CoreException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
