@@ -72,6 +72,11 @@ public class VertexType {
 	public static final VertexType task = new VertexType("task");
 
 	/**
+	 * VertexType representing a task
+	 */
+	private String type = "";
+
+	/**
 	 * Returns true if this receive operation leads to a send operation
 	 */
 	static public boolean isIntermediateReceive(DAGVertex vertex){
@@ -111,6 +116,7 @@ public class VertexType {
 
 	private VertexType(String type) {
 		super();
+		this.type = type;
 	}
 
 	public boolean isReceive(){
@@ -124,4 +130,21 @@ public class VertexType {
 	public boolean isTask(){
 		return (this == task);
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return type;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if(obj instanceof VertexType){
+			return (((VertexType)obj).type.equals(type));
+		}
+		return false;
+	}
+
+	
 }

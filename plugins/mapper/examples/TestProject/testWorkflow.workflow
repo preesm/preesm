@@ -12,7 +12,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
       <data key="variables">
-         <variable name="sourcePath" value="d:\Test"/>
+         <variable name="sourcePath" value="D:\Projets\PreesmSourceForge\trunk\plugins\mapper\examples\TestProject\Code"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.pfast" taskId="PFAST scheduler">
@@ -59,5 +59,4 @@
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="FAST scheduler"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAG Exporter"/>
 </preesm:workflow>

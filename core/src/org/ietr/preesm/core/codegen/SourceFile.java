@@ -86,6 +86,10 @@ public class SourceFile extends AbstractBufferContainer {
 		threads = new ArrayList<ThreadDeclaration>();
 	}
 
+	public List<ThreadDeclaration> getThreads() {
+		return threads;
+	}
+	
 	public Operator getOperator() {
 		return operator;
 	}

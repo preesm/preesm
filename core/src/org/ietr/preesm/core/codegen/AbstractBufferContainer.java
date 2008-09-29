@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
@@ -163,6 +164,65 @@ public abstract class AbstractBufferContainer {
 	}
 
 	/**
+	 * Route steps are allocated here. A route steps means that a receive and a
+	 * send are called successively. The receive output is allocated.
+	 */
+	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
+
+		Iterator<DAGVertex> vIterator = comVertices.iterator();
+
+		// Iteration on own buffers
+		while (vIterator.hasNext()) {
+			DAGVertex vertex = vIterator.next();
+
+			if (VertexType.isIntermediateReceive(vertex)) {
+				allocateVertexBuffers(vertex, false);
+			}
+		}
+	}
+
+	/**
+	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
+	 * allocates the input buffers, otherwise allocates output buffers.
+	 */
+	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
+
+		Iterator<DAGEdge> eIterator;
+		Set<DAGEdge> edgeSet;
+
+		if (isInputBuffer){
+			edgeSet = new HashSet<DAGEdge>(vertex.getBase().incomingEdgesOf(vertex));
+			// Removes edges between two operators
+			removeInterEdges(edgeSet);
+		}
+		else{
+			edgeSet = new HashSet<DAGEdge>(vertex.getBase().outgoingEdgesOf(vertex));
+			// Removes edges between two operators
+			removeInterEdges(edgeSet);
+		}
+
+		eIterator = edgeSet.iterator();
+			
+		// Iteration on all the edges of each vertex belonging to ownVertices
+		while (eIterator.hasNext()) {
+			DAGEdge edge = eIterator.next();
+
+			allocateEdgeBuffers(edge, isInputBuffer);
+		}
+	}
+
+	public void removeInterEdges(Set<DAGEdge> edgeSet) {
+
+		Iterator<DAGEdge> eIterator = edgeSet.iterator();
+		
+		while (eIterator.hasNext()) {
+			DAGEdge edge = eIterator.next();
+			if(!edge.getSource().getPropertyBean().getValue(Operator.propertyBeanName).equals(edge.getTarget().getPropertyBean().getValue(Operator.propertyBeanName)))
+				eIterator.remove();
+		}
+	}
+	
+	/**
 	 * Allocates all the buffers retrieved from a given buffer aggregate. The
 	 * boolean isInputBuffer is true if the aggregate belongs to an incoming
 	 * edge and false if the aggregate belongs to an outgoing edge
@@ -198,45 +258,6 @@ public abstract class AbstractBufferContainer {
 					Level.FINE,
 					"No aggregate for edge " + edge.getSource().getId()
 							+ edge.getTarget().getId());
-		}
-	}
-
-	/**
-	 * Route steps are allocated here. A route steps means that a receive and a
-	 * send are called successively. The receive output is allocated.
-	 */
-	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
-
-		Iterator<DAGVertex> vIterator = comVertices.iterator();
-
-		// Iteration on own buffers
-		while (vIterator.hasNext()) {
-			DAGVertex vertex = vIterator.next();
-
-			if (VertexType.isIntermediateReceive(vertex)) {
-				allocateVertexBuffers(vertex, false);
-			}
-		}
-	}
-
-	/**
-	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
-	 * allocates the input buffers, otherwise allocates output buffers.
-	 */
-	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
-
-		Iterator<DAGEdge> eIterator;
-
-		if (isInputBuffer)
-			eIterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
-		else
-			eIterator = vertex.getBase().outgoingEdgesOf(vertex).iterator();
-
-		// Iteration on all the edges of each vertex belonging to ownVertices
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-
-			allocateEdgeBuffers(edge, isInputBuffer);
 		}
 	}
 

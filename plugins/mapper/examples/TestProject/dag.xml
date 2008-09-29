@@ -7,62 +7,62 @@
 <desc>java.lang.String</desc>
 </key>
 <graph edgedefault="directed">
-<node id="9a051ca4-fbbc-481f-aad1-b6c55f81e8e9">
+<node id="25860de1-c253-4385-bf99-dbe651768fc0">
 <data key="name">Sensor</data>
 </node>
-<node id="805e5bab-4760-4827-8258-243b5c84c1cb">
+<node id="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e">
 <data key="name">Gen_int</data>
 </node>
-<node id="4aabd7b7-dc94-4411-ab43-345a81cfec95">
+<node id="f64ba1b6-4364-4021-8bd5-6b20c64a91bc">
 <data key="name">Copy</data>
 </node>
-<node id="c8d6dcc0-642e-4c39-97d4-9587125a05e9">
+<node id="10252fb6-188c-40d9-ab90-4921dbdbc10b">
 <data key="name">Actuator</data>
 </node>
-<node id="e2c29d5c-37b7-40ae-a307-335d2c9950a6">
+<node id="7887fc56-5871-46dc-b8b7-6fcde91a8c97">
 <data key="name">ParallelTest</data>
 </node>
-<node id="d92c2bb7-7154-4c1b-85ed-9b2d8b28fd14">
+<node id="2529a6b7-6984-43bd-bf01-8d5f35960cdf">
 <data key="name">ParallelTest2</data>
 </node>
-<node id="2669f532-1242-42f9-a7de-efbd40f90af1">
+<node id="7016162e-dd1e-4179-851a-d4e182a4fc50">
 <data key="name">__send1 (Sensor,ParallelTest)</data>
 </node>
-<node id="0d3b2f00-4182-496a-94b1-464f5db05c80">
+<node id="9fdf4a73-a88a-4636-8202-8abea35a38d0">
 <data key="name">__receive1 (Sensor,ParallelTest)</data>
 </node>
-<node id="9850ee06-baa8-47c6-80b2-fc438c2f5909">
+<node id="976ca70a-944e-4413-913a-135852fab9fc">
 <data key="name">__send1 (ParallelTest2,Actuator)</data>
 </node>
-<node id="f2cb6fe6-18de-4419-bc9d-6f9bfb6c1778">
+<node id="3e07789c-3ea7-4753-8efb-bea5971eef18">
 <data key="name">__receive1 (ParallelTest2,Actuator)</data>
 </node>
-<edge source="9a051ca4-fbbc-481f-aad1-b6c55f81e8e9" target="805e5bab-4760-4827-8258-243b5c84c1cb">
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e">
 <data key="Weight">1</data>
 </edge>
-<edge source="805e5bab-4760-4827-8258-243b5c84c1cb" target="4aabd7b7-dc94-4411-ab43-345a81cfec95">
+<edge source="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e" target="f64ba1b6-4364-4021-8bd5-6b20c64a91bc">
 <data key="Weight">10</data>
 </edge>
-<edge source="4aabd7b7-dc94-4411-ab43-345a81cfec95" target="c8d6dcc0-642e-4c39-97d4-9587125a05e9">
+<edge source="f64ba1b6-4364-4021-8bd5-6b20c64a91bc" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
 <data key="Weight">10</data>
 </edge>
-<edge source="805e5bab-4760-4827-8258-243b5c84c1cb" target="c8d6dcc0-642e-4c39-97d4-9587125a05e9">
+<edge source="0c7528f2-3a27-4ed9-9fce-5f29ef1d070e" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
 <data key="Weight">0</data>
 </edge>
-<edge source="9a051ca4-fbbc-481f-aad1-b6c55f81e8e9" target="e2c29d5c-37b7-40ae-a307-335d2c9950a6">
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="7887fc56-5871-46dc-b8b7-6fcde91a8c97">
 <data key="Weight">1</data>
 </edge>
-<edge source="e2c29d5c-37b7-40ae-a307-335d2c9950a6" target="d92c2bb7-7154-4c1b-85ed-9b2d8b28fd14">
+<edge source="7887fc56-5871-46dc-b8b7-6fcde91a8c97" target="2529a6b7-6984-43bd-bf01-8d5f35960cdf">
 <data key="Weight">1</data>
 </edge>
-<edge source="d92c2bb7-7154-4c1b-85ed-9b2d8b28fd14" target="c8d6dcc0-642e-4c39-97d4-9587125a05e9">
+<edge source="2529a6b7-6984-43bd-bf01-8d5f35960cdf" target="10252fb6-188c-40d9-ab90-4921dbdbc10b">
 <data key="Weight">1</data>
 </edge>
-<edge source="9a051ca4-fbbc-481f-aad1-b6c55f81e8e9" target="2669f532-1242-42f9-a7de-efbd40f90af1"/>
-<edge source="2669f532-1242-42f9-a7de-efbd40f90af1" target="0d3b2f00-4182-496a-94b1-464f5db05c80"/>
-<edge source="0d3b2f00-4182-496a-94b1-464f5db05c80" target="e2c29d5c-37b7-40ae-a307-335d2c9950a6"/>
-<edge source="d92c2bb7-7154-4c1b-85ed-9b2d8b28fd14" target="9850ee06-baa8-47c6-80b2-fc438c2f5909"/>
-<edge source="9850ee06-baa8-47c6-80b2-fc438c2f5909" target="f2cb6fe6-18de-4419-bc9d-6f9bfb6c1778"/>
-<edge source="f2cb6fe6-18de-4419-bc9d-6f9bfb6c1778" target="c8d6dcc0-642e-4c39-97d4-9587125a05e9"/>
+<edge source="25860de1-c253-4385-bf99-dbe651768fc0" target="7016162e-dd1e-4179-851a-d4e182a4fc50"/>
+<edge source="7016162e-dd1e-4179-851a-d4e182a4fc50" target="9fdf4a73-a88a-4636-8202-8abea35a38d0"/>
+<edge source="9fdf4a73-a88a-4636-8202-8abea35a38d0" target="7887fc56-5871-46dc-b8b7-6fcde91a8c97"/>
+<edge source="2529a6b7-6984-43bd-bf01-8d5f35960cdf" target="976ca70a-944e-4413-913a-135852fab9fc"/>
+<edge source="976ca70a-944e-4413-913a-135852fab9fc" target="3e07789c-3ea7-4753-8efb-bea5971eef18"/>
+<edge source="3e07789c-3ea7-4753-8efb-bea5971eef18" target="10252fb6-188c-40d9-ab90-4921dbdbc10b"/>
 </graph>
 </graphml>

@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -74,7 +73,6 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
  */
 public class C64Printer extends AbstractPrinter {
 
-	
 	public C64Printer() {
 		super();
 	}
@@ -82,39 +80,94 @@ public class C64Printer extends AbstractPrinter {
 	/**
 	 * Compares two buffers by their alphabetical order
 	 */
-	public class AlphaOrderComparator implements
-	Comparator<Buffer>{
+	public class AlphaOrderComparator implements Comparator<Buffer> {
 
 		@Override
 		public int compare(Buffer o1, Buffer o2) {
 			return o1.getName().compareTo(o2.getName());
 		}
-		
-	}
 
+	}
 
 	@Override
 	public void visit(SourceFile element, int index) {
-		
+
 		if (index == 0) {
-			
+
 			// Very specific to c64
 			currentSource += "#include <stdio.h>\n";
 			currentSource += "#include <stdlib.h>\n";
 			currentSource += "#include <std.h>\n";
 			currentSource += "#include <tsk.h>\n";
+			currentSource += "#include <log.h>\n";
 			currentSource += "#define uchar unsigned char\n";
 			currentSource += "#define ushort unsigned short\n";
+			currentSource += "//#define uint unsigned int\n";
 			currentSource += "#define ulong unsigned long\n";
 			currentSource += "#define prec_synchro int\n";
 			currentSource += "#define stream uchar\n";
-			currentSource += "#include \"..\\..\\lib_RACH\\common.h\"";
+			currentSource += "extern LOG_Obj trace;\n\n";
+			currentSource += "#include \"..\\..\\lib_RACH\\common.h\"\n";
+
+		} else if (index == 1) {
+
+			List<ThreadDeclaration> threads = element.getThreads();
+
+			// Starting threads
+			currentSource += "// Main function\n";
+			currentSource += "/* External Variables */\n";
+			currentSource += "extern far int L2RAM;   /* Generated within BIOS configuration */\n";
+			currentSource += "/* Handles for dynamically created tasks */\n";
+
+			for (ThreadDeclaration thread : threads) {
+				String handleName = thread.getName() + "_handle";
+				String attribName = thread.getName() + "_attrib";
+				currentSource += "TSK_Handle " + handleName + ";\n";
+				currentSource += "TSK_Attrs " + attribName + ";\n";
+				
+				currentSource += "void " + thread.getName() + "(void);\n\n";
+			}
+
+
+			currentSource += "void main(void)\n";
+			currentSource += "{\n";
+
+			for (ThreadDeclaration thread : threads) {
+				String handleName = thread.getName() + "_handle";
+				String attribName = thread.getName() + "_attrib";
+
+				currentSource += "/* Initialize attributes for Task "
+						+ thread.getName() + " */\n";
+				currentSource += "memcpy(&" + attribName
+						+ ",(void*)(&TSK_ATTRS),sizeof(TSK_Attrs));\n";
+
+				currentSource += attribName + ".priority = 1;\n";
+				currentSource += attribName + ".stack = NULL;\n";
+				currentSource += attribName + ".stacksize = 0x9000;\n";
+				currentSource += attribName + ".stackseg =L2RAM;\n";
+				currentSource += attribName + ".environ = NULL;\n";
+				currentSource += attribName + ".name = \"MainTask\";\n";
+				currentSource += attribName + ".exitflag = TRUE;\n";
+				currentSource += attribName + ".initstackflag = TRUE;\n";
+
+				currentSource += "/* Create a task to do the work */\n";
+				currentSource += "if( (" + handleName + " = TSK_create((Fxn)"
+						+ thread.getName() + ", &" + attribName
+						+ ", 1)) == NULL)\n";
+				currentSource += "{\n";
+				currentSource += "/* Failure in Creating Task */\n";
+				currentSource += "    LOG_printf(&trace,\"TSK_create() error... "
+						+ thread.getName() + "\");\n";
+				currentSource += "    while(1);\n";
+				currentSource += "}\n";
+			}
 			
-			
+			currentSource += "}\n";
+
 		} else if (index == 3) {
-			
+
 		}
-		
+
 	}
 
 	@Override
@@ -122,11 +175,11 @@ public class C64Printer extends AbstractPrinter {
 		if (index == 0) {
 			currentSource += "\n//Buffer allocation for " + element.getName()
 					+ "\n";
-		}if (index == 1) {
-			currentSource += "\n//Variables allocation for " + element.getName()
-			+ "\n";
-		} 
-		else if (index == 2) {
+		}
+		if (index == 1) {
+			currentSource += "\n//Variables allocation for "
+					+ element.getName() + "\n";
+		} else if (index == 2) {
 			currentSource += "\n";
 		} else if (index == 3) {
 			currentSource += "\n";
@@ -153,12 +206,18 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(BufferAllocation element, int index) {
-		currentSource += element.getBuffer().getType().getTypeName();
+
+		Buffer buf = element.getBuffer();
+		String name = buf.getName();
+
+		currentSource += "#pragma DATA_SECTION(" + name + ", \".my_sect\")\n";
+		currentSource += "#pragma DATA_ALIGN(" + name + ", 8)\n";
+		currentSource += buf.getType().getTypeName();
 		currentSource += "[";
-		currentSource += element.getBuffer().getSize().toString();
+		currentSource += buf.getSize().toString();
 		currentSource += "] ";
-		currentSource += element.getBuffer().toString();
-		currentSource += ";";
+		currentSource += name;
+		currentSource += ";\n";
 	}
 
 	@Override
@@ -175,8 +234,7 @@ public class C64Printer extends AbstractPrinter {
 	public void visit(ForLoop element, int index) {
 		if (index == 0) {
 			currentSource += "\n\nfor(;;)";
-		}
-		else if (index == 0) {
+		} else if (index == 0) {
 			currentSource += "\n\nfor(;;)";
 		} else if (index == 1) {
 			currentSource += "\n\n";
@@ -225,28 +283,29 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(UserFunctionCall element, int index) {
-		if(element.getParentContainer() instanceof FiniteForLoop){
-			for(int i = 0 ; i < index+1 ; i ++){
+		if (element.getParentContainer() instanceof FiniteForLoop) {
+			for (int i = 0; i < index + 1; i++) {
 				currentSource += "\t";
 			}
 		}
 		currentSource += element.getName() + "(";
-		
-		ConcurrentSkipListSet<Buffer> listset = new ConcurrentSkipListSet<Buffer>(new AlphaOrderComparator());
+
+		ConcurrentSkipListSet<Buffer> listset = new ConcurrentSkipListSet<Buffer>(
+				new AlphaOrderComparator());
 		listset.addAll(element.getAvailableBuffers());
 		Iterator<Buffer> iterator = listset.iterator();
-		
-		while(iterator.hasNext()){
+
+		while (iterator.hasNext()) {
 			Buffer buf = iterator.next();
-			if(buf instanceof SubBuffer){
-				visit((SubBuffer) buf,0); // Accept the code container
-			}else{
-				visit(buf,0); // Accept the code container
+			if (buf instanceof SubBuffer) {
+				visit((SubBuffer) buf, 0); // Accept the code container
+			} else {
+				visit(buf, 0); // Accept the code container
 			}
-			if(iterator.hasNext())
+			if (iterator.hasNext())
 				currentSource += ",";
 		}
-	
+
 		currentSource += ");";
 	}
 
@@ -268,9 +327,10 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(Receive element, int index) {
-		
+
 		if (index == 0) {
-			currentSource += element.getName() + "(" + element.getSource().getName() + ",";
+			currentSource += element.getName() + "("
+					+ element.getSource().getName() + ",";
 		} else if (index == 1) {
 			currentSource += ");";
 		}
@@ -280,7 +340,8 @@ public class C64Printer extends AbstractPrinter {
 	@Override
 	public void visit(Send element, int index) {
 		if (index == 0) {
-			currentSource += element.getName() + "(" + element.getTarget().getName() + ",";
+			currentSource += element.getName() + "("
+					+ element.getTarget().getName() + ",";
 		} else if (index == 1) {
 			currentSource += ");";
 		}
@@ -289,7 +350,11 @@ public class C64Printer extends AbstractPrinter {
 	@Override
 	public void visit(FiniteForLoop element, int index) {
 		if (index == 1) {
-			currentSource +="for("+element.getIndex()+" = "+element.getStartIndex()+"; "+element.getIndex()+" < "+element.getStopIndex()+" ; "+element.getIndex()+" += "+element.getIncrement()+"){\n";
+			currentSource += "for(" + element.getIndex() + " = "
+					+ element.getStartIndex() + "; " + element.getIndex()
+					+ " < " + element.getStopIndex() + " ; "
+					+ element.getIndex() + " += " + element.getIncrement()
+					+ "){\n";
 		} else if (index == 2) {
 			currentSource += "\n\t}";
 		}
@@ -297,18 +362,17 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(SubBuffer element, int index) {
-		Buffer topElement = element ;
-		List<SubBuffer> hierarchy = new ArrayList<SubBuffer>() ;
-		while(topElement instanceof SubBuffer){
-			hierarchy.add((SubBuffer)topElement);
-			topElement = ((SubBuffer)topElement).getParentBuffer();
+		Buffer topElement = element;
+		List<SubBuffer> hierarchy = new ArrayList<SubBuffer>();
+		while (topElement instanceof SubBuffer) {
+			hierarchy.add((SubBuffer) topElement);
+			topElement = ((SubBuffer) topElement).getParentBuffer();
 		}
 		currentSource += topElement.getName();
-		for(int i = hierarchy.size()-1 ; i >= 0 ; i --){
-			currentSource += "["+hierarchy.get(i).getIndex()+"] ";
+		for (int i = hierarchy.size() - 1; i >= 0; i--) {
+			currentSource += "[" + hierarchy.get(i).getIndex() + "] ";
 		}
 	}
-
 
 	@Override
 	public void visit(VariableAllocation element, int index) {
@@ -317,6 +381,5 @@ public class C64Printer extends AbstractPrinter {
 		currentSource += element.getVariable().toString();
 		currentSource += ";";
 	}
-
 
 }
