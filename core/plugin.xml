@@ -120,19 +120,6 @@
                           </contextualLaunch>
                           </shortcut>
                           </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.ietr.preesm.core.ui.editors.ImplementationEditor"
-            default="false"
-            icon="icons/preesm2.PNG"
-            id="org.ietr.preesm.core.ui.editors.ImplementationEditor"
-            name="Implementation editor">
-         <contentTypeBinding
-               contentTypeId="org.eclipse.core.runtime.xml">
-         </contentTypeBinding>
-      </editor>
-   </extension>
 
 
 </plugin>

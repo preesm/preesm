@@ -3,7 +3,10 @@
  */
 package org.ietr.preesm.plugin.mapper.plot;
 
-import org.eclipse.core.resources.IFile;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +22,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.sdf4j.importer.GMLDAGImporter;
+import org.sdf4j.importer.InvalidFileException;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
  * Editor of an implementation Gantt chart
@@ -27,11 +33,11 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
  */
 public class ImplementationEditor extends EditorPart {
 
-	private MapperDAG dag;
+	private DirectedAcyclicGraph dag = null;
 	
-	private IAbc simulator;
+	private IAbc simulator = null;
 	
-	public ImplementationEditor(MapperDAG dag,IAbc simulator) {
+	public ImplementationEditor() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -51,7 +57,22 @@ public class ImplementationEditor extends EditorPart {
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		// TODO Auto-generated method stub
+		
+		/*
+		if(input instanceof FileEditorInput){
+			IPath path = ((FileEditorInput)input).getPath();
+
+			GMLDAGImporter importer = new GMLDAGImporter() ;
+			try {
+				dag = importer.parse(new FileInputStream(path.toOSString()));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
 		
 	}
 
@@ -70,7 +91,10 @@ public class ImplementationEditor extends EditorPart {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		GanttPlotter.plotInComposite(dag, simulator, parent);
+		if(dag != null && simulator != null){
+			MapperDAG mapperDAG = (MapperDAG)dag;
+			GanttPlotter.plotInComposite(mapperDAG, simulator, parent);
+		}
 		
 	}
 

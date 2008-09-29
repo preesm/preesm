@@ -39,5 +39,27 @@
             type="org.ietr.preesm.plugin.mapper.plot.GanttExporter">
       </task>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            describer="org.ietr.preesm.plugin.mapper.plot.GanttContentDescriber"
+            file-extensions="gantt"
+            id="org.ietr.preesm.mapper.gantttype"
+            name="gantt"
+            priority="normal">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.preesm.plugin.mapper.plot.ImplementationEditor"
+            default="false"
+            id="org.ietr.preesm.plugin.mapper.plot.ImplementationEditor"
+            name="Implementation editor">
+         <contentTypeBinding
+               contentTypeId="org.eclipse.core.runtime.xml">
+         </contentTypeBinding>
+      </editor>
+   </extension>
 
 </plugin>

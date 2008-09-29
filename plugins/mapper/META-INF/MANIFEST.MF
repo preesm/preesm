@@ -7,10 +7,10 @@ Bundle-Activator: org.ietr.preesm.plugin.mapper.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core,
  org.eclipse.swt;bundle-version="3.4.0",
- org.eclipse.ui;bundle-version="3.4.0",
- org.eclipse.core.resources;bundle-version="3.4.0"
+ org.eclipse.ui;bundle-version="3.4.0"
 Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  lib/jfreechart.jar,
  lib/jetm.jar,
  lib/jetm-optional.jar,
  .
+Bundle-ActivationPolicy: lazy
