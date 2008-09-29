@@ -69,12 +69,15 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				VertexType.propertyBeanName);
 
 		Medium medium = (Medium)vertex.getPropertyBean().getValue(Medium.propertyBeanName);
+
+		// Send and receive only have one input and one output edges
+		DAGEdge inEdge = (DAGEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
+		DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
 		
 		if (type != null && medium != null) {
 			if (type.isSend()){
 
-				DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
-				Set<Buffer> bufferSet = parentContainer.getBuffers(outEdge);
+				Set<Buffer> bufferSet = parentContainer.getBuffers(inEdge);
 				
 				// The target is the operator on which the corresponding receive operation is mapped
 				DAGVertex receive = outEdge.getTarget();
@@ -82,8 +85,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				call = new Send(parentContainer, vertex, bufferSet, medium, target);
 			}
 			else if (type.isReceive()){
-				DAGEdge inEdge = (DAGEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
-				Set<Buffer> bufferSet = parentContainer.getBuffers(inEdge);
+				Set<Buffer> bufferSet = parentContainer.getBuffers(outEdge);
 				
 				// The source is the operator on which the corresponding send operation is allocated
 				DAGVertex send = inEdge.getSource();
