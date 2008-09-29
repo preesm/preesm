@@ -35,41 +35,37 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.codegen;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
-import org.sdf4j.model.AbstractVertex;
+public class Variable {
 
-public class CompoundCodeElement implements ICodeElement{
+	// Buffer generated from a name
+	/**
+	 * Buffer name if not generated from edge characteristics
+	 */
+	private String name;
 
-	private List<ICodeElement> calls ;
-	private String name ;
-	private AbstractBufferContainer parentContainer ;
-	private AbstractVertex<?> correspondingVertex ;
-	
-	
-	public CompoundCodeElement(String name,AbstractBufferContainer parentContainer, AbstractVertex<?> correspondingVertex) {
+	/**
+	 * Type of the allocated buffer
+	 */
+	private DataType type;
+
+	public Variable(String name,DataType type) {
+
+		this.type = type;
 		this.name = name;
-		this.parentContainer = parentContainer;
-		this.correspondingVertex = correspondingVertex;
-		calls = new ArrayList<ICodeElement>() ;
+	}
+
+	public String getName() {
+		return name ;
+	}
+
+
+	public DataType getType() {
+		return type;
 	}
 	
 	@Override
-	public void accept(AbstractPrinter printer) {
-		for(ICodeElement call : calls){
-			call.accept(printer);
-		}
+	public String toString() {
+		return getName();
 	}
-
-	@Override
-	public AbstractVertex<?> getCorrespondingVertex() {
-		return correspondingVertex;
-	}
-	
-	public void addCall(ICodeElement elt){
-		calls.add(elt);
-	}
-
 }

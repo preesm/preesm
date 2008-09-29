@@ -40,25 +40,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.codegen.printer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
-import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
@@ -66,10 +55,11 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
+import org.ietr.preesm.core.codegen.Variable;
+import org.ietr.preesm.core.codegen.VariableAllocation;
 
 
 /**
@@ -108,6 +98,7 @@ public abstract class AbstractPrinter {
 	public abstract void visit(Buffer element, int index);
 	public abstract void visit(SubBuffer element, int index);
 	public abstract void visit(BufferAllocation element, int index);
+	public abstract void visit(VariableAllocation element, int index);
 	public abstract void visit(AbstractCodeElement element, int index);
 	public abstract void visit(CommunicationFunctionCall element, int index);
 	public abstract void visit(ForLoop element, int index);

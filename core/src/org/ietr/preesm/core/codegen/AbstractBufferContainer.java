@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -70,6 +69,11 @@ public abstract class AbstractBufferContainer {
 	protected List<BufferAllocation> buffers;
 
 	/**
+	 * Contained variables
+	 */
+	protected List<VariableAllocation> variables;
+
+	/**
 	 * If the container was created in another container, reference to the
 	 * parent container. Buffers can be looked for in all ancestor containers
 	 */
@@ -83,23 +87,43 @@ public abstract class AbstractBufferContainer {
 	public AbstractBufferContainer(AbstractBufferContainer parentContainer) {
 		super();
 		this.buffers = new ArrayList<BufferAllocation>();
+		this.variables = new ArrayList<VariableAllocation>();
 		this.parentContainer = parentContainer;
-		
 		this.semaphoreContainer = new SemaphoreContainer(this);
 	}
 
 	public void accept(AbstractPrinter printer) {
-		
-		printer.visit(this,0); // Visit self
-		Iterator<BufferAllocation> iterator = buffers.iterator();
+		if (buffers.size() > 0) {
+			printer.visit(this, 0); // Visit self
+			Iterator<BufferAllocation> iterator = buffers.iterator();
 
-		while (iterator.hasNext()) {
-			BufferAllocation alloc = iterator.next();
-			alloc.accept(printer); // Accepts allocations
-			printer.visit(this,1); // Visit self
+			while (iterator.hasNext()) {
+				BufferAllocation alloc = iterator.next();
+				alloc.accept(printer); // Accepts allocations
+				printer.visit(this, 2); // Visit self
+			}
 		}
+		if (variables.size() > 0) {
+			printer.visit(this, 1); // Visit self
+			Iterator<VariableAllocation> iterator2 = variables.iterator();
 
-		printer.visit(this,2); // Visit self
+			while (iterator2.hasNext()) {
+				VariableAllocation alloc = iterator2.next();
+				alloc.accept(printer); // Accepts allocations
+				printer.visit(this, 2); // Visit self
+			}
+		}
+		printer.visit(this, 3); // Visit self
+	}
+
+	public void addVariable(Variable var) {
+		VariableAllocation alloc = new VariableAllocation(var);
+		variables.add(alloc);
+
+	}
+
+	public List<VariableAllocation> getVariables() {
+		return variables;
 	}
 
 	/**
@@ -118,7 +142,7 @@ public abstract class AbstractBufferContainer {
 							"buffer " + alloc.getBuffer().getName()
 									+ " already exists");
 	}
-	
+
 	/**
 	 * Buffers belonging to SDF vertices in the given set are allocated here.
 	 */
@@ -158,9 +182,9 @@ public abstract class AbstractBufferContainer {
 
 				// Creating the buffer
 				Buffer buf = new Buffer(edge.getSource().getName(), edge
-						.getTarget().getName(), def.getSourceOutputPortID(), def
-						.getDestInputPortID(), def.getSize(), new DataType(def
-						.getDataType()), agg);
+						.getTarget().getName(), def.getSourceOutputPortID(),
+						def.getDestInputPortID(), def.getSize(), new DataType(
+								def.getDataType()), agg);
 
 				BufferAllocation allocation = new BufferAllocation(buf);
 
@@ -178,8 +202,8 @@ public abstract class AbstractBufferContainer {
 	}
 
 	/**
-	 * Route steps are allocated here. A route steps means that a receive and
-	 * a send are called successively. The receive output is allocated.
+	 * Route steps are allocated here. A route steps means that a receive and a
+	 * send are called successively. The receive output is allocated.
 	 */
 	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
 
@@ -189,7 +213,7 @@ public abstract class AbstractBufferContainer {
 		while (vIterator.hasNext()) {
 			DAGVertex vertex = vIterator.next();
 
-			if(VertexType.isIntermediateReceive(vertex)){
+			if (VertexType.isIntermediateReceive(vertex)) {
 				allocateVertexBuffers(vertex, false);
 			}
 		}
@@ -199,8 +223,7 @@ public abstract class AbstractBufferContainer {
 	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
 	 * allocates the input buffers, otherwise allocates output buffers.
 	 */
-	public void allocateVertexBuffers(DAGVertex vertex,
-			boolean isInputBuffer) {
+	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
 
 		Iterator<DAGEdge> eIterator;
 
@@ -241,7 +264,7 @@ public abstract class AbstractBufferContainer {
 
 		return null;
 	}
-	
+
 	/**
 	 * Gets the buffers corresponding to the given edge from its aggregate
 	 */
@@ -276,11 +299,11 @@ public abstract class AbstractBufferContainer {
 
 		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
 				.getValue(BufferAggregate.propertyBeanName);
-		if(agg != null){
+		if (agg != null) {
 			Set<Buffer> bufferSet = getBuffers(agg);
 			return bufferSet;
 		}
-		return null ;
+		return null;
 	}
 
 	/**
@@ -302,9 +325,10 @@ public abstract class AbstractBufferContainer {
 		return semaphoreContainer;
 	}
 
-	public AbstractBufferContainer getParentContainer(){
-		return parentContainer ;
+	public AbstractBufferContainer getParentContainer() {
+		return parentContainer;
 	}
+
 	@Override
 	public String toString() {
 		String code = "";

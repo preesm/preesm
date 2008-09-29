@@ -5,7 +5,7 @@ import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 public class SubBuffer extends Buffer{
 	
 	private Buffer parentBuffer ;
-	private String index ;
+	private Variable index ;
 
 	public SubBuffer(String name, Integer size, DataType type,
 			BufferAggregate aggregate) {
@@ -20,11 +20,11 @@ public class SubBuffer extends Buffer{
 		return parentBuffer ;
 	}
 	
-	public void setIndex(String index){
+	public void setIndex(Variable index){
 		this.index = index ;
 	}
 	
-	public String getIndex(){
+	public Variable getIndex(){
 		return index ;
 	}
 
