@@ -37,6 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.task;
 
+import org.jgrapht.graph.AbstractGraph;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
 public interface IExporter extends ITask{
@@ -46,6 +50,10 @@ public interface IExporter extends ITask{
 	 * @param algorithm The algorithm to export
 	 * @param params The parameters rulling the exportation
 	 */
-	public void transform(SDFGraph algorithm, TextParameters params);
+	public void transform(AbstractGraph algorithm, TextParameters params);
+
+	public boolean isSDFExporter();
+	
+	public boolean isDAGExporter();
 
 }

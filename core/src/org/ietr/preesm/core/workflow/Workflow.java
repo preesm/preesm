@@ -48,6 +48,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorRegistry;
@@ -71,9 +72,9 @@ import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 import org.jgrapht.DirectedGraph;
+import org.sdf4j.model.AbstractGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
-import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -138,7 +139,7 @@ public class Workflow {
 			Map<String, String> envVars) {
 
 		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
-		int numberOfTasksDone = 0;
+		int numberOfTasksDone = 0;			
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		IArchitecture architecture = null;
@@ -149,7 +150,7 @@ public class Workflow {
 				workflow);
 		while (it.hasNext()) {
 			IWorkflowNode node = it.next();
-
+			
 			for (WorkflowEdge edge : workflow.incomingEdgesOf(node)) {
 				if (edge.getCarriedDataType().equals(WorkflowEdgeType.SDF)) {
 					sdf = edge.getCarriedData().getSDF();
@@ -272,9 +273,12 @@ public class Workflow {
 						monitor.worked(numberOfTasksDone);
 						// code translation
 						IExporter exporter = (IExporter) transformation;
-						exporter.getClass().getMethods()[0].getParameterTypes()[0].getClass().equals(DAGVertex.class);
 						
-						exporter.transform(sdf, parameters);
+						if(exporter.isSDFExporter())
+							exporter.transform(sdf, parameters);
+						else
+							exporter.transform(dag, parameters);
+						
 						IWorkspace workspace = ResourcesPlugin.getWorkspace();
 						try {
 							workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
@@ -282,8 +286,10 @@ public class Workflow {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						
+						Path path = new Path(parameters.getVariable("path"));
 						IResource resource = workspace.getRoot().findMember(
-								parameters.getVariable("path"));
+								path.toString());
 						if (resource != null) {
 							FileEditorInput input = new FileEditorInput(
 									(IFile) resource);

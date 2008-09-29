@@ -426,6 +426,26 @@ public class GanttPlotter extends ApplicationFrame {
 	}
 
 	/**
+	 * Starting point for the demonstration application.
+	 * 
+	 * @param args
+	 *            ignored.
+	 */
+	public static void plotInComposite(MapperDAG dag, IAbc simulator, Composite parent) {
+
+		GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
+				+ simulator.getFinalTime(), dag, simulator);
+
+	    Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
+	    parent.setLayout(new FillLayout());
+	    Frame frame = SWT_AWT.new_Frame(composite);
+	    frame.add(plot.getContentPane());
+
+	    parent.addPaintListener(plot.new SizePaintListener(composite,frame));
+		
+	}
+
+	/**
 	 * A demonstration application showing how to create a simple time series
 	 * chart. This example uses monthly data.
 	 * 
