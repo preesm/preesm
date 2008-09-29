@@ -312,9 +312,9 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(VariableAllocation element, int index) {
-		currentSource += element.getBuffer().getType().getTypeName();
+		currentSource += element.getVariable().getType().getTypeName();
 		currentSource += " ";
-		currentSource += element.getBuffer().toString();
+		currentSource += element.getVariable().toString();
 		currentSource += ";";
 	}
 
