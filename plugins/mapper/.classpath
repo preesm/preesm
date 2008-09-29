@@ -6,7 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.13.jar"/>
-	<classpathentry kind="lib" path="lib/jfreechart.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart.jar" sourcepath="/jfree"/>
 	<classpathentry kind="lib" path="lib/jetm.jar"/>
 	<classpathentry kind="lib" path="lib/jetm-optional.jar"/>
 	<classpathentry kind="output" path="bin"/>

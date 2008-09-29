@@ -110,7 +110,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		}
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.AccuratelyTimed);
+		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.LooselyTimed);
 
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		applet1.init(graph);

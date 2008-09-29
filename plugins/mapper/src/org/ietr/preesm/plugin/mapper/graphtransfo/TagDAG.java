@@ -99,7 +99,7 @@ public class TagDAG {
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.
 		SchedulingOrderManager orderMgr = new SchedulingOrderManager();
-		orderMgr.reconstructTotalOrderFromDAG(dag, dag);
+		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(new CommunicationRouter(architecture),orderMgr, true);
 		tvAdder.addTransferVertices(dag, new TransactionManager());
 		orderMgr.tagDAG(dag);

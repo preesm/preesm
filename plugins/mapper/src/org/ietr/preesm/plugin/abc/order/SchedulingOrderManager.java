@@ -255,6 +255,7 @@ public class SchedulingOrderManager {
 	 */
 	public void resetTotalOrder() {
 		totalOrder.clear();
+		schedules.clear();
 	}
 
 	/**
@@ -282,19 +283,20 @@ public class SchedulingOrderManager {
 	/**
 	 * Reconstructs the total order using the total order stored in DAG
 	 */
-	public void reconstructTotalOrderFromDAG(MapperDAG dag,
-			MapperDAG implementation) {
+	public void reconstructTotalOrderFromDAG(MapperDAG dag) {
 
 		resetTotalOrder();
 
-		ConcurrentSkipListSet<MapperDAGVertex> newTotalOrder = new ConcurrentSkipListSet<MapperDAGVertex>(
+		ConcurrentSkipListSet<DAGVertex> newTotalOrder = new ConcurrentSkipListSet<DAGVertex>(
 				new SchedulingOrderComparator());
 		
-		Iterator<DAGVertex> it = dag.vertexSet().iterator();
-		while(it.hasNext())
-			newTotalOrder.add((MapperDAGVertex)it.next());
+		newTotalOrder.addAll(dag.vertexSet());
 
-		totalOrder.addAll(newTotalOrder);
+		for(DAGVertex vertex:newTotalOrder){
+			addVertex((MapperDAGVertex) vertex);
+		}
+
+		
 	}
 
 	/**

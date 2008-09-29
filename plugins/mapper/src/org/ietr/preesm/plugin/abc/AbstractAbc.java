@@ -166,7 +166,7 @@ public abstract class AbstractAbc implements
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
 
-		orderManager.reconstructTotalOrderFromDAG(dag, implementation);
+		orderManager.reconstructTotalOrderFromDAG(implementation);
 
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
 				this.dag, this, true);

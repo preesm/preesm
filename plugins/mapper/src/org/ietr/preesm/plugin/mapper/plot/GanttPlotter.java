@@ -38,6 +38,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.plot;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
@@ -46,6 +48,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -83,6 +94,27 @@ import org.jfree.ui.RefineryUtilities;
  */
 public class GanttPlotter extends ApplicationFrame {
 
+	public class SizePaintListener implements PaintListener{
+
+		Composite composite;
+
+		Container frame;
+		
+		public SizePaintListener(Composite composite, Container frame) {
+			super();
+			this.composite = composite;
+			this.frame = frame;
+		}
+		
+		@Override
+		public void paintControl(PaintEvent e) {
+			// TODO Auto-generated method stub
+
+			frame.setSize(composite.getSize().x,composite.getSize().y);
+		}
+		
+	}
+	
 	/**
 	 * 
 	 */
@@ -325,6 +357,8 @@ public class GanttPlotter extends ApplicationFrame {
 
 		int test;
 
+
+		simulator.retrieveTotalOrder();
 		simulator.setDAG(dag);
 
 		test = simulator.getFinalTime(dag.getMapperDAGVertex("n1"));
@@ -347,9 +381,30 @@ public class GanttPlotter extends ApplicationFrame {
 		GanttPlotter plot = new GanttPlotter("Solution cost evolution", dag,
 				simulator);
 
-		plot.pack();
-		RefineryUtilities.centerFrameOnScreen(plot);
-		plot.setVisible(true);
+		//plot.pack();
+		//RefineryUtilities.centerFrameOnScreen(plot);
+		//plot.setVisible(true);
+		
+		Display display = Display.getDefault();
+		Shell shell = new Shell();
+	    Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.FILL);
+	    shell.setLayout(new FillLayout());
+	    Frame frame = SWT_AWT.new_Frame(composite);
+	    frame.add(plot.getContentPane());
+
+	    shell.addPaintListener(plot.new SizePaintListener(composite,frame));
+		
+	    shell.setText("test");
+	    shell.setSize(new Point(240, 460));
+
+	    shell.open();
+
+
+		while (!shell.isDisposed()) {
+
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
 
 	}
 
@@ -385,6 +440,7 @@ public class GanttPlotter extends ApplicationFrame {
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		chartPanel.setMouseZoomable(true, false);
 		setContentPane(chartPanel);
+
 	}
 
 	public void windowClosing(WindowEvent event){
