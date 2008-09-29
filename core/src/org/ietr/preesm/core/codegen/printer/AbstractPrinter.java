@@ -55,7 +55,10 @@ import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.CompoundCodeElement;
+import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
+import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
@@ -64,6 +67,7 @@ import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 
@@ -88,15 +92,27 @@ public abstract class AbstractPrinter {
 	public String getCurrentSource() {
 		return currentSource;
 	}
-	
+/*	public void visit(ICodeElement element, int index){
+		if(element instanceof Buffer){
+			visit((Buffer) element, index);
+		}else if(element instanceof CompoundCodeElement){
+			visit((CompoundCodeElement) element, index);
+		}else if(element instanceof FiniteForLoop){
+			visit((FiniteForLoop) element, index);
+		}else if(element instanceof ForLoop){
+			visit((ForLoop) element, index);
+		}
+	}*/
 	public abstract void visit(AbstractBufferContainer element, int index);
 	public abstract void visit(AbstractCodeContainer element, int index);
 	public abstract void visit(Buffer element, int index);
+	public abstract void visit(SubBuffer element, int index);
 	public abstract void visit(BufferAllocation element, int index);
 	public abstract void visit(AbstractCodeElement element, int index);
 	public abstract void visit(CommunicationFunctionCall element, int index);
 	public abstract void visit(ForLoop element, int index);
 	public abstract void visit(LinearCodeContainer element, int index);
+	public abstract void visit(FiniteForLoop element, int index);
 	public abstract void visit(Receive element, int index);
 	public abstract void visit(Semaphore element, int index);
 	public abstract void visit(SemaphorePend element, int index);

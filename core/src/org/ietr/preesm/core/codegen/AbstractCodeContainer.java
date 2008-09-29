@@ -45,8 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * An abstract code container within a thread contains code elements 
@@ -105,14 +104,14 @@ public abstract class AbstractCodeContainer {
 			codeElements.add(newElement);
 	}
 
-	public ICodeElement getCodeElement(DAGVertex vertex) {
+	public ICodeElement getCodeElement(AbstractVertex<?> vertex) {
 		
 		Iterator<ICodeElement> iterator = codeElements.iterator();
 		
 		while(iterator.hasNext()){
 			ICodeElement elt = iterator.next();
 
-			DAGVertex currentVertex = elt.getCorrespondingVertex();
+			AbstractVertex<?> currentVertex = elt.getCorrespondingVertex();
 			if(elt.getCorrespondingVertex() != null && currentVertex.equals(vertex)){
 				return elt;
 			}

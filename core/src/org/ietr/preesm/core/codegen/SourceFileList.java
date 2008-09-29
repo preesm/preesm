@@ -45,9 +45,7 @@ import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * A generated code is the gathering of source files, each

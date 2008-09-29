@@ -45,10 +45,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.AbstractEdge;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * Generated code consists primarily in a succession
@@ -64,7 +62,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 */
 	private Set<Buffer> availableBuffers;
 
-	public UserFunctionCall(String name, DAGVertex vertex, AbstractBufferContainer parentContainer) {
+	public UserFunctionCall(String name, AbstractVertex vertex, AbstractBufferContainer parentContainer) {
 		super(name,parentContainer, vertex);
 		
 		availableBuffers = new HashSet<Buffer>();
@@ -84,8 +82,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Adds to the function call all the buffers created by the vertex.
 	 */
-	public void addVertexBuffers(DAGVertex vertex){
-		
+	@SuppressWarnings("unchecked")
+	public void addVertexBuffers(AbstractVertex vertex){
 		addVertexBuffers(vertex,true);
 		addVertexBuffers(vertex,false);
 	}
@@ -93,9 +91,10 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Add input or output buffers for a vertex, depending on the direction
 	 */
-	public void addVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
+	@SuppressWarnings("unchecked")
+	public void addVertexBuffers(AbstractVertex vertex, boolean isInputBuffer) {
 
-		Iterator<DAGEdge> eIterator;
+		Iterator<AbstractEdge> eIterator;
 
 		if (isInputBuffer)
 			eIterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
@@ -104,7 +103,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		// Iteration on all the edges of each vertex belonging to ownVertices
 		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
+			AbstractEdge edge = eIterator.next();
 			
 			addBuffers(getParentContainer().getBuffers(edge));
 		}
@@ -145,6 +144,12 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 	
 	public void accept(AbstractPrinter printer) {
-		printer.visit(this,0); // Visit self
+		int i = 0 ;
+		AbstractBufferContainer contains = this.getParentContainer();
+		while(contains instanceof FiniteForLoop){
+			contains = ((FiniteForLoop) contains).getParentContainer();
+			 i ++ ;
+		}
+		printer.visit(this,i); // Visit self
 	}
 }

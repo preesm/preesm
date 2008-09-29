@@ -51,8 +51,6 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Source file to be executed on a given core. A source file contains Buffer

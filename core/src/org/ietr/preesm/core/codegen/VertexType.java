@@ -42,8 +42,6 @@ package org.ietr.preesm.core.codegen;
 
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Represents the type of a vertex in its propertybeans

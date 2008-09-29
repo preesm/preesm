@@ -43,7 +43,6 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Declaration of a communication thread for code generation. A communication

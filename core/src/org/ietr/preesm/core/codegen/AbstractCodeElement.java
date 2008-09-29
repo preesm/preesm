@@ -41,8 +41,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 
 
@@ -57,7 +57,8 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	/**
 	 * The vertex generating this function call
 	 */
-	private DAGVertex correspondingVertex;
+	@SuppressWarnings("unchecked")
+	private AbstractVertex correspondingVertex;
 	
 	private String name;
 
@@ -67,7 +68,8 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	private AbstractBufferContainer parentContainer;
 
 
-	public AbstractCodeElement(String name,AbstractBufferContainer parentContainer, DAGVertex correspondingVertex) {
+	@SuppressWarnings("unchecked")
+	public AbstractCodeElement(String name,AbstractBufferContainer parentContainer, AbstractVertex correspondingVertex) {
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
@@ -77,7 +79,8 @@ public abstract class AbstractCodeElement implements ICodeElement {
 		printer.visit(this,0); // Visit self
 	}
 
-	public DAGVertex getCorrespondingVertex() {
+	@SuppressWarnings("unchecked")
+	public AbstractVertex getCorrespondingVertex() {
 		return correspondingVertex;
 	}
 

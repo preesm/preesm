@@ -44,8 +44,6 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Special function call posting a semaphore

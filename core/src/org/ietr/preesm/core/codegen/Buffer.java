@@ -153,7 +153,6 @@ public class Buffer {
 	
 	@Override
 	public String toString() {
-
 		return getName();
 	}
 

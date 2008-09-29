@@ -41,7 +41,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * Generated code within threads consists primarily in a succession
@@ -54,5 +54,5 @@ public interface ICodeElement {
 	
 	public void accept(AbstractPrinter printer);
 	
-	public DAGVertex getCorrespondingVertex();
+	public AbstractVertex<?> getCorrespondingVertex();
 }

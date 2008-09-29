@@ -46,8 +46,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Declaration of a communication thread for code generation. 
@@ -140,18 +138,17 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices){
 		
 		Iterator<DAGVertex> iterator = vertices.iterator();
-		
 		while(iterator.hasNext()){
 			DAGVertex vertex = iterator.next();
 			
 
-			UserFunctionCall beginningCall = new UserFunctionCall("init_" + vertex.getName(), vertex, this);
+			ICodeElement beginningCall = new UserFunctionCall("init_" + vertex.getName(), vertex, this);
 			beginningCode.addCodeElement(beginningCall);
 			
-			UserFunctionCall loopCall = new UserFunctionCall(vertex.getName(), vertex, this);
+			ICodeElement loopCall = CodeElementFactory.createElement(vertex.getName(), this, vertex);
 			loopCode.addCodeElement(loopCall);
 
-			UserFunctionCall endCall = new UserFunctionCall("close_" + vertex.getName(), vertex, this);
+			ICodeElement endCall = new UserFunctionCall("close_" + vertex.getName(), vertex, this);
 			endCode.addCodeElement(endCall);
 			
 		}

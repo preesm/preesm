@@ -51,10 +51,9 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * A thread can contain buffer allocations as well as a source file (for static
@@ -242,7 +241,7 @@ public abstract class AbstractBufferContainer {
 
 		return null;
 	}
-
+	
 	/**
 	 * Gets the buffers corresponding to the given edge from its aggregate
 	 */
@@ -272,14 +271,16 @@ public abstract class AbstractBufferContainer {
 	/**
 	 * Gets the buffers corresponding to the given edge from its aggregate
 	 */
-	public Set<Buffer> getBuffers(DAGEdge edge) {
+	@SuppressWarnings("unchecked")
+	public Set<Buffer> getBuffers(AbstractEdge edge) {
 
 		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
 				.getValue(BufferAggregate.propertyBeanName);
-
-		Set<Buffer> bufferSet = getBuffers(agg);
-
-		return bufferSet;
+		if(agg != null){
+			Set<Buffer> bufferSet = getBuffers(agg);
+			return bufferSet;
+		}
+		return null ;
 	}
 
 	/**
@@ -301,6 +302,9 @@ public abstract class AbstractBufferContainer {
 		return semaphoreContainer;
 	}
 
+	public AbstractBufferContainer getParentContainer(){
+		return parentContainer ;
+	}
 	@Override
 	public String toString() {
 		String code = "";
