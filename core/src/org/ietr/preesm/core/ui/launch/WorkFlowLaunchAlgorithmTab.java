@@ -166,7 +166,7 @@ public class WorkFlowLaunchAlgorithmTab extends AbstractWorkFlowLaunchTab {
 	
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		workflowText.setText("");
+	
 	}
 
 	@Override
