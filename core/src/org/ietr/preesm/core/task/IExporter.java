@@ -37,11 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.task;
 
-import org.jgrapht.graph.AbstractGraph;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.AbstractGraph;
+
 
 public interface IExporter extends ITask{
 

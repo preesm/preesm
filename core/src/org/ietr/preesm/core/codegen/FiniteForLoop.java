@@ -51,14 +51,13 @@ import org.sdf4j.model.AbstractVertex;
 public class FiniteForLoop extends AbstractBufferContainer implements
 		ICodeElement {
 
-	private static List<Variable> indexs ;
 	@SuppressWarnings("unchecked")
 	private Map<AbstractEdge, Buffer> buffers ;
 	
 	private int startIndex ;
 	private int stopIndex;
 	private int increment;
-	private Variable index ;
+	private LoopIndex index ;
 	private AbstractVertex<?> vertexDescription ;
 	private List<ICodeElement> calls ;
 	
@@ -71,15 +70,21 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		vertexDescription = vertex ;
 		calls = new ArrayList<ICodeElement>() ;
 		buffers = new HashMap<AbstractEdge, Buffer>();
-		if(indexs == null){
-			indexs = new ArrayList<Variable>() ;
-			index = new Variable("i0", new DataType("int"));
-			indexs.add(index);
-		}else{
-			index = new Variable("i"+indexs.size()+1, new DataType("int"));
-			indexs.add(index);
+		for(VariableAllocation varDecl : parentContainer.getVariables()){
+			if(varDecl.getVariable() instanceof LoopIndex){
+				index = (LoopIndex) varDecl.getVariable();
+			}
 		}
-		parentContainer.addVariable(index);
+		if(index == null){
+			if(parentContainer instanceof FiniteForLoop){
+				char indexName = ((FiniteForLoop) parentContainer).getIndex().getNameAsChar();
+				indexName = (char) ((int) indexName ++);
+				index = new LoopIndex(indexName, new DataType("int"));
+			}else{
+				index = new LoopIndex('i', new DataType("int"));
+				parentContainer.addVariable(index);
+			}
+		}
 		for(AbstractEdge edge : ((AbstractVertex<AbstractGraph<AbstractVertex, AbstractEdge>>) vertexDescription).getBase().edgesOf(vertex)){
 			for(Buffer buf : parentContainer.getBuffers(edge)){
 				SubBuffer subBuff = new SubBuffer(buf.getName(), buf.getSize(), buf.getType(), buf.getAggregate()) ;
@@ -162,7 +167,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		return increment ;
 	}
 	
-	public Variable getIndex(){
+	public LoopIndex getIndex(){
 		return index ;
 	}
 	

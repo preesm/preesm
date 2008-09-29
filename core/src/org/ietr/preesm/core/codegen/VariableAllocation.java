@@ -55,7 +55,7 @@ public class VariableAllocation {
 		printer.visit(this, 0);
 	}
 
-	public Variable getBuffer() {
+	public Variable getVariable() {
 		return var;
 	}
 
