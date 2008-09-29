@@ -40,23 +40,17 @@ knowledge of the CeCILL-B license and that you accept its terms.
  */
 package org.ietr.preesm.plugin.codegen.print;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
@@ -65,7 +59,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
@@ -273,6 +267,21 @@ public class PCPrinter extends AbstractPrinter {
 		} else if (index == 1) {
 			currentSource += ");";
 		}
+	}
+	
+	@Override
+	public void visit(FiniteForLoop element, int index) {
+		if (index == 0) {
+			currentSource +="for(i=0"+element.getStartIndex()+"; i < "+element.getStopIndex()+" ; i+="+element.getIncrement()+"){\n";
+		} else if (index == 1) {
+			currentSource += "}\n";
+		}
+	}
+
+	@Override
+	public void visit(SubBuffer element, int index) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

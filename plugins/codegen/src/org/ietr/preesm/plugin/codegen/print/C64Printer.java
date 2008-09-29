@@ -40,23 +40,19 @@ knowledge of the CeCILL-B license and that you accept its terms.
  */
 package org.ietr.preesm.plugin.codegen.print;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
@@ -65,7 +61,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
@@ -221,6 +217,11 @@ public class C64Printer extends AbstractPrinter {
 
 	@Override
 	public void visit(UserFunctionCall element, int index) {
+		if(element.getParentContainer() instanceof FiniteForLoop){
+			for(int i = 0 ; i < index+1 ; i ++){
+				currentSource += "\t";
+			}
+		}
 		currentSource += element.getName() + "(";
 		
 		ConcurrentSkipListSet<Buffer> listset = new ConcurrentSkipListSet<Buffer>(new AlphaOrderComparator());
@@ -229,9 +230,11 @@ public class C64Printer extends AbstractPrinter {
 		
 		while(iterator.hasNext()){
 			Buffer buf = iterator.next();
-			
-			visit(buf,0); // Accept the code container
-			
+			if(buf instanceof SubBuffer){
+				visit((SubBuffer) buf,0); // Accept the code container
+			}else{
+				visit(buf,0); // Accept the code container
+			}
 			if(iterator.hasNext())
 				currentSource += ",";
 		}
@@ -274,5 +277,29 @@ public class C64Printer extends AbstractPrinter {
 			currentSource += ");";
 		}
 	}
+
+	@Override
+	public void visit(FiniteForLoop element, int index) {
+		if (index == 0) {
+			currentSource +="for("+element.getIndex()+"="+element.getStartIndex()+"; "+element.getIndex()+" < "+element.getStopIndex()+" ; "+element.getIndex()+"+="+element.getIncrement()+"){\n";
+		} else if (index == 1) {
+			currentSource += "\n\t}";
+		}
+	}
+
+	@Override
+	public void visit(SubBuffer element, int index) {
+		Buffer topElement = element ;
+		List<SubBuffer> hierarchy = new ArrayList<SubBuffer>() ;
+		while(topElement instanceof SubBuffer){
+			hierarchy.add((SubBuffer)topElement);
+			topElement = ((SubBuffer)topElement).getParentBuffer();
+		}
+		currentSource += topElement.getName();
+		for(int i = hierarchy.size()-1 ; i >= 0 ; i --){
+			currentSource += "["+hierarchy.get(i).getIndex()+"] ";
+		}
+	}
+
 
 }

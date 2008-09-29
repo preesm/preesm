@@ -49,7 +49,8 @@ public class LoopPipelining implements IGraphTransformation{
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
 		SDFGraph inGraph = algorithm.clone();
 		SimplePipeline pipeliner = new SimplePipeline();
-		pipeliner.extractPipeline(inGraph);
+		String nbClust = params.getVariable("nbCluster") ;
+		pipeliner.extractPipeline(inGraph, Integer.decode(nbClust));
 		TaskResult result = new TaskResult();
 		result.setSDF(inGraph);
 		return result;

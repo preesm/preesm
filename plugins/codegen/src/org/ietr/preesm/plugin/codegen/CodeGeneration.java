@@ -57,7 +57,6 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.codegen.print.C64Printer;
 import org.ietr.preesm.plugin.codegen.print.PrinterChooser;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;

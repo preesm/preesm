@@ -51,7 +51,6 @@ import java.util.logging.Level;
 
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
@@ -126,6 +125,7 @@ public class PrinterChooser {
 						new File(filePath)), true);
 				writer.print(code);
 				writer.flush();
+				writer.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
