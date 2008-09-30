@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
@@ -66,13 +65,12 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * Architecture simulators common features An architecture simulator
- * calculates costs for a given partial or total implementation
+ * Architecture simulators common features An architecture simulator calculates
+ * costs for a given partial or total implementation
  * 
  * @author mpelcat
  */
-public abstract class AbstractAbc implements
-		IAbc {
+public abstract class AbstractAbc implements IAbc {
 
 	/**
 	 * Architecture related to the current simulator
@@ -89,7 +87,6 @@ public abstract class AbstractAbc implements
 	 */
 	protected MapperDAG dag;
 
-
 	/**
 	 * Current implementation: the internal model that will be used to add
 	 * edges/vertices and calculate times
@@ -105,14 +102,13 @@ public abstract class AbstractAbc implements
 	/**
 	 * Transactions are used to add/remove vertices in the implementation
 	 */
-	protected TransactionManager transactionManager =  new TransactionManager();
+	protected TransactionManager transactionManager = new TransactionManager();
 
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(
-			ArchitectureSimulatorType simulatorType, MapperDAG dag,
-			IArchitecture archi) {
+	public static IAbc getInstance(ArchitectureSimulatorType simulatorType,
+			MapperDAG dag, IArchitecture archi) {
 
 		if (simulatorType == ArchitectureSimulatorType.InfiniteHomogeneous) {
 			return new InfiniteHomogeneousAbc(dag, archi);
@@ -122,7 +118,7 @@ public abstract class AbstractAbc implements
 			return new ApproximatelyTimedAbc(dag, archi);
 		} else if (simulatorType == ArchitectureSimulatorType.AccuratelyTimed) {
 			return new AccuratelyTimedAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.FpgaSched) {
+		} else if (simulatorType == ArchitectureSimulatorType.CommunicationContentious) {
 			return new FpgaSchedAbc(dag, archi);
 		} else if (simulatorType == ArchitectureSimulatorType.SendReceive) {
 			return new SendReceiveAbc(dag, archi);
@@ -153,7 +149,7 @@ public abstract class AbstractAbc implements
 	public MapperDAG getDAG() {
 		return dag;
 	}
-	
+
 	/**
 	 * Sets the DAG as current DAG and retrieves all implementation to calculate
 	 * timings
@@ -322,7 +318,7 @@ public abstract class AbstractAbc implements
 
 			ImplementationVertexProperty impprop = impvertex
 					.getImplementationVertexProperty();
-			
+
 			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
 
 				// Vertex schedule order is reset but not total order
@@ -379,7 +375,8 @@ public abstract class AbstractAbc implements
 
 		boolean possible = true;
 		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(implementation);
+		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
+				implementation);
 
 		/*
 		 * The listener is implanted in each vertex
@@ -431,7 +428,7 @@ public abstract class AbstractAbc implements
 
 		while (iterator.hasNext()) {
 
-			MapperDAGEdge edge = (MapperDAGEdge)iterator.next();
+			MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
 			if (!(edge instanceof PrecedenceEdge))
 				edge.getTimingEdgeProperty().resetCost();
 		}
@@ -443,7 +440,8 @@ public abstract class AbstractAbc implements
 	private final MapperDAGVertex translateInImplementationVertex(
 			MapperDAGVertex vertex) {
 
-		MapperDAGVertex internalVertex = implementation.getMapperDAGVertex(vertex.getName());
+		MapperDAGVertex internalVertex = implementation
+				.getMapperDAGVertex(vertex.getName());
 
 		if (internalVertex == null) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
@@ -457,9 +455,9 @@ public abstract class AbstractAbc implements
 	 */
 	private final MapperDAGEdge translateInImplantationEdge(MapperDAGEdge edge) {
 
-		MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex)edge
+		MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex) edge
 				.getSource());
-		MapperDAGVertex destVertex = translateInImplementationVertex((MapperDAGVertex)edge
+		MapperDAGVertex destVertex = translateInImplementationVertex((MapperDAGVertex) edge
 				.getTarget());
 
 		if (destVertex == null || sourceVertex == null) {
@@ -468,8 +466,8 @@ public abstract class AbstractAbc implements
 					"Implantation vertex with id " + edge.getSource() + " or "
 							+ edge.getTarget() + " not found");
 		} else {
-			MapperDAGEdge internalEdge = (MapperDAGEdge)implementation.getEdge(sourceVertex,
-					destVertex);
+			MapperDAGEdge internalEdge = (MapperDAGEdge) implementation
+					.getEdge(sourceVertex, destVertex);
 			return internalEdge;
 		}
 

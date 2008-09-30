@@ -34,51 +34,45 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.fpgasched;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling;
+
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.mapper.AbstractParameters;
 
 /**
- * Prepared for Fpga scheduling ABC
- * 
- * @author mpelcat
  */
-public class FpgaSchedAbc extends
-AbstractAbc {
 
-	public FpgaSchedAbc(MapperDAG dag, IArchitecture archi) {
-		super(dag, archi);
-		// TODO Auto-generated constructor stub
-	}
+public class CommunicationContentiousListSchedulingParameters extends AbstractParameters {
 
-	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
-		// TODO Called whenever a vertex is implanted
-		// Call here your edge scheduling and specific vertices adder (via transactions)
+
+	/**
+	 * Simulator type
+	 */
+	private ArchitectureSimulatorType simulatorType;
+
+	public CommunicationContentiousListSchedulingParameters(TextParameters textParameters) {
+		super(textParameters);
 		
+		this.simulatorType = ArchitectureSimulatorType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
-	@Override
-	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
-		// TODO Called whenever a vertex is unimplanted
-		
+	/**
+	 * 
+	 * Constructors
+	 * 
+	 */
+
+	public CommunicationContentiousListSchedulingParameters(int maxCount, int maxStep, int margIn,
+			ArchitectureSimulatorType simulatorType) {
+		super();
+
 	}
 
-	@Override
-	protected void setEdgeCost(MapperDAGEdge edge) {
-		// TODO Called from your own fireNewMappedVertex when necessary to set the cost of
-		// edges during simulation
-		
+	public ArchitectureSimulatorType getSimulatorType() {
+		return simulatorType;
 	}
 
-	@Override
-	protected void updateTimings() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

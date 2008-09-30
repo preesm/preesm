@@ -34,33 +34,52 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper;
+package org.ietr.preesm.plugin.abc.communicationcontentious;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
-import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.plugin.abc.AbstractAbc;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Class calling a tranformation for FPGA scheduling
+ * Prepared for communication contentious list scheduling ABC
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class FpgaSchedTransformation extends AbstractMapping {
+public class CommunicationContentiousAbc extends AbstractAbc {
 
-	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) {
-		// TODO Auto-generated method stub
-		
+	public CommunicationContentiousAbc(MapperDAG dag, IArchitecture archi) {
+		super(dag, archi);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
-			TextParameters textParameters, IScenario scenatio) {
-		// TODO Add here the calls to your task scheduling algorithm
-		// in which you ask fpgaschedabc for implementation evaluations
-		return null;
+	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+		// TODO Called whenever a vertex is implanted
+		// Call here your edge scheduling and specific vertices adder (via
+		// transactions)
+
+	}
+
+	@Override
+	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
+		// TODO Called whenever a vertex is unimplanted
+
+	}
+
+	@Override
+	protected void setEdgeCost(MapperDAGEdge edge) {
+		// TODO Called from your own fireNewMappedVertex when necessary to set
+		// the cost of
+		// edges during simulation
+
+	}
+
+	@Override
+	protected void updateTimings() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

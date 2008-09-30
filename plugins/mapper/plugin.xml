@@ -29,9 +29,9 @@
             type="org.ietr.preesm.plugin.mapper.StandardGeneticTransformation">
       </task>
       <task
-            id="org.ietr.preesm.plugin.mapper.fpgasched"
-            name="fpga scheduler"
-            type="org.ietr.preesm.plugin.mapper.FpgaSchedTransformation">
+            id="org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling"
+            name="communication contentious list scheduler"
+            type="org.ietr.preesm.plugin.mapper.CommunicationContentiousListSchedulingTransformation">
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.plot.GanttExporter"

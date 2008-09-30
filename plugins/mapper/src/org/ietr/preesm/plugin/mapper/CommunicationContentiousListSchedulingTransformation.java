@@ -34,69 +34,48 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-/**
- * 
- */
-package org.ietr.preesm.plugin.abc;
+package org.ietr.preesm.plugin.mapper;
+
+import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.task.TaskResult;
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CommunicationContentiousListSchedulingParameters;
+import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Types of simulator to be used in parameters
+ * Class calling a tranformation for communication contentious list scheduling
  * 
- * @author mpelcat
+ * @author pmu
  */
-public enum ArchitectureSimulatorType {
-
-	InfiniteHomogeneous,
-
-	LooselyTimed,
-
-	ApproximatelyTimed,
-
-	AccuratelyTimed,
-
-	CommunicationContentious,
-
-	SendReceive;
+public class CommunicationContentiousListSchedulingTransformation extends
+		AbstractMapping {
 
 	@Override
-	public String toString() {
+	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) {
+		// TODO Auto-generated method stub
 
-		if (this == InfiniteHomogeneous) {
-			return "InfiniteHomogeneous";
-		} else if (this == LooselyTimed) {
-			return "LooselyTimed";
-		} else if (this == ApproximatelyTimed) {
-			return "ApproximatelyTimed";
-		} else if (this == AccuratelyTimed) {
-			return "AccuratelyTimed";
+	}
 
-		} else if (this == CommunicationContentious) {
-			return "CommunicationContentious";
+	@Override
+	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+			TextParameters textParameters, IScenario scenario) {
+		// TODO Add here the calls to your task scheduling algorithm
+		// in which you ask communicationcontentiouslistschedulingdabc for
+		// implementation evaluations
 
-		} else if (this == SendReceive) {
-			return "SendReceive";
+		CommunicationContentiousListSchedulingParameters parameters;
+		TaskResult result = new TaskResult();
 
-		}
+		parameters = new CommunicationContentiousListSchedulingParameters(
+				textParameters);
+
+		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
+				scenario, false);
 
 		return null;
 	}
 
-	public static ArchitectureSimulatorType fromString(String type) {
-
-		if (type.equalsIgnoreCase("InfiniteHomogeneous")) {
-			return InfiniteHomogeneous;
-		} else if (type.equalsIgnoreCase("LooselyTimed")) {
-			return LooselyTimed;
-		} else if (type.equalsIgnoreCase("ApproximatelyTimed")) {
-			return ApproximatelyTimed;
-		} else if (type.equalsIgnoreCase("AccuratelyTimed")) {
-			return AccuratelyTimed;
-		} else if (type.equalsIgnoreCase("CommunicationContentious")) {
-			return CommunicationContentious;
-		} else if (type.equalsIgnoreCase("SendReceive")) {
-			return SendReceive;
-		}
-
-		return null;
-	}
 }
