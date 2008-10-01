@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc">
+      <desc>java.lang.String</desc>
+   </key>
+   <key attr.name="arguments" for="node" id="arguments"/>
+   <key attr.name="parameters" for="graph" id="parameters"/>
+   <key attr.name="variables" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="parameters"/>
+      <data key="variables"/>
+      <node id="readBlock" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="idct1d" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="transpose" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="clip" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="trigger" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <edge source="readBlock" sourceport="block" target="idct1d" targetport="row_in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+      </edge>
+      <edge source="idct1d" sourceport="row_out" target="transpose" targetport="block_in">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+      </edge>
+      <edge source="transpose" sourceport="block_out" target="readBlock" targetport="block_in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+      </edge>
+      <edge source="transpose" sourceport="block_out" target="clip" targetport="double_block">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">128</data>
+      </edge>
+      <edge source="trigger" sourceport="fire" target="readBlock" targetport="fire">
+         <data key="edge_prod">4</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+      </edge>
+   </graph>
+</graphml>
