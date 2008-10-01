@@ -70,7 +70,6 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.sdf.SDFAbstractGraph;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -208,7 +207,7 @@ public class FASTTransformation extends AbstractMapping {
 	 */
 	public SDFAbstractVertex addComVertices(SDFAbstractVertex v1, SDFAbstractVertex v2, Medium medium,Operator sendOp,Operator receiveOp, int schedulingOrder) {
 
-		SDFAbstractGraph graph = v1.getBase();
+		SDFGraph graph = v1.getBase();
 
 		SDFEdge originalEdge = graph.getEdge(v1, v2);
 		Object aggregate = originalEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);

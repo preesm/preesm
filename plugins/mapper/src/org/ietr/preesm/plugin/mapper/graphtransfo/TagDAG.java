@@ -57,9 +57,11 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
+import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation
@@ -163,8 +165,10 @@ public class TagDAG {
 
 		// Example buffer aggregate with one single buffer
 		BufferAggregate agg = new BufferAggregate();
-		agg.add(new BufferProperties(type, "out", "in", size));
-
+		for(AbstractEdge aggMember : edge.getAggregate()){
+			SDFEdge sdfAgMember = (SDFEdge) aggMember ;
+			agg.add(new BufferProperties(type, sdfAgMember.getSourceInterface().getName(), sdfAgMember.getTargetInterface().getName(), size));
+		}
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 	}
 
