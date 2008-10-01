@@ -289,7 +289,8 @@ public class Workflow {
 						
 						Path path = new Path(parameters.getVariable("path"));
 						IResource resource = workspace.getRoot().findMember(
-								path.toString());
+								path.toOSString());
+
 						if (resource != null) {
 							FileEditorInput input = new FileEditorInput(
 									(IFile) resource);

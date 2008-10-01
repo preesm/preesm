@@ -56,7 +56,7 @@ public class CodeElementFactory {
 			return new UserFunctionCall(name, vertex, parentContainer);
 		} else if (vertex.getCorrespondingSDFVertex().getGraphDescription() != null
 				&& vertex.getNbRepeat().intValue() > 1) {
-			SDFGraph graph = vertex.getCorrespondingSDFVertex()
+			SDFGraph graph = (SDFGraph) vertex.getCorrespondingSDFVertex()
 					.getGraphDescription();
 			FiniteForLoop loop = new FiniteForLoop(parentContainer, vertex, vertex.getNbRepeat().intValue());
 			for (SDFAbstractVertex child : graph.vertexSet()) {
@@ -65,7 +65,7 @@ public class CodeElementFactory {
 			}
 			return loop;
 		} else {
-			SDFGraph graph = vertex.getCorrespondingSDFVertex()
+			SDFGraph graph = (SDFGraph) vertex.getCorrespondingSDFVertex()
 					.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, vertex);
@@ -83,7 +83,7 @@ public class CodeElementFactory {
 			return new UserFunctionCall(name, vertex, parentContainer);
 		} else if (vertex.getGraphDescription() != null
 				&& vertex.getBase().getVRB().get(vertex) > 1) {
-			SDFGraph graph = vertex.getGraphDescription();
+			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
 					(SDFVertex) vertex, vertex.getBase().getVRB().get(vertex)) ;
 			for (SDFAbstractVertex child : graph.vertexSet()) {
@@ -92,7 +92,7 @@ public class CodeElementFactory {
 			}
 			return loop;
 		} else {
-			SDFGraph graph = vertex.getGraphDescription();
+			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, (SDFVertex) vertex);
 			for (SDFAbstractVertex child : graph.vertexSet()) {
