@@ -11,6 +11,9 @@
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
+      <data key="variables">
+         <variable name="sourcePath" value="${CodeGenSourcePath}"/>
+      </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">
       <data key="variables">
@@ -20,8 +23,17 @@
          <variable name="maxCount" value="400"/>
       </data>
    </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
+      <data key="variables">
+         <variable name="path" value="D:/IDCT2D/dag.gantt"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="__algorithm" sourceport="src port" targetport="SDF" to="Mapper"/>
    <preesm:dataTransfer from="Mapper" sourceport="DAG" targetport="DAG" to="CodeGen"/>
    <preesm:dataTransfer from="__scenario" sourceport="src port" targetport="scenario" to="Mapper"/>
    <preesm:dataTransfer from="__architecture" sourceport="src port" targetport="architecture" to="Mapper"/>
+   <preesm:dataTransfer from="Mapper" sourceport="DAG" targetport="DAG" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAG Plotter"/>
 </preesm:workflow>

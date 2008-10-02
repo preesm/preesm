@@ -263,7 +263,7 @@ public class Workflow {
 						sourceFiles = nodeResult.getSourcefilelist();
 
 						// Updates the workspace to show the generated files
-						updateWorkspace(monitor);
+						//updateWorkspace(monitor);
 						
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");

@@ -40,15 +40,26 @@ knowledge of the CeCILL-B license and that you accept its terms.
  */
 package org.ietr.preesm.plugin.codegen.print;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.eclipse.core.internal.resources.Folder;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
@@ -105,11 +116,12 @@ public class PrinterChooser {
 	public void print(SourceFile file) {
 		Operator operator = file.getOperator();
 		String fileName = operator.getName();
-		Path path = new Path(directory);
-		String filePath = path.toString() + "/" + fileName + ".c";
+		IPath path = new Path(directory);
+		path = path.append(fileName + ".c");
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 		AbstractPrinter printer = getPrinter(operator);
-
 		if (printer == null) {
 			PreesmLogger.getLogger().log(
 					Level.SEVERE,
@@ -119,16 +131,15 @@ public class PrinterChooser {
 			file.accept(printer);
 
 			String code = printer.getCurrentSource();
-
+			
+			IFile iFile = workspace.getRoot().getFile(path);
 			try {
-				PrintWriter writer = new PrintWriter(new FileOutputStream(
-						new File(filePath)), true);
-				writer.print(code);
-				writer.flush();
-				writer.close();
-			} catch (FileNotFoundException e) {
+				iFile.create(new ByteArrayInputStream(code.getBytes()) ,
+				       true,
+				       new NullProgressMonitor());
+			} catch (CoreException e1) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
 		}
 	}
