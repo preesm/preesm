@@ -262,6 +262,9 @@ public class Workflow {
 								parameters);
 						sourceFiles = nodeResult.getSourcefilelist();
 
+						// Updates the workspace to show the generated files
+						updateWorkspace(monitor);
+						
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
 						numberOfTasksDone++;
@@ -282,14 +285,7 @@ public class Workflow {
 						else
 							exporter.transform(dag,sdf,architecture,scenario, parameters);
 						
-						IWorkspace workspace = ResourcesPlugin.getWorkspace();
-						try {
-							workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
-						} catch (CoreException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
+						IWorkspace workspace = updateWorkspace(monitor);
 						Path path = new Path(parameters.getVariable("path"));
 						IResource resource = workspace.getRoot().findMember(
 								path.toOSString());
@@ -359,6 +355,19 @@ public class Workflow {
 		}
 		PlatformUI.getWorkbench().getDisplay().asyncExec(
 				new OpenWorkflowOutput(input, editor.getId()));
+	}
+	
+	private IWorkspace updateWorkspace(IProgressMonitor monitor){
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		try {
+			workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return workspace;
 	}
 
 }

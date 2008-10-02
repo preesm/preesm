@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.ietr.preesm.plugin.codegen;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.ietr.preesm.plugin.codegen.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.preesm.core
+ org.ietr.preesm.core,
+ org.eclipse.core.resources;bundle-version="3.4.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

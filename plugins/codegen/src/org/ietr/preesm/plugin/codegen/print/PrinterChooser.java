@@ -106,7 +106,7 @@ public class PrinterChooser {
 		Operator operator = file.getOperator();
 		String fileName = operator.getName();
 		Path path = new Path(directory);
-		String filePath = path.toString() + "\\" + fileName + ".c";
+		String filePath = path.toString() + "/" + fileName + ".c";
 
 		AbstractPrinter printer = getPrinter(operator);
 
