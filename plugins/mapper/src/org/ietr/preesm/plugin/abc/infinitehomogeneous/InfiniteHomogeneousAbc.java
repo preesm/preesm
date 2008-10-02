@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -177,5 +178,9 @@ public class InfiniteHomogeneousAbc extends
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
+	}
+
+	public AbcType getType(){
+		return AbcType.InfiniteHomogeneous;
 	}
 }

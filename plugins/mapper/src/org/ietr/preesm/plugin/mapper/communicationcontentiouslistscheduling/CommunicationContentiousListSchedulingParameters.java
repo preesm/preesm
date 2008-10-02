@@ -38,7 +38,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
 
 /**
@@ -50,12 +50,12 @@ public class CommunicationContentiousListSchedulingParameters extends AbstractPa
 	/**
 	 * Simulator type
 	 */
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	public CommunicationContentiousListSchedulingParameters(TextParameters textParameters) {
 		super(textParameters);
 		
-		this.simulatorType = ArchitectureSimulatorType.fromString(textParameters.getVariable("simulatorType"));
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
 	/**
@@ -65,12 +65,12 @@ public class CommunicationContentiousListSchedulingParameters extends AbstractPa
 	 */
 
 	public CommunicationContentiousListSchedulingParameters(int maxCount, int maxStep, int margIn,
-			ArchitectureSimulatorType simulatorType) {
+			AbcType simulatorType) {
 		super();
 
 	}
 
-	public ArchitectureSimulatorType getSimulatorType() {
+	public AbcType getSimulatorType() {
 		return simulatorType;
 	}
 

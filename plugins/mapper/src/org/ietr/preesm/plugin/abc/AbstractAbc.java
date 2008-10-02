@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.accuratelytimed.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.approximatelytimed.ApproximatelyTimedAbc;
-import org.ietr.preesm.plugin.abc.fpgasched.FpgaSchedAbc;
+import org.ietr.preesm.plugin.abc.communicationcontentious.CommunicationContentiousAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
@@ -57,6 +57,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
@@ -72,6 +74,11 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public abstract class AbstractAbc implements IAbc {
 
+	/**
+	 * ID used to reference the element in a property bean in case of a computation vertex
+	 */
+	public static final String propertyBeanName = "AbcReferenceType";
+	
 	/**
 	 * Architecture related to the current simulator
 	 */
@@ -107,20 +114,20 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(ArchitectureSimulatorType simulatorType,
+	public static IAbc getInstance(AbcType simulatorType,
 			MapperDAG dag, IArchitecture archi) {
 
-		if (simulatorType == ArchitectureSimulatorType.InfiniteHomogeneous) {
+		if (simulatorType == AbcType.InfiniteHomogeneous) {
 			return new InfiniteHomogeneousAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.LooselyTimed) {
+		} else if (simulatorType == AbcType.LooselyTimed) {
 			return new LooselyTimedAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.ApproximatelyTimed) {
+		} else if (simulatorType == AbcType.ApproximatelyTimed) {
 			return new ApproximatelyTimedAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.AccuratelyTimed) {
+		} else if (simulatorType == AbcType.AccuratelyTimed) {
 			return new AccuratelyTimedAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.CommunicationContentious) {
-			return new FpgaSchedAbc(dag, archi);
-		} else if (simulatorType == ArchitectureSimulatorType.SendReceive) {
+		} else if (simulatorType == AbcType.CommunicationContentious) {
+			return new CommunicationContentiousAbc(dag, archi);
+		} else if (simulatorType == AbcType.SendReceive) {
 			return new SendReceiveAbc(dag, archi);
 		}
 
@@ -170,7 +177,7 @@ public abstract class AbstractAbc implements IAbc {
 		while (iterator.hasNext()) {
 			MapperDAGVertex vertex = iterator.next();
 			implant(vertex, vertex.getImplementationVertexProperty()
-					.getEffectiveOperator(), true);
+					.getEffectiveOperator(), false);
 		}
 	}
 
@@ -332,7 +339,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			}
 
-			if (isImplantable(impvertex, operator)) {
+			if (isImplantable(impvertex, operator) || impvertex instanceof TransferVertex) {
 
 				// Implantation property is set in both DAG and implementation
 				dagprop.setEffectiveOperator(operator);

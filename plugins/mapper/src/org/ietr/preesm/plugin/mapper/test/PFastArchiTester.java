@@ -51,8 +51,8 @@ import org.ietr.preesm.core.constraints.Timing;
 import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -163,13 +163,13 @@ public class PFastArchiTester {
 		logger.log(Level.FINEST, "Evaluating Pfast algo");
 		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-		ArchitectureSimulatorType simulatorType = null;
+		AbcType simulatorType = null;
 		if (choixsimu == 0)
-			simulatorType = ArchitectureSimulatorType.LooselyTimed;
+			simulatorType = AbcType.LooselyTimed;
 		if (choixsimu == 1)
-			simulatorType = ArchitectureSimulatorType.ApproximatelyTimed;
+			simulatorType = AbcType.ApproximatelyTimed;
 		if (choixsimu == 2)
-			simulatorType = ArchitectureSimulatorType.AccuratelyTimed;
+			simulatorType = AbcType.AccuratelyTimed;
 
 		dag = pfastAlgorithm.map(dag, archi, nboperator, 3, initial, 20, 20, 6,
 				simulatorType, false, 10, null);

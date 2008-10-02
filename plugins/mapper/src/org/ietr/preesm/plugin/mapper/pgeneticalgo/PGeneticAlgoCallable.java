@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -59,7 +59,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 
 	// Simulator chosen
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	// Architecture chosen
 	private IArchitecture architecture;
@@ -88,7 +88,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 */
 	public PGeneticAlgoCallable(IArchitecture architecture,
 			int generationNumber, List<Chromosome> population,
-			int populationSize, ArchitectureSimulatorType simulatorType,
+			int populationSize, AbcType simulatorType,
 			String threadName) {
 		super();
 		this.architecture = architecture;

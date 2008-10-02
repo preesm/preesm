@@ -60,8 +60,8 @@ import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
@@ -71,6 +71,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
 import org.jfree.ui.RefineryUtilities;
 
 /**
@@ -118,7 +119,7 @@ public class PFastAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, MapperDAG, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(ArchitectureSimulatorType type,
+		public FinalTimeComparator(AbcType type,
 				MapperDAG dag, IArchitecture archi) {
 			super();
 			this.simulator = AbstractAbc.getInstance(type,
@@ -290,7 +291,7 @@ public class PFastAlgorithm extends Observable {
 
 	public MapperDAG map(MapperDAG dag, IArchitecture archi, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
-			int margIn, ArchitectureSimulatorType simulatorType,
+			int margIn, AbcType simulatorType,
 			boolean population, int populationsize,
 			List<MapperDAG> populationList) {
 
@@ -328,9 +329,8 @@ public class PFastAlgorithm extends Observable {
 
 		if (!population) {
 			demo.setSUBPLOT_COUNT(1);
-			demo.pack();
-			RefineryUtilities.centerFrameOnScreen(demo);
-			demo.setVisible(true);
+			//demo.display();
+			TimeEditor.createEditor(demo);
 
 			this.addObserver(demo);
 		}
@@ -485,7 +485,7 @@ public class PFastAlgorithm extends Observable {
 
 		logger.log(Level.FINER, "Evaluating pfast algorithm ");
 		pfastAlgorithm.map(dag, archi, 1, 3, initial, 30, 30, 6,
-				ArchitectureSimulatorType.LooselyTimed, true, 10, null);
+				AbcType.LooselyTimed, true, 10, null);
 
 		logger.log(Level.FINER, "Test finished");
 

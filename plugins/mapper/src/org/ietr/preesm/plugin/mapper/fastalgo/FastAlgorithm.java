@@ -58,14 +58,15 @@ import org.ietr.preesm.core.constraints.Timing;
 import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
@@ -140,13 +141,13 @@ public class FastAlgorithm extends Observable {
 		logger.log(Level.FINEST, "Evaluating fast algo");
 		FastAlgorithm algorithm = new FastAlgorithm();
 
-		dag = algorithm.map("test", ArchitectureSimulatorType.LooselyTimed,
+		dag = algorithm.map("test", AbcType.LooselyTimed,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 5, false, true, null);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, dag, archi);
+				.getInstance(AbcType.LooselyTimed, dag, archi);
 
 		simu2.setDAG(dag);
 		logger.log(Level.FINER, "Displaying dag implanted 2");
@@ -188,7 +189,7 @@ public class FastAlgorithm extends Observable {
 	 */
 
 	public MapperDAG map(String threadName,
-			ArchitectureSimulatorType simulatorType, MapperDAG dag,
+			AbcType simulatorType, MapperDAG dag,
 			IArchitecture archi, List<MapperDAGVertex> CpnDominantList,
 			List<MapperDAGVertex> BlockingNodesList,
 			List<MapperDAGVertex> FinalcriticalpathList, int MAXCOUNT,
@@ -201,9 +202,8 @@ public class FastAlgorithm extends Observable {
 		if (!pfastused) {
 
 			demo.setSUBPLOT_COUNT(1);
-			demo.pack();
-			RefineryUtilities.centerFrameOnScreen(demo);
-			demo.setVisible(true);
+			//demo.display();
+			TimeEditor.createEditor(demo);
 
 			this.addObserver(demo);
 		}

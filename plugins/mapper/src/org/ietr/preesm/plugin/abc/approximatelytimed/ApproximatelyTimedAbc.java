@@ -40,6 +40,7 @@ package org.ietr.preesm.plugin.abc.approximatelytimed;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -157,5 +158,9 @@ public class ApproximatelyTimedAbc extends
 
 		edge.getTimingEdgeProperty().setCost(0);
 
+	}
+
+	public AbcType getType(){
+		return AbcType.ApproximatelyTimed;
 	}
 }

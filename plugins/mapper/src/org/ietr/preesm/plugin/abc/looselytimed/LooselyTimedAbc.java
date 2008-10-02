@@ -40,6 +40,7 @@ package org.ietr.preesm.plugin.abc.looselytimed;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -171,4 +172,7 @@ public class LooselyTimedAbc extends
 
 	}
 
+	public AbcType getType(){
+		return AbcType.LooselyTimed;
+	}
 }

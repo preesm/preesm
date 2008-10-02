@@ -55,7 +55,7 @@ import org.ietr.preesm.core.constraints.Timing;
 import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
@@ -207,13 +207,13 @@ public class AlgorithmBenchmark {
 		FastAlgorithm algorithm = new FastAlgorithm();
 
 		// chosen simulator
-		ArchitectureSimulatorType simulatorType = null;
+		AbcType simulatorType = null;
 		if (choixsimu == 0)
-			simulatorType = ArchitectureSimulatorType.LooselyTimed;
+			simulatorType = AbcType.LooselyTimed;
 		if (choixsimu == 1)
-			simulatorType = ArchitectureSimulatorType.ApproximatelyTimed;
+			simulatorType = AbcType.ApproximatelyTimed;
 		if (choixsimu == 2)
-			simulatorType = ArchitectureSimulatorType.AccuratelyTimed;
+			simulatorType = AbcType.AccuratelyTimed;
 
 		
 

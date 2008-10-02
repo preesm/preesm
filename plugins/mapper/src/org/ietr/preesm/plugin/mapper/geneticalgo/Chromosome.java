@@ -47,8 +47,8 @@ import java.util.List;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
@@ -165,7 +165,7 @@ public class Chromosome {
 	 * 
 	 * @return : void
 	 */
-	public void evaluate(ArchitectureSimulatorType simulatorType) {
+	public void evaluate(AbcType simulatorType) {
 		this.updateDAG();
 		IAbc simulator = AbstractAbc
 				.getInstance(simulatorType, this.dag, this.archi);
@@ -280,10 +280,10 @@ public class Chromosome {
 		Chromosome chromosome = new Chromosome(dag, archi);
 
 		// test Evaluate
-		chromosome.evaluate(ArchitectureSimulatorType.LooselyTimed);
+		chromosome.evaluate(AbcType.LooselyTimed);
 
 		IAbc simu3 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu3.setDAG(chromosome.getDag());
 		simu3.plotImplementation();
@@ -292,7 +292,7 @@ public class Chromosome {
 		Chromosome chromosome2 = chromosome.clone();
 
 		IAbc simu4 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed,
+				.getInstance(AbcType.LooselyTimed,
 						chromosome2.getDag(), archi);
 		simu4.setDAG(chromosome2.getDag());
 		simu4.plotImplementation();
@@ -300,37 +300,37 @@ public class Chromosome {
 		// test MutationOperator
 		MutationOperator mutationOperator = new MutationOperator();
 		chromosome = mutationOperator.transform(chromosome,
-				ArchitectureSimulatorType.LooselyTimed);
+				AbcType.LooselyTimed);
 
 		IAbc simu5 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu5.setDAG(chromosome.getDag());
 		simu5.plotImplementation();
 
 		chromosome = mutationOperator.transform(chromosome,
-				ArchitectureSimulatorType.LooselyTimed);
+				AbcType.LooselyTimed);
 
 		IAbc simu6 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu6.setDAG(chromosome.getDag());
 		simu6.plotImplementation();
 
 		chromosome = mutationOperator.transform(chromosome,
-				ArchitectureSimulatorType.LooselyTimed);
+				AbcType.LooselyTimed);
 
 		IAbc simu7 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu7.setDAG(chromosome.getDag());
 		simu7.plotImplementation();
 
 		chromosome = mutationOperator.transform(chromosome,
-				ArchitectureSimulatorType.LooselyTimed);
+				AbcType.LooselyTimed);
 
 		IAbc simu1 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu1.setDAG(chromosome.getDag());
 		simu1.plotImplementation();
@@ -338,11 +338,11 @@ public class Chromosome {
 		// test crossOverOperator
 		CrossOverOperator crossOverOperator = new CrossOverOperator();
 		Chromosome chromosome3 = crossOverOperator.transform(chromosome2,
-				chromosome, ArchitectureSimulatorType.LooselyTimed);
-		chromosome3.evaluate(ArchitectureSimulatorType.LooselyTimed);
+				chromosome, AbcType.LooselyTimed);
+		chromosome3.evaluate(AbcType.LooselyTimed);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.LooselyTimed,
+				.getInstance(AbcType.LooselyTimed,
 						chromosome3.getDag(), archi);
 		simu2.setDAG(chromosome3.getDag());
 		simu2.plotImplementation();

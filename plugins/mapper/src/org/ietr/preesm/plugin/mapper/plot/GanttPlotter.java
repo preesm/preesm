@@ -50,8 +50,8 @@ import java.util.logging.Logger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -94,20 +94,26 @@ import org.jfree.ui.RefineryUtilities;
  */
 public class GanttPlotter extends ApplicationFrame {
 
-	public class SizePaintListener implements PaintListener{
+	public class SizeListener implements ControlListener{
 
 		Composite composite;
 
 		Container frame;
 		
-		public SizePaintListener(Composite composite, Container frame) {
+		public SizeListener(Composite composite, Container frame) {
 			super();
 			this.composite = composite;
 			this.frame = frame;
 		}
-		
+
 		@Override
-		public void paintControl(PaintEvent e) {
+		public void controlMoved(ControlEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
 			// TODO Auto-generated method stub
 
 			frame.setSize(composite.getSize().x,composite.getSize().y);
@@ -386,18 +392,18 @@ public class GanttPlotter extends ApplicationFrame {
 		//plot.setVisible(true);
 		
 		Display display = Display.getDefault();
+		
 		Shell shell = new Shell();
-	    Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.FILL);
 	    shell.setLayout(new FillLayout());
+	    shell.setText("test");
+	    shell.setSize(new Point(240, 460));
+	    shell.open();
+	    
+	    Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.FILL);
 	    Frame frame = SWT_AWT.new_Frame(composite);
 	    frame.add(plot.getContentPane());
 
-	    shell.addPaintListener(plot.new SizePaintListener(composite,frame));
-		
-	    shell.setText("test");
-	    shell.setSize(new Point(240, 460));
-
-	    shell.open();
+	    shell.addControlListener(plot.new SizeListener(composite,frame));
 
 
 		while (!shell.isDisposed()) {
@@ -441,7 +447,7 @@ public class GanttPlotter extends ApplicationFrame {
 	    Frame frame = SWT_AWT.new_Frame(composite);
 	    frame.add(plot.getContentPane());
 
-	    parent.addPaintListener(plot.new SizePaintListener(composite,frame));
+	    parent.addControlListener(plot.new SizeListener(composite,frame));
 		
 	}
 

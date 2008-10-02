@@ -177,4 +177,9 @@ public interface IAbc {
 	 * Sets the total orders in the dag
 	 */
 	public void retrieveTotalOrder();
+
+	/**
+	 * Gets the type of the current ABC
+	 */
+	public AbcType getType();
 }

@@ -44,7 +44,7 @@ package org.ietr.preesm.plugin.abc;
  * 
  * @author mpelcat
  */
-public enum ArchitectureSimulatorType {
+public enum AbcType {
 
 	InfiniteHomogeneous,
 
@@ -81,7 +81,7 @@ public enum ArchitectureSimulatorType {
 		return null;
 	}
 
-	public static ArchitectureSimulatorType fromString(String type) {
+	public static AbcType fromString(String type) {
 
 		if (type.equalsIgnoreCase("InfiniteHomogeneous")) {
 			return InfiniteHomogeneous;

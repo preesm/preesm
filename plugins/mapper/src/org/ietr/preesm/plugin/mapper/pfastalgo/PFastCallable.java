@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
@@ -59,7 +59,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 class PFastCallable implements Callable<MapperDAG> {
 
 	// Simulator chosen
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	// thread named by threadName
 	private String threadName;
@@ -103,7 +103,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	public PFastCallable(String name, MapperDAG inputDAG,
 			IArchitecture inputArchi, Set<String> blockingNodeNames,
 			int maxCount, int maxStep, int margIn, boolean alreadyImplanted,
-			ArchitectureSimulatorType simulatorType) {
+			AbcType simulatorType) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;

@@ -50,8 +50,8 @@ import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
@@ -71,7 +71,7 @@ public class FastPopulation {
 	private List<MapperDAG> population;
 
 	// Simulator used to make this population
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	// architecture used to make this population
 	private IArchitecture archi;
@@ -91,7 +91,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum,
-			ArchitectureSimulatorType simulatorType, IArchitecture archi) {
+			AbcType simulatorType, IArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.simulatorType = simulatorType;
@@ -106,7 +106,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, List<MapperDAG> population,
-			ArchitectureSimulatorType simulatorType, IArchitecture archi) {
+			AbcType simulatorType, IArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.population = population;
@@ -118,11 +118,11 @@ public class FastPopulation {
 	 * Getters and setters
 	 */
 
-	public ArchitectureSimulatorType getSimulatorType() {
+	public AbcType getSimulatorType() {
 		return simulatorType;
 	}
 
-	public void setSimulatorType(ArchitectureSimulatorType simulatorType) {
+	public void setSimulatorType(AbcType simulatorType) {
 		this.simulatorType = simulatorType;
 	}
 
@@ -228,7 +228,7 @@ public class FastPopulation {
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		FastPopulation population = new FastPopulation(5,
-				ArchitectureSimulatorType.LooselyTimed, archi);
+				AbcType.LooselyTimed, archi);
 		population.constructPopulation(dag, 20, 10, 3);
 		population.populationDisplay();
 

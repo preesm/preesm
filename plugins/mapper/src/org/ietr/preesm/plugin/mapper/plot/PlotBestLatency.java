@@ -39,7 +39,9 @@ package org.ietr.preesm.plugin.mapper.plot;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -50,10 +52,21 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.pgeneticalgo.PGeneticAlgo;
+import org.ietr.preesm.plugin.mapper.plot.GanttPlotter.SizeListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -62,10 +75,12 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
 
 /**
  * Plots the best latency found versus scheduling time
@@ -75,20 +90,44 @@ import org.jfree.ui.ApplicationFrame;
 public class PlotBestLatency extends ApplicationFrame implements
 		ActionListener, Observer {
 
-	/**
-	 * 
-	 */
+	public class SizeListener implements ControlListener{
+
+		Composite composite;
+
+		Container frame;
+		
+		public SizeListener(Composite composite, Container frame) {
+			super();
+			this.composite = composite;
+			this.frame = frame;
+		}
+
+		@Override
+		public void controlMoved(ControlEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void controlResized(ControlEvent e) {
+			// TODO Auto-generated method stub
+
+			frame.setSize(composite.getSize().x,composite.getSize().y);
+		}
+		
+	}
+	
 	private static final long serialVersionUID = -6939533490316310961L;
 
 	/** The number of subplots. */
-	private int SUBPLOT_COUNT = 1;
+	private int subplotCount = 1;
 	private int actionType = 0;
 
 	/** The datasets. */
 	private TimeSeriesCollection[] datasets;
 
 	/** The most recent value added to series 1. */
-	private double[] lastValue = new double[SUBPLOT_COUNT];
+	private double[] lastValue = new double[subplotCount];
 
 	/**
 	 * Constructs a new demonstration application.
@@ -100,51 +139,13 @@ public class PlotBestLatency extends ApplicationFrame implements
 
 		super(title);
 
-		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
-				new DateAxis("Time"));
-		this.datasets = new TimeSeriesCollection[SUBPLOT_COUNT];
-
-		for (int i = 0; i < SUBPLOT_COUNT; i++) {
-			this.lastValue[i] = 100.0;
-			final TimeSeries series = new TimeSeries("Real Time",
-					Millisecond.class);
-			this.datasets[i] = new TimeSeriesCollection(series);
-			final NumberAxis rangeAxis = new NumberAxis("Schedule");
-			rangeAxis.setAutoRangeIncludesZero(false);
-			final XYPlot subplot = new XYPlot(this.datasets[i], null,
-					rangeAxis, new StandardXYItemRenderer());
-			subplot.setBackgroundPaint(Color.white);
-			subplot.setDomainGridlinePaint(Color.lightGray);
-			subplot.setRangeGridlinePaint(Color.lightGray);
-			plot.add(subplot);
-		}
-
-		final JFreeChart chart = new JFreeChart(title, plot);
-		// chart.getLegend().setAnchor(Legend.EAST);
-		chart.setBorderPaint(Color.black);
-		chart.setBorderVisible(true);
-		chart.setBackgroundPaint(Color.white);
-
-		plot.setBackgroundPaint(Color.white);
-		plot.setDomainGridlinePaint(Color.lightGray);
-		plot.setRangeGridlinePaint(Color.lightGray);
-		// plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 4, 4, 4, 4));
-		final ValueAxis axis = plot.getDomainAxis();
-		axis.setAutoRange(true);
-		// axis.setFixedAutoRange(60000.0); // 60 seconds
-
+		JFreeChart chart = createChart(title);
 		final JPanel content = new JPanel(new BorderLayout());
 
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		content.add(chartPanel);
 
 		final JPanel buttonPanel = new JPanel(new FlowLayout());
-
-		/*
-		 * for (int i = 0; i < SUBPLOT_COUNT; i++) { final JButton button = new
-		 * JButton("Series " + i); button.setActionCommand("ADD_DATA_" + i);
-		 * //button.addActionListener(this); buttonPanel.add(button); }
-		 */
 
 		final JButton buttonPause = new JButton("Pause");
 		buttonPause.setActionCommand("pause");
@@ -169,6 +170,50 @@ public class PlotBestLatency extends ApplicationFrame implements
 	}
 
 	/**
+	 * Creates a chart.
+	 * 
+	 * @return A chart.
+	 */
+	private JFreeChart createChart(String title) {
+		
+		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
+				new DateAxis("Time"));
+		this.datasets = new TimeSeriesCollection[subplotCount];
+
+		for (int i = 0; i < subplotCount; i++) {
+			this.lastValue[i] = 100.0;
+			final TimeSeries series = new TimeSeries("Real Time",
+					Millisecond.class);
+			this.datasets[i] = new TimeSeriesCollection(series);
+			final NumberAxis rangeAxis = new NumberAxis("Schedule");
+			rangeAxis.setAutoRangeIncludesZero(false);
+			final XYPlot subplot = new XYPlot(this.datasets[i], null,
+					rangeAxis, new StandardXYItemRenderer());
+			subplot.setBackgroundPaint(Color.white);
+			subplot.setDomainGridlinePaint(Color.lightGray);
+			subplot.setRangeGridlinePaint(Color.lightGray);
+			plot.add(subplot);
+		}
+		
+		final JFreeChart chart = new JFreeChart(title, plot);
+
+		// chart.getLegend().setAnchor(Legend.EAST);
+		chart.setBorderPaint(Color.black);
+		chart.setBorderVisible(true);
+		chart.setBackgroundPaint(Color.white);
+
+		plot.setBackgroundPaint(Color.white);
+		plot.setDomainGridlinePaint(Color.lightGray);
+		plot.setRangeGridlinePaint(Color.lightGray);
+
+		final ValueAxis axis = plot.getDomainAxis();
+		axis.setAutoRange(true);
+		
+		return chart;
+		
+	}
+	
+	/**
 	 * Handles a click on the button and perform the wanted action.
 	 * 
 	 * @param e
@@ -176,7 +221,7 @@ public class PlotBestLatency extends ApplicationFrame implements
 	 */
 	public void actionPerformed(final ActionEvent e) {
 
-		for (int i = 0; i < SUBPLOT_COUNT; i++) {
+		for (int i = 0; i < subplotCount; i++) {
 			if (e.getActionCommand().endsWith(String.valueOf(i))) {
 				// final Millisecond now = new Millisecond();
 				// System.out.println("Now = " + now.toString());
@@ -282,8 +327,8 @@ public class PlotBestLatency extends ApplicationFrame implements
 	 * Getters and setters
 	 */
 
-	public int getSUBPLOT_COUNT() {
-		return SUBPLOT_COUNT;
+	public int getSubplotCount() {
+		return subplotCount;
 	}
 
 	public int getActionType() {
@@ -295,13 +340,30 @@ public class PlotBestLatency extends ApplicationFrame implements
 	}
 
 	public void setSUBPLOT_COUNT(int subplot_count) {
-		SUBPLOT_COUNT = subplot_count;
+		subplotCount = subplot_count;
 	}
 	
 	public void windowClosing(WindowEvent event){
 		if(event.equals(WindowEvent.WINDOW_CLOSING)){
 			
 		}
+	}
+
+	public void display(Composite parentComposite){
+	
+	    Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
+	    parentComposite.setLayout(new FillLayout());
+	    Frame frame = SWT_AWT.new_Frame(composite);
+	    frame.add(this.getContentPane());
+
+	    parentComposite.addControlListener(this.new SizeListener(composite,frame));
+	}
+
+	public void display(){
+		
+		this.pack();
+		RefineryUtilities.centerFrameOnScreen(this);
+		this.setVisible(true);
 	}
 
 }

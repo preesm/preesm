@@ -48,7 +48,9 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
+import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -88,8 +90,11 @@ public class TagDAG {
 	 * tag adds the send and receive operations necessary to the code generation.
 	 * It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, IArchitecture architecture) {
+	public void tag(MapperDAG dag, IArchitecture architecture,IAbc simu) {
 
+		PropertyBean bean = dag.getPropertyBean();
+		bean.setValue(AbstractAbc.propertyBeanName,simu.getType());
+		bean.setValue("SdfReferenceGraph",dag.getReferenceSdfGraph());
 
 		addTransfers(dag,architecture);
 		addProperties(dag);
@@ -143,6 +148,7 @@ public class TagDAG {
 		}
 	}
 
+	//TODO: Remove these fake aggregates
 	public void addAllAggregates(MapperDAG dag) {
 
 		MapperDAGEdge edge;
@@ -171,5 +177,4 @@ public class TagDAG {
 		}
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 	}
-
 }

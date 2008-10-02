@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 
 /**
  * Operator able to perform cross overs between 2 chromosomes
@@ -72,7 +72,7 @@ public class CrossOverOperator {
 	 * @return : Chromosome
 	 */
 	public Chromosome transform(Chromosome chromosome1, Chromosome chromosome2,
-			ArchitectureSimulatorType simulatorType) {
+			AbcType simulatorType) {
 
 		// variables
 		List<Gene> temp1 = new ArrayList<Gene>();

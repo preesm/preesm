@@ -62,6 +62,7 @@ import org.ietr.preesm.core.task.ICodeTranslation;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.IMapping;
+import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.ITask;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
@@ -116,7 +117,9 @@ public class Workflow {
 		while (it.hasNext() && workflowOk) {
 			IWorkflowNode node = it.next();
 			if (node.isTaskNode()) {
-				workflowOk = ((TaskNode) node).isTaskPossible();
+				// Testing only connected nodes
+				if (!workflow.edgesOf(node).isEmpty())
+					workflowOk = ((TaskNode) node).isTaskPossible();
 			}
 		}
 
@@ -277,7 +280,7 @@ public class Workflow {
 						if(exporter.isSDFExporter())
 							exporter.transform(sdf, parameters);
 						else
-							exporter.transform(dag, parameters);
+							exporter.transform(dag,sdf,architecture,scenario, parameters);
 						
 						IWorkspace workspace = ResourcesPlugin.getWorkspace();
 						try {
@@ -296,6 +299,14 @@ public class Workflow {
 									(IFile) resource);
 							openEditor(((IFile) resource).getName(), input);
 						}
+					} else if (transformation instanceof IPlotter) {
+						monitor.subTask("plot");
+						numberOfTasksDone++;
+						monitor.worked(numberOfTasksDone);
+
+						// code translation
+						IPlotter plotter = (IPlotter) transformation;
+						plotter.transform(dag,sdf,architecture,scenario, parameters);
 					}
 				}
 

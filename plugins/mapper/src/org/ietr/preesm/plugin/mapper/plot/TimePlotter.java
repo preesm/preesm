@@ -205,10 +205,12 @@ public class TimePlotter extends ApplicationFrame {
 		setContentPane(chartPanel);
 
 	}
+	
 	public void windowClosing(WindowEvent event){
 		if(event.equals(WindowEvent.WINDOW_CLOSING)){
 			
 		}
 	}
+	
 
 }

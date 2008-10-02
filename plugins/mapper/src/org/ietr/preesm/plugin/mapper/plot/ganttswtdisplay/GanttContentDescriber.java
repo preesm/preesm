@@ -1,10 +1,9 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.mapper.plot;
+package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
 
 import org.eclipse.core.internal.content.XMLContentDescriber;
-import org.eclipse.core.runtime.content.IContentDescriber;
 
 /**
  * @author mpelcat

@@ -54,8 +54,8 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -106,7 +106,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		PFASTTransformation transformation = new PFASTTransformation();
 		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, 5, 3,
-				ArchitectureSimulatorType.LooselyTimed);
+				AbcType.LooselyTimed);
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
 		logger.log(Level.FINER, "Test fast finished");
@@ -155,11 +155,11 @@ public class PFASTTransformation extends AbstractMapping {
 
 		simu2.setDAG(dag);
 
-		simu2.plotImplementation();
+		//simu2.plotImplementation();
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture);
+		tagSDF.tag(dag,architecture,simu2);
 
 		result.setDAG(dag);
 

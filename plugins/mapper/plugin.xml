@@ -36,13 +36,18 @@
       <task
             id="org.ietr.preesm.plugin.mapper.plot.GanttExporter"
             name="Gantt Exporter"
-            type="org.ietr.preesm.plugin.mapper.plot.GanttExporter">
+            type="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.GanttExporter">
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.plot"
+            name="Gantt plot transform"
+            type="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.GanttPlotTransform">
       </task>
    </extension>
    <extension
          point="org.eclipse.core.runtime.contentTypes">
       <content-type
-            describer="org.ietr.preesm.plugin.mapper.plot.GanttContentDescriber"
+            describer="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.GanttContentDescriber"
             file-extensions="gantt"
             id="org.ietr.preesm.mapper.gantttype"
             name="gantt"
@@ -52,13 +57,18 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.ImplementationEditor"
-            default="false"
-            id="org.ietr.preesm.plugin.mapper.plot.ImplementationEditor"
-            name="Implementation editor">
-         <contentTypeBinding
-               contentTypeId="org.eclipse.core.runtime.xml">
-         </contentTypeBinding>
+            class="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"
+            default="true"
+            icon="icons/preesm2mini.PNG"
+            id="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"
+            name="ImplementationEditor">
+      </editor>
+      <editor
+            class="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
+            default="true"
+            icon="icons/preesm3mini.PNG"
+            id="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
+            name="TimeEditor">
       </editor>
    </extension>
 

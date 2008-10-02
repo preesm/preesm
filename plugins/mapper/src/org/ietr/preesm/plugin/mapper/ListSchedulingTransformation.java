@@ -56,8 +56,8 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -110,7 +110,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		}
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(ArchitectureSimulatorType.LooselyTimed);
+		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed);
 
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		applet1.init(graph);
@@ -170,12 +170,12 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		//Calendar cal = Calendar.getInstance();
 		//DateFormat f = DateFormat.getDateInstance();
 		
-		simu2.plotImplementation();
+		//simu2.plotImplementation();
 		PreesmLogger.getLogger().log(Level.FINER, "Plot finished");
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture);
+		tagSDF.tag(dag,architecture,simu2);
 
 		result.setDAG(dag);
 

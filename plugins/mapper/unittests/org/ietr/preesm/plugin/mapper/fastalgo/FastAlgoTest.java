@@ -48,7 +48,7 @@ import junit.framework.TestCase;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
@@ -114,7 +114,7 @@ public class FastAlgoTest extends TestCase {
 		ListScheduler scheduler = new ListScheduler();
 		FastAlgorithm algorithm = new FastAlgorithm();
 
-		dag = algorithm.map("test", ArchitectureSimulatorType.LooselyTimed,
+		dag = algorithm.map("test", AbcType.LooselyTimed,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 16, false, false, null);

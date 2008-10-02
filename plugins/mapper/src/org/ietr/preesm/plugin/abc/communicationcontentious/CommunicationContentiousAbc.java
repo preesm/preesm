@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.communicationcontentious;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -82,4 +83,7 @@ public class CommunicationContentiousAbc extends AbstractAbc {
 
 	}
 
+	public AbcType getType(){
+		return AbcType.CommunicationContentious;
+	}
 }

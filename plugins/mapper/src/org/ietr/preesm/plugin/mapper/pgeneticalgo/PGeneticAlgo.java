@@ -64,7 +64,7 @@ import org.ietr.preesm.core.constraints.Timing;
 import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -75,6 +75,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
 import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -93,7 +94,7 @@ public class PGeneticAlgo extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		ArchitectureSimulatorType simulatorType = null;
+		AbcType simulatorType = null;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
@@ -119,7 +120,7 @@ public class PGeneticAlgo extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(ArchitectureSimulatorType type,
+		public FinalTimeComparator(AbcType type,
 				Chromosome chromosome) {
 			super();
 			this.simulatorType = type;
@@ -147,7 +148,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			IArchitecture archi, ArchitectureSimulatorType type,
+			IArchitecture archi, AbcType type,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
@@ -182,9 +183,8 @@ public class PGeneticAlgo extends Observable {
 		final PlotBestLatency demo = new PlotBestLatency(
 				"Parallel genetic Algorithm");
 		demo.setSUBPLOT_COUNT(1);
-		demo.pack();
-		RefineryUtilities.centerFrameOnScreen(demo);
-		demo.setVisible(true);
+		//demo.display();
+		TimeEditor.createEditor(demo);
 		this.addObserver(demo);
 
 		// set best population
@@ -341,7 +341,7 @@ public class PGeneticAlgo extends Observable {
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
 
-		ArchitectureSimulatorType simulatorType = ArchitectureSimulatorType.ApproximatelyTimed;
+		AbcType simulatorType = AbcType.ApproximatelyTimed;
 
 		PFastAlgorithm fastAlgorithm = new PFastAlgorithm();
 

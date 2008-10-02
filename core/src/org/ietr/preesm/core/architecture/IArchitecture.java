@@ -120,4 +120,9 @@ public interface IArchitecture {
 	 * @return
 	 */
 	public Set<Operator> getOperators(OperatorDefinition def);
+
+	/**
+	 * Returns the name of the architecture
+	 */
+	public String getName();
 }

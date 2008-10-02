@@ -53,8 +53,8 @@ import org.ietr.preesm.core.constraints.Scenario;
 import org.ietr.preesm.core.constraints.Timing;
 import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -63,6 +63,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -82,7 +83,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		ArchitectureSimulatorType simulatorType = null;
+		AbcType simulatorType = null;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
@@ -108,7 +109,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome
 		 * 
 		 */
-		public FinalTimeComparator(ArchitectureSimulatorType type,
+		public FinalTimeComparator(AbcType type,
 				Chromosome chromosome) {
 			super();
 			this.simulatorType = type;
@@ -166,7 +167,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
 			List<MapperDAG> populationDAG, IArchitecture archi,
-			ArchitectureSimulatorType type, int populationSize,
+			AbcType type, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
 		final PlotBestLatency demo = new PlotBestLatency("Genetic Algorithm");
@@ -175,9 +176,8 @@ public class StandardGeneticAlgorithm extends Observable {
 		if (!pgeneticalgo) {
 
 			demo.setSUBPLOT_COUNT(1);
-			demo.pack();
-			RefineryUtilities.centerFrameOnScreen(demo);
-			demo.setVisible(true);
+			//demo.display();
+			TimeEditor.createEditor(demo);
 			this.addObserver(demo);
 		}
 
@@ -287,7 +287,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		simu.resetDAG();
 
 		// Simulator Type
-		ArchitectureSimulatorType type = ArchitectureSimulatorType.AccuratelyTimed;
+		AbcType type = AbcType.AccuratelyTimed;
 
 		// create population using Pfast
 		PFastAlgorithm algorithm = new PFastAlgorithm();
@@ -298,13 +298,13 @@ public class StandardGeneticAlgorithm extends Observable {
 		// Perform the StandardGeneticAlgo
 		ConcurrentSkipListSet<Chromosome> skipListSet;
 		skipListSet = geneticAlgorithm.runGeneticAlgo("test", population,
-				archi, ArchitectureSimulatorType.AccuratelyTimed, 6, 25, false);
+				archi, AbcType.AccuratelyTimed, 6, 25, false);
 
 		// best solution
 		Chromosome chromosome7 = skipListSet.first().clone();
-		chromosome7.evaluate(ArchitectureSimulatorType.AccuratelyTimed);
+		chromosome7.evaluate(AbcType.AccuratelyTimed);
 		IAbc simu2 = AbstractAbc
-				.getInstance(ArchitectureSimulatorType.AccuratelyTimed,
+				.getInstance(AbcType.AccuratelyTimed,
 						chromosome7.getDag(), archi);
 		simu2.setDAG(chromosome7.getDag());
 		simu2.plotImplementation();

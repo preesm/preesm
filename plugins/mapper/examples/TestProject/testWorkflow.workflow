@@ -50,7 +50,7 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fpgasched" taskId="FPGA scheduling">
       <data key="variables"/>
    </preesm:task>
-   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot.GanttExporter" taskId="DAG Exporter">
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
       <data key="variables">
          <variable name="path" value="D:/IDCT2D/dag.gantt"/>
       </data>
@@ -58,5 +58,8 @@
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="FAST scheduler"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAG Exporter"/>
+   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAG Plotter"/>
 </preesm:workflow>

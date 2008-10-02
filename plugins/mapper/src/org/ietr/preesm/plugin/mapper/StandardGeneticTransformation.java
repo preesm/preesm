@@ -57,8 +57,8 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgoParameters;
@@ -113,7 +113,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		StandardGeneticTransformation transformation = new StandardGeneticTransformation();
 		GeneticAlgoParameters parameters = new GeneticAlgoParameters(100, 25,
-				ArchitectureSimulatorType.ApproximatelyTimed, false);
+				AbcType.ApproximatelyTimed, false);
 
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
@@ -197,11 +197,11 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		simu2.setDAG(dag);
 
-		simu2.plotImplementation();
+		//simu2.plotImplementation();
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture);
+		tagSDF.tag(dag,architecture,simu2);
 
 		transfoResult.setDAG(dag);
 

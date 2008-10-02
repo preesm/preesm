@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
 /**
@@ -72,7 +72,7 @@ public class MutationOperator {
 	 * @return Chromosome
 	 */
 	public Chromosome transform(Chromosome chromosome1,
-			ArchitectureSimulatorType simulatorType) {
+			AbcType simulatorType) {
 
 		// Construct the son
 		Chromosome chromosome = chromosome1.clone();

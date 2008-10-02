@@ -44,6 +44,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -95,8 +98,23 @@ public class MapperDAGVertex extends DAGVertex {
 	@Override
 	public MapperDAGVertex clone() {
 
-		MapperDAGVertex result = new MapperDAGVertex(this.getId(), this
-				.getName(), (MapperDAG)this.getBase());
+		MapperDAGVertex result = null;
+			
+		if(this instanceof OverheadVertex){
+			result = new OverheadVertex(this.getId(), (MapperDAG)this.getBase());
+		}
+		else if(this instanceof SendVertex){
+			result = new SendVertex(this.getId(), (MapperDAG)this.getBase());
+		}
+		else if(this instanceof ReceiveVertex){
+			result = new ReceiveVertex(this.getId(), (MapperDAG)this.getBase());
+		}
+		else{
+			result = new MapperDAGVertex(this.getId(), this
+					.getName(), (MapperDAG)this.getBase());
+		}
+		
+		
 		result.setImplantationVertexProperty(this
 				.getImplementationVertexProperty().clone());
 		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(result));

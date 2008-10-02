@@ -41,7 +41,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.fastalgo;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
 
 /**
@@ -51,7 +51,7 @@ import org.ietr.preesm.plugin.mapper.AbstractParameters;
  */
 public class ListSchedulingParameters extends AbstractParameters {
 
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	/**
 	 * 
@@ -59,10 +59,10 @@ public class ListSchedulingParameters extends AbstractParameters {
 	public ListSchedulingParameters(TextParameters textParameters) {
 		super(textParameters);
 
-		this.simulatorType = ArchitectureSimulatorType.fromString(textParameters.getVariable("simulatorType"));
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
-	public ListSchedulingParameters(ArchitectureSimulatorType simulatorType) {
+	public ListSchedulingParameters(AbcType simulatorType) {
 		super();
 		textParameters.addVariable("simulatorType", simulatorType.toString());
 		this.simulatorType = simulatorType;
@@ -71,7 +71,7 @@ public class ListSchedulingParameters extends AbstractParameters {
 	/**
 	 * @return the simulatorType
 	 */
-	public ArchitectureSimulatorType getSimulatorType() {
+	public AbcType getSimulatorType() {
 		return simulatorType;
 	}
 
@@ -79,7 +79,7 @@ public class ListSchedulingParameters extends AbstractParameters {
 	 * @param simulatorType
 	 *            the simulatorType to set
 	 */
-	public void setSimulatorType(ArchitectureSimulatorType simulatorType) {
+	public void setSimulatorType(AbcType simulatorType) {
 		this.simulatorType = simulatorType;
 	}
 

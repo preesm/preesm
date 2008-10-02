@@ -41,7 +41,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.pfastalgo;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.ArchitectureSimulatorType;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
 
 /**
@@ -88,7 +88,7 @@ public class PFastAlgoParameters extends AbstractParameters {
 	/**
 	 * simulator type
 	 */
-	private ArchitectureSimulatorType simulatorType;
+	private AbcType simulatorType;
 
 	/**
 	 * Constructors
@@ -101,12 +101,12 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.margIn = textParameters.getIntVariable("margIn");
 		this.nodesmin = textParameters.getIntVariable("nodesmin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.simulatorType = ArchitectureSimulatorType.fromString(textParameters.getVariable("simulatorType"));
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
 	public PFastAlgoParameters(int margIn, int maxCount, int maxStep,
 			int nodesmin, int procNumber,
-			ArchitectureSimulatorType simulatorType) {
+			AbcType simulatorType) {
 		super();
 		textParameters.addVariable("margIn", margIn);
 		textParameters.addVariable("maxCount", maxCount);
@@ -127,11 +127,11 @@ public class PFastAlgoParameters extends AbstractParameters {
 	 * Getters and Setters
 	 */
 
-	public ArchitectureSimulatorType getSimulatorType() {
+	public AbcType getSimulatorType() {
 		return simulatorType;
 	}
 
-	public void setSimulatorType(ArchitectureSimulatorType simulatorType) {
+	public void setSimulatorType(AbcType simulatorType) {
 		this.simulatorType = simulatorType;
 	}
 

@@ -402,4 +402,9 @@ public class MultiCoreArchitecture implements IArchitecture {
 
 		return ops;
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
 }
