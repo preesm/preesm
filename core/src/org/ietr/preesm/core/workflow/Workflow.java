@@ -56,7 +56,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.ICodeTranslation;
 import org.ietr.preesm.core.task.IExporter;

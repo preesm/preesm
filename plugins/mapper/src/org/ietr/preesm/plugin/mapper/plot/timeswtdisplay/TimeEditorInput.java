@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.Activator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;

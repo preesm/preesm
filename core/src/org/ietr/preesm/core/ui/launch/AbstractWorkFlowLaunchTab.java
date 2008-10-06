@@ -40,13 +40,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.ui.launch;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -59,7 +62,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
  * Containing common funtionalities of launch tabs.
@@ -84,25 +91,26 @@ public abstract class AbstractWorkFlowLaunchTab extends
 	 * file path of the current Tab. There can be only one file chooser for the
 	 * moment
 	 */
-	private Text filePath;
+	private IPath fileIPath = null;
+	private Text filePath = null;
 
 	
 
 	/**
 	 * Displays a file browser in a shell
 	 */
-	protected void browseFiles() {
-		FileDialog fileDialog = new FileDialog(currentComposite.getShell());
-		try {
-			fileDialog.setFilterPath(ResourcesPlugin.getWorkspace().getRoot()
-					.getLocation().toOSString());
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
-
-		String path = fileDialog.open();
-		if (path != null) {
-			filePath.setText(path.trim());
+	protected void browseFiles(Shell shell) {
+		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				new WorkbenchContentProvider());
+		tree.setAllowMultiple(false);
+		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		tree.setMessage("Please select an existing file:");
+		tree.setTitle("Choose an existing file");
+		// opens the dialog
+		if (tree.open() == Window.OK) {
+			fileIPath = ((IFile) tree.getFirstResult()).getLocation();
+			filePath.setText(fileIPath.toString());
 		}
 	}
 
@@ -140,7 +148,7 @@ public abstract class AbstractWorkFlowLaunchTab extends
 		buttonBrowse.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				browseFiles();
+				browseFiles(getCurrentComposite().getShell());
 			}
 		});
 

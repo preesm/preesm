@@ -43,7 +43,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  * Matthieu WIPLIEZ <Matthieu.Wipliez@insa-rennes.fr>
  * Maxime PELCAT <Maxime.Pelcat@insa-rennes.fr>
  */
-package org.ietr.preesm.core.constraints;
+package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
 import java.util.Iterator;

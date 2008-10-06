@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;

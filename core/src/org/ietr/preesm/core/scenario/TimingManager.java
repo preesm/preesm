@@ -35,30 +35,100 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.constraints;
+package org.ietr.preesm.core.scenario;
 
-public class Scenario implements IScenario {
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFVertex;
+
+/**
+ * Manager of the graphs timings
+ * 
+ * @author mpelcat
+ * 
+ */
+public class TimingManager {
 
 	/**
-	 * Manager of constraint groups
+	 * Default timing when none was set
 	 */
-	private ConstraintGroupManager constraintgroupmanager = null;
+	private Timing defaultTiming = null;
 
 	/**
-	 * Manager of timings
+	 * List of all timings
 	 */
-	private TimingManager timingmanager = null;
+	private List<Timing> timings;
 
-	public Scenario() {
-		constraintgroupmanager = new ConstraintGroupManager();
-		timingmanager = new TimingManager();
+	public TimingManager() {
+		timings = new ArrayList<Timing>();
+		defaultTiming = new Timing(new OperatorDefinition("default"),
+				new SDFVertex(), 1000);
 	}
 
-	public ConstraintGroupManager getConstraintGroupManager() {
-		return constraintgroupmanager;
+	public Timing addTiming(SDFAbstractVertex graph, OperatorDefinition operator) {
+
+		Timing newt = new Timing(operator, graph);
+		for (Timing timing : timings) {
+			if (timing.equals(newt)) {
+				return timing;
+			}
+		}
+
+		timings.add(newt);
+		return newt;
 	}
 
-	public TimingManager getTimingManager() {
-		return timingmanager;
+	public Timing addTiming(Timing newt) {
+
+		for (Timing timing : timings) {
+			if (timing.equals(newt)) {
+				return timing;
+			}
+		}
+
+		timings.add(newt);
+		return newt;
+	}
+
+	public List<Timing> getGraphTimings(String graphName) {
+		List<Timing> vals = new ArrayList<Timing>();
+
+		for (Timing timing : timings) {
+			if (timing.getVertex().getName().equals(graphName)) {
+				vals.add(timing);
+			}
+		}
+		return vals;
+	}
+
+	public int getTimingOrDefault(SDFAbstractVertex graph,
+			OperatorDefinition operator) {
+		Timing val = null;
+
+		for (Timing timing : timings) {
+			if (timing.getVertex() == graph
+					&& timing.getOperatorDefinition() == operator) {
+				val = timing;
+			}
+		}
+
+		if (val == null) {
+			val = defaultTiming;
+		}
+
+		return val.getTime();
+	}
+
+	public List<Timing> getTimings() {
+
+		return timings;
+	}
+
+	public void removeAll() {
+
+		timings.clear();
 	}
 }

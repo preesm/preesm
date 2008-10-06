@@ -35,7 +35,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.constraints;
+package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
 import java.util.Iterator;

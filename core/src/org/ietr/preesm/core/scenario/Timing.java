@@ -35,100 +35,99 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.constraints;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.ietr.preesm.core.scenario;
 
 import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.ietr.preesm.core.expression.Parameter;
+import org.ietr.preesm.core.log.PreesmLogger;
+import org.nfunk.jep.Variable;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
- * Manager of the graphs timings
- * 
  * @author mpelcat
- * 
  */
-public class TimingManager {
+public class Timing {
+
+	public static final Timing UNAVAILABLE = null;
+	public static final int DEFAULTTASKTIME = 100;
+
+	public static void main(String[] args) {
+		Variable test = new Parameter("test");
+		test.setValue(6546);
+		System.out.println(test);
+	}
 
 	/**
-	 * Default timing when none was set
+	 * related operator
 	 */
-	private Timing defaultTiming = null;
+	private OperatorDefinition operator;
 
 	/**
-	 * List of all timings
+	 * Definition of the timing
 	 */
-	private List<Timing> timings;
+	private int parameter;
 
-	public TimingManager() {
-		timings = new ArrayList<Timing>();
-		defaultTiming = new Timing(new OperatorDefinition("default"),
-				new SDFVertex(), 1000);
+	/**
+	 * related Graph
+	 */
+	private SDFAbstractVertex vertex;
+
+	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex) {
+
+		try {
+			parameter = -1;
+		} catch (Exception e) {
+			PreesmLogger.getLogger().severe(e.getMessage());
+		}
+		this.operator = operator;
+		this.vertex = vertex;
 	}
 
-	public Timing addTiming(SDFAbstractVertex graph, OperatorDefinition operator) {
+	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex,
+			int time) {
+		this(operator, vertex);
+		parameter = (time);
+	}
 
-		Timing newt = new Timing(operator, graph);
-		for (Timing timing : timings) {
-			if (timing.equals(newt)) {
-				return timing;
-			}
+	@Override
+	public boolean equals(Object obj) {
+
+		boolean equals = false;
+
+		if (obj instanceof Timing) {
+			Timing otherT = (Timing) obj;
+			equals = operator.equals(otherT.getOperatorDefinition());
+			equals &= vertex.getName().equalsIgnoreCase(
+					(otherT.getVertex().getName()));
 		}
 
-		timings.add(newt);
-		return newt;
+		return equals;
 	}
 
-	public Timing addTiming(Timing newt) {
-
-		for (Timing timing : timings) {
-			if (timing.equals(newt)) {
-				return timing;
-			}
-		}
-
-		timings.add(newt);
-		return newt;
+	public OperatorDefinition getOperatorDefinition() {
+		return operator;
 	}
 
-	public List<Timing> getGraphTimings(String graphName) {
-		List<Timing> vals = new ArrayList<Timing>();
-
-		for (Timing timing : timings) {
-			if (timing.getVertex().getName().equals(graphName)) {
-				vals.add(timing);
-			}
-		}
-		return vals;
+	public int getParam() {
+		return parameter;
 	}
 
-	public int getTimingOrDefault(SDFAbstractVertex graph,
-			OperatorDefinition operator) {
-		Timing val = null;
+	public int getTime() {
 
-		for (Timing timing : timings) {
-			if (timing.getVertex() == graph
-					&& timing.getOperatorDefinition() == operator) {
-				val = timing;
-			}
-		}
-
-		if (val == null) {
-			val = defaultTiming;
-		}
-
-		return val.getTime();
+		return parameter;
 	}
 
-	public List<Timing> getTimings() {
-
-		return timings;
+	public SDFAbstractVertex getVertex() {
+		return vertex;
 	}
 
-	public void removeAll() {
-
-		timings.clear();
+	public void setParam(int param) {
+		parameter = param;
 	}
+
+	public void setTime(int time) {
+
+		parameter = time;
+	}
+
 }

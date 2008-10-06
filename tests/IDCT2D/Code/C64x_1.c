@@ -14,30 +14,6 @@ extern LOG_Obj trace;
 #include "..\..\lib_RACH\common.h"
 
 //Buffer allocation for C64x_1
-#pragma DATA_SECTION(MacroBlockMBSortDataMB, ".my_sect")
-#pragma DATA_ALIGN(MacroBlockMBSortDataMB, 8)
-char[10] MacroBlockMBSortDataMB;
-
-#pragma DATA_SECTION(SortDatablockrowrow_in, ".my_sect")
-#pragma DATA_ALIGN(SortDatablockrowrow_in, 8)
-char[10] SortDatablockrowrow_in;
-
-#pragma DATA_SECTION(rowrow_outtranspose_1block_in, ".my_sect")
-#pragma DATA_ALIGN(rowrow_outtranspose_1block_in, 8)
-char[10] rowrow_outtranspose_1block_in;
-
-#pragma DATA_SECTION(transpose_1block_outcolumncol_in, ".my_sect")
-#pragma DATA_ALIGN(transpose_1block_outcolumncol_in, 8)
-char[10] transpose_1block_outcolumncol_in;
-
-#pragma DATA_SECTION(columncol_outtranspose_2block_in, ".my_sect")
-#pragma DATA_ALIGN(columncol_outtranspose_2block_in, 8)
-char[10] columncol_outtranspose_2block_in;
-
-#pragma DATA_SECTION(transpose_2block_outclipclip, ".my_sect")
-#pragma DATA_ALIGN(transpose_2block_outclipclip, 8)
-char[10] transpose_2block_outclipclip;
-
 #pragma DATA_SECTION(sem, ".my_sect")
 #pragma DATA_ALIGN(sem, 8)
 semaphore[0] sem;
@@ -97,20 +73,10 @@ if( (communicationThread_handle = TSK_create((Fxn)communicationThread, &communic
 void computationThread()
 {
 
-//Variables allocation for computationThread
-int i;
-
 
 //beginningCode
 
 {
-	init_MacroBlock(MacroBlockMBSortDataMB);
-	init_SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	init_row(SortDatablockrowrow_in,rowrow_outtranspose_1block_in);
-	init_transpose_1(rowrow_outtranspose_1block_in,transpose_1block_outcolumncol_in);
-	init_column(columncol_outtranspose_2block_in,transpose_1block_outcolumncol_in);
-	init_transpose_2(columncol_outtranspose_2block_in,transpose_2block_outclipclip);
-	init_clip(transpose_2block_outclipclip);
 }
 
 
@@ -118,23 +84,6 @@ int i;
 
 
 for(;;){
-	MacroBlock(MacroBlockMBSortDataMB);
-	SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	for(i = 0; i < 48 ; i += 1){
-		row(SortDatablockrowrow_in[i] ,rowrow_outtranspose_1block_in[i] );
-	}
-	for(i = 0; i < 6 ; i += 1){
-		transpose_1(rowrow_outtranspose_1block_in[i] ,transpose_1block_outcolumncol_in[i] );
-	}
-	for(i = 0; i < 48 ; i += 1){
-		column(columncol_outtranspose_2block_in[i] ,transpose_1block_outcolumncol_in[i] );
-	}
-	for(i = 0; i < 6 ; i += 1){
-		transpose_2(columncol_outtranspose_2block_in[i] ,transpose_2block_outclipclip[i] );
-	}
-	for(i = 0; i < 6 ; i += 1){
-		clip(transpose_2block_outclipclip[i] );
-	}
 }
 
 
@@ -142,13 +91,6 @@ for(;;){
 //endCode
 
 {
-	close_MacroBlock(MacroBlockMBSortDataMB);
-	close_SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	close_row(SortDatablockrowrow_in,rowrow_outtranspose_1block_in);
-	close_transpose_1(rowrow_outtranspose_1block_in,transpose_1block_outcolumncol_in);
-	close_column(columncol_outtranspose_2block_in,transpose_1block_outcolumncol_in);
-	close_transpose_2(columncol_outtranspose_2block_in,transpose_2block_outclipclip);
-	close_clip(transpose_2block_outclipclip);
 }
 
 }//end thread: computationThread

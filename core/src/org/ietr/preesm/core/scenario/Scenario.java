@@ -35,9 +35,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.constraints;
+package org.ietr.preesm.core.scenario;
 
-public class ConstraintManager {
+public class Scenario implements IScenario {
 
 	/**
 	 * Manager of constraint groups
@@ -49,16 +49,16 @@ public class ConstraintManager {
 	 */
 	private TimingManager timingmanager = null;
 
-	public ConstraintManager() {
+	public Scenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
 	}
 
-	public ConstraintGroupManager getCGManager() {
+	public ConstraintGroupManager getConstraintGroupManager() {
 		return constraintgroupmanager;
 	}
 
-	public TimingManager getTManager() {
+	public TimingManager getTimingManager() {
 		return timingmanager;
 	}
 }

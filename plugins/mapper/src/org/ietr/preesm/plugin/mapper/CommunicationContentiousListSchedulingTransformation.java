@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CommunicationContentiousListSchedulingParameters;

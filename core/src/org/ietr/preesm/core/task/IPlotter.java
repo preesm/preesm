@@ -4,7 +4,7 @@
 package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 

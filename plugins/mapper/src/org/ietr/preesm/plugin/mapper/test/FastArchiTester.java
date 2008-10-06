@@ -42,11 +42,11 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
-import org.ietr.preesm.core.constraints.Scenario;
-import org.ietr.preesm.core.constraints.Timing;
-import org.ietr.preesm.core.constraints.TimingManager;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;

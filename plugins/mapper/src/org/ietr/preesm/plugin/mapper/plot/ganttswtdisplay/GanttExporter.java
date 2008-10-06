@@ -5,7 +5,7 @@ package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
 
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.constraints.IScenario;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.graphtransfo.GMLMapperDAGExporter;

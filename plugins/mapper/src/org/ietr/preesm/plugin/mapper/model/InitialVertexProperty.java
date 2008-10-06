@@ -45,7 +45,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
-import org.ietr.preesm.core.constraints.Timing;
+import org.ietr.preesm.core.scenario.Timing;
 
 /**
  * Properties of an implanted vertex set when converting dag to mapper dag

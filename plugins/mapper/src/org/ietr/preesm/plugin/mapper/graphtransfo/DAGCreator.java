@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
-import org.ietr.preesm.core.constraints.Timing;
+import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
