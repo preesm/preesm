@@ -40,6 +40,8 @@ import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.AlgorithmTransformer;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CombinedListScheduling;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CommunicationContentiousListSchedulingParameters;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -65,7 +67,8 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		// TODO Add here the calls to your task scheduling algorithm
 		// in which you ask communicationcontentiouslistschedulingdabc for
 		// implementation evaluations
-
+		System.out
+				.println("Communication Contentious List Scheduling Transformation!");
 		CommunicationContentiousListSchedulingParameters parameters;
 		TaskResult result = new TaskResult();
 
@@ -74,8 +77,20 @@ public class CommunicationContentiousListSchedulingTransformation extends
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
-
-		return null;
+		CombinedListScheduling scheduler = new CombinedListScheduling(algorithm);
+		scheduler.schedule();
+		return result;
 	}
 
+	public static void main(String[] args) {
+		AlgorithmTransformer transformer = new AlgorithmTransformer();
+
+		// Generating random sdf dag
+		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
+		SDFGraph graph = transformer.randomSDF(nbVertex, minInDegree,
+				maxInDegree, minOutDegree, maxOutDegree, 1000);
+
+		CombinedListScheduling scheduler = new CombinedListScheduling(graph);
+		scheduler.schedule();
+	}
 }

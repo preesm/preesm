@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<design_architecture>
+	<vendor>ietr.org</vendor>
+	<library>test_lib</library>
+	<name>design_architecture</name>
+	<version>1.0</version>
+	<componentInstances>
+		<componentInstance type="processor">
+			<id>processor1</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor2</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus1</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus2</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="network">
+			<id>network1</id>
+			<name>opb_crossbar</name>
+		</componentInstance>
+	</componentInstances>
+	<interconnections>
+		<interconnection type="undirected">
+			<vertexRef>processor1</vertexRef>
+			<linkRef>bus1</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor2</vertexRef>
+			<linkRef>bus2</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus1</linkRef>
+		</interconnection>
+	</interconnections>
+</design_architecture>

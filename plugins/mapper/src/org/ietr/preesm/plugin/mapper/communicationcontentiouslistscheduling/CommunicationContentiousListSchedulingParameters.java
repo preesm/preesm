@@ -74,5 +74,11 @@ public class CommunicationContentiousListSchedulingParameters extends AbstractPa
 		return simulatorType;
 	}
 
-
+	/**
+	 * @param simulatorType
+	 *            the simulatorType to set
+	 */
+	public void setSimulatorType(AbcType simulatorType) {
+		this.simulatorType = simulatorType;
+	}
 }

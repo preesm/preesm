@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<design_architecture>
+	<vendor>ietr.org</vendor>
+	<library>test_lib</library>
+	<name>design_architecture</name>
+	<version>1.0</version>
+	<componentInstances>
+		<componentInstance type="processor">
+			<id>processor1</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor2</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor3</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor4</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor5</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor6</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor7</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="processor">
+			<id>processor8</id>
+			<name>microblaze</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus1</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus2</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus3</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus4</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus5</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus6</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus7</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="bus">
+			<id>bus8</id>
+			<name>opb_bus</name>
+		</componentInstance>
+		<componentInstance type="network">
+			<id>network1</id>
+			<name>opb_crossbar</name>
+		</componentInstance>
+	</componentInstances>
+	<interconnections>
+		<interconnection type="undirected">
+			<vertexRef>processor1</vertexRef>
+			<linkRef>bus1</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor2</vertexRef>
+			<linkRef>bus2</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor3</vertexRef>
+			<linkRef>bus3</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor4</vertexRef>
+			<linkRef>bus4</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor5</vertexRef>
+			<linkRef>bus5</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor6</vertexRef>
+			<linkRef>bus6</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor7</vertexRef>
+			<linkRef>bus7</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>processor8</vertexRef>
+			<linkRef>bus8</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus1</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus2</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus3</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus4</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus5</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus6</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus7</linkRef>
+		</interconnection>
+		<interconnection type="undirected">
+			<vertexRef>network1</vertexRef>
+			<linkRef>bus8</linkRef>
+		</interconnection>
+	</interconnections>
+</design_architecture>
