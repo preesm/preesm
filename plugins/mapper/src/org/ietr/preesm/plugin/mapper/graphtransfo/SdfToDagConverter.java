@@ -205,7 +205,7 @@ public class SdfToDagConverter {
 		}
 
 		/**
-		 * Importing constraint groups
+		 * Importing scenario: Only the timings corresponding to allowed mappings are set.
 		 */
 
 		// Iterating over constraint groups

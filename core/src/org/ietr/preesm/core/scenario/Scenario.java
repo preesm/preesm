@@ -37,6 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import org.w3c.dom.Element;
+
 public class Scenario implements IScenario {
 
 	/**
@@ -48,6 +50,16 @@ public class Scenario implements IScenario {
 	 * Manager of timings
 	 */
 	private TimingManager timingmanager = null;
+
+	/**
+	 * Path to the algorithm file
+	 */
+	private String algorithmURL = "";
+
+	/**
+	 * Path to the architecture file
+	 */
+	private String architectureURL = "";
 
 	public Scenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
@@ -61,4 +73,28 @@ public class Scenario implements IScenario {
 	public TimingManager getTimingManager() {
 		return timingmanager;
 	}
+	
+	static public Scenario fromFile(){
+		Scenario scenario = null;
+		
+		return scenario;
+	}
+
+	public String getAlgorithmURL() {
+		return algorithmURL;
+	}
+
+	public void setAlgorithmURL(String algorithmURL) {
+		this.algorithmURL = algorithmURL;
+	}
+
+	public String getArchitectureURL() {
+		return architectureURL;
+	}
+
+	public void setArchitectureURL(String architectureURL) {
+		this.architectureURL = architectureURL;
+	}
+	
+	
 }

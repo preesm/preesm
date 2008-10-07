@@ -3,29 +3,19 @@
  */
 package org.ietr.preesm.core.scenario.editor;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.Scenario;
 
 /**
  * @author mpelcat
  *
  */
-public class ConstraintsPage extends FormPage {
-
-	private Scenario scenario;
-
+public class TimingsPage extends FormPage {
 	@Override
 	public Control getPartControl() {
 		// TODO Auto-generated method stub
@@ -40,35 +30,25 @@ public class ConstraintsPage extends FormPage {
 		ScrolledForm f = managedForm.getForm();
 		f.setText("Formular:");
 		f.getBody().setLayout(new GridLayout());
-		
 		managedForm.getToolkit().createLabel(f.getBody(), "Feld1:");
 		managedForm.getToolkit().createText(f.getBody(), "Wert1");
 		managedForm.getToolkit().createHyperlink(f.getBody(), "Dies ist der Text", 0);
-
-		Composite treeCp = managedForm.getToolkit().createComposite(f.getBody());
-		treeCp.setLayout(new GridLayout(2,true));
-		SDFTreeSection sdfTreeSection = new SDFTreeSection(scenario, treeCp, managedForm.getToolkit(),Section.DESCRIPTION);
-		
-		
 		managedForm.refresh();
 
 	}
 
-	public ConstraintsPage(Scenario scenario, FormEditor editor, String id, String title) {
+	public TimingsPage(FormEditor editor, String id, String title) {
 		super(editor, id, title);
-		this.scenario = scenario;
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 
 		super.createPartControl(parent);
+		/*FormToolkit toolkit = new FormToolkit(parent.getDisplay());
+		Form form = toolkit.createForm(parent);
+		form.setText("Hello, Eclipse Forms");
+		toolkit.decorateFormHeading(form);	// NEW LINE*/
 	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		super.doSave(monitor);
-	}
-
 }

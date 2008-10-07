@@ -61,11 +61,6 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class ConstraintGroup {
 
 	/**
-	 * Name of the constraint group
-	 */
-	private String id;
-
-	/**
 	 * The set of processing units available for the constraint group
 	 */
 	private List<OperatorDefinition> operatordefinitions;
@@ -75,8 +70,7 @@ public class ConstraintGroup {
 	 */
 	private List<SDFAbstractVertex> vertices;
 
-	public ConstraintGroup(String groupId) {
-		id = groupId;
+	public ConstraintGroup() {
 		operatordefinitions = new ArrayList<OperatorDefinition>();
 		vertices = new ArrayList<SDFAbstractVertex>();
 
@@ -95,10 +89,6 @@ public class ConstraintGroup {
 
 		}
 
-	}
-
-	public String getId() {
-		return id;
 	}
 
 	public List<OperatorDefinition> getOperatorDefinitions() {
@@ -154,9 +144,5 @@ public class ConstraintGroup {
 			}
 		}
 
-	}
-
-	public void setId(String groupId) {
-		id = groupId;
 	}
 }
