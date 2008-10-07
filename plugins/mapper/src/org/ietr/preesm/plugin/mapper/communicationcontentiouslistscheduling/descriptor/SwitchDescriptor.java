@@ -2,24 +2,24 @@ package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.des
 
 import java.util.HashMap;
 
-public class NetworkDescriptor extends TGVertexDescriptor {
+public class SwitchDescriptor extends TGVertexDescriptor {
 
 	private double averageClockCyclesPerTransfer; // unit: clock cycle
 
 	private int portNumber;
 
-	public NetworkDescriptor(String id, String name,
+	public SwitchDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer) {
 		super(id, name, componentDescriptorBuffer);
-		this.type = ComponentType.Network;
+		this.type = ComponentType.Switch;
 	}
 
-	public NetworkDescriptor(String id, String name,
+	public SwitchDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
 		super(id, name, componentDescriptorBuffer, clockPeriod, dataWidth,
 				surface);
-		this.type = ComponentType.Network;
+		this.type = ComponentType.Switch;
 	}
 
 	public void setAverageClockCyclesPerTransfer(

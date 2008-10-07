@@ -2,13 +2,15 @@ package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling;
 
 import java.util.HashMap;
 
+import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.CommunicationDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComponentDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComponentType;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComputationDescriptor;
-import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.NetworkDescriptor;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.OperatorDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.parser.ArchitectureParser;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.parser.ParameterParser;
@@ -22,131 +24,124 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 public class CombinedListScheduling {
 
-	private String architectureFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture2.xml";
+	private String architectureFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture.xml";
 
 	private String parameterFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\parameter.xml";
 
-	private AlgorithmTransformer transformer = null;
+	private AlgorithmTransformer algoTransformer = null;
 
-	private SDFGraph graph = null;
+	private ArchitectureTransformer archiTransformer = null;
 
+	private ScenarioTransformer scenaTransformer = null;
+
+	private SDFGraph sdf = null;
+	private IArchitecture architecture = null;
+	private IScenario scenario = null;
+
+	private AlgorithmDescriptor algo = null;
+	private ArchitectureDescriptor archi = null;
 	private HashMap<String, Integer> computationWeights = null;
-
-	private AlgorithmDescriptor algorithm = null;
-
-	private ArchitectureDescriptor architecture = null;
 
 	private AbstractScheduler bestScheduler = null;
 
 	private int bestScheduleLength = Integer.MAX_VALUE;
 
-	public CombinedListScheduling(SDFGraph graph) {
-		transformer = new AlgorithmTransformer();
-		this.graph = graph;
-		generateNodeWeight(graph, 100);
+	public CombinedListScheduling(SDFGraph sdf, IArchitecture architecture,
+			IScenario scenario) {
+		algoTransformer = new AlgorithmTransformer();
+		archiTransformer = new ArchitectureTransformer();
+		scenaTransformer = new ScenarioTransformer();
+		this.sdf = sdf;
+		this.architecture = architecture;
+		this.scenario = scenario;
+		computationWeights = algoTransformer.generateNodeWeight(sdf, 100);
 	}
 
 	public CombinedListScheduling(String parameterFileName,
 			String architectureFileName) {
-		transformer = new AlgorithmTransformer();
+		this.architectureFileName = architectureFileName;
+		this.parameterFileName = parameterFileName;
+		algoTransformer = new AlgorithmTransformer();
 
 		// Generating random DAG-like SDF
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		graph = transformer.randomSDF(nbVertex, minInDegree, maxInDegree,
+		sdf = algoTransformer.randomSDF(nbVertex, minInDegree, maxInDegree,
 				minOutDegree, maxOutDegree, 500, 1000);
-		generateRandomNodeWeight(graph, 500, 1000);
+		computationWeights = algoTransformer.generateRandomNodeWeight(sdf, 500,
+				1000);
 	}
 
-	private void parse(SDFGraph sdf, String architectureFileName,
-			String parameterFileName) {
-
-		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			algorithm.getComputation(indexVertex.getName()).setTime(
-					computationWeights.get(indexVertex.getName()));
-		}
-
-		architecture = new ArchitectureDescriptor();
-		new ArchitectureParser(architectureFileName, architecture).parse();
-		// Parse the design parameter document
-		new ParameterParser(parameterFileName, architecture, algorithm).parse();
-
-		OperatorDescriptor defaultOperator = null;
-		NetworkDescriptor defaultNetwork = null;
-		for (ComponentDescriptor indexComponent : architecture.getComponents()
-				.values()) {
-			if ((indexComponent.getType() == ComponentType.Ip || indexComponent
-					.getType() == ComponentType.Processor)
-					&& indexComponent.getId().equalsIgnoreCase(
-							indexComponent.getName())) {
-				defaultOperator = (OperatorDescriptor) indexComponent;
-			} else if (indexComponent.getType() == ComponentType.Network
-					&& indexComponent.getId().equalsIgnoreCase(
-							indexComponent.getName())) {
-				defaultNetwork = (NetworkDescriptor) indexComponent;
+	private void parse() {
+		if (architecture != null) {
+			algo = algoTransformer.sdf2Algorithm(sdf);
+			archi = archiTransformer.architecture2Descriptor(architecture);
+			scenaTransformer.parse(scenario, algo, archi);
+		} else {
+			algo = algoTransformer.sdf2Algorithm(sdf);
+			for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+				algo.getComputation(indexVertex.getName()).setTime(
+						computationWeights.get(indexVertex.getName()));
 			}
-		}
+			archi = new ArchitectureDescriptor();
+			// Parse the design architecture document
+			new ArchitectureParser(architectureFileName, archi).parse();
+			// Parse the design parameter document
+			new ParameterParser(parameterFileName, archi, algo).parse();
 
-		System.out.println(" default operator: Id=" + defaultOperator.getId()
-				+ "; Name=" + defaultOperator.getName());
-		System.out.println(" default network: Id=" + defaultNetwork.getId()
-				+ "; Name=" + defaultNetwork.getName());
-		System.out.println("Computations in the algorithm:");
-		for (ComputationDescriptor indexComputation : algorithm
-				.getComputations().values()) {
-			if (!indexComputation.getComputationDurations().containsKey(
-					defaultOperator)) {
-				indexComputation.addComputationDuration(defaultOperator,
-						indexComputation.getTime());
-				System.out.println(" Name="
-						+ indexComputation.getName()
-						+ "; default computationDuration="
-						+ indexComputation
-								.getComputationDuration(defaultOperator));
+			OperatorDescriptor defaultOperator = null;
+			SwitchDescriptor defaultNetwork = null;
+			for (ComponentDescriptor indexComponent : archi.getComponents()
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Ip || indexComponent
+						.getType() == ComponentType.Processor)
+						&& indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					defaultOperator = (OperatorDescriptor) indexComponent;
+				} else if (indexComponent.getType() == ComponentType.Switch
+						&& indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					defaultNetwork = (SwitchDescriptor) indexComponent;
+				}
 			}
-		}
-		System.out.println("Communications in the algorithm:");
-		for (CommunicationDescriptor indexCommunication : algorithm
-				.getCommunications().values()) {
-			if (!indexCommunication.getCommunicationDurations().containsKey(
-					defaultNetwork)) {
-				indexCommunication.addCommunicationDuration(defaultNetwork,
-						indexCommunication.getWeight());
-				System.out.println(" Name="
-						+ indexCommunication.getName()
-						+ "; default communicationDuration="
-						+ indexCommunication
-								.getCommunicationDuration(defaultNetwork));
+
+			System.out.println(" default operator: Id="
+					+ defaultOperator.getId() + "; Name="
+					+ defaultOperator.getName());
+			System.out.println(" default network: Id=" + defaultNetwork.getId()
+					+ "; Name=" + defaultNetwork.getName());
+			System.out.println("Computations in the algorithm:");
+			for (ComputationDescriptor indexComputation : algo
+					.getComputations().values()) {
+				if (!indexComputation.getComputationDurations().containsKey(
+						defaultOperator)) {
+					indexComputation.addComputationDuration(defaultOperator,
+							indexComputation.getTime());
+					System.out.println(" Name="
+							+ indexComputation.getName()
+							+ "; default computationDuration="
+							+ indexComputation
+									.getComputationDuration(defaultOperator));
+				}
 			}
-		}
-		System.out.println("Operators in the architecture:");
-		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
-				.values()) {
-			System.out.println(" Id=" + indexOperator.getId() + "; Name="
-					+ indexOperator.getName());
-		}
-	}
-
-	private void generateRandomNodeWeight(SDFGraph sdf, double minWeight,
-			double maxWeight) {
-		computationWeights = new HashMap<String, Integer>();
-
-		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			Double taskSize = Math.random() * (maxWeight - minWeight)
-					+ minWeight;
-			computationWeights.put(indexVertex.getName(), taskSize.intValue());
-			// System.out.println("name: " + indexVertex.getName() + "; weight:"
-			// + taskSize.intValue());
-		}
-	}
-
-	private void generateNodeWeight(SDFGraph sdf, int weight) {
-		computationWeights = new HashMap<String, Integer>();
-
-		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			if (indexVertex.getName().equalsIgnoreCase("copy")) {
-				computationWeights.put(indexVertex.getName(), 10 * weight);
-			} else {
-				computationWeights.put(indexVertex.getName(), weight);
+			System.out.println("Communications in the algorithm:");
+			for (CommunicationDescriptor indexCommunication : algo
+					.getCommunications().values()) {
+				if (!indexCommunication.getCommunicationDurations()
+						.containsKey(defaultNetwork)) {
+					indexCommunication.addCommunicationDuration(defaultNetwork,
+							indexCommunication.getWeight());
+					System.out.println(" Name="
+							+ indexCommunication.getName()
+							+ "; default communicationDuration="
+							+ indexCommunication
+									.getCommunicationDuration(defaultNetwork));
+				}
+			}
+			System.out.println("Operators in the architecture:");
+			for (OperatorDescriptor indexOperator : archi.getAllOperators()
+					.values()) {
+				System.out.println(" Id=" + indexOperator.getId() + "; Name="
+						+ indexOperator.getName());
 			}
 		}
 	}
@@ -154,124 +149,105 @@ public class CombinedListScheduling {
 	public void schedule() {
 		System.out
 				.println("\n***** Combined List Scheduling With Static Order Begins! *****");
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+
+		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevelComputation scheduler1 = new ListSchedulingClassicWithStaticOrderByBottomLevelComputation(
-				algorithm, architecture);
+				algo, archi);
 		scheduler1.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevel scheduler2 = new ListSchedulingClassicWithStaticOrderByBottomLevel(
-				algorithm, architecture);
+				algo, archi);
 		scheduler2.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevelIn scheduler3 = new ListSchedulingClassicWithStaticOrderByBottomLevelIn(
-				algorithm, architecture);
+				algo, archi);
 		scheduler3.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevelOut scheduler4 = new ListSchedulingClassicWithStaticOrderByBottomLevelOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler4.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevelInOut scheduler5 = new ListSchedulingClassicWithStaticOrderByBottomLevelInOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler5.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelComputation scheduler6 = new ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelComputation(
-				algorithm, architecture);
+				algo, archi);
 		scheduler6.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevel scheduler7 = new ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevel(
-				algorithm, architecture);
+				algo, archi);
 		scheduler7.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelIn scheduler8 = new ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelIn(
-				algorithm, architecture);
+				algo, archi);
 		scheduler8.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelOut scheduler9 = new ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler9.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelInOut scheduler10 = new ListSchedulingCriticalChildClassicWithStaticOrderByBottomLevelInOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler10.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelComputation scheduler11 = new ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelComputation(
-				algorithm, architecture);
+				algo, archi);
 		scheduler11.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevel scheduler12 = new ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevel(
-				algorithm, architecture);
+				algo, archi);
 		scheduler12.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelIn scheduler13 = new ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelIn(
-				algorithm, architecture);
+				algo, archi);
 		scheduler13.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelOut scheduler14 = new ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler14.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelInOut scheduler15 = new ListSchedulingCommunicationDelayClassicWithStaticOrderByBottomLevelInOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler15.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCcCdClassicWithStaticOrderByBottomLevelComputation scheduler16 = new ListSchedulingCcCdClassicWithStaticOrderByBottomLevelComputation(
-				algorithm, architecture);
+				algo, archi);
 		scheduler16.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCcCdClassicWithStaticOrderByBottomLevel scheduler17 = new ListSchedulingCcCdClassicWithStaticOrderByBottomLevel(
-				algorithm, architecture);
+				algo, archi);
 		scheduler17.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCcCdClassicWithStaticOrderByBottomLevelIn scheduler18 = new ListSchedulingCcCdClassicWithStaticOrderByBottomLevelIn(
-				algorithm, architecture);
+				algo, archi);
 		scheduler18.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCcCdClassicWithStaticOrderByBottomLevelOut scheduler19 = new ListSchedulingCcCdClassicWithStaticOrderByBottomLevelOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler19.schedule();
 
-		algorithm = transformer.sdf2Algorithm(graph);
-		parse(graph, architectureFileName, parameterFileName);
+		parse();
 		ListSchedulingCcCdClassicWithStaticOrderByBottomLevelInOut scheduler20 = new ListSchedulingCcCdClassicWithStaticOrderByBottomLevelInOut(
-				algorithm, architecture);
+				algo, archi);
 		scheduler20.schedule();
 
 		chooseBestScheduler(scheduler1);
@@ -483,6 +459,14 @@ public class CombinedListScheduling {
 		}
 	}
 
+	public AbstractScheduler getBestScheduler() {
+		return bestScheduler;
+	}
+
+	public int getBestScheduleLength() {
+		return bestScheduleLength;
+	}
+
 	private void plot(AbstractScheduler scheduler) {
 		GanttPlotter plot = new GanttPlotter(scheduler.getName()
 				+ " -> Schedule Length=" + scheduler.getScheduleLength(),
@@ -497,12 +481,11 @@ public class CombinedListScheduling {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture1.xml";
+		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture.xml";
 		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\parameter.xml";
 
 		CombinedListScheduling test = new CombinedListScheduling(
 				parameterFileName, architectureFileName);
 		test.schedule();
 	}
-
 }

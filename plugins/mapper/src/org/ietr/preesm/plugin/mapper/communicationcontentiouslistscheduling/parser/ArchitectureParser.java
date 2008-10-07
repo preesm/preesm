@@ -13,7 +13,7 @@ import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.desc
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComponentDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.FifoDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.IpDescriptor;
-import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.NetworkDescriptor;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ProcessorDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.TGVertexDescriptor;
 import org.w3c.dom.Document;
@@ -209,14 +209,14 @@ public class ArchitectureParser {
 									n3 = n3.getNextSibling();
 								}
 							} else if (((Element) n2).getAttribute("type")
-									.equalsIgnoreCase("Network")) {
+									.equalsIgnoreCase("Switch")) {
 								while (n3 != null) {
 									name = n3.getNodeName();
 									if (name.equalsIgnoreCase("id")) {
 										componentId = n3.getFirstChild()
 												.getNodeValue();
 										if (componentName != null) {
-											new NetworkDescriptor(componentId,
+											new SwitchDescriptor(componentId,
 													componentName,
 													ComponentDescriptorBuffer);
 											componentName = null;
@@ -226,7 +226,7 @@ public class ArchitectureParser {
 										componentName = n3.getFirstChild()
 												.getNodeValue();
 										if (componentId != null) {
-											new NetworkDescriptor(componentId,
+											new SwitchDescriptor(componentId,
 													componentName,
 													ComponentDescriptorBuffer);
 											componentName = null;

@@ -61,8 +61,8 @@ public class ArchitectureDescriptor {
 		return (OperatorDescriptor) ComponentDescriptorBuffer.get(id);
 	}
 
-	public NetworkDescriptor getNetwork(String id) {
-		return (NetworkDescriptor) ComponentDescriptorBuffer.get(id);
+	public SwitchDescriptor getNetwork(String id) {
+		return (SwitchDescriptor) ComponentDescriptorBuffer.get(id);
 	}
 
 	public LinkDescriptor getLink(String id) {

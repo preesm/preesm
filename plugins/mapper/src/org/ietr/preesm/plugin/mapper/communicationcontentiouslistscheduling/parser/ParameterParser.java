@@ -16,7 +16,7 @@ import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.desc
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComputationDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.FifoDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.IpDescriptor;
-import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.NetworkDescriptor;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.OperatorDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ProcessorDescriptor;
 import org.w3c.dom.Document;
@@ -304,13 +304,13 @@ public class ParameterParser {
 						n3 = n3.getNextSibling();
 					}
 				} else if (((Element) n2).getAttribute("type")
-						.equalsIgnoreCase("Network")) {
+						.equalsIgnoreCase("Switch")) {
 					n3 = n2.getFirstChild();
 					while (n3 != null) {
 						name = n3.getNodeName();
 						if (name.equalsIgnoreCase("name")) {
 							componentName = n3.getFirstChild().getNodeValue();
-							new NetworkDescriptor(componentName, componentName,
+							new SwitchDescriptor(componentName, componentName,
 									ComponentDescriptorBuffer);
 						} else if (name.equalsIgnoreCase("clockPeriod")) {
 							ComponentDescriptorBuffer.get(componentName)
@@ -324,13 +324,13 @@ public class ParameterParser {
 													.getNodeValue()));
 						} else if (name
 								.equalsIgnoreCase("averageClockCyclesPerTransfer")) {
-							((NetworkDescriptor) ComponentDescriptorBuffer
+							((SwitchDescriptor) ComponentDescriptorBuffer
 									.get(componentName))
 									.setAverageClockCyclesPerTransfer(Double
 											.parseDouble(n3.getFirstChild()
 													.getNodeValue()));
 						} else if (name.equalsIgnoreCase("portNumber")) {
-							((NetworkDescriptor) ComponentDescriptorBuffer
+							((SwitchDescriptor) ComponentDescriptorBuffer
 									.get(componentName))
 									.setPortNumber(Integer.parseInt(n3
 											.getFirstChild().getNodeValue()));
@@ -453,7 +453,7 @@ public class ParameterParser {
 									CommunicationDescriptorBuffer
 											.get(communicationName)
 											.addCommunicationDuration(
-													(NetworkDescriptor) ComponentDescriptorBuffer
+													(SwitchDescriptor) ComponentDescriptorBuffer
 															.get(networkName),
 													Integer.parseInt(duration));
 									duration = null;

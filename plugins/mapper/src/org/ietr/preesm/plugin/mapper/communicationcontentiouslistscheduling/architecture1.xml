@@ -69,7 +69,7 @@
 			<id>bus8</id>
 			<name>opb_bus</name>
 		</componentInstance>
-		<componentInstance type="network">
+		<componentInstance type="switch">
 			<id>network1</id>
 			<name>opb_crossbar</name>
 		</componentInstance>

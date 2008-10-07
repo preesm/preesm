@@ -8,6 +8,7 @@ import java.util.Set;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.CommunicationDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComputationDescriptor;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.scheduler.AbstractScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.factories.DAGEdgeFactory;
@@ -22,7 +23,8 @@ import org.sdf4j.visitors.TopologyVisitor;
 /**
  * @author pmu
  * 
- *         The AlgorithmTransformer converts an SDF to an AlgorithmDescriptor
+ *         The AlgorithmTransformer converts different algorithms among SDF, DAG
+ *         and AlgorithmDescriptor
  */
 public class AlgorithmTransformer {
 
@@ -93,9 +95,17 @@ public class AlgorithmTransformer {
 	}
 
 	/**
+	 * Converts an AlgorithmDescriptor to a MapperDAG
+	 */
+	public MapperDAG algorithm2DAG(AbstractScheduler scheduler) {
+		MapperDAG dag = new MapperDAG(null, null);
+		return dag;
+	}
+
+	/**
 	 * Converts MapperDAG to an AlgorithmDescriptor
 	 */
-	public AlgorithmDescriptor dag2algorithm(MapperDAG dag) {
+	public AlgorithmDescriptor dag2Algorithm(MapperDAG dag) {
 		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(null);
 		return algorithm;
 	}
@@ -161,5 +171,32 @@ public class AlgorithmTransformer {
 		}
 
 		return demoGraph;
+	}
+
+	public HashMap<String, Integer> generateRandomNodeWeight(SDFGraph sdf,
+			double minWeight, double maxWeight) {
+		HashMap<String, Integer> computationWeights = new HashMap<String, Integer>();
+
+		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+			Double taskSize = Math.random() * (maxWeight - minWeight)
+					+ minWeight;
+			computationWeights.put(indexVertex.getName(), taskSize.intValue());
+			// System.out.println("name: " + indexVertex.getName() + "; weight:"
+			// + taskSize.intValue());
+		}
+		return computationWeights;
+	}
+
+	public HashMap<String, Integer> generateNodeWeight(SDFGraph sdf, int weight) {
+		HashMap<String, Integer> computationWeights = new HashMap<String, Integer>();
+
+		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+			if (indexVertex.getName().equalsIgnoreCase("copy")) {
+				computationWeights.put(indexVertex.getName(), 10 * weight);
+			} else {
+				computationWeights.put(indexVertex.getName(), weight);
+			}
+		}
+		return computationWeights;
 	}
 }

@@ -21,6 +21,6 @@ public enum ComponentType {
 	/**
 	 * 
 	 */
-	Network;
+	Switch;
 
 }

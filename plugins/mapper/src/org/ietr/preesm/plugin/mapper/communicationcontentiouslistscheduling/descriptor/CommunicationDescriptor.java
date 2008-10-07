@@ -19,7 +19,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 
 	private LinkDescriptor sendLink;
 
-	private NetworkDescriptor network;
+	private SwitchDescriptor network;
 
 	private LinkDescriptor receiveLink;
 
@@ -215,11 +215,11 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		this.sendLink = sendLink;
 	}
 
-	public NetworkDescriptor getNetwork() {
+	public SwitchDescriptor getNetwork() {
 		return network;
 	}
 
-	public void setNetwork(NetworkDescriptor network) {
+	public void setNetwork(SwitchDescriptor network) {
 		this.network = network;
 	}
 
@@ -231,7 +231,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		this.receiveLink = receiveLink;
 	}
 
-	public void addCommunicationDuration(NetworkDescriptor network, int time) {
+	public void addCommunicationDuration(SwitchDescriptor network, int time) {
 		communicationDurations.put(network.getName(), time);
 	}
 
@@ -239,7 +239,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		return communicationDurations;
 	}
 
-	public int getCommunicationDuration(NetworkDescriptor network) {
+	public int getCommunicationDuration(SwitchDescriptor network) {
 		if (communicationDurations.containsKey(network.getName())) {
 			return communicationDurations.get(network.getName());
 		} else {

@@ -2,6 +2,7 @@ package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.plo
 
 import java.awt.Color;
 import java.awt.LinearGradientPaint;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
@@ -292,4 +293,9 @@ public class GanttPlotter extends ApplicationFrame {
 		setContentPane(chartPanel);
 	}
 
+	public void windowClosing(WindowEvent event){
+		if(event.equals(WindowEvent.WINDOW_CLOSING)){
+			
+		}
+	}
 }

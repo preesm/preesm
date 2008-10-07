@@ -121,8 +121,8 @@ public class IpDescriptor extends OperatorDescriptor {
 			communicationDuration = receiveDuration + sendDuration;
 			maxNbInstance = executionDuration
 					/ (receiveDuration + sendDuration) + 1;
-		} else if (ComponentDescriptorBuffer.get(id).getType() == ComponentType.Network) {
-			NetworkDescriptor network = (NetworkDescriptor) ComponentDescriptorBuffer
+		} else if (ComponentDescriptorBuffer.get(id).getType() == ComponentType.Switch) {
+			SwitchDescriptor network = (SwitchDescriptor) ComponentDescriptorBuffer
 					.get(id);
 			receiveDuration = (int) (network.getAverageClockCyclesPerTransfer()
 					* 8 * nbInputData * network.getClockPeriod() / network

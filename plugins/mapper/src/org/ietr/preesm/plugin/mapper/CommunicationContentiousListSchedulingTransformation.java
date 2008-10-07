@@ -42,9 +42,6 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.AlgorithmTransformer;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CombinedListScheduling;
-import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.CommunicationContentiousListSchedulingParameters;
-import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -69,28 +66,31 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		// implementation evaluations
 		System.out
 				.println("Communication Contentious List Scheduling Transformation!");
-		CommunicationContentiousListSchedulingParameters parameters;
 		TaskResult result = new TaskResult();
+		// CommunicationContentiousListSchedulingParameters parameters = new
+		// CommunicationContentiousListSchedulingParameters(
+		// textParameters);
 
-		parameters = new CommunicationContentiousListSchedulingParameters(
-				textParameters);
-
-		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
-				scenario, false);
-		CombinedListScheduling scheduler = new CombinedListScheduling(algorithm);
+		CombinedListScheduling scheduler = new CombinedListScheduling(
+				algorithm, null, null);
 		scheduler.schedule();
+
+		// result
+		// .setDAG(alTransformer.algorithm2DAG(scheduler
+		// .getBestScheduler()));
 		return result;
 	}
 
 	public static void main(String[] args) {
-		AlgorithmTransformer transformer = new AlgorithmTransformer();
+		AlgorithmTransformer algoTransformer = new AlgorithmTransformer();
 
 		// Generating random sdf dag
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = transformer.randomSDF(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 1000);
+		SDFGraph sdf = algoTransformer.randomSDF(nbVertex, minInDegree,
+				maxInDegree, minOutDegree, maxOutDegree, 500, 1000);
 
-		CombinedListScheduling scheduler = new CombinedListScheduling(graph);
+		CombinedListScheduling scheduler = new CombinedListScheduling(sdf,
+				null, null);
 		scheduler.schedule();
 	}
 }

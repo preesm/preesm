@@ -26,7 +26,7 @@
 			<portNumber>8</portNumber>
 			<surface>100</surface>
 		</component>
-		<component type="network">
+		<component type="switch">
 			<name>opb_crossbar</name>
 			<clockPeriod>1</clockPeriod>
 			<!-- unit: ns -->
