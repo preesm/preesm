@@ -17,10 +17,7 @@
    <graph edgedefault="directed">
       <data key="parameters"/>
       <data key="variables"/>
-      <node id="readBlock" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="arguments"/>
-      </node>
+      <node id="blockIn" kind="port" port_direction="Input"/>
       <node id="idct1d" kind="vertex">
          <data key="graph_desc"/>
          <data key="arguments"/>
@@ -33,25 +30,34 @@
          <data key="graph_desc"/>
          <data key="arguments"/>
       </node>
-      <edge source="readBlock" sourceport="block" target="idct1d" targetport="row_in">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">8</data>
-      </edge>
+      <node id="ReadBlock" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
       <edge source="idct1d" sourceport="row_out" target="transpose" targetport="block_in">
          <data key="edge_prod">8</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-      </edge>
-      <edge source="transpose" sourceport="block_out" target="readBlock" targetport="block_in">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">64</data>
          <data key="edge_cons">64</data>
       </edge>
       <edge source="transpose" sourceport="block_out" target="clip" targetport="double_block">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">128</data>
+      </edge>
+      <edge source="blockIn" sourceport="block" target="ReadBlock" targetport="block_In">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+      </edge>
+      <edge source="ReadBlock" sourceport="block_out" target="idct1d" targetport="row_in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+      </edge>
+      <edge source="transpose" sourceport="block_out" target="ReadBlock" targetport="block_trans">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
       </edge>
    </graph>
 </graphml>

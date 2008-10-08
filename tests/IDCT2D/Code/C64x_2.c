@@ -14,33 +14,61 @@ extern LOG_Obj trace;
 #include "..\..\lib_RACH\common.h"
 
 //Buffer allocation for C64x_2
-#pragma DATA_SECTION(MacroBlockMBSortDataMB, ".my_sect")
-#pragma DATA_ALIGN(MacroBlockMBSortDataMB, 8)
-char[10] MacroBlockMBSortDataMB;
+#pragma DATA_SECTION(Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In, ".my_sect")
+#pragma DATA_ALIGN(Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In, 8)
+char[10] Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In;
 
-#pragma DATA_SECTION(SortDatablockrowrow_in, ".my_sect")
-#pragma DATA_ALIGN(SortDatablockrowrow_in, 8)
-char[10] SortDatablockrowrow_in;
+#pragma DATA_SECTION(Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In, ".my_sect")
+#pragma DATA_ALIGN(Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In, 8)
+char[10] Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In;
 
-#pragma DATA_SECTION(rowrow_outtranspose_1block_in, ".my_sect")
-#pragma DATA_ALIGN(rowrow_outtranspose_1block_in, 8)
-char[10] rowrow_outtranspose_1block_in;
+#pragma DATA_SECTION(Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In, ".my_sect")
+#pragma DATA_ALIGN(Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In, 8)
+char[10] Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In;
 
-#pragma DATA_SECTION(transpose_1block_outcolumncol_in, ".my_sect")
-#pragma DATA_ALIGN(transpose_1block_outcolumncol_in, 8)
-char[10] transpose_1block_outcolumncol_in;
+#pragma DATA_SECTION(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in, 8)
+char[10] HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in;
 
-#pragma DATA_SECTION(columncol_outtranspose_2block_in, ".my_sect")
-#pragma DATA_ALIGN(columncol_outtranspose_2block_in, 8)
-char[10] columncol_outtranspose_2block_in;
+#pragma DATA_SECTION(HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in, 8)
+char[10] HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in;
 
-#pragma DATA_SECTION(transpose_2block_outclipclip, ".my_sect")
-#pragma DATA_ALIGN(transpose_2block_outclipclip, 8)
-char[10] transpose_2block_outclipclip;
+#pragma DATA_SECTION(HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans, 8)
+char[10] HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block, 8)
+char[10] HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in, 8)
+char[10] HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in, 8)
+char[10] HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block, 8)
+char[10] HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in, 8)
+char[10] HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in, 8)
+char[10] HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in;
+
+#pragma DATA_SECTION(HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block, ".my_sect")
+#pragma DATA_ALIGN(HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block, 8)
+char[10] HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block;
 
 #pragma DATA_SECTION(sem, ".my_sect")
 #pragma DATA_ALIGN(sem, 8)
-semaphore[0] sem;
+semaphore[10] sem;
 
 
 // Main function
@@ -104,13 +132,21 @@ int i;
 //beginningCode
 
 {
-	init_MacroBlock(MacroBlockMBSortDataMB);
-	init_SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	init_row(SortDatablockrowrow_in,rowrow_outtranspose_1block_in);
-	init_transpose_1(rowrow_outtranspose_1block_in,transpose_1block_outcolumncol_in);
-	init_column(columncol_outtranspose_2block_in,transpose_1block_outcolumncol_in);
-	init_transpose_2(columncol_outtranspose_2block_in,transpose_2block_outclipclip);
-	init_clip(transpose_2block_outclipclip);
+	init_Trigger_0(Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	init_HierarchicalIdct2d_2_ReadBlock(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	init_HierarchicalIdct2d_2_idct1d(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in,HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in);
+	init_HierarchicalIdct2d_2_transpose(HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	init_HierarchicalIdct2d_2_ReadBlock_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In);
+	init_HierarchicalIdct2d_2_idct1d_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in,HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in);
+	init_HierarchicalIdct2d_2_transpose_1(HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in,HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block);
+	init_HierarchicalIdct2d_2_clip(HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	init_HierarchicalIdct2d_1_ReadBlock_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in,Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In);
+	init_HierarchicalIdct2d_1_idct1d_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in,HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in);
+	init_HierarchicalIdct2d_1_transpose_1(HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in,HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
+	init_HierarchicalIdct2d_1_clip(HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
+	semaphorePost(sem[0], empty);
+	semaphorePost(sem[2], empty);
+	semaphorePost(sem[4], empty);
 }
 
 
@@ -118,23 +154,34 @@ int i;
 
 
 for(;;){
-	MacroBlock(MacroBlockMBSortDataMB);
-	SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	for(i = 0; i < 48 ; i += 1){
-		row(SortDatablockrowrow_in[i] ,rowrow_outtranspose_1block_in[i] );
+	semaphorePend(sem[0], empty);
+	semaphorePend(sem[2], empty);
+	semaphorePend(sem[4], empty);
+	Trigger_0(Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	semaphorePost(sem[5], full);
+	semaphorePost(sem[3], full);
+	semaphorePost(sem[1], full);
+	HierarchicalIdct2d_2_ReadBlock(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	for(i = 0; i < 8 ; i += 1){
+		HierarchicalIdct2d_2_idct1d(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in[i] ,HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in[i] );
 	}
-	for(i = 0; i < 6 ; i += 1){
-		transpose_1(rowrow_outtranspose_1block_in[i] ,transpose_1block_outcolumncol_in[i] );
+	HierarchicalIdct2d_2_transpose(HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	HierarchicalIdct2d_2_ReadBlock_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In);
+	for(i = 0; i < 8 ; i += 1){
+		HierarchicalIdct2d_2_idct1d_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in[i] ,HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in[i] );
 	}
-	for(i = 0; i < 48 ; i += 1){
-		column(columncol_outtranspose_2block_in[i] ,transpose_1block_outcolumncol_in[i] );
+	HierarchicalIdct2d_2_transpose_1(HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in,HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block);
+	HierarchicalIdct2d_2_clip(HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	semaphorePend(sem[6], full);
+	HierarchicalIdct2d_1_ReadBlock_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in,Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In);
+	semaphorePost(sem[7], empty);
+	for(i = 0; i < 8 ; i += 1){
+		HierarchicalIdct2d_1_idct1d_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in[i] ,HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in[i] );
 	}
-	for(i = 0; i < 6 ; i += 1){
-		transpose_2(columncol_outtranspose_2block_in[i] ,transpose_2block_outclipclip[i] );
-	}
-	for(i = 0; i < 6 ; i += 1){
-		clip(transpose_2block_outclipclip[i] );
-	}
+	HierarchicalIdct2d_1_transpose_1(HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in,HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
+	semaphorePend(sem[8], full);
+	HierarchicalIdct2d_1_clip(HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
+	semaphorePost(sem[9], empty);
 }
 
 
@@ -142,13 +189,18 @@ for(;;){
 //endCode
 
 {
-	close_MacroBlock(MacroBlockMBSortDataMB);
-	close_SortData(MacroBlockMBSortDataMB,SortDatablockrowrow_in);
-	close_row(SortDatablockrowrow_in,rowrow_outtranspose_1block_in);
-	close_transpose_1(rowrow_outtranspose_1block_in,transpose_1block_outcolumncol_in);
-	close_column(columncol_outtranspose_2block_in,transpose_1block_outcolumncol_in);
-	close_transpose_2(columncol_outtranspose_2block_in,transpose_2block_outclipclip);
-	close_clip(transpose_2block_outclipclip);
+	close_Trigger_0(Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	close_HierarchicalIdct2d_2_ReadBlock(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in,Trigger_0fireHierarchicalIdct2d_2_ReadBlockblock_In);
+	close_HierarchicalIdct2d_2_idct1d(HierarchicalIdct2d_2_ReadBlockblock_outHierarchicalIdct2d_2_idct1drow_in,HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in);
+	close_HierarchicalIdct2d_2_transpose(HierarchicalIdct2d_2_idct1drow_outHierarchicalIdct2d_2_transposeblock_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	close_HierarchicalIdct2d_2_ReadBlock_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_ReadBlock_1block_trans,Trigger_0fireHierarchicalIdct2d_2_ReadBlock_1block_In);
+	close_HierarchicalIdct2d_2_idct1d_1(HierarchicalIdct2d_2_ReadBlock_1block_outHierarchicalIdct2d_2_idct1d_1row_in,HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in);
+	close_HierarchicalIdct2d_2_transpose_1(HierarchicalIdct2d_2_idct1d_1row_outHierarchicalIdct2d_2_transpose_1block_in,HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block);
+	close_HierarchicalIdct2d_2_clip(HierarchicalIdct2d_2_transpose_1block_outHierarchicalIdct2d_2_clipdouble_block,HierarchicalIdct2d_2_transposeblock_outHierarchicalIdct2d_2_clipdouble_block);
+	close_HierarchicalIdct2d_1_ReadBlock_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in,Trigger_0fireHierarchicalIdct2d_1_ReadBlock_1block_In);
+	close_HierarchicalIdct2d_1_idct1d_1(HierarchicalIdct2d_1_ReadBlock_1block_outHierarchicalIdct2d_1_idct1d_1row_in,HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in);
+	close_HierarchicalIdct2d_1_transpose_1(HierarchicalIdct2d_1_idct1d_1row_outHierarchicalIdct2d_1_transpose_1block_in,HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
+	close_HierarchicalIdct2d_1_clip(HierarchicalIdct2d_1_transpose_1block_outHierarchicalIdct2d_1_clipdouble_block);
 }
 
 }//end thread: computationThread
@@ -161,6 +213,8 @@ void communicationThread()
 //beginningCode
 
 {
+	semaphorePost(sem[7], empty);
+	semaphorePost(sem[9], empty);
 }
 
 
@@ -168,6 +222,21 @@ void communicationThread()
 
 
 for(;;){
+	semaphorePend(sem[1], full);
+	send(C64x_1,);
+	semaphorePost(sem[0], empty);
+	semaphorePend(sem[3], full);
+	send(C64x_1,);
+	semaphorePost(sem[2], empty);
+	semaphorePend(sem[5], full);
+	send(C64x_1,);
+	semaphorePost(sem[4], empty);
+	semaphorePend(sem[7], empty);
+	receive(C64x_1,);
+	semaphorePost(sem[6], full);
+	semaphorePend(sem[9], empty);
+	receive(C64x_1,);
+	semaphorePost(sem[8], full);
 }
 
 

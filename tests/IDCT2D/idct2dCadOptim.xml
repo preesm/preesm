@@ -17,41 +17,18 @@
    <graph edgedefault="directed">
       <data key="parameters"/>
       <data key="variables"/>
-      <node id="readBlock" kind="vertex">
+      <node id="Trigger" kind="vertex">
          <data key="graph_desc"/>
          <data key="arguments"/>
       </node>
-      <node id="idct1d" kind="vertex">
-         <data key="graph_desc"/>
+      <node id="HierarchicalIdct2d" kind="vertex">
+         <data key="graph_desc">idct2dv2_wp.xml</data>
          <data key="arguments"/>
       </node>
-      <node id="transpose" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="arguments"/>
-      </node>
-      <node id="clip" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="arguments"/>
-      </node>
-      <edge source="readBlock" sourceport="block" target="idct1d" targetport="row_in">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">8</data>
-      </edge>
-      <edge source="idct1d" sourceport="row_out" target="transpose" targetport="block_in">
-         <data key="edge_prod">8</data>
+      <edge source="Trigger" sourceport="fire" target="HierarchicalIdct2d" targetport="blockIn">
+         <data key="edge_prod">192</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
-      </edge>
-      <edge source="transpose" sourceport="block_out" target="readBlock" targetport="block_in">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">64</data>
-         <data key="edge_cons">64</data>
-      </edge>
-      <edge source="transpose" sourceport="block_out" target="clip" targetport="double_block">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">128</data>
       </edge>
    </graph>
 </graphml>
