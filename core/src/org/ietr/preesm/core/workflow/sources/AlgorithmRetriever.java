@@ -40,6 +40,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.workflow.sources;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -113,7 +114,7 @@ public class AlgorithmRetriever {
 		String filename = algorithmConfiguration.getAlgorithmFileName();
 		GMLSDFImporter importer = new GMLSDFImporter() ;
 		try {
-			algorithm = (SDFGraph) importer.parse(new FileInputStream(filename));
+			algorithm = (SDFGraph) importer.parse(new File(filename));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (InvalidFileException e) {
