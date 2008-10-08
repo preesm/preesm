@@ -19,7 +19,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 
 	private LinkDescriptor sendLink;
 
-	private SwitchDescriptor network;
+	private SwitchDescriptor sw;
 
 	private LinkDescriptor receiveLink;
 
@@ -90,7 +90,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	public CommunicationDescriptor(String name, AlgorithmDescriptor algorithm) {
 		super(name);
 		edge = new DAGEdge();
-//		edge.setName(name);
+		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(0));
 		this.algorithm = algorithm;
 		algorithm.addCommunication(this);
@@ -106,7 +106,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 			String destinationId, int weight, AlgorithmDescriptor algorithm) {
 		super(name);
 		edge = new DAGEdge();
-//		edge.setName(name);
+		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(weight));
 		this.sourceId = sourceId;
 		this.destinationId = destinationId;
@@ -125,7 +125,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 			HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer) {
 		super(name);
 		edge = new DAGEdge();
-//		edge.setName(name);
+		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(0));
 		CommunicationDescriptorBuffer.put(this.name, this);
 		this.type = OperationType.Communication;
@@ -142,7 +142,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 			String sourceId, String destinationId, int weight) {
 		super(name);
 		edge = new DAGEdge();
-//		edge.setName(name);
+		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(weight));
 		this.sourceId = sourceId;
 		this.destinationId = destinationId;
@@ -215,12 +215,12 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		this.sendLink = sendLink;
 	}
 
-	public SwitchDescriptor getNetwork() {
-		return network;
+	public SwitchDescriptor getSwitch() {
+		return sw;
 	}
 
-	public void setNetwork(SwitchDescriptor network) {
-		this.network = network;
+	public void setSwitch(SwitchDescriptor sw) {
+		this.sw = sw;
 	}
 
 	public LinkDescriptor getReceiveLink() {
@@ -231,17 +231,41 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		this.receiveLink = receiveLink;
 	}
 
-	public void addCommunicationDuration(SwitchDescriptor network, int time) {
-		communicationDurations.put(network.getName(), time);
+	public void addCommunicationDuration(SwitchDescriptor sw, int time) {
+		communicationDurations.put(sw.getName(), time);
+	}
+
+	public void addCommunicationDuration(String name, int time) {
+		communicationDurations.put(name, time);
+	}
+
+	public void addCommunicationDuration(LinkDescriptor link, int time) {
+		communicationDurations.put(link.getName(), time);
 	}
 
 	public HashMap<String, Integer> getCommunicationDurations() {
 		return communicationDurations;
 	}
 
-	public int getCommunicationDuration(SwitchDescriptor network) {
-		if (communicationDurations.containsKey(network.getName())) {
-			return communicationDurations.get(network.getName());
+	public int getCommunicationDuration(SwitchDescriptor sw) {
+		if (communicationDurations.containsKey(sw.getName())) {
+			return communicationDurations.get(sw.getName());
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	public int getCommunicationDuration(String name) {
+		if (communicationDurations.containsKey(name)) {
+			return communicationDurations.get(name);
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	public int getCommunicationDuration(LinkDescriptor link) {
+		if (communicationDurations.containsKey(link.getName())) {
+			return communicationDurations.get(link.getName());
 		} else {
 			return Integer.MAX_VALUE;
 		}
@@ -253,17 +277,16 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	}
 
 	private void setCommunicationDuration() {
-		// if (network != null) {
+		// if (sw != null) {
 		// communicationDuration = (int) (edge.getWeight().intValue() * 8
-		// / network.getDataWidth()
-		// * network.getAverageClockCyclesPerTransfer()
-		// * network.getClockPeriod() * exist);
+		// / sw.getDataWidth()
+		// * sw.getAverageClockCyclesPerTransfer()
+		// * sw.getClockPeriod() * exist);
 		// } else {
 		// communicationDuration = edge.getWeight().intValue() * exist;
 		// }
-		if (network != null) {
-			communicationDuration = communicationDurations.get(network
-					.getName());
+		if (sw != null) {
+			communicationDuration = communicationDurations.get(sw.getName());
 		} else {
 			communicationDuration = edge.getWeight().intValue();
 		}

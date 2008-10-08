@@ -37,50 +37,76 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import java.util.Iterator;
+
 /**
- * An interconnection joins one interface of a medium to one interface of an
- * operator
+ * A switch is a hardware communication entity able to transfer data.
+ * Switches are connected with media
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Interconnection {
+public class Switch extends ArchitectureComponent {
 
 	/**
-	 * Type of the medium connectable with this interconnection
+	 * ID used to reference the element in a property bean in case of a communication vertex
 	 */
-	private MediumDefinition mediumdef;
-
-	private ArchitectureInterface mediumInterface;
-
-	private ArchitectureInterface operatorInterface;
-
-	public Interconnection(Operator op, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
-
-		if (op.canConnectTo(med)) {
-			operatorInterface = op.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
-		}
-	}
+	public static final String propertyBeanName = "Switch";
 	
-	public Interconnection(Switch sw, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
+	public Switch(String name, SwitchDefinition type) {
+		super(name, type);
 
-		if (sw.canConnectTo(med)) {
-			operatorInterface = sw.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
+	}
+
+	public boolean addInterface(ArchitectureInterface intf) {
+
+		if (getInterface(intf.getMediumDefinition()) == null) {
+			availableInterfaces.add(intf);
+
+			return true;
 		}
+
+		return false;
 	}
 
-	public ArchitectureInterface getMediumInterface() {
-		return mediumInterface;
+	public boolean canConnectTo(Medium medium) {
+		boolean compatible = false;
+
+		MediumDefinition mediumtype = (MediumDefinition) medium.getDefinition();
+
+		ArchitectureInterface switchIntf = this.getInterface(mediumtype);
+		ArchitectureInterface mediumIntf = medium.getInterface(mediumtype);
+
+		if (switchIntf != null && mediumIntf != null) {
+			if (!switchIntf.isFull() && !mediumIntf.isFull()) {
+				return true;
+			}
+		}
+
+		return compatible;
 	}
 
-	public ArchitectureInterface getOperatorInterface() {
-		return operatorInterface;
+	public Switch clone(IArchitecture archi) {
+
+		// A new switch is created with a cloned definition taking archi as
+		// parameter
+		Switch newSw = new Switch(this.getName(),
+				((SwitchDefinition) this.getDefinition()).clone(archi));
+
+		// We iterate in interfaces
+		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
+				.iterator();
+
+		while (interIt.hasNext()) {
+			ArchitectureInterface currentItf = interIt.next();
+			// The medium definition used to clone the interface is retrieved
+			// from new architecture
+			MediumDefinition newmeddef = archi.getMediumDefinition(currentItf
+					.getMediumDefinition().getId());
+
+			newSw.availableInterfaces.add(currentItf.clone(newmeddef, newSw));
+		}
+
+		return newSw;
 	}
+
 }

@@ -34,53 +34,34 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.architecture;
 
 /**
- * An interconnection joins one interface of a medium to one interface of an
- * operator
+ * The switch definition specifies the switch characteristics
  * 
  * @author mpelcat
  */
-public class Interconnection {
+public class SwitchDefinition extends ArchitectureComponentDefinition {
 
-	/**
-	 * Type of the medium connectable with this interconnection
-	 */
-	private MediumDefinition mediumdef;
+	public SwitchDefinition(String id) {
+		super(id, "switch");
+	}
 
-	private ArchitectureInterface mediumInterface;
+	public SwitchDefinition clone(IArchitecture archi) {
 
-	private ArchitectureInterface operatorInterface;
+		// A new SwitchDefinition is created with same id
+		SwitchDefinition newdef = new SwitchDefinition(this.getId());
 
-	public Interconnection(Operator op, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
+		return newdef;
+	}
 
-		if (op.canConnectTo(med)) {
-			operatorInterface = op.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof SwitchDefinition) {
+			SwitchDefinition swdef = (SwitchDefinition) obj;
+			return this.getId().compareToIgnoreCase(swdef.getId()) == 0;
 		}
-	}
-	
-	public Interconnection(Switch sw, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
 
-		if (sw.canConnectTo(med)) {
-			operatorInterface = sw.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
-		}
-	}
-
-	public ArchitectureInterface getMediumInterface() {
-		return mediumInterface;
-	}
-
-	public ArchitectureInterface getOperatorInterface() {
-		return operatorInterface;
+		return false;
 	}
 }

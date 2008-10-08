@@ -3,6 +3,9 @@ package org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling;
 import java.util.HashMap;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.Medium;
+import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.Switch;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ArchitectureDescriptor;
@@ -10,6 +13,7 @@ import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.desc
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComponentDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComponentType;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComputationDescriptor;
+import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.LinkDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.OperatorDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.parser.ArchitectureParser;
@@ -72,24 +76,76 @@ public class CombinedListScheduling {
 	}
 
 	private void parse() {
+		algo = algoTransformer.sdf2Algorithm(sdf);
+		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+			algo.getComputation(indexVertex.getName()).setTime(
+					computationWeights.get(indexVertex.getName()));
+		}
 		if (architecture != null) {
-			algo = algoTransformer.sdf2Algorithm(sdf);
 			archi = archiTransformer.architecture2Descriptor(architecture);
-			scenaTransformer.parse(scenario, algo, archi);
-		} else {
-			algo = algoTransformer.sdf2Algorithm(sdf);
-			for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-				algo.getComputation(indexVertex.getName()).setTime(
-						computationWeights.get(indexVertex.getName()));
+			System.out.println("Computations in the algorithm:");
+			for (ComputationDescriptor indexComputation : algo
+					.getComputations().values()) {
+				for (Operator indexOperator : architecture.getOperators()) {
+					if (!indexComputation.getComputationDurations()
+							.containsKey(indexOperator.getDefinition().getId())) {
+						indexComputation.addComputationDuration(indexOperator
+								.getDefinition().getId(), indexComputation
+								.getTime());
+						System.out.println(" Name="
+								+ indexComputation.getName()
+								+ "; default computationDuration="
+								+ indexComputation
+										.getComputationDuration(indexOperator
+												.getDefinition().getId()));
+					}
+				}
 			}
+			System.out.println("Communications in the algorithm:");
+			for (CommunicationDescriptor indexCommunication : algo
+					.getCommunications().values()) {
+				for (Switch indexSwitch : architecture.getSwitches()) {
+					if (!indexCommunication.getCommunicationDurations()
+							.containsKey(indexSwitch.getDefinition().getId())) {
+						indexCommunication.addCommunicationDuration(indexSwitch
+								.getDefinition().getId(), indexCommunication
+								.getWeight());
+						System.out.println(" Name="
+								+ indexCommunication.getName()
+								+ "; default communicationDuration="
+								+ indexCommunication
+										.getCommunicationDuration(indexSwitch
+												.getDefinition().getId()));
+					}
+				}
+				for (Medium indexMedium : architecture.getMedia()) {
+					if (!indexCommunication.getCommunicationDurations()
+							.containsKey(indexMedium.getDefinition().getId())) {
+						indexCommunication.addCommunicationDuration(indexMedium
+								.getDefinition().getId(), indexCommunication
+								.getWeight());
+						System.out.println(" Name="
+								+ indexCommunication.getName()
+								+ "; default communicationDuration="
+								+ indexCommunication
+										.getCommunicationDuration(indexMedium
+												.getDefinition().getId()));
+					}
+				}
+			}
+		} else {
 			archi = new ArchitectureDescriptor();
 			// Parse the design architecture document
 			new ArchitectureParser(architectureFileName, archi).parse();
+		}
+		if (scenario != null) {
+
+		} else {
 			// Parse the design parameter document
 			new ParameterParser(parameterFileName, archi, algo).parse();
-
 			OperatorDescriptor defaultOperator = null;
-			SwitchDescriptor defaultNetwork = null;
+			SwitchDescriptor defaultSwitch = null;
+			LinkDescriptor defaultLink = null;
 			for (ComponentDescriptor indexComponent : archi.getComponents()
 					.values()) {
 				if ((indexComponent.getType() == ComponentType.Ip || indexComponent
@@ -100,15 +156,22 @@ public class CombinedListScheduling {
 				} else if (indexComponent.getType() == ComponentType.Switch
 						&& indexComponent.getId().equalsIgnoreCase(
 								indexComponent.getName())) {
-					defaultNetwork = (SwitchDescriptor) indexComponent;
+					defaultSwitch = (SwitchDescriptor) indexComponent;
+				} else if ((indexComponent.getType() == ComponentType.Bus || indexComponent
+						.getType() == ComponentType.Processor)
+						&& indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					defaultLink = (LinkDescriptor) indexComponent;
 				}
 			}
-
 			System.out.println(" default operator: Id="
 					+ defaultOperator.getId() + "; Name="
 					+ defaultOperator.getName());
-			System.out.println(" default network: Id=" + defaultNetwork.getId()
-					+ "; Name=" + defaultNetwork.getName());
+			System.out.println(" default switch: Id=" + defaultSwitch.getId()
+					+ "; Name=" + defaultSwitch.getName());
+			System.out.println(" default link: Id=" + defaultSwitch.getId()
+					+ "; Name=" + defaultSwitch.getName());
+
 			System.out.println("Computations in the algorithm:");
 			for (ComputationDescriptor indexComputation : algo
 					.getComputations().values()) {
@@ -127,22 +190,43 @@ public class CombinedListScheduling {
 			for (CommunicationDescriptor indexCommunication : algo
 					.getCommunications().values()) {
 				if (!indexCommunication.getCommunicationDurations()
-						.containsKey(defaultNetwork)) {
-					indexCommunication.addCommunicationDuration(defaultNetwork,
+						.containsKey(defaultSwitch)) {
+					indexCommunication.addCommunicationDuration(defaultSwitch,
 							indexCommunication.getWeight());
 					System.out.println(" Name="
 							+ indexCommunication.getName()
 							+ "; default communicationDuration="
 							+ indexCommunication
-									.getCommunicationDuration(defaultNetwork));
+									.getCommunicationDuration(defaultSwitch));
+				}
+				if (!indexCommunication.getCommunicationDurations()
+						.containsKey(defaultLink)) {
+					indexCommunication.addCommunicationDuration(defaultLink,
+							indexCommunication.getWeight());
+					System.out.println(" Name="
+							+ indexCommunication.getName()
+							+ "; default communicationDuration="
+							+ indexCommunication
+									.getCommunicationDuration(defaultLink));
 				}
 			}
-			System.out.println("Operators in the architecture:");
-			for (OperatorDescriptor indexOperator : archi.getAllOperators()
-					.values()) {
-				System.out.println(" Id=" + indexOperator.getId() + "; Name="
-						+ indexOperator.getName());
-			}
+		}
+
+		System.out.println("Operators in the architecture:");
+		for (OperatorDescriptor indexOperator : archi.getAllOperators()
+				.values()) {
+			System.out.println(" Id=" + indexOperator.getId() + "; Name="
+					+ indexOperator.getName());
+		}
+		System.out.println("Switches in the architecture:");
+		for (SwitchDescriptor indexSwitch : archi.getAllSwitches().values()) {
+			System.out.println(" Id=" + indexSwitch.getId() + "; Name="
+					+ indexSwitch.getName());
+		}
+		System.out.println("Media(Buses) in the architecture:");
+		for (LinkDescriptor indexLink : archi.getAllLinks().values()) {
+			System.out.println(" Id=" + indexLink.getId() + "; Name="
+					+ indexLink.getName());
 		}
 	}
 

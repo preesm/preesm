@@ -122,4 +122,8 @@ public class ArchitectureInterface {
 		return (usedSlots == interfacedefinition.getMultiplicity());
 	}
 
+	public ArchitectureComponent getOwner() {
+		return owner;
+	}
+
 }

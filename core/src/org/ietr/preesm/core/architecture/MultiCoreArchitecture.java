@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.architecture;
 
 import java.util.HashSet;
@@ -43,6 +42,7 @@ import java.util.Set;
 
 /**
  * Architecture based on a fixed number of cores
+ * 
  * @author mpelcat
  */
 public class MultiCoreArchitecture implements IArchitecture {
@@ -53,7 +53,7 @@ public class MultiCoreArchitecture implements IArchitecture {
 	private Set<ArchitectureComponent> architectureComponents;
 
 	/**
-	 * List of the cores + accelerators + media.
+	 * List of the interconnections between media and components.
 	 */
 	private Set<Interconnection> interconnections;
 
@@ -107,6 +107,30 @@ public class MultiCoreArchitecture implements IArchitecture {
 	}
 
 	/**
+	 * Adds a medium to the architecture only if this medium can be connected to
+	 * the operator and the switch
+	 * 
+	 * @return true if the medium could be added
+	 */
+	public Medium addMedium(Medium medium, Operator op, Switch sw,
+			boolean isMain) {
+		if (op.canConnectTo(medium)) {
+			if (sw.canConnectTo(medium)) {
+				architectureComponents.add(medium);
+
+				interconnections.add(new Interconnection(op, medium));
+				interconnections.add(new Interconnection(sw, medium));
+			}
+		}
+
+		if (isMain || getMedia().isEmpty()) {
+			mainMedium = medium;
+		}
+
+		return medium;
+	}
+
+	/**
 	 * Adds an operator to the architecture
 	 */
 	public Operator addOperator(Operator op, boolean isMain) {
@@ -119,6 +143,14 @@ public class MultiCoreArchitecture implements IArchitecture {
 		}
 
 		return op;
+	}
+
+	/**
+	 * Adds a switch to the architecture
+	 */
+	public Switch addSwitch(Switch sw) {
+		architectureComponents.add(sw);
+		return sw;
 	}
 
 	@Override
@@ -401,6 +433,99 @@ public class MultiCoreArchitecture implements IArchitecture {
 		}
 
 		return ops;
+	}
+
+	public int getNumberOfSwitches() {
+		return getSwitches().size();
+	}
+
+	/**
+	 * Returns the switch with the given name
+	 */
+	@Override
+	public Switch getSwitch(String name) {
+		Iterator<Switch> iterator = getSwitches().iterator();
+
+		while (iterator.hasNext()) {
+			Switch currentsw = iterator.next();
+
+			if (currentsw.getName().compareToIgnoreCase(name) == 0) {
+				return (currentsw);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the switch definition with the given id
+	 */
+	@Override
+	public SwitchDefinition getSwitchDefinition(String id) {
+		Iterator<Switch> iterator = getSwitches().iterator();
+
+		while (iterator.hasNext()) {
+			Switch currentsw = iterator.next();
+
+			if (currentsw.getDefinition().getId().compareToIgnoreCase(id) == 0) {
+				return ((SwitchDefinition) currentsw.getDefinition());
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns all the switches
+	 */
+	@Override
+	public Set<Switch> getSwitches() {
+		Set<Switch> sws = new HashSet<Switch>();
+
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.iterator();
+
+		while (iterator.hasNext()) {
+			ArchitectureComponent currentCmp = iterator.next();
+
+			if (currentCmp instanceof Switch) {
+				sws.add((Switch) currentCmp);
+			}
+		}
+
+		return sws;
+	}
+
+	/**
+	 * Returns the switches of the given definition
+	 */
+	@Override
+	public Set<Switch> getSwitches(SwitchDefinition def) {
+		Set<Switch> sws = new HashSet<Switch>();
+
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.iterator();
+
+		while (iterator.hasNext()) {
+			ArchitectureComponent currentCmp = iterator.next();
+
+			if (currentCmp instanceof Switch) {
+				if (currentCmp.getDefinition().getId().equalsIgnoreCase(
+						def.getId())) {
+					sws.add((Switch) currentCmp);
+				}
+			}
+		}
+
+		return sws;
+	}
+
+	/**
+	 * Returns all the interconnections
+	 */
+	@Override
+	public Set<Interconnection> getInterconnections() {
+		return interconnections;
 	}
 
 	@Override

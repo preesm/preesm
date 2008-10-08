@@ -34,7 +34,7 @@
 			<averageClockCyclesPerTransfer>
 				2
 			</averageClockCyclesPerTransfer>
-			<!-- unit: network clock cycle -->
+			<!-- unit: switch clock cycle -->
 			<portNumber>8</portNumber>
 			<surface>100</surface>
 		</component>

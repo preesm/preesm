@@ -414,10 +414,16 @@ public class ListSchedulingCommunicationDelayClassic extends
 				}
 
 				// find slot in destination operator
-				int indexOperationOnDestinationOperator = destinationOperator
-						.getOperations().indexOf(
-								receiveCommunicationList
-										.get(indexCommunicationOnReceiveLink));
+				int indexOperationOnDestinationOperator = 0;
+				if (destinationOperator.getOperations()
+						.contains(
+								sendCommunicationList
+										.get(indexCommunicationOnSendLink))) {
+					indexOperationOnDestinationOperator = destinationOperator
+							.getOperations().indexOf(
+									sendCommunicationList
+											.get(indexCommunicationOnSendLink));
+				}
 				int maxTime = 0;
 				for (int i = indexOperationOnDestinationOperator; i < destinationOperator
 						.getOperations().size() - 1; i++) {
@@ -438,16 +444,13 @@ public class ListSchedulingCommunicationDelayClassic extends
 				}
 
 				// insert communication
-				if (!sourceOperator.getSendCommunications().contains(
-						communication)) {
-					sourceOperator.addSendCommunication(communication);
-					sourceOperator.addOperation(
-							indexOperationOnSourceOperator + 1, communication);
-					sourceOperator.addOccupiedTimeInterval(communication
-							.getName(), communication
-							.getStartTimeOnSendOperator(), communication
-							.getFinishTimeOnSendOperator());
-				}
+				sourceOperator.addSendCommunication(communication);
+				sourceOperator.addOperation(indexOperationOnSourceOperator + 1,
+						communication);
+				sourceOperator.addOccupiedTimeInterval(communication.getName(),
+						communication.getStartTimeOnSendOperator(),
+						communication.getFinishTimeOnSendOperator());
+
 				destinationOperator.addReceiveCommunication(communication);
 				destinationOperator.addOperation(
 						indexOperationOnDestinationOperator + 1, communication);
@@ -491,8 +494,10 @@ public class ListSchedulingCommunicationDelayClassic extends
 				}
 				sendLink.addCommunication(indexCommunicationOnSendLink + 1,
 						communication);
-				receiveLink.addCommunication(
-						indexCommunicationOnReceiveLink + 1, communication);
+				if (sendLink != receiveLink) {
+					receiveLink.addCommunication(
+							indexCommunicationOnReceiveLink + 1, communication);
+				}
 				communication.setSendLink(sendLink);
 				communication.setReceiveLink(receiveLink);
 			}

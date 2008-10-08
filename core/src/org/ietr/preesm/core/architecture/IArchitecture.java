@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -120,6 +119,49 @@ public interface IArchitecture {
 	 * @return
 	 */
 	public Set<Operator> getOperators(OperatorDefinition def);
+
+	/**
+	 * Returns the number of switches.
+	 * 
+	 * @return The number of switches.
+	 */
+	public int getNumberOfSwitches();
+
+	/**
+	 * Returns the switch of the given id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Switch getSwitch(String id);
+
+	/**
+	 * Returns the switch definition with the given id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public SwitchDefinition getSwitchDefinition(String id);
+
+	/**
+	 * Returns all the switches
+	 * 
+	 * @return
+	 */
+	public Set<Switch> getSwitches();
+
+	/**
+	 * Returns the switches of the given type
+	 * 
+	 * @param def
+	 * @return
+	 */
+	public Set<Switch> getSwitches(SwitchDefinition def);
+
+	/**
+	 * Returns all the interconnections
+	 */
+	public Set<Interconnection> getInterconnections();
 
 	/**
 	 * Returns the name of the architecture

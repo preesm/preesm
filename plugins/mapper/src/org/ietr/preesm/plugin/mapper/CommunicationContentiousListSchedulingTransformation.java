@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
+import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.AlgorithmTransformer;
@@ -70,9 +73,11 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		// CommunicationContentiousListSchedulingParameters parameters = new
 		// CommunicationContentiousListSchedulingParameters(
 		// textParameters);
-
+		// architecture = Examples.get3C64Archi();
 		CombinedListScheduling scheduler = new CombinedListScheduling(
-				algorithm, null, null);
+				algorithm, architecture, scenario);
+		// CombinedListScheduling scheduler = new CombinedListScheduling(
+		// algorithm, null, null);
 		scheduler.schedule();
 
 		// result
@@ -88,9 +93,12 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph sdf = algoTransformer.randomSDF(nbVertex, minInDegree,
 				maxInDegree, minOutDegree, maxOutDegree, 500, 1000);
-
+		MultiCoreArchitecture architecture = Examples.get4C64Archi();
+		Scenario scenario = new Scenario();
 		CombinedListScheduling scheduler = new CombinedListScheduling(sdf,
-				null, null);
+				architecture, scenario);
+		// CombinedListScheduling scheduler = new CombinedListScheduling(sdf,
+		// null, null);
 		scheduler.schedule();
 	}
 }

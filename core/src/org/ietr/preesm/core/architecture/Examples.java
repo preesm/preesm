@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.architecture;
 
 /**
@@ -256,6 +255,117 @@ public class Examples {
 
 		archi.connect(m, op3);
 		archi.connect(m, op4);
+
+		return archi;
+	}
+
+	/**
+	 * Generates an archi with 2 C64x and a crossbar at 1 cycle/byte
+	 * 
+	 */
+	public static MultiCoreArchitecture get2PArchi() {
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("2C64Archi");
+
+		OperatorDefinition opdef = new OperatorDefinition("C64x");
+		MediumDefinition bus = new MediumDefinition("bus");
+		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		bus.setMediumProperty(new MediumProperty(1, 100, 1));
+
+		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
+				bus, ArchitectureInterfaceDefinition.INFINITE);
+
+		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		op1.addInterface(new ArchitectureInterface(intfdef, op1));
+		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		op2.addInterface(new ArchitectureInterface(intfdef, op2));
+
+		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
+
+		Medium m1 = new Medium("bus_1", bus, intfdef);
+		archi.addMedium(m1, op1, sw1, false);
+
+		Medium m2 = new Medium("bus_2", bus, intfdef);
+		archi.addMedium(m2, op2, sw1, false);
+
+		return archi;
+	}
+
+	/**
+	 * Generates an archi with 3 C64x and a crossbar at 1 cycle/byte
+	 * 
+	 */
+	public static MultiCoreArchitecture get3PArchi() {
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("3C64Archi");
+
+		OperatorDefinition opdef = new OperatorDefinition("C64x");
+		MediumDefinition bus = new MediumDefinition("bus");
+		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		bus.setMediumProperty(new MediumProperty(1, 100, 1));
+
+		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
+				bus, ArchitectureInterfaceDefinition.INFINITE);
+
+		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		op1.addInterface(new ArchitectureInterface(intfdef, op1));
+		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		op2.addInterface(new ArchitectureInterface(intfdef, op2));
+		Operator op3 = archi.addOperator(new Operator("C64x_3", opdef), false);
+		op3.addInterface(new ArchitectureInterface(intfdef, op3));
+
+		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
+
+		Medium m1 = new Medium("bus_1", bus, intfdef);
+		archi.addMedium(m1, op1, sw1, false);
+
+		Medium m2 = new Medium("bus_2", bus, intfdef);
+		archi.addMedium(m2, op2, sw1, false);
+
+		Medium m3 = new Medium("bus_3", bus, intfdef);
+		archi.addMedium(m3, op3, sw1, false);
+
+		return archi;
+	}
+
+	/**
+	 * Generates an archi with 4 C64x and a crossbar at 1 cycle/byte
+	 * 
+	 */
+	public static MultiCoreArchitecture get4PArchi() {
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("4C64Archi");
+
+		OperatorDefinition opdef = new OperatorDefinition("C64x");
+		MediumDefinition bus = new MediumDefinition("bus");
+		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		bus.setMediumProperty(new MediumProperty(1, 100, 1));
+
+		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
+				bus, ArchitectureInterfaceDefinition.INFINITE);
+
+		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		op1.addInterface(new ArchitectureInterface(intfdef, op1));
+		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		op2.addInterface(new ArchitectureInterface(intfdef, op2));
+		Operator op3 = archi.addOperator(new Operator("C64x_3", opdef), false);
+		op3.addInterface(new ArchitectureInterface(intfdef, op3));
+		Operator op4 = archi.addOperator(new Operator("C64x_4", opdef), false);
+		op4.addInterface(new ArchitectureInterface(intfdef, op4));
+
+		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
+
+		Medium m1 = new Medium("bus_1", bus, intfdef);
+		archi.addMedium(m1, op1, sw1, false);
+
+		Medium m2 = new Medium("bus_2", bus, intfdef);
+		archi.addMedium(m2, op2, sw1, false);
+
+		Medium m3 = new Medium("bus_3", bus, intfdef);
+		archi.addMedium(m3, op3, sw1, false);
+
+		Medium m4 = new Medium("bus_4", bus, intfdef);
+		archi.addMedium(m4, op4, sw1, false);
 
 		return archi;
 	}

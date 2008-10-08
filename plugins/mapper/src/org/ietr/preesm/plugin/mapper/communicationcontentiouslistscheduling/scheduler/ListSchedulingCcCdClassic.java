@@ -691,10 +691,16 @@ public class ListSchedulingCcCdClassic extends AbstractScheduler {
 				// }
 
 				// find slot in destination operator
-				int indexOperationOnDestinationOperator = destinationOperator
-						.getOperations().indexOf(
-								receiveCommunicationList
-										.get(indexCommunicationOnReceiveLink));
+				int indexOperationOnDestinationOperator = 0;
+				if (destinationOperator.getOperations()
+						.contains(
+								sendCommunicationList
+										.get(indexCommunicationOnSendLink))) {
+					indexOperationOnDestinationOperator = destinationOperator
+							.getOperations().indexOf(
+									sendCommunicationList
+											.get(indexCommunicationOnSendLink));
+				}
 				int maxTime = 0;
 				for (int i = indexOperationOnDestinationOperator; i < destinationOperator
 						.getOperations().size() - 1; i++) {
@@ -731,8 +737,10 @@ public class ListSchedulingCcCdClassic extends AbstractScheduler {
 
 				sendLink.addCommunication(indexCommunicationOnSendLink + 1,
 						communication);
-				receiveLink.addCommunication(
-						indexCommunicationOnReceiveLink + 1, communication);
+				if (sendLink != receiveLink) {
+					receiveLink.addCommunication(
+							indexCommunicationOnReceiveLink + 1, communication);
+				}
 				communication.setSendLink(sendLink);
 				communication.setReceiveLink(receiveLink);
 			}

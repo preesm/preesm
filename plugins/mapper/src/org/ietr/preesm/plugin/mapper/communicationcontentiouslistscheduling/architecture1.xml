@@ -70,7 +70,7 @@
 			<name>opb_bus</name>
 		</componentInstance>
 		<componentInstance type="switch">
-			<id>network1</id>
+			<id>switch1</id>
 			<name>opb_crossbar</name>
 		</componentInstance>
 	</componentInstances>
@@ -108,35 +108,35 @@
 			<linkRef>bus8</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus1</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus2</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus3</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus4</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus5</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus6</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus7</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus8</linkRef>
 		</interconnection>
 	</interconnections>

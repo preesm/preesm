@@ -11,6 +11,10 @@ public class ArchitectureDescriptor {
 
 	private HashMap<String, OperatorDescriptor> allOperators;
 
+	private HashMap<String, SwitchDescriptor> allSwitches;
+
+	private HashMap<String, LinkDescriptor> allLinks;
+
 	private Vector<ProcessorDescriptor> processorsInUse = null;
 
 	private ProcessorDescriptor newProcessor = null;
@@ -22,6 +26,8 @@ public class ArchitectureDescriptor {
 	public ArchitectureDescriptor() {
 		ComponentDescriptorBuffer = new HashMap<String, ComponentDescriptor>();
 		allOperators = new HashMap<String, OperatorDescriptor>();
+		allSwitches = new HashMap<String, SwitchDescriptor>();
+		allLinks = new HashMap<String, LinkDescriptor>();
 		processorsInUse = new Vector<ProcessorDescriptor>();
 	}
 
@@ -29,6 +35,8 @@ public class ArchitectureDescriptor {
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer) {
 		this.ComponentDescriptorBuffer = ComponentDescriptorBuffer;
 		allOperators = new HashMap<String, OperatorDescriptor>();
+		allSwitches = new HashMap<String, SwitchDescriptor>();
+		allLinks = new HashMap<String, LinkDescriptor>();
 		processorsInUse = new Vector<ProcessorDescriptor>();
 	}
 
@@ -37,6 +45,8 @@ public class ArchitectureDescriptor {
 			ProcessorDescriptor newProcessor) {
 		this.ComponentDescriptorBuffer = ComponentDescriptorBuffer;
 		allOperators = new HashMap<String, OperatorDescriptor>();
+		allSwitches = new HashMap<String, SwitchDescriptor>();
+		allLinks = new HashMap<String, LinkDescriptor>();
 		processorsInUse = new Vector<ProcessorDescriptor>();
 		this.newProcessor = newProcessor;
 	}
@@ -61,7 +71,7 @@ public class ArchitectureDescriptor {
 		return (OperatorDescriptor) ComponentDescriptorBuffer.get(id);
 	}
 
-	public SwitchDescriptor getNetwork(String id) {
+	public SwitchDescriptor getSwitch(String id) {
 		return (SwitchDescriptor) ComponentDescriptorBuffer.get(id);
 	}
 
@@ -83,6 +93,37 @@ public class ArchitectureDescriptor {
 			}
 		}
 		return allOperators;
+	}
+
+	public HashMap<String, SwitchDescriptor> getAllSwitches() {
+		if (allSwitches.size() == 0) {
+			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Switch)
+						&& !indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					allSwitches.put(indexComponent.getId(),
+							(SwitchDescriptor) indexComponent);
+				}
+			}
+		}
+		return allSwitches;
+	}
+
+	public HashMap<String, LinkDescriptor> getAllLinks() {
+		if (allLinks.size() == 0) {
+			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Bus || indexComponent
+						.getType() == ComponentType.Fifo)
+						&& !indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					allLinks.put(indexComponent.getId(),
+							(LinkDescriptor) indexComponent);
+				}
+			}
+		}
+		return allLinks;
 	}
 
 	public Vector<ProcessorDescriptor> getProcessorsInUse() {

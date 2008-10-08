@@ -38,7 +38,7 @@
 			<name>opb_bus</name>
 		</componentInstance>
 		<componentInstance type="switch">
-			<id>network1</id>
+			<id>switch1</id>
 			<name>opb_crossbar</name>
 		</componentInstance>
 	</componentInstances>
@@ -60,19 +60,19 @@
 			<linkRef>bus4</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus1</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus2</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus3</linkRef>
 		</interconnection>
 		<interconnection type="undirected">
-			<vertexRef>network1</vertexRef>
+			<vertexRef>switch1</vertexRef>
 			<linkRef>bus4</linkRef>
 		</interconnection>
 	</interconnections>
