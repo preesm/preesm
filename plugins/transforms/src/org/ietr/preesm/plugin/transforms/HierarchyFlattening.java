@@ -41,7 +41,6 @@ import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.FlatteningVisitor;
 
 /**
  * Class used to flatten the hierarchy of a given graph
@@ -52,8 +51,15 @@ public class HierarchyFlattening implements IGraphTransformation{
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
-		FlatteningVisitor flatHier  = new FlatteningVisitor() ;
-		algorithm.accept(flatHier);
+		String depthS = params.getVariable("depth");
+		int depth ;
+		if(depthS != null){
+			depth = Integer.decode(depthS);
+		}else{
+			depth = -1 ;
+		}
+		org.sdf4j.visitors.HierarchyFlattening flatHier  = new org.sdf4j.visitors.HierarchyFlattening() ;
+		flatHier.flattenGraph(algorithm, depth);
 		TaskResult result = new TaskResult() ;
 		result.setSDF((SDFGraph) flatHier.getOutput());
 		return result ;
