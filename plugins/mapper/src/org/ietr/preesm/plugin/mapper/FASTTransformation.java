@@ -145,7 +145,7 @@ public class FASTTransformation extends AbstractMapping {
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
-
+		
 		initial.constructInitialLists(dag, simu);
 
 		simu.resetDAG();

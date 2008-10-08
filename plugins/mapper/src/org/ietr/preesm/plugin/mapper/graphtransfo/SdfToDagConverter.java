@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -46,6 +45,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -87,38 +87,39 @@ public class SdfToDagConverter {
 		SDFRandomGraph test = new SDFRandomGraph();
 		SDFGraph demoGraph = test.createRandomGraph(nbVertex, minInDegree,
 				maxInDegree, minOutDegree, maxOutDegree, minrate, maxrate);
-		//SDFGraph demoGraph =createTestComGraph();
+		// SDFGraph demoGraph =createTestComGraph();
 		TopologyVisitor topo = new TopologyVisitor();
 		demoGraph.accept(topo);
 
 		IArchitecture architecture = Examples.get1C64Archi();
-		
+
 		IScenario scenario = new Scenario();
 		TimingManager tmanager = new TimingManager();
-		
+
 		Iterator<SDFAbstractVertex> it = demoGraph.vertexSet().iterator();
-		
-		while(it.hasNext()){
+
+		while (it.hasNext()) {
 			SDFAbstractVertex vertex = it.next();
-			
-			Timing t = new Timing((OperatorDefinition)architecture.getMainOperator().getDefinition(),vertex);
-			t.setTime(1000);
+
+			Timing t = new Timing((OperatorDefinition) architecture
+					.getMainOperator().getDefinition(), vertex);
+			t.setTime(100);
 			tmanager.addTiming(t);
 		}
-		
+
 		MapperDAG dag = convert(demoGraph, architecture, scenario, false);
 
-		
 	}
 
 	/**
-	 * Converts a SDF in a DAG and retrieves the interesting properties form the SDF.
+	 * Converts a SDF in a DAG and retrieves the interesting properties form the
+	 * SDF.
 	 * 
 	 * @author mpelcat
 	 */
-	public static MapperDAG convert(SDFGraph sdf, IArchitecture architecture,
+	public static MapperDAG convert(SDFGraph sdfIn, IArchitecture architecture,
 			IScenario scenario, boolean display) {
-
+		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
 		MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
 		TopologyVisitor topo = new TopologyVisitor();
@@ -127,24 +128,23 @@ public class SdfToDagConverter {
 		// Creates a visitor parameterized with the DAG
 		DAGTransformation<MapperDAG> visitor = new DAGTransformation<MapperDAG>(
 				dag, new MapperVertexFactory());
-		
+
 		// visits the SDF to generate the DAG
 		sdf.accept(visitor);
 
 		// Adds the necessary properties to vertices and edges
 		addInitialProperty(dag, architecture, scenario);
-		
-		// Displays the  DAG
+
+		// Displays the DAG
 		if (display) {
 			SDFAdapterDemo applet1 = new SDFAdapterDemo();
 			applet1.init(sdf);
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
-			for(DAGEdge testEdge : dag.edgeSet()){
+			for (DAGEdge testEdge : dag.edgeSet()) {
 				testEdge.getWeight();
 			}
 			applet2.init(dag);
 		}
-
 
 		return dag;
 	}
@@ -171,9 +171,9 @@ public class SdfToDagConverter {
 					.next();
 			InitialVertexProperty currentVertexInit = currentVertex
 					.getInitialVertexProperty();
-			
+
 			int nbRepeat = currentVertex.getNbRepeat().intValue();
-			
+
 			currentVertexInit.setNbRepeat(nbRepeat);
 
 			List<Timing> timelist = scenario.getTimingManager()
@@ -182,10 +182,17 @@ public class SdfToDagConverter {
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
 
-			while (listiterator.hasNext()) {
-				Timing timing = listiterator.next();
-
-				currentVertexInit.addTiming(timing);
+			if (timelist.size() != 0) {
+				while (listiterator.hasNext()) {
+					Timing timing = listiterator.next();
+					currentVertexInit.addTiming(timing);
+				}
+			}else{
+				for(Operator op : architecture.getOperators()){
+					Timing time = new Timing((OperatorDefinition) op.getDefinition(), currentVertex.getCorrespondingSDFVertex(), 1);
+					time.setTime(10000);
+					currentVertexInit.addTiming(time);
+				}
 			}
 
 		}
