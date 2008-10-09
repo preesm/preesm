@@ -73,16 +73,15 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		// CommunicationContentiousListSchedulingParameters parameters = new
 		// CommunicationContentiousListSchedulingParameters(
 		// textParameters);
+		AlgorithmTransformer algoTransformer = new AlgorithmTransformer();
 		// architecture = Examples.get3C64Archi();
 		CombinedListScheduling scheduler = new CombinedListScheduling(
 				algorithm, architecture, scenario);
-		// CombinedListScheduling scheduler = new CombinedListScheduling(
-		// algorithm, null, null);
+
 		scheduler.schedule();
 
-		// result
-		// .setDAG(alTransformer.algorithm2DAG(scheduler
-		// .getBestScheduler()));
+		result.setDAG(algoTransformer.algorithm2DAG(scheduler
+				.getBestScheduler()));
 		return result;
 	}
 
@@ -97,8 +96,6 @@ public class CommunicationContentiousListSchedulingTransformation extends
 		Scenario scenario = new Scenario();
 		CombinedListScheduling scheduler = new CombinedListScheduling(sdf,
 				architecture, scenario);
-		// CombinedListScheduling scheduler = new CombinedListScheduling(sdf,
-		// null, null);
 		scheduler.schedule();
 	}
 }

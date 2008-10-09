@@ -171,9 +171,30 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		}
 	}
 
-	public int getComputationDuration(OperatorDescriptor operator) {
+	public int getTotalComputationDuration(OperatorDescriptor operator) {
+		int duration=0;
 		if (computationDurations.containsKey(operator.getName())) {
-			return computationDurations.get(operator.getName());
+			if (operator.getType() == ComponentType.Ip) {
+				double op1 = new Integer(nbTotalRepeat).doubleValue();
+				double op2 = new Integer(((IpDescriptor) operator)
+						.getNbInstance()).doubleValue();
+				nbAverageRepeat = (int) (Math.ceil(op1 / op2));
+				duration = nbAverageRepeat
+						* (((IpDescriptor) operator).getCommunicationDuration()
+								+ ((IpDescriptor) operator)
+										.getExecutionDuration() - ((IpDescriptor) operator)
+								.getNbInstance()
+								* ((IpDescriptor) operator)
+										.getCommunicationDuration())
+						+ (nbTotalRepeat
+								+ ((IpDescriptor) operator).getNbInstance() - 1)
+						* ((IpDescriptor) operator).getCommunicationDuration();
+			} else if (operator.getType() == ComponentType.Processor) {
+				duration = nbTotalRepeat
+						* computationDurations.get(operator.getName());
+			}
+			return duration;
+//			return computationDurations.get(operator.getName());
 		} else {
 			return Integer.MAX_VALUE;
 		}

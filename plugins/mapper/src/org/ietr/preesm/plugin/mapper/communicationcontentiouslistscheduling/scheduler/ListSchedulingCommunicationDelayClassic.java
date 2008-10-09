@@ -58,10 +58,12 @@ public class ListSchedulingCommunicationDelayClassic extends
 				if (operator.getOccupiedTimeInterval(
 						operator.getOperation(i + 1).getName()).getStartTime()
 						- maxTime >= computation
-						.getComputationDuration(operator)) {
+						.getTotalComputationDuration(operator)) {
 					computation.setStartTime(maxTime);
-					computation.setFinishTime(maxTime
-							+ computation.getComputationDuration(operator));
+					computation
+							.setFinishTime(maxTime
+									+ computation
+											.getTotalComputationDuration(operator));
 					operator.addComputation(computation);
 					operator.addOperation(i + 1, computation);
 					operator.addOccupiedTimeInterval(computation.getName(),
@@ -297,121 +299,125 @@ public class ListSchedulingCommunicationDelayClassic extends
 												.getStartTimeOnLink()));
 				receiveLink.updateCommunication(receiveCommunicationList
 						.get(indexCommunicationOnReceiveLink + 1));
-				// Check delay
-				int delayStartTime = 0;
-				int delayDuration = 0;
-				boolean needDelay = true;
-				if (sourceOperator.getOperation(
-						indexOperationOnSourceOperator + 1).getType() == OperationType.Computation) {
-					if (((ComputationDescriptor) sourceOperator
-							.getOperation(indexOperationOnSourceOperator + 1))
-							.getStartTime() >= communication
-							.getFinishTimeOnSendOperator()) {
-						needDelay = false;
-					} else {
-						delayStartTime = ((ComputationDescriptor) sourceOperator
-								.getOperation(indexOperationOnSourceOperator + 1))
-								.getStartTime();
-						delayDuration = communication
-								.getFinishTimeOnSendOperator()
-								- delayStartTime;
-					}
-				} else {
-					if (sourceOperator
-							.getSendCommunications()
-							.contains(
-									(CommunicationDescriptor) sourceOperator
-											.getOperation(indexOperationOnSourceOperator + 1))) {
-						if (((CommunicationDescriptor) sourceOperator
-								.getOperation(indexOperationOnSourceOperator + 1))
-								.getStartTimeOnSendOperator() >= communication
-								.getFinishTimeOnSendOperator()) {
-							needDelay = false;
-						} else {
-							delayStartTime = ((CommunicationDescriptor) sourceOperator
-									.getOperation(indexOperationOnSourceOperator + 1))
-									.getStartTimeOnSendOperator();
-							delayDuration = communication
-									.getFinishTimeOnSendOperator()
-									- delayStartTime;
-						}
-					} else {
-						if (((CommunicationDescriptor) sourceOperator
-								.getOperation(indexOperationOnSourceOperator + 1))
-								.getStartTimeOnReceiveOperator() >= communication
-								.getFinishTimeOnSendOperator()) {
-							needDelay = false;
-						} else {
-							delayStartTime = ((CommunicationDescriptor) sourceOperator
-									.getOperation(indexOperationOnSourceOperator + 1))
-									.getStartTimeOnReceiveOperator();
-							delayDuration = communication
-									.getFinishTimeOnSendOperator()
-									- delayStartTime;
-						}
-					}
-				}
-				if (needDelay) {
-					// delay operations
-					// System.out.println(" delay operations for: "
-					// + delayDuration + " after: " + delayStartTime);
-					for (OperatorDescriptor indexOperator : architecture
-							.getAllOperators().values()) {
-						for (int i = 1; i < indexOperator.getOperations()
-								.size() - 1; i++) {
-							if (indexOperator.getOperation(i).getType() == OperationType.Computation) {
-								if (((ComputationDescriptor) indexOperator
-										.getOperation(i)).getStartTime() >= delayStartTime) {
-									((ComputationDescriptor) indexOperator
-											.getOperation(i))
-											.setStartTime(((ComputationDescriptor) indexOperator
-													.getOperation(i))
-													.getStartTime()
-													+ delayDuration);
-								}
-							} else {
-								// check only the receive communication to avoid
-								// duplicate checking
-								if (indexOperator
-										.getReceiveCommunications()
-										.contains(
-												(CommunicationDescriptor) indexOperator
-														.getOperation(i))) {
-									if (((CommunicationDescriptor) indexOperator
-											.getOperation(i))
-											.getStartTimeOnSendOperator() >= delayStartTime) {
-										((CommunicationDescriptor) indexOperator
-												.getOperation(i))
-												.setStartTimeOnSendOperator(((CommunicationDescriptor) indexOperator
-														.getOperation(i))
-														.getStartTimeOnSendOperator()
-														+ delayDuration);
-									}
-									if (((CommunicationDescriptor) indexOperator
-											.getOperation(i))
-											.getStartTimeOnLink() >= delayStartTime) {
-										((CommunicationDescriptor) indexOperator
-												.getOperation(i))
-												.setStartTimeOnLink(((CommunicationDescriptor) indexOperator
-														.getOperation(i))
-														.getStartTimeOnLink()
-														+ delayDuration);
-									}
-									if (((CommunicationDescriptor) indexOperator
-											.getOperation(i))
-											.getStartTimeOnReceiveOperator() >= delayStartTime) {
-										((CommunicationDescriptor) indexOperator
-												.getOperation(i))
-												.setStartTimeOnReceiveOperator(((CommunicationDescriptor) indexOperator
-														.getOperation(i))
-														.getStartTimeOnReceiveOperator()
-														+ delayDuration);
-									}
-								}
-							}
-						}
-					}
-				}
+				// // Check delay
+				// int delayStartTime = 0;
+				// int delayDuration = 0;
+				// boolean needDelay = true;
+				// if (sourceOperator.getOperation(
+				// indexOperationOnSourceOperator + 1).getType() ==
+				// OperationType.Computation) {
+				// if (((ComputationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTime() >= communication
+				// .getFinishTimeOnSendOperator()) {
+				// needDelay = false;
+				// } else {
+				// delayStartTime = ((ComputationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTime();
+				// delayDuration = communication
+				// .getFinishTimeOnSendOperator()
+				// - delayStartTime;
+				// }
+				// } else {
+				// if (sourceOperator
+				// .getSendCommunications()
+				// .contains(
+				// (CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))) {
+				// if (((CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTimeOnSendOperator() >= communication
+				// .getFinishTimeOnSendOperator()) {
+				// needDelay = false;
+				// } else {
+				// delayStartTime = ((CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTimeOnSendOperator();
+				// delayDuration = communication
+				// .getFinishTimeOnSendOperator()
+				// - delayStartTime;
+				// }
+				// } else {
+				// if (((CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTimeOnReceiveOperator() >= communication
+				// .getFinishTimeOnSendOperator()) {
+				// needDelay = false;
+				// } else {
+				// delayStartTime = ((CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator + 1))
+				// .getStartTimeOnReceiveOperator();
+				// delayDuration = communication
+				// .getFinishTimeOnSendOperator()
+				// - delayStartTime;
+				// }
+				// }
+				// }
+				// if (needDelay) {
+				// // delay operations
+				// // System.out.println(" delay operations for: "
+				// // + delayDuration + " after: " + delayStartTime);
+				// for (OperatorDescriptor indexOperator : architecture
+				// .getAllOperators().values()) {
+				// for (int i = 1; i < indexOperator.getOperations()
+				// .size() - 1; i++) {
+				// if (indexOperator.getOperation(i).getType() ==
+				// OperationType.Computation) {
+				// if (((ComputationDescriptor) indexOperator
+				// .getOperation(i)).getStartTime() >= delayStartTime) {
+				// ((ComputationDescriptor) indexOperator
+				// .getOperation(i))
+				// .setStartTime(((ComputationDescriptor) indexOperator
+				// .getOperation(i))
+				// .getStartTime()
+				// + delayDuration);
+				// }
+				// } else {
+				// // check only the receive communication to avoid
+				// // duplicate checking
+				// if (indexOperator
+				// .getReceiveCommunications()
+				// .contains(
+				// (CommunicationDescriptor) indexOperator
+				// .getOperation(i))) {
+				// if (((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnSendOperator() >= delayStartTime) {
+				// ((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
+				// indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnSendOperator()
+				// + delayDuration);
+				// }
+				// if (((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnLink() >= delayStartTime) {
+				// ((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .setStartTimeOnLink(((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnLink()
+				// + delayDuration);
+				// }
+				// if (((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnReceiveOperator() >= delayStartTime) {
+				// ((CommunicationDescriptor) indexOperator
+				// .getOperation(i))
+				// .setStartTimeOnReceiveOperator(((CommunicationDescriptor)
+				// indexOperator
+				// .getOperation(i))
+				// .getStartTimeOnReceiveOperator()
+				// + delayDuration);
+				// }
+				// }
+				// }
+				// }
+				// }
+				// }
 
 				// find slot in destination operator
 				int indexOperationOnDestinationOperator = 0;

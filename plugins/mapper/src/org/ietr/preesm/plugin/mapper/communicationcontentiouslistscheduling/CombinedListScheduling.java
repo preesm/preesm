@@ -21,6 +21,8 @@ import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.pars
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.plotter.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.scheduler.*;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.AlgorithmTransformer;
+import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jfree.ui.RefineryUtilities;
 
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -42,6 +44,8 @@ public class CombinedListScheduling {
 	private IArchitecture architecture = null;
 	private IScenario scenario = null;
 
+	private MapperDAG dag = null;
+
 	private AlgorithmDescriptor algo = null;
 	private ArchitectureDescriptor archi = null;
 	private HashMap<String, Integer> computationWeights = null;
@@ -59,6 +63,9 @@ public class CombinedListScheduling {
 		this.architecture = architecture;
 		this.scenario = scenario;
 		computationWeights = algoTransformer.generateNodeWeight(sdf, 100);
+		// computationWeights = algoTransformer.generateRandomNodeWeight(sdf,
+		// 500,
+		// 1000);
 	}
 
 	public CombinedListScheduling(String parameterFileName,
@@ -71,12 +78,18 @@ public class CombinedListScheduling {
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		sdf = algoTransformer.randomSDF(nbVertex, minInDegree, maxInDegree,
 				minOutDegree, maxOutDegree, 500, 1000);
+		// computationWeights = algoTransformer.generateNodeWeight(sdf, 100);
 		computationWeights = algoTransformer.generateRandomNodeWeight(sdf, 500,
 				1000);
 	}
 
 	private void parse() {
-		algo = algoTransformer.sdf2Algorithm(sdf);
+		if (dag != null) {
+			algo = algoTransformer.dag2Algorithm(dag);
+		} else {
+			algo = algoTransformer.sdf2Algorithm(sdf);
+		}
+		// set computation time with default weights
 		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
 			algo.getComputation(indexVertex.getName()).setTime(
 					computationWeights.get(indexVertex.getName()));
@@ -97,7 +110,9 @@ public class CombinedListScheduling {
 								+ "; default computationDuration="
 								+ indexComputation
 										.getComputationDuration(indexOperator
-												.getDefinition().getId()));
+												.getDefinition().getId())
+								+ "; nbTotalRepeate="
+								+ indexComputation.getNbTotalRepeat());
 					}
 				}
 			}
@@ -139,7 +154,7 @@ public class CombinedListScheduling {
 			new ArchitectureParser(architectureFileName, archi).parse();
 		}
 		if (scenario != null) {
-
+			scenaTransformer.parse(scenario, algo, archi);
 		} else {
 			// Parse the design parameter document
 			new ParameterParser(parameterFileName, archi, algo).parse();
@@ -183,7 +198,9 @@ public class CombinedListScheduling {
 							+ indexComputation.getName()
 							+ "; default computationDuration="
 							+ indexComputation
-									.getComputationDuration(defaultOperator));
+									.getComputationDuration(defaultOperator
+											.getId()) + "; nbTotalRepeate="
+							+ indexComputation.getNbTotalRepeat());
 				}
 			}
 			System.out.println("Communications in the algorithm:");
@@ -233,7 +250,9 @@ public class CombinedListScheduling {
 	public void schedule() {
 		System.out
 				.println("\n***** Combined List Scheduling With Static Order Begins! *****");
-
+		if ((architecture != null) && (scenario != null)) {
+			dag = SdfToDagConverter.convert(sdf, architecture, scenario, false);
+		}
 		parse();
 		ListSchedulingClassicWithStaticOrderByBottomLevelComputation scheduler1 = new ListSchedulingClassicWithStaticOrderByBottomLevelComputation(
 				algo, archi);

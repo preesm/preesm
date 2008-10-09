@@ -10,10 +10,13 @@ import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.desc
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.descriptor.ComputationDescriptor;
 import org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling.scheduler.AbstractScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.demo.SDFtoDAGDemo;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.factories.DAGEdgeFactory;
 import org.sdf4j.generator.DirectedAcyclicGraphGenerator;
 import org.sdf4j.model.dag.DAGDefaultEdgePropertyType;
+import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -106,7 +109,53 @@ public class AlgorithmTransformer {
 	 * Converts MapperDAG to an AlgorithmDescriptor
 	 */
 	public AlgorithmDescriptor dag2Algorithm(MapperDAG dag) {
-		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(null);
+		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(
+				new DAGEdgeFactory());
+
+		HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer = algorithm
+				.getComputations();
+		HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer = algorithm
+				.getCommunications();
+
+		// Iterating over MapperDAG vertices
+		TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
+		while (dagiterator.hasNext()) {
+			MapperDAGVertex currentVertex = (MapperDAGVertex) dagiterator
+					.next();
+
+			ComputationDescriptor dagvertex = new ComputationDescriptor(
+					currentVertex.getName(), ComputationDescriptorBuffer);
+			dagvertex.setAlgorithm(algorithm);
+			algorithm.addComputation(dagvertex);
+			dagvertex.setTime(currentVertex.getTime().intValue());
+			dagvertex.setNbTotalRepeat(currentVertex.getNbRepeat().intValue());
+		}
+
+		// Iterating over MapperDAG edges
+		Iterator<DAGEdge> edgeiterator = dag.edgeSet().iterator();
+
+		while (edgeiterator.hasNext()) {
+			MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
+
+			CommunicationDescriptor dagedge = new CommunicationDescriptor(
+					currentEdge.getSource().getName() + "->"
+							+ currentEdge.getTarget().getName(),
+					CommunicationDescriptorBuffer);
+			dagedge.setSource(currentEdge.getSource().getName());
+			ComputationDescriptorBuffer.get(currentEdge.getSource().getName())
+					.addFollowingCommunication(
+							CommunicationDescriptorBuffer
+									.get(dagedge.getName()));
+			dagedge.setDestination(currentEdge.getTarget().getName());
+			ComputationDescriptorBuffer.get(currentEdge.getTarget().getName())
+					.addPrecedingCommunication(
+							CommunicationDescriptorBuffer
+									.get(dagedge.getName()));
+			dagedge.setAlgorithm(algorithm);
+			algorithm.addCommunication(dagedge);
+			dagedge.setWeight(currentEdge.getWeight().intValue());
+		}
+
 		return algorithm;
 	}
 
@@ -135,7 +184,7 @@ public class AlgorithmTransformer {
 			int minOutDegree, int maxOutDegree, int minDataSize,
 			int maxDataSize, int maxSensor) {
 
-		SDFtoDAGDemo applet = new SDFtoDAGDemo();
+		// SDFtoDAGDemo applet = new SDFtoDAGDemo();
 		DirectedAcyclicGraphGenerator DAGG = new DirectedAcyclicGraphGenerator();
 		TopologyVisitor topo = new TopologyVisitor();
 
@@ -149,7 +198,7 @@ public class AlgorithmTransformer {
 		demoGraph.accept(visitor2);
 
 		demoGraph.accept(topo);
-		applet.init(demoGraph);
+		// applet.init(demoGraph);
 
 		// Random edgeSizeRand = new Random();
 
@@ -191,11 +240,7 @@ public class AlgorithmTransformer {
 		HashMap<String, Integer> computationWeights = new HashMap<String, Integer>();
 
 		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			if (indexVertex.getName().equalsIgnoreCase("copy")) {
-				computationWeights.put(indexVertex.getName(), 10 * weight);
-			} else {
-				computationWeights.put(indexVertex.getName(), weight);
-			}
+			computationWeights.put(indexVertex.getName(), weight);
 		}
 		return computationWeights;
 	}

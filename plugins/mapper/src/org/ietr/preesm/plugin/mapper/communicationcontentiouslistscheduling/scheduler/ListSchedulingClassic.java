@@ -183,10 +183,12 @@ public class ListSchedulingClassic extends AbstractScheduler {
 				if (operator.getOccupiedTimeInterval(
 						operator.getOperation(i + 1).getName()).getStartTime()
 						- maxTime >= computation
-						.getComputationDuration(operator)) {
+						.getTotalComputationDuration(operator)) {
 					computation.setStartTime(maxTime);
-					computation.setFinishTime(maxTime
-							+ computation.getComputationDuration(operator));
+					computation
+							.setFinishTime(maxTime
+									+ computation
+											.getTotalComputationDuration(operator));
 					operator.addComputation(computation);
 					operator.addOperation(i + 1, computation);
 					operator.addOccupiedTimeInterval(computation.getName(),
