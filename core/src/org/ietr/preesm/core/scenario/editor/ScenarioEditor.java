@@ -16,10 +16,12 @@ import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.ScenarioWriter;
 import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
+import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
 
 /**
- * The scenario editor allows to change all parameters depending
- * on both algorithm and architecture.
+ * The scenario editor allows to change all parameters in scenario; i.e. depending
+ * on both algorithm and architecture. It can be called by editing a .scenario file
+ * or by creating a new file through File/New/Other/Preesm/Preesm Scenario
  * 
  * @author mpelcat
  */
@@ -35,6 +37,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		super();
 	}
 
+	/**
+	 * Loading the scenario file
+	 */
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -57,6 +62,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		}
 	}
 
+	/**
+	 * Adding the editor pages
+	 */
 	@Override
 	protected void addPages() {
 		//this.activateSite();
@@ -76,6 +84,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		}
 	}
 
+	/**
+	 * Saving the scenario
+	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 

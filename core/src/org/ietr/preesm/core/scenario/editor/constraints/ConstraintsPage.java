@@ -28,17 +28,21 @@ import org.ietr.preesm.core.scenario.editor.Messages;
  */
 public class ConstraintsPage extends FormPage implements IPropertyListener {
 
+	/**
+	 * Currently edited scenario
+	 */
 	private Scenario scenario;
 
-	@Override
-	public Control getPartControl() {
-		// TODO Auto-generated method stub
-		return super.getPartControl();
+	public ConstraintsPage(Scenario scenario, FormEditor editor, String id, String title) {
+		super(editor, id, title);
+		this.scenario = scenario;
 	}
 
+	/**
+	 * Initializes the display content
+	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
 		super.createFormContent(managedForm);
 		
 		ScrolledForm f = managedForm.getForm();
@@ -53,32 +57,23 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
 	}
 
+	/**
+	 * Creates the section editing constraints
+	 */
 	private void createConstraintsSection(IManagedForm managedForm, String title, String desc) {
 
+		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
 		Section section = createSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"), 2);
 		section.setLayout(new ColumnLayout());
 	
+		// Creates the section part containing the tree with SDF vertices
 		SDFTreeSection sdfTreeSection = new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this);
 	}
 
-	public ConstraintsPage(Scenario scenario, FormEditor editor, String id, String title) {
-		super(editor, id, title);
-		this.scenario = scenario;
-	}
-
-	@Override
-	public void createPartControl(Composite parent) {
-
-		super.createPartControl(parent);
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		super.doSave(monitor);
-	}
-
+	/**
+	 * Creates a generic section
+	 */
 	private Section createSection(IManagedForm mform, String title,
 			String desc, int numColumns) {
 		
@@ -103,6 +98,9 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		return section;
 	}
 
+	/**
+	 * Function of the property listener used to transmit the dirty property
+	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
 		if(source instanceof SDFCheckStateListener && propId == PROP_DIRTY)

@@ -19,8 +19,9 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
+ * Writes a scenario as an XML
+ * 
  * @author mpelcat
- *
  */
 public class ScenarioWriter {
 

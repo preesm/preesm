@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.timings;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;

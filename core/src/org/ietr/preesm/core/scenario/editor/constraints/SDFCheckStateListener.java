@@ -25,18 +25,43 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection
- * modification of the current core definition
+ * modification of the current core definition. It updates the check
+ * state of the vertices depending on the constraint groups in the
+ * scenario
  * 
  * @author mpelcat
  */
 public class SDFCheckStateListener implements SelectionListener,
 		ICheckStateListener {
 
+	/**
+	 * Currently edited scenario
+	 */
 	private Scenario scenario = null;
-	private Section section = null;
+	
+	/**
+	 * Current operator
+	 */
 	private OperatorDefinition currentOpDef = null;
+
+	/**
+	 * Current section (necessary to diplay busy status)
+	 */
+	private Section section = null;
+
+	/**
+	 * Tree viewer used to set the checked status
+	 */
 	private CheckboxTreeViewer treeViewer = null;
+
+	/**
+	 * Content provider used to get the elements currently displayed
+	 */
 	private SDFTreeContentProvider contentProvider = null;
+
+	/**
+	 * Constraints page used as a property listener to change the dirty state
+	 */
 	private IPropertyListener propertyListener = null;
 
 	public SDFCheckStateListener(Section section, Scenario scenario) {
@@ -45,12 +70,18 @@ public class SDFCheckStateListener implements SelectionListener,
 		this.section = section;
 	}
 
+	/**
+	 * Sets the different necessary attributes
+	 */
 	public void setTreeViewer(CheckboxTreeViewer treeViewer, SDFTreeContentProvider contentProvider,IPropertyListener propertyListener) {
 		this.treeViewer = treeViewer;
 		this.contentProvider = contentProvider;
 		this.propertyListener = propertyListener;
 	}
 
+	/**
+	 * Fired when an element has been checked or unchecked
+	 */
 	@Override
 	public void checkStateChanged(CheckStateChangedEvent event) {
 		final Object element = event.getElement();
@@ -70,6 +101,10 @@ public class SDFCheckStateListener implements SelectionListener,
 		});
 	}
 
+	/**
+	 * Adds or remove constraints for all vertices in the graph depending 
+	 * on the isChecked status
+	 */
 	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
 		if (currentOpDef != null) {
 			if (isChecked)
@@ -82,6 +117,9 @@ public class SDFCheckStateListener implements SelectionListener,
 		updateCheck();
 	}
 
+	/**
+	 * Adds or remove a constraint depending on the isChecked status
+	 */
 	public void fireOnCheck(SDFAbstractVertex vertex, boolean isChecked) {
 		if (currentOpDef != null) {
 			if (isChecked)
@@ -116,6 +154,9 @@ public class SDFCheckStateListener implements SelectionListener,
 
 	}
 
+	/**
+	 * Update the check status of the whole tree
+	 */
 	public void updateCheck() {
 		SDFGraph currentGraph = contentProvider.getCurrentGraph();
 		if (scenario != null && currentOpDef != null && currentGraph != null) {
@@ -124,6 +165,8 @@ public class SDFCheckStateListener implements SelectionListener,
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
 					.getOpdefConstraintGroups(currentOpDef)) {
 				
+				// Retrieves the elements in the tree that have the same name as
+				// the ones to select in the constraint group
 				for(SDFAbstractVertex vertex:cg.getVertices()){
 					cgSet.add(currentGraph.getVertex(vertex.getName()));
 				}

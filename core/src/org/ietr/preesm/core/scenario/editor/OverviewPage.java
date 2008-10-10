@@ -34,10 +34,18 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.core.scenario.Scenario;
 
 /**
+ * This page contains general informations of the scenario including
+ * current algorithm and current architecture
+ * 
  * @author mpelcat
  */
 public class OverviewPage extends FormPage {
 
+
+	/**
+	 * This class calls the file browser when a "browse" button
+	 * is pushed
+	 */
 	public class FileSelectionAdapter extends SelectionAdapter{
 		
 		private Text filePath;
@@ -54,7 +62,10 @@ public class OverviewPage extends FormPage {
 			browseFiles(shell, filePath);
 		}
 	}
-	
+
+	/**
+	 * The current scenario being edited
+	 */
 	private Scenario scenario;
 	
 	public OverviewPage(Scenario scenario, FormEditor editor, String id, String title) {
@@ -63,6 +74,9 @@ public class OverviewPage extends FormPage {
 		this.scenario = scenario;
 	}
 
+	/**
+	 * Creation of the sections and their initialization
+	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		
@@ -80,18 +94,23 @@ public class OverviewPage extends FormPage {
 		layout.minNumColumns = 1;
 		form.getBody().setLayout(layout);
 
+		// Algorithm file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
 				Messages.getString("Overview.algorithmDescription"),
 				Messages.getString("Overview.algorithmFileEdit"),
 				scenario.getAlgorithmURL());
 
+		// Architecture file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
 				Messages.getString("Overview.architectureDescription"),
 				Messages.getString("Overview.architectureFileEdit"),
 				scenario.getArchitectureURL());
 		
 	}
-	
+
+	/**
+	 * Creates a blank section with expansion capabilities
+	 */
 	private Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns) {
 		
@@ -117,6 +136,16 @@ public class OverviewPage extends FormPage {
 		return client;
 	}
 
+
+	/**
+	 * Creates a section to edit a file
+	 * 
+	 * @param mform form containing the section
+	 * @param title section title
+	 * @param desc description of the section
+	 * @param fileEdit text to display in text label
+	 * @param initValue initial value of Text
+	 */
 	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue) {
 		
 		Composite client = createSection(mform, title, desc, 2);
@@ -156,7 +185,7 @@ public class OverviewPage extends FormPage {
 	
 
 	/**
-	 * Displays a file browser in a shell
+	 * Displays a file browser in a shell. The path is relative to the project
 	 */
 	protected void browseFiles(Shell shell, Text filePath) {
 		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
