@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/MapperAndCodegen_1/Kwok.xml"/>
+        <architecture url=""/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="C64x"/>
+            <task name="n6"/>
+            <task name="n3"/>
+            <task name="n8"/>
+            <task name="n1"/>
+            <task name="n5"/>
+        </constraintGroup>
+    </constraints>
+    <timings/>
+</scenario>

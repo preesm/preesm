@@ -11,6 +11,6 @@
 <stringAttribute key="org.ietr.preesm.core.algorithmFileName" value="D:\Projets\PreesmSourceForge\trunk\tests\MapperAndCodegen_1\TestCom.xml"/>
 <stringAttribute key="org.ietr.preesm.core.architectureFileName" value=""/>
 <intAttribute key="org.ietr.preesm.core.architectureType" value="1"/>
-<stringAttribute key="org.ietr.preesm.core.scenarioFileName" value=""/>
-<stringAttribute key="org.ietr.preesm.core.workflowFileName" value="D:\Projets\PreesmSourceForge\trunk\tests\MapperAndCodegen_1\mapperAndCodegen.workflow"/>
+<stringAttribute key="org.ietr.preesm.core.scenarioFileName" value="/MapperAndCodegen_1/mapperAndCodegen.scenario"/>
+<stringAttribute key="org.ietr.preesm.core.workflowFileName" value="/MapperAndCodegen_1/mapperAndCodegen.workflow"/>
 </launchConfiguration>

@@ -57,9 +57,9 @@
          <data key="edge_cons">10</data>
       </edge>
       <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
-         <data key="edge_prod">0</data>
+         <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">0</data>
+         <data key="edge_cons">1</data>
       </edge>
       <edge source="Sensor" sourceport="o2" target="ParallelTest" targetport="i1">
          <data key="edge_prod">1</data>

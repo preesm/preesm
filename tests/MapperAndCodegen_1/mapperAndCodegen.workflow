@@ -4,10 +4,10 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="maxStep" value="400"/>
-         <variable name="margIn" value="10"/>
+         <variable name="maxStep" value="10"/>
+         <variable name="margIn" value="1"/>
          <variable name="simulatorType" value="LooselyTimed"/>
-         <variable name="maxCount" value="400"/>
+         <variable name="maxCount" value="10"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
@@ -29,4 +29,6 @@
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAG Plotter"/>
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="DAG Plotter"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="codegen"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__algorithm"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__architecture"/>
 </preesm:workflow>
