@@ -3,66 +3,103 @@
  */
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
+ * This class provides the elements displayed in {@link SDFTreeSection}.
+ * Each element is a vertex.
+ * 
  * @author mpelcat
- *
  */
 public class SDFTreeContentProvider implements ITreeContentProvider {
+	
+	private Scenario scenario = null;
+	
+	private SDFGraph currentGraph = null;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
-	 */
+	public SDFTreeContentProvider(CheckboxTreeViewer treeViewer) {
+		super();
+	}
+	
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		// TODO Auto-generated method stub
-		return null;
+		Object table[] = null;
+		
+		if(parentElement instanceof SDFGraph){
+			SDFGraph graph = (SDFGraph)parentElement;
+			table = graph.vertexSet().toArray();
+		}
+		else if(parentElement instanceof SDFAbstractVertex){
+			SDFAbstractVertex vertex = (SDFAbstractVertex)parentElement;
+			table = null;
+		}
+		
+		return table;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
-	 */
 	@Override
 	public Object getParent(Object element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
-	 */
 	@Override
 	public boolean hasChildren(Object element) {
-		// TODO Auto-generated method stub
-		return false;
+
+		boolean hasChildren = false;
+		
+		if(element instanceof SDFGraph){
+			SDFGraph graph = (SDFGraph)element;
+			hasChildren = !graph.vertexSet().isEmpty();
+		}
+		else if(element instanceof SDFAbstractVertex){
+			SDFAbstractVertex vertex = (SDFAbstractVertex)element;
+			hasChildren = false;
+		}
+		
+		return hasChildren;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
-	 */
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
-		return null;
+		Object[] table = new Object[1];
+
+		if(inputElement instanceof Scenario){
+			Scenario inputScenario = (Scenario)inputElement;
+			
+			// Opening algorithm from file
+			if(inputScenario != scenario){
+				scenario = inputScenario;
+				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
+				table[0] = currentGraph;
+			}
+		}
+		return table;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
+	public SDFGraph getCurrentGraph() {
+		return currentGraph;
+	}
+
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
 
 	}
 

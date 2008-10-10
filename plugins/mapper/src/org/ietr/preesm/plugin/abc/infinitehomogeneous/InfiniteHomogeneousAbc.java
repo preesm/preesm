@@ -93,6 +93,9 @@ public class InfiniteHomogeneousAbc extends
 		if (effectiveOp == Operator.NO_COMPONENT) {
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
+
+			vertex.getTimingVertexProperty().setCost(0);
+			
 		} else {
 			// Setting vertex time
 			int vertextime = vertex.getInitialVertexProperty().getTime(

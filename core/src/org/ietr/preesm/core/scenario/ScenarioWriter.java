@@ -3,17 +3,29 @@
  */
 package org.ietr.preesm.core.scenario;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * @author mpelcat
@@ -37,51 +49,67 @@ public class ScenarioWriter {
 		this.scenario = scenario;
 
         try {
-			//Create instance of DocumentBuilderFactory
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			//Get the DocumentBuilder
-			DocumentBuilder docBuilder = factory.newDocumentBuilder();
-			//Create blank DOM Document
-			dom = docBuilder.newDocument();
-
-			//create the root element
-			Element root = dom.createElement("scenario");
-			
-		} catch (DOMException e) {
-			// TODO Auto-generated catch block
+			DOMImplementation impl;
+			impl = DOMImplementationRegistry.newInstance()
+					.getDOMImplementation("Core 3.0 XML 3.0 LS");
+			dom = impl.createDocument("", "scenario",null);
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 
 	}
-	public void generateScenarioDOM() {
+	public Document generateScenarioDOM() {
 
 		Element root = dom.getDocumentElement();
 		
 		addFiles(root);
 		addConstraints(root);
 		addTimings(root);
+		
+		return dom;
 	}
 	
-	public void addFiles(Element parent) {
+	public void writeDom(IFile file) {
+
+		try {
+			// Gets the DOM implementation of document
+			DOMImplementation impl = dom.getImplementation();
+			DOMImplementationLS implLS = (DOMImplementationLS) impl;
+
+			LSOutput output = implLS.createLSOutput();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			output.setByteStream(out);
+
+			LSSerializer serializer = implLS.createLSSerializer();
+			serializer.getDomConfig().setParameter("format-pretty-print", true);
+			serializer.write(dom, output);
+			
+			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
+					false, new NullProgressMonitor());
+			out.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void addFiles(Element parent) {
 
 		Element files= dom.createElement("files");
 		parent.appendChild(files);
 		
 		Element algo = dom.createElement("algorithm");
-		parent.appendChild(algo);
+		files.appendChild(algo);
 		algo.setAttribute("url", scenario.getAlgorithmURL());
 		
 		Element archi = dom.createElement("architecture");
-		parent.appendChild(archi);
+		files.appendChild(archi);
 		archi.setAttribute("url", scenario.getArchitectureURL());
 		
 		
 	}
 
-	public void addConstraints(Element parent) {
+	private void addConstraints(Element parent) {
 
 		Element constraints = dom.createElement("constraints");
 		parent.appendChild(constraints);
@@ -91,25 +119,25 @@ public class ScenarioWriter {
 		}
 	}
 
-	public void addConstraint(Element parent, ConstraintGroup cst) {
+	private void addConstraint(Element parent, ConstraintGroup cst) {
 
-		Element constraint = dom.createElement("constraint");
-		parent.appendChild(constraint);
+		Element constraintGroupElt = dom.createElement("constraintGroup");
+		parent.appendChild(constraintGroupElt);
 		
 		for(OperatorDefinition opdef:cst.getOperatorDefinitions()){
 			Element opdefelt = dom.createElement("operator");
-			constraint.appendChild(opdefelt);
+			constraintGroupElt.appendChild(opdefelt);
 			opdefelt.setAttribute("name", opdef.getId());
 		}
 		
 		for(SDFAbstractVertex vtx:cst.getVertices()){
 			Element vtxelt = dom.createElement("task");
-			constraint.appendChild(vtxelt);
+			constraintGroupElt.appendChild(vtxelt);
 			vtxelt.setAttribute("name", vtx.getName());
 		}
 	}
 
-	public void addTimings(Element parent) {
+	private void addTimings(Element parent) {
 
 		Element timings = dom.createElement("timings");
 		parent.appendChild(timings);
@@ -119,7 +147,7 @@ public class ScenarioWriter {
 		}
 	}
 
-	public void addTiming(Element parent, Timing timing) {
+	private void addTiming(Element parent, Timing timing) {
 
 		Element timingelt = dom.createElement("timing");
 		parent.appendChild(timingelt);

@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.scenario;
 
 import java.io.FileInputStream;
@@ -51,6 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
@@ -81,17 +81,16 @@ public class ScenarioParser {
 	 * scenario being retrieved
 	 */
 	private Scenario scenario = null;
-	
+
 	/**
 	 * current algorithm
 	 */
 	private SDFGraph algo = null;
-	
+
 	/**
 	 * current architecture
 	 */
 	private IArchitecture archi = null;
-	
 
 	public ScenarioParser() {
 
@@ -101,11 +100,11 @@ public class ScenarioParser {
 	public Document getDom() {
 		return dom;
 	}
-	
+
 	/**
 	 * Retrieves the DOM document
 	 */
-	private void parseXmlFile(String url) {
+	public void parseXmlFile(IFile file) {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -115,7 +114,7 @@ public class ScenarioParser {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
 			// parse using builder to get DOM representation of the XML file
-			dom = db.parse(url);
+			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -123,60 +122,64 @@ public class ScenarioParser {
 			se.printStackTrace();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Parses the first level of hierarchy
 	 */
-	private Element parseDocument() {
-		// get the root elememt
-		Element docElt = dom.getDocumentElement();
-
-		Node node = docElt.getFirstChild();
-
-		while (node != null) {
+	public Scenario parseDocument() {
+		if(dom != null){
+			// get the root elememt
+			Element docElt = dom.getDocumentElement();
 	
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("files")) {
-					parseFileNames(elt);
-				} 
-				else if (type.equals("constraints")) {
-					parseConstraintGroups(docElt);
-				} 
-				else if (type.equals("timings")) {
-					parseTimings(docElt);
-				} 
+			Node node = docElt.getFirstChild();
+	
+			while (node != null) {
+	
+				if (node instanceof Element) {
+					Element elt = (Element) node;
+					String type = elt.getTagName();
+					if (type.equals("files")) {
+						parseFileNames(elt);
+					} else if (type.equals("constraints")) {
+						parseConstraintGroups(elt);
+					} else if (type.equals("timings")) {
+						parseTimings(elt);
+					}
+				}
+	
+				node = node.getNextSibling();
 			}
-	
-			node = node.getNextSibling();
 		}
-	
-		return docElt;
+
+		return scenario;
 	}
 
 	/**
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
 	private void parseFileNames(Element filesElt) {
-			
-			Node node = filesElt.getFirstChild();
-	
+
+		Node node = filesElt.getFirstChild();
+
 		while (node != null) {
 
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
-				String id = elt.getAttribute("id");
 				String url = elt.getAttribute("url");
-				if (type.equals("file")) {
-					if(id.equals("algorithm"))
-						algo = getAlgorithm(url);
-					else if(id.equals("architecture"))
-						archi = getArchitecture(url);
-				} 
+				if (type.equals("algorithm")) {
+					scenario.setAlgorithmURL(url);
+					algo = getAlgorithm(url);
+				}
+				else if (type.equals("architecture")){
+					scenario.setArchitectureURL(url);
+					archi = getArchitecture(url);
+				}
 			}
 
 			node = node.getNextSibling();
@@ -186,34 +189,35 @@ public class ScenarioParser {
 	/**
 	 * Gets the Algorithm from its url by parsing the algorithm file
 	 */
-	private SDFGraph getAlgorithm(String url) {
+	static public SDFGraph getAlgorithm(String url) {
 
 		SDFGraph graph = null;
-		if(ResourcesPlugin.getWorkspace() != null){
+		if (ResourcesPlugin.getWorkspace() != null) {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
 			IFile file = root.getFile(new Path(url));
-			
-			GMLSDFImporter importer = new GMLSDFImporter() ;
+
+			GMLSDFImporter importer = new GMLSDFImporter();
 			try {
-				graph = (SDFGraph) importer.parse(new FileInputStream(file.getLocation().toOSString()));
+				graph = (SDFGraph) importer.parse(new FileInputStream(file
+						.getLocation().toOSString()));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (InvalidFileException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return graph;
-			
+
 	}
 
 	/**
 	 * Gets the Architecture from its url by parsing the architecture file
 	 */
-	private IArchitecture getArchitecture(String url) {
+	static public IArchitecture getArchitecture(String url) {
 
-		return Examples.get2C64Archi();	
+		return Examples.get2C64Archi();
 	}
 
 	/**
@@ -231,7 +235,7 @@ public class ScenarioParser {
 				if (type.equals("constraintGroup")) {
 					ConstraintGroup cg = getConstraintGroup(elt);
 					scenario.getConstraintGroupManager().addConstraintGroup(cg);
-				} 
+				}
 			}
 
 			node = node.getNextSibling();
@@ -244,7 +248,7 @@ public class ScenarioParser {
 	private ConstraintGroup getConstraintGroup(Element cstGroupElt) {
 
 		ConstraintGroup cg = new ConstraintGroup();
-		
+
 		if (algo != null && archi != null) {
 
 			Node node = cstGroupElt.getFirstChild();
@@ -270,7 +274,7 @@ public class ScenarioParser {
 				node = node.getNextSibling();
 			}
 		}
-		
+
 		return cg;
 	}
 
@@ -289,7 +293,7 @@ public class ScenarioParser {
 				if (type.equals("timing")) {
 					Timing timing = getTiming(elt);
 					scenario.getTimingManager().addTiming(timing);
-				} 
+				}
 			}
 
 			node = node.getNextSibling();
@@ -302,32 +306,32 @@ public class ScenarioParser {
 	private Timing getTiming(Element timingElt) {
 
 		Timing timing = null;
-		
+
 		if (algo != null && archi != null) {
-			
+
 			String type = timingElt.getTagName();
 			if (type.equals("timing")) {
 				String vertexname = timingElt.getAttribute("vertexname");
 				String opdefname = timingElt.getAttribute("opname");
 				int time;
-				
+
 				try {
 					time = Integer.parseInt(timingElt.getAttribute("time"));
 				} catch (NumberFormatException e) {
 					time = -1;
 				}
-				
+
 				SDFAbstractVertex vertex = algo.getVertex(vertexname);
 				OperatorDefinition opdef = archi
-				.getOperatorDefinition(opdefname);
-				
-				if(vertex != null && opdef != null && time >= 0){
-					timing = new Timing(opdef,vertex, time);
+						.getOperatorDefinition(opdefname);
+
+				if (vertex != null && opdef != null && time >= 0) {
+					timing = new Timing(opdef, vertex, time);
 				}
-			} 
-			
+			}
+
 		}
-		
+
 		return timing;
 	}
 

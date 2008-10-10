@@ -1,0 +1,179 @@
+/**
+ * 
+ */
+package org.ietr.preesm.core.scenario.editor;
+
+import java.net.URI;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.ietr.preesm.core.scenario.Scenario;
+
+/**
+ * @author mpelcat
+ */
+public class OverviewPage extends FormPage {
+
+	public class FileSelectionAdapter extends SelectionAdapter{
+		
+		private Text filePath;
+		private Shell shell;
+		
+		public FileSelectionAdapter(Text filePath,Shell shell) {
+			super();
+			this.filePath = filePath;
+			this.shell = shell;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			browseFiles(shell, filePath);
+		}
+	}
+	
+	private Scenario scenario;
+	
+	public OverviewPage(Scenario scenario, FormEditor editor, String id, String title) {
+		super(editor, id, title);
+
+		this.scenario = scenario;
+	}
+
+	@Override
+	protected void createFormContent(IManagedForm managedForm) {
+		
+		ScrolledForm form = managedForm.getForm();
+		//FormToolkit toolkit = managedForm.getToolkit();
+		form.setText(Messages.getString("Overview.title"));
+		ColumnLayout layout = new ColumnLayout();
+		layout.topMargin = 0;
+		layout.bottomMargin = 5;
+		layout.leftMargin = 10;
+		layout.rightMargin = 10;
+		layout.horizontalSpacing = 10;
+		layout.verticalSpacing = 10;
+		layout.maxNumColumns = 4;
+		layout.minNumColumns = 1;
+		form.getBody().setLayout(layout);
+
+		createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
+				Messages.getString("Overview.algorithmDescription"),
+				Messages.getString("Overview.algorithmFileEdit"),
+				scenario.getAlgorithmURL());
+
+		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
+				Messages.getString("Overview.architectureDescription"),
+				Messages.getString("Overview.architectureFileEdit"),
+				scenario.getArchitectureURL());
+		
+	}
+	
+	private Composite createSection(IManagedForm mform, String title,
+			String desc, int numColumns) {
+		
+		final ScrolledForm form = mform.getForm();
+		FormToolkit toolkit = mform.getToolkit();
+		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
+				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		section.setText(title);
+		section.setDescription(desc);
+
+		toolkit.createCompositeSeparator(section);
+		Composite client = toolkit.createComposite(section);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = numColumns;
+		client.setLayout(layout);
+		section.setClient(client);
+		section.addExpansionListener(new ExpansionAdapter() {
+			public void expansionStateChanged(ExpansionEvent e) {
+				form.reflow(false);
+			}
+		});
+		return client;
+	}
+
+	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue) {
+		
+		Composite client = createSection(mform, title, desc, 2);
+		
+		FormToolkit toolkit = mform.getToolkit();
+
+		GridData gd = new GridData();
+		Label label = toolkit.createLabel(client, fileEdit);
+
+		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)e.getSource();
+				String type = ((String)text.getData());
+				
+				if(type.equals(Messages.getString("Overview.algorithmFile")))
+					scenario.setAlgorithmURL(text.getText());
+				else if(type.equals(Messages.getString("Overview.architectureFile")))
+					scenario.setArchitectureURL(text.getText());
+				
+				firePropertyChange(PROP_DIRTY);
+				
+			}});
+		
+		gd.widthHint =400;
+		text.setLayoutData(gd);
+
+		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell());
+		button.addSelectionListener(adapter);
+		
+		toolkit.paintBordersFor(client);
+	}
+	
+
+	/**
+	 * Displays a file browser in a shell
+	 */
+	protected void browseFiles(Shell shell, Text filePath) {
+		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				new WorkbenchContentProvider());
+		tree.setAllowMultiple(false);
+		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		tree.setMessage("Please select an existing file:");
+		tree.setTitle("Choose an existing file");
+		// opens the dialog
+		if (tree.open() == Window.OK) {
+			IPath fileIPath = ((IFile) tree.getFirstResult()).getFullPath(); 
+			filePath.setText(fileIPath.toString());
+		}
+	}
+}

@@ -38,10 +38,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -55,10 +58,10 @@ public class ConstraintGroupManager {
 	/**
 	 * List of all constraint groups
 	 */
-	private List<ConstraintGroup> constraintgroups;
+	private Set<ConstraintGroup> constraintgroups;
 
 	public ConstraintGroupManager() {
-		constraintgroups = new ArrayList<ConstraintGroup>();
+		constraintgroups = new HashSet<ConstraintGroup>();
 	}
 
 	public void addConstraintGroup(ConstraintGroup cg) {
@@ -66,17 +69,93 @@ public class ConstraintGroupManager {
 		constraintgroups.add(cg);
 	}
 
-	public List<ConstraintGroup> getConstraintGroups() {
+	/**
+	 * Adding a simple constraint on one vertex and one core
+	 */
+	public void addConstraint(OperatorDefinition opdef, SDFAbstractVertex vertex) {
 
-		return new ArrayList<ConstraintGroup>(constraintgroups);
+		Set<ConstraintGroup> cgSet = getOpdefConstraintGroups(opdef);
+		
+		if(cgSet.isEmpty()){
+			ConstraintGroup cg = new ConstraintGroup();
+			cg.addOperatorDefinition(opdef);
+			cg.addVertex(vertex);
+			constraintgroups.add(cg);
+		}
+		else{
+			((ConstraintGroup)cgSet.toArray()[0]).addVertex(vertex);
+		}
 	}
 
-	public List<ConstraintGroup> getGraphConstraintGroups(
+	/**
+	 * Adding a constraint group on several vertices and one core
+	 */
+	public void addConstraints(OperatorDefinition opdef, Set<SDFAbstractVertex> vertexSet) {
+
+		Set<ConstraintGroup> cgSet = getOpdefConstraintGroups(opdef);
+		
+		if(cgSet.isEmpty()){
+			ConstraintGroup cg = new ConstraintGroup();
+			cg.addOperatorDefinition(opdef);
+			cg.addVertices(vertexSet);
+			constraintgroups.add(cg);
+		}
+		else{
+			((ConstraintGroup)cgSet.toArray()[0]).addVertices(vertexSet);
+		}
+	}
+
+	/**
+	 * Removing a simple constraint on one vertex and one core
+	 */
+	public void removeConstraint(OperatorDefinition opdef, SDFAbstractVertex vertex) {
+
+		Set<ConstraintGroup> cgSet = getOpdefConstraintGroups(opdef);
+		
+		if(!cgSet.isEmpty()){
+			for(ConstraintGroup cg:cgSet){
+				cg.removeVertex(vertex);
+			}
+		}
+	}
+
+	/**
+	 * Removing a constraint group on several vertices and one core
+	 */
+	public void removeConstraints(OperatorDefinition opdef, Set<SDFAbstractVertex> vertexSet) {
+
+		Set<ConstraintGroup> cgSet = getOpdefConstraintGroups(opdef);
+		
+		if(!cgSet.isEmpty()){
+			for(ConstraintGroup cg:cgSet){
+				cg.removeVertices(vertexSet);
+			}
+		}
+	}
+
+	public Set<ConstraintGroup> getConstraintGroups() {
+
+		return new HashSet<ConstraintGroup>(constraintgroups);
+	}
+
+	public Set<ConstraintGroup> getGraphConstraintGroups(
 			SDFAbstractVertex vertex) {
-		List<ConstraintGroup> graphConstraintGroups = new ArrayList<ConstraintGroup>();
+		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {
 			if (cg.hasVertex(vertex))
+				graphConstraintGroups.add(cg);
+		}
+
+		return graphConstraintGroups;
+	}
+
+	public Set<ConstraintGroup> getOpdefConstraintGroups(
+			OperatorDefinition opdef) {
+		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
+
+		for (ConstraintGroup cg : constraintgroups) {
+			if (cg.hasOperatorDefinition(opdef))
 				graphConstraintGroups.add(cg);
 		}
 

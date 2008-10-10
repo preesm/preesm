@@ -58,6 +58,18 @@
             Create a new Preesm project
          </description>
       </wizard>
+      <wizard
+            category="org.ietr.preesm.core.category"
+            class="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
+            hasPages="true"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
+            name="Scenario File"
+            project="false">
+         <description>
+            Create a new scenario file
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">

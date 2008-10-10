@@ -532,4 +532,23 @@ public class MultiCoreArchitecture implements IArchitecture {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public Set<OperatorDefinition> getOperatorDefinitions() {
+		Set<OperatorDefinition> opdefs = new HashSet<OperatorDefinition>();
+
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.iterator();
+
+		while (iterator.hasNext()) {
+			ArchitectureComponent currentCmp = iterator.next();
+
+			if (currentCmp instanceof Operator) {
+				if(!opdefs.contains(currentCmp.getDefinition()))
+					opdefs.add((OperatorDefinition)currentCmp.getDefinition());
+			}
+		}
+
+		return opdefs;
+	}
 }

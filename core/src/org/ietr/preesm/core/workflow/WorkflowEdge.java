@@ -64,24 +64,27 @@ public class WorkflowEdge {
 	}
 
 	public void setCarriedData(TaskResult data) {
-		switch (carriedDataType) {
-		case SDF:
-			this.data.setSDF(data.getSDF());
-			break;
-		case DAG:
-			this.data.setDAG(data.getDAG());
-			break;
-		case ARCHITECTURE:
-			this.data.setArchitecture(data.getArchitecture());
-			break;
-		case SCENARIO:
-			this.data.setScenario(data.getScenario());
-			break;
-		case SOURCELIST:
-			this.data.setSourcefilelist(data.getSourcefilelist());
-			break;
-		default:
-
+		
+		if(carriedDataType != null){
+			switch (carriedDataType) {
+			case SDF:
+				this.data.setSDF(data.getSDF());
+				break;
+			case DAG:
+				this.data.setDAG(data.getDAG());
+				break;
+			case ARCHITECTURE:
+				this.data.setArchitecture(data.getArchitecture());
+				break;
+			case SCENARIO:
+				this.data.setScenario(data.getScenario());
+				break;
+			case SOURCELIST:
+				this.data.setSourcefilelist(data.getSourcefilelist());
+				break;
+			default:
+	
+			}
 		}
 	}
 	

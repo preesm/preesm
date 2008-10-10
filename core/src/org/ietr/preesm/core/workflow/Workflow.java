@@ -186,10 +186,14 @@ public class Workflow {
 				monitor.subTask("loading algorithm");
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
-				AlgorithmRetriever retriever = new AlgorithmRetriever(
-						algorithmConfiguration);
-				nodeResult.setSDF(retriever.getAlgorithm());
-				sdf = nodeResult.getSDF();
+				
+				if(scenario != null){
+					String algorithmPath = scenario.getAlgorithmURL();
+					AlgorithmRetriever retriever = new AlgorithmRetriever(
+							algorithmPath);
+					nodeResult.setSDF(retriever.getAlgorithm());
+					sdf = nodeResult.getSDF();
+				}
 
 			} else if (node.isArchitectureNode()) {
 				monitor.subTask("loading architecture");
@@ -207,15 +211,11 @@ public class Workflow {
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
 
-				/*
-				 * ScenarioRetriever retriever = new ScenarioRetriever(
-				 * scenarioConfiguration); theScenario =
-				 * retriever.getScenario();
-				 */
-
-				IScenario theScenario = ScenarioRetriever.RandomScenario(sdf,
-						architecture);
-				// TODO: load the scenario
+				
+				ScenarioRetriever retriever = new ScenarioRetriever(
+				scenarioConfiguration); 
+				IScenario theScenario = retriever.getScenario();
+				 
 				nodeResult.setScenario(theScenario);
 
 			} else if (node.isTaskNode()) {

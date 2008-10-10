@@ -47,6 +47,10 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.sdf4j.generator.DirectedAcyclicGraphGenerator;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
@@ -113,11 +117,34 @@ public class AlgorithmRetriever {
 		super();
 		String filename = algorithmConfiguration.getAlgorithmFileName();
 		GMLSDFImporter importer = new GMLSDFImporter() ;
+		
+		Path relativePath = new Path(filename);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+		
 		try {
-			algorithm = (SDFGraph) importer.parse(new File(filename));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			algorithm = (SDFGraph) importer.parse(file.getContents());
 		} catch (InvalidFileException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public AlgorithmRetriever(String algorithmRelativePath) {
+		super();
+		
+		GMLSDFImporter importer = new GMLSDFImporter() ;
+		
+		Path relativePath = new Path(algorithmRelativePath);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+		
+		try {
+			algorithm = (SDFGraph) importer.parse(file.getContents());
+		} catch (InvalidFileException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

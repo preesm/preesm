@@ -53,4 +53,14 @@ public interface IScenario {
 	 * Manager of implementation timings.
 	 */
 	public TimingManager getTimingManager();
+
+	/**
+	 * Relative path to algorithm file
+	 */
+	public String getAlgorithmURL();
+
+	/**
+	 * Relative path to architecture file
+	 */
+	public String getArchitectureURL();
 }

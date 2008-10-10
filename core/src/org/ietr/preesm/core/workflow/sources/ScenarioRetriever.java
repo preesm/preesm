@@ -42,12 +42,19 @@ package org.ietr.preesm.core.workflow.sources;
 
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
+import org.sdf4j.importer.GMLSDFImporter;
+import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -84,6 +91,14 @@ public class ScenarioRetriever {
 
 	public ScenarioRetriever(ScenarioConfiguration scenarioConfiguration) {
 		super();
+		String filename = scenarioConfiguration.getScenarioFileName();
+		ScenarioParser parser = new ScenarioParser();
+		
+		Path relativePath = new Path(filename);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+		
+		parser.parseXmlFile(file);
+		scenario = parser.parseDocument();
 
 	}
 

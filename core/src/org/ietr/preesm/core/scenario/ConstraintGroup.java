@@ -46,8 +46,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -63,16 +65,16 @@ public class ConstraintGroup {
 	/**
 	 * The set of processing units available for the constraint group
 	 */
-	private List<OperatorDefinition> operatordefinitions;
+	private Set<OperatorDefinition> operatordefinitions;
 
 	/**
 	 * The set of graphs belonging to the constraint group
 	 */
-	private List<SDFAbstractVertex> vertices;
+	private Set<SDFAbstractVertex> vertices;
 
 	public ConstraintGroup() {
-		operatordefinitions = new ArrayList<OperatorDefinition>();
-		vertices = new ArrayList<SDFAbstractVertex>();
+		operatordefinitions = new HashSet<OperatorDefinition>();
+		vertices = new HashSet<SDFAbstractVertex>();
 
 	}
 
@@ -88,15 +90,28 @@ public class ConstraintGroup {
 			vertices.add(vertex);
 
 		}
-
 	}
 
-	public List<OperatorDefinition> getOperatorDefinitions() {
-		return new ArrayList<OperatorDefinition>(operatordefinitions);
+	public void addVertices(Set<SDFAbstractVertex> vertexSet) {
+		for(SDFAbstractVertex vertex:vertexSet){
+			addVertex(vertex);
+		}
 	}
 
-	public List<SDFAbstractVertex> getVertices() {
-		return new ArrayList<SDFAbstractVertex>(vertices);
+	public void removeVertices(Set<SDFAbstractVertex> vertexSet) {
+		for(SDFAbstractVertex vertex:vertexSet){
+			removeVertex(vertex);
+		}
+	}
+	
+	
+
+	public Set<OperatorDefinition> getOperatorDefinitions() {
+		return new HashSet<OperatorDefinition>(operatordefinitions);
+	}
+
+	public Set<SDFAbstractVertex> getVertices() {
+		return new HashSet<SDFAbstractVertex>(vertices);
 	}
 
 	public boolean hasOperatorDefinition(OperatorDefinition operator) {
@@ -105,7 +120,7 @@ public class ConstraintGroup {
 		Iterator<OperatorDefinition> it = operatordefinitions.iterator();
 		while (it.hasNext() && !b) {
 			OperatorDefinition currentop = it.next();
-			b = (currentop == operator);
+			b = currentop.equals(operator);
 		}
 
 		return b;
@@ -117,7 +132,7 @@ public class ConstraintGroup {
 		Iterator<SDFAbstractVertex> it = vertices.iterator();
 		while (it.hasNext() && !b) {
 			SDFAbstractVertex v = it.next();
-			b = (v == vertex);
+			b = (v.getName().equals(vertex.getName()));
 		}
 
 		return b;
@@ -127,7 +142,7 @@ public class ConstraintGroup {
 		Iterator<OperatorDefinition> it = operatordefinitions.iterator();
 		while (it.hasNext()) {
 			OperatorDefinition currentop = it.next();
-			if (currentop == operator) {
+			if (currentop.equals(operator)) {
 				it.remove();
 			}
 		}
@@ -138,7 +153,7 @@ public class ConstraintGroup {
 		Iterator<SDFAbstractVertex> it = vertices.iterator();
 		while (it.hasNext()) {
 			SDFAbstractVertex v = it.next();
-			if (v == vertex) {
+			if ((v.getName().equals(vertex.getName()))) {
 				it.remove();
 
 			}

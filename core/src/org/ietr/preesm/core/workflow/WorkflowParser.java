@@ -46,6 +46,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.jgrapht.DirectedGraph;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -83,15 +87,23 @@ public class WorkflowParser extends DefaultHandler2 {
 			DirectedGraph<IWorkflowNode, WorkflowEdge> workflow) {
 		this.nodes = new HashMap<String, IWorkflowNode>();
 		this.workflow = workflow;
+		
+		Path relativePath = new Path(fileName);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+		
+		
 		try {
 			XMLReader reader = XMLReaderFactory.createXMLReader();
 			reader.setContentHandler(this);
-			reader.parse(new InputSource(new FileInputStream(fileName)));
+			reader.parse(new InputSource(file.getContents()));
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

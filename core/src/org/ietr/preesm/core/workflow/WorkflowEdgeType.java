@@ -39,7 +39,7 @@ package org.ietr.preesm.core.workflow;
 
 
 public enum WorkflowEdgeType {
-	SDF, DAG, ARCHITECTURE, SCENARIO, SOURCELIST;
+	SDF, DAG, ARCHITECTURE, SCENARIO, SOURCELIST,NOTYPE;
 
 	public static WorkflowEdgeType fromString(String s) {
 		if (s.equals("SDF")) {
@@ -53,7 +53,7 @@ public enum WorkflowEdgeType {
 		} else if (s.equals("sources")) {
 			return WorkflowEdgeType.SOURCELIST;
 		} else {
-			return null;
+			return WorkflowEdgeType.NOTYPE;
 		}
 	}
 }

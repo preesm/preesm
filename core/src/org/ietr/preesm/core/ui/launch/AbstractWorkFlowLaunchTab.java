@@ -109,7 +109,7 @@ public abstract class AbstractWorkFlowLaunchTab extends
 		tree.setTitle("Choose an existing file");
 		// opens the dialog
 		if (tree.open() == Window.OK) {
-			fileIPath = ((IFile) tree.getFirstResult()).getLocation();
+			fileIPath = ((IFile) tree.getFirstResult()).getFullPath();
 			filePath.setText(fileIPath.toString());
 		}
 	}

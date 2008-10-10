@@ -10,12 +10,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.ietr.preesm.core.scenario.Scenario;
 
 /**
+ * Timing editor within the implementation editor
+ * 
  * @author mpelcat
- *
  */
 public class TimingsPage extends FormPage {
+	
+	Scenario scenario;
+	
 	@Override
 	public Control getPartControl() {
 		// TODO Auto-generated method stub
@@ -37,18 +42,15 @@ public class TimingsPage extends FormPage {
 
 	}
 
-	public TimingsPage(FormEditor editor, String id, String title) {
+	public TimingsPage(Scenario scenario, FormEditor editor, String id, String title) {
 		super(editor, id, title);
-		// TODO Auto-generated constructor stub
+		
+		this.scenario = scenario;
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 
 		super.createPartControl(parent);
-		/*FormToolkit toolkit = new FormToolkit(parent.getDisplay());
-		Form form = toolkit.createForm(parent);
-		form.setText("Hello, Eclipse Forms");
-		toolkit.decorateFormHeading(form);	// NEW LINE*/
 	}
 }
