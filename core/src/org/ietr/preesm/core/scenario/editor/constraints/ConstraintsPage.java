@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.editor.EditorTools;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**
@@ -58,23 +59,9 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	}
 
 	/**
-	 * Creates the section editing constraints
-	 */
-	private void createConstraintsSection(IManagedForm managedForm, String title, String desc) {
-
-		// Creates the section
-		managedForm.getForm().setLayout(new FillLayout());
-		Section section = createSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"), 2);
-		section.setLayout(new ColumnLayout());
-	
-		// Creates the section part containing the tree with SDF vertices
-		SDFTreeSection sdfTreeSection = new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this);
-	}
-
-	/**
 	 * Creates a generic section
 	 */
-	private Section createSection(IManagedForm mform, String title,
+	public Section createSection(IManagedForm mform, String title,
 			String desc, int numColumns) {
 		
 		final ScrolledForm form = mform.getForm();
@@ -96,6 +83,20 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 			}
 		});
 		return section;
+	}
+
+	/**
+	 * Creates the section editing constraints
+	 */
+	private void createConstraintsSection(IManagedForm managedForm, String title, String desc) {
+
+		// Creates the section
+		managedForm.getForm().setLayout(new FillLayout());
+		Section section = createSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"), 2);
+		section.setLayout(new ColumnLayout());
+	
+		// Creates the section part containing the tree with SDF vertices
+		SDFTreeSection sdfTreeSection = new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this);
 	}
 
 	/**

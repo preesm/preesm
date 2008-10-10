@@ -7,6 +7,8 @@
     <constraints>
         <constraintGroup>
             <operator name="C64x"/>
+            <task name="n6"/>
+            <task name="n4"/>
         </constraintGroup>
     </constraints>
     <timings/>

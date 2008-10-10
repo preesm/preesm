@@ -59,7 +59,7 @@ public class OverviewPage extends FormPage {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			browseFiles(shell, filePath);
+			EditorTools.browseFiles(shell, filePath);
 		}
 	}
 
@@ -183,22 +183,4 @@ public class OverviewPage extends FormPage {
 		toolkit.paintBordersFor(client);
 	}
 	
-
-	/**
-	 * Displays a file browser in a shell. The path is relative to the project
-	 */
-	protected void browseFiles(Shell shell, Text filePath) {
-		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
-				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				new WorkbenchContentProvider());
-		tree.setAllowMultiple(false);
-		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-		tree.setMessage("Please select an existing file:");
-		tree.setTitle("Choose an existing file");
-		// opens the dialog
-		if (tree.open() == Window.OK) {
-			IPath fileIPath = ((IFile) tree.getFirstResult()).getFullPath(); 
-			filePath.setText(fileIPath.toString());
-		}
-	}
 }
