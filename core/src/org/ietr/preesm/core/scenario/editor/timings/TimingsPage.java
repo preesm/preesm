@@ -3,14 +3,45 @@
  */
 package org.ietr.preesm.core.scenario.editor.timings;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.constraints.SDFCheckStateListener;
+import org.ietr.preesm.core.scenario.editor.constraints.SDFLabelProvider;
+import org.ietr.preesm.core.scenario.editor.constraints.SDFTreeContentProvider;
+import org.ietr.preesm.core.scenario.editor.constraints.SDFTreeSection;
 
 /**
  * Timing editor within the implementation editor
@@ -18,39 +49,164 @@ import org.ietr.preesm.core.scenario.Scenario;
  * @author mpelcat
  */
 public class TimingsPage extends FormPage {
-	
+
 	Scenario scenario;
-	
-	@Override
-	public Control getPartControl() {
-		// TODO Auto-generated method stub
-		return super.getPartControl();
+
+	public TimingsPage(Scenario scenario, FormEditor editor, String id,
+			String title) {
+		super(editor, id, title);
+
+		this.scenario = scenario;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		// TODO Auto-generated method stub
 		super.createFormContent(managedForm);
-		
+
 		ScrolledForm f = managedForm.getForm();
-		f.setText("Formular:");
+		f.setText(Messages.getString("Timings.title"));
 		f.getBody().setLayout(new GridLayout());
-		managedForm.getToolkit().createLabel(f.getBody(), "Feld1:");
-		managedForm.getToolkit().createText(f.getBody(), "Wert1");
-		managedForm.getToolkit().createHyperlink(f.getBody(), "Dies ist der Text", 0);
+
+		createTimingsSection(managedForm, Messages.getString("Timings.title"),
+				Messages.getString("Timings.description"));
+
 		managedForm.refresh();
 
 	}
 
-	public TimingsPage(Scenario scenario, FormEditor editor, String id, String title) {
-		super(editor, id, title);
+	/**
+	 * Creates the section editing constraints
+	 */
+	private void createTimingsSection(IManagedForm managedForm, String title,
+			String desc) {
+
+		// Creates the section
+		managedForm.getForm().setLayout(new FillLayout());
+		Composite container = createSection(managedForm, title, desc, 1);
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		toolkit.paintBordersFor(container);
+		container.setSize(100, 100);
+
+		TimingChangedListener listener = new TimingChangedListener();
+		addCoreSelector(container, toolkit, listener);
 		
-		this.scenario = scenario;
+		addTable(container, toolkit,listener);
 	}
 
-	@Override
-	public void createPartControl(Composite parent) {
+	/**
+	 * Creates a generic section
+	 */
+	public Composite createSection(IManagedForm mform, String title,
+			String desc, int numColumns) {
 
-		super.createPartControl(parent);
+		final ScrolledForm form = mform.getForm();
+		FormToolkit toolkit = mform.getToolkit();
+		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
+				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		section.setText(title);
+		section.setDescription(desc);
+		toolkit.createCompositeSeparator(section);
+		Composite client = toolkit.createComposite(section);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = numColumns;
+		client.setLayout(layout);
+		section.setClient(client);
+		section.addExpansionListener(new ExpansionAdapter() {
+			public void expansionStateChanged(ExpansionEvent e) {
+				form.reflow(false);
+			}
+		});
+		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+		return client;
+	}
+
+	/**
+	 * Adds a combo box for the core selection
+	 */
+	protected void addCoreSelector(Composite parent, FormToolkit toolkit,
+			SelectionListener listener) {
+		Composite combocps = toolkit.createComposite(parent);
+		combocps.setLayout(new FillLayout());
+		combocps.setVisible(true);
+		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+		combo.setToolTipText(Messages
+				.getString("Constraints.coreSelectionTooltip"));
+
+		IArchitecture archi = ScenarioParser.getArchitecture(scenario
+				.getArchitectureURL());
+
+		for (OperatorDefinition def : archi.getOperatorDefinitions()) {
+			combo.add(def.getId());
+		}
+
+		combo.setData(archi);
+		combo.addSelectionListener(listener);
+	}
+
+	/**
+	 * Adds a table to edit timings
+	 */
+	protected void addTable(Composite parent, FormToolkit toolkit,
+			ISelectionChangedListener listener) {
+		
+		Composite tablecps = toolkit.createComposite(parent);
+		tablecps.setVisible(true);
+		
+		TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		Table table = tableViewer.getTable();
+		table.setLayout(new GridLayout());
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		//table.setSize(100, 100);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		tableViewer
+				.setContentProvider(new SDFListContentProvider());
+		tableViewer
+				.setLabelProvider(new SDFLabelProvider());
+		//tableViewer
+		//		.setColumnProperties(new String[] { P_VARIABLE, P_VALUE });
+		tableViewer
+				.addSelectionChangedListener(listener);
+
+		// Create columns
+		final TableColumn tc1 = new TableColumn(table, SWT.NONE, 0);
+		tc1.setText(Messages
+				.getString("Timings.taskColumn"));
+		final TableColumn tc2 = new TableColumn(table, SWT.NONE, 1);
+		tc2.setText(Messages
+				.getString("Timings.timeColumn"));
+		final Table tref = table;
+		
+		final Composite comp = tablecps;
+		
+		tablecps.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				Rectangle area = comp.getClientArea();
+				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				ScrollBar vBar = tref.getVerticalBar();
+				int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
+				if (size.y > area.height + tref.getHeaderHeight()) {
+					Point vBarSize = vBar.getSize();
+					width -= vBarSize.x;
+				}
+				Point oldSize = tref.getSize();
+				if (oldSize.x > area.width) {
+					tc1.setWidth(width / 2 - 1);
+					tc2.setWidth(width - tc1.getWidth());
+					tref.setSize(area.width, area.height);
+				} else {
+					tref.setSize(area.width, area.height);
+					tc1.setWidth(width / 2 - 1);
+					tc2.setWidth(width - tc1.getWidth());
+				}
+			}
+		});
+
+		tableViewer.setInput(scenario);
+		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 	}
 }

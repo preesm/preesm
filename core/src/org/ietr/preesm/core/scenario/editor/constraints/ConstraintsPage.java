@@ -71,17 +71,6 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		section.setText(title);
 		section.setDescription(desc);
 		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
 		return section;
 	}
 
@@ -92,11 +81,11 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		Section section = createSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"), 2);
+		Section section = createSection(managedForm, title, desc, 2);
 		section.setLayout(new ColumnLayout());
 	
 		// Creates the section part containing the tree with SDF vertices
-		SDFTreeSection sdfTreeSection = new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this);
+		new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this);
 	}
 
 	/**
