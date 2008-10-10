@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.scenario.editor.timings;
 
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -11,8 +10,9 @@ import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
+ * Provides the elements contained in the timing editor
+ * 
  * @author mpelcat
- *
  */
 public class SDFListContentProvider implements IStructuredContentProvider{
 

@@ -3,10 +3,7 @@
  */
 package org.ietr.preesm.core.scenario.editor.timings;
 
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -19,17 +16,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -38,10 +32,7 @@ import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.Messages;
-import org.ietr.preesm.core.scenario.editor.constraints.SDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.constraints.SDFLabelProvider;
-import org.ietr.preesm.core.scenario.editor.constraints.SDFTreeContentProvider;
-import org.ietr.preesm.core.scenario.editor.constraints.SDFTreeSection;
 
 /**
  * Timing editor within the implementation editor
@@ -59,6 +50,9 @@ public class TimingsPage extends FormPage {
 		this.scenario = scenario;
 	}
 
+	/**
+	 * Creates the elements to display
+	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		// TODO Auto-generated method stub
@@ -76,7 +70,7 @@ public class TimingsPage extends FormPage {
 	}
 
 	/**
-	 * Creates the section editing constraints
+	 * Creates the section editing timings
 	 */
 	private void createTimingsSection(IManagedForm managedForm, String title,
 			String desc) {
@@ -167,8 +161,13 @@ public class TimingsPage extends FormPage {
 				.setContentProvider(new SDFListContentProvider());
 		tableViewer
 				.setLabelProvider(new SDFLabelProvider());
-		//tableViewer
-		//		.setColumnProperties(new String[] { P_VARIABLE, P_VALUE });
+		
+		/*String[] stringList = new String[2];
+		stringList[0] = "tutu";
+		
+		tableViewer
+				.setColumnProperties(stringList);*/
+		
 		tableViewer
 				.addSelectionChangedListener(listener);
 

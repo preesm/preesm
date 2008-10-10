@@ -9,23 +9,20 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
 /**
+ * Listener of core definition change and of table selection
+ * 
  * @author mpelcat
- *
  */
 public class TimingChangedListener implements SelectionListener, ISelectionChangedListener {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
+
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
-	 */
+
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		// TODO Auto-generated method stub
