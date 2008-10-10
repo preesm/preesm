@@ -34,69 +34,51 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-/**
- * 
- */
-package org.ietr.preesm.plugin.abc;
+
+package org.ietr.preesm.plugin.mapper.commcontenlistsched;
+
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.mapper.AbstractParameters;
 
 /**
- * Types of simulator to be used in parameters
- * 
- * @author mpelcat
  */
-public enum AbcType {
 
-	InfiniteHomogeneous,
+public class CommContenListSchedParameters extends AbstractParameters {
 
-	LooselyTimed,
 
-	ApproximatelyTimed,
+	/**
+	 * Simulator type
+	 */
+	private AbcType simulatorType;
 
-	AccuratelyTimed,
-
-	CommConten,
-
-	SendReceive;
-
-	@Override
-	public String toString() {
-
-		if (this == InfiniteHomogeneous) {
-			return "InfiniteHomogeneous";
-		} else if (this == LooselyTimed) {
-			return "LooselyTimed";
-		} else if (this == ApproximatelyTimed) {
-			return "ApproximatelyTimed";
-		} else if (this == AccuratelyTimed) {
-			return "AccuratelyTimed";
-
-		} else if (this == CommConten) {
-			return "CommConten";
-
-		} else if (this == SendReceive) {
-			return "SendReceive";
-
-		}
-
-		return null;
+	public CommContenListSchedParameters(TextParameters textParameters) {
+		super(textParameters);
+		
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
-	public static AbcType fromString(String type) {
+	/**
+	 * 
+	 * Constructors
+	 * 
+	 */
 
-		if (type.equalsIgnoreCase("InfiniteHomogeneous")) {
-			return InfiniteHomogeneous;
-		} else if (type.equalsIgnoreCase("LooselyTimed")) {
-			return LooselyTimed;
-		} else if (type.equalsIgnoreCase("ApproximatelyTimed")) {
-			return ApproximatelyTimed;
-		} else if (type.equalsIgnoreCase("AccuratelyTimed")) {
-			return AccuratelyTimed;
-		} else if (type.equalsIgnoreCase("CommConten")) {
-			return CommConten;
-		} else if (type.equalsIgnoreCase("SendReceive")) {
-			return SendReceive;
-		}
+	public CommContenListSchedParameters(int maxCount, int maxStep, int margIn,
+			AbcType simulatorType) {
+		super();
 
-		return null;
+	}
+
+	public AbcType getSimulatorType() {
+		return simulatorType;
+	}
+
+	/**
+	 * @param simulatorType
+	 *            the simulatorType to set
+	 */
+	public void setSimulatorType(AbcType simulatorType) {
+		this.simulatorType = simulatorType;
 	}
 }

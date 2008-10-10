@@ -47,7 +47,7 @@
          <variable name="simulatorType" value="LooselyTimed"/>
       </data>
    </preesm:task>
-   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling" taskId="communication contentious list scheduler">
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.commcontenlistsched" taskId="communication contentious list scheduler">
       <data key="variables">
          <variable name="simulatorType" value="LooselyTimed"/>
       </data>

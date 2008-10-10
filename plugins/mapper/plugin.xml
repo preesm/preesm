@@ -29,9 +29,9 @@
             type="org.ietr.preesm.plugin.mapper.StandardGeneticTransformation">
       </task>
       <task
-            id="org.ietr.preesm.plugin.mapper.communicationcontentiouslistscheduling"
-            name="communication contentious list scheduler"
-            type="org.ietr.preesm.plugin.mapper.CommunicationContentiousListSchedulingTransformation">
+            id="org.ietr.preesm.plugin.mapper.commcontenlistsched"
+            name="Communication contentious list scheduling"
+            type="org.ietr.preesm.plugin.mapper.CommContenListSchedTransformation">
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.plot.GanttExporter"

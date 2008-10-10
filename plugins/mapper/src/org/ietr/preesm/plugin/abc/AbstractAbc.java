@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.accuratelytimed.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.approximatelytimed.ApproximatelyTimedAbc;
-import org.ietr.preesm.plugin.abc.communicationcontentious.CommunicationContentiousAbc;
+import org.ietr.preesm.plugin.abc.commconten.CommContenAbc;
 import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
@@ -75,10 +75,11 @@ import org.sdf4j.model.dag.DAGVertex;
 public abstract class AbstractAbc implements IAbc {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
+	 * ID used to reference the element in a property bean in case of a
+	 * computation vertex
 	 */
 	public static final String propertyBeanName = "AbcReferenceType";
-	
+
 	/**
 	 * Architecture related to the current simulator
 	 */
@@ -114,8 +115,8 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(AbcType simulatorType,
-			MapperDAG dag, IArchitecture archi) {
+	public static IAbc getInstance(AbcType simulatorType, MapperDAG dag,
+			IArchitecture archi) {
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
 			return new InfiniteHomogeneousAbc(dag, archi);
@@ -125,8 +126,8 @@ public abstract class AbstractAbc implements IAbc {
 			return new ApproximatelyTimedAbc(dag, archi);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
 			return new AccuratelyTimedAbc(dag, archi);
-		} else if (simulatorType == AbcType.CommunicationContentious) {
-			return new CommunicationContentiousAbc(dag, archi);
+		} else if (simulatorType == AbcType.CommConten) {
+			return new CommContenAbc(dag, archi);
 		} else if (simulatorType == AbcType.SendReceive) {
 			return new SendReceiveAbc(dag, archi);
 		}
@@ -339,7 +340,8 @@ public abstract class AbstractAbc implements IAbc {
 
 			}
 
-			if (isImplantable(impvertex, operator) || impvertex instanceof TransferVertex) {
+			if (isImplantable(impvertex, operator)
+					|| impvertex instanceof TransferVertex) {
 
 				// Implantation property is set in both DAG and implementation
 				dagprop.setEffectiveOperator(operator);

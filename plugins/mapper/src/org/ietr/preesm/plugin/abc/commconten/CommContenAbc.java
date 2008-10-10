@@ -34,69 +34,56 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-/**
- * 
- */
-package org.ietr.preesm.plugin.abc;
+package org.ietr.preesm.plugin.abc.commconten;
+
+import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.abc.AbstractAbc;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Types of simulator to be used in parameters
+ * Prepared for communication contentious list scheduling ABC
  * 
- * @author mpelcat
+ * @author pmu
  */
-public enum AbcType {
+public class CommContenAbc extends AbstractAbc {
 
-	InfiniteHomogeneous,
-
-	LooselyTimed,
-
-	ApproximatelyTimed,
-
-	AccuratelyTimed,
-
-	CommConten,
-
-	SendReceive;
-
-	@Override
-	public String toString() {
-
-		if (this == InfiniteHomogeneous) {
-			return "InfiniteHomogeneous";
-		} else if (this == LooselyTimed) {
-			return "LooselyTimed";
-		} else if (this == ApproximatelyTimed) {
-			return "ApproximatelyTimed";
-		} else if (this == AccuratelyTimed) {
-			return "AccuratelyTimed";
-
-		} else if (this == CommConten) {
-			return "CommConten";
-
-		} else if (this == SendReceive) {
-			return "SendReceive";
-
-		}
-
-		return null;
+	public CommContenAbc(MapperDAG dag, IArchitecture archi) {
+		super(dag, archi);
+		// TODO Auto-generated constructor stub
 	}
 
-	public static AbcType fromString(String type) {
+	@Override
+	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+		// TODO Called whenever a vertex is implanted
+		// Call here your edge scheduling and specific vertices adder (via
+		// transactions)
 
-		if (type.equalsIgnoreCase("InfiniteHomogeneous")) {
-			return InfiniteHomogeneous;
-		} else if (type.equalsIgnoreCase("LooselyTimed")) {
-			return LooselyTimed;
-		} else if (type.equalsIgnoreCase("ApproximatelyTimed")) {
-			return ApproximatelyTimed;
-		} else if (type.equalsIgnoreCase("AccuratelyTimed")) {
-			return AccuratelyTimed;
-		} else if (type.equalsIgnoreCase("CommConten")) {
-			return CommConten;
-		} else if (type.equalsIgnoreCase("SendReceive")) {
-			return SendReceive;
-		}
+	}
 
-		return null;
+	@Override
+	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
+		// TODO Called whenever a vertex is unimplanted
+
+	}
+
+	@Override
+	protected void setEdgeCost(MapperDAGEdge edge) {
+		// TODO Called from your own fireNewMappedVertex when necessary to set
+		// the cost of
+		// edges during simulation
+
+	}
+
+	@Override
+	protected void updateTimings() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public AbcType getType() {
+		return AbcType.CommConten;
 	}
 }
