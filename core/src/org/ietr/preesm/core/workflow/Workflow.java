@@ -73,11 +73,8 @@ import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 import org.jgrapht.DirectedGraph;
-import org.sdf4j.model.AbstractGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 

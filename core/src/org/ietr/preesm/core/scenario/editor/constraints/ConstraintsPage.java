@@ -1,22 +1,13 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -24,13 +15,11 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
-import org.ietr.preesm.core.scenario.editor.OverviewPage.FileSelectionAdapter;
+import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**
  * Constraint editor within the implementation editor

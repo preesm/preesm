@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-import org.w3c.dom.Element;
 
 public class Scenario implements IScenario {
 

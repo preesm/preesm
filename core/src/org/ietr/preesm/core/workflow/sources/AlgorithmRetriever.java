@@ -40,9 +40,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.workflow.sources;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;

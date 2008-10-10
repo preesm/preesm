@@ -6,7 +6,7 @@
 <booleanAttribute key="attr_ocaml_remote_debug_enable" value="false"/>
 <stringAttribute key="attr_ocaml_remote_debug_port" value="8000"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="CodeGenSourcePath" value="D:\Projets\PreesmSourceForge\trunk\tests\MapperAndCodegen_1\Code"/>
+<mapEntry key="CodeGenSourcePath" value="/MapperAndCodegen_1/Code"/>
 </mapAttribute>
 <stringAttribute key="org.ietr.preesm.core.algorithmFileName" value="D:\Projets\PreesmSourceForge\trunk\tests\MapperAndCodegen_1\TestCom.xml"/>
 <stringAttribute key="org.ietr.preesm.core.architectureFileName" value=""/>

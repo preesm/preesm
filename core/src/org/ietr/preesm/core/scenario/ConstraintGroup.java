@@ -45,10 +45,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.OperatorDefinition;

@@ -14,25 +14,29 @@ extern LOG_Obj trace;
 #include "..\..\lib_RACH\common.h"
 
 //Buffer allocation for C64x_2
-#pragma DATA_SECTION(Sensoro1Gen_inti1, ".my_sect")
-#pragma DATA_ALIGN(Sensoro1Gen_inti1, 8)
-char[10] Sensoro1Gen_inti1;
+#pragma DATA_SECTION(n1o1n2i1, ".my_sect")
+#pragma DATA_ALIGN(n1o1n2i1, 8)
+char[10] n1o1n2i1;
 
-#pragma DATA_SECTION(Gen_into2Actuatori2, ".my_sect")
-#pragma DATA_ALIGN(Gen_into2Actuatori2, 8)
-char[10] Gen_into2Actuatori2;
+#pragma DATA_SECTION(n1o5n5i1, ".my_sect")
+#pragma DATA_ALIGN(n1o5n5i1, 8)
+char[10] n1o5n5i1;
 
-#pragma DATA_SECTION(Gen_into1Copyi1, ".my_sect")
-#pragma DATA_ALIGN(Gen_into1Copyi1, 8)
-char[10] Gen_into1Copyi1;
+#pragma DATA_SECTION(n1o2n7i2, ".my_sect")
+#pragma DATA_ALIGN(n1o2n7i2, 8)
+char[10] n1o2n7i2;
 
-#pragma DATA_SECTION(Copyo1Actuatori1, ".my_sect")
-#pragma DATA_ALIGN(Copyo1Actuatori1, 8)
-char[10] Copyo1Actuatori1;
+#pragma DATA_SECTION(n2o2n7i1, ".my_sect")
+#pragma DATA_ALIGN(n2o2n7i1, 8)
+char[10] n2o2n7i1;
+
+#pragma DATA_SECTION(n2o1n6i1, ".my_sect")
+#pragma DATA_ALIGN(n2o1n6i1, 8)
+char[10] n2o1n6i1;
 
 #pragma DATA_SECTION(sem, ".my_sect")
 #pragma DATA_ALIGN(sem, 8)
-semaphore[4] sem;
+semaphore[8] sem;
 
 
 // Main function
@@ -89,18 +93,19 @@ if( (communicationThread_handle = TSK_create((Fxn)communicationThread, &communic
 void computationThread()
 {
 
-//Variables allocation for computationThread
-int i;
-
 
 //beginningCode
 
 {
-	init_Sensor(Sensoro1Gen_inti1);
-	init_Gen_int(Gen_into1Copyi1,Gen_into2Actuatori2,Sensoro1Gen_inti1);
-	init_Copy(Copyo1Actuatori1,Gen_into1Copyi1);
-	init_Actuator(Copyo1Actuatori1,Gen_into2Actuatori2);
+	init_n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
+	init_n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
+	init_n7(n1o2n7i2,n2o2n7i1);
+	init_n6(n2o1n6i1);
+	init_n5(n1o5n5i1);
 	semaphorePost(sem[0], empty);
+	semaphorePost(sem[2], empty);
+	semaphorePost(sem[4], empty);
+	semaphorePost(sem[6], empty);
 }
 
 
@@ -109,15 +114,18 @@ int i;
 
 for(;;){
 	semaphorePend(sem[0], empty);
-	Sensor(Sensoro1Gen_inti1);
+	semaphorePend(sem[2], empty);
+	n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
+	semaphorePost(sem[3], full);
 	semaphorePost(sem[1], full);
-	Gen_int(Gen_into1Copyi1,Gen_into2Actuatori2,Sensoro1Gen_inti1);
-	for(i = 0; i < 10 ; i += 1){
-		Copy(Copyo1Actuatori1[i] ,Gen_into1Copyi1[i] );
-	}
-	semaphorePend(sem[2], full);
-	Actuator(Copyo1Actuatori1,Gen_into2Actuatori2);
-	semaphorePost(sem[3], empty);
+	n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
+	semaphorePend(sem[4], empty);
+	n7(n1o2n7i2,n2o2n7i1);
+	semaphorePost(sem[5], full);
+	semaphorePend(sem[6], empty);
+	n6(n2o1n6i1);
+	semaphorePost(sem[7], full);
+	n5(n1o5n5i1);
 }
 
 
@@ -125,10 +133,11 @@ for(;;){
 //endCode
 
 {
-	close_Sensor(Sensoro1Gen_inti1);
-	close_Gen_int(Gen_into1Copyi1,Gen_into2Actuatori2,Sensoro1Gen_inti1);
-	close_Copy(Copyo1Actuatori1,Gen_into1Copyi1);
-	close_Actuator(Copyo1Actuatori1,Gen_into2Actuatori2);
+	close_n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
+	close_n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
+	close_n7(n1o2n7i2,n2o2n7i1);
+	close_n6(n2o1n6i1);
+	close_n5(n1o5n5i1);
 }
 
 }//end thread: computationThread
@@ -141,7 +150,6 @@ void communicationThread()
 //beginningCode
 
 {
-	semaphorePost(sem[3], empty);
 }
 
 
@@ -152,9 +160,15 @@ for(;;){
 	semaphorePend(sem[1], full);
 	send(C64x_1,);
 	semaphorePost(sem[0], empty);
-	semaphorePend(sem[3], empty);
-	receive(C64x_1,);
-	semaphorePost(sem[2], full);
+	semaphorePend(sem[3], full);
+	send(C64x_1,);
+	semaphorePost(sem[2], empty);
+	semaphorePend(sem[5], full);
+	send(C64x_1,);
+	semaphorePost(sem[4], empty);
+	semaphorePend(sem[7], full);
+	send(C64x_1,);
+	semaphorePost(sem[6], empty);
 }
 
 

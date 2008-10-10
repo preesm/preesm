@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,22 +10,18 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.actions.SelectionListenerAction;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.internal.DirtyPerspectiveMarker;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection

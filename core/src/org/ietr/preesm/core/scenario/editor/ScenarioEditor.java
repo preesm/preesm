@@ -5,8 +5,6 @@ package org.ietr.preesm.core.scenario.editor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
-import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
@@ -17,6 +15,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.ScenarioWriter;
+import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
 
 /**
  * The scenario editor allows to change all parameters depending

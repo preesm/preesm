@@ -1,11 +1,9 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 

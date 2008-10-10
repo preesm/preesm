@@ -44,7 +44,6 @@ import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
@@ -53,8 +52,6 @@ import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
-import org.sdf4j.importer.GMLSDFImporter;
-import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 

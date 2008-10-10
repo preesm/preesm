@@ -1,45 +1,24 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
-import javax.swing.ComboBoxEditor;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
-import org.eclipse.ui.forms.events.ExpansionAdapter;
-import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.internal.layout.CellLayout;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
+import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**
  * Tree representing a SDF graph
@@ -83,10 +62,27 @@ public class SDFTreeSection extends SectionPart {
 		
 		initialize();
 		toolkit.paintBordersFor(container);
-		section.setLayout(FormLayoutFactory.createClearGridLayout(false, 1));
+		section.setLayout(createClearGridLayout());
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		section.setClient(container);
 
+	}
+	
+	public static GridLayout createClearGridLayout() {
+		GridLayout layout = new GridLayout();
+
+		layout.marginHeight = 0;
+		layout.marginWidth = 2;
+		layout.marginTop = 2;
+		layout.marginBottom = 2;
+		layout.marginLeft = 2;
+		layout.marginRight = 2;
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		layout.makeColumnsEqualWidth = false;
+		layout.numColumns = 1;
+
+		return layout;
 	}
 	
 	public void initialize() {

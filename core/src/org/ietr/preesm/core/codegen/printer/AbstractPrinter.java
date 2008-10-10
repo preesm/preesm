@@ -58,7 +58,6 @@ import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
-import org.ietr.preesm.core.codegen.Variable;
 import org.ietr.preesm.core.codegen.VariableAllocation;
 
 

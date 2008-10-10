@@ -1,16 +1,11 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor;
-
-import java.util.HashSet;
-import java.util.Set;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
-import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
