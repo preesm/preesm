@@ -134,9 +134,13 @@ public class PrinterChooser {
 			
 			IFile iFile = workspace.getRoot().getFile(path);
 			try {
-				iFile.create(new ByteArrayInputStream(code.getBytes()) ,
-				       true,
-				       new NullProgressMonitor());
+				if(iFile.exists()){
+					iFile.setContents(new ByteArrayInputStream(code.getBytes()), true, true, new NullProgressMonitor());
+				}else{
+					iFile.create(new ByteArrayInputStream(code.getBytes()) ,
+						       false,
+						       new NullProgressMonitor());
+				}
 			} catch (CoreException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
