@@ -2,7 +2,7 @@
 <spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd">
   <spirit:vendor>TexasInstruments</spirit:vendor>
   <spirit:library>TCI6487TLM</spirit:library>
-  <spirit:name>C64x+</spirit:name>
+  <spirit:name>edma3controller</spirit:name>
   <spirit:version>1.4</spirit:version>
   <spirit:busInterfaces>
     <spirit:busInterface>
@@ -21,31 +21,13 @@
       </spirit:portMaps>
     </spirit:busInterface>
   </spirit:busInterfaces>
-  <spirit:addressSpaces>
-    <spirit:addressSpace>
-      <spirit:name>InternalMemory</spirit:name>
-      <spirit:range>4G</spirit:range>
-      <spirit:width>32</spirit:width>
-      <spirit:localMemoryMap>
-        <spirit:name>c64x+localAddress</spirit:name>
-        <spirit:addressBlock>
-          <spirit:name>defaultBlock</spirit:name>
-          <spirit:baseAddress spirit:resolve="user" spirit:id="start_addr_local" spirit:choiceRef="BaseAddressChoices" spirit:configGroups="requiredConfig" spirit:prompt="Local Memory Map Starting Address:">0x00800000</spirit:baseAddress>
-          <spirit:range spirit:resolve="user" spirit:id="range_local" spirit:configGroups="requiredConfig" spirit:prompt="Local Memory Map Range (bytes):" spirit:choiceRef="RangeChoice">1048576</spirit:range>
-          <spirit:width spirit:id="width">32</spirit:width>
-          <spirit:usage>memory</spirit:usage>
-        </spirit:addressBlock>
-        <spirit:addressUnitBits>8</spirit:addressUnitBits>
-      </spirit:localMemoryMap>
-    </spirit:addressSpace>
-  </spirit:addressSpaces>
   <spirit:model>
     <spirit:views>
       <spirit:view>
         <spirit:name>PREESM_View</spirit:name>
         <spirit:envIdentifier>PREESM_Env</spirit:envIdentifier>
         <spirit:language>Spirit</spirit:language>
-        <spirit:modelName>c64x+Model</spirit:modelName>
+        <spirit:modelName>edma3Model</spirit:modelName>
         <spirit:fileSetRef>spiritFile</spirit:fileSetRef>
       </spirit:view>
     </spirit:views>
@@ -81,33 +63,9 @@
     <spirit:modelParameters>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>local_memory_addr_bits</spirit:name>
-        <spirit:value spirit:resolve="dependent" spirit:id="local_memory_addr_bits" spirit:dependency="floor(spirit:log(2,id('range_local')+1))" spirit:prompt="Number of address bit for the local memoryMap">20</spirit:value>
+        <spirit:value spirit:resolve="user" spirit:id="setup_time" spirit:prompt="Set-up time specific to the controller">100</spirit:value>
+        <spirit:value spirit:resolve="user" spirit:id="transfer_speed" spirit:prompt="Time necessary to transfer one memory block">100</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
-  <spirit:choices>
-    <spirit:choice>
-      <spirit:name>cacheChoice</spirit:name>
-      <spirit:enumeration spirit:text="0">0</spirit:enumeration>
-      <spirit:enumeration spirit:text="32k">32768</spirit:enumeration>
-      <spirit:enumeration spirit:text="64k">65536</spirit:enumeration>
-      <spirit:enumeration spirit:text="128k">131072</spirit:enumeration>
-      <spirit:enumeration spirit:text="256k">262144</spirit:enumeration>
-    </spirit:choice>
-  </spirit:choices>
-  <spirit:fileSets>
-    <spirit:fileSet>
-      <spirit:name>refinement</spirit:name>
-      <spirit:file>
-        <spirit:name>preesmproject/c64x+design.xml</spirit:name>
-        <spirit:fileType>spiritFile</spirit:fileType>
-      </spirit:file>
-    </spirit:fileSet>
-  </spirit:fileSets>
-  <spirit:cpus>
-    <spirit:cpu>
-      <spirit:name>processor</spirit:name>
-      <spirit:addressSpaceRef spirit:addressSpaceRef="InternalMemory"/>
-    </spirit:cpu>
-  </spirit:cpus>
 </spirit:component>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd">
+  <spirit:vendor>TexasInstruments</spirit:vendor>
+  <spirit:library>TCI6487TLM</spirit:library>
+  <spirit:name>main_design</spirit:name>
+  <spirit:version>1.4</spirit:version>
+  <spirit:componentInstances>
+    <spirit:componentInstance>
+      <spirit:instanceName>TCI6487_1</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="TCI6487" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+    <spirit:componentInstance>
+      <spirit:instanceName>TCI6487_2</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="TCI6487" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+    <spirit:componentInstance>
+      <spirit:instanceName>rapidIo_1</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="rapidIOcontroller" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+        <spirit:configurableElementValue spirit:referenceId="setup_time">1000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="transfer_speed">1000</spirit:configurableElementValue>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+  </spirit:componentInstances>
+  <spirit:interconnections>
+    <spirit:interconnection>
+      <spirit:name>l1</spirit:name>
+      <spirit:activeInterface spirit:componentRef="TCI6487_1" spirit:busRef="EDMA3bus"/>
+      <spirit:activeInterface spirit:componentRef="rapidIo_1" spirit:busRef="EDMA3bus"/>
+    </spirit:interconnection>
+    <spirit:interconnection>
+      <spirit:name>l2</spirit:name>
+      <spirit:activeInterface spirit:componentRef="TCI6487_2" spirit:busRef="EDMA3bus"/>
+      <spirit:activeInterface spirit:componentRef="rapidIo_1" spirit:busRef="EDMA3bus"/>
+    </spirit:interconnection>
+  </spirit:interconnections>
+</spirit:design>

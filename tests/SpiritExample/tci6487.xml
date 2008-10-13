@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd">
+  <spirit:vendor>TexasInstruments</spirit:vendor>
+  <spirit:library>TCI6487TLM</spirit:library>
+  <spirit:name>TCI6487</spirit:name>
+  <spirit:version>1.4</spirit:version>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>spirit-design</spirit:name>
+        <spirit:envIdentifier>::Hierarchy</spirit:envIdentifier>
+        <spirit:hierarchyRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="TCI6487_design" spirit:version="1.4"/>
+      </spirit:view>
+    </spirit:views>
+  </spirit:model>
+  <spirit:ports>
+      <spirit:port>
+        <spirit:name>EDMA3_physical</spirit:name>
+      </spirit:port>
+    </spirit:ports>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>refinement</spirit:name>
+      <spirit:file>
+        <spirit:name>TCI6487_design.xml</spirit:name>
+        <spirit:fileType>spiritFile</spirit:fileType>
+        <spirit:isIncludeFile>true</spirit:isIncludeFile>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+</spirit:component>

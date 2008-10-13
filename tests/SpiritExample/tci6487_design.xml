@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd">
+  <spirit:vendor>TexasInstruments</spirit:vendor>
+  <spirit:library>TCI6487TLM</spirit:library>
+  <spirit:name>TCI6487_design</spirit:name>
+  <spirit:version>1.4</spirit:version>
+  <spirit:componentInstances>
+    <spirit:componentInstance>
+      <spirit:instanceName>C64x+_1</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="C64x+" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+    <spirit:componentInstance>
+      <spirit:instanceName>C64x+_2</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="C64x+" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+    <spirit:componentInstance>
+      <spirit:instanceName>C64x+_3</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="C64x+" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+    <spirit:componentInstance>
+      <spirit:instanceName>edma3controller_1</spirit:instanceName>
+      <spirit:componentRef spirit:vendor="TexasInstruments" spirit:library="TCI6487TLM" spirit:name="edma3controller" spirit:version="1.4"/>
+      <spirit:configurableElementValues>
+        <spirit:configurableElementValue spirit:referenceId="setup_time">1000</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="transfer_speed">1000</spirit:configurableElementValue>
+      </spirit:configurableElementValues>
+    </spirit:componentInstance>
+  </spirit:componentInstances>
+  <spirit:interconnections>
+    <spirit:interconnection>
+      <spirit:name>l1</spirit:name>
+      <spirit:activeInterface spirit:componentRef="C64x+_1" spirit:busRef="EDMA3bus"/>
+      <spirit:activeInterface spirit:componentRef="edma3controller_1" spirit:busRef="EDMA3bus"/>
+    </spirit:interconnection>
+    <spirit:interconnection>
+      <spirit:name>l2</spirit:name>
+      <spirit:activeInterface spirit:componentRef="C64x+_2" spirit:busRef="EDMA3bus"/>
+      <spirit:activeInterface spirit:componentRef="edma3controller_1" spirit:busRef="EDMA3bus"/>
+    </spirit:interconnection>
+    <spirit:interconnection>
+      <spirit:name>l3</spirit:name>
+      <spirit:activeInterface spirit:componentRef="C64x+_3" spirit:busRef="EDMA3bus"/>
+      <spirit:activeInterface spirit:componentRef="edma3controller_1" spirit:busRef="EDMA3bus"/>
+    </spirit:interconnection>
+  </spirit:interconnections>
+  <spirit:adHocConnections>
+    <spirit:adHocConnection>
+      <spirit:name>EDMA3Connection</spirit:name>
+      <spirit:internalPortReference spirit:componentRef="edma3controller_1" spirit:portRef="EDMA3_physical"/>
+      <spirit:externalPortReference spirit:portRef="EDMA3_physical"/>
+    </spirit:adHocConnection>
+  </spirit:adHocConnections>
+</spirit:design>
