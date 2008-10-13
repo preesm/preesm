@@ -190,7 +190,7 @@ public class SdfToDagConverter {
 			}else{
 				for(Operator op : architecture.getOperators()){
 					Timing time = new Timing((OperatorDefinition) op.getDefinition(), currentVertex.getCorrespondingSDFVertex(), 1);
-					time.setTime(10000);
+					time.setTime(100000);
 					currentVertexInit.addTiming(time);
 				}
 			}
