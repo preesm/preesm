@@ -81,6 +81,11 @@ public class TimingManager {
 		return newt;
 	}
 
+	public void setTiming(SDFAbstractVertex graph, OperatorDefinition operator, int time) {
+
+		addTiming(graph, operator).setTime(time);
+	}
+
 	public Timing addTiming(Timing newt) {
 
 		for (Timing timing : timings) {
@@ -109,8 +114,8 @@ public class TimingManager {
 		Timing val = null;
 
 		for (Timing timing : timings) {
-			if (timing.getVertex() == graph
-					&& timing.getOperatorDefinition() == operator) {
+			if (timing.getVertex().getName().equals(graph.getName())
+					&& timing.getOperatorDefinition().equals(operator)) {
 				val = timing;
 			}
 		}

@@ -13,21 +13,8 @@ import org.eclipse.swt.events.SelectionListener;
  * 
  * @author mpelcat
  */
-public class TimingChangedListener implements SelectionListener, ISelectionChangedListener {
+public class TimingSelectionListener implements ISelectionChangedListener {
 
-
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {

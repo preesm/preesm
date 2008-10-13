@@ -3,7 +3,10 @@
  */
 package org.ietr.preesm.core.scenario.editor.timings;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -19,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -32,6 +36,7 @@ import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.constraints.SDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.constraints.SDFLabelProvider;
 
 /**
@@ -39,7 +44,7 @@ import org.ietr.preesm.core.scenario.editor.constraints.SDFLabelProvider;
  * 
  * @author mpelcat
  */
-public class TimingsPage extends FormPage {
+public class TimingsPage extends FormPage implements IPropertyListener {
 
 	Scenario scenario;
 
@@ -83,10 +88,8 @@ public class TimingsPage extends FormPage {
 		toolkit.paintBordersFor(container);
 		container.setSize(100, 100);
 
-		TimingChangedListener listener = new TimingChangedListener();
-		addCoreSelector(container, toolkit, listener);
-		
-		addTable(container, toolkit,listener);
+		Combo coreCombo = addCoreSelector(container, toolkit);
+		addTable(container, toolkit, coreCombo);
 	}
 
 	/**
@@ -113,15 +116,15 @@ public class TimingsPage extends FormPage {
 				form.reflow(false);
 			}
 		});
-		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
 		return client;
 	}
 
 	/**
 	 * Adds a combo box for the core selection
 	 */
-	protected void addCoreSelector(Composite parent, FormToolkit toolkit,
-			SelectionListener listener) {
+	protected Combo addCoreSelector(Composite parent, FormToolkit toolkit) {
 		Composite combocps = toolkit.createComposite(parent);
 		combocps.setLayout(new FillLayout());
 		combocps.setVisible(true);
@@ -137,51 +140,54 @@ public class TimingsPage extends FormPage {
 		}
 
 		combo.setData(archi);
-		combo.addSelectionListener(listener);
+
+		return combo;
 	}
 
 	/**
 	 * Adds a table to edit timings
 	 */
 	protected void addTable(Composite parent, FormToolkit toolkit,
-			ISelectionChangedListener listener) {
-		
+			Combo coreCombo) {
+
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
-		
+
 		TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		//table.setSize(100, 100);
+		// table.setSize(100, 100);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		tableViewer
-				.setContentProvider(new SDFListContentProvider());
-		tableViewer
-				.setLabelProvider(new SDFLabelProvider());
 		
-		/*String[] stringList = new String[2];
-		stringList[0] = "tutu";
-		
-		tableViewer
-				.setColumnProperties(stringList);*/
-		
-		tableViewer
-				.addSelectionChangedListener(listener);
+		SDFListContentProvider contentProvider = new SDFListContentProvider();
+		tableViewer.setContentProvider(new SDFListContentProvider());
 
+		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
+				scenario, tableViewer, this);
+		tableViewer.setLabelProvider(labelProvider);
+		coreCombo.addSelectionListener(labelProvider);
+
+		
 		// Create columns
-		final TableColumn tc1 = new TableColumn(table, SWT.NONE, 0);
-		tc1.setText(Messages
-				.getString("Timings.taskColumn"));
-		final TableColumn tc2 = new TableColumn(table, SWT.NONE, 1);
-		tc2.setText(Messages
-				.getString("Timings.timeColumn"));
+		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
+		column1.setText(Messages.getString("Timings.taskColumn"));
+		
+		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
+		column2.setText(Messages.getString("Timings.timeColumn"));
+		
+		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent e) {
+				labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
+			}
+		});
+		
 		final Table tref = table;
-		
 		final Composite comp = tablecps;
-		
+
+		// Setting the column width
 		tablecps.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				Rectangle area = comp.getClientArea();
@@ -194,18 +200,29 @@ public class TimingsPage extends FormPage {
 				}
 				Point oldSize = tref.getSize();
 				if (oldSize.x > area.width) {
-					tc1.setWidth(width / 2 - 1);
-					tc2.setWidth(width - tc1.getWidth());
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth(width - column1.getWidth());
 					tref.setSize(area.width, area.height);
 				} else {
 					tref.setSize(area.width, area.height);
-					tc1.setWidth(width / 2 - 1);
-					tc2.setWidth(width - tc1.getWidth());
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth(width - column1.getWidth());
 				}
 			}
 		});
 
 		tableViewer.setInput(scenario);
-		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
+	}
+
+	/**
+	 * Function of the property listener used to transmit the dirty property
+	 */
+	@Override
+	public void propertyChanged(Object source, int propId) {
+		if(source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
+			firePropertyChange(PROP_DIRTY);
+		
 	}
 }

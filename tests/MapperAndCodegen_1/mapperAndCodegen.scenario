@@ -7,16 +7,20 @@
     <constraints>
         <constraintGroup>
             <operator name="C64x"/>
-            <task name="n8"/>
-            <task name="n3"/>
-            <task name="n6"/>
-            <task name="n1"/>
-            <task name="n4"/>
-            <task name="n2"/>
-            <task name="n5"/>
-            <task name="n7"/>
-            <task name="n9"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Copy"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
         </constraintGroup>
     </constraints>
-    <timings/>
+    <timings>
+        <timing opname="C64x" time="11" vertexname="Gen_int"/>
+        <timing opname="C64x" time="30" vertexname="ParallelTest"/>
+        <timing opname="C64x" time="20" vertexname="Actuator"/>
+        <timing opname="C64x" time="10" vertexname="Sensor"/>
+        <timing opname="C64x" time="12" vertexname="Copy"/>
+        <timing opname="C64x" time="15" vertexname="ParallelTest2"/>
+    </timings>
 </scenario>
