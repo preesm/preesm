@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -195,7 +195,7 @@ public class ScenarioParser {
 
 			GMLSDFImporter importer = new GMLSDFImporter();
 			try {
-				graph = (SDFGraph) importer.parse(new FileInputStream(file
+				graph = (SDFGraph) importer.parse(new File(file
 						.getLocation().toOSString()));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();

@@ -40,6 +40,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.workflow.sources;
 
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -119,10 +120,13 @@ public class AlgorithmRetriever {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 		
 		try {
-			algorithm = (SDFGraph) importer.parse(file.getContents());
+			algorithm = (SDFGraph) importer.parse(file.getContents(), file.getFullPath().toOSString());
 		} catch (InvalidFileException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -137,10 +141,13 @@ public class AlgorithmRetriever {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 		
 		try {
-			algorithm = (SDFGraph) importer.parse(file.getContents());
+			algorithm = (SDFGraph) importer.parse(file.getContents(), file.getLocation().toOSString());
 		} catch (InvalidFileException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
