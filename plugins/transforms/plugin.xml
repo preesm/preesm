@@ -24,6 +24,11 @@
             type="org.ietr.preesm.plugin.transforms.Internalisation">
       </task>
       <task
+            id="org.ietr.preesm.plugin.transforms.graphlooping"
+            name="Detecting loops in graph"
+            type="org.ietr.preesm.plugin.transforms.GraphLooping">
+      </task>
+      <task
             id="org.ietr.preesm.plugin.transforms.mfa"
             name="Partitioning using Mean Field Algorithm"
             type="org.ietr.preesm.plugin.transforms.MFAClustering">
