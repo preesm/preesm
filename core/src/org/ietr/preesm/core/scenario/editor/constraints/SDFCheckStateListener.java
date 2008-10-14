@@ -17,6 +17,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -42,7 +43,7 @@ public class SDFCheckStateListener implements SelectionListener,
 	/**
 	 * Current operator
 	 */
-	private OperatorDefinition currentOpDef = null;
+	private Operator currentOpDef = null;
 
 	/**
 	 * Current section (necessary to diplay busy status)
@@ -148,7 +149,7 @@ public class SDFCheckStateListener implements SelectionListener,
 			String item = combo.getItem(combo.getSelectionIndex());
 
 			IArchitecture archi = (IArchitecture) combo.getData();
-			currentOpDef = archi.getOperatorDefinition(item);
+			currentOpDef = archi.getOperator(item);
 			updateCheck();
 		}
 
@@ -163,7 +164,7 @@ public class SDFCheckStateListener implements SelectionListener,
 			Set<SDFAbstractVertex> cgSet = new HashSet<SDFAbstractVertex>();
 
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
-					.getOpdefConstraintGroups(currentOpDef)) {
+					.getOpConstraintGroups(currentOpDef)) {
 				
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group

@@ -65,6 +65,11 @@ public class InitialVertexProperty {
 	private List<Timing> timings;
 
 	/**
+	 * Available operators
+	 */
+	private Set<Operator> operators;
+
+	/**
 	 * Number of repetitions that ponderates the timing
 	 */
 	private int nbRepeat;
@@ -75,6 +80,7 @@ public class InitialVertexProperty {
 		timings = new ArrayList<Timing>();
 		this.nbRepeat = 1;
 		parentVertex = null;
+		operators = new HashSet<Operator>();
 	}
 
 	public void setNbRepeat(int nbRepeat) {
@@ -83,6 +89,10 @@ public class InitialVertexProperty {
 	
 	public void addTiming(Timing timing) {
 		this.timings.add(timing);
+	}
+	
+	public void addOperator(Operator op) {
+		this.operators.add(op);
 	}
 
 	public InitialVertexProperty clone(MapperDAGVertex parentVertex) {
@@ -97,6 +107,12 @@ public class InitialVertexProperty {
 			Timing next = it.next();
 			property.addTiming(next);
 		}
+
+		Iterator<Operator> it2 = operators.iterator();
+		while (it2.hasNext()) {
+			Operator next = it2.next();
+			property.addOperator(next);
+		}
 		
 		property.setNbRepeat(nbRepeat);
 
@@ -104,19 +120,8 @@ public class InitialVertexProperty {
 
 	}
 
-	public Set<OperatorDefinition> getOperatorDefinitionSet() {
-
-		Set<OperatorDefinition> opset = new HashSet<OperatorDefinition>();
-
-		Iterator<Timing> iterator = timings.iterator();
-
-		while (iterator.hasNext()) {
-			Timing currenttiming = iterator.next();
-
-			opset.add(currenttiming.getOperatorDefinition());
-		}
-
-		return opset;
+	public Set<Operator> getOperatorSet() {
+		return operators;
 	}
 
 	public MapperDAGVertex getParentVertex() {
@@ -175,7 +180,15 @@ public class InitialVertexProperty {
 	 * given operator
 	 */
 	public boolean isImplantable(Operator operator) {
-		return isImplantable((OperatorDefinition) operator.getDefinition());
+		boolean isImplantable=false;
+		
+		for(Operator op:operators){
+			if(op.equals(operator))
+				return true;
+		}
+		
+		return isImplantable;
+		
 	}
 
 	/**

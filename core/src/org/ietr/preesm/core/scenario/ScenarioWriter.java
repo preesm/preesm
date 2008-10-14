@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
@@ -116,10 +117,10 @@ public class ScenarioWriter {
 		Element constraintGroupElt = dom.createElement("constraintGroup");
 		parent.appendChild(constraintGroupElt);
 		
-		for(OperatorDefinition opdef:cst.getOperatorDefinitions()){
+		for(Operator opdef:cst.getOperators()){
 			Element opdefelt = dom.createElement("operator");
 			constraintGroupElt.appendChild(opdefelt);
-			opdefelt.setAttribute("name", opdef.getId());
+			opdefelt.setAttribute("name", opdef.getName());
 		}
 		
 		for(SDFAbstractVertex vtx:cst.getVertices()){

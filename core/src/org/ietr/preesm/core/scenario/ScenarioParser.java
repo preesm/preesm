@@ -51,6 +51,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
@@ -260,10 +261,10 @@ public class ScenarioParser {
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {
-						OperatorDefinition def = archi
-								.getOperatorDefinition(name);
+						Operator def = archi
+								.getOperator(name);
 						if (def != null)
-							cg.addOperatorDefinition(def);
+							cg.addOperator(def);
 					}
 				}
 

@@ -74,17 +74,11 @@ public class OperatorIterator implements Iterator<Operator> {
 
 	public void createList(MapperDAGVertex vertex, IArchitecture archi) {
 
-		Set<OperatorDefinition> defset = vertex.getInitialVertexProperty()
-				.getOperatorDefinitionSet();
+		Set<Operator> defset = vertex.getInitialVertexProperty()
+				.getOperatorSet();
 
 		operatorlist = new ArrayList<Operator>();
-
-		Iterator<OperatorDefinition> iterator = defset.iterator();
-
-		while (iterator.hasNext()) {
-			operatorlist.addAll(archi.getOperators(iterator.next()));
-		}
-
+		operatorlist.addAll(defset);
 	}
 
 	public List<Operator> getOperatorList() {

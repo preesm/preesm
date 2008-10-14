@@ -239,17 +239,19 @@ public class SdfToDagConverter {
 					MapperDAGVertex currentvertex = vertexit.next();
 
 					// Iterating over operators in constraint group
-					Iterator<OperatorDefinition> opit = cg
-							.getOperatorDefinitions().iterator();
+					Iterator<Operator> opit = cg
+							.getOperators().iterator();
 
 					while (opit.hasNext()) {
-						OperatorDefinition currentop = opit.next();
+						Operator currentop = opit.next();
 
+						currentvertex.getInitialVertexProperty().addOperator(currentop);
+						
 						if (!currentvertex.getInitialVertexProperty()
 								.isImplantable(currentop)) {
 
 							// If no timing is set, we add a unavailable timing
-							Timing newTiming = new Timing(currentop,
+							Timing newTiming = new Timing((OperatorDefinition)currentop.getDefinition(),
 									currentsdfvertex);
 							currentvertex.getInitialVertexProperty().addTiming(
 									newTiming);

@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -63,7 +64,7 @@ public class ConstraintGroup {
 	/**
 	 * The set of processing units available for the constraint group
 	 */
-	private Set<OperatorDefinition> operatordefinitions;
+	private Set<Operator> operators;
 
 	/**
 	 * The set of graphs belonging to the constraint group
@@ -71,14 +72,14 @@ public class ConstraintGroup {
 	private Set<SDFAbstractVertex> vertices;
 
 	public ConstraintGroup() {
-		operatordefinitions = new HashSet<OperatorDefinition>();
+		operators = new HashSet<Operator>();
 		vertices = new HashSet<SDFAbstractVertex>();
 
 	}
 
-	public void addOperatorDefinition(OperatorDefinition opdef) {
-		if (!hasOperatorDefinition(opdef)) {
-			operatordefinitions.add(opdef);
+	public void addOperator(Operator opdef) {
+		if (!hasOperator(opdef)) {
+			operators.add(opdef);
 		}
 
 	}
@@ -104,20 +105,20 @@ public class ConstraintGroup {
 	
 	
 
-	public Set<OperatorDefinition> getOperatorDefinitions() {
-		return new HashSet<OperatorDefinition>(operatordefinitions);
+	public Set<Operator> getOperators() {
+		return new HashSet<Operator>(operators);
 	}
 
 	public Set<SDFAbstractVertex> getVertices() {
 		return new HashSet<SDFAbstractVertex>(vertices);
 	}
 
-	public boolean hasOperatorDefinition(OperatorDefinition operator) {
+	public boolean hasOperator(Operator operator) {
 		boolean b = false;
 
-		Iterator<OperatorDefinition> it = operatordefinitions.iterator();
+		Iterator<Operator> it = operators.iterator();
 		while (it.hasNext() && !b) {
-			OperatorDefinition currentop = it.next();
+			Operator currentop = it.next();
 			b = currentop.equals(operator);
 		}
 
@@ -136,10 +137,10 @@ public class ConstraintGroup {
 		return b;
 	}
 
-	public void removeOperatorDefinition(OperatorDefinition operator) {
-		Iterator<OperatorDefinition> it = operatordefinitions.iterator();
+	public void removeOperator(OperatorDefinition operator) {
+		Iterator<Operator> it = operators.iterator();
 		while (it.hasNext()) {
-			OperatorDefinition currentop = it.next();
+			Operator currentop = it.next();
 			if (currentop.equals(operator)) {
 				it.remove();
 			}
