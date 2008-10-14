@@ -23,7 +23,7 @@ public class CListSchedCcCdBlinout extends CListSchedCcCd {
 	}
 
 	public boolean schedule() {
-		System.out.println("\n***** schedule *****");
+		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevelInOut();
 		algorithm.computeBottomLevelInOut();
 		schedulingOrder = algorithm.sortComputationsByBottomLevelInOut();

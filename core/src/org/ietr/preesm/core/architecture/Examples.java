@@ -264,22 +264,22 @@ public class Examples {
 	 * 
 	 */
 	public static MultiCoreArchitecture get2PArchi() {
-		MultiCoreArchitecture archi = new MultiCoreArchitecture("2C64Archi");
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("2PArchi");
 
-		OperatorDefinition opdef = new OperatorDefinition("C64x");
-		MediumDefinition bus = new MediumDefinition("bus");
-		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		OperatorDefinition opdef = new OperatorDefinition("microblaze");
+		MediumDefinition bus = new MediumDefinition("opb_bus");
+		SwitchDefinition crossbar = new SwitchDefinition("opb_crossbar");
 		bus.setMediumProperty(new MediumProperty(1, 100, 1));
 
 		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
 				bus, ArchitectureInterfaceDefinition.INFINITE);
 
-		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		Operator op1 = archi.addOperator(new Operator("p_1", opdef), true);
 		op1.addInterface(new ArchitectureInterface(intfdef, op1));
-		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		Operator op2 = archi.addOperator(new Operator("p_2", opdef), false);
 		op2.addInterface(new ArchitectureInterface(intfdef, op2));
 
-		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		Switch sw1 = archi.addSwitch(new Switch("crossbar_1", crossbar));
 		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
 
 		Medium m1 = new Medium("bus_1", bus, intfdef);
@@ -296,24 +296,24 @@ public class Examples {
 	 * 
 	 */
 	public static MultiCoreArchitecture get3PArchi() {
-		MultiCoreArchitecture archi = new MultiCoreArchitecture("3C64Archi");
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("3PArchi");
 
-		OperatorDefinition opdef = new OperatorDefinition("C64x");
-		MediumDefinition bus = new MediumDefinition("bus");
-		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		OperatorDefinition opdef = new OperatorDefinition("microblaze");
+		MediumDefinition bus = new MediumDefinition("opb_bus");
+		SwitchDefinition crossbar = new SwitchDefinition("opb_crossbar");
 		bus.setMediumProperty(new MediumProperty(1, 100, 1));
 
 		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
 				bus, ArchitectureInterfaceDefinition.INFINITE);
 
-		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		Operator op1 = archi.addOperator(new Operator("p_1", opdef), true);
 		op1.addInterface(new ArchitectureInterface(intfdef, op1));
-		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		Operator op2 = archi.addOperator(new Operator("p_2", opdef), false);
 		op2.addInterface(new ArchitectureInterface(intfdef, op2));
-		Operator op3 = archi.addOperator(new Operator("C64x_3", opdef), false);
+		Operator op3 = archi.addOperator(new Operator("p_3", opdef), false);
 		op3.addInterface(new ArchitectureInterface(intfdef, op3));
 
-		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		Switch sw1 = archi.addSwitch(new Switch("crossbar_1", crossbar));
 		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
 
 		Medium m1 = new Medium("bus_1", bus, intfdef);
@@ -333,26 +333,26 @@ public class Examples {
 	 * 
 	 */
 	public static MultiCoreArchitecture get4PArchi() {
-		MultiCoreArchitecture archi = new MultiCoreArchitecture("4C64Archi");
+		MultiCoreArchitecture archi = new MultiCoreArchitecture("4PArchi");
 
-		OperatorDefinition opdef = new OperatorDefinition("C64x");
-		MediumDefinition bus = new MediumDefinition("bus");
-		SwitchDefinition crossbar = new SwitchDefinition("crossbar");
+		OperatorDefinition opdef = new OperatorDefinition("microblaze");
+		MediumDefinition bus = new MediumDefinition("opb_bus");
+		SwitchDefinition crossbar = new SwitchDefinition("opb_crossbar");
 		bus.setMediumProperty(new MediumProperty(1, 100, 1));
 
 		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
 				bus, ArchitectureInterfaceDefinition.INFINITE);
 
-		Operator op1 = archi.addOperator(new Operator("C64x_1", opdef), true);
+		Operator op1 = archi.addOperator(new Operator("p_1", opdef), true);
 		op1.addInterface(new ArchitectureInterface(intfdef, op1));
-		Operator op2 = archi.addOperator(new Operator("C64x_2", opdef), false);
+		Operator op2 = archi.addOperator(new Operator("p_2", opdef), false);
 		op2.addInterface(new ArchitectureInterface(intfdef, op2));
-		Operator op3 = archi.addOperator(new Operator("C64x_3", opdef), false);
+		Operator op3 = archi.addOperator(new Operator("p_3", opdef), false);
 		op3.addInterface(new ArchitectureInterface(intfdef, op3));
-		Operator op4 = archi.addOperator(new Operator("C64x_4", opdef), false);
+		Operator op4 = archi.addOperator(new Operator("p_4", opdef), false);
 		op4.addInterface(new ArchitectureInterface(intfdef, op4));
 
-		Switch sw1 = archi.addSwitch(new Switch("dma", crossbar));
+		Switch sw1 = archi.addSwitch(new Switch("crossbar_1", crossbar));
 		sw1.addInterface(new ArchitectureInterface(intfdef, sw1));
 
 		Medium m1 = new Medium("bus_1", bus, intfdef);

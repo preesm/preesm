@@ -40,7 +40,6 @@ import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.AlgorithmTransformer;
@@ -52,8 +51,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * 
  * @author pmu
  */
-public class CommContenListSchedTransformation extends
-		AbstractMapping {
+public class CommContenListSchedTransformation extends AbstractMapping {
 
 	@Override
 	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) {
@@ -73,15 +71,15 @@ public class CommContenListSchedTransformation extends
 		// CommunicationContentiousListSchedulingParameters parameters = new
 		// CommunicationContentiousListSchedulingParameters(
 		// textParameters);
-		AlgorithmTransformer algoTransformer = new AlgorithmTransformer();
+		// AlgorithmTransformer algoTransformer = new AlgorithmTransformer();
 		// architecture = Examples.get3C64Archi();
-		CombListSched scheduler = new CombListSched(
-				algorithm, architecture, scenario);
+		CombListSched scheduler = new CombListSched(algorithm, architecture,
+				scenario);
 
 		scheduler.schedule();
 
-		result.setDAG(algoTransformer.algorithm2DAG(scheduler
-				.getBestScheduler()));
+		// result.setDAG(algoTransformer.algorithm2DAG(scheduler
+		// .getBestScheduler()));
 		return result;
 	}
 
@@ -92,10 +90,8 @@ public class CommContenListSchedTransformation extends
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph sdf = algoTransformer.randomSDF(nbVertex, minInDegree,
 				maxInDegree, minOutDegree, maxOutDegree, 500, 1000);
-		MultiCoreArchitecture architecture = Examples.get4C64Archi();
-		Scenario scenario = new Scenario();
-		CombListSched scheduler = new CombListSched(sdf,
-				architecture, scenario);
+		MultiCoreArchitecture architecture = Examples.get4PArchi();
+		CombListSched scheduler = new CombListSched(sdf, architecture, null);
 		scheduler.schedule();
 	}
 }

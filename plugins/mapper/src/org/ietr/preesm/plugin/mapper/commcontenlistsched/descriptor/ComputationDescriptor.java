@@ -7,6 +7,8 @@
 package org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import org.sdf4j.model.dag.DAGVertex;
@@ -32,6 +34,8 @@ public class ComputationDescriptor extends OperationDescriptor implements
 	private HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer = null;
 
 	private OperatorDescriptor operator = null;
+
+	private Set<OperatorDescriptor> operatorSet = null;
 
 	private HashMap<String, Integer> computationDurations;
 
@@ -99,6 +103,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		vertex.setName(name);
 		vertex.setNbRepeat(new DAGVertexPropertyType(1));
 		vertex.setTime(new DAGVertexPropertyType(0));
+		operatorSet = new HashSet<OperatorDescriptor>();
 		precedingCommunications = new Vector<CommunicationDescriptor>();
 		followingCommunications = new Vector<CommunicationDescriptor>();
 		computationDurations = new HashMap<String, Integer>();
@@ -118,6 +123,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		this.algorithm = algorithm;
 		ComputationDescriptorBuffer = algorithm.getComputations();
 		ComputationDescriptorBuffer.put(this.name, this);
+		operatorSet = new HashSet<OperatorDescriptor>();
 		precedingCommunications = new Vector<CommunicationDescriptor>();
 		followingCommunications = new Vector<CommunicationDescriptor>();
 		computationDurations = new HashMap<String, Integer>();
@@ -172,7 +178,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 	}
 
 	public int getTotalComputationDuration(OperatorDescriptor operator) {
-		int duration=0;
+		int duration = 0;
 		if (computationDurations.containsKey(operator.getName())) {
 			if (operator.getType() == ComponentType.Ip) {
 				double op1 = new Integer(nbTotalRepeat).doubleValue();
@@ -194,7 +200,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 						* computationDurations.get(operator.getName());
 			}
 			return duration;
-//			return computationDurations.get(operator.getName());
+			// return computationDurations.get(operator.getName());
 		} else {
 			return Integer.MAX_VALUE;
 		}
@@ -361,6 +367,18 @@ public class ComputationDescriptor extends OperationDescriptor implements
 				}
 			}
 		}
+	}
+
+	public void setOperatorSet(Set<OperatorDescriptor> operators) {
+		operatorSet = operators;
+	}
+
+	public Set<OperatorDescriptor> getOperatorSet() {
+		return operatorSet;
+	}
+
+	public void addOperator(OperatorDescriptor operator) {
+		operatorSet.add(operator);
 	}
 
 	/**

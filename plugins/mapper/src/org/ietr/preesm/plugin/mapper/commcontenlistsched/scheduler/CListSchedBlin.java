@@ -22,7 +22,7 @@ public class CListSchedBlin extends CListSched {
 	}
 
 	public boolean schedule() {
-		System.out.println("\n***** schedule *****");
+		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevelIn();
 		algorithm.computeBottomLevelIn();
 		schedulingOrder = algorithm.sortComputationsByBottomLevelIn();

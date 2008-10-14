@@ -3,9 +3,6 @@ package org.ietr.preesm.plugin.mapper.commcontenlistsched;
 import java.util.HashMap;
 
 import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.architecture.Medium;
-import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.Switch;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.AlgorithmTransformer;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.AlgorithmDescriptor;
@@ -30,9 +27,9 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 public class CombListSched {
 
-	private String architectureFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture.xml";
+	private String architectureFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\commcontenlistsched\\architecture.xml";
 
-	private String parameterFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\parameter.xml";
+	private String parameterFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\commcontenlistsched\\parameter.xml";
 
 	private AlgorithmTransformer algoTransformer = null;
 
@@ -62,8 +59,8 @@ public class CombListSched {
 		this.sdf = sdf;
 		this.architecture = architecture;
 		this.scenario = scenario;
-		computationWeights = algoTransformer.generateRandomNodeWeight(sdf, 100,
-				100);
+		computationWeights = algoTransformer.generateRandomNodeWeight(sdf, 500,
+				1000);
 	}
 
 	public CombListSched(String parameterFileName, String architectureFileName) {
@@ -81,78 +78,34 @@ public class CombListSched {
 
 	private void parse() {
 		if (dag != null) {
+			System.out.println("Transform DAG to algorithm...");
 			algo = algoTransformer.dag2Algorithm(dag);
 		} else {
+			System.out.println("Transform SDF to algorithm...");
 			algo = algoTransformer.sdf2Algorithm(sdf);
 		}
-		// set computation time with default weights
-		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			algo.getComputation(indexVertex.getName()).setTime(
-					computationWeights.get(indexVertex.getName()));
-		}
+
 		if (architecture != null) {
+			System.out.println("Transform architecture...");
 			archi = archiTransformer.architecture2Descriptor(architecture);
-			System.out.println("Computations in the algorithm:");
-			for (ComputationDescriptor indexComputation : algo
-					.getComputations().values()) {
-				for (Operator indexOperator : architecture.getOperators()) {
-					if (!indexComputation.getComputationDurations()
-							.containsKey(indexOperator.getDefinition().getId())) {
-						indexComputation.addComputationDuration(indexOperator
-								.getDefinition().getId(), indexComputation
-								.getTime());
-						System.out.println(" Name="
-								+ indexComputation.getName()
-								+ "; default computationDuration="
-								+ indexComputation
-										.getComputationDuration(indexOperator
-												.getDefinition().getId())
-								+ "; nbTotalRepeate="
-								+ indexComputation.getNbTotalRepeat());
-					}
-				}
-			}
-			System.out.println("Communications in the algorithm:");
-			for (CommunicationDescriptor indexCommunication : algo
-					.getCommunications().values()) {
-				for (Switch indexSwitch : architecture.getSwitches()) {
-					if (!indexCommunication.getCommunicationDurations()
-							.containsKey(indexSwitch.getDefinition().getId())) {
-						indexCommunication.addCommunicationDuration(indexSwitch
-								.getDefinition().getId(), indexCommunication
-								.getWeight());
-						System.out.println(" Name="
-								+ indexCommunication.getName()
-								+ "; default communicationDuration="
-								+ indexCommunication
-										.getCommunicationDuration(indexSwitch
-												.getDefinition().getId()));
-					}
-				}
-				for (Medium indexMedium : architecture.getMedia()) {
-					if (!indexCommunication.getCommunicationDurations()
-							.containsKey(indexMedium.getDefinition().getId())) {
-						indexCommunication.addCommunicationDuration(indexMedium
-								.getDefinition().getId(), indexCommunication
-								.getWeight());
-						System.out.println(" Name="
-								+ indexCommunication.getName()
-								+ "; default communicationDuration="
-								+ indexCommunication
-										.getCommunicationDuration(indexMedium
-												.getDefinition().getId()));
-					}
-				}
-			}
 		} else {
+			System.out.println("Parse architecture...");
 			archi = new ArchitectureDescriptor();
 			// Parse the design architecture document
 			new ArchitectureParser(architectureFileName, archi).parse();
 		}
+
 		if (scenario != null) {
-			scenaTransformer.parse(scenario, algo, archi);
+			System.out.println("Parse scenario...");
+			scenaTransformer.parseScenario(scenario, algo, archi);
 		} else {
+			// set computation time with default weights
+			for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+				algo.getComputation(indexVertex.getName()).setTime(
+						computationWeights.get(indexVertex.getName()));
+			}
 			// Parse the design parameter document
+			System.out.println("Parse parameters...");
 			new ParameterParser(parameterFileName, archi, algo).parse();
 			OperatorDescriptor defaultOperator = null;
 			SwitchDescriptor defaultSwitch = null;
@@ -180,12 +133,17 @@ public class CombListSched {
 					+ defaultOperator.getName());
 			System.out.println(" default switch: Id=" + defaultSwitch.getId()
 					+ "; Name=" + defaultSwitch.getName());
-			System.out.println(" default link: Id=" + defaultSwitch.getId()
-					+ "; Name=" + defaultSwitch.getName());
+			System.out.println(" default link: Id=" + defaultLink.getId()
+					+ "; Name=" + defaultLink.getName());
 
 			System.out.println("Computations in the algorithm:");
 			for (ComputationDescriptor indexComputation : algo
 					.getComputations().values()) {
+				// Allow a computation to be executed on each operator
+				for (OperatorDescriptor indexOperator : archi.getAllOperators()
+						.values()) {
+					indexComputation.addOperator(indexOperator);
+				}
 				if (!indexComputation.getComputationDurations().containsKey(
 						defaultOperator)) {
 					indexComputation.addComputationDuration(defaultOperator,
@@ -561,8 +519,8 @@ public class CombListSched {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\architecture.xml";
-		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\communicationcontentiouslistscheduling\\parameter.xml";
+		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\commcontenlistsched\\architecture.xml";
+		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\commcontenlistsched\\parameter.xml";
 
 		CombListSched test = new CombListSched(parameterFileName,
 				architectureFileName);

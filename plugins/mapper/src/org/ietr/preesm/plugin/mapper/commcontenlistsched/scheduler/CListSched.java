@@ -28,7 +28,7 @@ public class CListSched extends AbstractScheduler {
 	@Override
 	public boolean schedule() {
 		// TODO Auto-generated method stub
-		System.out.println("\n***** schedule *****");
+		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevel();
 		algorithm.computeBottomLevel();
 		schedulingOrder = algorithm.sortComputationsByBottomLevel();
@@ -101,8 +101,10 @@ public class CListSched extends AbstractScheduler {
 		OperatorDescriptor bestOperator = null;
 		System.out.println(" * select operator for " + computation.getName());
 		if (computation.getOperator() == null) {
-			for (OperatorDescriptor indexOperator : architecture
-					.getAllOperators().values()) {
+			// for (OperatorDescriptor indexOperator : architecture
+			// .getAllOperators().values()) {
+			for (OperatorDescriptor indexOperator : computation
+					.getOperatorSet()) {
 				int minOperatorFinishTime = scheduleComputation(computation,
 						indexOperator);
 				if (bestOperatorFinishTime > minOperatorFinishTime) {
@@ -158,7 +160,8 @@ public class CListSched extends AbstractScheduler {
 		// computation.getName()
 		// + " on: " + operator.getId());
 		if (computation.getComputationDurations().containsKey(
-				operator.getName())) {
+				operator.getName())
+				&& computation.getOperatorSet().contains(operator)) {
 			// schedule preceding communications
 			for (CommunicationDescriptor indexCommunication : computation
 					.getPrecedingCommunications()) {
@@ -224,11 +227,11 @@ public class CListSched extends AbstractScheduler {
 			//
 			// give the finish time of the computation on this operator
 			maxOperatorFinishTime = computation.getFinishTime();
+			computation.setScheduled();
+			computation.setOperator(operator);
 		} else {
 			maxOperatorFinishTime = Integer.MAX_VALUE;
 		}
-		computation.setScheduled();
-		computation.setOperator(operator);
 		return maxOperatorFinishTime;
 	}
 

@@ -22,7 +22,7 @@ public class CListSchedCdBlout extends CListSchedCd {
 	}
 
 	public boolean schedule() {
-		System.out.println("\n***** schedule *****");
+		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevelOut();
 		algorithm.computeBottomLevelOut();
 		schedulingOrder = algorithm.sortComputationsByBottomLevelOut();
@@ -58,7 +58,7 @@ public class CListSchedCdBlout extends CListSchedCd {
 					+ schedulingOrder.get(i).getName());
 			bestOperator = selectOperator(schedulingOrder.get(i));
 
-			scheduleComputation(schedulingOrder.get(i), bestOperator);
+			scheduleComputation(schedulingOrder.get(i), bestOperator, false);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
