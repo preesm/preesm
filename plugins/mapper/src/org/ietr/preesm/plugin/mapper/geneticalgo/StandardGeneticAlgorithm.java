@@ -307,7 +307,7 @@ public class StandardGeneticAlgorithm extends Observable {
 				.getInstance(AbcType.AccuratelyTimed,
 						chromosome7.getDag(), archi);
 		simu2.setDAG(chromosome7.getDag());
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 
 	}
 }

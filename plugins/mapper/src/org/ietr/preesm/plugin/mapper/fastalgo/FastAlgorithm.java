@@ -155,7 +155,7 @@ public class FastAlgorithm extends Observable {
 
 		logger.log(Level.FINER, "SPlength " + dag.getScheduleLatency());
 
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 
 		logger.log(Level.FINER, "Test finished");
 	}

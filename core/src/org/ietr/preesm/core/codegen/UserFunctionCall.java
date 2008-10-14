@@ -43,8 +43,10 @@ package org.ietr.preesm.core.codegen;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 
@@ -72,11 +74,16 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 	
 	public void addBuffer(Buffer buffer){
-		availableBuffers.add(buffer);
+		
+		if(buffer==null)
+			PreesmLogger.getLogger().log(Level.SEVERE,"null buffer");
+		else
+			availableBuffers.add(buffer);
 	}
 	
 	public void addBuffers(Set<Buffer> buffers){
-		availableBuffers.addAll(buffers);
+		for(Buffer buffer:buffers)
+			addBuffer(buffer);
 	}
 
 	/**

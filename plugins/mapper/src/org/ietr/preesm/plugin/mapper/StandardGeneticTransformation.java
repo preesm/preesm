@@ -147,7 +147,8 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		InitialLists initial = new InitialLists();
 
-		initial.constructInitialLists(dag, simu);
+		if(!initial.constructInitialLists(dag, simu))
+				return null;
 
 		simu.resetDAG();
 

@@ -255,8 +255,11 @@ public class Workflow {
 
 						// generic code generation
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
-						nodeResult = codeGen.transform(dag, architecture,
-								parameters);
+						
+						if(dag != null)
+							nodeResult = codeGen.transform(dag, architecture,
+									parameters);
+						
 						sourceFiles = nodeResult.getSourcefilelist();
 
 						// Updates the workspace to show the generated files

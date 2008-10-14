@@ -134,6 +134,7 @@ public class FASTTransformation extends AbstractMapping {
 	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
 			TextParameters textParameters, IScenario scenario) {
 
+		PreesmLogger.getLogger().setLevel(Level.FINER);
 		FastAlgoParameters parameters;
 		TaskResult result = new TaskResult();
 		
@@ -146,7 +147,8 @@ public class FASTTransformation extends AbstractMapping {
 
 		InitialLists initial = new InitialLists();
 		
-		initial.constructInitialLists(dag, simu);
+		if(!initial.constructInitialLists(dag, simu))
+				return result;
 
 		simu.resetDAG();
 

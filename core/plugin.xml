@@ -3,6 +3,16 @@
 <plugin>
    <extension-point id="tasks" name="%tasksName" schema="schema/tasks.exsd"/>
    <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory"
+            fixed="false"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.core.ui.perspective"
+            name="PreesmCore">
+      </perspective>
+   </extension>
+   <extension
          point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
             class="org.ietr.preesm.core.ui.propertyTesters.PreesmPropertyTester"

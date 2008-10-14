@@ -188,7 +188,7 @@ public class StandardGeneticAlgoTester {
 		simu2.resetImplementation();
 		concurrentSkipListSet.first().updateDAG();
 		simu2.setDAG(concurrentSkipListSet.first().getDag());
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 		simu2.resetImplementation();
 
 		logger.log(Level.FINE, "Test finished");

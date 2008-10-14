@@ -679,7 +679,7 @@ public class GraphTimeKeeper {
 
 		logger.log(Level.FINEST, "Test finished");
 
-		simulator.plotImplementation();
+		simulator.plotImplementation(false);
 	}
 
 }

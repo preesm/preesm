@@ -211,7 +211,7 @@ public class FastPopulation {
 
 			scheduler.dagimplanteddisplay(temp, simu2);
 			simu2.setDAG(temp);
-			simu2.plotImplementation();
+			simu2.plotImplementation(false);
 			simu2.resetDAG();
 
 		}

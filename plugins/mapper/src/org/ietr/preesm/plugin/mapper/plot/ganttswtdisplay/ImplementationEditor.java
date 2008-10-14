@@ -3,6 +3,9 @@
  */
 package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -16,8 +19,11 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.sdf4j.model.PropertyBean;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -103,10 +109,16 @@ public class ImplementationEditor extends EditorPart {
 			IAbc simu = AbstractAbc
 			.getInstance(abctype, dag, archi);
 
+			// Every send and receive vertices are removed before plotting the graph
+			Set<DAGVertex> vset = new HashSet<DAGVertex>(dag.vertexSet());
+			for(DAGVertex v:vset)
+				if(v instanceof SendVertex || v instanceof ReceiveVertex)
+					dag.removeVertex(v);
+			
 			simu.setDAG(dag);
 
 			simu.getFinalTime();
-			GanttPlotter.plotInComposite(dag, simu, parent);
+			GanttPlotter.plotInComposite(simu, parent);
 		}
 		
 	}

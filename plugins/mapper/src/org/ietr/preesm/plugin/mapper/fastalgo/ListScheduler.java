@@ -349,7 +349,7 @@ public class ListScheduler {
 
 		logger.log(Level.FINEST, "Evaluating time : " + simu2.getFinalTime());
 		// simu2.setImplementation(dag);
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 
 		logger.log(Level.FINEST, "Test finished");
 	}

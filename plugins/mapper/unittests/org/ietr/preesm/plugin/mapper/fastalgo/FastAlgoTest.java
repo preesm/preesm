@@ -129,7 +129,7 @@ public class FastAlgoTest extends TestCase {
 
 		logger.log(Level.FINER, "length : " + simu2.getFinalTime());
 		assertEquals(simu2.getFinalTime(), 23);
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 	}
 
 }

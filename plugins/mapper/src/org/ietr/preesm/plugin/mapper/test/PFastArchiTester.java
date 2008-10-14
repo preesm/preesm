@@ -181,7 +181,7 @@ public class PFastArchiTester {
 		simu2.setDAG(dag);
 		int finale = simu2.getFinalTime();
 		logger.log(Level.FINE, "FinalSPlength " + finale);
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 		simu2.resetImplementation();
 
 		logger.log(Level.FINE, "Test finished");

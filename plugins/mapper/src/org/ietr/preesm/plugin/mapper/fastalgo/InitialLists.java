@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -151,18 +150,19 @@ public class InitialLists {
 	 * 
 	 * @param : MapperDAG ,MapperDAGVertex, List<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
-	 * @return : void
+	 * @return : true if a vertex was found
 	 */
-	private void checkpredecessor(MapperDAG dag, MapperDAGVertex currentvertex,
+	private boolean checkpredecessor(MapperDAG dag, MapperDAGVertex currentvertex,
 			List<MapperDAGVertex> orderlist,
 			List<MapperDAGVertex> blockingnode, IAbc archi) {
 
 		// Variables
 		MapperDAGVertex cpnvertex = null;
-		
+
 		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(castDag);
-		
+		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
+				castDag);
+
 		Set<DAGVertex> predset = new HashSet<DAGVertex>();
 
 		// check the parents of the current vertex
@@ -175,11 +175,19 @@ public class InitialLists {
 		while (!(orderlist.containsAll(predset))) {
 			cpnvertex = choixIBN(dag, predset, orderlist, archi);
 			predset.clear();
-			predset.addAll(neighborindex
-					.predecessorListOf((MapperDAGVertex) cpnvertex));
+
+			if (cpnvertex != null) {
+				predset.addAll(neighborindex
+						.predecessorListOf((MapperDAGVertex) cpnvertex));
+			} else {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"No operator was found for a vertex");
+				return false;
+			}
 
 		}
 		orderlist.add(cpnvertex);
+		return true;
 
 	}
 
@@ -191,9 +199,8 @@ public class InitialLists {
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
 	 * @return : MapperDAGVertex
 	 */
-	private MapperDAGVertex choixIBN(MapperDAG dag,
-			Set<DAGVertex> predset, List<MapperDAGVertex> orderlist,
-			IAbc archi) {
+	private MapperDAGVertex choixIBN(MapperDAG dag, Set<DAGVertex> predset,
+			List<MapperDAGVertex> orderlist, IAbc archi) {
 
 		// Variables
 		Iterator<DAGVertex> iter = predset.iterator();
@@ -206,7 +213,7 @@ public class InitialLists {
 		// if
 		// they have the same with the smallest t-level
 		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex)iter.next();
+			currentvertex = (MapperDAGVertex) iter.next();
 
 			if (archi.getBLevel(currentvertex) == blevelmax
 					&& !(orderlist.contains(currentvertex))) {
@@ -236,9 +243,9 @@ public class InitialLists {
 	 * 
 	 * @param : MapperDAG , List<MapperDAGVertex>, List<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>
-	 * @return : void
+	 * @return : true if the CPN could be constructed
 	 */
-	private void constructCPN(MapperDAG dag, List<MapperDAGVertex> orderlist,
+	private boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			List<MapperDAGVertex> blockingnode, List<MapperDAGVertex> fcplist,
 			IAbc archi) {
 
@@ -248,11 +255,11 @@ public class InitialLists {
 		MapperDAGVertex tempvertex = null;
 		int commax = 0;
 		BLevelIterator iterator = new BLevelIterator(dag, archi, false);
-		
+
 		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
 		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
 				castDag);
-		
+
 		Set<DAGVertex> succset = new HashSet<DAGVertex>();
 
 		// The DAG is entirely read in b-level order by the iterator to find the
@@ -273,7 +280,6 @@ public class InitialLists {
 
 		// Do the process while the vertex is not a leaf
 		while (!(succset.isEmpty())) {
-
 			Iterator<DAGVertex> iter = succset.iterator();
 
 			// the successors are read to find the next
@@ -281,7 +287,7 @@ public class InitialLists {
 			commax = -1;
 			while (iter.hasNext()) {
 
-				currentvertex = (MapperDAGVertex)iter.next();
+				currentvertex = (MapperDAGVertex) iter.next();
 				MapperDAG base = (MapperDAG) currentvertex.getBase();
 
 				if (archi.getCost((MapperDAGEdge) cpnvertex.getBase().getEdge(
@@ -306,11 +312,16 @@ public class InitialLists {
 			// Search for the predecessor of the final critical path nodes
 			// because they must be implanted before their successors
 			while (!(orderlist.contains(currentvertex))) {
-				checkpredecessor(dag, currentvertex, orderlist, blockingnode,
-						archi);
+				// If no predecessor was found
+				if(!checkpredecessor(dag, currentvertex, orderlist, blockingnode,
+						archi)){
+					return false;
+				}
 			}
 
 		}
+		
+		return true;
 
 	}
 
@@ -348,9 +359,9 @@ public class InitialLists {
 	 * 
 	 * @param : MapperDAG
 	 * @param : simu
-	 * @return : void
+	 * @return : true if the initial lists were constructed
 	 */
-	public void constructInitialLists(MapperDAG dag, IAbc simu) {
+	public boolean constructInitialLists(MapperDAG dag, IAbc simu) {
 
 		cpnDominantList.clear();
 		blockingNodesList.clear();
@@ -358,8 +369,10 @@ public class InitialLists {
 		OBNlist.clear();
 
 		// construction step by step of all the lists
-		constructCPN(dag, cpnDominantList, blockingNodesList,
-				finalcriticalpathList, simu);
+		if(!constructCPN(dag, cpnDominantList, blockingNodesList,
+				finalcriticalpathList, simu))
+			return false;
+		
 		constructCPNobn(dag, cpnDominantList, blockingNodesList, OBNlist, simu);
 
 		Set<DAGVertex> currentset = dag.vertexSet();
@@ -384,6 +397,8 @@ public class InitialLists {
 		blockingNodesList.clear();
 		ToolBox.addAllNodes(blockingNodesList, subsetfinder.subset());
 		simu.resetImplementation();
+
+		return true;
 	}
 
 	/**

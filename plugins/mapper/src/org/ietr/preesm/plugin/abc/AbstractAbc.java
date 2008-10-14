@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
@@ -43,6 +44,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.accuratelytimed.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.approximatelytimed.ApproximatelyTimedAbc;
@@ -57,6 +59,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
@@ -396,11 +399,31 @@ public abstract class AbstractAbc implements IAbc {
 			if (isImplantable(currentvertex, operator)) {
 				implant(currentvertex, operator, true);
 			} else {
-				PreesmLogger
-						.getLogger()
-						.severe(
-								"The current mapping algorithm necessitates that all vertices can be mapped on main operator: "
-										+ operator.getName());
+
+				boolean foundAlternative = false;
+
+				for (Operator op : currentvertex.getInitialVertexProperty()
+						.getOperatorSet()) {
+					if (op.getDefinition().equals(operator.getDefinition())) {
+						if (isImplantable(currentvertex, op)) {
+							implant(currentvertex, op, true);
+							foundAlternative = true;
+						}
+					}
+				}
+
+				if (!foundAlternative)
+					PreesmLogger
+							.getLogger()
+							.severe(
+									"The current mapping algorithm necessitates that all vertices can be mapped on main operator: "
+											+ operator.getName());
+				else
+					PreesmLogger.getLogger().info(
+							"The vertex: " + currentvertex.getName()
+									+ " could not be mapped on main operator "
+									+ operator.getName()
+									+ ". An alternative was found.");
 			}
 		}
 
@@ -422,11 +445,21 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	/**
-	 * Plots the current implementation
+	 * Plots the current implementation. If delegatedisplay=false, the
+	 * gantt is displayed in a shell. Otherwise, it is displayed
+	 * in Eclipse.
 	 */
-	public final void plotImplementation() {
-		updateTimings();
-		GanttPlotter.plot(implementation, this);
+	public GanttPlotter plotImplementation(boolean delegateDisplay) {
+		
+		if(!delegateDisplay){
+			updateTimings();
+			GanttPlotter.plot(implementation, this);
+			return null;
+		}
+		else{			
+			updateTimings();
+			return new GanttPlotter("Solution gantt", implementation, this);
+		}
 	}
 
 	/**

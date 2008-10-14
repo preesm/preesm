@@ -437,10 +437,12 @@ public class GanttPlotter extends ApplicationFrame {
 	 * @param args
 	 *            ignored.
 	 */
-	public static void plotInComposite(MapperDAG dag, IAbc simulator, Composite parent) {
+	public static void plotInComposite(IAbc simulator, Composite parent) {
 
-		GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
-				+ simulator.getFinalTime(), dag, simulator);
+		GanttPlotter plot = simulator.plotImplementation(true);
+		
+		//GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
+		//		+ simulator.getFinalTime(), dag, simulator);
 
 	    Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
 	    parent.setLayout(new FillLayout());

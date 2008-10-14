@@ -181,7 +181,7 @@ public class FastArchiTester {
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
 		logger.log(Level.FINE, "FinalSPlength " + simu2.getFinalTime());
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 		simu2.resetImplementation();
 
 		logger.log(Level.FINE, "Test finished");

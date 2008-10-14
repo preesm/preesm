@@ -169,7 +169,7 @@ public class ListSchedulingArchiTester {
 				"DAG Final Time on " + archi.getNumberOfOperators()
 						+ " proc = " + finalTime);
 
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 		simu2.resetDAG();
 
 		PreesmLogger.getLogger().log(Level.FINEST, "Test finished");

@@ -286,7 +286,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu3.setDAG(chromosome.getDag());
-		simu3.plotImplementation();
+		simu3.plotImplementation(false);
 
 		// test clone
 		Chromosome chromosome2 = chromosome.clone();
@@ -295,7 +295,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed,
 						chromosome2.getDag(), archi);
 		simu4.setDAG(chromosome2.getDag());
-		simu4.plotImplementation();
+		simu4.plotImplementation(false);
 
 		// test MutationOperator
 		MutationOperator mutationOperator = new MutationOperator();
@@ -306,7 +306,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu5.setDAG(chromosome.getDag());
-		simu5.plotImplementation();
+		simu5.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
 				AbcType.LooselyTimed);
@@ -315,7 +315,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu6.setDAG(chromosome.getDag());
-		simu6.plotImplementation();
+		simu6.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
 				AbcType.LooselyTimed);
@@ -324,7 +324,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu7.setDAG(chromosome.getDag());
-		simu7.plotImplementation();
+		simu7.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
 				AbcType.LooselyTimed);
@@ -333,7 +333,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed, chromosome
 						.getDag(), archi);
 		simu1.setDAG(chromosome.getDag());
-		simu1.plotImplementation();
+		simu1.plotImplementation(false);
 
 		// test crossOverOperator
 		CrossOverOperator crossOverOperator = new CrossOverOperator();
@@ -345,7 +345,7 @@ public class Chromosome {
 				.getInstance(AbcType.LooselyTimed,
 						chromosome3.getDag(), archi);
 		simu2.setDAG(chromosome3.getDag());
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 
 	}
 

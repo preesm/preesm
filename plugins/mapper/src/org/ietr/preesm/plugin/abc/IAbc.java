@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 
 /**
@@ -155,7 +156,7 @@ public interface IAbc {
 	/**
 	 * Plots the current implementation
 	 */
-	public void plotImplementation();
+	public GanttPlotter plotImplementation(boolean delegateDisplay);
 
 	/**
 	 * Unimplants all vertices in internal implementation

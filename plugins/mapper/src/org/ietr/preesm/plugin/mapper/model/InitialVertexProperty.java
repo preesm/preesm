@@ -191,14 +191,6 @@ public class InitialVertexProperty {
 		
 	}
 
-	/**
-	 * Checks in the vertex initial properties if it can be implanted on the
-	 * given operator
-	 */
-	public boolean isImplantable(OperatorDefinition operatordef) {
-		return (getTiming(operatordef) != Timing.UNAVAILABLE);
-	}
-
 	public void setParentVertex(MapperDAGVertex parentVertex) {
 		this.parentVertex = parentVertex;
 	}

@@ -189,7 +189,7 @@ public class PGeneticAlgoTester {
 				.getInstance(simulatorType, list.get(0).getDag(), archi);
 		simu2.resetImplementation();
 		simu2.setDAG(list.get(0).getDag());
-		simu2.plotImplementation();
+		simu2.plotImplementation(false);
 		simu2.resetImplementation();
 
 		logger.log(Level.FINE, "Test finished");

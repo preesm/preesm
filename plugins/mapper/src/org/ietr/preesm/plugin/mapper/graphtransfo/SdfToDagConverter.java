@@ -245,11 +245,11 @@ public class SdfToDagConverter {
 					while (opit.hasNext()) {
 						Operator currentop = opit.next();
 
-						currentvertex.getInitialVertexProperty().addOperator(currentop);
 						
 						if (!currentvertex.getInitialVertexProperty()
 								.isImplantable(currentop)) {
 
+							currentvertex.getInitialVertexProperty().addOperator(currentop);
 							// If no timing is set, we add a unavailable timing
 							Timing newTiming = new Timing((OperatorDefinition)currentop.getDefinition(),
 									currentsdfvertex);
