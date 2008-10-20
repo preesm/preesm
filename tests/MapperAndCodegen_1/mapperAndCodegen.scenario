@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/MapperAndCodegen_1/TestCom.xml"/>
+        <algorithm url="/mapper and codegen/Kwok.xml"/>
         <architecture url=""/>
     </files>
     <constraints>
         <constraintGroup>
             <operator name="C64x_1"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="Copy"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n9"/>
+            <task name="n8"/>
+            <task name="n1"/>
+            <task name="n7"/>
+            <task name="n3"/>
+            <task name="n5"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64x_2"/>
-            <task name="ParallelTest"/>
+            <task name="n4"/>
         </constraintGroup>
     </constraints>
     <timings>
-        <timing opname="C64x" time="11" vertexname="Gen_int"/>
-        <timing opname="C64x" time="30" vertexname="ParallelTest"/>
-        <timing opname="C64x" time="20" vertexname="Actuator"/>
-        <timing opname="C64x" time="10" vertexname="Sensor"/>
-        <timing opname="C64x" time="12" vertexname="Copy"/>
-        <timing opname="C64x" time="15" vertexname="ParallelTest2"/>
+        <timing opname="C64x" time="1000" vertexname="n1"/>
+        <timing opname="C64x" time="1000" vertexname="n2"/>
+        <timing opname="C64x" time="1000" vertexname="n3"/>
+        <timing opname="C64x" time="1000" vertexname="n4"/>
+        <timing opname="C64x" time="1000" vertexname="n5"/>
+        <timing opname="C64x" time="1000" vertexname="n6"/>
+        <timing opname="C64x" time="1000" vertexname="n7"/>
+        <timing opname="C64x" time="1000" vertexname="n8"/>
+        <timing opname="C64x" time="1000" vertexname="n9"/>
     </timings>
 </scenario>
