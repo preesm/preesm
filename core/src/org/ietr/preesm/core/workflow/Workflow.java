@@ -52,7 +52,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorRegistry;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
@@ -66,6 +68,8 @@ import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.ITask;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
@@ -138,6 +142,20 @@ public class Workflow {
 			ScenarioConfiguration scenarioConfiguration,
 			Map<String, String> envVars) {
 
+
+		Activator.getDefault().getWorkbench().getDisplay().asyncExec(new Runnable(){
+	
+			@Override
+			public void run() {
+				IWorkbenchWindow window = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
+				try {
+					Activator.getDefault().getWorkbench().showPerspective(CorePerspectiveFactory.ID, window);
+				} catch (WorkbenchException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
 		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
 		int numberOfTasksDone = 0;			
 		SDFGraph sdf = null;

@@ -153,6 +153,14 @@
             name="Preesm scenario editor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="org.ietr.preesm.core.ui.console.CoreConsoleFactory"
+            icon="icons/preesm2mini.PNG"
+            label="Preesm Core Console">
+      </consoleFactory>
+   </extension>
 
 
 </plugin>

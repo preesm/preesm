@@ -88,7 +88,7 @@ public class PGeneticTransformation extends AbstractMapping {
 	public static void main(String[] args) {
 
 		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
+		logger.setLevel(Level.FINEST);
 
 		// PreesmLogger.getLogger().setLevel(Level.FINER);
 

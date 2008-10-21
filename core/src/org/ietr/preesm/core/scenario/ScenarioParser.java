@@ -289,7 +289,8 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				if (type.equals("timing")) {
 					Timing timing = getTiming(elt);
-					scenario.getTimingManager().addTiming(timing);
+					if(timing!=null)
+						scenario.getTimingManager().addTiming(timing);
 				}
 			}
 

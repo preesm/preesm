@@ -3,17 +3,11 @@
  */
 package org.ietr.preesm.core.scenario.editor.timings;
 
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
-import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Provides the elements contained in the timing editor

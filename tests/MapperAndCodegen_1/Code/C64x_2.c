@@ -14,29 +14,21 @@ extern LOG_Obj trace;
 #include "..\..\lib_RACH\common.h"
 
 //Buffer allocation for C64x_2
-#pragma DATA_SECTION(n1o1n2i1, ".my_sect")
-#pragma DATA_ALIGN(n1o1n2i1, 8)
-char[10] n1o1n2i1;
+#pragma DATA_SECTION(Sensoro2ParallelTesti1, ".my_sect")
+#pragma DATA_ALIGN(Sensoro2ParallelTesti1, 8)
+char[10] Sensoro2ParallelTesti1;
 
-#pragma DATA_SECTION(n1o5n5i1, ".my_sect")
-#pragma DATA_ALIGN(n1o5n5i1, 8)
-char[10] n1o5n5i1;
+#pragma DATA_SECTION(ParallelTesto1ParallelTest2i1, ".my_sect")
+#pragma DATA_ALIGN(ParallelTesto1ParallelTest2i1, 8)
+char[10] ParallelTesto1ParallelTest2i1;
 
-#pragma DATA_SECTION(n1o2n7i2, ".my_sect")
-#pragma DATA_ALIGN(n1o2n7i2, 8)
-char[10] n1o2n7i2;
-
-#pragma DATA_SECTION(n2o2n7i1, ".my_sect")
-#pragma DATA_ALIGN(n2o2n7i1, 8)
-char[10] n2o2n7i1;
-
-#pragma DATA_SECTION(n2o1n6i1, ".my_sect")
-#pragma DATA_ALIGN(n2o1n6i1, 8)
-char[10] n2o1n6i1;
+#pragma DATA_SECTION(ParallelTest2o1Actuatori3, ".my_sect")
+#pragma DATA_ALIGN(ParallelTest2o1Actuatori3, 8)
+char[10] ParallelTest2o1Actuatori3;
 
 #pragma DATA_SECTION(sem, ".my_sect")
 #pragma DATA_ALIGN(sem, 8)
-semaphore[8] sem;
+semaphore[6] sem;
 
 
 // Main function
@@ -97,15 +89,11 @@ void computationThread()
 //beginningCode
 
 {
-	init_n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
-	init_n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
-	init_n7(n1o2n7i2,n2o2n7i1);
-	init_n6(n2o1n6i1);
-	init_n5(n1o5n5i1);
+	init_Sensor(Sensoro2ParallelTesti1);
+	init_ParallelTest(ParallelTesto1ParallelTest2i1,Sensoro2ParallelTesti1);
+	init_ParallelTest2(ParallelTest2o1Actuatori3,ParallelTesto1ParallelTest2i1);
+	init_Actuator(ParallelTest2o1Actuatori3);
 	semaphorePost(sem[0], empty);
-	semaphorePost(sem[2], empty);
-	semaphorePost(sem[4], empty);
-	semaphorePost(sem[6], empty);
 }
 
 
@@ -114,18 +102,15 @@ void computationThread()
 
 for(;;){
 	semaphorePend(sem[0], empty);
-	semaphorePend(sem[2], empty);
-	n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
-	semaphorePost(sem[3], full);
+	Sensor(Sensoro2ParallelTesti1);
 	semaphorePost(sem[1], full);
-	n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
-	semaphorePend(sem[4], empty);
-	n7(n1o2n7i2,n2o2n7i1);
-	semaphorePost(sem[5], full);
-	semaphorePend(sem[6], empty);
-	n6(n2o1n6i1);
-	semaphorePost(sem[7], full);
-	n5(n1o5n5i1);
+	ParallelTest(ParallelTesto1ParallelTest2i1,Sensoro2ParallelTesti1);
+	ParallelTest2(ParallelTest2o1Actuatori3,ParallelTesto1ParallelTest2i1);
+	semaphorePend(sem[2], full);
+	semaphorePend(sem[4], full);
+	Actuator(ParallelTest2o1Actuatori3);
+	semaphorePost(sem[5], empty);
+	semaphorePost(sem[3], empty);
 }
 
 
@@ -133,11 +118,10 @@ for(;;){
 //endCode
 
 {
-	close_n1(n1o1n2i1,n1o2n7i2,n1o5n5i1);
-	close_n2(n1o1n2i1,n2o1n6i1,n2o2n7i1);
-	close_n7(n1o2n7i2,n2o2n7i1);
-	close_n6(n2o1n6i1);
-	close_n5(n1o5n5i1);
+	close_Sensor(Sensoro2ParallelTesti1);
+	close_ParallelTest(ParallelTesto1ParallelTest2i1,Sensoro2ParallelTesti1);
+	close_ParallelTest2(ParallelTest2o1Actuatori3,ParallelTesto1ParallelTest2i1);
+	close_Actuator(ParallelTest2o1Actuatori3);
 }
 
 }//end thread: computationThread
@@ -150,6 +134,8 @@ void communicationThread()
 //beginningCode
 
 {
+	semaphorePost(sem[3], empty);
+	semaphorePost(sem[5], empty);
 }
 
 
@@ -160,15 +146,12 @@ for(;;){
 	semaphorePend(sem[1], full);
 	send(C64x_1,);
 	semaphorePost(sem[0], empty);
-	semaphorePend(sem[3], full);
-	send(C64x_1,);
-	semaphorePost(sem[2], empty);
-	semaphorePend(sem[5], full);
-	send(C64x_1,);
-	semaphorePost(sem[4], empty);
-	semaphorePend(sem[7], full);
-	send(C64x_1,);
-	semaphorePost(sem[6], empty);
+	semaphorePend(sem[3], empty);
+	receive(C64x_1,);
+	semaphorePost(sem[2], full);
+	semaphorePend(sem[5], empty);
+	receive(C64x_1,);
+	semaphorePost(sem[4], full);
 }
 
 

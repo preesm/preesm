@@ -14,21 +14,13 @@ extern LOG_Obj trace;
 #include "..\..\lib_RACH\common.h"
 
 //Buffer allocation for C64x_1
-#pragma DATA_SECTION(n3o1n8i1, ".my_sect")
-#pragma DATA_ALIGN(n3o1n8i1, 8)
-char[10] n3o1n8i1;
-
-#pragma DATA_SECTION(n4o1n8i2, ".my_sect")
-#pragma DATA_ALIGN(n4o1n8i2, 8)
-char[10] n4o1n8i2;
-
-#pragma DATA_SECTION(n8o1n9i3, ".my_sect")
-#pragma DATA_ALIGN(n8o1n9i3, 8)
-char[10] n8o1n9i3;
+#pragma DATA_SECTION(Gen_into1Copyi1, ".my_sect")
+#pragma DATA_ALIGN(Gen_into1Copyi1, 8)
+char[10] Gen_into1Copyi1;
 
 #pragma DATA_SECTION(sem, ".my_sect")
 #pragma DATA_ALIGN(sem, 8)
-semaphore[8] sem;
+semaphore[6] sem;
 
 
 // Main function
@@ -85,14 +77,17 @@ if( (communicationThread_handle = TSK_create((Fxn)communicationThread, &communic
 void computationThread()
 {
 
+//Variables allocation for computationThread
+int i;
+
 
 //beginningCode
 
 {
-	init_n3(n3o1n8i1);
-	init_n4(n4o1n8i2);
-	init_n8(n3o1n8i1,n4o1n8i2,n8o1n9i3);
-	init_n9(n8o1n9i3);
+	init_Gen_int(Gen_into1Copyi1);
+	init_Copy(Gen_into1Copyi1);
+	semaphorePost(sem[2], empty);
+	semaphorePost(sem[4], empty);
 }
 
 
@@ -101,17 +96,15 @@ void computationThread()
 
 for(;;){
 	semaphorePend(sem[0], full);
-	n3(n3o1n8i1);
+	semaphorePend(sem[2], empty);
+	Gen_int(Gen_into1Copyi1);
+	semaphorePost(sem[3], full);
 	semaphorePost(sem[1], empty);
-	semaphorePend(sem[2], full);
-	n4(n4o1n8i2);
-	semaphorePost(sem[3], empty);
-	n8(n3o1n8i1,n4o1n8i2,n8o1n9i3);
-	semaphorePend(sem[4], full);
-	semaphorePend(sem[6], full);
-	n9(n8o1n9i3);
-	semaphorePost(sem[7], empty);
-	semaphorePost(sem[5], empty);
+	semaphorePend(sem[4], empty);
+	for(i = 0; i < 10 ; i += 1){
+		Copy(Gen_into1Copyi1[i] );
+	}
+	semaphorePost(sem[5], full);
 }
 
 
@@ -119,10 +112,8 @@ for(;;){
 //endCode
 
 {
-	close_n3(n3o1n8i1);
-	close_n4(n4o1n8i2);
-	close_n8(n3o1n8i1,n4o1n8i2,n8o1n9i3);
-	close_n9(n8o1n9i3);
+	close_Gen_int(Gen_into1Copyi1);
+	close_Copy(Gen_into1Copyi1);
 }
 
 }//end thread: computationThread
@@ -135,10 +126,7 @@ void communicationThread()
 //beginningCode
 
 {
-	semaphorePost(sem[3], empty);
 	semaphorePost(sem[1], empty);
-	semaphorePost(sem[5], empty);
-	semaphorePost(sem[7], empty);
 }
 
 
@@ -146,18 +134,15 @@ void communicationThread()
 
 
 for(;;){
-	semaphorePend(sem[3], empty);
-	receive(C64x_2,);
-	semaphorePost(sem[2], full);
 	semaphorePend(sem[1], empty);
 	receive(C64x_2,);
 	semaphorePost(sem[0], full);
-	semaphorePend(sem[5], empty);
-	receive(C64x_2,);
-	semaphorePost(sem[4], full);
-	semaphorePend(sem[7], empty);
-	receive(C64x_2,);
-	semaphorePost(sem[6], full);
+	semaphorePend(sem[3], full);
+	send(C64x_2,);
+	semaphorePost(sem[2], empty);
+	semaphorePend(sem[5], full);
+	send(C64x_2,);
+	semaphorePost(sem[4], empty);
 }
 
 

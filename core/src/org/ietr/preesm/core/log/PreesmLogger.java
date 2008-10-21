@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * PREESM
  * Copyright 2007 IETR under CeCILL license.
@@ -50,22 +49,34 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import javax.swing.text.StyleConstants.ColorConstants;
+
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.ui.console.MessageConsoleStream;
+
 /**
  * @author mwipliez
  * 
  */
 public class PreesmLogger extends Logger {
 
-	private static final Logger logger = new PreesmLogger();
+	private static final PreesmLogger logger = new PreesmLogger();
 
 	private static final String LOGGER_NAME = "org.ietr.preesm.log.PreesmLogger";
+
+	MessageConsole console = null;
 
 	/**
 	 * GIves this Logger
 	 * 
 	 * @return a Logger
 	 */
-	public static Logger getLogger() {
+	public static PreesmLogger getLogger() {
 		return logger;
 	}
 
@@ -79,29 +90,60 @@ public class PreesmLogger extends Logger {
 
 	@Override
 	public void log(LogRecord record) {
+
 		Level level = record.getLevel();
 		int levelVal = level.intValue();
 		if (getLevel() != null) {
 			if (levelVal >= getLevel().intValue()) {
-				if (levelVal < Level.INFO.intValue()) {
-					String msg = record.getMillis() + " " + level.toString()
-							+ ": " + record.getMessage() + " (in "
-							+ record.getSourceClassName() + "#"
-							+ record.getSourceMethodName() + ")";
-					System.out.println(msg);
-				} else {
-					Date date = new Date(record.getMillis());
-					DateFormat df = DateFormat.getTimeInstance();
-					String msg = df.format(date) + " " + level.toString()
-							+ ": " + record.getMessage();
 
-					if (levelVal < Level.WARNING.intValue()) {
+				// Writes a log in standard output
+				if (console == null) {
+					if (levelVal < Level.INFO.intValue()) {
+						String msg = record.getMillis() + " "
+								+ level.toString() + ": " + record.getMessage()
+								+ " (in " + record.getSourceClassName() + "#"
+								+ record.getSourceMethodName() + ")";
 						System.out.println(msg);
 					} else {
-						System.err.println(msg);
+						Date date = new Date(record.getMillis());
+						DateFormat df = DateFormat.getTimeInstance();
+						String msg = df.format(date) + " " + level.toString()
+								+ ": " + record.getMessage();
+
+						if (levelVal < Level.WARNING.intValue()) {
+							System.out.println(msg);
+						} else {
+							System.err.println(msg);
+						}
 					}
+				} else {
+					// Writes a log in console
+					MessageConsoleStream stream = console.newMessageStream();
+
+					if (levelVal < Level.INFO.intValue())
+						stream.setColor(new Color(null, 0, 0, 0));
+					else
+						stream.setColor(new Color(null, 255, 0, 0));
+
+					stream.println(record.getMessage());
 				}
 			}
 		}
+	}
+
+	public void createConsole() {
+
+		IConsoleManager mgr = ConsolePlugin.getDefault().getConsoleManager();
+
+		if (console == null) {
+			console = new MessageConsole("Preesm console", null);
+			mgr.addConsoles(new IConsole[] { console });
+		}
+
+		console.activate();
+		console.setBackground(new Color(null, 0, 0, 0));
+		// console.newMessageStream().println("test");
+
+		mgr.refresh(console);
 	}
 }

@@ -5,7 +5,6 @@ package org.ietr.preesm.core.scenario.editor.timings;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -23,7 +22,6 @@ import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
 
 /**

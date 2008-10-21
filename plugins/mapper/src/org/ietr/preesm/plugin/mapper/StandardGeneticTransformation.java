@@ -87,7 +87,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 	public static void main(String[] args) {
 		// FASTTransformation transformation = new FASTTransformation();
 		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
+		logger.setLevel(Level.FINEST);
 
 		// PreesmLogger.getLogger().setLevel(Level.FINER);
 

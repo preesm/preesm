@@ -18,7 +18,6 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.sdf4j.model.sdf.SDFAbstractVertex;

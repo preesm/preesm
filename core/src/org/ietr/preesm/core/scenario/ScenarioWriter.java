@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;

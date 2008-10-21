@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**

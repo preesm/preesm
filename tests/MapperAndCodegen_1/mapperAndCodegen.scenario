@@ -1,35 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/mapper and codegen/Kwok.xml"/>
+        <algorithm url="/MapperAndCodegen_1/TestCom.xml"/>
         <architecture url=""/>
     </files>
     <constraints>
         <constraintGroup>
             <operator name="C64x_1"/>
-            <task name="n6"/>
-            <task name="n2"/>
-            <task name="n9"/>
-            <task name="n8"/>
-            <task name="n1"/>
-            <task name="n7"/>
-            <task name="n3"/>
-            <task name="n5"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64x_2"/>
-            <task name="n4"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
         </constraintGroup>
     </constraints>
     <timings>
-        <timing opname="C64x" time="1000" vertexname="n1"/>
-        <timing opname="C64x" time="1000" vertexname="n2"/>
-        <timing opname="C64x" time="1000" vertexname="n3"/>
-        <timing opname="C64x" time="1000" vertexname="n4"/>
-        <timing opname="C64x" time="1000" vertexname="n5"/>
-        <timing opname="C64x" time="1000" vertexname="n6"/>
-        <timing opname="C64x" time="1000" vertexname="n7"/>
-        <timing opname="C64x" time="1000" vertexname="n8"/>
-        <timing opname="C64x" time="1000" vertexname="n9"/>
+        <timing opname="C64x" time="10000000" vertexname="ParallelTest"/>
     </timings>
 </scenario>

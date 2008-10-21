@@ -65,7 +65,7 @@ public class Examples {
 
 		OperatorDefinition opdef = new OperatorDefinition("C64x");
 		MediumDefinition edma = new MediumDefinition("edma");
-		edma.setMediumProperty(new MediumProperty(1, 500, 1));
+		edma.setMediumProperty(new MediumProperty(1, 2, 1));
 
 		ArchitectureInterfaceDefinition intfdef = new ArchitectureInterfaceDefinition(
 				edma, ArchitectureInterfaceDefinition.INFINITE);
