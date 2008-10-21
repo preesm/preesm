@@ -23,18 +23,22 @@ public class EditorTools {
 	/**
 	 * Displays a file browser in a shell. The path is relative to the project
 	 */
-	static public void browseFiles(Shell shell, Text filePath) {
+	static public String browseFiles(Shell shell, String title) {
+		String returnVal = "";
+		
 		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
 				new WorkbenchContentProvider());
 		tree.setAllowMultiple(false);
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-		tree.setMessage("Please select an existing file:");
-		tree.setTitle("Choose an existing file");
+		tree.setMessage(title);
+		tree.setTitle(title);
 		// opens the dialog
 		if (tree.open() == Window.OK) {
 			IPath fileIPath = ((IFile) tree.getFirstResult()).getFullPath(); 
-			filePath.setText(fileIPath.toString());
+			returnVal = fileIPath.toString();
 		}
+		
+		return returnVal;
 	}
 }

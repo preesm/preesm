@@ -43,16 +43,18 @@ public class OverviewPage extends FormPage {
 		
 		private Text filePath;
 		private Shell shell;
+		private String title;
 		
-		public FileSelectionAdapter(Text filePath,Shell shell) {
+		public FileSelectionAdapter(Text filePath,Shell shell,String title) {
 			super();
 			this.filePath = filePath;
 			this.shell = shell;
+			this.title = title;
 		}
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			EditorTools.browseFiles(shell, filePath);
+			filePath.setText(EditorTools.browseFiles(shell, title));
 		}
 	}
 
@@ -91,13 +93,15 @@ public class OverviewPage extends FormPage {
 		createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
 				Messages.getString("Overview.algorithmDescription"),
 				Messages.getString("Overview.algorithmFileEdit"),
-				scenario.getAlgorithmURL());
+				scenario.getAlgorithmURL(),
+				Messages.getString("Overview.algorithmBrowseTitle"));
 
 		// Architecture file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
 				Messages.getString("Overview.architectureDescription"),
 				Messages.getString("Overview.architectureFileEdit"),
-				scenario.getArchitectureURL());
+				scenario.getArchitectureURL(),
+				Messages.getString("Overview.architectureBrowseTitle"));
 		
 	}
 
@@ -139,7 +143,7 @@ public class OverviewPage extends FormPage {
 	 * @param fileEdit text to display in text label
 	 * @param initValue initial value of Text
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue) {
+	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle) {
 		
 		Composite client = createSection(mform, title, desc, 2);
 		
@@ -170,7 +174,7 @@ public class OverviewPage extends FormPage {
 		text.setLayoutData(gd);
 
 		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell());
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle);
 		button.addSelectionListener(adapter);
 		
 		toolkit.paintBordersFor(client);

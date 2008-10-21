@@ -55,9 +55,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.ietr.preesm.core.scenario.editor.EditorTools;
+import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 
 /**
  * Shortcut for launching an executable directly from the navigator, without
@@ -76,15 +82,22 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 			workingCopy = type.newInstance(null, DebugPlugin.getDefault()
 					.getLaunchManager()
 					.generateUniqueLaunchConfigurationNameFrom(
-							file.getLocation().toOSString()));
+							file.getFullPath().toString()));
 		} catch (CoreException e) {
 			return null;
 		}
 
 		workingCopy.setAttribute(
 				WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, file
-						.getLocation().toOSString());
+						.getFullPath().toString());
 
+		// We ask for the scenario to use with the selected workflow
+		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.getString("Shortcut.browseScenarioTitle"));
+		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,scenarioPath);
+		
+		if(scenarioPath.isEmpty())
+			return null;
+		
 		// set the defaults on the common tab
 		CommonTab tab = new CommonTab();
 		tab.setDefaults(workingCopy);
