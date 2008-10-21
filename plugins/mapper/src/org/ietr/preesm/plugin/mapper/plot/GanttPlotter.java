@@ -229,7 +229,8 @@ public class GanttPlotter extends ApplicationFrame {
 			if (cmp != ArchitectureComponent.NO_COMPONENT) {
 				long start = simulator.getTLevel(currentVertex);
 				long end = simulator.getFinalTime(currentVertex);
-				Task t = new Task(currentVertex.getName(), new SimpleTimePeriod(
+				String taskName = currentVertex.getName() + " (x" + currentVertex.getInitialVertexProperty().getNbRepeat() + ")";
+				Task t = new Task(taskName, new SimpleTimePeriod(
 						start, end));
 				series.get(cmp.getName()).addSubtask(t);
 			}

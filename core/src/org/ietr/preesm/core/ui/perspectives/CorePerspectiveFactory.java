@@ -65,8 +65,6 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 			
 			bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
 			
-			// Creates a console for the logger
-			PreesmLogger.getLogger().createConsole();
 			bottomRight.addView("org.eclipse.ui.console.ConsoleView");
 			
 		}

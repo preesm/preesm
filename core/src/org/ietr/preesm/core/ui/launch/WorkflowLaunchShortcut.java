@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.ui.launch;
 
 import java.util.ArrayList;
@@ -71,7 +70,6 @@ import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
  */
 public class WorkflowLaunchShortcut implements ILaunchShortcut {
 
-
 	public static ILaunchConfiguration createLaunchConfiguration(IFile file) {
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = manager
@@ -88,16 +86,20 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		}
 
 		workingCopy.setAttribute(
-				WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, file
-						.getFullPath().toString());
+				WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME,
+				file.getFullPath().toString());
 
 		// We ask for the scenario to use with the selected workflow
-		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.getString("Shortcut.browseScenarioTitle"));
-		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,scenarioPath);
+		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getShell(), Messages
+				.getString("Shortcut.browseScenarioTitle"), "scenario");
 		
-		if(scenarioPath.isEmpty())
+		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,
+				scenarioPath);
+
+		if (scenarioPath.isEmpty())
 			return null;
-		
+
 		// set the defaults on the common tab
 		CommonTab tab = new CommonTab();
 		tab.setDefaults(workingCopy);

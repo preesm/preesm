@@ -6,25 +6,26 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="C64x_1"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-            <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="C64x_2"/>
             <task name="ParallelTest"/>
+            <task name="Copy"/>
             <task name="Sensor"/>
+            <task name="ParallelTest2"/>
             <task name="Gen_int"/>
             <task name="Actuator"/>
-            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64x_1"/>
+            <task name="ParallelTest"/>
             <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest2"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
         </constraintGroup>
     </constraints>
     <timings>
-        <timing opname="C64x" time="10000000" vertexname="ParallelTest"/>
+        <timing opname="C64x" time="1000" vertexname="ParallelTest"/>
+        <timing opname="C64x" time="100" vertexname="Sensor"/>
     </timings>
 </scenario>

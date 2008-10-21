@@ -75,6 +75,10 @@ public class InitialVertexProperty {
 	private int nbRepeat;
 
 
+	public int getNbRepeat() {
+		return nbRepeat;
+	}
+
 	public InitialVertexProperty() {
 		super();
 		timings = new ArrayList<Timing>();

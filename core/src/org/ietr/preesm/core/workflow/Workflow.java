@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -58,6 +57,7 @@ import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.ICodeTranslation;
@@ -142,22 +142,11 @@ public class Workflow {
 			ScenarioConfiguration scenarioConfiguration,
 			Map<String, String> envVars) {
 
+		// Activates the Preesm perspective
+		activatePerspective();
 
-		Activator.getDefault().getWorkbench().getDisplay().asyncExec(new Runnable(){
-	
-			@Override
-			public void run() {
-				IWorkbenchWindow window = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
-				try {
-					Activator.getDefault().getWorkbench().showPerspective(CorePerspectiveFactory.ID, window);
-				} catch (WorkbenchException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
 		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
-		int numberOfTasksDone = 0;			
+		int numberOfTasksDone = 0;
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		IArchitecture architecture = null;
@@ -168,7 +157,7 @@ public class Workflow {
 				workflow);
 		while (it.hasNext()) {
 			IWorkflowNode node = it.next();
-			
+
 			for (WorkflowEdge edge : workflow.incomingEdgesOf(node)) {
 				if (edge.getCarriedDataType().equals(WorkflowEdgeType.SDF)) {
 					sdf = edge.getCarriedData().getSDF();
@@ -201,8 +190,8 @@ public class Workflow {
 				monitor.subTask("loading algorithm");
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
-				
-				if(scenario != null){
+
+				if (scenario != null) {
 					String algorithmPath = scenario.getAlgorithmURL();
 					AlgorithmRetriever retriever = new AlgorithmRetriever(
 							algorithmPath);
@@ -226,11 +215,10 @@ public class Workflow {
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
 
-				
 				ScenarioRetriever retriever = new ScenarioRetriever(
-				scenarioConfiguration); 
+						scenarioConfiguration);
 				IScenario theScenario = retriever.getScenario();
-				 
+
 				nodeResult.setScenario(theScenario);
 
 			} else if (node.isTaskNode()) {
@@ -273,16 +261,16 @@ public class Workflow {
 
 						// generic code generation
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
-						
-						if(dag != null)
+
+						if (dag != null)
 							nodeResult = codeGen.transform(dag, architecture,
 									parameters);
-						
+
 						sourceFiles = nodeResult.getSourcefilelist();
 
 						// Updates the workspace to show the generated files
-						//updateWorkspace(monitor);
-						
+						// updateWorkspace(monitor);
+
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
 						numberOfTasksDone++;
@@ -297,12 +285,13 @@ public class Workflow {
 						monitor.worked(numberOfTasksDone);
 						// code translation
 						IExporter exporter = (IExporter) transformation;
-						
-						if(exporter.isSDFExporter())
+
+						if (exporter.isSDFExporter())
 							exporter.transform(sdf, parameters);
 						else
-							exporter.transform(dag,sdf,architecture,scenario, parameters);
-						
+							exporter.transform(dag, sdf, architecture,
+									scenario, parameters);
+
 						IWorkspace workspace = updateWorkspace(monitor);
 						Path path = new Path(parameters.getVariable("path"));
 						IResource resource = workspace.getRoot().findMember(
@@ -320,7 +309,8 @@ public class Workflow {
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
-						plotter.transform(dag,sdf,architecture,scenario, parameters);
+						plotter.transform(dag, sdf, architecture, scenario,
+								parameters);
 					}
 				}
 
@@ -374,8 +364,8 @@ public class Workflow {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(
 				new OpenWorkflowOutput(input, editor.getId()));
 	}
-	
-	private IWorkspace updateWorkspace(IProgressMonitor monitor){
+
+	private IWorkspace updateWorkspace(IProgressMonitor monitor) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
@@ -384,8 +374,27 @@ public class Workflow {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return workspace;
 	}
 
+	private void activatePerspective() {
+		Activator.getDefault().getWorkbench().getDisplay().asyncExec(
+				new Runnable() {
+					@Override
+					public void run() {
+						IWorkbenchWindow window = Activator.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow();
+						try {
+							Activator.getDefault().getWorkbench()
+									.showPerspective(CorePerspectiveFactory.ID,
+											window);
+						} catch (WorkbenchException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+
+		PreesmLogger.getLogger().createConsole();
+	}
 }

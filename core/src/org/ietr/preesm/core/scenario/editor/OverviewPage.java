@@ -44,17 +44,19 @@ public class OverviewPage extends FormPage {
 		private Text filePath;
 		private Shell shell;
 		private String title;
+		private String fileExtension;
 		
-		public FileSelectionAdapter(Text filePath,Shell shell,String title) {
+		public FileSelectionAdapter(Text filePath,Shell shell,String title,String fileExtension) {
 			super();
 			this.filePath = filePath;
 			this.shell = shell;
 			this.title = title;
+			this.fileExtension = fileExtension;
 		}
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			filePath.setText(EditorTools.browseFiles(shell, title));
+			filePath.setText(EditorTools.browseFiles(shell, title, fileExtension));
 		}
 	}
 
@@ -94,14 +96,16 @@ public class OverviewPage extends FormPage {
 				Messages.getString("Overview.algorithmDescription"),
 				Messages.getString("Overview.algorithmFileEdit"),
 				scenario.getAlgorithmURL(),
-				Messages.getString("Overview.algorithmBrowseTitle"));
+				Messages.getString("Overview.algorithmBrowseTitle"),
+				"xml");
 
 		// Architecture file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
 				Messages.getString("Overview.architectureDescription"),
 				Messages.getString("Overview.architectureFileEdit"),
 				scenario.getArchitectureURL(),
-				Messages.getString("Overview.architectureBrowseTitle"));
+				Messages.getString("Overview.architectureBrowseTitle"),
+				"xml");
 		
 	}
 
@@ -142,8 +146,9 @@ public class OverviewPage extends FormPage {
 	 * @param desc description of the section
 	 * @param fileEdit text to display in text label
 	 * @param initValue initial value of Text
+	 * @param browseTitle title of file browser
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle) {
+	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,String fileExtension) {
 		
 		Composite client = createSection(mform, title, desc, 2);
 		
@@ -174,7 +179,7 @@ public class OverviewPage extends FormPage {
 		text.setLayoutData(gd);
 
 		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtension);
 		button.addSelectionListener(adapter);
 		
 		toolkit.paintBordersFor(client);
