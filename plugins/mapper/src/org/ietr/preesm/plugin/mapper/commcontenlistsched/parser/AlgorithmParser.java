@@ -132,9 +132,9 @@ public class AlgorithmParser {
 								} else if (name.equalsIgnoreCase("source")) {
 									nodeName = n4.getNodeValue();
 									CommunicationDescriptorBuffer.get(edgeName)
-											.setSource(nodeName);
+											.setOrigin(nodeName);
 									ComputationDescriptorBuffer.get(nodeName)
-											.addFollowingCommunication(
+											.addOutputCommunication(
 													CommunicationDescriptorBuffer
 															.get(edgeName));
 								} else if (name.equalsIgnoreCase("destination")) {
@@ -142,7 +142,7 @@ public class AlgorithmParser {
 									CommunicationDescriptorBuffer.get(edgeName)
 											.setDestination(nodeName);
 									ComputationDescriptorBuffer.get(nodeName)
-											.addPrecedingCommunication(
+											.addInputCommunication(
 													CommunicationDescriptorBuffer
 															.get(edgeName));
 								} else if (name.equalsIgnoreCase("weight")) {

@@ -84,7 +84,7 @@ public abstract class AbstractScheduler {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
 				.values()) {
 
-			if (indexComputation.getPrecedingCommunications().isEmpty()
+			if (indexComputation.getInputCommunications().isEmpty()
 					&& indexComputation != topComputation
 					&& indexComputation != bottomComputation) {
 				communicationName = new String("communication_in")
@@ -95,16 +95,16 @@ public abstract class AbstractScheduler {
 				CommunicationDescriptorBuffer.get(communicationName)
 						.clearExist();
 				topComputation
-						.addFollowingCommunication(CommunicationDescriptorBuffer
+						.addOutputCommunication(CommunicationDescriptorBuffer
 								.get(communicationName));
 				indexComputation
-						.addPrecedingCommunication(CommunicationDescriptorBuffer
+						.addInputCommunication(CommunicationDescriptorBuffer
 								.get(communicationName));
 				nbCommunicationIn++;
 				System.out.println(communicationName + " : topComputation -> "
 						+ indexComputation.getName());
 			}
-			if (indexComputation.getFollowingCommunications().isEmpty()
+			if (indexComputation.getOutputCommunications().isEmpty()
 					&& indexComputation != topComputation
 					&& indexComputation != bottomComputation) {
 				communicationName = (new String("communication_out"))
@@ -115,10 +115,10 @@ public abstract class AbstractScheduler {
 				CommunicationDescriptorBuffer.get(communicationName)
 						.clearExist();
 				bottomComputation
-						.addPrecedingCommunication(CommunicationDescriptorBuffer
+						.addInputCommunication(CommunicationDescriptorBuffer
 								.get(communicationName));
 				indexComputation
-						.addFollowingCommunication(CommunicationDescriptorBuffer
+						.addOutputCommunication(CommunicationDescriptorBuffer
 								.get(communicationName));
 				nbCommunicationOut++;
 				System.out.println(communicationName + " : "
@@ -154,7 +154,7 @@ public abstract class AbstractScheduler {
 		bottomComputation.setStartTime(Integer.MAX_VALUE);
 		for (ComputationDescriptor indexComputation : algorithm
 				.getComputations().values()) {
-			if (indexComputation.getPrecedingCommunications().isEmpty()
+			if (indexComputation.getInputCommunications().isEmpty()
 					&& indexComputation != topComputation
 					&& indexComputation != bottomComputation) {
 				communicationName = new String("communication_in")
@@ -164,16 +164,16 @@ public abstract class AbstractScheduler {
 				algorithm.addCommunication(algorithm
 						.getCommunication(communicationName));
 				algorithm.getCommunication(communicationName).clearExist();
-				topComputation.addFollowingCommunication(algorithm
+				topComputation.addOutputCommunication(algorithm
 						.getCommunication(communicationName));
-				indexComputation.addPrecedingCommunication(algorithm
+				indexComputation.addInputCommunication(algorithm
 						.getCommunication(communicationName));
 				nbCommunicationIn++;
 				System.out.println(communicationName + " : "
 						+ topComputation.getName() + " -> "
 						+ indexComputation.getName());
 			}
-			if (indexComputation.getFollowingCommunications().isEmpty()
+			if (indexComputation.getOutputCommunications().isEmpty()
 					&& indexComputation != topComputation
 					&& indexComputation != bottomComputation) {
 				communicationName = (new String("communication_out"))
@@ -183,9 +183,9 @@ public abstract class AbstractScheduler {
 				algorithm.getCommunication(communicationName).clearExist();
 				algorithm.addCommunication(algorithm
 						.getCommunication(communicationName));
-				bottomComputation.addPrecedingCommunication(algorithm
+				bottomComputation.addInputCommunication(algorithm
 						.getCommunication(communicationName));
-				indexComputation.addFollowingCommunication(algorithm
+				indexComputation.addOutputCommunication(algorithm
 						.getCommunication(communicationName));
 				nbCommunicationOut++;
 				System.out.println(communicationName + " : "
@@ -254,7 +254,7 @@ public abstract class AbstractScheduler {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computations = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computations.add(ComputationDescriptorBuffer.get(indexCommunication
 					.getDestination()));
 		}
@@ -263,21 +263,21 @@ public abstract class AbstractScheduler {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computations.get(
-					i).getPrecedingCommunications()) {
+					i).getInputCommunications()) {
 				if (!ComputationDescriptorBuffer.get(
-						indexCommunication.getSource()).isReady()) {
+						indexCommunication.getOrigin()).isReady()) {
 					skipComputation = true;
 					break;
 				} else if (time < ComputationDescriptorBuffer.get(
-						indexCommunication.getSource()).getTopLevel()
+						indexCommunication.getOrigin()).getTopLevel()
 						+ ComputationDescriptorBuffer.get(
-								indexCommunication.getSource())
+								indexCommunication.getOrigin())
 								.getComputationDuration()
 						+ indexCommunication.getCommunicationDuration()) {
 					time = ComputationDescriptorBuffer.get(
-							indexCommunication.getSource()).getTopLevel()
+							indexCommunication.getOrigin()).getTopLevel()
 							+ ComputationDescriptorBuffer.get(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration()
 							+ indexCommunication.getCommunicationDuration();
 				}
@@ -289,7 +289,7 @@ public abstract class AbstractScheduler {
 				// + computations.get(i).getId() + " --> t-level="
 				// + computations.get(i).getTopLevel());
 				for (CommunicationDescriptor indexCommunication : computations
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (ComputationDescriptorBuffer.get(indexCommunication
 							.getDestination()) != bottomComputation) {
 						computations.add(ComputationDescriptorBuffer
@@ -300,16 +300,16 @@ public abstract class AbstractScheduler {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			if (time < ComputationDescriptorBuffer.get(
-					indexCommunication.getSource()).getTopLevel()
+					indexCommunication.getOrigin()).getTopLevel()
 					+ ComputationDescriptorBuffer.get(
-							indexCommunication.getSource())
+							indexCommunication.getOrigin())
 							.getComputationDuration()) {
 				time = ComputationDescriptorBuffer.get(
-						indexCommunication.getSource()).getTopLevel()
+						indexCommunication.getOrigin()).getTopLevel()
 						+ ComputationDescriptorBuffer.get(
-								indexCommunication.getSource())
+								indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -335,16 +335,16 @@ public abstract class AbstractScheduler {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computations = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computations.add(ComputationDescriptorBuffer.get(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computations.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computations.get(
-					i).getFollowingCommunications()) {
+					i).getOutputCommunications()) {
 				if (!ComputationDescriptorBuffer.get(
 						indexCommunication.getDestination()).isReady()) {
 					skipComputation = true;
@@ -366,18 +366,18 @@ public abstract class AbstractScheduler {
 				// + computations.get(i).getName() + " --> b-level="
 				// + computations.get(i).getBottomLevel());
 				for (CommunicationDescriptor indexCommunication : computations
-						.get(i).getPrecedingCommunications()) {
+						.get(i).getInputCommunications()) {
 					if (ComputationDescriptorBuffer.get(indexCommunication
-							.getSource()) != topComputation) {
+							.getOrigin()) != topComputation) {
 						computations.add(ComputationDescriptorBuffer
-								.get(indexCommunication.getSource()));
+								.get(indexCommunication.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < ComputationDescriptorBuffer.get(
 					indexCommunication.getDestination()).getBottomLevel()) {
 				time = ComputationDescriptorBuffer.get(
@@ -439,7 +439,7 @@ public abstract class AbstractScheduler {
 			if (indexComputation.isScheduled()) {
 				indexComputation.updateTimes();
 				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getPrecedingCommunications()) {
+						.getInputCommunications()) {
 					indexCommunication.updateTimes();
 				}
 			}
@@ -452,7 +452,7 @@ public abstract class AbstractScheduler {
 			if (indexComputation.isScheduled()) {
 				indexComputation.restoreTimes();
 				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getPrecedingCommunications()) {
+						.getInputCommunications()) {
 					indexCommunication.restoreTimes();
 				}
 			}
@@ -465,7 +465,7 @@ public abstract class AbstractScheduler {
 			if (indexComputation.isScheduled()) {
 				indexComputation.backupTimes();
 				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getPrecedingCommunications()) {
+						.getInputCommunications()) {
 					indexCommunication.backupTimes();
 				}
 			}
@@ -478,7 +478,7 @@ public abstract class AbstractScheduler {
 			if (indexComputation.isScheduled()) {
 				indexComputation.recoverTimes();
 				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getPrecedingCommunications()) {
+						.getInputCommunications()) {
 					indexCommunication.recoverTimes();
 				}
 			}

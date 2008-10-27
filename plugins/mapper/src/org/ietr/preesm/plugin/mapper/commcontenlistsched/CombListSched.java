@@ -208,269 +208,66 @@ public class CombListSched {
 			dag = SdfToDagConverter.convert(sdf, architecture, scenario, false);
 		}
 		parse();
-		CListSchedBlcomp scheduler1 = new CListSchedBlcomp(algo, archi);
+
+		CombCListSched scheduler1 = new CombCListSched(algo.clone(), archi
+				.clone());
 		scheduler1.schedule();
 
-		parse();
-		CListSchedBl scheduler2 = new CListSchedBl(algo, archi);
+		CombCListSchedCc scheduler2 = new CombCListSchedCc(algo.clone(), archi
+				.clone());
 		scheduler2.schedule();
 
-		parse();
-		CListSchedBlin scheduler3 = new CListSchedBlin(algo, archi);
+		CombCListSchedCd scheduler3 = new CombCListSchedCd(algo.clone(), archi
+				.clone());
 		scheduler3.schedule();
 
-		parse();
-		CListSchedBlout scheduler4 = new CListSchedBlout(algo, archi);
+		CombCListSchedCcCd scheduler4 = new CombCListSchedCcCd(algo.clone(),
+				archi.clone());
 		scheduler4.schedule();
 
-		parse();
-		CListSchedBlinout scheduler5 = new CListSchedBlinout(algo, archi);
-		scheduler5.schedule();
-
-		parse();
-		CListSchedCcBlcomp scheduler6 = new CListSchedCcBlcomp(algo, archi);
-		scheduler6.schedule();
-
-		parse();
-		CListSchedCcBl scheduler7 = new CListSchedCcBl(algo, archi);
-		scheduler7.schedule();
-
-		parse();
-		CListSchedCcBlin scheduler8 = new CListSchedCcBlin(algo, archi);
-		scheduler8.schedule();
-
-		parse();
-		CListSchedCcBlout scheduler9 = new CListSchedCcBlout(algo, archi);
-		scheduler9.schedule();
-
-		parse();
-		CListSchedCcBlinout scheduler10 = new CListSchedCcBlinout(algo, archi);
-		scheduler10.schedule();
-
-		parse();
-		CListSchedCdBlcomp scheduler11 = new CListSchedCdBlcomp(algo, archi);
-		scheduler11.schedule();
-
-		parse();
-		CListSchedCdBl scheduler12 = new CListSchedCdBl(algo, archi);
-		scheduler12.schedule();
-
-		parse();
-		CListSchedCdBlin scheduler13 = new CListSchedCdBlin(algo, archi);
-		scheduler13.schedule();
-
-		parse();
-		CListSchedCdBlout scheduler14 = new CListSchedCdBlout(algo, archi);
-		scheduler14.schedule();
-
-		parse();
-		CListSchedCdBlinout scheduler15 = new CListSchedCdBlinout(algo, archi);
-		scheduler15.schedule();
-
-		parse();
-		CListSchedCcCdBlcomp scheduler16 = new CListSchedCcCdBlcomp(algo, archi);
-		scheduler16.schedule();
-
-		parse();
-		CListSchedCcCdBl scheduler17 = new CListSchedCcCdBl(algo, archi);
-		scheduler17.schedule();
-
-		parse();
-		CListSchedCcCdBlin scheduler18 = new CListSchedCcCdBlin(algo, archi);
-		scheduler18.schedule();
-
-		parse();
-		CListSchedCcCdBlout scheduler19 = new CListSchedCcCdBlout(algo, archi);
-		scheduler19.schedule();
-
-		parse();
-		CListSchedCcCdBlinout scheduler20 = new CListSchedCcCdBlinout(algo,
-				archi);
-		scheduler20.schedule();
-
-		chooseBestScheduler(scheduler1);
-		chooseBestScheduler(scheduler2);
-		chooseBestScheduler(scheduler3);
-		chooseBestScheduler(scheduler4);
-		chooseBestScheduler(scheduler5);
-		chooseBestScheduler(scheduler6);
-		chooseBestScheduler(scheduler7);
-		chooseBestScheduler(scheduler8);
-		chooseBestScheduler(scheduler9);
-		chooseBestScheduler(scheduler10);
-		chooseBestScheduler(scheduler11);
-		chooseBestScheduler(scheduler12);
-		chooseBestScheduler(scheduler13);
-		chooseBestScheduler(scheduler14);
-		chooseBestScheduler(scheduler15);
-		chooseBestScheduler(scheduler16);
-		chooseBestScheduler(scheduler17);
-		chooseBestScheduler(scheduler18);
-		chooseBestScheduler(scheduler19);
-		chooseBestScheduler(scheduler20);
+		chooseBestScheduler(scheduler1.getBestScheduler());
+		chooseBestScheduler(scheduler2.getBestScheduler());
+		chooseBestScheduler(scheduler3.getBestScheduler());
+		chooseBestScheduler(scheduler4.getBestScheduler());
 
 		System.out.println("***Compared Results***");
 
 		System.out
-				.print("No.\tScheduling Method\t\t\t\t\t\t\t\t\t\t\t\tSchedule Length\t\tUsed Operators\t\tScheduling Order");
+				.print("No.\tScheduling Method\t\t\t\t\t\t\t\tSchedule Length\t\tUsed Operators\t\tScheduling Order");
 
 		System.out.print("\n1\t" + scheduler1.getName() + "\t\t\t\t\t\t"
-				+ scheduler1.getScheduleLength() + "\t\t\t"
-				+ scheduler1.getUsedOperators().size() + "\t\t\t");
+				+ scheduler1.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ scheduler1.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler1
-				.getSchedulingOrder()) {
+				.getBestScheduler().getSchedulingOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 
-		System.out.print("\n2\t" + scheduler2.getName() + "\t\t\t\t\t\t\t"
-				+ scheduler2.getScheduleLength() + "\t\t\t"
-				+ scheduler2.getUsedOperators().size() + "\t\t\t");
+		System.out.print("\n2\t" + scheduler2.getName() + "\t\t\t\t"
+				+ scheduler2.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ scheduler2.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler2
-				.getSchedulingOrder()) {
+				.getBestScheduler().getSchedulingOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 
-		System.out.print("\n3\t" + scheduler3.getName() + "\t\t\t\t\t\t\t"
-				+ scheduler3.getScheduleLength() + "\t\t\t"
-				+ scheduler3.getUsedOperators().size() + "\t\t\t");
+		System.out.print("\n3\t" + scheduler3.getName() + "\t\t\t"
+				+ scheduler3.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ scheduler3.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler3
-				.getSchedulingOrder()) {
+				.getBestScheduler().getSchedulingOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 
-		System.out.print("\n4\t" + scheduler4.getName() + "\t\t\t\t\t\t"
-				+ scheduler4.getScheduleLength() + "\t\t\t"
-				+ scheduler4.getUsedOperators().size() + "\t\t\t");
+		System.out.print("\n4\t" + scheduler4.getName() + "\t"
+				+ scheduler4.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ scheduler4.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler4
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n5\t" + scheduler5.getName() + "\t\t\t\t\t\t"
-				+ scheduler5.getScheduleLength() + "\t\t\t"
-				+ scheduler5.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler5
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n6\t" + scheduler6.getName() + "\t\t\t"
-				+ scheduler6.getScheduleLength() + "\t\t\t"
-				+ scheduler6.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler6
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n7\t" + scheduler7.getName() + "\t\t\t\t\t"
-				+ scheduler7.getScheduleLength() + "\t\t\t"
-				+ scheduler7.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler7
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n8\t" + scheduler8.getName() + "\t\t\t\t"
-				+ scheduler8.getScheduleLength() + "\t\t\t"
-				+ scheduler8.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler8
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n9\t" + scheduler9.getName() + "\t\t\t\t"
-				+ scheduler9.getScheduleLength() + "\t\t\t"
-				+ scheduler9.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler9
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n10\t" + scheduler10.getName() + "\t\t\t"
-				+ scheduler10.getScheduleLength() + "\t\t\t"
-				+ scheduler10.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler10
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n11\t" + scheduler11.getName() + "\t\t\t"
-				+ scheduler11.getScheduleLength() + "\t\t\t"
-				+ scheduler11.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler11
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n12\t" + scheduler12.getName() + "\t\t\t\t"
-				+ scheduler12.getScheduleLength() + "\t\t\t"
-				+ scheduler12.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler12
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n13\t" + scheduler13.getName() + "\t\t\t\t"
-				+ scheduler13.getScheduleLength() + "\t\t\t"
-				+ scheduler13.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler13
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n14\t" + scheduler14.getName() + "\t\t\t"
-				+ scheduler14.getScheduleLength() + "\t\t\t"
-				+ scheduler14.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler14
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n15\t" + scheduler15.getName() + "\t\t\t"
-				+ scheduler15.getScheduleLength() + "\t\t\t"
-				+ scheduler15.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler15
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n16\t" + scheduler16.getName() + "\t"
-				+ scheduler16.getScheduleLength() + "\t\t\t"
-				+ scheduler16.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler16
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n17\t" + scheduler17.getName() + "\t\t"
-				+ scheduler17.getScheduleLength() + "\t\t\t"
-				+ scheduler17.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler17
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n18\t" + scheduler18.getName() + "\t\t"
-				+ scheduler18.getScheduleLength() + "\t\t\t"
-				+ scheduler18.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler18
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n19\t" + scheduler19.getName() + "\t"
-				+ scheduler19.getScheduleLength() + "\t\t\t"
-				+ scheduler19.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler19
-				.getSchedulingOrder()) {
-			System.out.print(indexComputation.getName() + " ");
-		}
-
-		System.out.print("\n20\t" + scheduler20.getName() + "\t"
-				+ scheduler20.getScheduleLength() + "\t\t\t"
-				+ scheduler20.getUsedOperators().size() + "\t\t\t");
-		for (ComputationDescriptor indexComputation : scheduler20
-				.getSchedulingOrder()) {
+				.getBestScheduler().getSchedulingOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 

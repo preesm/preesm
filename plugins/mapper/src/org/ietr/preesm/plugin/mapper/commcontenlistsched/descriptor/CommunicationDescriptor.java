@@ -10,11 +10,11 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 
 	private DAGEdge edge;
 
-	private String sourceId;
+	private String originId;
 
 	private String destinationId;
 
-	private int exist = 1; // 0 when source and destination in the same
+	private int exist = 1; // 0 when origin and destination in the same
 	// component, otherwise 1
 
 	private LinkDescriptor sendLink;
@@ -102,13 +102,13 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		receiveInvolvements = new HashMap<String, Integer>();
 	}
 
-	public CommunicationDescriptor(String name, String sourceId,
+	public CommunicationDescriptor(String name, String originId,
 			String destinationId, int weight, AlgorithmDescriptor algorithm) {
 		super(name);
 		edge = new DAGEdge();
 		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(weight));
-		this.sourceId = sourceId;
+		this.originId = originId;
 		this.destinationId = destinationId;
 		this.algorithm = algorithm;
 		algorithm.addCommunication(this);
@@ -139,12 +139,12 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	public CommunicationDescriptor(
 			String name,
 			HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer,
-			String sourceId, String destinationId, int weight) {
+			String originId, String destinationId, int weight) {
 		super(name);
 		edge = new DAGEdge();
 		// edge.setName(name);
 		edge.setWeight(new DAGEdgePropertyType(weight));
-		this.sourceId = sourceId;
+		this.originId = originId;
 		this.destinationId = destinationId;
 		CommunicationDescriptorBuffer.put(this.name, this);
 		this.type = OperationType.Communication;
@@ -175,12 +175,12 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		return edge.getWeight().intValue();
 	}
 
-	public void setSource(String sourceId) {
-		this.sourceId = sourceId;
+	public void setOrigin(String originId) {
+		this.originId = originId;
 	}
 
-	public String getSource() {
-		return sourceId;
+	public String getOrigin() {
+		return originId;
 	}
 
 	public void setDestination(String destinationId) {

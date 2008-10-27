@@ -65,7 +65,7 @@ public class CListSchedCd extends AbstractScheduler {
 					+ schedulingOrder.get(i).getStartTime() + "; finishTime"
 					+ "=" + schedulingOrder.get(i).getFinishTime());
 			for (CommunicationDescriptor indexCommunication : schedulingOrder
-					.get(i).getPrecedingCommunications()) {
+					.get(i).getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
 						+ indexCommunication.getStartTimeOnLink()
@@ -102,13 +102,12 @@ public class CListSchedCd extends AbstractScheduler {
 		if (computation.getOperator() == null) {
 			// for (OperatorDescriptor indexOperator : architecture
 			// .getAllOperators().values()) {
-			for (OperatorDescriptor indexOperator : computation
-					.getOperatorSet()) {
+			for (String indexOperatorId : computation.getOperatorSet()) {
 				int minOperatorFinishTime = scheduleComputation(computation,
-						indexOperator, false);
+						architecture.getOperator(indexOperatorId), false);
 				if (bestOperatorFinishTime > minOperatorFinishTime) {
 					bestOperatorFinishTime = minOperatorFinishTime;
-					bestOperator = indexOperator;
+					bestOperator = architecture.getOperator(indexOperatorId);
 				}
 				// System.out.println(" minOperatorFinishTime="
 				// + minOperatorFinishTime);
@@ -117,7 +116,7 @@ public class CListSchedCd extends AbstractScheduler {
 				for (OperatorDescriptor indexOperator2 : architecture
 						.getAllOperators().values()) {
 					for (CommunicationDescriptor indexCommunication : computation
-							.getPrecedingCommunications()) {
+							.getInputCommunications()) {
 						indexOperator2
 								.removeSendCommunication(indexCommunication);
 						indexOperator2
@@ -137,8 +136,10 @@ public class CListSchedCd extends AbstractScheduler {
 						indexCommunication.clearScheduled();
 					}
 				}
-				indexOperator.removeComputation(computation);
-				indexOperator.removeOperation(computation);
+				architecture.getOperator(indexOperatorId).removeComputation(
+						computation);
+				architecture.getOperator(indexOperatorId).removeOperation(
+						computation);
 				restoreTimes();
 				computation.clearScheduled();
 				computation.setOperator(null);
@@ -159,18 +160,18 @@ public class CListSchedCd extends AbstractScheduler {
 				+ " on: " + operator.getId());
 		if (computation.getComputationDurations().containsKey(
 				operator.getName())
-				&& computation.getOperatorSet().contains(operator)) {
+				&& computation.getOperatorSet().contains(operator.getId())) {
 			// schedule preceding communications
 			for (CommunicationDescriptor indexCommunication : computation
-					.getPrecedingCommunications()) {
-				if (!indexCommunication.getSource().equalsIgnoreCase(
+					.getInputCommunications()) {
+				if (!indexCommunication.getOrigin().equalsIgnoreCase(
 						topComputation.getName())) {
 					scheduleCommunication(indexCommunication, operator);
 				}
 			}
 			// calculate data ready time
 			for (CommunicationDescriptor indexCommunication : computation
-					.getPrecedingCommunications()) {
+					.getInputCommunications()) {
 				if (indexCommunication.isScheduled()) {
 					if (dataReadyTime < indexCommunication
 							.getFinishTimeOnReceiveOperator()) {
@@ -207,9 +208,15 @@ public class CListSchedCd extends AbstractScheduler {
 			if (!isTemporary) {
 				Vector<CommunicationDescriptor> communicationList = new Vector<CommunicationDescriptor>();
 				for (CommunicationDescriptor indexCommunication : computation
-						.getPrecedingCommunications()) {
+						.getInputCommunications()) {
 					if (indexCommunication.isExist()) {
 						communicationList.add(indexCommunication);
+					} else {
+						// set ALAP to source computation finish time
+						indexCommunication
+								.setALAP(algorithm.getComputation(
+										indexCommunication.getOrigin())
+										.getFinishTime());
 					}
 				}
 				// Collections.sort(communicationList);
@@ -294,7 +301,7 @@ public class CListSchedCd extends AbstractScheduler {
 	protected void scheduleCommunication(CommunicationDescriptor communication,
 			OperatorDescriptor destinationOperator) {
 		ComputationDescriptor sourceComputation = algorithm
-				.getComputation(communication.getSource());
+				.getComputation(communication.getOrigin());
 		// System.out.println(" *** schedule communication: "
 		// + communication.getName());
 		if (sourceComputation.isScheduled()) {
@@ -344,7 +351,7 @@ public class CListSchedCd extends AbstractScheduler {
 							sendCommunicationList
 									.get(indexCommunicationOnSendLink))) {
 						infSendCommunicationTime = max(algorithm
-								.getComputation(communication.getSource())
+								.getComputation(communication.getOrigin())
 								.getFinishTime()
 								+ communication.getSendOverhead(),
 								sendCommunicationList.get(
@@ -356,7 +363,7 @@ public class CListSchedCd extends AbstractScheduler {
 										.getFinishTimeOnLink());
 					} else {
 						infSendCommunicationTime = max(algorithm
-								.getComputation(communication.getSource())
+								.getComputation(communication.getOrigin())
 								.getFinishTime()
 								+ communication.getSendOverhead(),
 								sendCommunicationList.get(
@@ -375,7 +382,7 @@ public class CListSchedCd extends AbstractScheduler {
 									indexCommunicationOnSendLink + 1)
 									.getStartTimeOnLink());
 					infReceiveCommunicationTime = max(algorithm.getComputation(
-							communication.getSource()).getFinishTime()
+							communication.getOrigin()).getFinishTime()
 							+ communication.getSendOverhead(),
 							receiveCommunicationList.get(
 									indexCommunicationOnReceiveLink)
@@ -423,7 +430,7 @@ public class CListSchedCd extends AbstractScheduler {
 										.get(indexCommunicationOnSendLink)),
 						sourceOperator.getOperations().indexOf(
 								algorithm.getComputation(communication
-										.getSource())));
+										.getOrigin())));
 				if (sourceOperator.getOperation(indexOperationOnSourceOperator)
 						.getType() == OperationType.Computation) {
 					communication

@@ -162,4 +162,120 @@ public class ArchitectureDescriptor {
 		this.surfaceUsed = surfaceUsed;
 	}
 
+	public ArchitectureDescriptor clone() {
+		ArchitectureDescriptor archi = new ArchitectureDescriptor();
+
+		for (ComponentDescriptor indexComponent : this.getComponents().values()) {
+			if (indexComponent.getType() == ComponentType.Processor) {
+				ProcessorDescriptor newProcessor = new ProcessorDescriptor(
+						indexComponent.getId(), indexComponent.getName(), archi
+								.getComponents());
+				newProcessor
+						.setClockPeriod(((ProcessorDescriptor) indexComponent)
+								.getClockPeriod());
+				newProcessor
+						.setDataWidth(((ProcessorDescriptor) indexComponent)
+								.getDataWidth());
+				newProcessor.setSurface(((ProcessorDescriptor) indexComponent)
+						.getSurface());
+			} else if (indexComponent.getType() == ComponentType.Ip) {
+				IpDescriptor newIp = new IpDescriptor(indexComponent.getId(),
+						indexComponent.getName(), archi.getComponents());
+				newIp.setClockPeriod(((IpDescriptor) indexComponent)
+						.getClockPeriod());
+				newIp.setUserInterfaceType(((IpDescriptor) indexComponent)
+						.getUserInterfaceType());
+				newIp.setDataWidth(((IpDescriptor) indexComponent)
+						.getDataWidth());
+				newIp.setNbInputData(((IpDescriptor) indexComponent)
+						.getNbInputData());
+				newIp.setNbOutputData(((IpDescriptor) indexComponent)
+						.getNbOutputData());
+				newIp.setLatency(((IpDescriptor) indexComponent).getLatency());
+				newIp.setCadence(((IpDescriptor) indexComponent).getCadence());
+				newIp.setSurface(((IpDescriptor) indexComponent).getSurface());
+
+			} else if (indexComponent.getType() == ComponentType.Bus) {
+				BusDescriptor newBus = new BusDescriptor(
+						indexComponent.getId(), indexComponent.getName(), archi
+								.getComponents());
+				newBus.setClockPeriod(((BusDescriptor) indexComponent)
+						.getClockPeriod());
+				newBus.setDataWidth(((BusDescriptor) indexComponent)
+						.getDataWidth());
+				newBus
+						.setAverageClockCyclesPerTransfer(((BusDescriptor) indexComponent)
+								.getAverageClockCyclesPerTransfer());
+				newBus.setPortNumber(((BusDescriptor) indexComponent)
+						.getPortNumber());
+				newBus
+						.setSurface(((BusDescriptor) indexComponent)
+								.getSurface());
+			} else if (indexComponent.getType() == ComponentType.Fifo) {
+				FifoDescriptor newFifo = new FifoDescriptor(indexComponent
+						.getId(), indexComponent.getName(), archi
+						.getComponents());
+				newFifo.setClockPeriod(((FifoDescriptor) indexComponent)
+						.getClockPeriod());
+				newFifo.setDataWidth(((FifoDescriptor) indexComponent)
+						.getDataWidth());
+				newFifo
+						.setAverageClockCyclesPerTransfer(((FifoDescriptor) indexComponent)
+								.getAverageClockCyclesPerTransfer());
+				newFifo.setSurface(((FifoDescriptor) indexComponent)
+						.getSurface());
+			} else if (indexComponent.getType() == ComponentType.Switch) {
+				SwitchDescriptor newSwitch = new SwitchDescriptor(
+						indexComponent.getId(), indexComponent.getName(), archi
+								.getComponents());
+				newSwitch.setClockPeriod(((SwitchDescriptor) indexComponent)
+						.getClockPeriod());
+				newSwitch.setDataWidth(((SwitchDescriptor) indexComponent)
+						.getDataWidth());
+				newSwitch
+						.setAverageClockCyclesPerTransfer(((SwitchDescriptor) indexComponent)
+								.getAverageClockCyclesPerTransfer());
+				newSwitch.setPortNumber(((SwitchDescriptor) indexComponent)
+						.getPortNumber());
+				newSwitch.setSurface(((SwitchDescriptor) indexComponent)
+						.getSurface());
+			}
+		}
+
+		for (ComponentDescriptor indexComponent : this.getComponents().values()) {
+			if (indexComponent.getType() == ComponentType.Processor
+					|| indexComponent.getType() == ComponentType.Ip
+					|| indexComponent.getType() == ComponentType.Switch) {
+				for (LinkDescriptor indexLink : ((TGVertexDescriptor) indexComponent)
+						.getInputLinks()) {
+					((TGVertexDescriptor) archi.getComponent(indexComponent
+							.getId())).addInputLink(((LinkDescriptor) archi
+							.getComponent(indexLink.getId())));
+				}
+				for (LinkDescriptor indexLink : ((TGVertexDescriptor) indexComponent)
+						.getOutputLinks()) {
+					((TGVertexDescriptor) archi.getComponent(indexComponent
+							.getId())).addOutputLink(((LinkDescriptor) archi
+							.getComponent(indexLink.getId())));
+				}
+			} else if (indexComponent.getType() == ComponentType.Bus) {
+				for (TGVertexDescriptor indexVertex : ((BusDescriptor) indexComponent)
+						.getTGVertices().values()) {
+					((BusDescriptor) archi.getComponent(indexComponent.getId()))
+							.addTGVertex(((TGVertexDescriptor) archi
+									.getComponent(indexVertex.getId())));
+				}
+			} else if (indexComponent.getType() == ComponentType.Fifo) {
+				((FifoDescriptor) archi.getComponent(indexComponent.getId()))
+						.setOrigin(((TGVertexDescriptor) archi
+								.getComponent(((FifoDescriptor) indexComponent)
+										.getOrigin().getId())));
+				((FifoDescriptor) archi.getComponent(indexComponent.getId()))
+						.setDestination(((TGVertexDescriptor) archi
+								.getComponent(((FifoDescriptor) indexComponent)
+										.getDestination().getId())));
+			}
+		}
+		return archi;
+	}
 }

@@ -27,20 +27,20 @@ public class ComputationDescriptor extends OperationDescriptor implements
 
 	private int nbTotalRepeat = 1;
 
-	private Vector<CommunicationDescriptor> precedingCommunications;
+	private Vector<CommunicationDescriptor> inputCommunications;
 
-	private Vector<CommunicationDescriptor> followingCommunications;
+	private Vector<CommunicationDescriptor> outputCommunications;
 
 	private HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer = null;
 
 	private OperatorDescriptor operator = null;
 
-	private Set<OperatorDescriptor> operatorSet = null;
+	private Set<String> operatorSet = null;
 
 	private HashMap<String, Integer> computationDurations;
 
-	// The computation is ready if and only if all its preceding or following
-	// computations are ready.
+	// The computation is ready if and only if all its predecessors or
+	// successors are ready.
 	private boolean ready = false;
 
 	private int nbAverageRepeat;
@@ -66,9 +66,9 @@ public class ComputationDescriptor extends OperationDescriptor implements
 	// next computation in the same processor
 	private ComputationDescriptor nextComputation = null;
 
-	private Vector<CommunicationDescriptor> unscheduledPrecedingCommunications = null;
+	private Vector<CommunicationDescriptor> unscheduledInputCommunications = null;
 
-	private Vector<CommunicationDescriptor> unscheduledFollowingCommunications = null;
+	private Vector<CommunicationDescriptor> unscheduledOutputCommunications = null;
 
 	private int topLevel = 0;
 
@@ -103,14 +103,14 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		vertex.setName(name);
 		vertex.setNbRepeat(new DAGVertexPropertyType(1));
 		vertex.setTime(new DAGVertexPropertyType(0));
-		operatorSet = new HashSet<OperatorDescriptor>();
-		precedingCommunications = new Vector<CommunicationDescriptor>();
-		followingCommunications = new Vector<CommunicationDescriptor>();
+		operatorSet = new HashSet<String>();
+		inputCommunications = new Vector<CommunicationDescriptor>();
+		outputCommunications = new Vector<CommunicationDescriptor>();
 		computationDurations = new HashMap<String, Integer>();
 		ComputationDescriptorBuffer.put(this.name, this);
 		this.ComputationDescriptorBuffer = ComputationDescriptorBuffer;
-		unscheduledPrecedingCommunications = new Vector<CommunicationDescriptor>();
-		unscheduledFollowingCommunications = new Vector<CommunicationDescriptor>();
+		unscheduledInputCommunications = new Vector<CommunicationDescriptor>();
+		unscheduledOutputCommunications = new Vector<CommunicationDescriptor>();
 		this.type = OperationType.Computation;
 	}
 
@@ -123,12 +123,12 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		this.algorithm = algorithm;
 		ComputationDescriptorBuffer = algorithm.getComputations();
 		ComputationDescriptorBuffer.put(this.name, this);
-		operatorSet = new HashSet<OperatorDescriptor>();
-		precedingCommunications = new Vector<CommunicationDescriptor>();
-		followingCommunications = new Vector<CommunicationDescriptor>();
+		operatorSet = new HashSet<String>();
+		inputCommunications = new Vector<CommunicationDescriptor>();
+		outputCommunications = new Vector<CommunicationDescriptor>();
 		computationDurations = new HashMap<String, Integer>();
-		unscheduledPrecedingCommunications = new Vector<CommunicationDescriptor>();
-		unscheduledFollowingCommunications = new Vector<CommunicationDescriptor>();
+		unscheduledInputCommunications = new Vector<CommunicationDescriptor>();
+		unscheduledOutputCommunications = new Vector<CommunicationDescriptor>();
 		this.type = OperationType.Computation;
 	}
 
@@ -285,33 +285,33 @@ public class ComputationDescriptor extends OperationDescriptor implements
 	/**
 	 * 
 	 */
-	public void addPrecedingCommunication(CommunicationDescriptor communication) {
-		precedingCommunications.add(communication);
-		unscheduledPrecedingCommunications.add(communication);
+	public void addInputCommunication(CommunicationDescriptor communication) {
+		inputCommunications.add(communication);
+		unscheduledInputCommunications.add(communication);
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public Vector<CommunicationDescriptor> getPrecedingCommunications() {
-		return precedingCommunications;
+	public Vector<CommunicationDescriptor> getInputCommunications() {
+		return inputCommunications;
 	}
 
 	/**
 	 * 
 	 */
-	public void addFollowingCommunication(CommunicationDescriptor communication) {
-		followingCommunications.add(communication);
-		unscheduledFollowingCommunications.add(communication);
+	public void addOutputCommunication(CommunicationDescriptor communication) {
+		outputCommunications.add(communication);
+		unscheduledOutputCommunications.add(communication);
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public Vector<CommunicationDescriptor> getFollowingCommunications() {
-		return followingCommunications;
+	public Vector<CommunicationDescriptor> getOutputCommunications() {
+		return outputCommunications;
 	}
 
 	/**
@@ -323,10 +323,10 @@ public class ComputationDescriptor extends OperationDescriptor implements
 			this.operator = null;
 		} else {
 			this.operator = operator;
-			for (CommunicationDescriptor indexCommunication : precedingCommunications) {
+			for (CommunicationDescriptor indexCommunication : inputCommunications) {
 				if (ComputationDescriptorBuffer != null) {
 					if (ComputationDescriptorBuffer.get(
-							indexCommunication.getSource()).getOperator() == operator) {
+							indexCommunication.getOrigin()).getOperator() == operator) {
 						indexCommunication.clearExist();
 					} else {
 						if (indexCommunication.getWeight() == 0) {
@@ -337,7 +337,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 					}
 				} else {
 					if (algorithm
-							.getComputation(indexCommunication.getSource())
+							.getComputation(indexCommunication.getOrigin())
 							.getOperator() == operator) {
 						indexCommunication.clearExist();
 					} else {
@@ -349,7 +349,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 					}
 				}
 			}
-			for (CommunicationDescriptor indexCommunication : followingCommunications) {
+			for (CommunicationDescriptor indexCommunication : outputCommunications) {
 				if (ComputationDescriptorBuffer != null) {
 					if (ComputationDescriptorBuffer.get(
 							indexCommunication.getDestination()).getOperator() == operator) {
@@ -369,16 +369,20 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		}
 	}
 
-	public void setOperatorSet(Set<OperatorDescriptor> operators) {
+	public void setOperatorSet(Set<String> operators) {
 		operatorSet = operators;
 	}
 
-	public Set<OperatorDescriptor> getOperatorSet() {
+	public Set<String> getOperatorSet() {
 		return operatorSet;
 	}
 
 	public void addOperator(OperatorDescriptor operator) {
-		operatorSet.add(operator);
+		operatorSet.add(operator.getId());
+	}
+
+	public void addOperator(String operatorId) {
+		operatorSet.add(operatorId);
 	}
 
 	/**
@@ -484,7 +488,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		boolean result = false;
 
 		for (CommunicationDescriptor edgeIndex : computation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (edgeIndex.getDestination().equals(this.getName())) {
 				result = true;
 				break;
@@ -500,7 +504,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		computations.add(this);
 		for (int i = 0; i < computations.size(); i++) {
 			for (CommunicationDescriptor edgeIndex : computations.get(i)
-					.getFollowingCommunications()) {
+					.getOutputCommunications()) {
 				if (edgeIndex.getDestination().equals(computation.getName())) {
 					result = true;
 					break;
@@ -523,13 +527,13 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		computations.add(this);
 		for (int i = 0; i < computations.size(); i++) {
 			for (CommunicationDescriptor edgeIndex : computations.get(i)
-					.getPrecedingCommunications()) {
-				if (edgeIndex.getSource().equals(computation.getName())) {
+					.getInputCommunications()) {
+				if (edgeIndex.getOrigin().equals(computation.getName())) {
 					result = true;
 					break;
 				} else {
 					computations.add(ComputationDescriptorBuffer.get(edgeIndex
-							.getSource()));
+							.getOrigin()));
 				}
 			}
 			if (result) {
@@ -539,32 +543,30 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		return result;
 	}
 
-	public CommunicationDescriptor getUnscheduledPrecedingCommunication(
-			int index) {
-		return unscheduledPrecedingCommunications.get(index);
+	public CommunicationDescriptor getUnscheduledInputCommunication(int index) {
+		return unscheduledInputCommunications.get(index);
 	}
 
-	public Vector<CommunicationDescriptor> getUnscheduledPrecedingCommunications() {
-		return unscheduledPrecedingCommunications;
+	public Vector<CommunicationDescriptor> getUnscheduledInputCommunications() {
+		return unscheduledInputCommunications;
 	}
 
-	public void addUnscheduledPrecedingCommunication(
+	public void addUnscheduledInputCommunication(
 			CommunicationDescriptor unscheduledCommunication) {
-		unscheduledPrecedingCommunications.add(unscheduledCommunication);
+		unscheduledInputCommunications.add(unscheduledCommunication);
 	}
 
-	public CommunicationDescriptor getUnscheduledFollowingCommunication(
-			int index) {
-		return unscheduledFollowingCommunications.get(index);
+	public CommunicationDescriptor getUnscheduledOutputCommunication(int index) {
+		return unscheduledOutputCommunications.get(index);
 	}
 
-	public Vector<CommunicationDescriptor> getUnscheduledFollowingCommunications() {
-		return unscheduledFollowingCommunications;
+	public Vector<CommunicationDescriptor> getUnscheduledOutputCommunications() {
+		return unscheduledOutputCommunications;
 	}
 
-	public void addUnscheduledFollowingCommunication(
+	public void addUnscheduledOutputCommunication(
 			CommunicationDescriptor unscheduledCommunication) {
-		unscheduledFollowingCommunications.add(unscheduledCommunication);
+		unscheduledOutputCommunications.add(unscheduledCommunication);
 	}
 
 	public int compareTo(ComputationDescriptor computation) {

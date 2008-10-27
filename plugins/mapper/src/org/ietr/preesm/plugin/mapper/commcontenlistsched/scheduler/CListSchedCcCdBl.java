@@ -65,7 +65,7 @@ public class CListSchedCcCdBl extends CListSchedCcCd {
 					+ schedulingOrder.get(i).getStartTime() + "; finishTime"
 					+ "=" + schedulingOrder.get(i).getFinishTime());
 			for (CommunicationDescriptor indexCommunication : schedulingOrder
-					.get(i).getPrecedingCommunications()) {
+					.get(i).getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
 						+ indexCommunication.getStartTimeOnLink()

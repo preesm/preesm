@@ -78,15 +78,15 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 	// Communication
 	public void addCommunication(CommunicationDescriptor communication) {
 		if (!CommunicationDescriptorBuffer.containsValue(communication)) {
-			CommunicationDescriptorBuffer.put(
-					communication.getName(), communication);
+			CommunicationDescriptorBuffer.put(communication.getName(),
+					communication);
 			OperationDescriptorBuffer.put(communication.getName(),
 					communication);
 			if (communication.getName().equalsIgnoreCase("topCommunication")
 					&& communication.getName().equalsIgnoreCase(
 							"bottomCommunication")) {
 				this.addEdge(ComputationDescriptorBuffer.get(
-						communication.getSource()).getVertex(),
+						communication.getOrigin()).getVertex(),
 						ComputationDescriptorBuffer.get(
 								communication.getDestination()).getVertex());
 			}
@@ -97,11 +97,12 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		return CommunicationDescriptorBuffer.get(name);
 	}
 
-//	public CommunicationDescriptor getCommunication(ComputationDescriptor src,
-//			ComputationDescriptor dst) {
-//		return CommunicationDescriptorBuffer.get(this.getEdge(src.getVertex(),
-//				dst.getVertex()).getName());
-//	}
+	// public CommunicationDescriptor getCommunication(ComputationDescriptor
+	// src,
+	// ComputationDescriptor dst) {
+	// return CommunicationDescriptorBuffer.get(this.getEdge(src.getVertex(),
+	// dst.getVertex()).getName());
+	// }
 
 	public HashMap<String, CommunicationDescriptor> getCommunications() {
 		return CommunicationDescriptorBuffer;
@@ -131,7 +132,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
 					.getDestination()));
 		}
@@ -140,22 +141,22 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getPrecedingCommunications()) {
-				if (!this.getComputation(indexCommunication.getSource())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
 					if (time < this.getComputation(
-							indexCommunication.getSource()).getTopLevel()
+							indexCommunication.getOrigin()).getTopLevel()
 							+ this.getComputation(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration()
 							+ indexCommunication.getCommunicationDuration()) {
 						time = this.getComputation(
-								indexCommunication.getSource()).getTopLevel()
+								indexCommunication.getOrigin()).getTopLevel()
 								+ this.getComputation(
-										indexCommunication.getSource())
+										indexCommunication.getOrigin())
 										.getComputationDuration()
 								+ indexCommunication.getCommunicationDuration();
 					}
@@ -168,7 +169,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getName() + " --> t-level="
 				// + computationList.get(i).getTopLevel());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (this
 							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
 						computationList.add(this
@@ -180,14 +181,14 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
-			if (time < this.getComputation(indexCommunication.getSource())
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
 					.getTopLevel()
-					+ this.getComputation(indexCommunication.getSource())
+					+ this.getComputation(indexCommunication.getOrigin())
 							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getSource())
+				time = this.getComputation(indexCommunication.getOrigin())
 						.getTopLevel()
-						+ this.getComputation(indexCommunication.getSource())
+						+ this.getComputation(indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -213,16 +214,16 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getFollowingCommunications()) {
+					.get(i).getOutputCommunications()) {
 				if (!this.getComputation(indexCommunication.getDestination())
 						.isReady()) {
 					skipComputation = true;
@@ -247,18 +248,18 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getId() + " --> b-level="
 				// + computationList.get(i).getBottomLevel());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
-					if (this.getComputation(indexCommunication.getSource()) != topComputation) {
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
 						computationList
 								.add(this.getComputation(indexCommunication
-										.getSource()));
+										.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < this.getComputation(indexCommunication.getDestination())
 					.getBottomLevel()) {
 				time = this.getComputation(indexCommunication.getDestination())
@@ -323,7 +324,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
 					.getDestination()));
 		}
@@ -332,23 +333,23 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getPrecedingCommunications()) {
-				if (!this.getComputation(indexCommunication.getSource())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
 					if (time < this.getComputation(
-							indexCommunication.getSource())
+							indexCommunication.getOrigin())
 							.getTopLevelComputation()
 							+ this.getComputation(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration()) {
 						time = this.getComputation(
-								indexCommunication.getSource())
+								indexCommunication.getOrigin())
 								.getTopLevelComputation()
 								+ this.getComputation(
-										indexCommunication.getSource())
+										indexCommunication.getOrigin())
 										.getComputationDuration();
 					}
 				}
@@ -360,7 +361,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getName() + " --> t-level-c="
 				// + computationList.get(i).getTopLevelComputation());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (this
 							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
 						computationList.add(this
@@ -372,14 +373,14 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
-			if (time < this.getComputation(indexCommunication.getSource())
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
 					.getTopLevel()
-					+ this.getComputation(indexCommunication.getSource())
+					+ this.getComputation(indexCommunication.getOrigin())
 							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getSource())
+				time = this.getComputation(indexCommunication.getOrigin())
 						.getTopLevel()
-						+ this.getComputation(indexCommunication.getSource())
+						+ this.getComputation(indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -401,16 +402,16 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getFollowingCommunications()) {
+					.get(i).getOutputCommunications()) {
 				if (!this.getComputation(indexCommunication.getDestination())
 						.isReady()) {
 					skipComputation = true;
@@ -433,18 +434,18 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getId() + " --> b-level-c="
 				// + computationList.get(i).getBottomLevelComputation());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
-					if (this.getComputation(indexCommunication.getSource()) != topComputation) {
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
 						computationList
 								.add(this.getComputation(indexCommunication
-										.getSource()));
+										.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < this.getComputation(indexCommunication.getDestination())
 					.getBottomLevelComputation()) {
 				time = this.getComputation(indexCommunication.getDestination())
@@ -501,7 +502,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
 					.getDestination()));
 		}
@@ -509,28 +510,28 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getPrecedingCommunications()) {
-				if (!this.getComputation(indexCommunication.getSource())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
 					if (time < this.getComputation(
-							indexCommunication.getSource()).getTopLevelIn()
+							indexCommunication.getOrigin()).getTopLevelIn()
 							+ this.getComputation(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration()) {
 						time = this.getComputation(
-								indexCommunication.getSource()).getTopLevelIn()
+								indexCommunication.getOrigin()).getTopLevelIn()
 								+ this.getComputation(
-										indexCommunication.getSource())
+										indexCommunication.getOrigin())
 										.getComputationDuration();
 					}
 				}
 			}
 			if (!skipComputation) {
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
+						.get(i).getInputCommunications()) {
 					time += indexCommunication.getCommunicationDuration();
 				}
 				computationList.get(i).setTopLevelIn(time);
@@ -539,7 +540,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getName() + " --> t-level-in="
 				// + computationList.get(i).getTopLevelIn());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (this
 							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
 						computationList.add(this
@@ -551,14 +552,14 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
-			if (time < this.getComputation(indexCommunication.getSource())
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
 					.getTopLevelIn()
-					+ this.getComputation(indexCommunication.getSource())
+					+ this.getComputation(indexCommunication.getOrigin())
 							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getSource())
+				time = this.getComputation(indexCommunication.getOrigin())
 						.getTopLevelIn()
-						+ this.getComputation(indexCommunication.getSource())
+						+ this.getComputation(indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -577,16 +578,16 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getFollowingCommunications()) {
+					.get(i).getOutputCommunications()) {
 				if (!this.getComputation(indexCommunication.getDestination())
 						.isReady()) {
 					skipComputation = true;
@@ -597,7 +598,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 							.getBottomLevelIn();
 					for (CommunicationDescriptor inputCommunication : this
 							.getComputation(indexCommunication.getDestination())
-							.getPrecedingCommunications()) {
+							.getInputCommunications()) {
 						sumIn += inputCommunication.getCommunicationDuration();
 					}
 					if (time < sumIn) {
@@ -613,18 +614,18 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getId() + " --> b-level-in="
 				// + computationList.get(i).getBottomLevelIn());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
-					if (this.getComputation(indexCommunication.getSource()) != topComputation) {
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
 						computationList
 								.add(this.getComputation(indexCommunication
-										.getSource()));
+										.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < this.getComputation(indexCommunication.getDestination())
 					.getBottomLevelIn()) {
 				time = this.getComputation(indexCommunication.getDestination())
@@ -681,7 +682,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
 					.getDestination()));
 		}
@@ -689,20 +690,20 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getPrecedingCommunications()) {
-				if (!this.getComputation(indexCommunication.getSource())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
 					int sumOut = this.getComputation(
-							indexCommunication.getSource()).getTopLevelOut()
+							indexCommunication.getOrigin()).getTopLevelOut()
 							+ this.getComputation(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration();
 					for (CommunicationDescriptor outputCommunication : this
-							.getComputation(indexCommunication.getSource())
-							.getFollowingCommunications()) {
+							.getComputation(indexCommunication.getOrigin())
+							.getOutputCommunications()) {
 						sumOut += outputCommunication
 								.getCommunicationDuration();
 					}
@@ -718,7 +719,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getName() + " --> t-level-out="
 				// + computationList.get(i).getTopLevelOut());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (this
 							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
 						computationList.add(this
@@ -730,14 +731,14 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
-			if (time < this.getComputation(indexCommunication.getSource())
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
 					.getTopLevelOut()
-					+ this.getComputation(indexCommunication.getSource())
+					+ this.getComputation(indexCommunication.getOrigin())
 							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getSource())
+				time = this.getComputation(indexCommunication.getOrigin())
 						.getTopLevelOut()
-						+ this.getComputation(indexCommunication.getSource())
+						+ this.getComputation(indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -756,16 +757,16 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getFollowingCommunications()) {
+					.get(i).getOutputCommunications()) {
 				if (!this.getComputation(indexCommunication.getDestination())
 						.isReady()) {
 					skipComputation = true;
@@ -782,7 +783,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			}
 			if (!skipComputation) {
 				for (CommunicationDescriptor outputCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					time += outputCommunication.getCommunicationDuration();
 				}
 				computationList.get(i).setBottomLevelOut(
@@ -792,18 +793,18 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getId() + " --> b-level-out="
 				// + computationList.get(i).getBottomLevelOut());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
-					if (this.getComputation(indexCommunication.getSource()) != topComputation) {
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
 						computationList
 								.add(this.getComputation(indexCommunication
-										.getSource()));
+										.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < this.getComputation(indexCommunication.getDestination())
 					.getBottomLevelOut()) {
 				time = this.getComputation(indexCommunication.getDestination())
@@ -861,7 +862,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
 					.getDestination()));
 		}
@@ -869,20 +870,20 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getPrecedingCommunications()) {
-				if (!this.getComputation(indexCommunication.getSource())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
 					int sumOut = this.getComputation(
-							indexCommunication.getSource()).getTopLevelInOut()
+							indexCommunication.getOrigin()).getTopLevelInOut()
 							+ this.getComputation(
-									indexCommunication.getSource())
+									indexCommunication.getOrigin())
 									.getComputationDuration();
 					for (CommunicationDescriptor outputCommunication : this
-							.getComputation(indexCommunication.getSource())
-							.getFollowingCommunications()) {
+							.getComputation(indexCommunication.getOrigin())
+							.getOutputCommunications()) {
 						sumOut += outputCommunication
 								.getCommunicationDuration();
 					}
@@ -895,7 +896,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			}
 			if (!skipComputation) {
 				for (CommunicationDescriptor inputCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
+						.get(i).getInputCommunications()) {
 					time += inputCommunication.getCommunicationDuration();
 				}
 				computationList.get(i).setTopLevelInOut(time);
@@ -904,7 +905,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getName() + " --> t-level-inout="
 				// + computationList.get(i).getTopLevelInOut());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					if (this
 							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
 						computationList.add(this
@@ -916,14 +917,14 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
-			if (time < this.getComputation(indexCommunication.getSource())
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
 					.getTopLevelInOut()
-					+ this.getComputation(indexCommunication.getSource())
+					+ this.getComputation(indexCommunication.getOrigin())
 							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getSource())
+				time = this.getComputation(indexCommunication.getOrigin())
 						.getTopLevelInOut()
-						+ this.getComputation(indexCommunication.getSource())
+						+ this.getComputation(indexCommunication.getOrigin())
 								.getComputationDuration();
 			}
 		}
@@ -942,16 +943,16 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		// times in it because they should be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
 		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getPrecedingCommunications()) {
+				.getInputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getSource()));
+					.getOrigin()));
 		}
 
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getFollowingCommunications()) {
+					.get(i).getOutputCommunications()) {
 				if (!this.getComputation(indexCommunication.getDestination())
 						.isReady()) {
 					skipComputation = true;
@@ -962,7 +963,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 							.getBottomLevelInOut();
 					for (CommunicationDescriptor inputCommunication : this
 							.getComputation(indexCommunication.getDestination())
-							.getPrecedingCommunications()) {
+							.getInputCommunications()) {
 						sumIn += inputCommunication.getCommunicationDuration();
 					}
 					sumIn -= indexCommunication.getCommunicationDuration();
@@ -973,7 +974,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 			}
 			if (!skipComputation) {
 				for (CommunicationDescriptor outputCommunication : computationList
-						.get(i).getFollowingCommunications()) {
+						.get(i).getOutputCommunications()) {
 					time += outputCommunication.getCommunicationDuration();
 				}
 				computationList.get(i).setBottomLevelInOut(
@@ -983,18 +984,18 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 				// + computationList.get(i).getId() + " --> b-level-inout="
 				// + computationList.get(i).getBottomLevelInOut());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getPrecedingCommunications()) {
-					if (this.getComputation(indexCommunication.getSource()) != topComputation) {
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
 						computationList
 								.add(this.getComputation(indexCommunication
-										.getSource()));
+										.getOrigin()));
 					}
 				}
 			}
 		}
 		int time = 0;
 		for (CommunicationDescriptor indexCommunication : topComputation
-				.getFollowingCommunications()) {
+				.getOutputCommunications()) {
 			if (time < this.getComputation(indexCommunication.getDestination())
 					.getBottomLevelInOut()) {
 				time = this.getComputation(indexCommunication.getDestination())
@@ -1040,4 +1041,53 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 
 	}
 
+	public AlgorithmDescriptor clone() {
+		AlgorithmDescriptor algo = new AlgorithmDescriptor(new DAGEdgeFactory());
+		for (ComputationDescriptor indexComputation : this.getComputations()
+				.values()) {
+			if (!indexComputation.getName().equalsIgnoreCase(
+					algo.getTopComputation().getName())
+					&& !indexComputation.getName().equalsIgnoreCase(
+							algo.getBottomComputation().getName())) {
+				ComputationDescriptor newComputation = new ComputationDescriptor(
+						indexComputation.getName(), algo.getComputations());
+				newComputation.setTime(indexComputation.getTime());
+				newComputation.setNbTotalRepeat(indexComputation
+						.getNbTotalRepeat());
+				newComputation.setAlgorithm(algo);
+				algo.addComputation(newComputation);
+
+				for (String indexOperatorName : indexComputation
+						.getComputationDurations().keySet()) {
+					newComputation.addComputationDuration(indexOperatorName,
+							indexComputation
+									.getComputationDuration(indexOperatorName));
+				}
+				for (String indexOperatorId : indexComputation.getOperatorSet()) {
+					newComputation.addOperator(indexOperatorId);
+				}
+			}
+		}
+		for (CommunicationDescriptor indexCommunication : this
+				.getCommunications().values()) {
+			CommunicationDescriptor newCommunication = new CommunicationDescriptor(
+					indexCommunication.getName(), algo.getCommunications());
+			newCommunication.setOrigin(indexCommunication.getOrigin());
+			algo.getComputation(newCommunication.getOrigin())
+					.addOutputCommunication(newCommunication);
+			newCommunication
+					.setDestination(indexCommunication.getDestination());
+			algo.getComputation(newCommunication.getDestination())
+					.addInputCommunication(newCommunication);
+			newCommunication.setWeight(indexCommunication.getWeight());
+			newCommunication.setAlgorithm(algo);
+			algo.addCommunication(newCommunication);
+			for (String indexName : indexCommunication
+					.getCommunicationDurations().keySet()) {
+				newCommunication.addCommunicationDuration(indexName,
+						indexCommunication.getCommunicationDuration(indexName));
+			}
+		}
+		return algo;
+	}
 }

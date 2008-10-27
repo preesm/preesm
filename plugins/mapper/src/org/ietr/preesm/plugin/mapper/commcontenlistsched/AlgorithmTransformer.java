@@ -72,14 +72,14 @@ public class AlgorithmTransformer {
 							+ sdfedge.getTarget().getName() + ":"
 							+ sdfedge.getTargetInterface().getName(),
 					CommunicationDescriptorBuffer);
-			dagedge.setSource(sdfedge.getSource().getName());
+			dagedge.setOrigin(sdfedge.getSource().getName());
 			ComputationDescriptorBuffer.get(sdfedge.getSource().getName())
-					.addFollowingCommunication(
+					.addOutputCommunication(
 							CommunicationDescriptorBuffer
 									.get(dagedge.getName()));
 			dagedge.setDestination(sdfedge.getTarget().getName());
 			ComputationDescriptorBuffer.get(sdfedge.getTarget().getName())
-					.addPrecedingCommunication(
+					.addInputCommunication(
 							CommunicationDescriptorBuffer
 									.get(dagedge.getName()));
 			dagedge.setAlgorithm(algorithm);
@@ -141,14 +141,14 @@ public class AlgorithmTransformer {
 					currentEdge.getSource().getName() + "->"
 							+ currentEdge.getTarget().getName(),
 					CommunicationDescriptorBuffer);
-			dagedge.setSource(currentEdge.getSource().getName());
+			dagedge.setOrigin(currentEdge.getSource().getName());
 			ComputationDescriptorBuffer.get(currentEdge.getSource().getName())
-					.addFollowingCommunication(
+					.addOutputCommunication(
 							CommunicationDescriptorBuffer
 									.get(dagedge.getName()));
 			dagedge.setDestination(currentEdge.getTarget().getName());
 			ComputationDescriptorBuffer.get(currentEdge.getTarget().getName())
-					.addPrecedingCommunication(
+					.addInputCommunication(
 							CommunicationDescriptorBuffer
 									.get(dagedge.getName()));
 			dagedge.setAlgorithm(algorithm);
