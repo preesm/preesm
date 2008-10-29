@@ -43,23 +43,23 @@
    <spirit:interconnections>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="EDMA3_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="C64_4"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="EDMA3_1"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="C64_4"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="EDMA3_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="C64_3"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="EDMA3_1"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="C64_3"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="EDMA3_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="C64_2"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="EDMA3_1"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="C64_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="EDMA3_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="C64_1"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="EDMA3_1"/>
+         <spirit:activeInterface spirit:busRef="EDMA3if" spirit:componentRef="C64_1"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>

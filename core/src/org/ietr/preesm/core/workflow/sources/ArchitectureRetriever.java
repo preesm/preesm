@@ -40,8 +40,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.workflow.sources;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.parser.ArchitectureParser;
+import org.ietr.preesm.core.scenario.ScenarioParser;
 
 /**
  * @author mpelcat
@@ -55,9 +60,19 @@ public class ArchitectureRetriever {
 
 	IArchitecture architecture = null;
 	
-	public ArchitectureRetriever(ArchitectureConfiguration architectureConfiguration) {
+	public ArchitectureRetriever(String architecturePath) {
 		super();
-		// TODO: load the architecture into the "architecture" variable
+		
+		String filename = architecturePath;
+		ArchitectureParser parser = new ArchitectureParser();
+		
+		Path relativePath = new Path(filename);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+		
+		parser.parseXmlFile(file);
+		architecture = parser.parseDocument();
+
+		architecture = Examples.get2C64Archi();
 	}
 
 	public IArchitecture getArchitecture() {

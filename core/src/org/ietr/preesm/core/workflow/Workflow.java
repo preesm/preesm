@@ -204,11 +204,13 @@ public class Workflow {
 				numberOfTasksDone++;
 				monitor.worked(numberOfTasksDone);
 
-				// ArchitectureRetriever retriever = new
-				// ArchitectureRetriever(architectureConfiguration);
-				nodeResult.setArchitecture(ArchitectureRetriever
-						.ExampleArchitecture());
-				architecture = nodeResult.getArchitecture();
+				if (scenario != null) {
+					String architecturePath = scenario.getArchitectureURL();
+					ArchitectureRetriever retriever = new ArchitectureRetriever(
+							architecturePath);
+					nodeResult.setArchitecture(retriever.getArchitecture());
+					architecture = nodeResult.getArchitecture();
+				}
 
 			} else if (node.isScenarioNode()) {
 				monitor.subTask("loading scenario");

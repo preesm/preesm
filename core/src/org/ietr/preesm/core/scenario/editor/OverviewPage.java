@@ -105,7 +105,7 @@ public class OverviewPage extends FormPage {
 				Messages.getString("Overview.architectureFileEdit"),
 				scenario.getArchitectureURL(),
 				Messages.getString("Overview.architectureBrowseTitle"),
-				"xml");
+				"ipxactds");
 		
 	}
 

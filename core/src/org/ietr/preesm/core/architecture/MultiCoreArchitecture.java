@@ -107,6 +107,20 @@ public class MultiCoreArchitecture implements IArchitecture {
 	}
 
 	/**
+	 * Adds a medium to the architecture
+	 */
+	public Medium addMedium(Medium medium) {
+
+		architectureComponents.add(medium);
+
+		if (getMedia().isEmpty()) {
+			mainMedium = medium;
+		}
+
+		return medium;
+	}
+
+	/**
 	 * Adds a medium to the architecture only if this medium can be connected to
 	 * the operator and the switch
 	 * 
@@ -141,6 +155,15 @@ public class MultiCoreArchitecture implements IArchitecture {
 		if (isMain || architectureComponents.isEmpty()) {
 			mainCore = op;
 		}
+
+		return op;
+	}
+
+	/**
+	 * Adds an operator to the architecture
+	 */
+	public Operator addOperator(Operator op) {
+		addOperator(op, false);
 
 		return op;
 	}
