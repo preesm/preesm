@@ -4,10 +4,10 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="maxStep" value="400"/>
          <variable name="margIn" value="10"/>
-         <variable name="simulatorType" value="AccuratelyTimed"/>
          <variable name="maxCount" value="400"/>
+         <variable name="maxStep" value="400"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">

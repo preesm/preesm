@@ -4,10 +4,10 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="maxStep" value="400"/>
          <variable name="margIn" value="10"/>
-         <variable name="simulatorType" value="SendReceive"/>
          <variable name="maxCount" value="400"/>
+         <variable name="maxStep" value="400"/>
+         <variable name="simulatorType" value="SendReceive"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
@@ -17,29 +17,29 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.pfast" taskId="PFAST scheduler">
       <data key="variables">
-         <variable name="procNumber" value="3"/>
-         <variable name="maxStep" value="16"/>
          <variable name="margIn" value="8"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
-         <variable name="nodesMin" value="5"/>
          <variable name="maxCount" value="20"/>
+         <variable name="maxStep" value="16"/>
+         <variable name="nodesMin" value="5"/>
+         <variable name="procNumber" value="3"/>
+         <variable name="simulatorType" value="LooselyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.standardgenetic" taskId="genetic scheduler">
       <data key="variables">
-         <variable name="pfastused2makepopulation" value="false"/>
          <variable name="generationNumber" value="100"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="pfastused2makepopulation" value="false"/>
          <variable name="populationSize" value="25"/>
+         <variable name="simulatorType" value="LooselyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.pgenetic" taskId="pgenetic scheduler">
       <data key="variables">
-         <variable name="procNumber" value="3"/>
-         <variable name="pfastused2makepopulation" value="true"/>
          <variable name="generationNumber" value="100"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="pfastused2makepopulation" value="true"/>
          <variable name="populationSize" value="10"/>
+         <variable name="procNumber" value="3"/>
+         <variable name="simulatorType" value="LooselyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="list scheduler">
