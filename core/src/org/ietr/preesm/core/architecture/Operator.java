@@ -108,5 +108,8 @@ public class Operator extends ArchitectureComponent {
 
 		return newOp;
 	}
-
+	
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.operator;
+	}
 }

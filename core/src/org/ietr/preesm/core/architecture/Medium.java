@@ -103,5 +103,9 @@ public class Medium extends ArchitectureComponent {
 
 		return newmed;
 	}
+	
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.medium;
+	}
 
 }

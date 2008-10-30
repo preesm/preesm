@@ -55,6 +55,7 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -326,7 +327,7 @@ public class PGeneticAlgo extends Observable {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing(archi.getOperatorDefinition("c64x"), graph
+			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), 50);
 			tmgr.addTiming(newt);
 		}

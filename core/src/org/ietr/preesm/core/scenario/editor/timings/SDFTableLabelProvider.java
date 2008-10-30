@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -116,7 +117,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			String item = combo.getItem(combo.getSelectionIndex());
 
 			IArchitecture archi = (IArchitecture) combo.getData();
-			currentOpDef = archi.getOperatorDefinition(item);
+			currentOpDef = archi.getComponentDefinition(ArchitectureComponentType.operator,item);
 
 			tableViewer.refresh();
 		}

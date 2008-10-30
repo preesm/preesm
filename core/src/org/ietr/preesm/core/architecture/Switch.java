@@ -109,4 +109,8 @@ public class Switch extends ArchitectureComponent {
 		return newSw;
 	}
 
+	
+	public ArchitectureComponentType getType(){
+		return null;
+	}
 }

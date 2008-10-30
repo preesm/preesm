@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.test;
 
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
@@ -90,7 +91,7 @@ public class ListSchedulingArchiTester {
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
 			Double taskSize = Math.random() * 1000;
-			Timing newt = new Timing(archi.getOperatorDefinition("c64x"), graph
+			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), taskSize.intValue());
 			tmgr.addTiming(newt);
 		}

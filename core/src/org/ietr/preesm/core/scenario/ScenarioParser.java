@@ -49,6 +49,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
@@ -321,7 +322,7 @@ public class ScenarioParser {
 
 				SDFAbstractVertex vertex = algo.getVertex(vertexname);
 				OperatorDefinition opdef = archi
-						.getOperatorDefinition(opdefname);
+						.getComponentDefinition(ArchitectureComponentType.operator,opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef, vertex, time);

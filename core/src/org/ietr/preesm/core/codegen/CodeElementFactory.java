@@ -42,6 +42,9 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
 
+/**
+ * @author jpiat
+ */
 public class CodeElementFactory {
 
 	public static ICodeElement createElement(String name,

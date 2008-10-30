@@ -43,6 +43,7 @@ package org.ietr.preesm.plugin.mapper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Medium;
@@ -108,7 +109,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing(archi.getOperatorDefinition("c64x"), graph
+			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), 100);
 			tmgr.addTiming(newt);
 		}

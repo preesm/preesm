@@ -58,8 +58,8 @@ public abstract class ArchitectureComponent {
 	protected List<ArchitectureInterface> availableInterfaces;
 
 	/**
-	 * The type contains the category (medium or operator) and the id (example:
-	 * C64x+)
+	 * The definition contains the category (medium or operator) and the id (example:
+	 * C64x+) as well as specific parameters
 	 */
 	private ArchitectureComponentDefinition definition;
 
@@ -130,4 +130,6 @@ public abstract class ArchitectureComponent {
 	public String toString() {
 		return name;
 	}
+
+	public abstract ArchitectureComponentType getType();
 }

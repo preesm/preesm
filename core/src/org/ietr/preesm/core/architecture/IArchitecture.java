@@ -92,7 +92,7 @@ public interface IArchitecture {
 	/**
 	 * Returns the operator definition with the given id
 	 */
-	public OperatorDefinition getOperatorDefinition(String id);
+	public OperatorDefinition getComponentDefinition(ArchitectureComponentType type,String id);
 
 	/**
 	 * Returns all the operator definitions
