@@ -50,11 +50,15 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 
 /**
  * @author mwipliez
@@ -89,7 +93,7 @@ public class PreesmLogger extends Logger {
 	public void log(LogRecord record) {
 
 		Level level = record.getLevel();
-		int levelVal = level.intValue();
+		final int levelVal = level.intValue();
 		if (getLevel() != null) {
 			if (levelVal >= getLevel().intValue()) {
 
@@ -115,13 +119,21 @@ public class PreesmLogger extends Logger {
 					}
 				} else {
 					// Writes a log in console
-					MessageConsoleStream stream = console.newMessageStream();
+					final MessageConsoleStream stream = console.newMessageStream();
 
-					if (levelVal < Level.INFO.intValue())
-						stream.setColor(new Color(null, 0, 0, 0));
-					else
-						stream.setColor(new Color(null, 255, 0, 0));
 
+					Activator.getDefault().getWorkbench().getDisplay().asyncExec(
+							new Runnable() {
+								@Override
+								public void run() {
+									if (levelVal < Level.INFO.intValue())
+										stream.setColor(new Color(null, 0, 0, 0));
+									else
+										stream.setColor(new Color(null, 255, 0, 0));
+								}
+							});
+
+					
 					stream.println(record.getMessage());
 				}
 			}

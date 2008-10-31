@@ -88,7 +88,7 @@ public class MultiCoreArchitecture {
 		this.name = name;
 	}
 
-	public BusReference getBusDefinition(String id) {
+	public BusReference getBusReference(String id) {
 		return busReferences.get(id);
 	}
 
@@ -261,7 +261,7 @@ public class MultiCoreArchitecture {
 	}
 
 	/**
-	 * Returns all the operators
+	 * Returns the Component with the given type and name
 	 */
 	public ArchitectureComponent getComponent(ArchitectureComponentType type,
 			String name) {
@@ -277,6 +277,13 @@ public class MultiCoreArchitecture {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the Component with the given name
+	 */
+	public ArchitectureComponent getComponent(String name) {
+		return architectureComponents.get(name);
 	}
 
 	/**

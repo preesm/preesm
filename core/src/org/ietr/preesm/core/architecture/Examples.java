@@ -38,7 +38,6 @@ package org.ietr.preesm.core.architecture;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.MediumProperty;
 
 /**
  * Architecture predefined Examples
@@ -65,7 +64,7 @@ public class Examples {
 		op2.addInterface(intf2);
 
 		Medium edma = (Medium) archi.addComponent(ArchitectureComponentType.medium,"edma","edma_1");
-		((MediumDefinition)edma.getDefinition()).setMediumProperty(new MediumProperty(1, 2, 1));
+		((MediumDefinition)edma.getDefinition()).setParams(1, 2, 1);
 		ArchitectureInterface intfEdma = new ArchitectureInterface(edmaBusRef, edma);
 		
 		archi.connect(edma,intfEdma, op1,intf1);
@@ -126,7 +125,7 @@ public class Examples {
 		MediumDefinition bus = new MediumDefinition("opb_bus");
 		BusReference busRef = new BusReference("opb_busDef");
 		SwitchDefinition crossbar = new SwitchDefinition("opb_crossbar");
-		bus.setMediumProperty(new MediumProperty(1, 100, 1));
+		bus.setParams(1, 100, 1);
 
 		Operator op1 = (Operator)archi.addComponent(ArchitectureComponentType.operator,"microblaze","p_1");
 		ArchitectureInterface intf1 = op1.addInterface(new ArchitectureInterface(busRef, op1));
@@ -141,7 +140,7 @@ public class Examples {
 		ArchitectureInterface intfsw = sw1.addInterface(new ArchitectureInterface(busRef, sw1));
 
 		Medium m1 = (Medium) archi.addComponent(ArchitectureComponentType.medium,"opb_bus","bus_1");
-		((MediumDefinition)m1.getDefinition()).setMediumProperty(new MediumProperty(1, 100, 1));
+		((MediumDefinition)m1.getDefinition()).setParams(1, 100, 1);
 		ArchitectureInterface intfm1 = new ArchitectureInterface(busRef, m1);
 
 		Medium m2 = (Medium) archi.addComponent(ArchitectureComponentType.medium,"opb_bus","bus_2");

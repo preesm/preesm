@@ -120,7 +120,7 @@ public class InfiniteHomogeneousAbc extends
 				if (archi.getMainMedium() != null) {
 					MediumDefinition def = (MediumDefinition) archi
 							.getMainMedium().getDefinition();
-					Float speed = def.getMediumProperty().getInvSpeed();
+					Float speed = def.getInvSpeed();
 					speed = edgesize * speed;
 					edge.getTimingEdgeProperty().setCost(speed.intValue());
 				} else {

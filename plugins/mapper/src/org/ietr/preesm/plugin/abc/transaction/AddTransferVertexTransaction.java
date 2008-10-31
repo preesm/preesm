@@ -138,7 +138,7 @@ public class AddTransferVertexTransaction extends Transaction {
 			MediumDefinition def = (MediumDefinition) currentMedium
 					.getDefinition();
 
-			if (def.hasMediumProperty()) {
+			if (def.getInvSpeed() != 0) {
 				tVertex = new TransferVertex(tvertexID, implementation);
 
 				tVertex.setRouteStep(step);

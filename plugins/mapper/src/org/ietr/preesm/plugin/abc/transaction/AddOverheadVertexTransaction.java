@@ -122,11 +122,11 @@ public class AddOverheadVertexTransaction extends Transaction {
 		String overtexID = "__overhead (" + currentSource.getName() + ","
 				+ currentTarget.getName() + ")";
 
-		if (mediumDef.hasMediumProperty()) {
+		if (mediumDef.getInvSpeed() != 0) {
 			oVertex = new OverheadVertex(overtexID, implementation);
 
 			oVertex.getTimingVertexProperty().setCost(
-					mediumDef.getMediumProperty().getOverhead());
+					mediumDef.getOverhead());
 
 			oVertex.getImplementationVertexProperty().setEffectiveOperator(
 					step.getSender());

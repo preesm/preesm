@@ -147,7 +147,7 @@ public class AddSendReceiveTransaction extends Transaction {
 			MediumDefinition def = (MediumDefinition) currentMedium
 					.getDefinition();
 
-			if (def.hasMediumProperty()) {
+			if (def.getInvSpeed() != 0) {
 				
 				Operator senderOperator = step.getSender();
 				Operator receiverOperator = step.getReceiver();

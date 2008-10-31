@@ -37,6 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,6 +46,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ArchitectureInterface;
+import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -122,9 +128,8 @@ public class ArchitectureParser {
 						archi = new MultiCoreArchitecture(elt.getTextContent());
 					} else if (type.equals("spirit:componentInstances")) {
 						parseComponentInstances(elt);
-						//parseInterconnections(elt);
 					} else if (type.equals("spirit:interconnections")) {
-						//parseInterconnections(elt);
+						parseInterconnections(elt);
 					} 
 				}
 	
@@ -185,24 +190,8 @@ public class ArchitectureParser {
 
 			node = node.getNextSibling();
 		}
-/*
-		if(cmpType.equals("Operator")){
 
-			OperatorDefinition opDef = new OperatorDefinition(cmpDefId);
-			Operator op = new Operator(cmpName,opDef);
-			
-			if(op!=null)
-				archi.addOperator(op);
-		}
-		else if(cmpType.equals("Medium")){
-
-			MediumDefinition mDef = new MediumDefinition(cmpDefId);
-			Medium m = new Medium(cmpName,mDef);
-			
-			if(m!=null)
-				archi.addMedium(m);
-			
-		}*/
+		archi.addComponent(ArchitectureComponentType.getType(cmpType), cmpDefId, cmpName);
 	}
 	
 	/**
@@ -229,5 +218,65 @@ public class ArchitectureParser {
 		}
 
 		return componentType;
+	}
+	
+	/**
+	 * Parses all interconnections
+	 */
+	private void parseInterconnections(Element callElt) {
+
+		Node node = callElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("spirit:interconnection")) {
+					parseInterconnection(elt);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+	}
+	
+	/**
+	 * Parses one interconnection
+	 */
+	private void parseInterconnection(Element callElt) {
+
+		List<String> busRefList = new ArrayList<String>();
+		List<String> componentRefList = new ArrayList<String>();
+
+		Node node = callElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("spirit:activeInterface")) {
+					busRefList.add(elt.getAttribute("spirit:busRef"));
+					componentRefList.add(elt.getAttribute("spirit:componentRef"));
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+
+		if(busRefList.size() == 2 && componentRefList.size() == 2){
+
+			ArchitectureComponent cmp1 = archi.getComponent(componentRefList.get(0));
+			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
+			ArchitectureInterface if1 = cmp1.addInterface(new ArchitectureInterface(busRef1,cmp1));
+			
+			ArchitectureComponent cmp2 = archi.getComponent(componentRefList.get(1));
+			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
+			ArchitectureInterface if2 = cmp2.addInterface(new ArchitectureInterface(busRef2,cmp2));
+			
+			archi.connect(cmp1, if1, cmp2, if2);
+		}
+			
 	}
 }

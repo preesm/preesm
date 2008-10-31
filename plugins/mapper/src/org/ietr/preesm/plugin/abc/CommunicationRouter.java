@@ -51,7 +51,6 @@ import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.MediumProperty;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -109,16 +108,10 @@ public class CommunicationRouter {
 			InitialEdgeProperty edgeprop = edge.getInitialEdgeProperty();
 			Integer datasize = edgeprop.getDataSize();
 
-			if (def.hasMediumProperty()) {
-				Float time = datasize.floatValue()
-						* def.getMediumProperty().getInvSpeed();
+			Float time = datasize.floatValue()
+					* def.getInvSpeed();
 
-				return time.intValue();
-			} else {
-				PreesmLogger.getLogger().log(Level.SEVERE,
-						"There is no time property for medium " + def.getId());
-				return 0;
-			}
+			return time.intValue();
 		} else {
 
 			PreesmLogger.getLogger().log(
@@ -140,7 +133,7 @@ public class CommunicationRouter {
 		if (!op1.equals(op2)) {
 			// List of all media between op1 and op2
 			Set<Medium> media = archi.getMedia(op1, op2);
-			MediumProperty bestprop = null;
+			MediumDefinition bestprop = null;
 
 			if (!media.isEmpty()) {
 
@@ -149,8 +142,8 @@ public class CommunicationRouter {
 				// iterating media and choosing the one with best speed
 				while (iterator.hasNext()) {
 					Medium currentMedium = iterator.next();
-					MediumProperty currentProp = ((MediumDefinition) currentMedium
-							.getDefinition()).getMediumProperty();
+					MediumDefinition currentProp = (MediumDefinition) currentMedium
+							.getDefinition();
 
 					if (bestprop == null
 							|| bestprop.getInvSpeed() > currentProp
