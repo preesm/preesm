@@ -256,6 +256,7 @@ public class ArchitectureParser {
 
 		List<String> busRefList = new ArrayList<String>();
 		List<String> componentRefList = new ArrayList<String>();
+		boolean isFifo = false;
 
 		Node node = callElt.getFirstChild();
 
@@ -267,6 +268,9 @@ public class ArchitectureParser {
 				if (type.equals("spirit:activeInterface")) {
 					busRefList.add(elt.getAttribute("spirit:busRef"));
 					componentRefList.add(elt.getAttribute("spirit:componentRef"));
+				}
+				else if (type.equals("spirit:displayName")) {
+					isFifo = (elt.getTextContent().equalsIgnoreCase("fifo"));
 				}
 			}
 
@@ -283,7 +287,7 @@ public class ArchitectureParser {
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
 			ArchitectureInterface if2 = cmp2.addInterface(new ArchitectureInterface(busRef2,cmp2));
 			
-			archi.connect(cmp1, if1, cmp2, if2);
+			archi.connect(cmp1, if1, cmp2, if2, isFifo);
 		}
 			
 	}

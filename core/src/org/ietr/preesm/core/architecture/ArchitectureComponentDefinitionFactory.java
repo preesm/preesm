@@ -3,6 +3,10 @@
  */
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.parser.BusDefinition;
+import org.ietr.preesm.core.architecture.parser.CommunicationNodeDefinition;
+import org.ietr.preesm.core.architecture.parser.CommunicatorDefinition;
+import org.ietr.preesm.core.architecture.parser.MemoryDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 
 
@@ -23,6 +27,18 @@ public class ArchitectureComponentDefinitionFactory {
 			}
 			else if(type == ArchitectureComponentType.operator){
 				result = new OperatorDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.communicationNode){
+				result = new CommunicationNodeDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.communicator){
+				result = new CommunicatorDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.memory){
+				result = new MemoryDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.bus){
+				result = new BusDefinition(name);
 			}
 		}
 		

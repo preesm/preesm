@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.parser.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 
 /**
@@ -62,9 +63,14 @@ public class MultiCoreArchitecture {
 	private Map<String, ArchitectureComponentDefinition> architectureComponentDefinitions;
 
 	/**
-	 * List of the interconnections between media and components.
+	 * List of the interconnections between components.
 	 */
 	private Set<Interconnection> interconnections;
+
+	/**
+	 * List of the fifos between components.
+	 */
+	private Set<Fifo> fifos;
 
 	/**
 	 * List of the bus references associated to interfaces
@@ -81,9 +87,11 @@ public class MultiCoreArchitecture {
 	 */
 	public MultiCoreArchitecture(String name) {
 		architectureComponents = new HashMap<String, ArchitectureComponent>();
-		interconnections = new HashSet<Interconnection>();
 		architectureComponentDefinitions = new HashMap<String, ArchitectureComponentDefinition>();
 		busReferences = new HashMap<String, BusReference>();
+
+		interconnections = new HashSet<Interconnection>();
+		fifos = new HashSet<Fifo>();
 
 		this.name = name;
 	}
@@ -111,8 +119,10 @@ public class MultiCoreArchitecture {
 	/**
 	 * Creates and adds a component
 	 */
-	public ArchitectureComponent addComponent(ArchitectureComponentType type, String defId, String name) {
-		ArchitectureComponentDefinition newDef = addComponentDefinition(type, defId);
+	public ArchitectureComponent addComponent(ArchitectureComponentType type,
+			String defId, String name) {
+		ArchitectureComponentDefinition newDef = addComponentDefinition(type,
+				defId);
 		ArchitectureComponent cmp = ArchitectureComponentFactory.createElement(
 				newDef, name);
 		architectureComponents.put(name, cmp);
@@ -147,7 +157,9 @@ public class MultiCoreArchitecture {
 			ArchitectureComponent next = cmpIt.next();
 
 			// each component is cloned and added to the new archi
-			ArchitectureComponent newCmp = newArchi.addComponent(next.getType(),next.getDefinition().getId(), next.getName());
+			ArchitectureComponent newCmp = newArchi.addComponent(
+					next.getType(), next.getDefinition().getId(), next
+							.getName());
 			newCmp.getDefinition().fill(next.getDefinition());
 		}
 
@@ -167,9 +179,15 @@ public class MultiCoreArchitecture {
 	 * @return true if the medium could be added
 	 */
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
-			ArchitectureComponent cmp2, ArchitectureInterface if2) {
-		if (!existInterconnection(cmp1, if1, cmp2, if2))
-			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+			ArchitectureComponent cmp2, ArchitectureInterface if2,
+			boolean isFifo) {
+
+		if (isFifo) {
+			fifos.add(new Fifo(cmp1, if1, cmp2, if2));
+		} else {
+			if (!existInterconnection(cmp1, if1, cmp2, if2))
+				interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+		}
 	}
 
 	/**
