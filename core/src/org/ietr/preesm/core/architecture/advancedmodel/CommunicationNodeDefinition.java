@@ -35,25 +35,25 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.architecture.parser;
+package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * Parameters for a Memory (exemple: a Shared RAM)
+ * Parameters for a communication node (exemple: a switch)
  * 
  * @author mpelcat
  */
-public class MemoryDefinition extends ArchitectureComponentDefinition {
+public class CommunicationNodeDefinition extends ArchitectureComponentDefinition {
 
-	public MemoryDefinition(String id) {
-		super(id, "memory");
+	public CommunicationNodeDefinition(String id) {
+		super(id, "communicationNode");
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof MemoryDefinition) {
-			MemoryDefinition opdef = (MemoryDefinition) obj;
+		if (obj instanceof CommunicationNodeDefinition) {
+			CommunicationNodeDefinition opdef = (CommunicationNodeDefinition) obj;
 			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
 		}
 
@@ -61,12 +61,12 @@ public class MemoryDefinition extends ArchitectureComponentDefinition {
 	}
 
 	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.memory;
+		return ArchitectureComponentType.communicationNode;
 	}
 
-	public MemoryDefinition clone() {
+	public CommunicationNodeDefinition clone() {
 
-		MemoryDefinition newdef = new MemoryDefinition(this.getId());
+		CommunicationNodeDefinition newdef = new CommunicationNodeDefinition(this.getId());
 
 		return newdef;
 	}

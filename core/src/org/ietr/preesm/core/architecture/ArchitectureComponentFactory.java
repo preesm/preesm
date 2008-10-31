@@ -3,14 +3,14 @@
  */
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.architecture.parser.Bus;
-import org.ietr.preesm.core.architecture.parser.BusDefinition;
-import org.ietr.preesm.core.architecture.parser.CommunicationNode;
-import org.ietr.preesm.core.architecture.parser.CommunicationNodeDefinition;
-import org.ietr.preesm.core.architecture.parser.Communicator;
-import org.ietr.preesm.core.architecture.parser.CommunicatorDefinition;
-import org.ietr.preesm.core.architecture.parser.Memory;
-import org.ietr.preesm.core.architecture.parser.MemoryDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.Bus;
+import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.Memory;
+import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 

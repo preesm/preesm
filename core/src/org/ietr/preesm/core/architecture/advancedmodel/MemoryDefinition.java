@@ -35,30 +35,43 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.architecture.parser;
+package org.ietr.preesm.core.architecture.advancedmodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
-
 /**
- * a Bus
+ * Parameters for a Memory (exemple: a Shared RAM)
  * 
  * @author mpelcat
  */
-public class Bus extends ArchitectureComponent {
+public class MemoryDefinition extends ArchitectureComponentDefinition {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
-	 */
-	public static final String propertyBeanName = "bus";
-	
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
-
+	public MemoryDefinition(String id) {
+		super(id, "memory");
 	}
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof MemoryDefinition) {
+			MemoryDefinition opdef = (MemoryDefinition) obj;
+			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+		}
+
+		return false;
+	}
+
 	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.bus;
+		return ArchitectureComponentType.memory;
+	}
+
+	public MemoryDefinition clone() {
+
+		MemoryDefinition newdef = new MemoryDefinition(this.getId());
+
+		return newdef;
+	}
+
+
+	public void fill(ArchitectureComponentDefinition origin){
 	}
 }

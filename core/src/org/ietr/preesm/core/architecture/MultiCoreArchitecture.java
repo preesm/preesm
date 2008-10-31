@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.parser.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 
 /**

@@ -34,44 +34,59 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
+package org.ietr.preesm.core.architecture.advancedmodel;
 
-package org.ietr.preesm.core.architecture.parser;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ArchitectureInterface;
 
 /**
- * Parameters for a communication node (exemple: a switch)
+ * An interconnection joins one interface of a component to one interface of a
+ * component
  * 
  * @author mpelcat
  */
-public class CommunicationNodeDefinition extends ArchitectureComponentDefinition {
+public class Fifo {
 
-	public CommunicationNodeDefinition(String id) {
-		super(id, "communicationNode");
+	private ArchitectureComponent srcCmp;
+	private ArchitectureInterface srcIf;
+
+	private ArchitectureComponent dstCmp;
+	private ArchitectureInterface dstIf;
+
+	public Fifo(ArchitectureComponent srcCmp,
+			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
+			ArchitectureInterface dstIf) {
+		this.srcCmp = srcCmp;
+		this.dstCmp = dstCmp;
+
+		this.srcIf = srcIf;
+		this.dstIf = dstIf;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CommunicationNodeDefinition) {
-			CommunicationNodeDefinition opdef = (CommunicationNodeDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
-		}
 
+		if (obj instanceof Fifo) {
+			Fifo intc = (Fifo) obj;
+			return intc.srcCmp.equals(this.srcCmp) && intc.dstCmp.equals(this.dstCmp)
+					&& intc.srcIf.equals(this.srcIf) && intc.dstIf.equals(this.dstIf);
+		}
 		return false;
 	}
-
-	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.communicationNode;
+	
+	public ArchitectureComponent getSrcCmp() {
+		return srcCmp;
 	}
 
-	public CommunicationNodeDefinition clone() {
-
-		CommunicationNodeDefinition newdef = new CommunicationNodeDefinition(this.getId());
-
-		return newdef;
+	public ArchitectureComponent getDstCmp() {
+		return dstCmp;
 	}
 
+	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
 
-	public void fill(ArchitectureComponentDefinition origin){
+		if(srcCmp.getType() == type) return srcIf;
+		else if(dstCmp.getType() == type) return dstIf;
+		else return null;
 	}
 }
