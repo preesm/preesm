@@ -8,35 +8,35 @@
          <spirit:instanceName>C64_1</spirit:instanceName>
          <spirit:componentRef spirit:library="preesm" spirit:name="C64" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">Operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>C64_2</spirit:instanceName>
          <spirit:componentRef spirit:library="preesm" spirit:name="C64" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">Operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>C64_3</spirit:instanceName>
          <spirit:componentRef spirit:library="preesm" spirit:name="C64" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">Operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>C64_4</spirit:instanceName>
          <spirit:componentRef spirit:library="preesm" spirit:name="C64" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">Operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>EDMA3_1</spirit:instanceName>
          <spirit:componentRef spirit:library="preesm" spirit:name="EDMA3" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">Medium</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>

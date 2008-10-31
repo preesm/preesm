@@ -61,17 +61,12 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	 */
 	float invSpeed = 0f;
 
+
 	/**
 	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
 	 * with cycles
 	 */
 	int overhead = 0;
-
-	/**
-	 * Reception time on receiver in TU(Time Unit) The usual utilization is with
-	 * cycles
-	 */
-	int receptionTime = 0;
 
 	public MediumDefinition(MediumDefinition origin) {
 		super(origin.getId(), "medium");
@@ -83,9 +78,10 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 		super(id, "medium");
 	}
 
-	public MediumDefinition(String id,float invSpeed, int overhead, int receptionTime) {
+	public MediumDefinition(String id,float invSpeed, int overhead) {
 		super(id, "medium");
-		setParams(invSpeed, overhead, receptionTime);
+		setInvSpeed(invSpeed);
+		setOverhead(overhead);
 	}
 	
 	public ArchitectureComponentType getType(){
@@ -94,40 +90,27 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	@Override
 	public MediumDefinition clone() {
-		return new MediumDefinition(this.getId(),this.getInvSpeed(), this.getOverhead(), this
-				.getReceptionTime());
+		return new MediumDefinition(this.getId(),this.getInvSpeed(), this.getOverhead());
 	}
 
 	public void fill(ArchitectureComponentDefinition origin){
 		this.invSpeed = ((MediumDefinition)origin).getInvSpeed();
 		this.overhead = ((MediumDefinition)origin).getOverhead();
-		this.receptionTime = ((MediumDefinition)origin).getReceptionTime();
-	}
-
-	public void setParams(float invSpeed, int overhead, int receptionTime){
-		this.invSpeed = invSpeed;
-		this.overhead = overhead;
-		this.receptionTime = receptionTime;
 	}
 	
-	/**
-	 * @return the speed
-	 */
 	public float getInvSpeed() {
 		return invSpeed;
 	}
 
-	/**
-	 * @return the overhead
-	 */
 	public int getOverhead() {
 		return overhead;
 	}
 
-	/**
-	 * @return the receptionTime
-	 */
-	public int getReceptionTime() {
-		return receptionTime;
+	public void setInvSpeed(float invSpeed) {
+		this.invSpeed = invSpeed;
+	}
+
+	public void setOverhead(int overhead) {
+		this.overhead = overhead;
 	}
 }

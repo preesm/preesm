@@ -51,6 +51,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -169,6 +170,7 @@ public class ArchitectureParser {
 		String cmpName = "";
 		String cmpDefId = "";
 		String cmpType = "";
+		Element configElt = null;
 		
 		Node node = callElt.getFirstChild();
 
@@ -184,14 +186,20 @@ public class ArchitectureParser {
 					cmpDefId = elt.getAttribute("spirit:name");
 				}
 				else if (type.equals("spirit:configurableElementValues")) {
-					cmpType = parseComponentType(elt);
+					configElt = elt;
+					cmpType = parseComponentType(configElt);
 				}
 			}
 
 			node = node.getNextSibling();
 		}
 
-		archi.addComponent(ArchitectureComponentType.getType(cmpType), cmpDefId, cmpName);
+		ArchitectureComponentType type = ArchitectureComponentType.getType(cmpType);
+		ArchitectureComponent cmp = archi.addComponent(ArchitectureComponentType.getType(cmpType), cmpDefId, cmpName);
+
+		if(configElt!= null && type == ArchitectureComponentType.medium){
+			MediumParser.parse((MediumDefinition)cmp.getDefinition(), configElt);
+		}
 	}
 	
 	/**
