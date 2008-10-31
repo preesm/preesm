@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper;
 
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TaskResult;
@@ -60,7 +59,7 @@ public class CommContenListSchedTransformation extends AbstractMapping {
 	}
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters, IScenario scenario) {
 		// TODO Add here the calls to your task scheduling algorithm
 		// in which you ask communicationcontentiouslistschedulingdabc for

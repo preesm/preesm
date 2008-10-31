@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
@@ -60,7 +60,7 @@ public class DAGCreator {
 	/**
 	 * Kwok example 1 for fast algo
 	 */
-	public MapperDAG dagexample1(IArchitecture architecture) {
+	public MapperDAG dagexample1(MultiCoreArchitecture architecture) {
 
 		/* Construct DAG */
 
@@ -166,7 +166,7 @@ public class DAGCreator {
 	/**
 	 * Kwok example 2 for fast algo
 	 */
-	public MapperDAG dagexample2(IArchitecture architecture) {
+	public MapperDAG dagexample2(MultiCoreArchitecture architecture) {
 
 		/* Retrieve constraints */
 		/* Construct DAG */

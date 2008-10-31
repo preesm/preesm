@@ -102,4 +102,9 @@ public abstract class ArchitectureComponentDefinition {
 		return (id.compareToIgnoreCase(othertype.id) == 0);
 	}
 
+	public abstract ArchitectureComponentType getType();
+	
+	public abstract ArchitectureComponentDefinition clone();
+	
+	public abstract void fill(ArchitectureComponentDefinition origin);
 }

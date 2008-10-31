@@ -43,8 +43,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
@@ -91,7 +93,7 @@ public class SdfToDagConverter {
 		TopologyVisitor topo = new TopologyVisitor();
 		demoGraph.accept(topo);
 
-		IArchitecture architecture = Examples.get1C64Archi();
+		MultiCoreArchitecture architecture = Examples.get2C64Archi();
 
 		IScenario scenario = new Scenario();
 		TimingManager tmanager = new TimingManager();
@@ -117,7 +119,7 @@ public class SdfToDagConverter {
 	 * 
 	 * @author mpelcat
 	 */
-	public static MapperDAG convert(SDFGraph sdfIn, IArchitecture architecture,
+	public static MapperDAG convert(SDFGraph sdfIn, MultiCoreArchitecture architecture,
 			IScenario scenario, boolean display) {
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
@@ -158,7 +160,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static MapperDAG addInitialProperty(MapperDAG dag,
-			IArchitecture architecture, IScenario scenario) {
+			MultiCoreArchitecture architecture, IScenario scenario) {
 
 		/**
 		 * Importing constraint timings
@@ -188,7 +190,7 @@ public class SdfToDagConverter {
 					currentVertexInit.addTiming(timing);
 				}
 			}else{
-				for(Operator op : architecture.getOperators()){
+				for(ArchitectureComponent op : architecture.getComponents(ArchitectureComponentType.operator)){
 					Timing time = new Timing((OperatorDefinition) op.getDefinition(), currentVertex.getCorrespondingSDFVertex(), 1);
 					time.setTime(500);
 					currentVertexInit.addTiming(time);

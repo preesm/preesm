@@ -55,7 +55,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -149,7 +149,7 @@ public class Workflow {
 		int numberOfTasksDone = 0;
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
-		IArchitecture architecture = null;
+		MultiCoreArchitecture architecture = null;
 		IScenario scenario = null;
 		SourceFileList sourceFiles = null;
 

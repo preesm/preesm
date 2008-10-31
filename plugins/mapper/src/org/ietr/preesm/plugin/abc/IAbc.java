@@ -41,7 +41,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -59,7 +59,7 @@ public interface IAbc {
 	/**
 	 * Gets the architecture
 	 */
-	public IArchitecture getArchitecture();
+	public MultiCoreArchitecture getArchitecture();
 
 	public MapperDAG getDAG();
 

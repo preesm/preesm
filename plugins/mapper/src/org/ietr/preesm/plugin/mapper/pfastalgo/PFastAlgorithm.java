@@ -57,7 +57,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -72,7 +71,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
 import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
-import org.jfree.ui.RefineryUtilities;
 
 /**
  * Task scheduling FAST algorithm multithread
@@ -120,7 +118,7 @@ public class PFastAlgorithm extends Observable {
 		 * 
 		 */
 		public FinalTimeComparator(AbcType type,
-				MapperDAG dag, IArchitecture archi) {
+				MapperDAG dag, MultiCoreArchitecture archi) {
 			super();
 			this.simulator = AbstractAbc.getInstance(type,
 					dag, archi);
@@ -289,7 +287,7 @@ public class PFastAlgorithm extends Observable {
 	 * @return MapperDAG
 	 */
 
-	public MapperDAG map(MapperDAG dag, IArchitecture archi, int nboperator,
+	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
 			int margIn, AbcType simulatorType,
 			boolean population, int populationsize,

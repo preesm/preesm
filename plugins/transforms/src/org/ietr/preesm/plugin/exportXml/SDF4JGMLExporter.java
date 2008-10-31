@@ -1,6 +1,6 @@
 package org.ietr.preesm.plugin.exportXml;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.exporter.GMLSDFExporter;
@@ -30,7 +30,7 @@ public class SDF4JGMLExporter implements IExporter{
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			IArchitecture archi,
+			MultiCoreArchitecture archi,
 			org.ietr.preesm.core.scenario.IScenario scenario,
 			TextParameters params) {
 		// TODO Auto-generated method stub

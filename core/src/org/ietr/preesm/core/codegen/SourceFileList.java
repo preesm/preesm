@@ -43,7 +43,9 @@ package org.ietr.preesm.core.codegen;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
@@ -75,14 +77,14 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	/**
 	 * Creates the source files from an architecture
 	 */
-	private void createSourceFiles(IArchitecture architecture) {
+	private void createSourceFiles(MultiCoreArchitecture architecture) {
 
-		Iterator<Operator> iterator = architecture.getOperators().iterator();
+		Iterator<ArchitectureComponent> iterator = architecture.getComponents(ArchitectureComponentType.operator).iterator();
 		
 		// Generates and populates one source file per core
 		while(iterator.hasNext()){
 			
-			Operator currentOp = iterator.next();
+			Operator currentOp = (Operator)iterator.next();
 			
 			SourceFile sourceFile = new SourceFile(currentOp.getName(), currentOp);
 			add(sourceFile);
@@ -97,7 +99,7 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	/**
 	 * Creates and fills source files from an SDF and an architecture
 	 */
-	public void generateSourceFiles(DirectedAcyclicGraph algorithm, IArchitecture architecture) {
+	public void generateSourceFiles(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture) {
 
 		// Creates one source file per operator
 		createSourceFiles(architecture);

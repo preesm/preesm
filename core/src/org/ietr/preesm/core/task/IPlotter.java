@@ -3,7 +3,7 @@
  */
 package org.ietr.preesm.core.task;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -20,6 +20,6 @@ public interface IPlotter extends ITask {
 	 * @param algorithm The algorithm to export
 	 * @param params The parameters rulling the exportation
 	 */
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, IArchitecture archi, IScenario scenario, TextParameters params);
+	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, IScenario scenario, TextParameters params);
 	
 }

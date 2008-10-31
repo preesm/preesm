@@ -58,8 +58,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
@@ -255,7 +257,7 @@ public class GanttPlotter extends ApplicationFrame {
 		logger.setLevel(Level.ALL);
 
 		logger.log(Level.FINEST, "Creating archi");
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
@@ -265,77 +267,77 @@ public class GanttPlotter extends ApplicationFrame {
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());
-		simulator.implant(dag.getMapperDAGVertex("n1"), archi.getOperator("c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n3"), archi.getOperator("c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n2"), archi.getOperator("c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n7"), archi.getOperator("c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n6"), archi.getOperator("c64x_2"),
+		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_2"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n5"), archi.getOperator("c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n4"), archi.getOperator("c64x_3"),
+		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_3"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n8"), archi.getOperator("c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n9"), archi.getOperator("c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getOperator("c64x_1"));
-		simulator.getFinalTime(archi.getOperator("c64x_2"));
-		simulator.getFinalTime(archi.getOperator("c64x_3"));
-		simulator.getFinalTime(archi.getOperator("c64x_4"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 
 		logger.log(Level.FINEST, "Iterating in t order");
 

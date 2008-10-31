@@ -47,17 +47,17 @@ import java.util.Set;
  * 
  * @author mpelcat
  */
-public class MultiCoreArchitecture implements IArchitecture {
+public class MultiCoreArchitecture {
 
 	/**
 	 * List of the cores + accelerators + media with their IDs.
 	 */
-	private Map<String,ArchitectureComponent> architectureComponents;
+	private Map<String, ArchitectureComponent> architectureComponents;
 
 	/**
 	 * List of the component definitions with their IDs.
 	 */
-	private Map<String,ArchitectureComponentDefinition> architectureComponentDefinitions;
+	private Map<String, ArchitectureComponentDefinition> architectureComponentDefinitions;
 
 	/**
 	 * List of the interconnections between media and components.
@@ -65,14 +65,9 @@ public class MultiCoreArchitecture implements IArchitecture {
 	private Set<Interconnection> interconnections;
 
 	/**
-	 * main core of the archi.
+	 * List of the bus references associated to interfaces
 	 */
-	private Operator mainCore = null;
-
-	/**
-	 * main medium of the archi.
-	 */
-	private Medium mainMedium = null;
+	private Map<String, BusReference> busReferences;
 
 	/**
 	 * name of the archi.
@@ -83,123 +78,57 @@ public class MultiCoreArchitecture implements IArchitecture {
 	 * Creating an empty architecture.
 	 */
 	public MultiCoreArchitecture(String name) {
-		architectureComponents = new HashMap<String,ArchitectureComponent>();
+		architectureComponents = new HashMap<String, ArchitectureComponent>();
 		interconnections = new HashSet<Interconnection>();
-		architectureComponentDefinitions = new HashMap<String,ArchitectureComponentDefinition>();
+		architectureComponentDefinitions = new HashMap<String, ArchitectureComponentDefinition>();
+		busReferences = new HashMap<String, BusReference>();
 
 		this.name = name;
 	}
 
-	/**
-	 * Adds the definition of a medium 
-	 */
-	public ArchitectureComponentDefinition createMediumDefinition(String id) {
-		if(architectureComponentDefinitions.containsKey(id)){
-			ArchitectureComponentDefinition def = architectureComponentDefinitions.get(id);
-			if(def instanceof MediumDefinition){
-				return def;
-			}
-			else{
-				// The ComponentDefinition exists with a bad type
-				return null;
-			}
-		}
-
-		return new MediumDefinition(id);
+	public BusReference getBusDefinition(String id) {
+		return busReferences.get(id);
 	}
 
 	/**
-	 * Adds a medium to the architecture only if this medium can be connected to
-	 * the two operators
-	 * 
-	 * @return true if the medium could be added
+	 * Adds the definition of a component and returns it to let the user add
+	 * specific properties
 	 */
-	public Medium addMedium(Medium medium, Operator operator1,
-			Operator operator2, boolean isMain) {
-		if (operator1.canConnectTo(medium)) {
-			if (operator2.canConnectTo(medium)) {
-				architectureComponents.put(medium.getName(),medium);
-
-				interconnections.add(new Interconnection(operator1, medium));
-				interconnections.add(new Interconnection(operator2, medium));
-			}
+	public ArchitectureComponentDefinition addComponentDefinition(
+			ArchitectureComponentType type, String id) {
+		if (architectureComponentDefinitions.containsKey(id)) {
+			return architectureComponentDefinitions.get(id);
+		} else {
+			ArchitectureComponentDefinition def = ArchitectureComponentDefinitionFactory
+					.createElement(type, id);
+			architectureComponentDefinitions.put(def.getId(), def);
+			return def;
 		}
-
-		if (isMain || getMedia().isEmpty()) {
-			mainMedium = medium;
-		}
-
-		return medium;
 	}
 
 	/**
-	 * Adds a medium to the architecture
+	 * Creates and adds a component
 	 */
-	public Medium addMedium(Medium medium) {
-
-		architectureComponents.put(medium.getName(),medium);
-
-		if (getMedia().isEmpty()) {
-			mainMedium = medium;
-		}
-
-		return medium;
+	public ArchitectureComponent addComponent(ArchitectureComponentType type, String defId, String name) {
+		ArchitectureComponentDefinition newDef = addComponentDefinition(type, defId);
+		ArchitectureComponent cmp = ArchitectureComponentFactory.createElement(
+				newDef, name);
+		architectureComponents.put(name, cmp);
+		return cmp;
 	}
 
 	/**
-	 * Adds a medium to the architecture only if this medium can be connected to
-	 * the operator and the switch
-	 * 
-	 * @return true if the medium could be added
+	 * Adds the reference of a bus and returns it to let the user add specific
+	 * properties
 	 */
-	public Medium addMedium(Medium medium, Operator op, Switch sw,
-			boolean isMain) {
-		if (op.canConnectTo(medium)) {
-			if (sw.canConnectTo(medium)) {
-				architectureComponents.put(medium.getName(),medium);
-
-				interconnections.add(new Interconnection(op, medium));
-				interconnections.add(new Interconnection(sw, medium));
-			}
+	public BusReference createBusReference(String id) {
+		if (busReferences.containsKey(id)) {
+			return busReferences.get(id);
+		} else {
+			BusReference def = new BusReference(id);
+			busReferences.put(def.getId(), def);
+			return def;
 		}
-
-		if (isMain || getMedia().isEmpty()) {
-			mainMedium = medium;
-		}
-
-		return medium;
-	}
-
-	/**
-	 * Adds an operator to the architecture
-	 */
-	public Operator addOperator(Operator op, boolean isMain) {
-		architectureComponents.put(op.getName(),op);
-
-		// The first added core is the main one unless isMain
-		// is set to true on another core
-		if (isMain || architectureComponents.isEmpty()) {
-			mainCore = op;
-		}
-
-		return op;
-	}
-
-	/**
-	 * Adds an operator to the architecture
-	 */
-	public Operator addOperator(Operator op) {
-		addOperator(op, false);
-
-		return op;
-	}
-
-	/**
-	 * Adds a switch to the architecture
-	 */
-	public Switch addSwitch(Switch sw) {
-		architectureComponents.put(sw.getName(),sw);
-		return sw;
 	}
 
 	@Override
@@ -208,52 +137,24 @@ public class MultiCoreArchitecture implements IArchitecture {
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
 
-		// Iterating on media
-		Iterator<Medium> mediaIt = this.getMedia().iterator();
+		// Iterating on components
+		Iterator<ArchitectureComponent> cmpIt = architectureComponents.values()
+				.iterator();
 
-		while (mediaIt.hasNext()) {
-			Medium next = mediaIt.next();
+		while (cmpIt.hasNext()) {
+			ArchitectureComponent next = cmpIt.next();
 
-			// each medium is cloned and added to the new archi
-			newArchi.architectureComponents.put(next.getName(),next.clone());
+			// each component is cloned and added to the new archi
+			ArchitectureComponent newCmp = newArchi.addComponent(next.getType(),next.getDefinition().getId(), next.getName());
+			newCmp.getDefinition().fill(next.getDefinition());
 		}
 
-		// Iterating on operators
-		Iterator<Operator> opIt = this.getOperators().iterator();
+		// We iterate on interconnections
+		Iterator<Interconnection> intIt = interconnections.iterator();
 
-		while (opIt.hasNext()) {
-			Operator next = opIt.next();
+		while (intIt.hasNext()) {
+			Interconnection nextInt = intIt.next();
 
-			// each operator is cloned and added to the new archi
-			// The archi is given to the clone method to reference
-			// the already added media
-			newArchi.architectureComponents.put(next.getName(),next.clone(this));
-		}
-
-		// Main core and media are set
-
-		if (getMainOperator() != null)
-			newArchi.mainCore = newArchi.getOperator(getMainOperator()
-					.getName());
-
-		if (getMainMedium() != null)
-			newArchi.mainMedium = newArchi.getMedium(getMainMedium().getName());
-
-		// We iterate again on both operators and media to add interconnexions
-		opIt = this.getOperators().iterator();
-
-		while (opIt.hasNext()) {
-			Operator nextOp = opIt.next();
-			mediaIt = this.getMedia().iterator();
-
-			while (mediaIt.hasNext()) {
-				Medium nextMedium = mediaIt.next();
-
-				if (this.existInterconnection(nextMedium, nextOp)) {
-					newArchi.connect(newArchi.getMedium(nextMedium.getName()),
-							newArchi.getOperator(nextOp.getName()));
-				}
-			}
 		}
 		return newArchi;
 	}
@@ -263,77 +164,66 @@ public class MultiCoreArchitecture implements IArchitecture {
 	 * 
 	 * @return true if the medium could be added
 	 */
-	public boolean connect(Medium medium, Operator operator) {
-		boolean b = false;
-
-		if (operator.canConnectTo(medium)) {
-			interconnections.add(new Interconnection(operator, medium));
-			b = true;
-		}
-
-		return b;
+	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
+			ArchitectureComponent cmp2, ArchitectureInterface if2) {
+		if (!existInterconnection(cmp1, if1, cmp2, if2))
+			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
 	}
 
 	/**
-	 * 
+	 * Interconnections have no direction
 	 */
-	private boolean existInterconnection(ArchitectureInterface mediumIntf,
-			ArchitectureInterface operatorIntf) {
+	private boolean existInterconnection(ArchitectureComponent cmp1,
+			ArchitectureInterface if1, ArchitectureComponent cmp2,
+			ArchitectureInterface if2) {
 
+		Interconnection testInter = new Interconnection(cmp1, if1, cmp2, if2);
 		Iterator<Interconnection> iterator = interconnections.iterator();
 
 		while (iterator.hasNext()) {
 			Interconnection currentInter = iterator.next();
 
-			if (currentInter.getMediumInterface().equals(mediumIntf)
-					&& currentInter.getOperatorInterface().equals(operatorIntf))
+			if (currentInter.equals(testInter))
 				return true;
 		}
 
 		return false;
 	}
 
-	/**
-	 * 
-	 */
-	private boolean existInterconnection(Medium medium, Operator operator) {
+	private boolean existInterconnection(ArchitectureComponent cmp1,
+			ArchitectureComponent cmp2) {
 
-		ArchitectureInterface mediumIntf = medium
-				.getInterface((MediumDefinition) medium.getDefinition());
-		ArchitectureInterface operatorIntf = operator
-				.getInterface((MediumDefinition) medium.getDefinition());
-
-		return existInterconnection(mediumIntf, operatorIntf);
-	}
-
-	@Override
-	public Medium getMainMedium() {
-		return mainMedium;
-	}
-
-	@Override
-	public Operator getMainOperator() {
-		return mainCore;
-	}
-
-	/**
-	 * Returns all the media
-	 */
-	public Set<Medium> getMedia() {
-		Set<Medium> media = new HashSet<Medium>();
-
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
+		Iterator<Interconnection> iterator = interconnections.iterator();
 
 		while (iterator.hasNext()) {
-			ArchitectureComponent currentCmp = iterator.next();
+			Interconnection currentInter = iterator.next();
 
-			if (currentCmp instanceof Medium) {
-				media.add((Medium) currentCmp);
-			}
+			if ((currentInter.getCp1().equals(cmp1) && currentInter.getCp2()
+					.equals(cmp2))
+					|| (currentInter.getCp2().equals(cmp1) && currentInter
+							.getCp1().equals(cmp2)))
+				return true;
 		}
 
-		return media;
+		return false;
+	}
+
+	public Medium getMainMedium() {
+		Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.medium);
+		if (!cmpSet.isEmpty())
+			return (Medium) getComponents(ArchitectureComponentType.medium)
+					.toArray()[0];
+		else
+			return null;
+	}
+
+	public Operator getMainOperator() {
+		Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.operator);
+		if (!cmpSet.isEmpty())
+			return (Operator) getComponents(ArchitectureComponentType.operator)
+					.toArray()[0];
+		else
+			return null;
 	}
 
 	/**
@@ -341,11 +231,12 @@ public class MultiCoreArchitecture implements IArchitecture {
 	 */
 	public Set<Medium> getMedia(Operator op) {
 		Set<Medium> media = new HashSet<Medium>();
-		Iterator<Medium> iterator = getMedia().iterator();
+		Iterator<ArchitectureComponent> iterator = getComponents(
+				ArchitectureComponentType.medium).iterator();
 
 		while (iterator.hasNext()) {
 
-			Medium currentMedium = iterator.next();
+			Medium currentMedium = (Medium) iterator.next();
 
 			if (existInterconnection(currentMedium, op)) {
 				media.add(currentMedium);
@@ -363,58 +254,23 @@ public class MultiCoreArchitecture implements IArchitecture {
 		return intersection;
 	}
 
-	/**
-	 * Returns all the operators
-	 */
-	@Override
-	public Medium getMedium(String name) {
-		Iterator<Medium> iterator = getMedia().iterator();
-
-		while (iterator.hasNext()) {
-			Medium currentmed = iterator.next();
-
-			if (currentmed.getName().compareToIgnoreCase(name) == 0) {
-				return (currentmed);
-			}
-		}
-
-		return null;
-	}
-
-	public MediumDefinition getMediumDefinition(String id) {
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
-
-		while (iterator.hasNext()) {
-			ArchitectureComponent currentCmp = iterator.next();
-
-			if (currentCmp instanceof Medium) {
-				if (currentCmp.getDefinition().getId().equalsIgnoreCase(id)) {
-					return (MediumDefinition) currentCmp.getDefinition();
-				}
-			}
-		}
-
-		return null;
-	}
-
-	@Override
 	public int getNumberOfOperators() {
-		return getOperators().size();
+		return getComponents(ArchitectureComponentType.operator).size();
 	}
 
 	/**
 	 * Returns all the operators
 	 */
-	@Override
-	public Operator getOperator(String name) {
-		Iterator<Operator> iterator = getOperators().iterator();
+	public ArchitectureComponent getComponent(ArchitectureComponentType type,
+			String name) {
+		Iterator<ArchitectureComponent> iterator = getComponents(type)
+				.iterator();
 
 		while (iterator.hasNext()) {
-			Operator currentop = iterator.next();
+			ArchitectureComponent currentcmp = iterator.next();
 
-			if (currentop.getName().compareToIgnoreCase(name) == 0) {
-				return (currentop);
+			if (currentcmp.getName().compareToIgnoreCase(name) == 0) {
+				return (currentcmp);
 			}
 		}
 
@@ -422,20 +278,20 @@ public class MultiCoreArchitecture implements IArchitecture {
 	}
 
 	/**
-	 * Returns all the operators
+	 * Returns all the components of type type
 	 */
-	@Override
-	public Set<Operator> getOperators() {
-		Set<Operator> ops = new HashSet<Operator>();
+	public Set<ArchitectureComponent> getComponents(
+			ArchitectureComponentType type) {
+		Set<ArchitectureComponent> ops = new HashSet<ArchitectureComponent>();
 
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.values().iterator();
 
 		while (iterator.hasNext()) {
 			ArchitectureComponent currentCmp = iterator.next();
 
-			if (currentCmp instanceof Operator) {
-				ops.add((Operator) currentCmp);
+			if (currentCmp.getType() == type) {
+				ops.add(currentCmp);
 			}
 		}
 
@@ -443,28 +299,54 @@ public class MultiCoreArchitecture implements IArchitecture {
 	}
 
 	/**
-	 * Returns the operators of the given definition
+	 * Returns all the components definitions of type type
 	 */
-	@Override
-	public Set<Operator> getOperators(OperatorDefinition def) {
-		Set<Operator> ops = new HashSet<Operator>();
+	public Set<ArchitectureComponentDefinition> getComponentDefinitions(
+			ArchitectureComponentType type) {
+		Set<ArchitectureComponentDefinition> opdefs = new HashSet<ArchitectureComponentDefinition>();
 
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
+		Iterator<ArchitectureComponentDefinition> iterator = architectureComponentDefinitions
+				.values().iterator();
 
 		while (iterator.hasNext()) {
-			ArchitectureComponent currentCmp = iterator.next();
+			ArchitectureComponentDefinition currentCmp = iterator.next();
 
-			if (currentCmp instanceof Operator) {
-				if (currentCmp.getDefinition().getId().equalsIgnoreCase(
-						def.getId())) {
-					ops.add((Operator) currentCmp);
-				}
+			if (currentCmp.getType() == type) {
+				opdefs.add(currentCmp);
 			}
 		}
 
-		return ops;
+		return opdefs;
 	}
+
+	/**
+	 * Returns the component definition with the given id and type
+	 */
+	public ArchitectureComponentDefinition getComponentDefinition(
+			ArchitectureComponentType type, String id) {
+
+		ArchitectureComponentDefinition def = architectureComponentDefinitions
+				.get(id);
+
+		if (def != null && def.getType() == type) {
+			return def;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns all the interconnections
+	 */
+	public Set<Interconnection> getInterconnections() {
+		return interconnections;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	// TODO: To remove
 
 	public int getNumberOfSwitches() {
 		return getSwitches().size();
@@ -473,7 +355,6 @@ public class MultiCoreArchitecture implements IArchitecture {
 	/**
 	 * Returns the switch with the given name
 	 */
-	@Override
 	public Switch getSwitch(String name) {
 		Iterator<Switch> iterator = getSwitches().iterator();
 
@@ -491,7 +372,6 @@ public class MultiCoreArchitecture implements IArchitecture {
 	/**
 	 * Returns the switch definition with the given id
 	 */
-	@Override
 	public SwitchDefinition getSwitchDefinition(String id) {
 		Iterator<Switch> iterator = getSwitches().iterator();
 
@@ -509,12 +389,11 @@ public class MultiCoreArchitecture implements IArchitecture {
 	/**
 	 * Returns all the switches
 	 */
-	@Override
 	public Set<Switch> getSwitches() {
 		Set<Switch> sws = new HashSet<Switch>();
 
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.values().iterator();
 
 		while (iterator.hasNext()) {
 			ArchitectureComponent currentCmp = iterator.next();
@@ -530,12 +409,11 @@ public class MultiCoreArchitecture implements IArchitecture {
 	/**
 	 * Returns the switches of the given definition
 	 */
-	@Override
 	public Set<Switch> getSwitches(SwitchDefinition def) {
 		Set<Switch> sws = new HashSet<Switch>();
 
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
+		Iterator<ArchitectureComponent> iterator = architectureComponents
+				.values().iterator();
 
 		while (iterator.hasNext()) {
 			ArchitectureComponent currentCmp = iterator.next();
@@ -552,52 +430,10 @@ public class MultiCoreArchitecture implements IArchitecture {
 	}
 
 	/**
-	 * Returns all the interconnections
+	 * Adds a switch to the architecture
 	 */
-	@Override
-	public Set<Interconnection> getInterconnections() {
-		return interconnections;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public Set<OperatorDefinition> getOperatorDefinitions() {
-		Set<OperatorDefinition> opdefs = new HashSet<OperatorDefinition>();
-
-		Iterator<ArchitectureComponent> iterator = architectureComponents.values()
-				.iterator();
-
-		while (iterator.hasNext()) {
-			ArchitectureComponent currentCmp = iterator.next();
-
-			if (currentCmp instanceof Operator) {
-				if(!opdefs.contains(currentCmp.getDefinition()))
-					opdefs.add((OperatorDefinition)currentCmp.getDefinition());
-			}
-		}
-
-		return opdefs;
-	}
-
-	/**
-	 * Returns the operator definition with the given id
-	 */
-	@Override
-	public OperatorDefinition getComponentDefinition(ArchitectureComponentType type,String id) {
-		Iterator<Operator> iterator = getOperators().iterator();
-
-		while (iterator.hasNext()) {
-			Operator currentop = iterator.next();
-
-			if (currentop.getDefinition().getId().compareToIgnoreCase(id) == 0) {
-				return ((OperatorDefinition) currentop.getDefinition());
-			}
-		}
-
-		return null;
+	public Switch addSwitch(Switch sw) {
+		architectureComponents.put(sw.getName(), sw);
+		return sw;
 	}
 }

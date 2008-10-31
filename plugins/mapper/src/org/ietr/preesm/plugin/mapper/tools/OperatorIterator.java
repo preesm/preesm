@@ -45,9 +45,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
@@ -64,7 +63,7 @@ public class OperatorIterator implements Iterator<Operator> {
 	/**
 	 * Constructor from an architecture and a reference vertex
 	 */
-	public OperatorIterator(MapperDAGVertex vertex, IArchitecture archi) {
+	public OperatorIterator(MapperDAGVertex vertex, MultiCoreArchitecture archi) {
 		super();
 
 		createList(vertex, archi);
@@ -72,7 +71,7 @@ public class OperatorIterator implements Iterator<Operator> {
 		currentIndex = 0;
 	}
 
-	public void createList(MapperDAGVertex vertex, IArchitecture archi) {
+	public void createList(MapperDAGVertex vertex, MultiCoreArchitecture archi) {
 
 		Set<Operator> defset = vertex.getInitialVertexProperty()
 				.getOperatorSet();

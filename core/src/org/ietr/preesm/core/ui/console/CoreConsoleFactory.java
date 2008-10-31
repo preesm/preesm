@@ -1,17 +1,9 @@
 package org.ietr.preesm.core.ui.console;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.IConsoleFactory;
-import org.eclipse.ui.console.IConsoleManager;
-import org.eclipse.ui.console.MessageConsole;
 import org.ietr.preesm.core.log.PreesmLogger;
 
 /**

@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DAGVertex;
@@ -121,7 +121,7 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Fills itself from an SDF and an architecture
 	 */
-	public void generateSource(DirectedAcyclicGraph algorithm, IArchitecture architecture) {
+	public void generateSource(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture) {
 
 		// Gets the task vertices allocated to the current operator in
 		// scheduling order

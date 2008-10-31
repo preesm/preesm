@@ -50,9 +50,9 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -71,7 +71,6 @@ import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
-import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -93,7 +92,7 @@ public class FastAlgorithm extends Observable {
 		DAGCreator dagCreator = new DAGCreator();
 
 		// Generating archi
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		// Generating random sdf dag
 		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
@@ -107,7 +106,7 @@ public class FastAlgorithm extends Observable {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
+			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), 50);
 			tmgr.addTiming(newt);
 		}
@@ -191,7 +190,7 @@ public class FastAlgorithm extends Observable {
 
 	public MapperDAG map(String threadName,
 			AbcType simulatorType, MapperDAG dag,
-			IArchitecture archi, List<MapperDAGVertex> CpnDominantList,
+			MultiCoreArchitecture archi, List<MapperDAGVertex> CpnDominantList,
 			List<MapperDAGVertex> BlockingNodesList,
 			List<MapperDAGVertex> FinalcriticalpathList, int MAXCOUNT,
 			int MAXSTEP, int MARGIN, boolean alreadyimplanted, boolean pfastused, 

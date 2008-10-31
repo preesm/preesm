@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.looselytimed;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -75,7 +75,7 @@ public class LooselyTimedAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(MapperDAG dag, IArchitecture archi) {
+	public LooselyTimedAbc(MapperDAG dag, MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs

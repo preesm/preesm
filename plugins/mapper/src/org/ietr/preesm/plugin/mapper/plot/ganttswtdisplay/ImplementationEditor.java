@@ -12,7 +12,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -35,7 +35,7 @@ public class ImplementationEditor extends EditorPart {
 
 	private MapperDAG dag = null;
 	private SDFGraph sdf = null;
-	private IArchitecture archi = null;
+	private MultiCoreArchitecture archi = null;
 	private IScenario scenario = null;
 	private TextParameters params = null;
 	

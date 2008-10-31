@@ -40,7 +40,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.plugin.mapper;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.TaskResult;
@@ -59,7 +59,7 @@ public abstract class AbstractMapping implements IMapping {
 
 	
 	@Override
-	public abstract TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+	public abstract TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
 			IScenario scenatio);
 

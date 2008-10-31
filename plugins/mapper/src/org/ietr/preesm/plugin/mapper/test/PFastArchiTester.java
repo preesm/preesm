@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -85,7 +86,7 @@ public class PFastArchiTester {
 				maxInDegree, minOutDegree, maxOutDegree, 1500,true);
 
 		// Generating archi
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		// Generating constraints
 		IScenario scenario = new Scenario();
@@ -93,7 +94,7 @@ public class PFastArchiTester {
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
 			Double taskSize = Math.random() * 1000 + 500;
-			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
+			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), taskSize.intValue());
 			tmgr.addTiming(newt);
 		}
@@ -116,7 +117,7 @@ public class PFastArchiTester {
 		int nboperator = 7;
 		tester.testArchipfast(dag, Examples.get2C64Archi(), choixsimu,
 				nboperator);
-		tester.testArchipfast(dag, Examples.get3C64Archi(), choixsimu,
+		/*tester.testArchipfast(dag, Examples.get3C64Archi(), choixsimu,
 				nboperator);
 		tester.testArchipfast(dag, Examples.get4C64Archi(), choixsimu,
 				nboperator);
@@ -126,7 +127,7 @@ public class PFastArchiTester {
 		// different simulators with the same architecture
 		tester.testArchipfast(dag, Examples.get4C64Archi(), 0, nboperator);
 		tester.testArchipfast(dag, Examples.get4C64Archi(), 1, nboperator);
-		tester.testArchipfast(dag, Examples.get4C64Archi(), 2, nboperator);
+		tester.testArchipfast(dag, Examples.get4C64Archi(), 2, nboperator);*/
 
 		logger.log(Level.FINE, "Test demo finished");
 

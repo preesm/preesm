@@ -4,16 +4,10 @@
 package org.ietr.preesm.plugin.mapper.plot.timeswtdisplay;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.Activator;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * @author mpelcat

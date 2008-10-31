@@ -2,11 +2,10 @@ package org.ietr.preesm.plugin.mapper.commcontenlistsched;
 
 import java.util.HashMap;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Interconnection;
-import org.ietr.preesm.core.architecture.Medium;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.Switch;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.BusDescriptor;
@@ -19,7 +18,7 @@ import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.TGVertexDesc
  * @author pmu
  * 
  *         The ArchitectureTransformer converts different architectures between
- *         IArchitecture and AlgorithmDescriptor
+ *         MultiCoreArchitecture and AlgorithmDescriptor
  */
 public class ArchitectureTransformer {
 
@@ -29,15 +28,15 @@ public class ArchitectureTransformer {
 	}
 
 	public ArchitectureDescriptor architecture2Descriptor(
-			IArchitecture architecture) {
+			MultiCoreArchitecture architecture) {
 		MultiCoreArchitecture archi = (MultiCoreArchitecture) architecture;
 		ArchitectureDescriptor archiDescriptor = new ArchitectureDescriptor();
 		this.ComponentDescriptorBuffer = archiDescriptor.getComponents();
-		for (Operator indexOperator : archi.getOperators()) {
+		for (ArchitectureComponent indexOperator : archi.getComponents(ArchitectureComponentType.operator)) {
 			new ProcessorDescriptor(indexOperator.getName(), indexOperator
 					.getDefinition().getId(), ComponentDescriptorBuffer);
 		}
-		for (Medium indexMedium : archi.getMedia()) {
+		for (ArchitectureComponent indexMedium : archi.getComponents(ArchitectureComponentType.medium)) {
 			new BusDescriptor(indexMedium.getName(), indexMedium
 					.getDefinition().getId(), ComponentDescriptorBuffer);
 		}
@@ -47,28 +46,28 @@ public class ArchitectureTransformer {
 		}
 		for (Interconnection indexInterconnection : archi.getInterconnections()) {
 			((TGVertexDescriptor) ComponentDescriptorBuffer
-					.get(indexInterconnection.getOperatorInterface().getOwner()
+					.get(indexInterconnection.getInterface(ArchitectureComponentType.operator).getOwner()
 							.getName()))
 					.addInputLink((BusDescriptor) ComponentDescriptorBuffer
-							.get(indexInterconnection.getMediumInterface()
+							.get(indexInterconnection.getInterface(ArchitectureComponentType.medium)
 									.getOwner().getName()));
 			((TGVertexDescriptor) ComponentDescriptorBuffer
-					.get(indexInterconnection.getOperatorInterface().getOwner()
+					.get(indexInterconnection.getInterface(ArchitectureComponentType.operator).getOwner()
 							.getName()))
 					.addOutputLink((BusDescriptor) ComponentDescriptorBuffer
-							.get(indexInterconnection.getMediumInterface()
+							.get(indexInterconnection.getInterface(ArchitectureComponentType.medium)
 									.getOwner().getName()));
 			((BusDescriptor) ComponentDescriptorBuffer.get(indexInterconnection
-					.getMediumInterface().getOwner().getName()))
+					.getInterface(ArchitectureComponentType.medium).getOwner().getName()))
 					.addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
-							.get(indexInterconnection.getOperatorInterface()
+							.get(indexInterconnection.getInterface(ArchitectureComponentType.operator)
 									.getOwner().getName()));
 		}
 
 		return archiDescriptor;
 	}
 
-	public IArchitecture descriptor2Architecture(
+	public MultiCoreArchitecture descriptor2Architecture(
 			ArchitectureDescriptor archiDescriptor) {
 		MultiCoreArchitecture architecture = new MultiCoreArchitecture(
 				archiDescriptor.getName());

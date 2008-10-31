@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.task;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -63,7 +63,7 @@ public class TaskResult {
 	/**
 	 * Returned architecture
 	 */
-	private IArchitecture architecture;
+	private MultiCoreArchitecture architecture;
 
 	/**
 	 * Returned source file list
@@ -105,7 +105,7 @@ public class TaskResult {
 	/**
 	 * Returns the architecture of this result.
 	 */
-	public IArchitecture getArchitecture() {
+	public MultiCoreArchitecture getArchitecture() {
 		return architecture;
 	}
 
@@ -160,7 +160,7 @@ public class TaskResult {
 		this.dag = dag;
 	}
 	
-	public void setArchitecture(IArchitecture architecture) {
+	public void setArchitecture(MultiCoreArchitecture architecture) {
 		this.architecture = architecture;
 	}
 

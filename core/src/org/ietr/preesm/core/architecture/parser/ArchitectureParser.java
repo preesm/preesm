@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.parser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -45,24 +43,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Medium;
 import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
-import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.Scenario;
-import org.ietr.preesm.core.scenario.Timing;
-import org.sdf4j.importer.GMLSDFImporter;
-import org.sdf4j.importer.InvalidFileException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -123,7 +109,7 @@ public class ArchitectureParser {
 	/**
 	 * Parses the first level of hierarchy
 	 */
-	public IArchitecture parseDocument() {
+	public MultiCoreArchitecture parseDocument() {
 		if(dom != null){
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
@@ -203,7 +189,7 @@ public class ArchitectureParser {
 
 			node = node.getNextSibling();
 		}
-
+/*
 		if(cmpType.equals("Operator")){
 
 			OperatorDefinition opDef = new OperatorDefinition(cmpDefId);
@@ -220,7 +206,7 @@ public class ArchitectureParser {
 			if(m!=null)
 				archi.addMedium(m);
 			
-		}
+		}*/
 	}
 	
 	/**

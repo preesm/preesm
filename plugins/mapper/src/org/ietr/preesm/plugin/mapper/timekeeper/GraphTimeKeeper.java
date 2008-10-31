@@ -47,8 +47,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.looselytimed.LooselyTimedAbc;
@@ -516,7 +518,7 @@ public class GraphTimeKeeper {
 		logger.setLevel(Level.ALL);
 
 		logger.log(Level.FINEST, "Creating archi");
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 		archi = archi.clone();
 
 		logger.log(Level.FINEST, "Creating DAG");
@@ -526,112 +528,112 @@ public class GraphTimeKeeper {
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());
-		simulator.implant(dag.getMapperDAGVertex("n1"), archi
-				.getOperator("c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n3"), archi
-				.getOperator("c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n2"), archi
-				.getOperator("c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n7"), archi
-				.getOperator("c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n6"), archi
-				.getOperator("c64x_2"), true);
+		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_2"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n5"), archi
-				.getOperator("c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n4"), archi
-				.getOperator("c64x_3"), true);
+		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_3"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n8"), archi
-				.getOperator("c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n9"), archi
-				.getOperator("c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi
+				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
 
-		time = simulator.getFinalTime(archi.getOperator("c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getOperator("c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
 		logger.log(Level.FINEST, "Iterating in t order");

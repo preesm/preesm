@@ -18,7 +18,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
@@ -116,8 +116,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			Combo combo = ((Combo) e.getSource());
 			String item = combo.getItem(combo.getSelectionIndex());
 
-			IArchitecture archi = (IArchitecture) combo.getData();
-			currentOpDef = archi.getComponentDefinition(ArchitectureComponentType.operator,item);
+			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo.getData();
+			currentOpDef = (OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,item);
 
 			tableViewer.refresh();
 		}

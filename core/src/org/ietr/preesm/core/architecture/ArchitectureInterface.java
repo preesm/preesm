@@ -47,9 +47,9 @@ package org.ietr.preesm.core.architecture;
 public class ArchitectureInterface {
 
 	/**
-	 * type of the corresponding medium
+	 * type of the corresponding bus
 	 */
-	private ArchitectureInterfaceDefinition interfacedefinition;
+	private BusReference busReference;
 
 	/**
 	 * owner of the corresponding interface
@@ -65,22 +65,22 @@ public class ArchitectureInterface {
 	 * 
 	 * Constructor
 	 */
-	public ArchitectureInterface(ArchitectureInterfaceDefinition interfacedef,
+	public ArchitectureInterface(BusReference busReference,
 			ArchitectureComponent owner) {
-		this.interfacedefinition = interfacedef;
+		this.busReference = busReference;
 
 		this.usedSlots = 0;
 
 		this.owner = owner;
 	}
 
-	public ArchitectureInterface clone(MediumDefinition mediumDef,
+	public ArchitectureInterface clone(BusReference busRef,
 			ArchitectureComponent newOwner) {
 
 		// The interface definition is cloned and references the given medium
 		// definition
 		ArchitectureInterface newintf = new ArchitectureInterface(
-				this.interfacedefinition.clone(mediumDef), newOwner);
+				(BusReference)this.busReference.clone(), newOwner);
 
 		newintf.usedSlots = 0; // usedSlot will be incremented when
 		// interconnexions are added
@@ -94,17 +94,13 @@ public class ArchitectureInterface {
 		if (obj instanceof ArchitectureInterface) {
 			ArchitectureInterface intf = (ArchitectureInterface) obj;
 			return owner.equals(intf.owner)
-					&& interfacedefinition.equals(intf.interfacedefinition);
+					&& busReference.equals(intf.busReference);
 		}
 		return false;
 	}
 
-	public ArchitectureInterfaceDefinition getInterfaceDefinition() {
-		return interfacedefinition;
-	}
-
-	public MediumDefinition getMediumDefinition() {
-		return interfacedefinition.getMediumDefinition();
+	public BusReference getBusReference() {
+		return busReference;
 	}
 
 	/**
@@ -112,14 +108,6 @@ public class ArchitectureInterface {
 	 */
 	public void incrementUsedSlots() {
 		usedSlots += 1;
-	}
-
-	/**
-	 * @return true if the interface has reached its maximal number of
-	 *         interconnections
-	 */
-	public boolean isFull() {
-		return (usedSlots == interfacedefinition.getMultiplicity());
 	}
 
 	public ArchitectureComponent getOwner() {

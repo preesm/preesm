@@ -16,7 +16,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -147,8 +148,8 @@ public class SDFCheckStateListener implements SelectionListener,
 			Combo combo = ((Combo) e.getSource());
 			String item = combo.getItem(combo.getSelectionIndex());
 
-			IArchitecture archi = (IArchitecture) combo.getData();
-			currentOpDef = archi.getOperator(item);
+			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo.getData();
+			currentOpDef = (Operator)archi.getComponent(ArchitectureComponentType.operator,item);
 			updateCheck();
 		}
 

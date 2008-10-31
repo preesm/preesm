@@ -51,7 +51,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.sdf4j.importer.GMLSDFImporter;
@@ -88,7 +88,7 @@ public class ScenarioParser {
 	/**
 	 * current architecture
 	 */
-	private IArchitecture archi = null;
+	private MultiCoreArchitecture archi = null;
 
 	public ScenarioParser() {
 
@@ -213,7 +213,7 @@ public class ScenarioParser {
 	/**
 	 * Gets the Architecture from its url by parsing the architecture file
 	 */
-	static public IArchitecture getArchitecture(String url) {
+	static public MultiCoreArchitecture getArchitecture(String url) {
 
 		return Examples.get2C64Archi();
 	}
@@ -262,8 +262,8 @@ public class ScenarioParser {
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {
-						Operator def = archi
-								.getOperator(name);
+						Operator def = (Operator)archi
+								.getComponent(ArchitectureComponentType.operator,name);
 						if (def != null)
 							cg.addOperator(def);
 					}
@@ -321,7 +321,7 @@ public class ScenarioParser {
 				}
 
 				SDFAbstractVertex vertex = algo.getVertex(vertexname);
-				OperatorDefinition opdef = archi
+				OperatorDefinition opdef = (OperatorDefinition)archi
 						.getComponentDefinition(ArchitectureComponentType.operator,opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {

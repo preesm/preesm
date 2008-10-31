@@ -28,16 +28,9 @@
  */
 package org.ietr.preesm.core.ui.perspectives;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.IConsoleManager;
-import org.eclipse.ui.console.MessageConsole;
-import org.ietr.preesm.core.log.PreesmLogger;
-import org.ietr.preesm.core.ui.Activator;
 
 /**
  * This class creates the layout associated with the preesm core perspective.

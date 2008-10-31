@@ -40,7 +40,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.core.task;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -67,7 +67,7 @@ public interface IMapping extends ITransformation {
 	 * @param scenario
 	 *            The transformation constraints.
 	 */
-	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters algorithmParameters,
 			IScenario scenario);
 

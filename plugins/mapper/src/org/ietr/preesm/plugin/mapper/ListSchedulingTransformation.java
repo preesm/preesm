@@ -45,7 +45,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
@@ -86,7 +85,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		logger.setLevel(Level.FINEST);
 
 		// Generating archi
-		MultiCoreArchitecture architecture = Examples.get4C64Archi();
+		MultiCoreArchitecture architecture = Examples.get2C64Archi();
 
 		// Generating random sdf dag
 		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
@@ -136,7 +135,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 	 * Function called while running the plugin
 	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
 			IScenario scenario) {
 

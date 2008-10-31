@@ -38,6 +38,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -82,7 +83,12 @@ public abstract class ArchitectureComponent {
 	/**
 	 * Adds an interface to the architecture component
 	 */
-	public abstract boolean addInterface(ArchitectureInterface intf);
+	public final ArchitectureInterface addInterface(ArchitectureInterface intf) {
+
+		availableInterfaces.add(intf);
+		
+		return intf;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -103,23 +109,29 @@ public abstract class ArchitectureComponent {
 	}
 
 	/**
-	 * Gets the interface for the given medium type
+	 * Gets the interface for the given bus type
 	 * 
 	 * @return the interface or null if it does not exist
 	 */
-	public ArchitectureInterface getInterface(MediumDefinition mediumdef) {
+	public ArchitectureInterface getInterface(BusReference busRef) {
 
+		ArchitectureInterface searchedIntf = null;
+		
 		ListIterator<ArchitectureInterface> it = getAvailableInterfaces()
 				.listIterator();
 
 		while (it.hasNext()) {
 			ArchitectureInterface intf = it.next();
-			if (mediumdef.sameId(intf.getMediumDefinition())) {
-				return intf;
+			if (busRef.equals(intf.getBusReference())) {
+				searchedIntf =  intf;
 			}
 		}
 
-		return null;
+		if(searchedIntf == null){
+			searchedIntf = new ArchitectureInterface(busRef,this);
+		}
+		
+		return searchedIntf;
 	}
 
 	public String getName() {
@@ -132,4 +144,27 @@ public abstract class ArchitectureComponent {
 	}
 
 	public abstract ArchitectureComponentType getType();
+
+	
+	public final ArchitectureComponent clone(MultiCoreArchitecture archi) {
+
+		// Definition is cloned		
+		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition().getType(),this.getDefinition().getId(), this.getName());
+		newCmp.getDefinition().fill(this.getDefinition());
+		
+		// We iterate on interfaces
+		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
+				.iterator();
+
+		while (interIt.hasNext()) {
+			// Each interface is cloned and added to the new medium.
+			// The interface medium definition is set to the current definition
+			ArchitectureInterface itf = interIt.next();
+			newCmp.availableInterfaces.add(itf.clone(
+					archi.createBusReference(itf.getBusReference().getId()), newCmp));
+		}
+
+		return newCmp;
+	}
+
 }

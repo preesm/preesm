@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -83,7 +84,7 @@ public class ListSchedulingArchiTester {
 				maxInDegree, minOutDegree, maxOutDegree, 300,true);
 
 		// Generating archi
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		// Generating constraints
 		IScenario scenario = new Scenario();
@@ -91,7 +92,7 @@ public class ListSchedulingArchiTester {
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
 			Double taskSize = Math.random() * 1000;
-			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
+			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), taskSize.intValue());
 			tmgr.addTiming(newt);
 		}
@@ -102,11 +103,11 @@ public class ListSchedulingArchiTester {
 		// perform list scheduling with different architecture but the same
 		// simulator
 		int choixsimu = 1;
-		tester.testArchi(dag, Examples.get1C64Archi(), choixsimu);
+		//tester.testArchi(dag, Examples.get1C64Archi(), choixsimu);
 		tester.testArchi(dag, Examples.get2C64Archi(), choixsimu);
-		tester.testArchi(dag, Examples.get3C64Archi(), choixsimu);
-		tester.testArchi(dag, Examples.get4C64Archi(), choixsimu);
-		tester.testArchi(dag, Examples.get4C64_6edmaArchi(), choixsimu);
+		//tester.testArchi(dag, Examples.get3C64Archi(), choixsimu);
+		//tester.testArchi(dag, Examples.get4C64Archi(), choixsimu);
+		//tester.testArchi(dag, Examples.get4C64_6edmaArchi(), choixsimu);
 
 	}
 

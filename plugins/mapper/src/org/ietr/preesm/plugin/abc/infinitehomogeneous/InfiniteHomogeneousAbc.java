@@ -42,8 +42,8 @@ package org.ietr.preesm.plugin.abc.infinitehomogeneous;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MediumDefinition;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -69,7 +69,7 @@ public class InfiniteHomogeneousAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public InfiniteHomogeneousAbc(MapperDAG dag,
-			IArchitecture archi) {
+			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done

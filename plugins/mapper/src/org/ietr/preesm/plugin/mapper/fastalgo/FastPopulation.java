@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -74,7 +73,7 @@ public class FastPopulation {
 	private AbcType simulatorType;
 
 	// architecture used to make this population
-	private IArchitecture archi;
+	private MultiCoreArchitecture archi;
 
 	/**
 	 * Constructors
@@ -91,7 +90,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum,
-			AbcType simulatorType, IArchitecture archi) {
+			AbcType simulatorType, MultiCoreArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.simulatorType = simulatorType;
@@ -106,7 +105,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, List<MapperDAG> population,
-			AbcType simulatorType, IArchitecture archi) {
+			AbcType simulatorType, MultiCoreArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.population = population;
@@ -126,11 +125,11 @@ public class FastPopulation {
 		this.simulatorType = simulatorType;
 	}
 
-	public IArchitecture getArchi() {
+	public MultiCoreArchitecture getArchi() {
 		return archi;
 	}
 
-	public void setArchi(IArchitecture archi) {
+	public void setArchi(MultiCoreArchitecture archi) {
 		this.archi = archi;
 	}
 
@@ -224,7 +223,7 @@ public class FastPopulation {
 	public static void main(String[] args) {
 
 		DAGCreator dagCreator = new DAGCreator();
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		FastPopulation population = new FastPopulation(5,

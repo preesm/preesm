@@ -57,8 +57,8 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -77,7 +77,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
 import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
-import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -149,7 +148,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			IArchitecture archi, AbcType type,
+			MultiCoreArchitecture archi, AbcType type,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
@@ -314,7 +313,7 @@ public class PGeneticAlgo extends Observable {
 		Logger logger = PreesmLogger.getLogger();
 
 		DAGCreator dagCreator = new DAGCreator();
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 		// Generating random sdf dag
 		int nbVertex = 15, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
@@ -327,7 +326,7 @@ public class PGeneticAlgo extends Observable {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
+			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), 50);
 			tmgr.addTiming(newt);
 		}

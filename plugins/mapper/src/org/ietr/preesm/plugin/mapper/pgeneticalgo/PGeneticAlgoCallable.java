@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
@@ -62,7 +62,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	private AbcType simulatorType;
 
 	// Architecture chosen
-	private IArchitecture architecture;
+	private MultiCoreArchitecture architecture;
 
 	// thread named by threadName
 	private String threadName;
@@ -86,7 +86,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param simulatorType
 	 * @param threadName
 	 */
-	public PGeneticAlgoCallable(IArchitecture architecture,
+	public PGeneticAlgoCallable(MultiCoreArchitecture architecture,
 			int generationNumber, List<Chromosome> population,
 			int populationSize, AbcType simulatorType,
 			String threadName) {

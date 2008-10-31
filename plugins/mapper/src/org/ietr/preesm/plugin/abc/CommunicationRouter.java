@@ -43,10 +43,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Medium;
 import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.MediumProperty;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
@@ -62,12 +64,12 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
  */
 public class CommunicationRouter {
 
-	private IArchitecture archi;
+	private MultiCoreArchitecture archi;
 
 	/**
 	 * Constructor from a given architecture
 	 */
-	public CommunicationRouter(IArchitecture archi) {
+	public CommunicationRouter(MultiCoreArchitecture archi) {
 
 		this.archi = archi;
 	}
@@ -184,13 +186,13 @@ public class CommunicationRouter {
 
 			// There is no best medium directly connecting op1 and op2
 			// Recursively appending best routes
-			Iterator<Operator> iterator = archi.getOperators().iterator();
+			Iterator<ArchitectureComponent> iterator = archi.getComponents(ArchitectureComponentType.operator).iterator();
 			Route bestSubRoute = null;
 
 			// Iterating all operators
 			while (iterator.hasNext()) {
 				
-				Operator op = iterator.next();
+				Operator op = (Operator)iterator.next();
 				Medium m = getDirectRoute(op1, op);
 
 				// If there is a direct route between op1 and the current op,

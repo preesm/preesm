@@ -34,53 +34,57 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.architecture;
 
 /**
- * An interconnection joins one interface of a medium to one interface of an
- * operator
+ * An interconnection joins one interface of a component to one interface of a
+ * component
  * 
  * @author mpelcat
  */
 public class Interconnection {
 
-	/**
-	 * Type of the medium connectable with this interconnection
-	 */
-	private MediumDefinition mediumdef;
+	private ArchitectureComponent cp1;
+	private ArchitectureInterface if1;
 
-	private ArchitectureInterface mediumInterface;
+	private ArchitectureComponent cp2;
+	private ArchitectureInterface if2;
 
-	private ArchitectureInterface operatorInterface;
+	public Interconnection(ArchitectureComponent cp1,
+			ArchitectureInterface if1, ArchitectureComponent cp2,
+			ArchitectureInterface if2) {
+		this.cp1 = cp1;
+		this.cp2 = cp2;
 
-	public Interconnection(Operator op, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
+		this.if1 = if1;
+		this.if2 = if2;
+	}
 
-		if (op.canConnectTo(med)) {
-			operatorInterface = op.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Interconnection) {
+			Interconnection intc = (Interconnection) obj;
+			return (intc.cp1.equals(this.cp1) && intc.cp2.equals(this.cp2)
+					&& intc.if1.equals(this.if1) && intc.if2.equals(this.if2)) ||
+					(intc.cp2.equals(this.cp1) && intc.cp1.equals(this.cp2)
+							&& intc.if2.equals(this.if1) && intc.if1.equals(this.if2));
 		}
+		return false;
 	}
 	
-	public Interconnection(Switch sw, Medium med) {
-		mediumdef = new MediumDefinition((MediumDefinition) med.getDefinition());
-
-		if (sw.canConnectTo(med)) {
-			operatorInterface = sw.getInterface(mediumdef);
-			operatorInterface.incrementUsedSlots();
-			mediumInterface = med.getInterface(mediumdef);
-			mediumInterface.incrementUsedSlots();
-		}
+	public ArchitectureComponent getCp1() {
+		return cp1;
 	}
 
-	public ArchitectureInterface getMediumInterface() {
-		return mediumInterface;
+	public ArchitectureComponent getCp2() {
+		return cp2;
 	}
 
-	public ArchitectureInterface getOperatorInterface() {
-		return operatorInterface;
+	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
+
+		if(cp1.getType() == type) return if1;
+		else if(cp2.getType() == type) return if2;
+		else return null;
 	}
 }

@@ -45,8 +45,8 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -86,7 +86,7 @@ public class PFASTTransformation extends AbstractMapping {
 		// PreesmLogger.getLogger().setLevel(Level.FINER);
 
 		// Generating archi
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		// Generating random sdf dag
 		int nbVertex = 20, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
@@ -100,7 +100,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing(archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
+			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
 					.getVertex(name), 100);
 			tmgr.addTiming(newt);
 		}
@@ -123,7 +123,7 @@ public class PFASTTransformation extends AbstractMapping {
 	 * Function called while running the plugin
 	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm, IArchitecture architecture,
+	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
 			IScenario scenario) {
 

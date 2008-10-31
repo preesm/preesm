@@ -4,10 +4,9 @@
 package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.Activator;
@@ -22,11 +21,11 @@ public class ImplementationEditorInput implements IEditorInput {
 
 	private MapperDAG dag = null;
 	private SDFGraph sdf = null;
-	private IArchitecture archi = null;
+	private MultiCoreArchitecture archi = null;
 	private IScenario scenario = null;
 	private TextParameters params = null;
 	
-	public ImplementationEditorInput(IArchitecture archi, MapperDAG dag,
+	public ImplementationEditorInput(MultiCoreArchitecture archi, MapperDAG dag,
 			TextParameters params, IScenario scenario, SDFGraph sdf) {
 		super();
 		this.archi = archi;
@@ -44,7 +43,7 @@ public class ImplementationEditorInput implements IEditorInput {
 		return sdf;
 	}
 
-	public IArchitecture getArchi() {
+	public MultiCoreArchitecture getArchi() {
 		return archi;
 	}
 

@@ -45,9 +45,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Medium;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.VertexType;
@@ -143,7 +144,7 @@ public class CodeGeneration implements ICodeGeneration {
 	/**
 	 * Kwok example 2 -> implanted DAG on one processor
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_single(IArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_single(MultiCoreArchitecture architecture) {
 
 		/* Construct DAG */
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
@@ -202,14 +203,14 @@ public class CodeGeneration implements ICodeGeneration {
 	/**
 	 * Kwok example 2 -> implanted DAG on 4 processors like with list sched
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_multi(IArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_multi(MultiCoreArchitecture architecture) {
 
 		DAGVertex vertex;
 		
-		Operator c64x_1 = architecture.getOperator("C64x_1");
-		Operator c64x_2 = architecture.getOperator("C64x_2");
-		Operator c64x_3 = architecture.getOperator("C64x_3");
-		Operator c64x_4 = architecture.getOperator("C64x_4");
+		Operator c64x_1 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_1");
+		Operator c64x_2 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_2");
+		Operator c64x_3 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_3");
+		Operator c64x_4 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_4");
 
 		Medium edma = architecture.getMainMedium();
 		
@@ -303,20 +304,20 @@ public class CodeGeneration implements ICodeGeneration {
 	/**
 	 * Kwok example 2 -> implanted DAG on 4 processors like with list sched
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_multi_with_routes(IArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_multi_with_routes(MultiCoreArchitecture architecture) {
 
 		DAGVertex vertex;
 		
-		Operator c64x_1 = architecture.getOperator("C64x_1");
-		Operator c64x_2 = architecture.getOperator("C64x_2");
-		Operator c64x_3 = architecture.getOperator("C64x_3");
-		Operator c64x_4 = architecture.getOperator("C64x_4");
-		Operator c64x_5 = architecture.getOperator("C64x_5");
-		Operator c64x_6 = architecture.getOperator("C64x_6");
+		Operator c64x_1 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_1");
+		Operator c64x_2 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_2");
+		Operator c64x_3 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_3");
+		Operator c64x_4 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_4");
+		Operator c64x_5 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_5");
+		Operator c64x_6 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_6");
 
-		Medium edma1 = architecture.getMedium("edma_Faraday1");
-		Medium edma2 = architecture.getMedium("edma_Faraday2");
-		Medium rIO = architecture.getMedium("rapidIO");
+		Medium edma1 = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"edma_Faraday1");
+		Medium edma2 = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"edma_Faraday2");
+		Medium rIO = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"rapidIO");
 		
 		/* Construct DAG */
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
@@ -422,10 +423,10 @@ public class CodeGeneration implements ICodeGeneration {
 		CodeGeneration gen = new CodeGeneration();
 		// Input archi & algo
 		
-		//IArchitecture architecture = Examples.get4C64Archi();
+		//MultiCoreArchitecture architecture = Examples.get4C64Archi();
 		//SDFGraph algorithm = gen.implanteddagexample2_multi(architecture);
 	
-		IArchitecture architecture = Examples.get2FaradayArchi();
+		MultiCoreArchitecture architecture = Examples.get2C64Archi();
 		DirectedAcyclicGraph algorithm = gen.implanteddagexample2_multi_with_routes(architecture);
 		
 		// Input file list
@@ -441,7 +442,7 @@ public class CodeGeneration implements ICodeGeneration {
 	}
 
 	@Override
-	public TaskResult transform(DirectedAcyclicGraph algorithm, IArchitecture architecture, TextParameters parameters) {
+	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, TextParameters parameters) {
 
 		String sourcePath = parameters.getVariable("sourcePath");
 		TaskResult result = new TaskResult();
@@ -464,7 +465,7 @@ public class CodeGeneration implements ICodeGeneration {
 	 * The implementation is a tagged SDF graph.
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			IArchitecture architecture, SourceFileList list) {
+			MultiCoreArchitecture architecture, SourceFileList list) {
 
 		list.generateSourceFiles(algorithm, architecture);
 		

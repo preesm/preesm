@@ -42,8 +42,8 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.Medium;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
@@ -90,7 +90,7 @@ public class TagDAG {
 	 * tag adds the send and receive operations necessary to the code generation.
 	 * It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, IArchitecture architecture,IAbc simu) {
+	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,IAbc simu) {
 
 		PropertyBean bean = dag.getPropertyBean();
 		bean.setValue(AbstractAbc.propertyBeanName,simu.getType());
@@ -101,7 +101,7 @@ public class TagDAG {
 		addAllAggregates(dag);
 	}
 
-	public void addTransfers(MapperDAG dag, IArchitecture architecture) {
+	public void addTransfers(MapperDAG dag, MultiCoreArchitecture architecture) {
 		
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.

@@ -61,6 +61,22 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	}
 
+	public MediumProperty getMediumProperty() {
+		return mediumProperty;
+	}
+
+	public boolean hasMediumProperty() {
+		return (this.mediumProperty != null);
+	}
+
+	public void setMediumProperty(MediumProperty prop) {
+		this.mediumProperty = prop;
+	}
+	
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.medium;
+	}
+
 	@Override
 	public MediumDefinition clone() {
 
@@ -71,15 +87,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 		return newdef;
 	}
 
-	public MediumProperty getMediumProperty() {
-		return mediumProperty;
-	}
-
-	public boolean hasMediumProperty() {
-		return (this.mediumProperty != null);
-	}
-
-	public void setMediumProperty(MediumProperty approximatelyTimedProperty) {
-		this.mediumProperty = approximatelyTimedProperty;
+	public void fill(ArchitectureComponentDefinition origin){
+		this.setMediumProperty(((MediumDefinition)origin).mediumProperty.clone());
 	}
 }

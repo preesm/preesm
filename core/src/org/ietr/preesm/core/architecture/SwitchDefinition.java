@@ -47,7 +47,7 @@ public class SwitchDefinition extends ArchitectureComponentDefinition {
 		super(id, "switch");
 	}
 
-	public SwitchDefinition clone(IArchitecture archi) {
+	public SwitchDefinition clone() {
 
 		// A new SwitchDefinition is created with same id
 		SwitchDefinition newdef = new SwitchDefinition(this.getId());
@@ -63,5 +63,15 @@ public class SwitchDefinition extends ArchitectureComponentDefinition {
 		}
 
 		return false;
+	}
+
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.communicationNode;
+	}
+
+	@Override
+	public void fill(ArchitectureComponentDefinition origin) {
+		// TODO Auto-generated method stub
+		
 	}
 }

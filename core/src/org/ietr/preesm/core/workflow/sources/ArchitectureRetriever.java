@@ -44,9 +44,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.ArchitectureParser;
-import org.ietr.preesm.core.scenario.ScenarioParser;
 
 /**
  * @author mpelcat
@@ -54,11 +53,11 @@ import org.ietr.preesm.core.scenario.ScenarioParser;
  */
 public class ArchitectureRetriever {
 
-	static public IArchitecture ExampleArchitecture(){
+	static public MultiCoreArchitecture ExampleArchitecture(){
 		return Examples.get2C64Archi();
 	}
 
-	IArchitecture architecture = null;
+	MultiCoreArchitecture architecture = null;
 	
 	public ArchitectureRetriever(String architecturePath) {
 		super();
@@ -75,7 +74,7 @@ public class ArchitectureRetriever {
 		architecture = Examples.get2C64Archi();
 	}
 
-	public IArchitecture getArchitecture() {
+	public MultiCoreArchitecture getArchitecture() {
 		return architecture;
 	}
 			

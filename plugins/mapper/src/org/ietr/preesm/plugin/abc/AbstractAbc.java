@@ -36,15 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.accuratelytimed.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.approximatelytimed.ApproximatelyTimedAbc;
@@ -59,8 +57,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
@@ -86,7 +82,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Architecture related to the current simulator
 	 */
-	protected IArchitecture archi;
+	protected MultiCoreArchitecture archi;
 
 	/**
 	 * Contains the rank list of all the vertices in an implementation
@@ -119,7 +115,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcType simulatorType, MapperDAG dag,
-			IArchitecture archi) {
+			MultiCoreArchitecture archi) {
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
 			return new InfiniteHomogeneousAbc(dag, archi);
@@ -141,7 +137,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Architecture simulator constructor
 	 */
-	public AbstractAbc(MapperDAG dag, IArchitecture archi) {
+	public AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi) {
 
 		orderManager = new SchedulingOrderManager();
 
@@ -198,7 +194,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture
 	 */
-	public IArchitecture getArchitecture() {
+	public MultiCoreArchitecture getArchitecture() {
 		return this.archi;
 	}
 

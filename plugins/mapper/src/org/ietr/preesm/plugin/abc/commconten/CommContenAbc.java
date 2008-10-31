@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.commconten;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -50,14 +50,14 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class CommContenAbc extends AbstractAbc {
 
-	public CommContenAbc(MapperDAG dag, IArchitecture archi) {
+	public CommContenAbc(MapperDAG dag, MultiCoreArchitecture archi) {
 		super(dag, archi);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
-		// TODO Called whenever a vertex is implanted
+		// TODO Called whenever a vertex is implanteds
 		// Call here your edge scheduling and specific vertices adder (via
 		// transactions)
 

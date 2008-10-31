@@ -40,7 +40,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  */
 package org.ietr.preesm.plugin.abc.accuratelytimed;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -87,7 +87,7 @@ public class AccuratelyTimedAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public AccuratelyTimedAbc(MapperDAG dag,
-			IArchitecture archi) {
+			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs

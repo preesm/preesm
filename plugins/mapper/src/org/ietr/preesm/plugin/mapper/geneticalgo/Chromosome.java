@@ -44,8 +44,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
-import org.ietr.preesm.core.architecture.IArchitecture;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -79,7 +79,7 @@ public class Chromosome {
 
 	// Architecture on which this chromosome will be used (chromosome = mapping
 	// and scheduling)
-	private IArchitecture archi;
+	private MultiCoreArchitecture archi;
 
 	/**
 	 * Constructor
@@ -99,7 +99,7 @@ public class Chromosome {
 	 * @param architecture
 	 */
 	public Chromosome(List<Gene> chromoList, MapperDAG dag,
-			IArchitecture architecture) {
+			MultiCoreArchitecture architecture) {
 		super();
 		this.ChromoList = chromoList;
 		this.evaluateCost = 0;
@@ -114,7 +114,7 @@ public class Chromosome {
 	 * @param dag
 	 * @param architecture
 	 */
-	public Chromosome(MapperDAG dag, IArchitecture architecture) {
+	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture) {
 		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList().listIterator();
 		MapperDAGVertex currentVertex = null;
 		this.dag = dag;
@@ -151,7 +151,7 @@ public class Chromosome {
 			currentVertex
 					.getImplementationVertexProperty()
 					.setEffectiveComponent(
-							this.archi.getOperator(currentGene.getOperatorId()));
+							this.archi.getComponent(ArchitectureComponentType.operator,currentGene.getOperatorId()));
 
 		}
 		this.setDirty(true);
@@ -201,11 +201,11 @@ public class Chromosome {
 	/**
 	 * Getters and Setters
 	 */
-	public IArchitecture getArchi() {
+	public MultiCoreArchitecture getArchi() {
 		return archi;
 	}
 
-	public void setArchi(IArchitecture archi) {
+	public void setArchi(MultiCoreArchitecture archi) {
 		this.archi = archi;
 	}
 
@@ -261,7 +261,7 @@ public class Chromosome {
 
 		// Create and set the context
 		DAGCreator dagCreator = new DAGCreator();
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		ListScheduler scheduler = new ListScheduler();

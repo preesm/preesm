@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.codegen.ICodeElement;
 
 /**
  * Factory able to create an architecture component of any type

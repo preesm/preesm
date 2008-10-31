@@ -10,19 +10,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
-import org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditorInput;
-import org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditorRunnable;
-import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Editor of an implementation Gantt chart

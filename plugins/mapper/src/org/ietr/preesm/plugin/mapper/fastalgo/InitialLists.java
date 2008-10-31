@@ -489,7 +489,7 @@ public class InitialLists {
 		logger.setLevel(Level.ALL);
 
 		logger.log(Level.FINEST, "Creating archi");
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dagtest = new DAGCreator().dagexample1(archi);

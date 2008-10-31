@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
-import java.util.Iterator;
 
 /**
  * A switch is a hardware communication entity able to transfer data.
@@ -56,61 +55,8 @@ public class Switch extends ArchitectureComponent {
 		super(name, type);
 
 	}
-
-	public boolean addInterface(ArchitectureInterface intf) {
-
-		if (getInterface(intf.getMediumDefinition()) == null) {
-			availableInterfaces.add(intf);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	public boolean canConnectTo(Medium medium) {
-		boolean compatible = false;
-
-		MediumDefinition mediumtype = (MediumDefinition) medium.getDefinition();
-
-		ArchitectureInterface switchIntf = this.getInterface(mediumtype);
-		ArchitectureInterface mediumIntf = medium.getInterface(mediumtype);
-
-		if (switchIntf != null && mediumIntf != null) {
-			if (!switchIntf.isFull() && !mediumIntf.isFull()) {
-				return true;
-			}
-		}
-
-		return compatible;
-	}
-
-	public Switch clone(IArchitecture archi) {
-
-		// A new switch is created with a cloned definition taking archi as
-		// parameter
-		Switch newSw = new Switch(this.getName(),
-				((SwitchDefinition) this.getDefinition()).clone(archi));
-
-		// We iterate in interfaces
-		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
-				.iterator();
-
-		while (interIt.hasNext()) {
-			ArchitectureInterface currentItf = interIt.next();
-			// The medium definition used to clone the interface is retrieved
-			// from new architecture
-			MediumDefinition newmeddef = archi.getMediumDefinition(currentItf
-					.getMediumDefinition().getId());
-
-			newSw.availableInterfaces.add(currentItf.clone(newmeddef, newSw));
-		}
-
-		return newSw;
-	}
-
 	
 	public ArchitectureComponentType getType(){
-		return null;
+		return ArchitectureComponentType.communicationNode;
 	}
 }

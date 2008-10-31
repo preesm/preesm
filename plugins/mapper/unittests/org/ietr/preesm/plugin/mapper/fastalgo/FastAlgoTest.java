@@ -97,7 +97,7 @@ public class FastAlgoTest extends TestCase {
 		logger.setLevel(Level.FINER);
 
 		logger.log(Level.FINEST, "Creating 4 cores archi");
-		MultiCoreArchitecture archi = Examples.get4C64Archi();
+		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);

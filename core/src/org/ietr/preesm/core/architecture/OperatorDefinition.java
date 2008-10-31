@@ -47,15 +47,6 @@ public class OperatorDefinition extends ArchitectureComponentDefinition {
 	public OperatorDefinition(String id) {
 		super(id, "operator");
 	}
-
-	public OperatorDefinition clone(IArchitecture archi) {
-
-		// A new OperatorDefinition is created with same id
-		OperatorDefinition newdef = new OperatorDefinition(this.getId());
-
-		return newdef;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof OperatorDefinition) {
@@ -64,5 +55,21 @@ public class OperatorDefinition extends ArchitectureComponentDefinition {
 		}
 
 		return false;
+	}
+
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.operator;
+	}
+
+	public OperatorDefinition clone() {
+
+		// A new OperatorDefinition is created with same id
+		OperatorDefinition newdef = new OperatorDefinition(this.getId());
+
+		return newdef;
+	}
+
+
+	public void fill(ArchitectureComponentDefinition origin){
 	}
 }

@@ -15,8 +15,9 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.SectionPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.architecture.IArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.Messages;
@@ -103,10 +104,10 @@ public class SDFTreeSection extends SectionPart {
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
 
-		IArchitecture archi = ScenarioParser.getArchitecture(scenario
+		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
 				.getArchitectureURL());
 
-		for (Operator def : archi.getOperators()) {
+		for (ArchitectureComponent def : archi.getComponents(ArchitectureComponentType.operator)) {
 			combo.add(def.getName());
 		}
 

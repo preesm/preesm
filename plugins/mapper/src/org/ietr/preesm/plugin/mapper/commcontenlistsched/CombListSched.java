@@ -2,9 +2,8 @@ package org.ietr.preesm.plugin.mapper.commcontenlistsched;
 
 import java.util.HashMap;
 
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.plugin.mapper.commcontenlistsched.AlgorithmTransformer;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.CommunicationDescriptor;
@@ -17,11 +16,14 @@ import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.SwitchDescri
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.ArchitectureParser;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.ParameterParser;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.plotter.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.*;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.AbstractScheduler;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSched;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCc;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCcCd;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCd;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jfree.ui.RefineryUtilities;
-
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -38,7 +40,7 @@ public class CombListSched {
 	private ScenarioTransformer scenaTransformer = null;
 
 	private SDFGraph sdf = null;
-	private IArchitecture architecture = null;
+	private MultiCoreArchitecture architecture = null;
 	private IScenario scenario = null;
 
 	private MapperDAG dag = null;
@@ -51,7 +53,7 @@ public class CombListSched {
 
 	private int bestScheduleLength = Integer.MAX_VALUE;
 
-	public CombListSched(SDFGraph sdf, IArchitecture architecture,
+	public CombListSched(SDFGraph sdf, MultiCoreArchitecture architecture,
 			IScenario scenario) {
 		algoTransformer = new AlgorithmTransformer();
 		archiTransformer = new ArchitectureTransformer();

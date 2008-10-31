@@ -29,7 +29,9 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -128,11 +130,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
 
-		IArchitecture archi = ScenarioParser.getArchitecture(scenario
+		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
 				.getArchitectureURL());
 
-		for (OperatorDefinition def : archi.getOperatorDefinitions()) {
-			combo.add(def.getId());
+		for (ArchitectureComponentDefinition def : archi.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			combo.add(((OperatorDefinition)def).getId());
 		}
 
 		combo.setData(archi);

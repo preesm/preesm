@@ -45,7 +45,7 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.IArchitecture;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
@@ -66,7 +66,7 @@ public class ScenarioRetriever {
 	 * {@link AlgorithmRetriever}RandomDAG() method
 	 */
 	public static IScenario RandomScenario(SDFGraph dag,
-			IArchitecture archi) {
+			MultiCoreArchitecture archi) {
 
 		// Generating scenario
 		IScenario localScenario = new Scenario();

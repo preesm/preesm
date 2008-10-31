@@ -7,8 +7,8 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.optimisations.loops.detection.LoopDetector;
 import org.sdf4j.optimisations.clustering.Clusterize;
+import org.sdf4j.optimisations.loops.detection.LoopDetector;
 
 public class GraphLooping implements IGraphTransformation{
 
