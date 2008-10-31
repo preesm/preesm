@@ -42,9 +42,9 @@ package org.ietr.preesm.plugin.abc.infinitehomogeneous;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;

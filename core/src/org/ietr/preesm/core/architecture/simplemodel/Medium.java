@@ -35,59 +35,31 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.simplemodel;
+
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+
 
 /**
- * The medium definition describes the medium capabilities
+ * defines a communication medium between 2 operators. It represents a
+ * bus and its drivers
  *         
  * @author mpelcat
  */
-public class MediumDefinition extends ArchitectureComponentDefinition {
+public class Medium extends ArchitectureComponent {
 
 	/**
-	 * Properties used by architecture simulator
+	 * ID used to reference the element in a property bean
 	 */
-	private MediumProperty mediumProperty;
-
-	public MediumDefinition(MediumDefinition origin) {
-		super(origin.getId(), "medium");
-
-	}
-
-	public MediumDefinition(String id) {
-		super(id, "medium");
-
-		mediumProperty = null;
-
-	}
-
-	public MediumProperty getMediumProperty() {
-		return mediumProperty;
-	}
-
-	public boolean hasMediumProperty() {
-		return (this.mediumProperty != null);
-	}
-
-	public void setMediumProperty(MediumProperty prop) {
-		this.mediumProperty = prop;
+	public static final String propertyBeanName = "medium";
+	
+	public Medium(String name, MediumDefinition type) {
+		super(name, type);
 	}
 	
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.medium;
 	}
 
-	@Override
-	public MediumDefinition clone() {
-
-		MediumDefinition newdef = new MediumDefinition(this.getId());
-
-		newdef.mediumProperty = this.mediumProperty.clone();
-
-		return newdef;
-	}
-
-	public void fill(ArchitectureComponentDefinition origin){
-		this.setMediumProperty(((MediumDefinition)origin).mediumProperty.clone());
-	}
 }

@@ -42,9 +42,9 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.Medium;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;

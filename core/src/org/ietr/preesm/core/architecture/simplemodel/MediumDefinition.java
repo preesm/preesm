@@ -35,69 +35,62 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-/**
- * 
- */
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.simplemodel;
+
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * These properties are used by the timed architecture simulator to
- * evaluate the performance of an implementation
+ * The medium definition describes the medium capabilities
+ *         
  * @author mpelcat
  */
-public class MediumProperty {
+public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	/**
-	 * Transfer inverse speed in TU(Time Unit)/AU (Allocation Unit) The usual
-	 * utilization is with cycles/Byte
-	 * 
-	 * The speed can depend on parameters like data size
+	 * Properties used by architecture simulator
 	 */
-	float invSpeed = 0f;
+	private MediumProperty mediumProperty;
 
-	/**
-	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
-	 * with cycles
-	 */
-	int overhead = 0;
+	public MediumDefinition(MediumDefinition origin) {
+		super(origin.getId(), "medium");
 
-	/**
-	 * Reception time on receiver in TU(Time Unit) The usual utilization is with
-	 * cycles
-	 */
-	int receptionTime = 0;
+	}
 
-	public MediumProperty(float invSpeed, int overhead, int receptionTime) {
-		super();
-		this.invSpeed = invSpeed;
-		this.overhead = overhead;
-		this.receptionTime = receptionTime;
+	public MediumDefinition(String id) {
+		super(id, "medium");
+
+		mediumProperty = null;
+
+	}
+
+	public MediumProperty getMediumProperty() {
+		return mediumProperty;
+	}
+
+	public boolean hasMediumProperty() {
+		return (this.mediumProperty != null);
+	}
+
+	public void setMediumProperty(MediumProperty prop) {
+		this.mediumProperty = prop;
+	}
+	
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.medium;
 	}
 
 	@Override
-	public MediumProperty clone() {
-		return new MediumProperty(this.getInvSpeed(), this.getOverhead(), this
-				.getReceptionTime());
+	public MediumDefinition clone() {
+
+		MediumDefinition newdef = new MediumDefinition(this.getId());
+
+		newdef.mediumProperty = this.mediumProperty.clone();
+
+		return newdef;
 	}
 
-	/**
-	 * @return the speed
-	 */
-	public float getInvSpeed() {
-		return invSpeed;
-	}
-
-	/**
-	 * @return the overhead
-	 */
-	public int getOverhead() {
-		return overhead;
-	}
-
-	/**
-	 * @return the receptionTime
-	 */
-	public int getReceptionTime() {
-		return receptionTime;
+	public void fill(ArchitectureComponentDefinition origin){
+		this.setMediumProperty(((MediumDefinition)origin).mediumProperty.clone());
 	}
 }

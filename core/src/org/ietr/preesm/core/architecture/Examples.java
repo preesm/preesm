@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.MediumProperty;
+
 /**
  * Architecture predefined Examples
  * 

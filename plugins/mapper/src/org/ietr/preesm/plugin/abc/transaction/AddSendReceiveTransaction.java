@@ -42,10 +42,10 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.Medium;
-import org.ietr.preesm.core.architecture.MediumDefinition;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;

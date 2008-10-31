@@ -23,6 +23,7 @@ Bundle-ClassPath: .,
  lib/sdf4j.jar,
  lib/jgraph.jar
 Export-Package: org.ietr.preesm.core.architecture,
+ org.ietr.preesm.core.architecture.simplemodel,
  org.ietr.preesm.core.codegen;uses:="org.ietr.preesm.core.architecture,org.ietr.preesm.core.codegen.sdfProperties,org.sdf4j.model.sdf",
  org.ietr.preesm.core.codegen.printer,
  org.ietr.preesm.core.codegen.sdfProperties,

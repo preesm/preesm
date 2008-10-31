@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.ietr.preesm.core.architecture.Medium;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jgrapht.Graph;

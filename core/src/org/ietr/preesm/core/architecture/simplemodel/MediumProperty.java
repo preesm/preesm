@@ -38,15 +38,22 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /**
  * 
  */
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.simplemodel;
 
 /**
- * These properties are used by the approximately timed architecture
- * simulator to evaluate the performance of an implementation
- *         
+ * These properties are used by the timed architecture simulator to
+ * evaluate the performance of an implementation
  * @author mpelcat
  */
-public class ApproximatelyTimedMediumProperty {
+public class MediumProperty {
+
+	/**
+	 * Transfer inverse speed in TU(Time Unit)/AU (Allocation Unit) The usual
+	 * utilization is with cycles/Byte
+	 * 
+	 * The speed can depend on parameters like data size
+	 */
+	float invSpeed = 0f;
 
 	/**
 	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
@@ -60,26 +67,24 @@ public class ApproximatelyTimedMediumProperty {
 	 */
 	int receptionTime = 0;
 
-	/**
-	 * Transfer speed in TU(Time Unit)/AU (Allocation Unit) The usual
-	 * utilization is with cycles/Byte
-	 * 
-	 * The speed can depend on parameters like data size
-	 */
-	int speed = 0;
-
-	public ApproximatelyTimedMediumProperty(int speed, int overhead,
-			int receptionTime) {
+	public MediumProperty(float invSpeed, int overhead, int receptionTime) {
 		super();
-		this.speed = speed;
+		this.invSpeed = invSpeed;
 		this.overhead = overhead;
 		this.receptionTime = receptionTime;
 	}
 
 	@Override
-	public ApproximatelyTimedMediumProperty clone() {
-		return new ApproximatelyTimedMediumProperty(this.getSpeed(), this
-				.getOverhead(), this.getReceptionTime());
+	public MediumProperty clone() {
+		return new MediumProperty(this.getInvSpeed(), this.getOverhead(), this
+				.getReceptionTime());
+	}
+
+	/**
+	 * @return the speed
+	 */
+	public float getInvSpeed() {
+		return invSpeed;
 	}
 
 	/**
@@ -94,12 +99,5 @@ public class ApproximatelyTimedMediumProperty {
 	 */
 	public int getReceptionTime() {
 		return receptionTime;
-	}
-
-	/**
-	 * @return the speed
-	 */
-	public int getSpeed() {
-		return speed;
 	}
 }

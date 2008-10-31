@@ -45,13 +45,13 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.Medium;
-import org.ietr.preesm.core.architecture.MediumDefinition;
-import org.ietr.preesm.core.architecture.MediumProperty;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.MediumProperty;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;

@@ -38,7 +38,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /**
  * 
  */
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.simplemodel;
 
 /**
  * These properties are used by the loosely timed architecture simulator

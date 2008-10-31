@@ -35,28 +35,71 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.core.architecture;
-
+/**
+ * 
+ */
+package org.ietr.preesm.core.architecture.simplemodel;
 
 /**
- * defines a communication medium between 2 operators. It represents a
- * bus and its drivers
+ * These properties are used by the approximately timed architecture
+ * simulator to evaluate the performance of an implementation
  *         
  * @author mpelcat
  */
-public class Medium extends ArchitectureComponent {
+public class ApproximatelyTimedMediumProperty {
 
 	/**
-	 * ID used to reference the element in a property bean
+	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
+	 * with cycles
 	 */
-	public static final String propertyBeanName = "medium";
-	
-	public Medium(String name, MediumDefinition type) {
-		super(name, type);
-	}
-	
-	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.medium;
+	int overhead = 0;
+
+	/**
+	 * Reception time on receiver in TU(Time Unit) The usual utilization is with
+	 * cycles
+	 */
+	int receptionTime = 0;
+
+	/**
+	 * Transfer speed in TU(Time Unit)/AU (Allocation Unit) The usual
+	 * utilization is with cycles/Byte
+	 * 
+	 * The speed can depend on parameters like data size
+	 */
+	int speed = 0;
+
+	public ApproximatelyTimedMediumProperty(int speed, int overhead,
+			int receptionTime) {
+		super();
+		this.speed = speed;
+		this.overhead = overhead;
+		this.receptionTime = receptionTime;
 	}
 
+	@Override
+	public ApproximatelyTimedMediumProperty clone() {
+		return new ApproximatelyTimedMediumProperty(this.getSpeed(), this
+				.getOverhead(), this.getReceptionTime());
+	}
+
+	/**
+	 * @return the overhead
+	 */
+	public int getOverhead() {
+		return overhead;
+	}
+
+	/**
+	 * @return the receptionTime
+	 */
+	public int getReceptionTime() {
+		return receptionTime;
+	}
+
+	/**
+	 * @return the speed
+	 */
+	public int getSpeed() {
+		return speed;
+	}
 }

@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+
 /**
  * Architecture based on a fixed number of cores
  * 
