@@ -70,8 +70,6 @@ public class ArchitectureRetriever {
 		
 		parser.parseXmlFile(file);
 		architecture = parser.parseDocument();
-
-		architecture = Examples.get2C64Archi();
 	}
 
 	public MultiCoreArchitecture getArchitecture() {
