@@ -308,6 +308,18 @@
          <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b12"/>
          <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR2"/>
       </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>fifo</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="fifo1" spirit:componentRef="RapidIO1"/>
+         <spirit:activeInterface spirit:busRef="fifo2" spirit:componentRef="RapidIO2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>fifo</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="fifo2" spirit:componentRef="RapidIO2"/>
+         <spirit:activeInterface spirit:busRef="fifo1" spirit:componentRef="RapidIO1"/>
+      </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>
 </spirit:design>
