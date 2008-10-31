@@ -12,7 +12,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
       <data key="variables">
-         <variable name="sourcePath" value="${CodeGenSourcePath}"/>
+         <variable name="sourcePath" value="/MapperAndCodegen_1/Code"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
