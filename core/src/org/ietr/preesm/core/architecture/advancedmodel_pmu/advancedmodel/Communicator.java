@@ -34,70 +34,81 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-/**
- * 
- */
 package org.ietr.preesm.core.architecture.advancedmodel;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * These properties are used by the timed architecture simulator to evaluate the
- * performance of an implementation
+ * Define a communicator used for communication. It usually represents a DMA
+ * controller
  * 
  * @author pmu
  */
-public class CommunicatorProperty {
+public class Communicator extends AbstractNode {
 
 	/**
-	 * Transfer inverse speed in TU(Time Unit)/AU (Allocation Unit) The usual
-	 * utilization is with cycles/Byte
-	 * 
-	 * The speed can depend on parameters like data size
+	 * ID used to reference the element in a property bean
 	 */
-	float invSpeed = 0f;
+	public static final String propertyBeanName = "communicator";
 
 	/**
-	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
-	 * with cycles
+	 * This communicator can be configured by some processors by using some
+	 * time. The used times for different processors are stored in setupTimes.
 	 */
-	int overhead = 0;
+	private Map<Processor, Double> setupTimes;
 
-	/**
-	 * Reception time on receiver in TU(Time Unit) The usual utilization is with
-	 * cycles
-	 */
-	int receptionTime = 0;
+	public Communicator(String name, CommunicatorDefinition definition) {
+		super(name, definition);
+		setupTimes = new HashMap<Processor, Double>();
+	}
 
-	public CommunicatorProperty(float invSpeed, int overhead, int receptionTime) {
-		super();
-		this.invSpeed = invSpeed;
-		this.overhead = overhead;
-		this.receptionTime = receptionTime;
+	public void addSetupTime(Processor proc, double time) {
+		setupTimes.put(proc, time);
 	}
 
 	@Override
-	public CommunicatorProperty clone() {
-		return new CommunicatorProperty(this.getInvSpeed(), this.getOverhead(),
-				this.getReceptionTime());
+	public Communicator clone() {
+
+		// A new communicator is created with the same definition.
+		Communicator newComm = new Communicator(new String(this.getName()),
+				this.getDefinition());
+		// We iterate in interfaces
+		Iterator<SpiritInterface> intfIt = this.availableInterfaces.iterator();
+		while (intfIt.hasNext()) {
+			SpiritInterface currentIntf = intfIt.next();
+			SpiritInterface newIntf = currentIntf.clone();
+			newIntf.setOwner(newComm);
+			newComm.addInterface(newIntf);
+		}
+		return newComm;
 	}
 
-	/**
-	 * @return the speed
-	 */
-	public float getInvSpeed() {
-		return invSpeed;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Communicator) {
+			Communicator comm = (Communicator) obj;
+			return this.getName().compareToIgnoreCase(comm.getName()) == 0;
+		}
+		return false;
 	}
 
-	/**
-	 * @return the overhead
-	 */
-	public int getOverhead() {
-		return overhead;
+	@Override
+	public CommunicatorDefinition getDefinition() {
+		return (CommunicatorDefinition) definition;
 	}
 
-	/**
-	 * @return the receptionTime
-	 */
-	public int getReceptionTime() {
-		return receptionTime;
+	public Set<Processor> getProcessors() {
+		return setupTimes.keySet();
+	}
+
+	public double getSetupTime(Processor proc) {
+		return setupTimes.get(proc);
+	}
+
+	public Map<Processor, Double> getSetupTimes() {
+		return setupTimes;
 	}
 }
