@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 
@@ -125,7 +126,6 @@ public class Examples {
 
 		MediumDefinition bus = new MediumDefinition("opb_bus");
 		BusReference busRef = new BusReference("opb_busDef");
-		SwitchDefinition crossbar = new SwitchDefinition("opb_crossbar");
 		bus.setInvSpeed(1);
 		bus.setOverhead(100);
 
@@ -138,7 +138,7 @@ public class Examples {
 		Operator op4 = (Operator)archi.addComponent(ArchitectureComponentType.operator,"microblaze","p_4");
 		ArchitectureInterface intf4 = op4.addInterface(new ArchitectureInterface(busRef, op4));
 
-		Switch sw1 = archi.addSwitch(new Switch("crossbar_1", crossbar));
+		CommunicationNode sw1 = (CommunicationNode) archi.addComponent(ArchitectureComponentType.communicationNode,"opb_crossbar","crossbar_1");
 		ArchitectureInterface intfsw = sw1.addInterface(new ArchitectureInterface(busRef, sw1));
 
 		Medium m1 = (Medium) archi.addComponent(ArchitectureComponentType.medium,"opb_bus","bus_1");
