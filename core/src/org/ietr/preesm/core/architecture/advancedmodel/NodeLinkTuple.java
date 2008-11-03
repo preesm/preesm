@@ -34,51 +34,52 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
+/**
+ * 
+ */
 package org.ietr.preesm.core.architecture.advancedmodel;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * a Memory (exemple: a Shared RAM)
+ * A node-link-tuple contains a communication node and a communication link.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Memory extends ArchitectureComponent {
+public class NodeLinkTuple {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "memory";
+	private CommunicationNode node;
 
-	/**
-	 * Communication performers are communicators and processors that can access
-	 * this processor.
-	 */
-	private Set<ArchitectureComponent> commPerformers;
+	private ArchitectureComponent link;
 
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
-		commPerformers = new HashSet<ArchitectureComponent>();
-	}
-
-	public boolean addCommunicationPerformer(ArchitectureComponent commPerformer) {
-		if (commPerformer.getType() == ArchitectureComponentType.communicator
-				|| commPerformer.getType() == ArchitectureComponentType.processor) {
-			return commPerformers.add(commPerformer);
+	public NodeLinkTuple(CommunicationNode node, ArchitectureComponent link) {
+		if (link.getType() == ArchitectureComponentType.bus
+				|| link.getType() == ArchitectureComponentType.fifo) {
+			this.node = node;
+			this.link = link;
 		}
-		return false;
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
+	public CommunicationNode getNode() {
+		return node;
 	}
 
-	public Set<ArchitectureComponent> getCommunicationPerformers() {
-		return commPerformers;
+	public void setNode(CommunicationNode node) {
+		this.node = node;
+	}
+
+	public ArchitectureComponent getLink() {
+		return link;
+	}
+
+	public boolean setLink(ArchitectureComponent link) {
+		if (link.getType() == ArchitectureComponentType.bus
+				|| link.getType() == ArchitectureComponentType.fifo) {
+			this.link = link;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

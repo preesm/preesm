@@ -13,7 +13,12 @@ import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
 
 /**
  * Factory able to create an architecture component of any type
@@ -44,6 +49,15 @@ public class ArchitectureComponentFactory {
 			}
 			else if(type instanceof BusDefinition){
 				result = new Bus(name,(BusDefinition)type);
+			}
+			else if(type instanceof ProcessorDefinition){
+				result = new Processor(name,(ProcessorDefinition)type);
+			}
+			else if(type instanceof IpCoprocessorDefinition){
+				result = new IpCoprocessor(name,(IpCoprocessorDefinition)type);
+			}
+			else if(type instanceof FifoDefinition){
+				result = new Fifo(name,(FifoDefinition)type);
 			}
 		}
 		

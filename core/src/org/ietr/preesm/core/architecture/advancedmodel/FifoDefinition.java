@@ -34,51 +34,44 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
+
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * a Memory (exemple: a Shared RAM)
+ * Parameters for a Fifo
  * 
  * @author mpelcat
  */
-public class Memory extends ArchitectureComponent {
+public class FifoDefinition extends ArchitectureComponentDefinition {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "memory";
-
-	/**
-	 * Communication performers are communicators and processors that can access
-	 * this processor.
-	 */
-	private Set<ArchitectureComponent> commPerformers;
-
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
-		commPerformers = new HashSet<ArchitectureComponent>();
+	public FifoDefinition(String id) {
+		super(id, "fifo");
 	}
-
-	public boolean addCommunicationPerformer(ArchitectureComponent commPerformer) {
-		if (commPerformer.getType() == ArchitectureComponentType.communicator
-				|| commPerformer.getType() == ArchitectureComponentType.processor) {
-			return commPerformers.add(commPerformer);
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FifoDefinition) {
+			FifoDefinition fifodef = (FifoDefinition) obj;
+			return this.getId().compareToIgnoreCase(fifodef.getId()) == 0;
 		}
+
 		return false;
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.fifo;
 	}
 
-	public Set<ArchitectureComponent> getCommunicationPerformers() {
-		return commPerformers;
+	public FifoDefinition clone() {
+
+		FifoDefinition newdef = new FifoDefinition(this.getId());
+
+		return newdef;
+	}
+
+
+	public void fill(ArchitectureComponentDefinition origin){
 	}
 }

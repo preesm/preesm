@@ -399,6 +399,7 @@ public class CListSchedCc extends AbstractScheduler {
 					if (sourceOperator.getSendCommunications().contains(
 							sendCommunicationList
 									.get(indexCommunicationOnSendLink))) {
+						// a send of sourceOperator
 						infSendCommunicationTime = max(algorithm
 								.getComputation(communication.getOrigin())
 								.getFinishTime()
@@ -410,7 +411,11 @@ public class CListSchedCc extends AbstractScheduler {
 								sendCommunicationList.get(
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());
-					} else {
+					} else if (sourceOperator.getReceiveCommunications()
+							.contains(
+									sendCommunicationList
+											.get(indexCommunicationOnSendLink))) {
+						// a receive of sourceOperator
 						infSendCommunicationTime = max(algorithm
 								.getComputation(communication.getOrigin())
 								.getFinishTime()
@@ -419,6 +424,15 @@ public class CListSchedCc extends AbstractScheduler {
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnReceiveOperator()
 										+ communication.getSendOverhead(),
+								sendCommunicationList.get(
+										indexCommunicationOnSendLink)
+										.getFinishTimeOnLink());
+					} else {
+						// neither a send nor a receive of sourceOperator
+						infSendCommunicationTime = max(algorithm
+								.getComputation(communication.getOrigin())
+								.getFinishTime()
+								+ communication.getSendOverhead(),
 								sendCommunicationList.get(
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());
@@ -690,6 +704,155 @@ public class CListSchedCc extends AbstractScheduler {
 				}
 				communication.setSendLink(sendLink);
 				communication.setReceiveLink(receiveLink);
+				// } else{
+				// // find slot on send link
+				// int indexCommunicationOnSendLink = 0;
+				// int infSendCommunicationTime = 0;
+				// int supSendCommunicationTime = 0;
+				// int infCommunicationTime = 0;
+				// int supCommunicationTime = 0;
+				// while (indexCommunicationOnSendLink < sendCommunicationList
+				// .size()) {
+				// if (sourceOperator.getSendCommunications().contains(
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink))) {
+				// infSendCommunicationTime = max(algorithm
+				// .getComputation(communication.getOrigin())
+				// .getFinishTime()
+				// + communication.getSendOverhead(),
+				// sendCommunicationList.get(
+				// indexCommunicationOnSendLink)
+				// .getFinishTimeOnSendOperator()
+				// + communication.getSendOverhead(),
+				// sendCommunicationList.get(
+				// indexCommunicationOnSendLink)
+				// .getFinishTimeOnLink());
+				// } else {
+				// infSendCommunicationTime = max(algorithm
+				// .getComputation(communication.getOrigin())
+				// .getFinishTime()
+				// + communication.getSendOverhead(),
+				//									
+				// sendCommunicationList.get(
+				// indexCommunicationOnSendLink)
+				// .getFinishTimeOnLink());
+				// }
+				// supSendCommunicationTime = sendCommunicationList.get(
+				// indexCommunicationOnSendLink + 1)
+				// .getStartTimeOnLink();
+				// infCommunicationTime = infSendCommunicationTime;
+				// supCommunicationTime = supSendCommunicationTime;
+				// if (infCommunicationTime
+				// + communication.getCommunicationDuration() <=
+				// supCommunicationTime) {
+				// break;
+				// } else {
+				// indexCommunicationOnSendLink++;
+				// }
+				// }
+				//
+				// // set new start times on source operator and send link
+				// int indexOperationOnSourceOperator = max(
+				// sourceOperator.getOperations().indexOf(
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink)),
+				// sourceOperator.getOperations().indexOf(
+				// algorithm.getComputation(communication
+				// .getOrigin())));
+				// if (sourceOperator.getOperation(
+				// indexOperationOnSourceOperator).getType() ==
+				// OperationType.Computation) {
+				// communication
+				// .setStartTimeOnSendOperator(((ComputationDescriptor)
+				// sourceOperator
+				// .getOperation(indexOperationOnSourceOperator))
+				// .getFinishTime());
+				// } else {
+				// if (sourceOperator
+				// .getSendCommunications()
+				// .contains(
+				// (CommunicationDescriptor) sourceOperator
+				// .getOperation(indexOperationOnSourceOperator))) {
+				// communication
+				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
+				// sourceOperator
+				// .getOperation(indexOperationOnSourceOperator))
+				// .getFinishTimeOnSendOperator());
+				// } else {
+				// communication
+				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
+				// sourceOperator
+				// .getOperation(indexOperationOnSourceOperator))
+				// .getFinishTimeOnReceiveOperator());
+				// }
+				// }
+				// communication.setStartTimeOnLink(infCommunicationTime);
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink + 1)
+				// .setStartTimeOnLink(
+				// max(
+				// communication.getFinishTimeOnLink(),
+				// sendCommunicationList
+				// .get(
+				// indexCommunicationOnSendLink + 1)
+				// .getStartTimeOnLink()));
+				//
+				// // find slot in destination operator
+				// int indexOperationOnDestinationOperator = 0;
+				// if (destinationOperator.getOperations().contains(
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink))) {
+				// indexOperationOnDestinationOperator = destinationOperator
+				// .getOperations()
+				// .indexOf(
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink));
+				// }
+				// int maxTime = 0;
+				// for (int i = indexOperationOnDestinationOperator; i <
+				// destinationOperator
+				// .getOperations().size() - 1; i++) {
+				// maxTime = max(destinationOperator
+				// .getOccupiedTimeInterval(
+				// destinationOperator.getOperation(i)
+				// .getName()).getFinishTime()
+				// + communication.getReceiveInvolvement(),
+				// communication.getFinishTimeOnLink());
+				// if (destinationOperator.getOccupiedTimeInterval(
+				// destinationOperator.getOperation(i + 1)
+				// .getName()).getStartTime()
+				// - maxTime >= communication.getReceiveOverhead()) {
+				// communication.setStartTimeOnReceiveOperator(maxTime
+				// - communication.getReceiveInvolvement());
+				// indexOperationOnDestinationOperator = i;
+				// break;
+				// }
+				// }
+				//
+				// // insert communication
+				// // if (!sourceOperator.getSendCommunications().contains(
+				// // communication)) {
+				// sourceOperator.addSendCommunication(communication);
+				// sourceOperator.addOperation(
+				// indexOperationOnSourceOperator + 1, communication);
+				// sourceOperator.addOccupiedTimeInterval(communication
+				// .getName(), communication
+				// .getStartTimeOnSendOperator(), communication
+				// .getFinishTimeOnSendOperator());
+				// // }
+				// destinationOperator.addReceiveCommunication(communication);
+				// destinationOperator.addOperation(
+				// indexOperationOnDestinationOperator + 1,
+				// communication);
+				// destinationOperator.addOccupiedTimeInterval(communication
+				// .getName(), communication
+				// .getStartTimeOnReceiveOperator(), communication
+				// .getFinishTimeOnReceiveOperator());
+				// sendLink.addCommunication(indexCommunicationOnSendLink + 1,
+				// communication);
+				// communication.setSendLink(sendLink);
+				// // communication.setReceiveLink(receiveLink);
+				// }
 			}
 			communication.setScheduled();
 		} else {

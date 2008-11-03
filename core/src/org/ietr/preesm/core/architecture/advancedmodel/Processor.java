@@ -36,106 +36,64 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.advancedmodel;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.ArchitectureInterface;
 
 /**
- * An interconnection joins one interface of a component to one interface of a
- * component
+ * A processor is a hardware entity used to execute computations and perform
+ * communications.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Fifo extends ArchitectureComponent {
+public class Processor extends ArchitectureComponent {
 
-	private ArchitectureComponent srcCmp;
-	private ArchitectureInterface srcIf;
+	/**
+	 * ID used to reference the element in a property bean in case of a
+	 * computation vertex
+	 */
+	public static final String propertyBeanName = "processor";
 
-	private ArchitectureComponent dstCmp;
-	private ArchitectureInterface dstIf;
+	/**
+	 * A communicator can be configured by this processor by using some time.
+	 * The used time for the communicator is stored in setupTimes.
+	 */
+	private Map<Communicator, Double> setupTimes;
 
-	public Fifo(ArchitectureComponent srcCmp,
-			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
-			ArchitectureInterface dstIf) {
-		super("fifo", new FifoDefinition("fifo"));
-		this.srcCmp = srcCmp;
-		this.dstCmp = dstCmp;
-
-		this.srcIf = srcIf;
-		this.dstIf = dstIf;
+	public Processor(String name, ProcessorDefinition definition) {
+		super(name, definition);
+		setupTimes = new HashMap<Communicator, Double>();
 	}
 
-	public Fifo(String name, FifoDefinition type) {
-		super(name, type);
-
-	}
-	public Fifo(String name, FifoDefinition type, ArchitectureComponent srcCmp,
-			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
-			ArchitectureInterface dstIf) {
-		super(name, type);
-		this.srcCmp = srcCmp;
-		this.dstCmp = dstCmp;
-
-		this.srcIf = srcIf;
-		this.dstIf = dstIf;
+	public void addSetupTime(Communicator comm, double time) {
+		setupTimes.put(comm, time);
 	}
 
 	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.fifo;
+		return ArchitectureComponentType.processor;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-
-		if (obj instanceof Fifo) {
-			Fifo intc = (Fifo) obj;
-			return intc.srcCmp.equals(this.srcCmp)
-					&& intc.dstCmp.equals(this.dstCmp)
-					&& intc.srcIf.equals(this.srcIf)
-					&& intc.dstIf.equals(this.dstIf);
+		if (obj instanceof Processor) {
+			Processor proc = (Processor) obj;
+			return this.getName().compareToIgnoreCase(proc.getName()) == 0;
 		}
 		return false;
 	}
 
-	public ArchitectureComponent getSrcCmp() {
-		return srcCmp;
+	public Set<Communicator> getCommunicators() {
+		return setupTimes.keySet();
 	}
 
-	public ArchitectureComponent getDstCmp() {
-		return dstCmp;
+	public double getSetupTime(Communicator comm) {
+		return setupTimes.get(comm);
 	}
 
-	public ArchitectureInterface getSrcIf() {
-		return srcIf;
-	}
-
-	public ArchitectureInterface getDstIf() {
-		return dstIf;
-	}
-
-	public void setSrcCmp(ArchitectureComponent srcCmp) {
-		this.srcCmp = srcCmp;
-	}
-
-	public void setSrcIf(ArchitectureInterface srcIf) {
-		this.srcIf = srcIf;
-	}
-
-	public void setDstCmp(ArchitectureComponent dstCmp) {
-		this.dstCmp = dstCmp;
-	}
-
-	public void setDstIf(ArchitectureInterface dstIf) {
-		this.dstIf = dstIf;
-	}
-
-	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
-
-		if (srcCmp.getType() == type)
-			return srcIf;
-		else if (dstCmp.getType() == type)
-			return dstIf;
-		else
-			return null;
+	public Map<Communicator, Double> getSetupTimes() {
+		return setupTimes;
 	}
 }

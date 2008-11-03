@@ -361,7 +361,11 @@ public class CListSchedCd extends AbstractScheduler {
 								sendCommunicationList.get(
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());
-					} else {
+					} else if (sourceOperator.getReceiveCommunications()
+							.contains(
+									sendCommunicationList
+											.get(indexCommunicationOnSendLink))) {
+						// a receive of sourceOperator
 						infSendCommunicationTime = max(algorithm
 								.getComputation(communication.getOrigin())
 								.getFinishTime()
@@ -370,6 +374,15 @@ public class CListSchedCd extends AbstractScheduler {
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnReceiveOperator()
 										+ communication.getSendOverhead(),
+								sendCommunicationList.get(
+										indexCommunicationOnSendLink)
+										.getFinishTimeOnLink());
+					} else {
+						// neither a send nor a receive of sourceOperator
+						infSendCommunicationTime = max(algorithm
+								.getComputation(communication.getOrigin())
+								.getFinishTime()
+								+ communication.getSendOverhead(),
 								sendCommunicationList.get(
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());

@@ -36,49 +36,41 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * a Memory (exemple: a Shared RAM)
+ * The processor definition specifies the characteristics of a processor.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Memory extends ArchitectureComponent {
+public class ProcessorDefinition extends ArchitectureComponentDefinition {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "memory";
-
-	/**
-	 * Communication performers are communicators and processors that can access
-	 * this processor.
-	 */
-	private Set<ArchitectureComponent> commPerformers;
-
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
-		commPerformers = new HashSet<ArchitectureComponent>();
+	public ProcessorDefinition(String id) {
+		super(id, "processor");
 	}
 
-	public boolean addCommunicationPerformer(ArchitectureComponent commPerformer) {
-		if (commPerformer.getType() == ArchitectureComponentType.communicator
-				|| commPerformer.getType() == ArchitectureComponentType.processor) {
-			return commPerformers.add(commPerformer);
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ProcessorDefinition) {
+			ProcessorDefinition procDef = (ProcessorDefinition) obj;
+			return this.getId().compareToIgnoreCase(procDef.getId()) == 0;
 		}
 		return false;
 	}
 
 	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
+		return ArchitectureComponentType.processor;
 	}
 
-	public Set<ArchitectureComponent> getCommunicationPerformers() {
-		return commPerformers;
+	public ProcessorDefinition clone() {
+
+		// A new ProcessorDefinition is created with same id
+		ProcessorDefinition newdef = new ProcessorDefinition(this.getId());
+
+		return newdef;
+	}
+
+	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }

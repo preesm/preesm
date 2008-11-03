@@ -36,49 +36,28 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * a Memory (exemple: a Shared RAM)
+ * An IP coprocessor is a hardware entity only used to execute computations.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Memory extends ArchitectureComponent {
+public class IpCoprocessor extends ArchitectureComponent {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
 	 * computation vertex
 	 */
-	public static final String propertyBeanName = "memory";
+	public static final String propertyBeanName = "ipcoprocessor";
 
-	/**
-	 * Communication performers are communicators and processors that can access
-	 * this processor.
-	 */
-	private Set<ArchitectureComponent> commPerformers;
-
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
-		commPerformers = new HashSet<ArchitectureComponent>();
-	}
-
-	public boolean addCommunicationPerformer(ArchitectureComponent commPerformer) {
-		if (commPerformer.getType() == ArchitectureComponentType.communicator
-				|| commPerformer.getType() == ArchitectureComponentType.processor) {
-			return commPerformers.add(commPerformer);
-		}
-		return false;
+	public IpCoprocessor(String name, IpCoprocessorDefinition definition) {
+		super(name, definition);
 	}
 
 	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
+		return ArchitectureComponentType.ipCoprocessor;
 	}
 
-	public Set<ArchitectureComponent> getCommunicationPerformers() {
-		return commPerformers;
-	}
 }

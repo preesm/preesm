@@ -36,49 +36,42 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * a Memory (exemple: a Shared RAM)
+ * The IP coprocessor definition specifies the characteristics of an IP
+ * coprocessor.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Memory extends ArchitectureComponent {
+public class IpCoprocessorDefinition extends ArchitectureComponentDefinition {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "memory";
-
-	/**
-	 * Communication performers are communicators and processors that can access
-	 * this processor.
-	 */
-	private Set<ArchitectureComponent> commPerformers;
-
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
-		commPerformers = new HashSet<ArchitectureComponent>();
+	public IpCoprocessorDefinition(String name) {
+		super(name, "ipCoprocessor");
 	}
 
-	public boolean addCommunicationPerformer(ArchitectureComponent commPerformer) {
-		if (commPerformer.getType() == ArchitectureComponentType.communicator
-				|| commPerformer.getType() == ArchitectureComponentType.processor) {
-			return commPerformers.add(commPerformer);
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IpCoprocessorDefinition) {
+			IpCoprocessorDefinition ipDef = (IpCoprocessorDefinition) obj;
+			return this.getId().compareToIgnoreCase(ipDef.getId()) == 0;
 		}
 		return false;
 	}
-
+	
 	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
+		return ArchitectureComponentType.ipCoprocessor;
 	}
 
-	public Set<ArchitectureComponent> getCommunicationPerformers() {
-		return commPerformers;
+	public IpCoprocessorDefinition clone() {
+
+		// A new IpCoprocessorDefinition is created with same id
+		IpCoprocessorDefinition newdef = new IpCoprocessorDefinition(this.getId());
+
+		return newdef;
+	}
+
+	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }
