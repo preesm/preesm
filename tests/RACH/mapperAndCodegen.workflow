@@ -12,12 +12,17 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
       <data key="variables">
-         <variable name="sourcePath" value="/MapperAndCodegen_1/Code"/>
+         <variable name="sourcePath" value="/RACH/Code"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
       <data key="variables">
          <variable name="path" value="D:/IDCT2D/dag.gantt"/>
+      </data>
+   </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform" taskId="DAGExporter">
+      <data key="variables">
+         <variable name="path" value="/RACH/DAG/outDAG.xml"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
@@ -31,4 +36,8 @@
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="codegen"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__architecture"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="DAGExporter"/>
+   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAGExporter"/>
+   <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="DAGExporter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAGExporter"/>
 </preesm:workflow>

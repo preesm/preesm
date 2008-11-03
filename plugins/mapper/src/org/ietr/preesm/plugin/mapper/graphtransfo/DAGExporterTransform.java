@@ -1,20 +1,22 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
+package org.ietr.preesm.plugin.mapper.graphtransfo;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.graphtransfo.GMLMapperDAGExporter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-public class GanttExporter implements IExporter{
+public class DAGExporterTransform implements IExporter{
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
@@ -25,7 +27,10 @@ public class GanttExporter implements IExporter{
 		MapperDAG mapperDag = (MapperDAG)dag;
 		GMLMapperDAGExporter exporter = new GMLMapperDAGExporter() ;
 		MapperDAG clone = mapperDag.clone() ;
-		exporter.export(clone, path.toString());
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IResource resource = workspace.getRoot().findMember(
+				path.toOSString());
+		exporter.export(clone, resource.getLocation().toOSString());
 	}
 
 	@Override

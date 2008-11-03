@@ -31,9 +31,9 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		super();
 		addKey(DAGVertex.NAME, DAGVertex.NAME, "vertex", "string", String.class);
 		addKey(VertexType.propertyBeanName, VertexType.propertyBeanName, "vertex", "string", String.class);
-		addKey(Operator.propertyBeanName, Operator.propertyBeanName, "vertex", "int",
+		addKey(Operator.propertyBeanName, Operator.propertyBeanName, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey(Medium.propertyBeanName, Medium.propertyBeanName, "vertex", "int",
+		addKey(Medium.propertyBeanName, Medium.propertyBeanName, "vertex", "string",
 				SDFDefaultEdgePropertyType.class);
 		addKey("schedulingOrder", "schedulingOrder", "vertex", "int",
 				SDFDefaultEdgePropertyType.class);
