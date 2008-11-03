@@ -60,4 +60,6 @@
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="communication contentious list scheduler"/>
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="communication contentious list scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="communication contentious list scheduler"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__architecture"/>
 </preesm:workflow>
