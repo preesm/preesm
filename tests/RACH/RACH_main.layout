@@ -2,12 +2,17 @@
 <layout>
    <vertices>
       <vertex id="a1" x="57" y="70"/>
-      <vertex id="FIR_a1" x="149" y="77"/>
+      <vertex id="FIR_a1" x="149" y="71"/>
       <vertex id="DFT_a1" x="264" y="70"/>
       <vertex id="ZCMult_z1_a1" x="381" y="70"/>
       <vertex id="IFFT_z1_a1" x="529" y="70"/>
       <vertex id="PowComp_z1_a1" x="666" y="70"/>
       <vertex id="NoiseFloor_z1" x="828" y="70"/>
       <vertex id="Peaksearch" x="975" y="70"/>
+      <vertex id="ZCGen" x="255" y="228"/>
+      <vertex id="ZCMult_z2_a1" x="385" y="196"/>
+      <vertex id="PowComp_z2_a1" x="661" y="198"/>
+      <vertex id="IFFT_z2_a1" x="526" y="200"/>
+      <vertex id="NoiseFloor_z2" x="826" y="202"/>
    </vertices>
 </layout>
