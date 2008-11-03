@@ -49,14 +49,6 @@
          <data key="graph_desc"/>
          <data key="arguments"/>
       </node>
-      <node id="ZCMult_z2_a1" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="arguments"/>
-      </node>
-      <node id="ZCVal" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="arguments"/>
-      </node>
       <edge source="a1" sourceport="o" target="FIR_a1" targetport="i">
          <data key="edge_prod">24576</data>
          <data key="edge_delay">0</data>
@@ -82,20 +74,15 @@
          <data key="edge_delay">0</data>
          <data key="edge_cons">1024</data>
       </edge>
-      <edge source="NoiseFloor_z1" sourceport="o" target="Peaksearch" targetport="i">
-         <data key="edge_prod">4</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">4</data>
-      </edge>
-      <edge source="PowComp_z1_a1" sourceport="o" target="NoiseFloor_z1" targetport="o">
+      <edge source="PowComp_z1_a1" sourceport="o" target="NoiseFloor_z1" targetport="i">
          <data key="edge_prod">512</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">512</data>
       </edge>
-      <edge source="ZCVal" sourceport="zc1" target="ZCMult_z1_a1" targetport="zc1">
-         <data key="edge_prod"/>
-         <data key="edge_delay"/>
-         <data key="edge_cons"/>
+      <edge source="NoiseFloor_z1" sourceport="o" target="Peaksearch" targetport="i">
+         <data key="edge_prod">4</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">4</data>
       </edge>
    </graph>
 </graphml>

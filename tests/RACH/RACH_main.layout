@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
    <vertices>
-      <vertex id="a1" x="59" y="72"/>
-      <vertex id="FIR_a1" x="152" y="69"/>
-      <vertex id="DFT_a1" x="271" y="73"/>
-      <vertex id="ZCMult_z1_a1" x="420" y="72"/>
-      <vertex id="IFFT_z1_a1" x="562" y="81"/>
-      <vertex id="PowComp_z1_a1" x="697" y="85"/>
-      <vertex id="NoiseFloor_z1" x="963" y="146"/>
-      <vertex id="Peaksearch" x="1107" y="186"/>
-      <vertex id="ZCMult_z2_a1" x="417" y="163"/>
-      <vertex id="ZCVal" x="267" y="192"/>
+      <vertex id="a1" x="57" y="70"/>
+      <vertex id="FIR_a1" x="149" y="77"/>
+      <vertex id="DFT_a1" x="264" y="70"/>
+      <vertex id="ZCMult_z1_a1" x="381" y="70"/>
+      <vertex id="IFFT_z1_a1" x="529" y="70"/>
+      <vertex id="PowComp_z1_a1" x="666" y="70"/>
+      <vertex id="NoiseFloor_z1" x="828" y="70"/>
+      <vertex id="Peaksearch" x="975" y="70"/>
    </vertices>
 </layout>
