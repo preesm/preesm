@@ -49,5 +49,25 @@
          <data key="graph_desc"/>
          <data key="arguments"/>
       </node>
+      <edge source="a1" sourceport="o" target="FIR_a1" targetport="i">
+         <data key="edge_prod">24576</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">24576</data>
+      </edge>
+      <edge source="FIR_a1" sourceport="o" target="DFT_a1" targetport="i">
+         <data key="edge_prod">1536</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1536</data>
+      </edge>
+      <edge source="DFT_a1" sourceport="o" target="ZCMult_z1_a1" targetport="i">
+         <data key="edge_prod">1536</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1536</data>
+      </edge>
+      <edge source="ZCMult_z1_a1" sourceport="o" target="IFFT_z1_a1" targetport="i">
+         <data key="edge_prod">839</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">839</data>
+      </edge>
    </graph>
 </graphml>
