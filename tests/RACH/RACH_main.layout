@@ -7,7 +7,7 @@
       <vertex id="ZCMult_z1_a1" x="420" y="72"/>
       <vertex id="IFFT_z1_a1" x="562" y="81"/>
       <vertex id="PowComp_z1_a1" x="697" y="85"/>
-      <vertex id="NoiseFloor_z1" x="781" y="248"/>
-      <vertex id="Peaksearch" x="925" y="288"/>
+      <vertex id="NoiseFloor_z1" x="888" y="217"/>
+      <vertex id="Peaksearch" x="1032" y="257"/>
    </vertices>
 </layout>

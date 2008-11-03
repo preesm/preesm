@@ -69,5 +69,20 @@
          <data key="edge_delay">0</data>
          <data key="edge_cons">839</data>
       </edge>
+      <edge source="IFFT_z1_a1" sourceport="o" target="PowComp_z1_a1" targetport="i">
+         <data key="edge_prod">1024</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1024</data>
+      </edge>
+      <edge source="PowComp_z1_a1" sourceport="o" target="NoiseFloor_z1" targetport="i">
+         <data key="edge_prod">512</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">512</data>
+      </edge>
+      <edge source="NoiseFloor_z1" sourceport="o" target="Peaksearch" targetport="i">
+         <data key="edge_prod">4</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">4</data>
+      </edge>
    </graph>
 </graphml>
