@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc">
+      <desc>java.lang.String</desc>
+   </key>
+   <key attr.name="arguments" for="node" id="arguments"/>
+   <key attr.name="parameters" for="graph" id="parameters"/>
+   <key attr.name="variables" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="parameters"/>
+      <data key="variables"/>
+      <node id="a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="FIR_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="DFT_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="ZCMult_z1_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="IFFT_z1_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="PowComp_z1_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="NoiseFloor_z1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+      <node id="Peaksearch" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="arguments"/>
+      </node>
+   </graph>
+</graphml>
