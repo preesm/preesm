@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/RACH/RACH_main.xml"/>
+        <architecture url="/RACH/RACH_archi.ipxactds"/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="c64x_1"/>
+            <task name="ZCMult_z1_a1"/>
+            <task name="IFFT_z1_a1"/>
+            <task name="NoiseFloor_z1"/>
+            <task name="DFT_a1"/>
+            <task name="Peaksearch"/>
+            <task name="PowComp_z1_a1"/>
+            <task name="a1"/>
+            <task name="FIR_a1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="c64x_4"/>
+            <task name="ZCMult_z1_a1"/>
+            <task name="IFFT_z1_a1"/>
+            <task name="NoiseFloor_z1"/>
+            <task name="DFT_a1"/>
+            <task name="Peaksearch"/>
+            <task name="PowComp_z1_a1"/>
+            <task name="a1"/>
+            <task name="FIR_a1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="c64x_3"/>
+            <task name="ZCMult_z1_a1"/>
+            <task name="IFFT_z1_a1"/>
+            <task name="NoiseFloor_z1"/>
+            <task name="DFT_a1"/>
+            <task name="Peaksearch"/>
+            <task name="PowComp_z1_a1"/>
+            <task name="a1"/>
+            <task name="FIR_a1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="c64x_2"/>
+            <task name="ZCMult_z1_a1"/>
+            <task name="IFFT_z1_a1"/>
+            <task name="NoiseFloor_z1"/>
+            <task name="DFT_a1"/>
+            <task name="Peaksearch"/>
+            <task name="PowComp_z1_a1"/>
+            <task name="a1"/>
+            <task name="FIR_a1"/>
+        </constraintGroup>
+    </constraints>
+    <timings/>
+</scenario>

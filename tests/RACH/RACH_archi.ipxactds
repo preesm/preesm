@@ -1,5 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:componentInstances/>
-   <spirit:interconnections/>
+   <spirit:name/>
+   <spirit:library/>
+   <spirit:componentInstances>
+      <spirit:componentInstance>
+         <spirit:instanceName>c64x_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>c64x_2</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>c64x_3</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>c64x_4</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>EDMA_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="edma" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_overhead">1</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+   </spirit:componentInstances>
+   <spirit:interconnections>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_1"/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_2"/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_3"/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_4"/>
+         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
+      </spirit:interconnection>
+   </spirit:interconnections>
    <spirit:hierConnections/>
 </spirit:design>
