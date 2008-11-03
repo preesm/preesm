@@ -2,17 +2,41 @@
 <layout>
    <vertices>
       <vertex id="a1" x="57" y="70"/>
-      <vertex id="FIR_a1" x="149" y="71"/>
+      <vertex id="FIR_a1" x="149" y="70"/>
       <vertex id="DFT_a1" x="264" y="70"/>
       <vertex id="ZCMult_z1_a1" x="381" y="70"/>
-      <vertex id="IFFT_z1_a1" x="529" y="70"/>
-      <vertex id="PowComp_z1_a1" x="666" y="70"/>
-      <vertex id="NoiseFloor_z1" x="828" y="70"/>
-      <vertex id="Peaksearch" x="975" y="70"/>
-      <vertex id="ZCGen" x="255" y="228"/>
-      <vertex id="ZCMult_z2_a1" x="385" y="196"/>
-      <vertex id="PowComp_z2_a1" x="661" y="198"/>
-      <vertex id="IFFT_z2_a1" x="526" y="200"/>
-      <vertex id="NoiseFloor_z2" x="826" y="202"/>
+      <vertex id="IFFT_z1_a1" x="529" y="79"/>
+      <vertex id="PowComp_z1_a1" x="666" y="79"/>
+      <vertex id="NoiseFloor_z1" x="828" y="79"/>
+      <vertex id="Peaksearch" x="975" y="125"/>
+      <vertex id="ZCGen" x="264" y="181"/>
+      <vertex id="ZCMult_z2_a1" x="381" y="199"/>
+      <vertex id="PowComp_z2_a1" x="666" y="192"/>
+      <vertex id="IFFT_z2_a1" x="529" y="195"/>
+      <vertex id="NoiseFloor_z2" x="828" y="190"/>
+      <vertex id="PowComp_z3_a1" x="669" y="303"/>
+      <vertex id="NoiseFloor_z3" x="826" y="296"/>
+      <vertex id="IFFT_z3_a1" x="516" y="301"/>
+      <vertex id="ZCMult_z3_a1" x="379" y="296"/>
+      <vertex id="NoiseFloor_z4" x="833" y="379"/>
+      <vertex id="IFFT_z4_a1" x="512" y="377"/>
+      <vertex id="PowComp_z4_a1" x="669" y="379"/>
+      <vertex id="ZCMult_z4_a1" x="376" y="373"/>
+      <vertex id="ZCMult_z5_a1" x="374" y="451"/>
+      <vertex id="IFFT_z5_a1" x="499" y="455"/>
+      <vertex id="PowComp_z5_a1" x="681" y="457"/>
+      <vertex id="NoiseFloor_z5" x="830" y="457"/>
+      <vertex id="PowComp_z6_a1" x="692" y="515"/>
+      <vertex id="NoiseFloor_z6" x="826" y="515"/>
+      <vertex id="IFFT_z6_a1" x="485" y="513"/>
+      <vertex id="ZCMult_z6_a1" x="371" y="509"/>
+      <vertex id="NoiseFloor_z7" x="811" y="576"/>
+      <vertex id="PowComp_z7_a1" x="692" y="576"/>
+      <vertex id="ZCMult_z7_a1" x="357" y="570"/>
+      <vertex id="IFFT_z7_a1" x="460" y="574"/>
+      <vertex id="ZCMult_z8_a1" x="354" y="630"/>
+      <vertex id="PowComp_z8_a1" x="703" y="636"/>
+      <vertex id="NoiseFloor_z8" x="807" y="636"/>
+      <vertex id="IFFT_z8_a1" x="446" y="634"/>
    </vertices>
 </layout>
