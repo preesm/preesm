@@ -49,7 +49,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author pmu
  */
-public class Processor extends ArchitectureComponent {
+public class Processor extends ArchitectureComponent implements Terminal,
+		CommunicationPerformer {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
@@ -62,6 +63,12 @@ public class Processor extends ArchitectureComponent {
 	 * The used time for the communicator is stored in setupTimes.
 	 */
 	private Map<Communicator, Double> setupTimes;
+
+	/**
+	 * Communication performers are communicators and processors that can access
+	 * this processor.
+	 */
+	private Set<CommunicationPerformer> commPerformers;
 
 	public Processor(String name, ProcessorDefinition definition) {
 		super(name, definition);
@@ -76,15 +83,6 @@ public class Processor extends ArchitectureComponent {
 		return ArchitectureComponentType.processor;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Processor) {
-			Processor proc = (Processor) obj;
-			return this.getName().compareToIgnoreCase(proc.getName()) == 0;
-		}
-		return false;
-	}
-
 	public Set<Communicator> getCommunicators() {
 		return setupTimes.keySet();
 	}
@@ -95,5 +93,14 @@ public class Processor extends ArchitectureComponent {
 
 	public Map<Communicator, Double> getSetupTimes() {
 		return setupTimes;
+	}
+
+	public void addCommunicationPerformer(CommunicationPerformer commPerformer) {
+		commPerformers.add(commPerformer);
+
+	}
+
+	public Set<CommunicationPerformer> getCommunicationPerformers() {
+		return commPerformers;
 	}
 }

@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.advancedmodel;
 
+import java.util.Set;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
@@ -44,20 +46,35 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author pmu
  */
-public class IpCoprocessor extends ArchitectureComponent {
+public class IpCoprocessor extends ArchitectureComponent implements Terminal {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
 	 * computation vertex
 	 */
 	public static final String propertyBeanName = "ipcoprocessor";
+	
+	/**
+	 * Communication performers are communicators and processors that can access
+	 * this processor.
+	 */
+	private Set<CommunicationPerformer> commPerformers;
 
 	public IpCoprocessor(String name, IpCoprocessorDefinition definition) {
 		super(name, definition);
 	}
 
+	public void addCommunicationPerformer(CommunicationPerformer commPerformer) {
+		commPerformers.add(commPerformer);
+
+	}
+	
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.ipCoprocessor;
+	}
+	
+	public Set<CommunicationPerformer> getCommunicationPerformers() {
+		return commPerformers;
 	}
 
 }

@@ -178,15 +178,23 @@ public class MultiCoreArchitecture {
 	 * 
 	 * @return true if the medium could be added
 	 */
+//	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
+//			ArchitectureComponent cmp2, ArchitectureInterface if2,
+//			boolean isFifo) {
+//
+//		if (isFifo) {
+//			fifos.add(new Fifo(cmp1, if1, cmp2, if2));
+//		} else {
+//			if (!existInterconnection(cmp1, if1, cmp2, if2))
+//				interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+//		}
+//
+//	}
+	
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
-			ArchitectureComponent cmp2, ArchitectureInterface if2,
-			boolean isFifo) {
-
-		if (isFifo) {
-			fifos.add(new Fifo(cmp1, if1, cmp2, if2));
-		} else {
-			if (!existInterconnection(cmp1, if1, cmp2, if2))
-				interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+			ArchitectureComponent cmp2, ArchitectureInterface if2) {
+		if (!existInterconnection(cmp1, if1, cmp2, if2)){
+			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
 		}
 	}
 

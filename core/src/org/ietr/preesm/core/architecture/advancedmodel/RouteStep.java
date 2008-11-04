@@ -42,9 +42,6 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 /**
  * A route step is a part of a route. It starts on a terminal and finishes on
  * another terminal. A processor is used to control the communication on this
@@ -58,27 +55,20 @@ public class RouteStep {
 
 	private Communicator communicator = null;
 
-	private ArchitectureComponent startTerminal;
+	private Terminal startTerminal;
 
-	private ArchitectureComponent startLink = null;
+	private Link startLink = null;
 
 	private List<NodeLinkTuple> nodeLinkTuples;
 
-	private ArchitectureComponent finishTerminal;
+	private Terminal finishTerminal;
 
-	public RouteStep(Processor processor, ArchitectureComponent startTerminal,
-			ArchitectureComponent finishTerminal) {
-		if ((startTerminal.getType() == ArchitectureComponentType.processor
-				|| startTerminal.getType() == ArchitectureComponentType.ipCoprocessor || startTerminal
-				.getType() == ArchitectureComponentType.memory)
-				&& (finishTerminal.getType() == ArchitectureComponentType.processor
-						|| finishTerminal.getType() == ArchitectureComponentType.ipCoprocessor || finishTerminal
-						.getType() == ArchitectureComponentType.memory)) {
-			this.processor = processor;
-			this.startTerminal = startTerminal;
-			this.finishTerminal = finishTerminal;
-			nodeLinkTuples = new ArrayList<NodeLinkTuple>();
-		}
+	public RouteStep(Processor processor, Terminal startTerminal,
+			Terminal finishTerminal) {
+		this.processor = processor;
+		this.startTerminal = startTerminal;
+		this.finishTerminal = finishTerminal;
+		nodeLinkTuples = new ArrayList<NodeLinkTuple>();
 	}
 
 	public void addNodeLinkTuple(int index, NodeLinkTuple nodeLinkTuple) {
@@ -93,7 +83,7 @@ public class RouteStep {
 		return communicator;
 	}
 
-	public ArchitectureComponent getFinishTerminal() {
+	public Terminal getFinishTerminal() {
 		return finishTerminal;
 	}
 
@@ -105,11 +95,11 @@ public class RouteStep {
 		return processor;
 	}
 
-	public ArchitectureComponent getStartLink() {
+	public Link getStartLink() {
 		return startLink;
 	}
 
-	public ArchitectureComponent getStartTerminal() {
+	public Terminal getStartTerminal() {
 		return startTerminal;
 	}
 
@@ -117,40 +107,20 @@ public class RouteStep {
 		this.communicator = communicator;
 	}
 
-	public boolean setFinishTerminal(ArchitectureComponent finishTerminal) {
-		if (finishTerminal.getType() == ArchitectureComponentType.processor
-				|| finishTerminal.getType() == ArchitectureComponentType.ipCoprocessor
-				|| finishTerminal.getType() == ArchitectureComponentType.memory) {
-			this.finishTerminal = finishTerminal;
-			return true;
-		} else {
-			return false;
-		}
+	public void setFinishTerminal(Terminal finishTerminal) {
+		this.finishTerminal = finishTerminal;
 	}
 
 	public void setProcessor(Processor processor) {
 		this.processor = processor;
 	}
 
-	public boolean setStartLink(ArchitectureComponent startLink) {
-		if (startLink.getType() == ArchitectureComponentType.bus
-				|| startLink.getType() == ArchitectureComponentType.fifo) {
-			this.startLink = startLink;
-			return true;
-		} else {
-			return false;
-		}
+	public void setStartLink(Link startLink) {
+		this.startLink = startLink;
 	}
 
-	public boolean setStartTerminal(ArchitectureComponent startTerminal) {
-		if (startTerminal.getType() == ArchitectureComponentType.processor
-				|| startTerminal.getType() == ArchitectureComponentType.ipCoprocessor
-				|| startTerminal.getType() == ArchitectureComponentType.memory) {
-			this.startTerminal = startTerminal;
-			return true;
-		} else {
-			return false;
-		}
+	public void setStartTerminal(Terminal startTerminal) {
+		this.startTerminal = startTerminal;
 	}
 
 	@Override

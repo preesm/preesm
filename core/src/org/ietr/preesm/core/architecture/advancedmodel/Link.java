@@ -33,46 +33,17 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 /**
- * A bus is a hyperedge used to connect different nodes and transfer data
- * between them.
+ * This interface should be implemented by Bus and Fifo.
  * 
  * @author pmu
+ * 
  */
-public class Bus extends ArchitectureComponent implements Link {
+public interface Link {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "bus";
+	public double getDataRate();
 
-	/**
-	 * The average data rate of this link is the number of bytes transferred in
-	 * a time unit.
-	 */
-	private double dataRate;
-
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
-		dataRate = 0;
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.bus;
-	}
-
-	public double getDataRate() {
-		return dataRate;
-	}
-
-	public void setDataRate(double dataRate) {
-		this.dataRate = dataRate;
-	}
+	public void setDataRate(double dataRate);
 }

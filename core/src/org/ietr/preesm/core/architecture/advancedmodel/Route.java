@@ -42,11 +42,9 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 /**
- * A route contains a list of route steps.
+ * A route contains a list of route steps from the origin terminal to the
+ * destination terminal.
  * 
  * @author pmu
  */
@@ -57,24 +55,16 @@ public class Route {
 	 */
 	public static final String propertyBeanName = "route";
 
-	private ArchitectureComponent originTerminal;
+	private Terminal originTerminal;
 
-	private ArchitectureComponent destinationTerminal;
+	private Terminal destinationTerminal;
 
 	private List<RouteStep> routSteps;
 
-	public Route(ArchitectureComponent originTerminal,
-			ArchitectureComponent destinationTerminal) {
-		if ((originTerminal.getType() == ArchitectureComponentType.processor
-				|| originTerminal.getType() == ArchitectureComponentType.ipCoprocessor || originTerminal
-				.getType() == ArchitectureComponentType.memory)
-				&& (destinationTerminal.getType() == ArchitectureComponentType.processor
-						|| destinationTerminal.getType() == ArchitectureComponentType.ipCoprocessor || destinationTerminal
-						.getType() == ArchitectureComponentType.memory)) {
-			this.originTerminal = originTerminal;
-			this.destinationTerminal = destinationTerminal;
-			routSteps = new ArrayList<RouteStep>();
-		}
+	public Route(Terminal originTerminal, Terminal destinationTerminal) {
+		this.originTerminal = originTerminal;
+		this.destinationTerminal = destinationTerminal;
+		routSteps = new ArrayList<RouteStep>();
 	}
 
 	public void addRoutStep(int index, RouteStep routeStep) {
@@ -85,11 +75,11 @@ public class Route {
 		routSteps.add(routeStep);
 	}
 
-	public ArchitectureComponent getDestinationTerminal() {
+	public Terminal getDestinationTerminal() {
 		return destinationTerminal;
 	}
 
-	public ArchitectureComponent getOriginTerminal() {
+	public Terminal getOriginTerminal() {
 		return originTerminal;
 	}
 
@@ -97,26 +87,11 @@ public class Route {
 		return routSteps;
 	}
 
-	public boolean setDestinationTerminal(
-			ArchitectureComponent destinationTerminal) {
-		if (destinationTerminal.getType() == ArchitectureComponentType.processor
-				|| destinationTerminal.getType() == ArchitectureComponentType.ipCoprocessor
-				|| destinationTerminal.getType() == ArchitectureComponentType.memory) {
-			this.destinationTerminal = destinationTerminal;
-			return true;
-		} else {
-			return false;
-		}
+	public void setDestinationTerminal(Terminal destinationTerminal) {
+		this.destinationTerminal = destinationTerminal;
 	}
 
-	public boolean setOriginTerminal(ArchitectureComponent originTerminal) {
-		if (originTerminal.getType() == ArchitectureComponentType.processor
-				|| originTerminal.getType() == ArchitectureComponentType.ipCoprocessor
-				|| originTerminal.getType() == ArchitectureComponentType.memory) {
-			this.originTerminal = originTerminal;
-			return true;
-		} else {
-			return false;
-		}
+	public void setOriginTerminal(Terminal originTerminal) {
+		this.originTerminal = originTerminal;
 	}
 }

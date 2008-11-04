@@ -41,101 +41,151 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
 
 /**
- * An interconnection joins one interface of a component to one interface of a
- * component
+ * A fifo is a directed edge used to connect two nodes and transfer data from
+ * the origin node to the destination node.
  * 
- * @author mpelcat
+ * @author pmu
  */
-public class Fifo extends ArchitectureComponent {
+public class Fifo extends ArchitectureComponent implements Link {
 
-	private ArchitectureComponent srcCmp;
-	private ArchitectureInterface srcIf;
+	/**
+	 * ID used to reference the element in a property bean in case of a
+	 * communication vertex
+	 */
+	public static final String propertyBeanName = "fifo";
+	
+//	private ArchitectureComponent srcCmp;
+//	private ArchitectureInterface srcIf;
+//
+//	private ArchitectureComponent dstCmp;
+//	private ArchitectureInterface dstIf;
+	
+	private ArchitectureInterface inputInterface;
 
-	private ArchitectureComponent dstCmp;
-	private ArchitectureInterface dstIf;
+	private ArchitectureInterface outputInterface;
 
-	public Fifo(ArchitectureComponent srcCmp,
-			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
-			ArchitectureInterface dstIf) {
-		super("fifo", new FifoDefinition("fifo"));
-		this.srcCmp = srcCmp;
-		this.dstCmp = dstCmp;
+	/**
+	 * The average data rate of this link is the number of bytes transferred in
+	 * a time unit.
+	 */
+	private double dataRate;
 
-		this.srcIf = srcIf;
-		this.dstIf = dstIf;
-	}
+//	public Fifo(ArchitectureComponent srcCmp, ArchitectureInterface srcIf,
+//			ArchitectureComponent dstCmp, ArchitectureInterface dstIf) {
+//		super("fifo", new FifoDefinition("fifo"));
+//		this.srcCmp = srcCmp;
+//		this.dstCmp = dstCmp;
+//
+//		this.srcIf = srcIf;
+//		this.dstIf = dstIf;
+//
+//		dataRate = 0;
+//	}
 
 	public Fifo(String name, FifoDefinition type) {
 		super(name, type);
-
+		dataRate = 0;
 	}
-	public Fifo(String name, FifoDefinition type, ArchitectureComponent srcCmp,
-			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
-			ArchitectureInterface dstIf) {
-		super(name, type);
-		this.srcCmp = srcCmp;
-		this.dstCmp = dstCmp;
 
-		this.srcIf = srcIf;
-		this.dstIf = dstIf;
-	}
+//	public Fifo(String name, FifoDefinition type, ArchitectureComponent srcCmp,
+//			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
+//			ArchitectureInterface dstIf) {
+//		super(name, type);
+//		this.srcCmp = srcCmp;
+//		this.dstCmp = dstCmp;
+//
+//		this.srcIf = srcIf;
+//		this.dstIf = dstIf;
+//	}
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.fifo;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+//	@Override
+//	public boolean equals(Object obj) {
+//
+//		if (obj instanceof Fifo) {
+//			Fifo intc = (Fifo) obj;
+//			return intc.srcCmp.equals(this.srcCmp)
+//					&& intc.dstCmp.equals(this.dstCmp)
+//					&& intc.srcIf.equals(this.srcIf)
+//					&& intc.dstIf.equals(this.dstIf);
+//		}
+//		return false;
+//	}
+//
+//	public ArchitectureComponent getSrcCmp() {
+//		return srcCmp;
+//	}
+//
+//	public ArchitectureComponent getDstCmp() {
+//		return dstCmp;
+//	}
+//
+//	public ArchitectureInterface getSrcIf() {
+//		return srcIf;
+//	}
+//
+//	public ArchitectureInterface getDstIf() {
+//		return dstIf;
+//	}
+//
+//	public void setSrcCmp(ArchitectureComponent srcCmp) {
+//		this.srcCmp = srcCmp;
+//	}
+//
+//	public void setSrcIf(ArchitectureInterface srcIf) {
+//		this.srcIf = srcIf;
+//	}
+//
+//	public void setDstCmp(ArchitectureComponent dstCmp) {
+//		this.dstCmp = dstCmp;
+//	}
+//
+//	public void setDstIf(ArchitectureInterface dstIf) {
+//		this.dstIf = dstIf;
+//	}
+//
+//	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
+//
+//		if (srcCmp.getType() == type)
+//			return srcIf;
+//		else if (dstCmp.getType() == type)
+//			return dstIf;
+//		else
+//			return null;
+//	}
+	
+	public ArchitectureInterface getInputInterface() {
+		return inputInterface;
+	}
 
-		if (obj instanceof Fifo) {
-			Fifo intc = (Fifo) obj;
-			return intc.srcCmp.equals(this.srcCmp)
-					&& intc.dstCmp.equals(this.dstCmp)
-					&& intc.srcIf.equals(this.srcIf)
-					&& intc.dstIf.equals(this.dstIf);
+	public void setInputInterface(ArchitectureInterface inputInterface) {
+		if(this.inputInterface!=null){
+			availableInterfaces.remove(this.inputInterface);
 		}
-		return false;
+		this.inputInterface = inputInterface;
+		this.addInterface(inputInterface);
 	}
 
-	public ArchitectureComponent getSrcCmp() {
-		return srcCmp;
+	public ArchitectureInterface getOutputInterface() {
+		return outputInterface;
 	}
 
-	public ArchitectureComponent getDstCmp() {
-		return dstCmp;
+	public void setOutputInterface(ArchitectureInterface outputInterface) {
+		if(this.outputInterface!=null){
+			availableInterfaces.remove(this.outputInterface);
+		}
+		this.outputInterface = outputInterface;
+		this.addInterface(outputInterface);
+	}
+	
+	public double getDataRate() {
+		return dataRate;
 	}
 
-	public ArchitectureInterface getSrcIf() {
-		return srcIf;
-	}
-
-	public ArchitectureInterface getDstIf() {
-		return dstIf;
-	}
-
-	public void setSrcCmp(ArchitectureComponent srcCmp) {
-		this.srcCmp = srcCmp;
-	}
-
-	public void setSrcIf(ArchitectureInterface srcIf) {
-		this.srcIf = srcIf;
-	}
-
-	public void setDstCmp(ArchitectureComponent dstCmp) {
-		this.dstCmp = dstCmp;
-	}
-
-	public void setDstIf(ArchitectureInterface dstIf) {
-		this.dstIf = dstIf;
-	}
-
-	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
-
-		if (srcCmp.getType() == type)
-			return srcIf;
-		else if (dstCmp.getType() == type)
-			return dstIf;
-		else
-			return null;
+	public void setDataRate(double dataRate) {
+		this.dataRate = dataRate;
 	}
 }

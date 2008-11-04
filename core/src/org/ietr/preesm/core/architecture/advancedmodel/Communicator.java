@@ -34,31 +34,56 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.architecture.advancedmodel;
+
+import java.util.Map;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 
 /**
  * a Communicator (example: an edma)
  * 
  * @author mpelcat
  */
-public class Communicator extends ArchitectureComponent {
+public class Communicator extends ArchitectureComponent implements
+		CommunicationPerformer {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
+	 * ID used to reference the element in a property bean in case of a
+	 * computation vertex
 	 */
 	public static final String propertyBeanName = "communicator";
-	
+
+	/**
+	 * This communicator can be configured by some processors by using some
+	 * time. The used times for different processors are stored in setupTimes.
+	 */
+	private Map<Processor, Double> setupTimes;
+
 	public Communicator(String name, CommunicatorDefinition type) {
 		super(name, type);
 
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicator;
+	}
+
+	public void addSetupTime(Processor proc, double time) {
+		setupTimes.put(proc, time);
+	}
+
+	public Set<Processor> getProcessors() {
+		return setupTimes.keySet();
+	}
+
+	public double getSetupTime(Processor proc) {
+		return setupTimes.get(proc);
+	}
+
+	public Map<Processor, Double> getSetupTimes() {
+		return setupTimes;
 	}
 }
