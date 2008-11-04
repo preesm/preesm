@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:library>4C64</spirit:library>
+   <spirit:name>4C64</spirit:name>
+   <spirit:library/>
    <spirit:componentInstances>
       <spirit:componentInstance>
          <spirit:instanceName>c64x_1</spirit:instanceName>
