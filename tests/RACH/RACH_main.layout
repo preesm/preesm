@@ -3,11 +3,11 @@
    <vertices>
       <vertex id="a1" x="57" y="531"/>
       <vertex id="FIR_a1" x="149" y="531"/>
-      <vertex id="DFT_a1" x="264" y="531"/>
+      <vertex id="DFT_a1" x="264" y="530"/>
       <vertex id="ZCMult_z1_a1" x="381" y="200"/>
       <vertex id="IFFT_z1_a1" x="529" y="264"/>
       <vertex id="PowComp_z1_a1" x="666" y="319"/>
-      <vertex id="ZCMult_z2_a1" x="381" y="716"/>
+      <vertex id="ZCMult_z2_a1" x="378" y="704"/>
       <vertex id="PowComp_z2_a1" x="666" y="1096"/>
       <vertex id="IFFT_z2_a1" x="529" y="878"/>
       <vertex id="PowComp_z3_a1" x="666" y="541"/>
@@ -15,7 +15,7 @@
       <vertex id="ZCMult_z3_a1" x="381" y="329"/>
       <vertex id="IFFT_z4_a1" x="529" y="144"/>
       <vertex id="PowComp_z4_a1" x="666" y="208"/>
-      <vertex id="ZCMult_z4_a1" x="381" y="71"/>
+      <vertex id="ZCMult_z4_a1" x="382" y="68"/>
       <vertex id="ZCMult_z5_a1" x="381" y="974"/>
       <vertex id="IFFT_z5_a1" x="529" y="1433"/>
       <vertex id="PowComp_z5_a1" x="666" y="1651"/>
