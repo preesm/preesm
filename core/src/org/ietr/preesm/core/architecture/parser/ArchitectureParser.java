@@ -130,18 +130,24 @@ public class ArchitectureParser {
 					if (type.equals("spirit:name")) {
 						archi = new MultiCoreArchitecture(elt.getTextContent());
 					} else if (type.equals("spirit:componentInstances")) {
+
+						if(archi==null){
+							PreesmLogger.getLogger().log(Level.SEVERE,"enter a name in the architecture");
+						}
+						
 						parseComponentInstances(elt);
 					} else if (type.equals("spirit:interconnections")) {
+
+						if(archi==null){
+							PreesmLogger.getLogger().log(Level.SEVERE,"enter a name in the architecture");
+						}
+						
 						parseInterconnections(elt);
 					} 
 				}
 	
 				node = node.getNextSibling();
 			}
-		}
-
-		if(archi==null){
-			PreesmLogger.getLogger().log(Level.SEVERE,"enter a name in the architecture");
 		}
 		
 		return archi;
