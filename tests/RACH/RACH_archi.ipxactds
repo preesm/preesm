@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:name/>
-   <spirit:library/>
+   <spirit:library>4C64</spirit:library>
    <spirit:componentInstances>
       <spirit:componentInstance>
          <spirit:instanceName>c64x_1</spirit:instanceName>
@@ -35,8 +34,8 @@
          <spirit:componentRef spirit:library="" spirit:name="edma" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_overhead">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">2</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_overhead">4000</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>
