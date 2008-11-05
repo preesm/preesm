@@ -36,14 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 /**
- * This interface should be implemented by Bus and Fifo.
+ * This interface should be implemented by Processor and Communicator.
  * 
  * @author pmu
  * 
  */
-public interface Link {
+public interface ICommunicationPerformer {
 
-	public double getDataRate();
-
-	public void setDataRate(double dataRate);
 }

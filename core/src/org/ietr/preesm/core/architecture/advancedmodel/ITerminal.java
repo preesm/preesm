@@ -43,10 +43,10 @@ import java.util.Set;
  * @author pmu
  * 
  */
-public interface Terminal {
+public interface ITerminal {
 
-	public void addCommunicationPerformer(CommunicationPerformer commPerformer);
+	public void addCommunicationPerformer(ICommunicationPerformer commPerformer);
 
-	public Set<CommunicationPerformer> getCommunicationPerformers();
+	public Set<ICommunicationPerformer> getCommunicationPerformers();
 
 }

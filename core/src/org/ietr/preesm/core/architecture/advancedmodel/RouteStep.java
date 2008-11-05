@@ -55,16 +55,16 @@ public class RouteStep {
 
 	private Communicator communicator = null;
 
-	private Terminal startTerminal;
+	private ITerminal startTerminal;
 
-	private Link startLink = null;
+	private ILink startLink = null;
 
 	private List<NodeLinkTuple> nodeLinkTuples;
 
-	private Terminal finishTerminal;
+	private ITerminal finishTerminal;
 
-	public RouteStep(Processor processor, Terminal startTerminal,
-			Terminal finishTerminal) {
+	public RouteStep(Processor processor, ITerminal startTerminal,
+			ITerminal finishTerminal) {
 		this.processor = processor;
 		this.startTerminal = startTerminal;
 		this.finishTerminal = finishTerminal;
@@ -83,7 +83,7 @@ public class RouteStep {
 		return communicator;
 	}
 
-	public Terminal getFinishTerminal() {
+	public ITerminal getFinishTerminal() {
 		return finishTerminal;
 	}
 
@@ -95,11 +95,11 @@ public class RouteStep {
 		return processor;
 	}
 
-	public Link getStartLink() {
+	public ILink getStartLink() {
 		return startLink;
 	}
 
-	public Terminal getStartTerminal() {
+	public ITerminal getStartTerminal() {
 		return startTerminal;
 	}
 
@@ -107,7 +107,7 @@ public class RouteStep {
 		this.communicator = communicator;
 	}
 
-	public void setFinishTerminal(Terminal finishTerminal) {
+	public void setFinishTerminal(ITerminal finishTerminal) {
 		this.finishTerminal = finishTerminal;
 	}
 
@@ -115,11 +115,11 @@ public class RouteStep {
 		this.processor = processor;
 	}
 
-	public void setStartLink(Link startLink) {
+	public void setStartLink(ILink startLink) {
 		this.startLink = startLink;
 	}
 
-	public void setStartTerminal(Terminal startTerminal) {
+	public void setStartTerminal(ITerminal startTerminal) {
 		this.startTerminal = startTerminal;
 	}
 

@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author pmu
  */
-public class IpCoprocessor extends ArchitectureComponent implements Terminal {
+public class IpCoprocessor extends ArchitectureComponent implements ITerminal {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
@@ -58,13 +58,13 @@ public class IpCoprocessor extends ArchitectureComponent implements Terminal {
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
 	 */
-	private Set<CommunicationPerformer> commPerformers;
+	private Set<ICommunicationPerformer> commPerformers;
 
 	public IpCoprocessor(String name, IpCoprocessorDefinition definition) {
 		super(name, definition);
 	}
 
-	public void addCommunicationPerformer(CommunicationPerformer commPerformer) {
+	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
 		commPerformers.add(commPerformer);
 
 	}
@@ -73,7 +73,7 @@ public class IpCoprocessor extends ArchitectureComponent implements Terminal {
 		return ArchitectureComponentType.ipCoprocessor;
 	}
 	
-	public Set<CommunicationPerformer> getCommunicationPerformers() {
+	public Set<ICommunicationPerformer> getCommunicationPerformers() {
 		return commPerformers;
 	}
 

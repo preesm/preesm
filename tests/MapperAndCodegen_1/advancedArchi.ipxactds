@@ -186,6 +186,20 @@
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>fifo1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="fifo" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>fifo2</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="fifo" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
    </spirit:componentInstances>
    <spirit:interconnections>
       <spirit:interconnection>
@@ -310,15 +324,27 @@
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:displayName>fifo</spirit:displayName>
-         <spirit:activeInterface spirit:busRef="fifo1" spirit:componentRef="RapidIO1"/>
-         <spirit:activeInterface spirit:busRef="fifo2" spirit:componentRef="RapidIO2"/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="RapidIO1"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="fifo1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:displayName>fifo</spirit:displayName>
-         <spirit:activeInterface spirit:busRef="fifo2" spirit:componentRef="RapidIO2"/>
-         <spirit:activeInterface spirit:busRef="fifo1" spirit:componentRef="RapidIO1"/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="fifo2"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="RapidIO1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="RapidIO2"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="fifo2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="fifo1"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="RapidIO2"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>

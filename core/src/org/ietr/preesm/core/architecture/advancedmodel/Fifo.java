@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureInterface;
  * 
  * @author pmu
  */
-public class Fifo extends ArchitectureComponent implements Link {
+public class Fifo extends ArchitectureComponent implements ILink {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a

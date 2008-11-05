@@ -48,7 +48,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * @author mpelcat
  */
 public class Communicator extends ArchitectureComponent implements
-		CommunicationPerformer {
+		ICommunicationPerformer {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a

@@ -67,10 +67,10 @@ public class MultiCoreArchitecture {
 	 */
 	private Set<Interconnection> interconnections;
 
-	/**
-	 * List of the fifos between components.
-	 */
-	private Set<Fifo> fifos;
+//	/**
+//	 * List of the fifos between components.
+//	 */
+//	private Set<Fifo> fifos;
 
 	/**
 	 * List of the bus references associated to interfaces
@@ -91,7 +91,7 @@ public class MultiCoreArchitecture {
 		busReferences = new HashMap<String, BusReference>();
 
 		interconnections = new HashSet<Interconnection>();
-		fifos = new HashSet<Fifo>();
+//		fifos = new HashSet<Fifo>();
 
 		this.name = name;
 	}
@@ -173,11 +173,11 @@ public class MultiCoreArchitecture {
 		return newArchi;
 	}
 
-	/**
-	 * Connects a medium and an operator
-	 * 
-	 * @return true if the medium could be added
-	 */
+//	/**
+//	 * Connects a medium and an operator
+//	 * 
+//	 * @return true if the medium could be added
+//	 */
 //	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
 //			ArchitectureComponent cmp2, ArchitectureInterface if2,
 //			boolean isFifo) {
@@ -191,10 +191,27 @@ public class MultiCoreArchitecture {
 //
 //	}
 	
+	/**
+	 * Connect two components. If the connection is directed, cmp1 and cmp2 are
+	 * source and target components relatively.
+	 * 
+	 */
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
-			ArchitectureComponent cmp2, ArchitectureInterface if2) {
+			ArchitectureComponent cmp2, ArchitectureInterface if2,
+			boolean isFifo) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)){
 			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+			if(isFifo){
+				if(cmp1.getType()==ArchitectureComponentType.fifo){
+					if(((Fifo)cmp1).getOutputInterface()==null){
+						((Fifo)cmp1).setOutputInterface(if1);
+					}
+				} else if(cmp2.getType()==ArchitectureComponentType.fifo){
+					if(((Fifo)cmp2).getInputInterface()==null){
+						((Fifo)cmp2).setInputInterface(if2);
+					}
+				}
+			}
 		}
 	}
 

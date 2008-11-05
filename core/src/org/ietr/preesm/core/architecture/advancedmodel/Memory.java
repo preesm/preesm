@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author mpelcat
  */
-public class Memory extends ArchitectureComponent implements Terminal {
+public class Memory extends ArchitectureComponent implements ITerminal {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
@@ -59,14 +59,14 @@ public class Memory extends ArchitectureComponent implements Terminal {
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
 	 */
-	private Set<CommunicationPerformer> commPerformers;
+	private Set<ICommunicationPerformer> commPerformers;
 
 	public Memory(String name, MemoryDefinition type) {
 		super(name, type);
-		commPerformers = new HashSet<CommunicationPerformer>();
+		commPerformers = new HashSet<ICommunicationPerformer>();
 	}
 
-	public void addCommunicationPerformer(CommunicationPerformer commPerformer) {
+	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
 		commPerformers.add(commPerformer);
 
 	}
@@ -75,7 +75,7 @@ public class Memory extends ArchitectureComponent implements Terminal {
 		return ArchitectureComponentType.memory;
 	}
 
-	public Set<CommunicationPerformer> getCommunicationPerformers() {
+	public Set<ICommunicationPerformer> getCommunicationPerformers() {
 		return commPerformers;
 	}
 }
