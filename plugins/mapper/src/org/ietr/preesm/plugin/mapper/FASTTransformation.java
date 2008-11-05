@@ -210,7 +210,7 @@ public class FASTTransformation extends AbstractMapping {
 	 */
 	public SDFAbstractVertex addComVertices(SDFAbstractVertex v1, SDFAbstractVertex v2, Medium medium,Operator sendOp,Operator receiveOp, int schedulingOrder) {
 
-		SDFGraph graph = v1.getBase();
+		SDFGraph graph = (SDFGraph)v1.getBase();
 
 		SDFEdge originalEdge = graph.getEdge(v1, v2);
 		Object aggregate = originalEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);

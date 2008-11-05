@@ -310,424 +310,424 @@
          <data key="name">NoiseFloor_z8</data>
       </node>
       <edge source="a1" sourceport="o" target="FIR_a1" targetport="i">
-         <data key="edge_prod">24576</data>
+         <data key="edge_prod">98304</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">24576</data>
+         <data key="edge_cons">98304</data>
       </edge>
       <edge source="FIR_a1" sourceport="o" target="DFT_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z1_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="ZCMult_z1_a1" sourceport="o" target="IFFT_z1_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z1_a1" sourceport="o" target="PowComp_z1_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z1_a1" sourceport="o" target="PowAcc_z1" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="ZCGen" sourceport="zc1" target="ZCMult_z1_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc2" target="ZCMult_z2_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z2_a1" sourceport="o" target="IFFT_z2_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z2_a1" sourceport="o" target="PowComp_z2_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z2_a1" sourceport="o" target="PowAcc_z2" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="ZCGen" sourceport="zc3" target="ZCMult_z3_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc4" target="ZCMult_z4_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc5" target="ZCMult_z5_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc6" target="ZCMult_z6_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc7" target="ZCMult_z7_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc8" target="ZCMult_z8_a1" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z3_a1" sourceport="o" target="IFFT_z3_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z4_a1" sourceport="o" target="IFFT_z4_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z5_a1" sourceport="o" target="IFFT_z5_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z6_a1" sourceport="o" target="IFFT_z6_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z7_a1" sourceport="o" target="IFFT_z7_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z8_a1" sourceport="o" target="IFFT_z8_a1" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z3_a1" sourceport="o" target="PowComp_z3_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z4_a1" sourceport="o" target="PowComp_z4_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z5_a1" sourceport="o" target="PowComp_z5_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z6_a1" sourceport="o" target="PowComp_z6_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z7_a1" sourceport="o" target="PowComp_z7_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z8_a1" sourceport="o" target="PowComp_z8_a1" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z3_a1" sourceport="o" target="PowAcc_z3" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z4_a1" sourceport="o" target="PowAcc_z4" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z5_a1" sourceport="o" target="PowAcc_z5" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z6_a1" sourceport="o" target="PowAcc_z6" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z7_a1" sourceport="o" target="PowAcc_z7" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z8_a1" sourceport="o" target="PowAcc_z8" targetport="i_a1">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z2_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z3_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z4_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z5_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z6_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z7_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a1" sourceport="o" target="ZCMult_z8_a1" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="a2" sourceport="o" target="FIR_a2" targetport="i">
-         <data key="edge_prod">24576</data>
+         <data key="edge_prod">98304</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">24576</data>
+         <data key="edge_cons">98304</data>
       </edge>
       <edge source="FIR_a2" sourceport="o" target="DFT_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z1_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="ZCMult_z1_a2" sourceport="o" target="IFFT_z1_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z1_a2" sourceport="o" target="PowComp_z1_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z1_a2" sourceport="o" target="PowAcc_z1" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="ZCGen" sourceport="zc1" target="ZCMult_z1_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc2" target="ZCMult_z2_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z2_a2" sourceport="o" target="IFFT_z2_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z2_a2" sourceport="o" target="PowComp_z2_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z2_a2" sourceport="o" target="PowAcc_z2" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="ZCGen" sourceport="zc3" target="ZCMult_z3_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc4" target="ZCMult_z4_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc5" target="ZCMult_z5_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc6" target="ZCMult_z6_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc7" target="ZCMult_z7_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCGen" sourceport="zc8" target="ZCMult_z8_a2" targetport="zc">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z3_a2" sourceport="o" target="IFFT_z3_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z4_a2" sourceport="o" target="IFFT_z4_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z5_a2" sourceport="o" target="IFFT_z5_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z6_a2" sourceport="o" target="IFFT_z6_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z7_a2" sourceport="o" target="IFFT_z7_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="ZCMult_z8_a2" sourceport="o" target="IFFT_z8_a2" targetport="i">
-         <data key="edge_prod">839</data>
+         <data key="edge_prod">3356</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">839</data>
+         <data key="edge_cons">3356</data>
       </edge>
       <edge source="IFFT_z3_a2" sourceport="o" target="PowComp_z3_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z4_a2" sourceport="o" target="PowComp_z4_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z5_a2" sourceport="o" target="PowComp_z5_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z6_a2" sourceport="o" target="PowComp_z6_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z7_a2" sourceport="o" target="PowComp_z7_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="IFFT_z8_a2" sourceport="o" target="PowComp_z8_a2" targetport="i">
-         <data key="edge_prod">1024</data>
+         <data key="edge_prod">4096</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1024</data>
+         <data key="edge_cons">4096</data>
       </edge>
       <edge source="PowComp_z3_a2" sourceport="o" target="PowAcc_z3" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z4_a2" sourceport="o" target="PowAcc_z4" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z5_a2" sourceport="o" target="PowAcc_z5" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z6_a2" sourceport="o" target="PowAcc_z6" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z7_a2" sourceport="o" target="PowAcc_z7" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowComp_z8_a2" sourceport="o" target="PowAcc_z8" targetport="i_a2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z2_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z3_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z4_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z5_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z6_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z7_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="DFT_a2" sourceport="o" target="ZCMult_z8_a2" targetport="i">
-         <data key="edge_prod">1536</data>
+         <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1536</data>
+         <data key="edge_cons">6144</data>
       </edge>
       <edge source="Noisefloor_z1" sourceport="o" target="Peaksearch" targetport="i_z1">
          <data key="edge_prod">4</data>
@@ -735,79 +735,79 @@
          <data key="edge_cons">4</data>
       </edge>
       <edge source="NoiseFloor_z2" sourceport="o" target="Peaksearch" targetport="i_z2">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z8" sourceport="o" target="Peaksearch" targetport="i_z8">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z3" sourceport="o" target="Peaksearch" targetport="i_z3">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z5" sourceport="o" target="Peaksearch" targetport="i_z5">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z4" sourceport="o" target="Peaksearch" targetport="i_z4">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z6" sourceport="o" target="Peaksearch" targetport="i_z6">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="NoiseFloor_z7" sourceport="o" target="Peaksearch" targetport="i_z7">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z1" sourceport="i" target="Noisefloor_z1" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z2" sourceport="i" target="NoiseFloor_z2" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z8" sourceport="i" target="NoiseFloor_z8" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z3" sourceport="i" target="NoiseFloor_z3" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z5" sourceport="i" target="NoiseFloor_z5" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z4" sourceport="i" target="NoiseFloor_z4" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z6" sourceport="i" target="NoiseFloor_z6" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
       <edge source="PowAcc_z7" sourceport="i" target="NoiseFloor_z7" targetport="o">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">512</data>
+         <data key="edge_cons">2048</data>
       </edge>
    </graph>
 </graphml>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jxl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding=".svn/|org/.svn/|org/ietr/.svn/|org/ietr/preesm/.svn/|org/ietr/preesm/core/.svn/|org/ietr/preesm/core/architecture/.svn/|org/ietr/preesm/core/codegen/.svn/|org/ietr/preesm/core/codegen/sdfProperties/.svn/|org/ietr/preesm/core/constraints/.svn/|org/ietr/preesm/core/expression/.svn/|org/ietr/preesm/core/log/.svn/|org/ietr/preesm/core/task/.svn/|org/ietr/preesm/core/ui/.svn/|org/ietr/preesm/core/ui/launch/.svn/|org/ietr/preesm/core/ui/natures/.svn/|org/ietr/preesm/core/ui/propertyTesters/.svn/|org/ietr/preesm/core/ui/wizards/.svn/|org/ietr/preesm/core/workflow/.svn/|org/ietr/preesm/core/workflow/sources/.svn/" kind="src" path="src"/>

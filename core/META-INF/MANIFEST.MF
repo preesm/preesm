@@ -21,7 +21,8 @@ Bundle-ClassPath: .,
  lib/jgrapht-jdk1.5.jar,
  lib/jmatharray.jar,
  lib/sdf4j.jar,
- lib/jgraph.jar
+ lib/jgraph.jar,
+ lib/jxl.jar
 Export-Package: org.ietr.preesm.core.architecture,
  org.ietr.preesm.core.architecture.simplemodel,
  org.ietr.preesm.core.codegen;uses:="org.ietr.preesm.core.architecture,org.ietr.preesm.core.codegen.sdfProperties,org.sdf4j.model.sdf",

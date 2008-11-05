@@ -37,6 +37,8 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 				SDFDefaultEdgePropertyType.class);
 		addKey("schedulingOrder", "schedulingOrder", "vertex", "int",
 				SDFDefaultEdgePropertyType.class);
+		addKey("dataSize", "dataSize", "vertex", "int",
+				SDFDefaultEdgePropertyType.class);
 	}
 
 	@Override

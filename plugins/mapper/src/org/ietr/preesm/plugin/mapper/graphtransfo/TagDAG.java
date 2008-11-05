@@ -125,17 +125,21 @@ public class TagDAG {
 			
 			if(currentVertex instanceof SendVertex){
 
+				MapperDAGEdge incomingEdge = (MapperDAGEdge)((SendVertex) currentVertex).incomingEdges().toArray()[0];
 				bean.setValue(VertexType.propertyBeanName, VertexType.send);
 				bean.setValue(Operator.propertyBeanName,
 						((SendVertex) currentVertex).getRouteStep().getSender());
 				bean.setValue(Medium.propertyBeanName, ((SendVertex) currentVertex).getRouteStep().getMedium());
+				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty().getDataSize());
 			}
 			else if(currentVertex instanceof ReceiveVertex){
 
+				MapperDAGEdge incomingEdge = (MapperDAGEdge)((ReceiveVertex) currentVertex).incomingEdges().toArray()[0];
 				bean.setValue(VertexType.propertyBeanName, VertexType.receive);
 				bean.setValue(Operator.propertyBeanName,
 						((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
 				bean.setValue(Medium.propertyBeanName, ((ReceiveVertex) currentVertex).getRouteStep().getMedium());
+				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty().getDataSize());
 			}
 			else{
 	

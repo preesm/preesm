@@ -404,6 +404,29 @@ public abstract class AbstractAbc implements IAbc {
 						if (isImplantable(currentvertex, op)) {
 							implant(currentvertex, op, true);
 							foundAlternative = true;
+
+							PreesmLogger.getLogger().info(
+									"The vertex: " + currentvertex.getName()
+											+ " could not be mapped on main operator "
+											+ operator.getName()
+											+ ". An alternative with same definition was found.");
+						}
+					}
+				}
+
+				if (!foundAlternative){
+
+					for (Operator op : currentvertex.getInitialVertexProperty()
+							.getOperatorSet()) {
+						if (isImplantable(currentvertex, op)) {
+								implant(currentvertex, op, true);
+								foundAlternative = true;
+
+								PreesmLogger.getLogger().info(
+										"The vertex: " + currentvertex.getName()
+												+ " could not be mapped on main operator "
+												+ operator.getName()
+												+ ". An alternative with another definition was found.");
 						}
 					}
 				}
@@ -412,14 +435,7 @@ public abstract class AbstractAbc implements IAbc {
 					PreesmLogger
 							.getLogger()
 							.severe(
-									"The current mapping algorithm necessitates that all vertices can be mapped on main operator: "
-											+ operator.getName());
-				else
-					PreesmLogger.getLogger().info(
-							"The vertex: " + currentvertex.getName()
-									+ " could not be mapped on main operator "
-									+ operator.getName()
-									+ ". An alternative was found.");
+									"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
 			}
 		}
 
