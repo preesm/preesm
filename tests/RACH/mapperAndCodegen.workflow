@@ -22,7 +22,9 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform" taskId="DAGExporter">
       <data key="variables">
-         <variable name="path" value="/RACH/DAG/outDAG.xml"/>
+         <variable name="path" value="/RACH/DAG/outDAG.graphml"/>
+         <variable name="transformedPath" value="/RACH/DAG/outDAG.lua"/>
+         <variable name="xslPath" value="/RACH/DAG/LUAXSL.xslt"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>

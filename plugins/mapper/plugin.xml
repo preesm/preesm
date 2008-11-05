@@ -36,7 +36,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform"
             name="Gantt Exporter"
-            type="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform">
+            type="org.ietr.preesm.plugin.mapper.exporter.DAGExporterTransform">
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.plot"

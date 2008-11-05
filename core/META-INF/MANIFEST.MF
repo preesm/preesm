@@ -22,8 +22,11 @@ Bundle-ClassPath: .,
  lib/jmatharray.jar,
  lib/sdf4j.jar,
  lib/jgraph.jar,
- lib/jxl.jar
-Export-Package: org.ietr.preesm.core.architecture,
+ lib/jxl.jar,
+ lib/saxon/saxon9-dom.jar,
+ lib/saxon/saxon9.jar
+Export-Package: net.sf.saxon,
+ org.ietr.preesm.core.architecture,
  org.ietr.preesm.core.architecture.simplemodel,
  org.ietr.preesm.core.codegen;uses:="org.ietr.preesm.core.architecture,org.ietr.preesm.core.codegen.sdfProperties,org.sdf4j.model.sdf",
  org.ietr.preesm.core.codegen.printer,

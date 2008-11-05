@@ -1,4 +1,4 @@
-package org.ietr.preesm.plugin.mapper.graphtransfo;
+package org.ietr.preesm.plugin.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
