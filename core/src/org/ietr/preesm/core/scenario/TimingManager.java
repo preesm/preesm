@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
+import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFVertex;
 
@@ -61,6 +63,11 @@ public class TimingManager {
 	 * List of all timings
 	 */
 	private List<Timing> timings;
+
+	/**
+	 * Path to a file containing timings
+	 */
+	private String timingFileURL = "";
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
@@ -90,6 +97,7 @@ public class TimingManager {
 
 		for (Timing timing : timings) {
 			if (timing.equals(newt)) {
+				timing.setTime(newt.getTime());
 				return timing;
 			}
 		}
@@ -135,5 +143,18 @@ public class TimingManager {
 	public void removeAll() {
 
 		timings.clear();
+	}
+
+	public String getTimingFileURL() {
+		return timingFileURL;
+	}
+
+	public void setTimingFileURL(String timingFileURL, Scenario currentScenario) {
+		this.timingFileURL = timingFileURL;
+		
+		if(!timingFileURL.isEmpty() && currentScenario != null){
+			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
+			parser.parse(timingFileURL);
+		}
 	}
 }

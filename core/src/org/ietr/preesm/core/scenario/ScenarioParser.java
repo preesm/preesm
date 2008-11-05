@@ -179,6 +179,9 @@ public class ScenarioParser {
 					scenario.setArchitectureURL(url);
 					archi = getArchitecture(url);
 				}
+				else if (type.equals("timingfile")){
+					scenario.getTimingManager().setTimingFileURL(url, null);
+				}
 			}
 
 			node = node.getNextSibling();

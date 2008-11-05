@@ -98,6 +98,10 @@ public class ScenarioWriter {
 		files.appendChild(archi);
 		archi.setAttribute("url", scenario.getArchitectureURL());
 		
+		Element timings = dom.createElement("timingfile");
+		files.appendChild(timings);
+		timings.setAttribute("url", scenario.getTimingManager().getTimingFileURL());
+		
 		
 	}
 

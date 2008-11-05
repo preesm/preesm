@@ -92,7 +92,8 @@ public class InitialVertexProperty {
 	}
 	
 	public void addTiming(Timing timing) {
-		this.timings.add(timing);
+		if(getTiming(timing.getOperatorDefinition()) == null)
+			this.timings.add(timing);
 	}
 	
 	public void addOperator(Operator op) {

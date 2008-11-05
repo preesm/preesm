@@ -34,32 +34,6 @@ import org.ietr.preesm.core.scenario.Scenario;
  */
 public class OverviewPage extends FormPage {
 
-
-	/**
-	 * This class calls the file browser when a "browse" button
-	 * is pushed
-	 */
-	public class FileSelectionAdapter extends SelectionAdapter{
-		
-		private Text filePath;
-		private Shell shell;
-		private String title;
-		private String fileExtension;
-		
-		public FileSelectionAdapter(Text filePath,Shell shell,String title,String fileExtension) {
-			super();
-			this.filePath = filePath;
-			this.shell = shell;
-			this.title = title;
-			this.fileExtension = fileExtension;
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			filePath.setText(EditorTools.browseFiles(shell, title, fileExtension));
-		}
-	}
-
 	/**
 	 * The current scenario being edited
 	 */
@@ -97,7 +71,7 @@ public class OverviewPage extends FormPage {
 				Messages.getString("Overview.algorithmFileEdit"),
 				scenario.getAlgorithmURL(),
 				Messages.getString("Overview.algorithmBrowseTitle"),
-				"xml");
+				"graphml");
 
 		// Architecture file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
@@ -155,7 +129,7 @@ public class OverviewPage extends FormPage {
 		FormToolkit toolkit = mform.getToolkit();
 
 		GridData gd = new GridData();
-		Label label = toolkit.createLabel(client, fileEdit);
+		toolkit.createLabel(client, fileEdit);
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 		text.setData(title);

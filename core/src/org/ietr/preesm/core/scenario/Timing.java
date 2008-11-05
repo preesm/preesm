@@ -65,7 +65,7 @@ public class Timing {
 	/**
 	 * Definition of the timing
 	 */
-	private int parameter;
+	private int time;
 
 	/**
 	 * related Graph
@@ -74,11 +74,7 @@ public class Timing {
 
 	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex) {
 
-		try {
-			parameter = -1;
-		} catch (Exception e) {
-			PreesmLogger.getLogger().severe(e.getMessage());
-		}
+		time = -1;
 		this.operator = operator;
 		this.vertex = vertex;
 	}
@@ -86,7 +82,7 @@ public class Timing {
 	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex,
 			int time) {
 		this(operator, vertex);
-		parameter = (time);
+		this.time = time;
 	}
 
 	@Override
@@ -108,26 +104,18 @@ public class Timing {
 		return operator;
 	}
 
-	public int getParam() {
-		return parameter;
-	}
-
 	public int getTime() {
 
-		return parameter;
+		return time;
 	}
 
 	public SDFAbstractVertex getVertex() {
 		return vertex;
 	}
 
-	public void setParam(int param) {
-		parameter = param;
-	}
-
 	public void setTime(int time) {
 
-		parameter = time;
+		this.time = time;
 	}
 
 }

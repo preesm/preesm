@@ -7,25 +7,34 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -35,7 +44,9 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.OverviewPage;
 
 /**
  * Timing editor within the implementation editor
@@ -44,7 +55,7 @@ import org.ietr.preesm.core.scenario.editor.Messages;
  */
 public class TimingsPage extends FormPage implements IPropertyListener {
 
-	Scenario scenario;
+	final Scenario scenario;
 
 	public TimingsPage(Scenario scenario, FormEditor editor, String id,
 			String title) {
@@ -61,10 +72,21 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		// TODO Auto-generated method stub
 		super.createFormContent(managedForm);
 
-		ScrolledForm f = managedForm.getForm();
-		f.setText(Messages.getString("Timings.title"));
-		f.getBody().setLayout(new GridLayout());
+		ScrolledForm form = managedForm.getForm();
+		//FormToolkit toolkit = managedForm.getToolkit();
+		form.setText(Messages.getString("Timings.title"));
 
+		GridLayout layout = new GridLayout();
+		form.getBody().setLayout(layout);
+
+		// Timing file chooser section
+		createFileSection(managedForm, Messages.getString("Timings.timingFile"),
+				Messages.getString("Timings.timingFileDescription"),
+				Messages.getString("Timings.timingFileEdit"),
+				scenario.getTimingManager().getTimingFileURL(),
+				Messages.getString("Timings.timingFileBrowseTitle"),
+				"xls");
+		
 		createTimingsSection(managedForm, Messages.getString("Timings.title"),
 				Messages.getString("Timings.description"));
 
@@ -77,14 +99,12 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	private void createTimingsSection(IManagedForm managedForm, String title,
 			String desc) {
-
+		
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 1);
+		Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
-
-		toolkit.paintBordersFor(container);
-		container.setSize(100, 100);
 
 		Combo coreCombo = addCoreSelector(container, toolkit);
 		addTable(container, toolkit, coreCombo);
@@ -94,8 +114,9 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 * Creates a generic section
 	 */
 	public Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns) {
+			String desc, int numColumns, GridData gridData) {
 
+		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -114,8 +135,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				form.reflow(false);
 			}
 		});
-		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		section.setLayoutData(gridData);
 		return client;
 	}
 
@@ -222,5 +242,51 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		if(source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
 		
+	}
+
+
+	/**
+	 * Creates a section to edit a file
+	 * 
+	 * @param mform form containing the section
+	 * @param title section title
+	 * @param desc description of the section
+	 * @param fileEdit text to display in text label
+	 * @param initValue initial value of Text
+	 * @param browseTitle title of file browser
+	 */
+	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,String fileExtension) {
+		
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = 120;
+		Composite client = createSection(mform, title, desc, 2,gridData);
+		FormToolkit toolkit = mform.getToolkit();
+
+		GridData gd = new GridData();
+		toolkit.createLabel(client, fileEdit);
+
+		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)e.getSource();
+				String type = ((String)text.getData());
+				
+				scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
+				
+				firePropertyChange(PROP_DIRTY);
+				
+			}});
+		
+		gd.widthHint =400;
+		text.setLayoutData(gd);
+
+		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtension);
+		button.addSelectionListener(adapter);
+		
+		toolkit.paintBordersFor(client);
 	}
 }
