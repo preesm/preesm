@@ -81,7 +81,9 @@ public class ExcelTimingParser {
 									operatorCell.getColumn(),
 									vertexCell.getRow());
 
-							if (timingCell.getType().equals(CellType.NUMBER)) {
+							if (timingCell.getType().equals(CellType.NUMBER)
+									|| timingCell.getType().equals(
+											CellType.NUMBER_FORMULA)) {
 								Timing timing = new Timing(
 										((OperatorDefinition) operatorDef),
 										vertex, Integer.valueOf(timingCell
