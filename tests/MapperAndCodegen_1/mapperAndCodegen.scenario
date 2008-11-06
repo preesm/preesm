@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/MapperAndCodegen_1/Kwok.xml"/>
+        <algorithm url="/MapperAndCodegen_1/Kwok.graphml"/>
         <architecture url="/MapperAndCodegen_1/4C64.ipxactds"/>
     </files>
     <constraints>
