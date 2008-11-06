@@ -43,21 +43,21 @@
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>FFTC</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="fftc" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>TCP3D</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="tcp3d" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>TCP3E</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="tcp3e" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>

@@ -146,6 +146,12 @@ public class TagDAG {
 				bean.setValue(Operator.propertyBeanName,
 						currentVertex.getImplementationVertexProperty().getEffectiveOperator());
 				bean.setValue(VertexType.propertyBeanName, VertexType.task);
+				
+				Operator effectiveOperator = currentVertex.getImplementationVertexProperty().getEffectiveOperator();
+				int singleRepeatTime = currentVertex.getInitialVertexProperty().getTime(effectiveOperator);
+				int nbRepeat = currentVertex.getInitialVertexProperty().getNbRepeat();
+				int totalTime = nbRepeat * singleRepeatTime;
+				bean.setValue("duration", totalTime);
 			}
 			
 			bean.setValue("schedulingOrder", currentVertex.getImplementationVertexProperty().getSchedulingTotalOrder());
