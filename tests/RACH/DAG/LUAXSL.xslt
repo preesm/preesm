@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
-
+    
     <xsl:output indent="yes" method="text"/>
     <xsl:variable name="new_line" select="'&#xA;'" />
-
+    
     <!-- Top-level: graph -> graph -->
     <xsl:template match="graphml:graphml">
         <xsl:apply-templates select="graph"/>
@@ -12,21 +12,21 @@
     
     <xsl:template match="graph">      
         
---General Config
+        --General Config
         
---VPU1={}
---VPU1.enable_preemption=true
---VPU2={}
---VPU2.enable_preemption=true
+        --VPU1={}
+        --VPU1.enable_preemption=true
+        --VPU2={}
+        --VPU2.enable_preemption=true
         
         
-EDMA__CCDMA ={}
+        EDMA__CCDMA ={}
         
-EDMA__CCDMA.evt_queue_priority = {0,1,2,3,4,5}
-EDMA__CCDMA.tc_address_map = { 0x02A20000,0x02A28000,0x02A30000,0x02A38000,0x02A40000,0x02A48000 }
-
-Tasks = {}
-Tasks.p = {}
+        EDMA__CCDMA.evt_queue_priority = {0,1,2,3,4,5}
+        EDMA__CCDMA.tc_address_map = { 0x02A20000,0x02A28000,0x02A30000,0x02A38000,0x02A40000,0x02A48000 }
+        
+        Tasks = {}
+        Tasks.p = {}
         <xsl:value-of select="$new_line"/>
         <xsl:apply-templates select="node"/>
         <xsl:apply-templates select="edge"/>
@@ -38,11 +38,12 @@ Tasks.p = {}
         <xsl:variable name="input_transfers" select="//node[data[@key='vertexType']='receive' and data[@key='receiverGraphName']=$currentTask]" />
         
         <xsl:if test="$input_transfers/last()!=0">
-        <xsl:value-of select="concat($task_def,'.Xin= {')"/>
-        <xsl:for-each select="$input_transfers">
-            <xsl:value-of select="concat('&quot;',data[@key='name'],'&quot;')"/>
-            <xsl:if test="position()!=last()">,</xsl:if>
-        </xsl:for-each>
+            <xsl:value-of select="concat($task_def,'.Xin= {')"/>
+            <xsl:for-each select="$input_transfers">
+                <xsl:variable name="transfer_def" select="concat('Tasks.p.',data[@key='name'])" />
+                <xsl:value-of select="concat('&quot;',$transfer_def,'&quot;')"/>
+                <xsl:if test="position()!=last()">,</xsl:if>
+            </xsl:for-each>
             <xsl:value-of select="concat('}',$new_line)"/>
         </xsl:if>
     </xsl:template>
@@ -55,13 +56,14 @@ Tasks.p = {}
         <xsl:if test="$output_transfers/last()!=0">
             <xsl:value-of select="concat($task_def,'.Xout= {')"/>
             <xsl:for-each select="$output_transfers">
-                <xsl:value-of select="concat('&quot;',data[@key='name'],'&quot;')"/>
+                <xsl:variable name="transfer_def" select="concat('Tasks.p.',data[@key='name'])" />
+                <xsl:value-of select="concat('&quot;',$transfer_def,'&quot;')"/>
                 <xsl:if test="position()!=last()">,</xsl:if>
             </xsl:for-each>
             <xsl:value-of select="concat('}',$new_line)"/>
         </xsl:if>
     </xsl:template>
-        
+    
     <xsl:template match="node">
         <xsl:choose >
             <xsl:when test="data[@key='vertexType']='task'" >
