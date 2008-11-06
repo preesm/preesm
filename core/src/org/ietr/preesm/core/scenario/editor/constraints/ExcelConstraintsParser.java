@@ -1,10 +1,11 @@
 /**
  * 
  */
-package org.ietr.preesm.core.scenario.editor.timings;
+package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -18,9 +19,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -30,16 +33,17 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Importing timings in a scenario from an excel file.
- * task names are rows while operator types are columns
+ * Importing constraints in a scenario from an excel file.
+ * The existing timings mean that the task can be mapped on the given operator.
+ * Task names are rows while operator types are columns.
  * 
  * @author mpelcat
  */
-public class ExcelTimingParser {
+public class ExcelConstraintsParser {
 
 	private Scenario scenario = null;
 
-	public ExcelTimingParser(Scenario scenario) {
+	public ExcelConstraintsParser(Scenario scenario) {
 		super();
 		this.scenario = scenario;
 	}
@@ -63,6 +67,9 @@ public class ExcelTimingParser {
 
 		Path path = new Path(url);
 		IFile file = workspace.getRoot().getFile(path);
+		
+		scenario.getConstraintGroupManager().removeAll();
+		
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
@@ -70,13 +77,13 @@ public class ExcelTimingParser {
 				for (ArchitectureComponentDefinition operatorDef : currentArchi
 						.getComponentDefinitions(ArchitectureComponentType.operator)) {
 
-					String operatorId = ((OperatorDefinition) operatorDef)
+					String operatorDefId = ((OperatorDefinition) operatorDef)
 							.getId();
 					String vertexName = vertex.getName();
 
-					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+					if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
 						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorId);
+						Cell operatorCell = w.getSheet(0).findCell(operatorDefId);
 
 						if (vertexCell != null && operatorCell != null) {
 							Cell timingCell = w.getSheet(0).getCell(
@@ -86,11 +93,12 @@ public class ExcelTimingParser {
 							if (timingCell.getType().equals(CellType.NUMBER)
 									|| timingCell.getType().equals(
 											CellType.NUMBER_FORMULA)) {
-								Timing timing = new Timing(
-										((OperatorDefinition) operatorDef),
-										vertex, Integer.valueOf(timingCell
-												.getContents()));
-								scenario.getTimingManager().addTiming(timing);
+								Set<ArchitectureComponent> operators = currentArchi.getComponents(ArchitectureComponentType.operator);
+								
+								for(ArchitectureComponent operator:operators){
+									if(operator.getDefinition().getId().equalsIgnoreCase(operatorDefId))
+										scenario.getConstraintGroupManager().addConstraint((Operator)operator, vertex);
+								}
 							}
 						}
 					}

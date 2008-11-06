@@ -68,13 +68,13 @@ public class ConstraintGroupManager {
 	/**
 	 * Adding a simple constraint on one vertex and one core
 	 */
-	public void addConstraint(Operator opdef, SDFAbstractVertex vertex) {
+	public void addConstraint(Operator currentOp, SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opdef);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
 		if(cgSet.isEmpty()){
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperator(opdef);
+			cg.addOperator(currentOp);
 			cg.addVertex(vertex);
 			constraintgroups.add(cg);
 		}
@@ -86,13 +86,13 @@ public class ConstraintGroupManager {
 	/**
 	 * Adding a constraint group on several vertices and one core
 	 */
-	public void addConstraints(Operator opdef, Set<SDFAbstractVertex> vertexSet) {
+	public void addConstraints(Operator currentOp, Set<SDFAbstractVertex> vertexSet) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opdef);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
 		if(cgSet.isEmpty()){
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperator(opdef);
+			cg.addOperator(currentOp);
 			cg.addVertices(vertexSet);
 			constraintgroups.add(cg);
 		}
@@ -104,9 +104,9 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a simple constraint on one vertex and one core
 	 */
-	public void removeConstraint(Operator opdef, SDFAbstractVertex vertex) {
+	public void removeConstraint(Operator currentOp, SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opdef);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
 		if(!cgSet.isEmpty()){
 			for(ConstraintGroup cg:cgSet){
@@ -118,9 +118,9 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a constraint group on several vertices and one core
 	 */
-	public void removeConstraints(Operator opdef, Set<SDFAbstractVertex> vertexSet) {
+	public void removeConstraints(Operator currentOp, Set<SDFAbstractVertex> vertexSet) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opdef);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
 		if(!cgSet.isEmpty()){
 			for(ConstraintGroup cg:cgSet){
@@ -147,11 +147,11 @@ public class ConstraintGroupManager {
 	}
 
 	public Set<ConstraintGroup> getOpConstraintGroups(
-			Operator opdef) {
+			Operator currentOp) {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasOperator(opdef))
+			if (cg.hasOperator(currentOp))
 				graphConstraintGroups.add(cg);
 		}
 
