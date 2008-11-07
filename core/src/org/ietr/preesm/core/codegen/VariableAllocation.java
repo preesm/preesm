@@ -38,12 +38,12 @@ package org.ietr.preesm.core.codegen;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 
 public class VariableAllocation {
-	
+
 	/**
 	 * Buffer to allocate
 	 */
 	private Variable var;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -62,11 +62,11 @@ public class VariableAllocation {
 	@Override
 	public String toString() {
 		String code = "";
-		
+
 		code += var.getType().getTypeName();
 		code += var.toString();
 		code += ";";
-		
+
 		return code;
 	}
 

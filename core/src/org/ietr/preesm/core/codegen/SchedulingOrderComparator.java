@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -49,8 +48,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class SchedulingOrderComparator implements
-Comparator<DAGVertex> {
+public class SchedulingOrderComparator implements Comparator<DAGVertex> {
 
 	/**
 	 * @Override compare
@@ -60,11 +58,10 @@ Comparator<DAGVertex> {
 
 		int difference = 0;
 
-		difference = (Integer) v1.getPropertyBean().getValue(
-				"schedulingOrder");
+		difference = (Integer) v1.getPropertyBean().getValue("schedulingOrder");
 
-		difference -= (Integer) v2.getPropertyBean().getValue(
-				"schedulingOrder");
+		difference -= (Integer) v2.getPropertyBean()
+				.getValue("schedulingOrder");
 
 		return difference;
 	}

@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -44,11 +43,9 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.dag.DAGVertex;
 
-
-
 /**
- * Generated code within threads consists primarily in a succession
- * of code elements. 
+ * Generated code within threads consists primarily in a succession of code
+ * elements.
  * 
  * @author mpelcat
  */
@@ -59,7 +56,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	 */
 	@SuppressWarnings("unchecked")
 	private AbstractVertex correspondingVertex;
-	
+
 	private String name;
 
 	/**
@@ -67,16 +64,17 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	 */
 	private AbstractBufferContainer parentContainer;
 
-
 	@SuppressWarnings("unchecked")
-	public AbstractCodeElement(String name,AbstractBufferContainer parentContainer, AbstractVertex correspondingVertex) {
+	public AbstractCodeElement(String name,
+			AbstractBufferContainer parentContainer,
+			AbstractVertex correspondingVertex) {
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
 	}
 
 	public void accept(AbstractPrinter printer) {
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,7 +89,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;
 	}
-	
+
 	public void setCorrespondingVertex(DAGVertex correspondingVertex) {
 		this.correspondingVertex = correspondingVertex;
 	}
@@ -100,7 +98,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-		
+
 		return getName();
 	}
 }

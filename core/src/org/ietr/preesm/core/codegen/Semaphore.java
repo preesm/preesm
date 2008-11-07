@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -44,9 +43,8 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 
 /**
- * Class representing a semaphore in the code.
- * A semaphore protects a buffer from being read while empty
- * or written while full.
+ * Class representing a semaphore in the code. A semaphore protects a buffer
+ * from being read while empty or written while full.
  * 
  * @author mpelcat
  */
@@ -63,30 +61,31 @@ public class Semaphore {
 	private BufferAggregate protectedAggregate;
 
 	/**
-	 * A semaphore can be the signal of a full buffer aggregate or the 
-	 * signal of an empty buffer aggregate.
+	 * A semaphore can be the signal of a full buffer aggregate or the signal of
+	 * an empty buffer aggregate.
 	 */
 	private SemaphoreType semaphoreType;
-	
-	public Semaphore(SemaphoreContainer container, BufferAggregate protectedBuffers, SemaphoreType semaphoreType) {
-		
+
+	public Semaphore(SemaphoreContainer container,
+			BufferAggregate protectedBuffers, SemaphoreType semaphoreType) {
+
 		this.semaphoreType = semaphoreType;
-		
+
 		this.protectedAggregate = protectedBuffers;
-		
+
 		this.container = container;
 	}
 
 	public void accept(AbstractPrinter printer) {
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 
-		if(obj instanceof Semaphore)
-			if(((Semaphore)obj).protectedAggregate == protectedAggregate)
-				if(((Semaphore)obj).semaphoreType == semaphoreType)
+		if (obj instanceof Semaphore)
+			if (((Semaphore) obj).protectedAggregate == protectedAggregate)
+				if (((Semaphore) obj).semaphoreType == semaphoreType)
 					return true;
 		return false;
 	}
@@ -105,16 +104,17 @@ public class Semaphore {
 	public SemaphoreType getSemaphoreType() {
 		return semaphoreType;
 	}
-	
+
 	/**
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-		
+
 		String code = "";
-		
-		code += "sem[" + getSemaphoreNumber() + "], " + semaphoreType.toString();
-		
+
+		code += "sem[" + getSemaphoreNumber() + "], "
+				+ semaphoreType.toString();
+
 		return code;
 	}
 }

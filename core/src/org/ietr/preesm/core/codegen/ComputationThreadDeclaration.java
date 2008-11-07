@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -48,16 +47,15 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * Declaration of a communication thread for code generation. 
- * A computation thread calls the functions corresponding
- * to the dag tasks.
+ * Declaration of a communication thread for code generation. A computation
+ * thread calls the functions corresponding to the dag tasks.
  * 
  * @author mpelcat
  */
 public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
-		super("computationThread",parentContainer);
+		super("computationThread", parentContainer);
 	}
 
 	/**
@@ -76,8 +74,8 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 			// Getting incoming receive operations
 			ownComVertices = getComVertices(task, true);
-			
-			if(!ownComVertices.isEmpty()){
+
+			if (!ownComVertices.isEmpty()) {
 
 				ICodeElement taskElement = loopCode.getCodeElement(task);
 				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
@@ -85,24 +83,28 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 				while (comIterator.hasNext()) {
 					DAGVertex com = comIterator.next();
 
-					// Creates the semaphore if necessary ; retrieves it otherwise 
+					// Creates the semaphore if necessary ; retrieves it
+					// otherwise
 					// from global declaration and creates the pending function
-					SemaphorePend pend = new SemaphorePend(container,com, SemaphoreType.full);
+					SemaphorePend pend = new SemaphorePend(container, com,
+							SemaphoreType.full);
 
-					// Creates the semaphore if necessary and creates the posting
+					// Creates the semaphore if necessary and creates the
+					// posting
 					// function
-					SemaphorePost post = new SemaphorePost(container, com, SemaphoreType.empty);
-					
+					SemaphorePost post = new SemaphorePost(container, com,
+							SemaphoreType.empty);
+
 					loopCode.addCodeElementBefore(taskElement, pend);
 					loopCode.addCodeElementAfter(taskElement, post);
-					
+
 				}
 			}
 
 			// Getting outgoing send operations
 			ownComVertices = getComVertices(task, false);
-			
-			if(!ownComVertices.isEmpty()){
+
+			if (!ownComVertices.isEmpty()) {
 
 				ICodeElement taskElement = loopCode.getCodeElement(task);
 				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
@@ -112,21 +114,26 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 					// A first token must initialize the semaphore pend due to
 					// a sending operation
-					SemaphorePost init = new SemaphorePost(container, com, SemaphoreType.empty);
+					SemaphorePost init = new SemaphorePost(container, com,
+							SemaphoreType.empty);
 
 					beginningCode.addCodeElementBefore(taskElement, init);
-					
-					// Creates the semaphore if necessary ; retrieves it otherwise 
+
+					// Creates the semaphore if necessary ; retrieves it
+					// otherwise
 					// from global declaration and creates the pending function
-					SemaphorePend pend = new SemaphorePend(container,com, SemaphoreType.empty);
-					
-					// Creates the semaphore if necessary and creates the posting
+					SemaphorePend pend = new SemaphorePend(container, com,
+							SemaphoreType.empty);
+
+					// Creates the semaphore if necessary and creates the
+					// posting
 					// function
-					SemaphorePost post = new SemaphorePost(container, com, SemaphoreType.full);
-					
+					SemaphorePost post = new SemaphorePost(container, com,
+							SemaphoreType.full);
+
 					loopCode.addCodeElementBefore(taskElement, pend);
 					loopCode.addCodeElementAfter(taskElement, post);
-					
+
 				}
 			}
 		}
@@ -135,22 +142,24 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	/**
 	 * Adds one function call for each vertex in the ordered set
 	 */
-	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices){
-		
-		Iterator<DAGVertex> iterator = vertices.iterator();
-		while(iterator.hasNext()){
-			DAGVertex vertex = iterator.next();
-			
+	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices) {
 
-			ICodeElement beginningCall = new UserFunctionCall("init_" + vertex.getName(), vertex, this);
+		Iterator<DAGVertex> iterator = vertices.iterator();
+		while (iterator.hasNext()) {
+			DAGVertex vertex = iterator.next();
+
+			ICodeElement beginningCall = new UserFunctionCall("init_"
+					+ vertex.getName(), vertex, this);
 			beginningCode.addCodeElement(beginningCall);
-			
-			ICodeElement loopCall = CodeElementFactory.createElement(vertex.getName(), this, vertex);
+
+			ICodeElement loopCall = CodeElementFactory.createElement(vertex
+					.getName(), this, vertex);
 			loopCode.addCodeElement(loopCall);
 
-			ICodeElement endCall = new UserFunctionCall("close_" + vertex.getName(), vertex, this);
+			ICodeElement endCall = new UserFunctionCall("close_"
+					+ vertex.getName(), vertex, this);
 			endCode.addCodeElement(endCall);
-			
+
 		}
 	}
 
@@ -158,14 +167,13 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	 * Gets the communication vertices preceding or following the vertex vertex.
 	 * If preceding = true, returns the communication vertices preceding the
 	 * vertex, otherwise, returns the communication vertices following the
-	 * vertex.
-	 * The communication vertices are returned in scheduling order
+	 * vertex. The communication vertices are returned in scheduling order
 	 */
-	public SortedSet<DAGVertex> getComVertices(
-			DAGVertex vertex, boolean preceding) {
+	public SortedSet<DAGVertex> getComVertices(DAGVertex vertex,
+			boolean preceding) {
 
 		DAGVertex currentVertex = null;
-		
+
 		ConcurrentSkipListSet<DAGVertex> schedule = new ConcurrentSkipListSet<DAGVertex>(
 				new SchedulingOrderComparator());
 
@@ -183,10 +191,10 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 				currentVertex = edge.getSource();
 			else
 				currentVertex = edge.getTarget();
-			
+
 			// retrieving the type of the vertex
-			VertexType vertexType = (VertexType) currentVertex.getPropertyBean()
-					.getValue(VertexType.propertyBeanName);
+			VertexType vertexType = (VertexType) currentVertex
+					.getPropertyBean().getValue(VertexType.propertyBeanName);
 
 			if (vertexType != null
 					&& (vertexType.equals(VertexType.send) || vertexType

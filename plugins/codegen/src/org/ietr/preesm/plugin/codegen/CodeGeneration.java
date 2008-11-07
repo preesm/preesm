@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -78,12 +77,11 @@ public class CodeGeneration implements ICodeGeneration {
 	public CodeGeneration() {
 	}
 
-
 	/**
 	 * Adding a new edge to graph from a few properties
 	 */
-	public DAGEdge addExampleEdge(DirectedAcyclicGraph graph, String source, String dest,
-			String type, int prodCons) {
+	public DAGEdge addExampleEdge(DirectedAcyclicGraph graph, String source,
+			String dest, String type, int prodCons) {
 
 		DAGEdge edge;
 
@@ -103,48 +101,58 @@ public class CodeGeneration implements ICodeGeneration {
 
 		return edge;
 	}
-	
+
 	/**
-	 * Adding send and receive between v1 and v2. It removes the original vertex and
-	 * copies its buffer aggregate
+	 * Adding send and receive between v1 and v2. It removes the original vertex
+	 * and copies its buffer aggregate
 	 */
-	public DAGVertex addComVertices(DAGVertex v1, DAGVertex v2, Medium medium,Operator sendOp,Operator receiveOp, int schedulingOrder) {
+	public DAGVertex addComVertices(DAGVertex v1, DAGVertex v2, Medium medium,
+			Operator sendOp, Operator receiveOp, int schedulingOrder) {
 
 		DirectedAcyclicGraph graph = v1.getBase();
 
 		DAGEdge originalEdge = graph.getEdge(v1, v2);
-		Object aggregate = originalEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+		Object aggregate = originalEdge.getPropertyBean().getValue(
+				BufferAggregate.propertyBeanName);
 		graph.removeEdge(originalEdge);
-		
-		// Tagging the communication vertices with their operator, type and medium
+
+		// Tagging the communication vertices with their operator, type and
+		// medium
 		DAGVertex send = new DAGVertex();
 		send.setId("snd" + v2.getName() + sendOp.getName());
 		send.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		send.getPropertyBean().setValue(VertexType.propertyBeanName, VertexType.send);
+		send.getPropertyBean().setValue(VertexType.propertyBeanName,
+				VertexType.send);
 		send.getPropertyBean().setValue(Medium.propertyBeanName, medium);
 		send.getPropertyBean().setValue(Operator.propertyBeanName, sendOp);
-		
+
 		DAGVertex receive = new DAGVertex();
 		receive.setId("rcv" + v1.getName() + receiveOp.getName());
 		receive.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		receive.getPropertyBean().setValue(VertexType.propertyBeanName, VertexType.receive);
+		receive.getPropertyBean().setValue(VertexType.propertyBeanName,
+				VertexType.receive);
 		receive.getPropertyBean().setValue(Medium.propertyBeanName, medium);
-		receive.getPropertyBean().setValue(Operator.propertyBeanName, receiveOp);
-		
+		receive.getPropertyBean()
+				.setValue(Operator.propertyBeanName, receiveOp);
+
 		graph.addVertex(send);
 		graph.addVertex(receive);
-		
-		graph.addEdge(v1, send).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(send, receive).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(receive, v2).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		
+
+		graph.addEdge(v1, send).getPropertyBean().setValue(
+				BufferAggregate.propertyBeanName, aggregate);
+		graph.addEdge(send, receive).getPropertyBean().setValue(
+				BufferAggregate.propertyBeanName, aggregate);
+		graph.addEdge(receive, v2).getPropertyBean().setValue(
+				BufferAggregate.propertyBeanName, aggregate);
+
 		return receive;
 	}
 
 	/**
 	 * Kwok example 2 -> implanted DAG on one processor
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_single(MultiCoreArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_single(
+			MultiCoreArchitecture architecture) {
 
 		/* Construct DAG */
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
@@ -203,17 +211,22 @@ public class CodeGeneration implements ICodeGeneration {
 	/**
 	 * Kwok example 2 -> implanted DAG on 4 processors like with list sched
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_multi(MultiCoreArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_multi(
+			MultiCoreArchitecture architecture) {
 
 		DAGVertex vertex;
-		
-		Operator c64x_1 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_1");
-		Operator c64x_2 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_2");
-		Operator c64x_3 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_3");
-		Operator c64x_4 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_4");
+
+		Operator c64x_1 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_1");
+		Operator c64x_2 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_2");
+		Operator c64x_3 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_3");
+		Operator c64x_4 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_4");
 
 		Medium edma = architecture.getMainMedium();
-		
+
 		/* Construct DAG */
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
 
@@ -229,11 +242,11 @@ public class CodeGeneration implements ICodeGeneration {
 			bean.setValue(VertexType.propertyBeanName, VertexType.task);
 		}
 
-		//n1,n3,n2,n7 on C64x_1
-		//n4 on C64x_2
-		//n6 on C64x_3
-		//n5,n8,n9 on C64x_4
-		
+		// n1,n3,n2,n7 on C64x_1
+		// n4 on C64x_2
+		// n6 on C64x_3
+		// n5,n8,n9 on C64x_4
+
 		graph.getVertex("n1").getPropertyBean().setValue("schedulingOrder", 1);
 		graph.getVertex("n1").getPropertyBean().setValue(
 				Operator.propertyBeanName, c64x_1);
@@ -269,56 +282,74 @@ public class CodeGeneration implements ICodeGeneration {
 		edge = addExampleEdge(graph, "n1", "n3", "char", 1);
 		edge = addExampleEdge(graph, "n1", "n7", "char", 20);
 		edge = addExampleEdge(graph, "n1", "n4", "char", 1);
-		addComVertices(graph.getVertex("n1"),graph.getVertex("n4"),edma,c64x_1,c64x_2,1);
-		
+		addComVertices(graph.getVertex("n1"), graph.getVertex("n4"), edma,
+				c64x_1, c64x_2, 1);
+
 		edge = addExampleEdge(graph, "n1", "n5", "char", 1);
-		addComVertices(graph.getVertex("n1"),graph.getVertex("n5"),edma,c64x_1,c64x_4,2);
+		addComVertices(graph.getVertex("n1"), graph.getVertex("n5"), edma,
+				c64x_1, c64x_4, 2);
 
 		edge = addExampleEdge(graph, "n2", "n6", "char", 1);
-		addComVertices(graph.getVertex("n2"),graph.getVertex("n6"),edma,c64x_1,c64x_3,3);
-		
+		addComVertices(graph.getVertex("n2"), graph.getVertex("n6"), edma,
+				c64x_1, c64x_3, 3);
+
 		edge = addExampleEdge(graph, "n2", "n7", "char", 5);
 		edge = addExampleEdge(graph, "n2", "n8", "char", 5);
-		addComVertices(graph.getVertex("n2"),graph.getVertex("n8"),edma,c64x_1,c64x_4,4);
-		
+		addComVertices(graph.getVertex("n2"), graph.getVertex("n8"), edma,
+				c64x_1, c64x_4, 4);
+
 		edge = addExampleEdge(graph, "n3", "n7", "char", 5);
 		edge = addExampleEdge(graph, "n3", "n8", "char", 1);
-		addComVertices(graph.getVertex("n3"),graph.getVertex("n8"),edma,c64x_1,c64x_4,5);
-		
+		addComVertices(graph.getVertex("n3"), graph.getVertex("n8"), edma,
+				c64x_1, c64x_4, 5);
+
 		edge = addExampleEdge(graph, "n4", "n8", "char", 1);
-		addComVertices(graph.getVertex("n4"),graph.getVertex("n8"),edma,c64x_2,c64x_4,6);
-		
+		addComVertices(graph.getVertex("n4"), graph.getVertex("n8"), edma,
+				c64x_2, c64x_4, 6);
+
 		edge = addExampleEdge(graph, "n5", "n8", "char", 10);
 
 		edge = addExampleEdge(graph, "n6", "n9", "char", 10);
-		addComVertices(graph.getVertex("n6"),graph.getVertex("n9"),edma,c64x_3,c64x_4,7);
+		addComVertices(graph.getVertex("n6"), graph.getVertex("n9"), edma,
+				c64x_3, c64x_4, 7);
 
 		edge = addExampleEdge(graph, "n7", "n9", "char", 10);
-		addComVertices(graph.getVertex("n7"),graph.getVertex("n9"),edma,c64x_1,c64x_4,8);
+		addComVertices(graph.getVertex("n7"), graph.getVertex("n9"), edma,
+				c64x_1, c64x_4, 8);
 
 		edge = addExampleEdge(graph, "n8", "n9", "char", 10);
-		
+
 		return graph;
 	}
 
 	/**
 	 * Kwok example 2 -> implanted DAG on 4 processors like with list sched
 	 */
-	public DirectedAcyclicGraph implanteddagexample2_multi_with_routes(MultiCoreArchitecture architecture) {
+	public DirectedAcyclicGraph implanteddagexample2_multi_with_routes(
+			MultiCoreArchitecture architecture) {
 
 		DAGVertex vertex;
-		
-		Operator c64x_1 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_1");
-		Operator c64x_2 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_2");
-		Operator c64x_3 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_3");
-		Operator c64x_4 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_4");
-		Operator c64x_5 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_5");
-		Operator c64x_6 = (Operator)architecture.getComponent(ArchitectureComponentType.operator,"C64x_6");
 
-		Medium edma1 = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"edma_Faraday1");
-		Medium edma2 = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"edma_Faraday2");
-		Medium rIO = (Medium)architecture.getComponent(ArchitectureComponentType.medium,"rapidIO");
-		
+		Operator c64x_1 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_1");
+		Operator c64x_2 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_2");
+		Operator c64x_3 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_3");
+		Operator c64x_4 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_4");
+		Operator c64x_5 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_5");
+		Operator c64x_6 = (Operator) architecture.getComponent(
+				ArchitectureComponentType.operator, "C64x_6");
+
+		Medium edma1 = (Medium) architecture.getComponent(
+				ArchitectureComponentType.medium, "edma_Faraday1");
+		Medium edma2 = (Medium) architecture.getComponent(
+				ArchitectureComponentType.medium, "edma_Faraday2");
+		Medium rIO = (Medium) architecture.getComponent(
+				ArchitectureComponentType.medium, "rapidIO");
+
 		/* Construct DAG */
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph();
 
@@ -334,11 +365,11 @@ public class CodeGeneration implements ICodeGeneration {
 			bean.setValue(VertexType.propertyBeanName, VertexType.task);
 		}
 
-		//n1,n3,n2,n7 on C64x_1
-		//n4 on C64x_2
-		//n6 on C64x_3
-		//n5,n8,n9 on C64x_4
-		
+		// n1,n3,n2,n7 on C64x_1
+		// n4 on C64x_2
+		// n6 on C64x_3
+		// n5,n8,n9 on C64x_4
+
 		graph.getVertex("n1").getPropertyBean().setValue("schedulingOrder", 1);
 		graph.getVertex("n1").getPropertyBean().setValue(
 				Operator.propertyBeanName, c64x_1);
@@ -375,37 +406,45 @@ public class CodeGeneration implements ICodeGeneration {
 		edge = addExampleEdge(graph, "n1", "n3", "char", 1);
 		edge = addExampleEdge(graph, "n1", "n7", "char", 20);
 		edge = addExampleEdge(graph, "n1", "n4", "char", 1);
-		receive = addComVertices(graph.getVertex("n1"),graph.getVertex("n4"),edma1,c64x_1,c64x_2,1);
-		
+		receive = addComVertices(graph.getVertex("n1"), graph.getVertex("n4"),
+				edma1, c64x_1, c64x_2, 1);
+
 		edge = addExampleEdge(graph, "n1", "n5", "char", 1);
-		receive = addComVertices(graph.getVertex("n1"),graph.getVertex("n5"),rIO,c64x_1,c64x_4,2);
-		
+		receive = addComVertices(graph.getVertex("n1"), graph.getVertex("n5"),
+				rIO, c64x_1, c64x_4, 2);
+
 		edge = addExampleEdge(graph, "n2", "n6", "char", 1);
-		receive = addComVertices(graph.getVertex("n2"),graph.getVertex("n6"),edma1,c64x_1,c64x_3,3);
-		
+		receive = addComVertices(graph.getVertex("n2"), graph.getVertex("n6"),
+				edma1, c64x_1, c64x_3, 3);
+
 		edge = addExampleEdge(graph, "n2", "n7", "char", 5);
 		edge = addExampleEdge(graph, "n2", "n8", "char", 5);
-		receive = addComVertices(graph.getVertex("n2"),graph.getVertex("n8"),rIO,c64x_1,c64x_4,4);
-		
+		receive = addComVertices(graph.getVertex("n2"), graph.getVertex("n8"),
+				rIO, c64x_1, c64x_4, 4);
+
 		edge = addExampleEdge(graph, "n3", "n7", "char", 5);
 		edge = addExampleEdge(graph, "n3", "n8", "char", 1);
-		receive = addComVertices(graph.getVertex("n3"),graph.getVertex("n8"),rIO,c64x_1,c64x_4,5);
-		
+		receive = addComVertices(graph.getVertex("n3"), graph.getVertex("n8"),
+				rIO, c64x_1, c64x_4, 5);
+
 		edge = addExampleEdge(graph, "n4", "n8", "char", 1);
-		receive = addComVertices(graph.getVertex("n4"),graph.getVertex("n8"),edma1,c64x_2,c64x_1,6);
-		addComVertices(receive,graph.getVertex("n8"),rIO,c64x_1,c64x_4,7);
-		
+		receive = addComVertices(graph.getVertex("n4"), graph.getVertex("n8"),
+				edma1, c64x_2, c64x_1, 6);
+		addComVertices(receive, graph.getVertex("n8"), rIO, c64x_1, c64x_4, 7);
+
 		edge = addExampleEdge(graph, "n5", "n8", "char", 10);
 
 		edge = addExampleEdge(graph, "n6", "n9", "char", 10);
-		receive = addComVertices(graph.getVertex("n6"),graph.getVertex("n9"),edma1,c64x_3,c64x_1,8);
-		addComVertices(receive,graph.getVertex("n9"),rIO,c64x_1,c64x_4,9);
+		receive = addComVertices(graph.getVertex("n6"), graph.getVertex("n9"),
+				edma1, c64x_3, c64x_1, 8);
+		addComVertices(receive, graph.getVertex("n9"), rIO, c64x_1, c64x_4, 9);
 
 		edge = addExampleEdge(graph, "n7", "n9", "char", 10);
-		receive = addComVertices(graph.getVertex("n7"),graph.getVertex("n9"),rIO,c64x_1,c64x_4,10);
+		receive = addComVertices(graph.getVertex("n7"), graph.getVertex("n9"),
+				rIO, c64x_1, c64x_4, 10);
 
 		edge = addExampleEdge(graph, "n8", "n9", "char", 10);
-		
+
 		return graph;
 	}
 
@@ -422,41 +461,42 @@ public class CodeGeneration implements ICodeGeneration {
 		// Creating generator
 		CodeGeneration gen = new CodeGeneration();
 		// Input archi & algo
-		
-		//MultiCoreArchitecture architecture = Examples.get4C64Archi();
-		//SDFGraph algorithm = gen.implanteddagexample2_multi(architecture);
-	
+
+		// MultiCoreArchitecture architecture = Examples.get4C64Archi();
+		// SDFGraph algorithm = gen.implanteddagexample2_multi(architecture);
+
 		MultiCoreArchitecture architecture = Examples.get2C64Archi();
-		DirectedAcyclicGraph algorithm = gen.implanteddagexample2_multi_with_routes(architecture);
-		
+		DirectedAcyclicGraph algorithm = gen
+				.implanteddagexample2_multi_with_routes(architecture);
+
 		// Input file list
 
-		Map<String,String> map = new HashMap<String,String>();
-		map.put("sourcePath","d:/Test");
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("sourcePath", "d:/Test");
 		TextParameters params = new TextParameters(map);
-		
-		gen.transform(algorithm, architecture,params);
+
+		gen.transform(algorithm, architecture, params);
 
 		logger.log(Level.FINER, "Code generated");
-		
+
 	}
 
 	@Override
-	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, TextParameters parameters) {
-
+	public TaskResult transform(DirectedAcyclicGraph algorithm,
+			MultiCoreArchitecture architecture, TextParameters parameters) {
 		String sourcePath = parameters.getVariable("sourcePath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
-		
+
 		// Generate source file class
 		generateSourceFiles(algorithm, architecture, list);
 
 		// Generates the code
 		PrinterChooser printerChooser = new PrinterChooser(sourcePath);
 		printerChooser.printList(list);
-		
+
 		result.setSourcefilelist(list);
-		
+
 		return result;
 	}
 
@@ -466,9 +506,8 @@ public class CodeGeneration implements ICodeGeneration {
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
 			MultiCoreArchitecture architecture, SourceFileList list) {
-
-		list.generateSourceFiles(algorithm, architecture);
-		
+		CodeGenerator codegen = new CodeGenerator(list);
+		codegen.generateSourceFiles(algorithm, architecture);
 	}
 
 }

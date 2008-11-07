@@ -34,24 +34,16 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
- * A generated code is the gathering of source files, each
- * one corresponding to one core.
+ * A generated code is the gathering of source files, each one corresponding to
+ * one core.
  * 
  * @author mwipliez
  * @author mpelcat
@@ -69,53 +61,6 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	private SourceFile main;
 
 	/**
-	 * 
-	 */
-	public SourceFileList() {
-	}
-
-	/**
-	 * Creates the source files from an architecture
-	 */
-	private void createSourceFiles(MultiCoreArchitecture architecture) {
-
-		Iterator<ArchitectureComponent> iterator = architecture.getComponents(ArchitectureComponentType.operator).iterator();
-		
-		// Generates and populates one source file per core
-		while(iterator.hasNext()){
-			
-			Operator currentOp = (Operator)iterator.next();
-			
-			SourceFile sourceFile = new SourceFile(currentOp.getName(), currentOp);
-			add(sourceFile);
-			
-			// The main operator leads to the main source file
-			if(architecture.getMainOperator().equals(currentOp)){
-				setMain(sourceFile);
-			}
-		}
-	}
-
-	/**
-	 * Creates and fills source files from an SDF and an architecture
-	 */
-	public void generateSourceFiles(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture) {
-
-		// Creates one source file per operator
-		createSourceFiles(architecture);
-		
-		Iterator<SourceFile> iterator = this.iterator();
-
-		// For each source file, generates source code
-		while(iterator.hasNext()){
-			
-			SourceFile currentSource = iterator.next();
-			
-			currentSource.generateSource(algorithm, architecture);
-		}
-	}
-	
-	/**
 	 * Returns the main source file.
 	 * 
 	 * @return
@@ -123,7 +68,7 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	public SourceFile getMain() {
 		return main;
 	}
-	
+
 	/**
 	 * Sets the given source file as being the main file. If the source file is
 	 * not part of the source file list, it will be added.
@@ -138,24 +83,19 @@ public class SourceFileList extends ArrayList<SourceFile> {
 
 		this.main = main;
 	}
-	
+
 	/**
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
 		String code = "";
-		
-		Iterator<SourceFile> iterator = iterator();
-		
-		// Displays every files
-		while(iterator.hasNext()){
-			SourceFile file = iterator.next();
-			
-			code += file.toString();
 
+		// Displays every files
+		for (SourceFile file : this) {
+			code += file.toString();
 			code += "\n//---------------------------\n";
 		}
-		
+
 		return code;
 	}
 }

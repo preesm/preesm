@@ -34,14 +34,12 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
-
 
 /**
  * Declaration of a thread for code generation. Threads can be communication or
@@ -83,7 +81,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		super(parentContainer);
 
 		this.name = name;
-		
+
 		beginningCode = new LinearCodeContainer();
 		loopCode = new ForLoop();
 		endCode = new LinearCodeContainer();
@@ -91,18 +89,18 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 
 	public void accept(AbstractPrinter printer) {
 
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 		super.accept(printer); // Accept the buffer allocation
-		printer.visit(this,1); // Visit self
-		
+		printer.visit(this, 1); // Visit self
+
 		beginningCode.accept(printer);
-		printer.visit(this,2); // Visit self
+		printer.visit(this, 2); // Visit self
 		loopCode.accept(printer);
-		printer.visit(this,3); // Visit self
+		printer.visit(this, 3); // Visit self
 		endCode.accept(printer);
-		printer.visit(this,4); // Visit self
+		printer.visit(this, 4); // Visit self
 	}
-	
+
 	public boolean equals(Object obj) {
 
 		if (obj instanceof ThreadDeclaration) {
@@ -121,26 +119,26 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-		
+
 		String code = "";
-		
+
 		code += "\n//Thread: " + getName() + "\n";
 		code += "void " + getName() + "(){\n";
 
 		// Buffer allocation
 		code += super.toString();
-		
+
 		code += "\n//beginningCode\n";
 		code += beginningCode.toString();
-		
+
 		code += "\n//loopCode\n";
 		code += loopCode.toString();
-		
+
 		code += "\n//endCode\n";
 		code += endCode.toString();
 
 		code += "}//end thread: " + getName() + "\n";
-		
+
 		return code;
 	}
 

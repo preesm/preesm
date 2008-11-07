@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -43,17 +42,16 @@ package org.ietr.preesm.core.codegen;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.dag.DAGVertex;
 
-
 /**
- * Each thread runs indefinitely. It contains a for loop.
- * Thanks to SDF transformation, for loops can be generated
- * to reduce the overall length of the code.
+ * Each thread runs indefinitely. It contains a for loop. Thanks to SDF
+ * transformation, for loops can be generated to reduce the overall length of
+ * the code.
  * 
  * @author mwipliez
  * @author mpelcat
  */
 public class ForLoop extends AbstractCodeContainer implements ICodeElement {
-	
+
 	/**
 	 * 
 	 */
@@ -63,9 +61,15 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 
 	public void accept(AbstractPrinter printer) {
 
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 		super.accept(printer); // Accept the code container
-		printer.visit(this,1); // Visit self
+		printer.visit(this, 1); // Visit self
+	}
+
+	@Override
+	public DAGVertex getCorrespondingVertex() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -77,13 +81,7 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 		code += "\n\nfor(;;){\n";
 		code += super.toString();
 		code += "\n\n}\n";
-		
-		return code;
-	}
 
-	@Override
-	public DAGVertex getCorrespondingVertex() {
-		// TODO Auto-generated method stub
-		return null;
+		return code;
 	}
 }

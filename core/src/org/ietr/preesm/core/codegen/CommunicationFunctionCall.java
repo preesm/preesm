@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -68,29 +67,37 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
 				VertexType.propertyBeanName);
 
-		Medium medium = (Medium)vertex.getPropertyBean().getValue(Medium.propertyBeanName);
+		Medium medium = (Medium) vertex.getPropertyBean().getValue(
+				Medium.propertyBeanName);
 
 		// Send and receive only have one input and one output edges
-		DAGEdge inEdge = (DAGEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
-		DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
-		
+		DAGEdge inEdge = (DAGEdge) (vertex.getBase().incomingEdgesOf(vertex)
+				.toArray()[0]);
+		DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(vertex)
+				.toArray()[0]);
+
 		if (type != null && medium != null) {
-			if (type.isSend()){
+			if (type.isSend()) {
 
 				Set<Buffer> bufferSet = parentContainer.getBuffers(inEdge);
-				
-				// The target is the operator on which the corresponding receive operation is mapped
+
+				// The target is the operator on which the corresponding receive
+				// operation is mapped
 				DAGVertex receive = outEdge.getTarget();
-				Operator target = (Operator)receive.getPropertyBean().getValue(Operator.propertyBeanName);
-				call = new Send(parentContainer, vertex, bufferSet, medium, target);
-			}
-			else if (type.isReceive()){
+				Operator target = (Operator) receive.getPropertyBean()
+						.getValue(Operator.propertyBeanName);
+				call = new Send(parentContainer, vertex, bufferSet, medium,
+						target);
+			} else if (type.isReceive()) {
 				Set<Buffer> bufferSet = parentContainer.getBuffers(outEdge);
-				
-				// The source is the operator on which the corresponding send operation is allocated
+
+				// The source is the operator on which the corresponding send
+				// operation is allocated
 				DAGVertex send = inEdge.getSource();
-				Operator source = (Operator)send.getPropertyBean().getValue(Operator.propertyBeanName);
-				call = new Receive(parentContainer, vertex, bufferSet, medium, source);
+				Operator source = (Operator) send.getPropertyBean().getValue(
+						Operator.propertyBeanName);
+				call = new Receive(parentContainer, vertex, bufferSet, medium,
+						source);
 			}
 		}
 
@@ -108,26 +115,27 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	private Medium medium;
 
 	public CommunicationFunctionCall(String name,
-			AbstractBufferContainer parentContainer, Set<Buffer> bufferSet, Medium medium, DAGVertex correspondingVertex) {
+			AbstractBufferContainer parentContainer, Set<Buffer> bufferSet,
+			Medium medium, DAGVertex correspondingVertex) {
 
 		super(name, parentContainer, correspondingVertex);
 
 		this.bufferSet = bufferSet;
-		
+
 		this.medium = medium;
 	}
 
 	public void accept(AbstractPrinter printer) {
 
-		printer.visit(this,0); // Visit self
-		
+		printer.visit(this, 0); // Visit self
+
 		Iterator<Buffer> iterator = bufferSet.iterator();
-		
-		while(iterator.hasNext()){
+
+		while (iterator.hasNext()) {
 			Buffer buf = iterator.next();
-			
+
 			buf.accept(printer); // Accept the code container
-			printer.visit(this,1); // Visit self
+			printer.visit(this, 1); // Visit self
 		}
 	}
 
@@ -138,19 +146,19 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	public Medium getMedium() {
 		return medium;
 	}
-	
+
 	@Override
 	public String toString() {
 
 		String code = "";
 
 		code += medium.getName() + ",";
-		
+
 		Iterator<Buffer> iterator = bufferSet.iterator();
-		
-		while(iterator.hasNext()){
+
+		while (iterator.hasNext()) {
 			Buffer buf = iterator.next();
-			
+
 			code += buf.toString();
 		}
 

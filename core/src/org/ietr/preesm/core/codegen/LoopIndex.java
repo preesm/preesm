@@ -1,22 +1,20 @@
 package org.ietr.preesm.core.codegen;
 
-public class LoopIndex extends Variable{
+public class LoopIndex extends Variable {
 
-	char indexName ;
-	
+	char indexName;
+
 	public LoopIndex(char name, DataType type) {
 		super(((Character) name).toString(), type);
-		indexName = name ;
+		indexName = name;
 	}
 
-	
 	public LoopIndex(String name, DataType type) {
 		super(name, type);
 	}
-	
-	public char getNameAsChar(){
-		return indexName ;
+
+	public char getNameAsChar() {
+		return indexName;
 	}
 
-	
 }

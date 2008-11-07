@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.core.codegen;
 
 import java.util.Iterator;
@@ -69,40 +68,45 @@ public class CommunicationThreadDeclaration extends ThreadDeclaration {
 			ICodeElement com = loopCode.getCodeElement(vertex);
 
 			AbstractBufferContainer container = getGlobalContainer();
-			
-			// First test on the type of vertex that will be protected by a semaphore
-			VertexType vType = (VertexType)vertex.getPropertyBean().getValue(VertexType.propertyBeanName);
+
+			// First test on the type of vertex that will be protected by a
+			// semaphore
+			VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
+					VertexType.propertyBeanName);
 
 			SemaphoreType sType = null;
-			
-			// If the communication operation is an intermediate step of a route, no semaphore is generated
-			if(VertexType.isIntermediateReceive(vertex))
-				continue;
-			
-			if(VertexType.isIntermediateSend(vertex))
-				continue;
-			
-			// A first token must initialize the empty buffer semaphores before receive operations
-			if(vType.isReceive()){
 
-				SemaphorePost init = new SemaphorePost(container, vertex, SemaphoreType.empty);
+			// If the communication operation is an intermediate step of a
+			// route, no semaphore is generated
+			if (VertexType.isIntermediateReceive(vertex))
+				continue;
+
+			if (VertexType.isIntermediateSend(vertex))
+				continue;
+
+			// A first token must initialize the empty buffer semaphores before
+			// receive operations
+			if (vType.isReceive()) {
+
+				SemaphorePost init = new SemaphorePost(container, vertex,
+						SemaphoreType.empty);
 				beginningCode.addCodeElement(init);
 			}
-				
-			if(vType.isSend())
+
+			if (vType.isSend())
 				sType = SemaphoreType.full;
-			else if(vType.isReceive())
+			else if (vType.isReceive())
 				sType = SemaphoreType.empty;
-			
+
 			// Creates the semaphore if necessary ; retrieves it otherwise
 			// from global declaration and creates the pending function
 			SemaphorePend pend = new SemaphorePend(container, vertex, sType);
 
-			if(vType.isSend())
+			if (vType.isSend())
 				sType = SemaphoreType.empty;
-			else if(vType.isReceive())
+			else if (vType.isReceive())
 				sType = SemaphoreType.full;
-			
+
 			// Creates the semaphore if necessary and creates the posting
 			// function
 			SemaphorePost post = new SemaphorePost(container, vertex, sType);

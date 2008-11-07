@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -49,27 +48,26 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
  */
 public class LinearCodeContainer extends AbstractCodeContainer {
 
-
 	public void accept(AbstractPrinter printer) {
 
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 		super.accept(printer); // Accept the code container
-		printer.visit(this,1); // Visit self
+		printer.visit(this, 1); // Visit self
 	}
 
 	/**
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-		
+
 		String code = "";
 
 		code += "\n{\n";
-		
+
 		code += super.toString();
-		
+
 		code += "\n}\n";
-		
+
 		return code;
 	}
 }

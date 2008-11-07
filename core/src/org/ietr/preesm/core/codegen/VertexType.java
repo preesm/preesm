@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -50,9 +49,8 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class VertexType {
 
-
 	/**
-	 * ID used to reference the element in a property bean 
+	 * ID used to reference the element in a property bean
 	 */
 	public static final String propertyBeanName = "vertexType";
 
@@ -60,7 +58,7 @@ public class VertexType {
 	 * VertexType representing a receive operation
 	 */
 	public static final VertexType receive = new VertexType("receive");
-	
+
 	/**
 	 * VertexType representing a send operation
 	 */
@@ -72,62 +70,77 @@ public class VertexType {
 	public static final VertexType task = new VertexType("task");
 
 	/**
-	 * VertexType representing a task
-	 */
-	private String type = "";
-
-	/**
 	 * Returns true if this receive operation leads to a send operation
 	 */
-	static public boolean isIntermediateReceive(DAGVertex vertex){
-		
-		VertexType vType = (VertexType)vertex.getPropertyBean().getValue(VertexType.propertyBeanName);
-		
+	static public boolean isIntermediateReceive(DAGVertex vertex) {
+
+		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
+				VertexType.propertyBeanName);
+
 		// If the communication operation is an intermediate step of a route
-		if(vType.isReceive()){
-			DAGEdge outEdge = (DAGEdge)(vertex.getBase().outgoingEdgesOf(vertex).toArray()[0]);
-			VertexType nextVType = (VertexType)outEdge.getTarget().getPropertyBean().getValue(VertexType.propertyBeanName);
-			
-			if(nextVType.isSend())
+		if (vType.isReceive()) {
+			DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(
+					vertex).toArray()[0]);
+			VertexType nextVType = (VertexType) outEdge.getTarget()
+					.getPropertyBean().getValue(VertexType.propertyBeanName);
+
+			if (nextVType.isSend())
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Returns true if this send operation follows a receive operation
 	 */
-	static public boolean isIntermediateSend(DAGVertex vertex){
-		
-		VertexType vType = (VertexType)vertex.getPropertyBean().getValue(VertexType.propertyBeanName);
-		
+	static public boolean isIntermediateSend(DAGVertex vertex) {
+
+		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
+				VertexType.propertyBeanName);
+
 		// If the communication operation is an intermediate step of a route
-		if(vType.isSend()){
-			DAGEdge inEdge = (DAGEdge)(vertex.getBase().incomingEdgesOf(vertex).toArray()[0]);
-			VertexType prevVType = (VertexType)inEdge.getSource().getPropertyBean().getValue(VertexType.propertyBeanName);
-			
-			if(prevVType.isReceive())
+		if (vType.isSend()) {
+			DAGEdge inEdge = (DAGEdge) (vertex.getBase()
+					.incomingEdgesOf(vertex).toArray()[0]);
+			VertexType prevVType = (VertexType) inEdge.getSource()
+					.getPropertyBean().getValue(VertexType.propertyBeanName);
+
+			if (prevVType.isReceive())
 				return true;
 		}
-		
+
 		return false;
 	}
+
+	/**
+	 * VertexType representing a task
+	 */
+	private String type = "";
 
 	private VertexType(String type) {
 		super();
 		this.type = type;
 	}
 
-	public boolean isReceive(){
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof VertexType) {
+			return (((VertexType) obj).type.equals(type));
+		}
+		return false;
+	}
+
+	public boolean isReceive() {
 		return (this == receive);
 	}
-	
-	public boolean isSend(){
+
+	public boolean isSend() {
 		return (this == send);
 	}
-	
-	public boolean isTask(){
+
+	public boolean isTask() {
 		return (this == task);
 	}
 
@@ -137,14 +150,4 @@ public class VertexType {
 		return type;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-
-		if(obj instanceof VertexType){
-			return (((VertexType)obj).type.equals(type));
-		}
-		return false;
-	}
-
-	
 }

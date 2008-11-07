@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -52,36 +51,36 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class Send extends CommunicationFunctionCall{
+public class Send extends CommunicationFunctionCall {
 
 	/**
 	 * Target of the currently sent communication
 	 */
 	Operator target;
 
-	public Send(AbstractBufferContainer parentContainer, DAGVertex vertex, Set<Buffer> bufferSet, Medium medium, Operator target) {
+	public Send(AbstractBufferContainer parentContainer, DAGVertex vertex,
+			Set<Buffer> bufferSet, Medium medium, Operator target) {
 		super("send", parentContainer, bufferSet, medium, vertex);
-		
+
 		this.target = target;
 	}
 
 	public void accept(AbstractPrinter printer) {
-		printer.visit(this,0);
+		printer.visit(this, 0);
 		super.accept(printer);
-		printer.visit(this,1);
+		printer.visit(this, 1);
 	}
 
 	public Operator getTarget() {
 		return target;
 	}
-	
+
 	@Override
 	public String toString() {
 
 		String code = super.toString();
 
-		code = getName() + "(" + target.getName() + ","+ code + ");";
-
+		code = getName() + "(" + target.getName() + "," + code + ");";
 
 		return code;
 	}

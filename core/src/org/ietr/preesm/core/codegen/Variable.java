@@ -35,7 +35,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.codegen;
 
-
 public class Variable {
 
 	// Buffer generated from a name
@@ -49,21 +48,20 @@ public class Variable {
 	 */
 	private DataType type;
 
-	public Variable(String name,DataType type) {
+	public Variable(String name, DataType type) {
 
 		this.type = type;
 		this.name = name;
 	}
 
 	public String getName() {
-		return name ;
+		return name;
 	}
-
 
 	public DataType getType() {
 		return type;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();

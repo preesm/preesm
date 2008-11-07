@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -51,38 +50,48 @@ import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 
 /**
- * Generated code consists primarily in a succession
- * of code elements. A User Function Call is a call
- * corresponding to a vertex in the graph
+ * Generated code consists primarily in a succession of code elements. A User
+ * Function Call is a call corresponding to a vertex in the graph
  * 
  * @author mpelcat
  */
 public class UserFunctionCall extends AbstractCodeElement {
-	
+
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
 	private Set<Buffer> availableBuffers;
 
-	public UserFunctionCall(String name, AbstractVertex vertex, AbstractBufferContainer parentContainer) {
-		super(name,parentContainer, vertex);
-		
+	public UserFunctionCall(String name, AbstractVertex vertex,
+			AbstractBufferContainer parentContainer) {
+		super(name, parentContainer, vertex);
+
 		availableBuffers = new HashSet<Buffer>();
-		
+
 		// Adds all buffers that can be called by the user function
 		addVertexBuffers(vertex);
 	}
-	
-	public void addBuffer(Buffer buffer){
-		
-		if(buffer==null)
-			PreesmLogger.getLogger().log(Level.SEVERE,"null buffer");
+
+	public void accept(AbstractPrinter printer) {
+		int i = 0;
+		AbstractBufferContainer contains = this.getParentContainer();
+		while (contains instanceof FiniteForLoop) {
+			contains = ((FiniteForLoop) contains).getParentContainer();
+			i++;
+		}
+		printer.visit(this, i); // Visit self
+	}
+
+	public void addBuffer(Buffer buffer) {
+
+		if (buffer == null)
+			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
 		else
 			availableBuffers.add(buffer);
 	}
-	
-	public void addBuffers(Set<Buffer> buffers){
-		for(Buffer buffer:buffers)
+
+	public void addBuffers(Set<Buffer> buffers) {
+		for (Buffer buffer : buffers)
 			addBuffer(buffer);
 	}
 
@@ -90,11 +99,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 * Adds to the function call all the buffers created by the vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	public void addVertexBuffers(AbstractVertex vertex){
-		addVertexBuffers(vertex,true);
-		addVertexBuffers(vertex,false);
+	public void addVertexBuffers(AbstractVertex vertex) {
+		addVertexBuffers(vertex, true);
+		addVertexBuffers(vertex, false);
 	}
-	
+
 	/**
 	 * Add input or output buffers for a vertex, depending on the direction
 	 */
@@ -111,7 +120,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Iteration on all the edges of each vertex belonging to ownVertices
 		while (eIterator.hasNext()) {
 			AbstractEdge edge = eIterator.next();
-			
+
 			addBuffers(getParentContainer().getBuffers(edge));
 		}
 	}
@@ -119,44 +128,34 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public Set<Buffer> getAvailableBuffers() {
 		return availableBuffers;
 	}
-	
+
 	/**
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-		
+
 		String code = "";
 		boolean first = true;
-		
+
 		code += super.toString();
 		code += "(";
-		
-		Iterator<Buffer> iterator = availableBuffers.iterator();
-		
-		while(iterator.hasNext()){
 
-			if(!first)
+		Iterator<Buffer> iterator = availableBuffers.iterator();
+
+		while (iterator.hasNext()) {
+
+			if (!first)
 				code += ",";
 			else
 				first = false;
-			
+
 			Buffer buf = iterator.next();
 
 			code += buf.toString();
 		}
-		
+
 		code += ");";
-		
+
 		return code;
-	}
-	
-	public void accept(AbstractPrinter printer) {
-		int i = 0 ;
-		AbstractBufferContainer contains = this.getParentContainer();
-		while(contains instanceof FiniteForLoop){
-			contains = ((FiniteForLoop) contains).getParentContainer();
-			 i ++ ;
-		}
-		printer.visit(this,i); // Visit self
 	}
 }

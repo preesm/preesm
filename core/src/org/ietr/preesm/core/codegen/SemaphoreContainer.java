@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -67,10 +66,11 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		this.parentContainer = parentContainer;
 	}
 
-	public void allocateSemaphores(){
-		
-		Buffer buf = new Buffer("sem", this.size(),new DataType("semaphore"),null);
-		
+	public void allocateSemaphores() {
+
+		Buffer buf = new Buffer("sem", this.size(), new DataType("semaphore"),
+				null);
+
 		parentContainer.addBuffer(new BufferAllocation(buf));
 	}
 
@@ -86,8 +86,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 			return sem;
 		}
 	}
-	
-	
+
 	public Semaphore getSemaphore(BufferAggregate agg, SemaphoreType type) {
 
 		Semaphore sem = null;
@@ -104,7 +103,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 				return sem;
 			}
 		}
-		
+
 		return null;
 	}
 }

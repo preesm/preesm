@@ -70,11 +70,6 @@ public abstract class AbstractBufferContainer {
 	protected List<BufferAllocation> buffers;
 
 	/**
-	 * Contained variables
-	 */
-	protected List<VariableAllocation> variables;
-
-	/**
 	 * If the container was created in another container, reference to the
 	 * parent container. Buffers can be looked for in all ancestor containers
 	 */
@@ -84,6 +79,11 @@ public abstract class AbstractBufferContainer {
 	 * A buffer container contains a semaphore container to allocate semaphores
 	 */
 	private SemaphoreContainer semaphoreContainer;
+
+	/**
+	 * Contained variables
+	 */
+	protected List<VariableAllocation> variables;
 
 	public AbstractBufferContainer(AbstractBufferContainer parentContainer) {
 		super();
@@ -117,16 +117,6 @@ public abstract class AbstractBufferContainer {
 		printer.visit(this, 3); // Visit self
 	}
 
-	public void addVariable(Variable var) {
-		VariableAllocation alloc = new VariableAllocation(var);
-		variables.add(alloc);
-
-	}
-
-	public List<VariableAllocation> getVariables() {
-		return variables;
-	}
-
 	/**
 	 * Adds the given buffer to the buffer list.
 	 * 
@@ -142,6 +132,12 @@ public abstract class AbstractBufferContainer {
 							Level.FINE,
 							"buffer " + alloc.getBuffer().getName()
 									+ " already exists");
+	}
+
+	public void addVariable(Variable var) {
+		VariableAllocation alloc = new VariableAllocation(var);
+		variables.add(alloc);
+
 	}
 
 	/**
@@ -163,65 +159,6 @@ public abstract class AbstractBufferContainer {
 		}
 	}
 
-	/**
-	 * Route steps are allocated here. A route steps means that a receive and a
-	 * send are called successively. The receive output is allocated.
-	 */
-	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
-
-		Iterator<DAGVertex> vIterator = comVertices.iterator();
-
-		// Iteration on own buffers
-		while (vIterator.hasNext()) {
-			DAGVertex vertex = vIterator.next();
-
-			if (VertexType.isIntermediateReceive(vertex)) {
-				allocateVertexBuffers(vertex, false);
-			}
-		}
-	}
-
-	/**
-	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
-	 * allocates the input buffers, otherwise allocates output buffers.
-	 */
-	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
-
-		Iterator<DAGEdge> eIterator;
-		Set<DAGEdge> edgeSet;
-
-		if (isInputBuffer){
-			edgeSet = new HashSet<DAGEdge>(vertex.getBase().incomingEdgesOf(vertex));
-			// Removes edges between two operators
-			removeInterEdges(edgeSet);
-		}
-		else{
-			edgeSet = new HashSet<DAGEdge>(vertex.getBase().outgoingEdgesOf(vertex));
-			// Removes edges between two operators
-			removeInterEdges(edgeSet);
-		}
-
-		eIterator = edgeSet.iterator();
-			
-		// Iteration on all the edges of each vertex belonging to ownVertices
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-
-			allocateEdgeBuffers(edge, isInputBuffer);
-		}
-	}
-
-	public void removeInterEdges(Set<DAGEdge> edgeSet) {
-
-		Iterator<DAGEdge> eIterator = edgeSet.iterator();
-		
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-			if(!edge.getSource().getPropertyBean().getValue(Operator.propertyBeanName).equals(edge.getTarget().getPropertyBean().getValue(Operator.propertyBeanName)))
-				eIterator.remove();
-		}
-	}
-	
 	/**
 	 * Allocates all the buffers retrieved from a given buffer aggregate. The
 	 * boolean isInputBuffer is true if the aggregate belongs to an incoming
@@ -262,6 +199,55 @@ public abstract class AbstractBufferContainer {
 	}
 
 	/**
+	 * Route steps are allocated here. A route steps means that a receive and a
+	 * send are called successively. The receive output is allocated.
+	 */
+	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
+
+		Iterator<DAGVertex> vIterator = comVertices.iterator();
+
+		// Iteration on own buffers
+		while (vIterator.hasNext()) {
+			DAGVertex vertex = vIterator.next();
+
+			if (VertexType.isIntermediateReceive(vertex)) {
+				allocateVertexBuffers(vertex, false);
+			}
+		}
+	}
+
+	/**
+	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
+	 * allocates the input buffers, otherwise allocates output buffers.
+	 */
+	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
+
+		Iterator<DAGEdge> eIterator;
+		Set<DAGEdge> edgeSet;
+
+		if (isInputBuffer) {
+			edgeSet = new HashSet<DAGEdge>(vertex.getBase().incomingEdgesOf(
+					vertex));
+			// Removes edges between two operators
+			removeInterEdges(edgeSet);
+		} else {
+			edgeSet = new HashSet<DAGEdge>(vertex.getBase().outgoingEdgesOf(
+					vertex));
+			// Removes edges between two operators
+			removeInterEdges(edgeSet);
+		}
+
+		eIterator = edgeSet.iterator();
+
+		// Iteration on all the edges of each vertex belonging to ownVertices
+		while (eIterator.hasNext()) {
+			DAGEdge edge = eIterator.next();
+
+			allocateEdgeBuffers(edge, isInputBuffer);
+		}
+	}
+
+	/**
 	 * Gets the buffer with the given name.
 	 */
 	public Buffer getBuffer(String name) {
@@ -283,6 +269,21 @@ public abstract class AbstractBufferContainer {
 		if (parentContainer != null)
 			return (parentContainer.getBuffer(name));
 
+		return null;
+	}
+
+	/**
+	 * Gets the buffers corresponding to the given edge from its aggregate
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<Buffer> getBuffers(AbstractEdge edge) {
+
+		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
+				.getValue(BufferAggregate.propertyBeanName);
+		if (agg != null) {
+			Set<Buffer> bufferSet = getBuffers(agg);
+			return bufferSet;
+		}
 		return null;
 	}
 
@@ -313,21 +314,6 @@ public abstract class AbstractBufferContainer {
 	}
 
 	/**
-	 * Gets the buffers corresponding to the given edge from its aggregate
-	 */
-	@SuppressWarnings("unchecked")
-	public Set<Buffer> getBuffers(AbstractEdge edge) {
-
-		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
-				.getValue(BufferAggregate.propertyBeanName);
-		if (agg != null) {
-			Set<Buffer> bufferSet = getBuffers(agg);
-			return bufferSet;
-		}
-		return null;
-	}
-
-	/**
 	 * Gets the container corresponding to global allocations
 	 */
 	public AbstractBufferContainer getGlobalContainer() {
@@ -342,12 +328,30 @@ public abstract class AbstractBufferContainer {
 		return null;
 	}
 
+	public AbstractBufferContainer getParentContainer() {
+		return parentContainer;
+	}
+
 	public SemaphoreContainer getSemaphoreContainer() {
 		return semaphoreContainer;
 	}
 
-	public AbstractBufferContainer getParentContainer() {
-		return parentContainer;
+	public List<VariableAllocation> getVariables() {
+		return variables;
+	}
+
+	public void removeInterEdges(Set<DAGEdge> edgeSet) {
+
+		Iterator<DAGEdge> eIterator = edgeSet.iterator();
+
+		while (eIterator.hasNext()) {
+			DAGEdge edge = eIterator.next();
+			if (!edge.getSource().getPropertyBean().getValue(
+					Operator.propertyBeanName).equals(
+					edge.getTarget().getPropertyBean().getValue(
+							Operator.propertyBeanName)))
+				eIterator.remove();
+		}
 	}
 
 	@Override

@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -86,32 +85,24 @@ public class SourceFile extends AbstractBufferContainer {
 		threads = new ArrayList<ThreadDeclaration>();
 	}
 
-	public List<ThreadDeclaration> getThreads() {
-		return threads;
-	}
-	
-	public Operator getOperator() {
-		return operator;
-	}
-	
 	/**
 	 * Accepts a printer visitor
 	 */
 	public void accept(AbstractPrinter printer) {
 
-		printer.visit(this,0); // Visit self
+		printer.visit(this, 0); // Visit self
 		super.accept(printer); // Accept the buffer allocation
-		printer.visit(this,1); // Visit self
+		printer.visit(this, 1); // Visit self
 
 		Iterator<ThreadDeclaration> iterator = threads.iterator();
 
 		while (iterator.hasNext()) {
 			ThreadDeclaration thread = iterator.next();
 
-			thread.accept(printer); //Accept the threads
-			printer.visit(this,2); // Visit self
+			thread.accept(printer); // Accept the threads
+			printer.visit(this, 2); // Visit self
 		}
-		printer.visit(this,3); // Visit self
+		printer.visit(this, 3); // Visit self
 	}
 
 	public void addThread(ThreadDeclaration thread) {
@@ -121,32 +112,37 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Fills itself from an SDF and an architecture
 	 */
-	public void generateSource(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture) {
+	public void generateSource(DirectedAcyclicGraph algorithm,
+			MultiCoreArchitecture architecture) {
 
 		// Gets the task vertices allocated to the current operator in
 		// scheduling order
-		SortedSet<DAGVertex> ownTaskVertices = getOwnVertices(algorithm, VertexType.task);
+		SortedSet<DAGVertex> ownTaskVertices = getOwnVertices(algorithm,
+				VertexType.task);
 
 		// Gets the communication vertices allocated to the current operator in
 		// scheduling order
-		SortedSet<DAGVertex> ownCommunicationVertices = getOwnVertices(algorithm, VertexType.send);
-		ownCommunicationVertices.addAll(getOwnVertices(algorithm, VertexType.receive));
-		
+		SortedSet<DAGVertex> ownCommunicationVertices = getOwnVertices(
+				algorithm, VertexType.send);
+		ownCommunicationVertices.addAll(getOwnVertices(algorithm,
+				VertexType.receive));
+
 		// Buffers defined as global variables are retrieved here. They are
 		// added globally to the file
 		allocateBuffers(ownTaskVertices);
-		
+
 		// Allocation of route step buffers
 		allocateRouteSteps(ownCommunicationVertices);
 
-		// Creating computation thread in which all SDF function calls will be placed
+		// Creating computation thread in which all SDF function calls will be
+		// placed
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				this);
 		addThread(computationThread);
-		
+
 		// Adding all function calls corresponding do computation vertices
 		computationThread.addUserFunctionCalls(ownTaskVertices);
-		
+
 		// Creating communication where communication processes are launched
 		CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
 				this);
@@ -158,7 +154,7 @@ public class SourceFile extends AbstractBufferContainer {
 		// Adding all function calls corresponding do computation vertices
 		computationThread.addSemaphorePends(ownTaskVertices);
 		communicationThread.addSemaphores(ownCommunicationVertices);
-		
+
 		// Allocates the semaphores globally
 		getSemaphoreContainer().allocateSemaphores();
 	}
@@ -167,11 +163,16 @@ public class SourceFile extends AbstractBufferContainer {
 		return name;
 	}
 
+	public Operator getOperator() {
+		return operator;
+	}
+
 	/**
-	 * Gets every task vertices allocated to the current operator in their scheduling
-	 * order
+	 * Gets every task vertices allocated to the current operator in their
+	 * scheduling order
 	 */
-	public SortedSet<DAGVertex> getOwnVertices(DirectedAcyclicGraph algorithm, VertexType currentType) {
+	public SortedSet<DAGVertex> getOwnVertices(DirectedAcyclicGraph algorithm,
+			VertexType currentType) {
 
 		ConcurrentSkipListSet<DAGVertex> schedule = new ConcurrentSkipListSet<DAGVertex>(
 				new SchedulingOrderComparator());
@@ -199,10 +200,14 @@ public class SourceFile extends AbstractBufferContainer {
 		return schedule;
 	}
 
+	public List<ThreadDeclaration> getThreads() {
+		return threads;
+	}
+
 	public void removeThread(ThreadDeclaration thread) {
 		threads.remove(thread);
 	}
-	
+
 	/**
 	 * Displays pseudo-code for test
 	 */

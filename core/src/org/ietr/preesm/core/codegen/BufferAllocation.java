@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -42,22 +41,20 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 
-
 /**
- * A buffer allocation is necessary for every input and
- * output of the SDF description.
+ * A buffer allocation is necessary for every input and output of the SDF
+ * description.
  * 
  * @author mwipliez
  * @author mpelcat
  */
 public class BufferAllocation {
 
-
 	/**
 	 * Buffer to allocate
 	 */
 	private Buffer buffer;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -76,14 +73,14 @@ public class BufferAllocation {
 	@Override
 	public String toString() {
 		String code = "";
-		
+
 		code += buffer.getType().getTypeName();
 		code += "[";
 		code += buffer.getSize().toString();
 		code += "] ";
 		code += buffer.toString();
 		code += ";";
-		
+
 		return code;
 	}
 

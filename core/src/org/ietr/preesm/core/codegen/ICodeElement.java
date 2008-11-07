@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -44,15 +43,14 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 
 /**
- * Generated code within threads consists primarily in a succession
- * of code elements. 
+ * Generated code within threads consists primarily in a succession of code
+ * elements.
  * 
  * @author mpelcat
  */
 public interface ICodeElement {
 
-	
 	public void accept(AbstractPrinter printer);
-	
+
 	public AbstractVertex<?> getCorrespondingVertex();
 }

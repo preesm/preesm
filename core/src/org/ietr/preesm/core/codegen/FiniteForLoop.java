@@ -52,60 +52,52 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		ICodeElement {
 
 	@SuppressWarnings("unchecked")
-	private Map<AbstractEdge, Buffer> buffers ;
-	
-	private int startIndex ;
-	private int stopIndex;
+	private Map<AbstractEdge, Buffer> buffers;
+
+	private List<ICodeElement> calls;
 	private int increment;
-	private LoopIndex index ;
-	private AbstractVertex<?> vertexDescription ;
-	private List<ICodeElement> calls ;
-	
+	private LoopIndex index;
+	private int startIndex;
+	private int stopIndex;
+	private AbstractVertex<?> vertexDescription;
+
 	@SuppressWarnings("unchecked")
-	public FiniteForLoop(AbstractBufferContainer parentContainer, AbstractVertex vertex, int nbIter) {
+	public FiniteForLoop(AbstractBufferContainer parentContainer,
+			AbstractVertex vertex, int nbIter) {
 		super(parentContainer);
-		startIndex = 0 ;
-		stopIndex = nbIter ;
+		startIndex = 0;
+		stopIndex = nbIter;
 		increment = 1;
-		vertexDescription = vertex ;
-		calls = new ArrayList<ICodeElement>() ;
+		vertexDescription = vertex;
+		calls = new ArrayList<ICodeElement>();
 		buffers = new HashMap<AbstractEdge, Buffer>();
-		for(VariableAllocation varDecl : parentContainer.getVariables()){
-			if(varDecl.getVariable() instanceof LoopIndex){
+		for (VariableAllocation varDecl : parentContainer.getVariables()) {
+			if (varDecl.getVariable() instanceof LoopIndex) {
 				index = (LoopIndex) varDecl.getVariable();
 			}
 		}
-		if(index == null){
-			if(parentContainer instanceof FiniteForLoop){
-				char indexName = ((FiniteForLoop) parentContainer).getIndex().getNameAsChar();
-				indexName = (char) ((int) indexName ++);
+		if (index == null) {
+			if (parentContainer instanceof FiniteForLoop) {
+				char indexName = ((FiniteForLoop) parentContainer).getIndex()
+						.getNameAsChar();
+				indexName = (char) ((int) indexName++);
 				index = new LoopIndex(indexName, new DataType("int"));
-			}else{
+			} else {
 				index = new LoopIndex('i', new DataType("int"));
 				parentContainer.addVariable(index);
 			}
 		}
-		for(AbstractEdge edge : ((AbstractVertex<AbstractGraph<AbstractVertex, AbstractEdge>>) vertexDescription).getBase().edgesOf(vertex)){
-			for(Buffer buf : parentContainer.getBuffers(edge)){
-				SubBuffer subBuff = new SubBuffer(buf.getName(), buf.getSize(), buf.getType(), buf.getAggregate()) ;
+		for (AbstractEdge edge : ((AbstractVertex<AbstractGraph<AbstractVertex, AbstractEdge>>) vertexDescription)
+				.getBase().edgesOf(vertex)) {
+			for (Buffer buf : parentContainer.getBuffers(edge)) {
+				SubBuffer subBuff = new SubBuffer(buf.getName(), buf.getSize(),
+						buf.getType(), buf.getAggregate());
 				subBuff.setParentBuffer(buf);
 				subBuff.setIndex(index);
 				this.addBuffer(subBuff, edge);
 			}
 		}
-		
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Set<Buffer> getBuffers(AbstractEdge edge) {
-		Set<Buffer> buffer = new TreeSet<Buffer>() ;
-		buffer.add(buffers.get(edge));
-		return buffer ;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void addBuffer(Buffer buffer, AbstractEdge edge){
-		buffers.put(edge, buffer);
+
 	}
 
 	@Override
@@ -117,68 +109,88 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			alloc.accept(printer); // Accepts allocations
 		}
 		printer.visit(this, 1);
-		for(ICodeElement call : calls){
+		for (ICodeElement call : calls) {
 			call.accept(printer);
 		}
 		printer.visit(this, 2);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void addBuffer(Buffer buffer, AbstractEdge edge) {
+		buffers.put(edge, buffer);
+	}
+
+	public void addCall(ICodeElement call) {
+		calls.add(call);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<Buffer> getBuffers(AbstractEdge edge) {
+		Set<Buffer> buffer = new TreeSet<Buffer>();
+		buffer.add(buffers.get(edge));
+		return buffer;
 	}
 
 	@Override
 	public AbstractVertex<?> getCorrespondingVertex() {
 		return vertexDescription;
 	}
-	
-	/**
-	 * Sets the loop start index
-	 * @param start The start index of the loop
-	 */
-	public void setStartIndex(int start){
-		this.startIndex = start ;
+
+	public int getIncrement() {
+		return increment;
 	}
-	
-	/**
-	 * Sets the stop index of the loop
-	 * @param stop The stop index of the loop
-	 */
-	public void setStopIndex(int stop){
-		this.stopIndex = stop ;
+
+	public LoopIndex getIndex() {
+		return index;
 	}
-	
+
+	public int getStartIndex() {
+		return startIndex;
+	}
+
+	public int getStopIndex() {
+		return stopIndex;
+	}
+
 	/**
 	 * Sets the increment of the loop
-	 * @param inc The increment of the loop
+	 * 
+	 * @param inc
+	 *            The increment of the loop
 	 */
-	public void setIncrement(int inc){
-		this.increment = inc ;
+	public void setIncrement(int inc) {
+		this.increment = inc;
 	}
-	
-	public void addCall(ICodeElement call){
-		calls.add(call);
+
+	/**
+	 * Sets the loop start index
+	 * 
+	 * @param start
+	 *            The start index of the loop
+	 */
+	public void setStartIndex(int start) {
+		this.startIndex = start;
 	}
-	
-	public int getStartIndex(){
-		return startIndex ;
+
+	/**
+	 * Sets the stop index of the loop
+	 * 
+	 * @param stop
+	 *            The stop index of the loop
+	 */
+	public void setStopIndex(int stop) {
+		this.stopIndex = stop;
 	}
-	public int getStopIndex(){
-		return stopIndex ;
-	}
-	
-	public int getIncrement(){
-		return increment ;
-	}
-	
-	public LoopIndex getIndex(){
-		return index ;
-	}
-	
-	public String toString(){
-		String result = new String() ;
-		result += "for(int i ="+startIndex+" ; i < "+stopIndex+" ; i +="+increment+" ){\n";
-		for(ICodeElement call : calls){
-			result += call.toString()+";\n";
+
+	public String toString() {
+		String result = new String();
+		result += "for(int i =" + startIndex + " ; i < " + stopIndex
+				+ " ; i +=" + increment + " ){\n";
+		for (ICodeElement call : calls) {
+			result += call.toString() + ";\n";
 		}
-		result +=" }";
-		return result ;
+		result += " }";
+		return result;
 	}
 
 }
