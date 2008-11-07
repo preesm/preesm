@@ -33,10 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-/**
- * 
- */
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
@@ -46,14 +42,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * A thread can contain buffer allocations as well as a source file (for static
@@ -123,7 +115,6 @@ public abstract class AbstractBufferContainer {
 	 * @param buffer
 	 */
 	public void addBuffer(BufferAllocation alloc) {
-
 		if (getBuffer(alloc.getBuffer().getName()) == null)
 			buffers.add(alloc);
 		else
@@ -137,121 +128,12 @@ public abstract class AbstractBufferContainer {
 	public void addVariable(Variable var) {
 		VariableAllocation alloc = new VariableAllocation(var);
 		variables.add(alloc);
-
-	}
-
-	/**
-	 * Buffers belonging to SDF vertices in the given set are allocated here.
-	 */
-	public void allocateBuffers(Set<DAGVertex> ownVertices) {
-
-		Iterator<DAGVertex> vIterator = ownVertices.iterator();
-
-		// Iteration on own buffers
-		while (vIterator.hasNext()) {
-			DAGVertex vertex = vIterator.next();
-
-			// Allocating all input buffers of vertex
-			allocateVertexBuffers(vertex, true);
-
-			// Allocating all output buffers of vertex
-			allocateVertexBuffers(vertex, false);
-		}
-	}
-
-	/**
-	 * Allocates all the buffers retrieved from a given buffer aggregate. The
-	 * boolean isInputBuffer is true if the aggregate belongs to an incoming
-	 * edge and false if the aggregate belongs to an outgoing edge
-	 */
-	public void allocateEdgeBuffers(DAGEdge edge, boolean isInputBuffer) {
-
-		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
-				.getValue(BufferAggregate.propertyBeanName);
-
-		if (agg != null) {
-
-			// allocates the aggregate
-			Iterator<BufferProperties> iterator = agg.iterator();
-
-			while (iterator.hasNext()) {
-				BufferProperties def = iterator.next();
-
-				// Creating the buffer
-				Buffer buf = new Buffer(edge.getSource().getName(), edge
-						.getTarget().getName(), def.getSourceOutputPortID(),
-						def.getDestInputPortID(), def.getSize(), new DataType(
-								def.getDataType()), agg);
-
-				BufferAllocation allocation = new BufferAllocation(buf);
-
-				// Adding the buffer allocation
-				addBuffer(allocation);
-
-			}
-
-		} else {
-			PreesmLogger.getLogger().log(
-					Level.FINE,
-					"No aggregate for edge " + edge.getSource().getId()
-							+ edge.getTarget().getId());
-		}
-	}
-
-	/**
-	 * Route steps are allocated here. A route steps means that a receive and a
-	 * send are called successively. The receive output is allocated.
-	 */
-	public void allocateRouteSteps(Set<DAGVertex> comVertices) {
-
-		Iterator<DAGVertex> vIterator = comVertices.iterator();
-
-		// Iteration on own buffers
-		while (vIterator.hasNext()) {
-			DAGVertex vertex = vIterator.next();
-
-			if (VertexType.isIntermediateReceive(vertex)) {
-				allocateVertexBuffers(vertex, false);
-			}
-		}
-	}
-
-	/**
-	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
-	 * allocates the input buffers, otherwise allocates output buffers.
-	 */
-	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
-
-		Iterator<DAGEdge> eIterator;
-		Set<DAGEdge> edgeSet;
-
-		if (isInputBuffer) {
-			edgeSet = new HashSet<DAGEdge>(vertex.getBase().incomingEdgesOf(
-					vertex));
-			// Removes edges between two operators
-			removeInterEdges(edgeSet);
-		} else {
-			edgeSet = new HashSet<DAGEdge>(vertex.getBase().outgoingEdgesOf(
-					vertex));
-			// Removes edges between two operators
-			removeInterEdges(edgeSet);
-		}
-
-		eIterator = edgeSet.iterator();
-
-		// Iteration on all the edges of each vertex belonging to ownVertices
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-
-			allocateEdgeBuffers(edge, isInputBuffer);
-		}
 	}
 
 	/**
 	 * Gets the buffer with the given name.
 	 */
 	public Buffer getBuffer(String name) {
-
 		Buffer buffer = null;
 		Iterator<BufferAllocation> iterator = buffers.iterator();
 
@@ -277,7 +159,6 @@ public abstract class AbstractBufferContainer {
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Buffer> getBuffers(AbstractEdge edge) {
-
 		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
 				.getValue(BufferAggregate.propertyBeanName);
 		if (agg != null) {
@@ -291,7 +172,6 @@ public abstract class AbstractBufferContainer {
 	 * Gets the buffers corresponding to the given edge from its aggregate
 	 */
 	public Set<Buffer> getBuffers(BufferAggregate agg) {
-
 		Set<Buffer> bufferSet = new HashSet<Buffer>();
 
 		Iterator<BufferAllocation> iterator = buffers.iterator();
@@ -317,7 +197,6 @@ public abstract class AbstractBufferContainer {
 	 * Gets the container corresponding to global allocations
 	 */
 	public AbstractBufferContainer getGlobalContainer() {
-
 		if (parentContainer != null)
 			return parentContainer.getGlobalContainer();
 		else
@@ -340,34 +219,15 @@ public abstract class AbstractBufferContainer {
 		return variables;
 	}
 
-	public void removeInterEdges(Set<DAGEdge> edgeSet) {
-
-		Iterator<DAGEdge> eIterator = edgeSet.iterator();
-
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-			if (!edge.getSource().getPropertyBean().getValue(
-					Operator.propertyBeanName).equals(
-					edge.getTarget().getPropertyBean().getValue(
-							Operator.propertyBeanName)))
-				eIterator.remove();
-		}
-	}
-
 	@Override
 	public String toString() {
 		String code = "";
 
 		code += "\n//Buffer allocation for " + getName() + "\n";
 
-		Iterator<BufferAllocation> iterator = buffers.iterator();
-
 		// Displays allocations
-		while (iterator.hasNext()) {
-			BufferAllocation alloc = iterator.next();
-
+		for (BufferAllocation alloc : buffers) {
 			code += alloc.toString();
-
 			code += "\n";
 		}
 

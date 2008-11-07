@@ -51,7 +51,8 @@ public class CodeGenerator {
 
 		// For each source file, generates source code
 		for (SourceFile file : list) {
-			file.generateSource(algorithm, architecture);
+			SourceFileCodeGenerator codegen = new SourceFileCodeGenerator(file);
+			codegen.generateSource(algorithm, architecture);
 		}
 	}
 }
