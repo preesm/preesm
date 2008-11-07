@@ -33,8 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-
 package org.ietr.preesm.plugin.transforms;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
@@ -44,26 +42,27 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Class used to flatten the hierarchy of a given graph
+ * 
  * @author jpiat
- *
+ * 
  */
-public class HierarchyFlattening implements IGraphTransformation{
+public class HierarchyFlattening implements IGraphTransformation {
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
 		String depthS = params.getVariable("depth");
-		int depth ;
-		if(depthS != null){
+		int depth;
+		if (depthS != null) {
 			depth = Integer.decode(depthS);
-		}else{
-			depth = -1 ;
+		} else {
+			depth = -1;
 		}
-		org.sdf4j.visitors.HierarchyFlattening flatHier  = new org.sdf4j.visitors.HierarchyFlattening() ;
+		org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
 		flatHier.flattenGraph(algorithm, depth);
-		TaskResult result = new TaskResult() ;
+		TaskResult result = new TaskResult();
 		result.setSDF((SDFGraph) flatHier.getOutput());
-		return result ;
-		
+		return result;
+
 	}
 
 }

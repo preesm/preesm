@@ -33,8 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-
 package org.ietr.preesm.plugin.transforms;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
@@ -45,18 +43,19 @@ import org.sdf4j.visitors.ToHSDFVisitor;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph
+ * 
  * @author jpiat
- *
+ * 
  */
-public class HSDFTransformation implements IGraphTransformation{
+public class HSDFTransformation implements IGraphTransformation {
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
-		ToHSDFVisitor toHsdf = new ToHSDFVisitor() ;
+		ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 		algorithm.accept(toHsdf);
-		TaskResult result = new TaskResult() ;
+		TaskResult result = new TaskResult();
 		result.setSDF((SDFGraph) toHsdf.getOutput());
-		return result ;
+		return result;
 	}
 
 }
