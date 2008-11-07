@@ -44,8 +44,11 @@ import org.sdf4j.model.AbstractVertex;
 public class CompoundCodeElement implements ICodeElement {
 
 	private List<ICodeElement> calls;
+	
 	private AbstractVertex<?> correspondingVertex;
+	
 	private String name;
+	
 	private AbstractBufferContainer parentContainer;
 
 	public CompoundCodeElement(String name,

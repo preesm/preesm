@@ -63,7 +63,9 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	protected LinearCodeContainer beginningCode;
 
 	protected LinearCodeContainer endCode;
+
 	protected ForLoop loopCode;
+
 	/**
 	 * Thread name
 	 */
@@ -86,7 +88,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		loopCode = new ForLoop();
 		endCode = new LinearCodeContainer();
 	}
-
+	
 	public void accept(AbstractPrinter printer) {
 
 		printer.visit(this, 0); // Visit self
@@ -100,7 +102,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		endCode.accept(printer);
 		printer.visit(this, 4); // Visit self
 	}
-
+	
 	public boolean equals(Object obj) {
 
 		if (obj instanceof ThreadDeclaration) {
@@ -109,6 +111,18 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		} else {
 			return false;
 		}
+	}
+
+	public LinearCodeContainer getBeginningCode() {
+		return beginningCode;
+	}
+
+	public LinearCodeContainer getEndCode() {
+		return endCode;
+	}
+
+	public ForLoop getLoopCode() {
+		return loopCode;
 	}
 
 	public String getName() {

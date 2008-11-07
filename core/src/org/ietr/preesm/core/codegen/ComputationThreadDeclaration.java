@@ -33,10 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-/**
- * 
- */
 package org.ietr.preesm.core.codegen;
 
 import java.util.Iterator;
@@ -59,111 +55,6 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	}
 
 	/**
-	 * Adds semaphores to protect the data transmitted in this thread. Iterates
-	 * the task vertices in direct order and adds semaphore pending functions
-	 */
-	public void addSemaphorePends(SortedSet<DAGVertex> taskVertices) {
-
-		SortedSet<DAGVertex> ownComVertices = null;
-		AbstractBufferContainer container = getGlobalContainer();
-
-		Iterator<DAGVertex> taskIterator = taskVertices.iterator();
-
-		while (taskIterator.hasNext()) {
-			DAGVertex task = taskIterator.next();
-
-			// Getting incoming receive operations
-			ownComVertices = getComVertices(task, true);
-
-			if (!ownComVertices.isEmpty()) {
-
-				ICodeElement taskElement = loopCode.getCodeElement(task);
-				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
-
-				while (comIterator.hasNext()) {
-					DAGVertex com = comIterator.next();
-
-					// Creates the semaphore if necessary ; retrieves it
-					// otherwise
-					// from global declaration and creates the pending function
-					SemaphorePend pend = new SemaphorePend(container, com,
-							SemaphoreType.full);
-
-					// Creates the semaphore if necessary and creates the
-					// posting
-					// function
-					SemaphorePost post = new SemaphorePost(container, com,
-							SemaphoreType.empty);
-
-					loopCode.addCodeElementBefore(taskElement, pend);
-					loopCode.addCodeElementAfter(taskElement, post);
-
-				}
-			}
-
-			// Getting outgoing send operations
-			ownComVertices = getComVertices(task, false);
-
-			if (!ownComVertices.isEmpty()) {
-
-				ICodeElement taskElement = loopCode.getCodeElement(task);
-				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
-
-				while (comIterator.hasNext()) {
-					DAGVertex com = comIterator.next();
-
-					// A first token must initialize the semaphore pend due to
-					// a sending operation
-					SemaphorePost init = new SemaphorePost(container, com,
-							SemaphoreType.empty);
-
-					beginningCode.addCodeElementBefore(taskElement, init);
-
-					// Creates the semaphore if necessary ; retrieves it
-					// otherwise
-					// from global declaration and creates the pending function
-					SemaphorePend pend = new SemaphorePend(container, com,
-							SemaphoreType.empty);
-
-					// Creates the semaphore if necessary and creates the
-					// posting
-					// function
-					SemaphorePost post = new SemaphorePost(container, com,
-							SemaphoreType.full);
-
-					loopCode.addCodeElementBefore(taskElement, pend);
-					loopCode.addCodeElementAfter(taskElement, post);
-
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds one function call for each vertex in the ordered set
-	 */
-	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices) {
-
-		Iterator<DAGVertex> iterator = vertices.iterator();
-		while (iterator.hasNext()) {
-			DAGVertex vertex = iterator.next();
-
-			ICodeElement beginningCall = new UserFunctionCall("init_"
-					+ vertex.getName(), vertex, this);
-			beginningCode.addCodeElement(beginningCall);
-
-			ICodeElement loopCall = CodeElementFactory.createElement(vertex
-					.getName(), this, vertex);
-			loopCode.addCodeElement(loopCall);
-
-			ICodeElement endCall = new UserFunctionCall("close_"
-					+ vertex.getName(), vertex, this);
-			endCode.addCodeElement(endCall);
-
-		}
-	}
-
-	/**
 	 * Gets the communication vertices preceding or following the vertex vertex.
 	 * If preceding = true, returns the communication vertices preceding the
 	 * vertex, otherwise, returns the communication vertices following the
@@ -171,7 +62,6 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	 */
 	public SortedSet<DAGVertex> getComVertices(DAGVertex vertex,
 			boolean preceding) {
-
 		DAGVertex currentVertex = null;
 
 		ConcurrentSkipListSet<DAGVertex> schedule = new ConcurrentSkipListSet<DAGVertex>(
@@ -179,18 +69,20 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 		Iterator<DAGEdge> iterator = null;
 
-		if (preceding)
+		if (preceding) {
 			iterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
-		else
+		} else {
 			iterator = vertex.getBase().outgoingEdgesOf(vertex).iterator();
+		}
 
 		while (iterator.hasNext()) {
 			DAGEdge edge = iterator.next();
 
-			if (preceding)
+			if (preceding) {
 				currentVertex = edge.getSource();
-			else
+			} else {
 				currentVertex = edge.getTarget();
+			}
 
 			// retrieving the type of the vertex
 			VertexType vertexType = (VertexType) currentVertex

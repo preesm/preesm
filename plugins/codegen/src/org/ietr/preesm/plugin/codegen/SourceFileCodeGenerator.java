@@ -110,7 +110,6 @@ public class SourceFileCodeGenerator {
 	 * allocates the input buffers, otherwise allocates output buffers.
 	 */
 	public void allocateVertexBuffers(DAGVertex vertex, boolean isInputBuffer) {
-		Iterator<DAGEdge> eIterator;
 		Set<DAGEdge> edgeSet;
 
 		if (isInputBuffer) {
@@ -125,12 +124,8 @@ public class SourceFileCodeGenerator {
 			removeInterEdges(edgeSet);
 		}
 
-		eIterator = edgeSet.iterator();
-
 		// Iteration on all the edges of each vertex belonging to ownVertices
-		while (eIterator.hasNext()) {
-			DAGEdge edge = eIterator.next();
-
+		for (DAGEdge edge : edgeSet) {
 			allocateEdgeBuffers(edge, isInputBuffer);
 		}
 	}
@@ -164,9 +159,9 @@ public class SourceFileCodeGenerator {
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
-
-		// Adding all function calls corresponding do computation vertices
-		computationThread.addUserFunctionCalls(ownTaskVertices);
+		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(computationThread);
+		compCodegen.addUserFunctionCalls(ownTaskVertices);
+		compCodegen.addSemaphorePends(ownTaskVertices);
 
 		// Creating communication where communication processes are launched
 		CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
@@ -177,7 +172,6 @@ public class SourceFileCodeGenerator {
 		communicationThread.addSendsAndReceives(ownCommunicationVertices);
 
 		// Adding all function calls corresponding do computation vertices
-		computationThread.addSemaphorePends(ownTaskVertices);
 		communicationThread.addSemaphores(ownCommunicationVertices);
 
 		// Allocates the semaphores globally
