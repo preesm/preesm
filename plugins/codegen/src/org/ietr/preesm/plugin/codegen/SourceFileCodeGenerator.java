@@ -194,7 +194,8 @@ public class SourceFileCodeGenerator {
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
-		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(computationThread);
+		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
+				computationThread);
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
 		compCodegen.addSemaphorePends(ownTaskVertices);
 
@@ -202,7 +203,8 @@ public class SourceFileCodeGenerator {
 		CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
 				file);
 		file.addThread(communicationThread);
-		CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(communicationThread);
+		CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
+				communicationThread);
 		commCodeGen.addSendsAndReceives(ownCommunicationVertices);
 		commCodeGen.addSemaphores(ownCommunicationVertices);
 

@@ -33,10 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-/**
- * 
- */
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
@@ -50,7 +46,8 @@ import org.sdf4j.model.AbstractVertex;
  * An abstract code container within a thread contains code elements (function
  * calls, samaphore pend and post, for loops...).
  * 
- * @author mpelcat
+ * @author Maxime Pelcat
+ * @author Matthieu Wipliez
  */
 public abstract class AbstractCodeContainer {
 
@@ -78,39 +75,63 @@ public abstract class AbstractCodeContainer {
 		printer.visit(this, 3); // Visit self
 	}
 
+	/**
+	 * Adds the given code element at the end of the code element list.
+	 * 
+	 * @param element
+	 *            An object implementing {@link ICodeElement}.
+	 */
 	public void addCodeElement(ICodeElement element) {
 		codeElements.add(element);
 	}
 
+	/**
+	 * Adds the given given code element <code>newElement</code> after the
+	 * reference code element <code>oldElement</code>.
+	 * 
+	 * @param oldElement
+	 *            The reference code element.
+	 * @param newElement
+	 *            The code element to add.
+	 */
 	public void addCodeElementAfter(ICodeElement oldElement,
 			ICodeElement newElement) {
-
 		int index = codeElements.indexOf(oldElement);
-
-		if (index != -1)
+		if (index != -1) {
 			codeElements.add(index + 1, newElement);
-		else
+		} else {
 			codeElements.add(newElement);
+		}
 	}
 
+	/**
+	 * Adds the given given code element <code>newElement</code> before the
+	 * reference code element <code>oldElement</code>.
+	 * 
+	 * @param oldElement
+	 *            The reference code element.
+	 * @param newElement
+	 *            The code element to add.
+	 */
 	public void addCodeElementBefore(ICodeElement oldElement,
 			ICodeElement newElement) {
-
 		int index = codeElements.indexOf(oldElement);
-
-		if (index != -1)
+		if (index != -1) {
 			codeElements.add(index, newElement);
-		else
+		} else {
 			codeElements.add(newElement);
+		}
 	}
 
+	/**
+	 * Returns the code element that corresponds to the given vertex.
+	 * 
+	 * @param vertex
+	 *            An {@link AbstractVertex}.
+	 * @return The matching code element or <code>null</code>.
+	 */
 	public ICodeElement getCodeElement(AbstractVertex<?> vertex) {
-
-		Iterator<ICodeElement> iterator = codeElements.iterator();
-
-		while (iterator.hasNext()) {
-			ICodeElement elt = iterator.next();
-
+		for (ICodeElement elt : codeElements) {
 			AbstractVertex<?> currentVertex = elt.getCorrespondingVertex();
 			if (elt.getCorrespondingVertex() != null
 					&& currentVertex.equals(vertex)) {
@@ -125,19 +146,10 @@ public abstract class AbstractCodeContainer {
 	 * Displays pseudo-code for test
 	 */
 	public String toString() {
-
-		String code = "";
-
-		code += "\n";
-
-		Iterator<ICodeElement> iterator = codeElements.iterator();
-
-		while (iterator.hasNext()) {
-			ICodeElement elt = iterator.next();
-
+		String code = "\n";
+		for (ICodeElement elt : codeElements) {
 			code += elt.toString() + "\n";
 		}
-
 		return code;
 	}
 }

@@ -144,6 +144,16 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		return index;
 	}
 
+	/**
+	 * Returns the name of this finite for loop.
+	 * 
+	 * @return <code>""</code>.
+	 */
+	@Override
+	public String getName() {
+		return "";
+	}
+
 	public int getStartIndex() {
 		return startIndex;
 	}

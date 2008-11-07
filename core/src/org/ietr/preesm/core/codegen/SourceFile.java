@@ -33,10 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-/**
- * 
- */
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
@@ -50,8 +46,8 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
  * Source file to be executed on a given core. A source file contains Buffer
  * declarations and threads.
  * 
- * @author mwipliez
- * @author mpelcat
+ * @author Maxime Pelcat
+ * @author Matthieu Wipliez
  */
 public class SourceFile extends AbstractBufferContainer {
 
@@ -59,18 +55,24 @@ public class SourceFile extends AbstractBufferContainer {
 	 * File name
 	 */
 	private String name;
+
 	/**
 	 * Operator on which this source file will run
 	 */
 	private Operator operator;
 
 	/**
-	 * Operator on which this source file will run
+	 * The threads in this file.
 	 */
 	private List<ThreadDeclaration> threads;
 
 	/**
+	 * Creates a new source file with the given name on the given operator.
 	 * 
+	 * @param name
+	 *            The source file name.
+	 * @param operator
+	 *            The operator it is created on.
 	 */
 	public SourceFile(String name, Operator operator) {
 		super(null);
@@ -98,22 +100,50 @@ public class SourceFile extends AbstractBufferContainer {
 		printer.visit(this, 3); // Visit self
 	}
 
+	/**
+	 * Adds a thread to this source file.
+	 * 
+	 * @param thread
+	 *            A {@link ThreadDeclaration}.
+	 */
 	public void addThread(ThreadDeclaration thread) {
 		threads.add(thread);
 	}
 
+	/**
+	 * Returns this source file's name.
+	 * 
+	 * @return This source file's name.
+	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Returns this source file's operator.
+	 * 
+	 * @return This source file's operator.
+	 */
 	public Operator getOperator() {
 		return operator;
 	}
 
+	/**
+	 * Returns this source file's thread list.
+	 * 
+	 * @return This source file's thread list.
+	 */
 	public List<ThreadDeclaration> getThreads() {
 		return threads;
 	}
 
+	/**
+	 * Removes the given thread from this source file's thread list.
+	 * 
+	 * @param thread
+	 *            A {@link ThreadDeclaration}.
+	 */
 	public void removeThread(ThreadDeclaration thread) {
 		threads.remove(thread);
 	}

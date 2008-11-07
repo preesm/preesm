@@ -65,7 +65,7 @@ public class CommThreadCodeGenerator {
 	public void addSemaphores(SortedSet<DAGVertex> comVertices) {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
-		
+
 		for (DAGVertex vertex : comVertices) {
 			ICodeElement com = loopCode.getCodeElement(vertex);
 

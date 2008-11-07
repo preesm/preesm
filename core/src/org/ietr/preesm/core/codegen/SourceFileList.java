@@ -33,20 +33,17 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-/**
- * 
- */
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
 
 /**
  * A generated code is the gathering of source files, each one corresponding to
- * one core.
+ * one core. A source file list extends an {@link ArrayList} of
+ * {@link SourceFile}s with the ability of having a <b>main</b> file.
  * 
- * @author mwipliez
- * @author mpelcat
+ * @author Maxime Pelcat
+ * @author Matthieu Wipliez
  */
 public class SourceFileList extends ArrayList<SourceFile> {
 
@@ -63,7 +60,7 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	/**
 	 * Returns the main source file.
 	 * 
-	 * @return
+	 * @return The main {@link SourceFile}.
 	 */
 	public SourceFile getMain() {
 		return main;

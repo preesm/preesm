@@ -51,8 +51,8 @@ import org.sdf4j.model.AbstractEdge;
  * A thread can contain buffer allocations as well as a source file (for static
  * allocations). They are both AbstractBufferContainer
  * 
- * @author mwipliez
- * @author mpelcat
+ * @author Maxime Pelcat
+ * @author Matthieu Wipliez
  */
 public abstract class AbstractBufferContainer {
 
@@ -77,8 +77,13 @@ public abstract class AbstractBufferContainer {
 	 */
 	protected List<VariableAllocation> variables;
 
+	/**
+	 * Creates a new buffer container with the given parent container.
+	 * 
+	 * @param parentContainer
+	 *            A parent buffer container. May be <code>null</code>.
+	 */
 	public AbstractBufferContainer(AbstractBufferContainer parentContainer) {
-		super();
 		this.buffers = new ArrayList<BufferAllocation>();
 		this.variables = new ArrayList<VariableAllocation>();
 		this.parentContainer = parentContainer;
@@ -113,6 +118,7 @@ public abstract class AbstractBufferContainer {
 	 * Adds the given buffer to the buffer list.
 	 * 
 	 * @param buffer
+	 *            A {@link BufferAllocation}.
 	 */
 	public void addBuffer(BufferAllocation alloc) {
 		if (getBuffer(alloc.getBuffer().getName()) == null)
@@ -125,6 +131,12 @@ public abstract class AbstractBufferContainer {
 									+ " already exists");
 	}
 
+	/**
+	 * Adds the given variable to this buffer container variable list.
+	 * 
+	 * @param var
+	 *            A {@link Variable}.
+	 */
 	public void addVariable(Variable var) {
 		VariableAllocation alloc = new VariableAllocation(var);
 		variables.add(alloc);
@@ -132,6 +144,10 @@ public abstract class AbstractBufferContainer {
 
 	/**
 	 * Gets the buffer with the given name.
+	 * 
+	 * @param name
+	 *            The buffer name.
+	 * @return The buffer created.
 	 */
 	public Buffer getBuffer(String name) {
 		Buffer buffer = null;
@@ -203,9 +219,13 @@ public abstract class AbstractBufferContainer {
 			return this;
 	}
 
-	public String getName() {
-		return null;
-	}
+	/**
+	 * Returns the name of this buffer container. This method should be
+	 * implemented by classes extending {@link AbstractBufferContainer}.
+	 * 
+	 * @return The buffer container name, or <code>""</code>.
+	 */
+	public abstract String getName();
 
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;

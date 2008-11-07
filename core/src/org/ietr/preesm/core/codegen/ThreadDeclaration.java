@@ -88,7 +88,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		loopCode = new ForLoop();
 		endCode = new LinearCodeContainer();
 	}
-	
+
 	public void accept(AbstractPrinter printer) {
 
 		printer.visit(this, 0); // Visit self
@@ -102,7 +102,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		endCode.accept(printer);
 		printer.visit(this, 4); // Visit self
 	}
-	
+
 	public boolean equals(Object obj) {
 
 		if (obj instanceof ThreadDeclaration) {

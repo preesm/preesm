@@ -58,30 +58,6 @@ public class CompThreadCodeGenerator {
 	}
 
 	/**
-	 * Adds one function call for each vertex in the ordered set
-	 */
-	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices) {
-		LinearCodeContainer beginningCode = thread.getBeginningCode();
-		ForLoop loopCode = thread.getLoopCode();
-		LinearCodeContainer endCode = thread.getEndCode();
-
-		for (DAGVertex vertex : vertices) {
-			ICodeElement beginningCall = new UserFunctionCall("init_"
-					+ vertex.getName(), vertex, thread);
-			beginningCode.addCodeElement(beginningCall);
-
-			ICodeElement loopCall = CodeElementFactory.createElement(vertex
-					.getName(), thread, vertex);
-			loopCode.addCodeElement(loopCall);
-
-			ICodeElement endCall = new UserFunctionCall("close_"
-					+ vertex.getName(), vertex, thread);
-			endCode.addCodeElement(endCall);
-
-		}
-	}
-
-	/**
 	 * Adds semaphores to protect the data transmitted in this thread. Iterates
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
@@ -142,6 +118,30 @@ public class CompThreadCodeGenerator {
 					loopCode.addCodeElementAfter(taskElement, post);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Adds one function call for each vertex in the ordered set
+	 */
+	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices) {
+		LinearCodeContainer beginningCode = thread.getBeginningCode();
+		ForLoop loopCode = thread.getLoopCode();
+		LinearCodeContainer endCode = thread.getEndCode();
+
+		for (DAGVertex vertex : vertices) {
+			ICodeElement beginningCall = new UserFunctionCall("init_"
+					+ vertex.getName(), vertex, thread);
+			beginningCode.addCodeElement(beginningCall);
+
+			ICodeElement loopCall = CodeElementFactory.createElement(vertex
+					.getName(), thread, vertex);
+			loopCode.addCodeElement(loopCall);
+
+			ICodeElement endCall = new UserFunctionCall("close_"
+					+ vertex.getName(), vertex, thread);
+			endCode.addCodeElement(endCall);
+
 		}
 	}
 }

@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-
 /**
  * Declaration of a communication thread for code generation. A communication
  * thread launches communication operations
