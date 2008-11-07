@@ -1,6 +1,40 @@
+/*********************************************************
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+
+[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+
+This software is a computer program whose purpose is to prototype
+parallel applications.
+
+This software is governed by the CeCILL-B license under French law and
+abiding by the rules of distribution of free software.  You can  use, 
+modify and/ or redistribute the software under the terms of the CeCILL-B
+license as circulated by CEA, CNRS and INRIA at the following URL
+"http://www.cecill.info". 
+
+As a counterpart to the access to the source code and  rights to copy,
+modify and redistribute granted by the license, users are provided only
+with a limited warranty  and the software's author,  the holder of the
+economic rights,  and the successive licensors  have only  limited
+liability. 
+
+In this respect, the user's attention is drawn to the risks associated
+with loading,  using,  modifying and/or developing or reproducing the
+software by the user in light of its specific status of free software,
+that may mean  that it is complicated to manipulate,  and  that  also
+therefore means  that it is reserved for developers  and  experienced
+professionals having in-depth computer knowledge. Users are therefore
+encouraged to load and test the software's suitability as regards their
+requirements in conditions enabling the security of their systems and/or 
+data to be ensured and,  more generally, to use and operate it in the 
+same conditions as regards security. 
+
+The fact that you are presently reading this means that you have had
+knowledge of the CeCILL-B license and that you accept its terms.
+ *********************************************************/
 package org.ietr.preesm.plugin.codegen;
 
-import java.util.Iterator;
 import java.util.SortedSet;
 
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
@@ -30,11 +64,8 @@ public class CompThreadCodeGenerator {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
-		
-		Iterator<DAGVertex> iterator = vertices.iterator();
-		while (iterator.hasNext()) {
-			DAGVertex vertex = iterator.next();
 
+		for (DAGVertex vertex : vertices) {
 			ICodeElement beginningCall = new UserFunctionCall("init_"
 					+ vertex.getName(), vertex, thread);
 			beginningCode.addCodeElement(beginningCall);
@@ -55,36 +86,26 @@ public class CompThreadCodeGenerator {
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
 	public void addSemaphorePends(SortedSet<DAGVertex> taskVertices) {
-		SortedSet<DAGVertex> ownComVertices = null;
 		AbstractBufferContainer container = thread.getGlobalContainer();
-
-		Iterator<DAGVertex> taskIterator = taskVertices.iterator();
-		
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 
-		while (taskIterator.hasNext()) {
-			DAGVertex task = taskIterator.next();
-
+		for (DAGVertex task : taskVertices) {
 			// Getting incoming receive operations
-			ownComVertices = thread.getComVertices(task, true);
+			SortedSet<DAGVertex> ownComVertices = thread.getComVertices(task,
+					true);
 
 			if (!ownComVertices.isEmpty()) {
 				ICodeElement taskElement = loopCode.getCodeElement(task);
-				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
-
-				while (comIterator.hasNext()) {
-					DAGVertex com = comIterator.next();
-
+				for (DAGVertex com : ownComVertices) {
 					// Creates the semaphore if necessary ; retrieves it
-					// otherwise
-					// from global declaration and creates the pending function
+					// otherwise from global declaration and creates the pending
+					// function
 					SemaphorePend pend = new SemaphorePend(container, com,
 							SemaphoreType.full);
 
 					// Creates the semaphore if necessary and creates the
-					// posting
-					// function
+					// posting function
 					SemaphorePost post = new SemaphorePost(container, com,
 							SemaphoreType.empty);
 
@@ -98,11 +119,7 @@ public class CompThreadCodeGenerator {
 
 			if (!ownComVertices.isEmpty()) {
 				ICodeElement taskElement = loopCode.getCodeElement(task);
-				Iterator<DAGVertex> comIterator = ownComVertices.iterator();
-
-				while (comIterator.hasNext()) {
-					DAGVertex com = comIterator.next();
-
+				for (DAGVertex com : ownComVertices) {
 					// A first token must initialize the semaphore pend due to
 					// a sending operation
 					SemaphorePost init = new SemaphorePost(container, com,
@@ -111,14 +128,13 @@ public class CompThreadCodeGenerator {
 					beginningCode.addCodeElementBefore(taskElement, init);
 
 					// Creates the semaphore if necessary ; retrieves it
-					// otherwise
-					// from global declaration and creates the pending function
+					// otherwise from global declaration and creates the pending
+					// function
 					SemaphorePend pend = new SemaphorePend(container, com,
 							SemaphoreType.empty);
 
 					// Creates the semaphore if necessary and creates the
-					// posting
-					// function
+					// posting function
 					SemaphorePost post = new SemaphorePost(container, com,
 							SemaphoreType.full);
 

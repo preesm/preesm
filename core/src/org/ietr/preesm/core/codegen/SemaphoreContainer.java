@@ -67,7 +67,6 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	}
 
 	public void allocateSemaphores() {
-
 		Buffer buf = new Buffer("sem", this.size(), new DataType("semaphore"),
 				null);
 
@@ -75,7 +74,6 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	}
 
 	public Semaphore createSemaphore(BufferAggregate agg, SemaphoreType type) {
-
 		Semaphore sem = getSemaphore(agg, type);
 
 		if (sem == null) {
@@ -88,7 +86,6 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	}
 
 	public Semaphore getSemaphore(BufferAggregate agg, SemaphoreType type) {
-
 		Semaphore sem = null;
 
 		Iterator<Semaphore> currentIt = iterator();
