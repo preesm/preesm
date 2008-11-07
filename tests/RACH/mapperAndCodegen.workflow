@@ -16,9 +16,7 @@
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
-      <data key="variables">
-         <variable name="path" value="D:/IDCT2D/dag.gantt"/>
-      </data>
+      <data key="variables"/>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform" taskId="DAGExporter">
       <data key="variables">

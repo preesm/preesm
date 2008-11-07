@@ -18,8 +18,8 @@
       <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
    <graph edgedefault="directed">
-         <data key="parameters"/>
-         <data key="variables"/>
+      <data key="parameters"/>
+      <data key="variables">=</data>
       <node id="a1" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">a1</data>
@@ -309,11 +309,14 @@
          <data key="graph_desc"/>
          <data key="name">NoiseFloor_z8</data>
       </node>
-      <edge source="a1" sourceport="o" target="FIR_a1" targetport="i">
-         <data key="edge_prod">98304</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">98304</data>
-      </edge>
+      <node id="Rotation_a1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">Rotation_a1</data>
+      </node>
+      <node id="Rotation_a2" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">Rotation_a2</data>
+      </node>
       <edge source="FIR_a1" sourceport="o" target="DFT_a1" targetport="i">
          <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
@@ -518,11 +521,6 @@
          <data key="edge_prod">6144</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">6144</data>
-      </edge>
-      <edge source="a2" sourceport="o" target="FIR_a2" targetport="i">
-         <data key="edge_prod">98304</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">98304</data>
       </edge>
       <edge source="FIR_a2" sourceport="o" target="DFT_a2" targetport="i">
          <data key="edge_prod">6144</data>
@@ -808,6 +806,26 @@
          <data key="edge_prod">2048</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">2048</data>
+      </edge>
+      <edge source="a1" sourceport="o" target="Rotation_a1" targetport="i">
+         <data key="edge_prod">98304</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">98304</data>
+      </edge>
+      <edge source="a2" sourceport="o" target="Rotation_a2" targetport="i">
+         <data key="edge_prod">98304</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">98304</data>
+      </edge>
+      <edge source="Rotation_a2" sourceport="o" target="FIR_a2" targetport="i">
+         <data key="edge_prod">98304</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">98304</data>
+      </edge>
+      <edge source="Rotation_a1" sourceport="o" target="FIR_a1" targetport="i">
+         <data key="edge_prod">98304</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">98304</data>
       </edge>
    </graph>
 </graphml>

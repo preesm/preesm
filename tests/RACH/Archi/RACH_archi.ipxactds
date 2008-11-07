@@ -80,6 +80,13 @@
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">4000</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>AIF</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="aif" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
    </spirit:componentInstances>
    <spirit:interconnections>
       <spirit:interconnection>
@@ -136,6 +143,11 @@
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_3"/>
          <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="TCP3E"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="aif" spirit:componentRef="AIF"/>
+         <spirit:activeInterface spirit:busRef="aif" spirit:componentRef="EDMA_1"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>
