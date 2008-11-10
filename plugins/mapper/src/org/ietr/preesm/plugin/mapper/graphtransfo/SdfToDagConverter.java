@@ -106,7 +106,7 @@ public class SdfToDagConverter {
 			tmanager.addTiming(t);
 		}
 
-		MapperDAG dag = convert(demoGraph, architecture, scenario, false);
+		convert(demoGraph, architecture, scenario, false);
 
 	}
 

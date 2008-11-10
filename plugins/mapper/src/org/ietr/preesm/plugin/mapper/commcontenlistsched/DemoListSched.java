@@ -36,10 +36,25 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.commcontenlistsched;
 
-import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.*;
-import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.*;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.AlgorithmDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ArchitectureDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.CommunicationDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ComponentDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ComponentType;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.ComputationDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.LinkDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.OperationDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.OperatorDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.descriptor.SwitchDescriptor;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.AlgorithmParser;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.ArchitectureParser;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.parser.ParameterParser;
 import org.ietr.preesm.plugin.mapper.commcontenlistsched.plotter.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.*;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.AbstractScheduler;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSched;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCc;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCcCd;
+import org.ietr.preesm.plugin.mapper.commcontenlistsched.scheduler.CombCListSchedCd;
 import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.factories.DAGEdgeFactory;
 

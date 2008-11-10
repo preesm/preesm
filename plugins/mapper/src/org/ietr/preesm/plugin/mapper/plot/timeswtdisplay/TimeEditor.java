@@ -46,7 +46,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
 
 /**
- * Editor of an implementation Gantt chart
+ * Editor displaying the best latency found in time
  * 
  * @author mpelcat
  */

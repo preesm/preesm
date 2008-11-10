@@ -50,7 +50,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -60,14 +59,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.log.PreesmLogger;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xml.sax.SAXException;
 
 /**
@@ -129,7 +125,6 @@ public class XsltTransformer {
 		Path relativePath = new Path(sourceFilePath);
 		IFile inputFile = null;
 		Document source = null;
-		Document dest = null;
 		DocumentBuilder db = null;
 		
 		try {
@@ -140,7 +135,6 @@ public class XsltTransformer {
 
 			// parse using builder to get DOM representation of the XML file
 			source = db.parse(inputFile.getContents());
-			dest = db.newDocument();
 
 		} catch (ParserConfigurationException pce) {
 			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());

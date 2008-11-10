@@ -38,7 +38,6 @@ package org.ietr.preesm.core.scenario;
 
 import org.ietr.preesm.core.architecture.OperatorDefinition;
 import org.ietr.preesm.core.expression.Parameter;
-import org.ietr.preesm.core.log.PreesmLogger;
 import org.nfunk.jep.Variable;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 

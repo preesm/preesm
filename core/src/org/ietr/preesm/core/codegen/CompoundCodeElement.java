@@ -77,4 +77,12 @@ public class CompoundCodeElement implements ICodeElement {
 		return correspondingVertex;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public AbstractBufferContainer getParentContainer() {
+		return parentContainer;
+	}
+
 }

@@ -44,15 +44,12 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.ietr.preesm.core.ui.Activator;
-import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 
 /**
  * @author mwipliez

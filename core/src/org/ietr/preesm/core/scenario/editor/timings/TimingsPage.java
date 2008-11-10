@@ -40,7 +40,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -55,8 +54,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -67,7 +64,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -79,7 +75,6 @@ import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
-import org.ietr.preesm.core.scenario.editor.OverviewPage;
 
 /**
  * Timing editor within the implementation editor
@@ -213,7 +208,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
-		SDFListContentProvider contentProvider = new SDFListContentProvider();
 		tableViewer.setContentProvider(new SDFListContentProvider());
 
 		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
@@ -305,7 +299,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text)e.getSource();
-				String type = ((String)text.getData());
 				
 				scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
 				

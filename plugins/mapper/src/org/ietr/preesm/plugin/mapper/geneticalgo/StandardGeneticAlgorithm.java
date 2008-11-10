@@ -58,7 +58,6 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
-import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
@@ -257,7 +256,6 @@ public class StandardGeneticAlgorithm extends Observable {
 	public static void main(String[] args) {
 
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
-		DAGCreator dagCreator = new DAGCreator();
 		MultiCoreArchitecture archi = Examples.get2C64Archi();
 
 		// Generating random sdf dag

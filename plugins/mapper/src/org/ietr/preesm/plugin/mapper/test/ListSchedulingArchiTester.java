@@ -53,7 +53,6 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
-import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -74,8 +73,6 @@ public class ListSchedulingArchiTester {
 		PreesmLogger.getLogger().setLevel(Level.INFO);
 
 		ListSchedulingArchiTester tester = new ListSchedulingArchiTester();
-
-		DAGCreator dagCreator = new DAGCreator();
 
 		// Generating random sdf dag
 		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;

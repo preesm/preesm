@@ -48,6 +48,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class Schedule extends LinkedList<MapperDAGVertex> {
 
+	private static final long serialVersionUID = 1L;
+
 	public Schedule() {
 
 		super();

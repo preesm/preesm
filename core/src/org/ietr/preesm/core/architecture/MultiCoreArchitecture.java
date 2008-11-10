@@ -168,7 +168,7 @@ public class MultiCoreArchitecture {
 
 		while (intIt.hasNext()) {
 			Interconnection nextInt = intIt.next();
-
+			newArchi.connect(nextInt.getCp1(), nextInt.getIf1(), nextInt.getCp2(), nextInt.getIf2(), false);
 		}
 		return newArchi;
 	}

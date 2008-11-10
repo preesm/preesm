@@ -72,4 +72,8 @@ public class ArchitectureComponentType {
 		else if(name.equalsIgnoreCase("fifo"))	 			return fifo;
 		else return null;
 	}
+
+	public String getName() {
+		return name;
+	}
 }

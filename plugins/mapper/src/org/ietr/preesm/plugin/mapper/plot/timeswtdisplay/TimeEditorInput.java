@@ -43,8 +43,9 @@ import org.ietr.preesm.plugin.mapper.Activator;
 import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
 
 /**
+ * Input of the editor displaying the best latency found in time
+ * 
  * @author mpelcat
- *
  */
 public class TimeEditorInput implements IEditorInput {
 
@@ -106,6 +107,7 @@ public class TimeEditorInput implements IEditorInput {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked") 
 	@Override
 	public Object getAdapter(Class adapter) {
 		// TODO Auto-generated method stub

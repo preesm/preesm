@@ -46,7 +46,13 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-public class GanttPlotTransform implements IPlotter {
+/**
+ * Transform class that can be called in workflow. The transform method displays the gantt
+ * chart of the given mapped dag
+ * 
+ * @author mpelcat
+ */
+public class ImplementationEditorTransform implements IPlotter {
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,

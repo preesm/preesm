@@ -47,8 +47,9 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
+ * Input of the editor of an implementation Gantt chart
+ * 
  * @author mpelcat
- *
  */
 public class ImplementationEditorInput implements IEditorInput {
 
@@ -134,6 +135,7 @@ public class ImplementationEditorInput implements IEditorInput {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object getAdapter(Class adapter) {
 		// TODO Auto-generated method stub

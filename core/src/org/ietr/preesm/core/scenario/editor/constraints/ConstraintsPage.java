@@ -59,7 +59,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
-import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 
 /**
  * Constraint editor within the implementation editor
@@ -202,7 +201,6 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text)e.getSource();
-				String type = ((String)text.getData());
 
 				ExcelConstraintsParser parser = new ExcelConstraintsParser(scenario);
 				parser.parse(text.getText());

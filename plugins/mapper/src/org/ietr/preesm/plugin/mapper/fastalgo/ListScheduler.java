@@ -58,7 +58,6 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -288,7 +287,6 @@ public class ListScheduler {
 		logger.setLevel(Level.FINEST);
 
 		// PreesmLogger.getLogger().setLevel(Level.FINER);
-		DAGCreator dagCreator = new DAGCreator();
 
 		// Generating archi
 		MultiCoreArchitecture archi = Examples.get2C64Archi();

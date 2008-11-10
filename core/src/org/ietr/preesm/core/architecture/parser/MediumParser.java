@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.architecture.parser;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -44,6 +44,7 @@ package org.ietr.preesm.core.architecture;
  */
 public class Interconnection {
 
+
 	private ArchitectureComponent cp1;
 	private ArchitectureInterface if1;
 
@@ -81,6 +82,14 @@ public class Interconnection {
 		return cp2;
 	}
 
+	public ArchitectureInterface getIf1() {
+		return if1;
+	}
+
+	public ArchitectureInterface getIf2() {
+		return if2;
+	}
+	
 	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
 
 		if(cp1.getType() == type) return if1;

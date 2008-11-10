@@ -49,7 +49,6 @@ import org.sdf4j.exporter.GMLExporter;
 import org.sdf4j.model.dag.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFDefaultEdgePropertyType;
 import org.w3c.dom.Element;
 
 /**

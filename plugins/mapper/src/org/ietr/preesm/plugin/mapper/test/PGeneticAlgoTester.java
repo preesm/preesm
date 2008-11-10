@@ -57,7 +57,6 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
-import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
@@ -79,7 +78,6 @@ public class PGeneticAlgoTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 		PGeneticAlgoTester tester = new PGeneticAlgoTester();
-		DAGCreator dagCreator = new DAGCreator();
 
 		// Generating random sdf dag
 		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;

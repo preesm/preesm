@@ -42,6 +42,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Class used by the editor displaying the implementation gantt chart.
+ * Useful to run editor in display thread.
+ * 
+ * @author mpelcat
+ */
 public class ImplementationEditorRunnable implements Runnable {
 
 	private IEditorInput input;
@@ -60,10 +66,8 @@ public class ImplementationEditorRunnable implements Runnable {
 		if (dwindow != null && input instanceof ImplementationEditorInput) {
 			IWorkbenchPage page = dwindow.getActivePage();
 
-			ImplementationEditor editor;
 			try {
-				editor = (ImplementationEditor) page
-						.openEditor(input,
+				page.openEditor(input,
 								"org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor");
 
 			} catch (PartInitException e) {

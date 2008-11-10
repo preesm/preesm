@@ -42,6 +42,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Class used by the editor displaying the best latency found in time.
+ * Useful to run editor in display thread.
+ * 
+ * @author mpelcat
+ */
 public class TimeEditorRunnable implements Runnable {
 
 	private IEditorInput input;
@@ -59,11 +65,9 @@ public class TimeEditorRunnable implements Runnable {
 
 		if (dwindow != null && input instanceof TimeEditorInput) {
 			IWorkbenchPage page = dwindow.getActivePage();
-
-			TimeEditor editor;
+			
 			try {
-				editor = (TimeEditor) page
-						.openEditor(input,
+				page.openEditor(input,
 								"org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor");
 
 			} catch (PartInitException e) {

@@ -69,7 +69,7 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			table = graph.vertexSet().toArray();
 		}
 		else if(parentElement instanceof SDFAbstractVertex){
-			SDFAbstractVertex vertex = (SDFAbstractVertex)parentElement;
+			//SDFAbstractVertex vertex = (SDFAbstractVertex)parentElement;
 			table = null;
 		}
 		
@@ -92,7 +92,7 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			hasChildren = !graph.vertexSet().isEmpty();
 		}
 		else if(element instanceof SDFAbstractVertex){
-			SDFAbstractVertex vertex = (SDFAbstractVertex)element;
+			//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
 			hasChildren = false;
 		}
 		
