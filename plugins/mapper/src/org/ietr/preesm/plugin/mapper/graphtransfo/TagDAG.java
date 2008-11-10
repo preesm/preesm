@@ -59,7 +59,9 @@ import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Tags an SDF with the implementation information necessary for code generation
@@ -179,7 +181,7 @@ public class TagDAG {
 
 		// Example buffer aggregate with one single buffer
 		BufferAggregate agg = new BufferAggregate();
-		for(AbstractEdge aggMember : edge.getAggregate()){
+		for(AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()){
 			SDFEdge sdfAgMember = (SDFEdge) aggMember ;
 			agg.add(new BufferProperties(type, sdfAgMember.getSourceInterface().getName(), sdfAgMember.getTargetInterface().getName(), size));
 		}

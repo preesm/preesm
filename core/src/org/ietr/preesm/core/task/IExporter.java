@@ -50,6 +50,7 @@ public interface IExporter extends ITask{
 	 * @param algorithm The algorithm to export
 	 * @param params The parameters rulling the exportation
 	 */
+	@SuppressWarnings("unchecked") 
 	public void transform(AbstractGraph algorithm, TextParameters params);
 
 	/**

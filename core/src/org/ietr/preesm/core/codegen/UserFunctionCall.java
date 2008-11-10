@@ -59,6 +59,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 */
 	private Set<Buffer> availableBuffers;
 
+	@SuppressWarnings("unchecked") 
 	public UserFunctionCall(String name, AbstractVertex vertex,
 			AbstractBufferContainer parentContainer) {
 		super(name, parentContainer, vertex);

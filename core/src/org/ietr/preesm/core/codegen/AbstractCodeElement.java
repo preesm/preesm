@@ -39,6 +39,7 @@ package org.ietr.preesm.core.codegen;
 import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
  * Generated code within threads consists primarily in a succession of code
@@ -75,7 +76,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	}
 
 	@SuppressWarnings("unchecked")
-	public AbstractVertex getCorrespondingVertex() {
+	public AbstractVertex<DirectedAcyclicGraph> getCorrespondingVertex() {
 		return correspondingVertex;
 	}
 

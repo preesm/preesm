@@ -45,16 +45,6 @@
       </task>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.contentTypes">
-      <content-type
-            describer="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.GanttContentDescriber"
-            file-extensions="gantt"
-            id="org.ietr.preesm.mapper.gantttype"
-            name="gantt"
-            priority="normal">
-      </content-type>
-   </extension>
-   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"

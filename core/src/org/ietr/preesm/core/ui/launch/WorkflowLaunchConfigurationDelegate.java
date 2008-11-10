@@ -73,6 +73,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 	 * @param monitor
 	 * 			Monitoring the workflow progress
 	 */
+	@SuppressWarnings("unchecked") 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		String workflowName = configuration.getAttribute(

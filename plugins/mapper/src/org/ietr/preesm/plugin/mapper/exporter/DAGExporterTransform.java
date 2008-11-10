@@ -107,6 +107,7 @@ public class DAGExporterTransform implements IExporter{
 	}
 
 	@Override
+	@SuppressWarnings("unchecked") 
 	public void transform(AbstractGraph algorithm, TextParameters params) {
 		// TODO Auto-generated method stub
 		
