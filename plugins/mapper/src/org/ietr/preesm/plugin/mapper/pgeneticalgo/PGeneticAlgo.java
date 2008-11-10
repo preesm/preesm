@@ -71,7 +71,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**

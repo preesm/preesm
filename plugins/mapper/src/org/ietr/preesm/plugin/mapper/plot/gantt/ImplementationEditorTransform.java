@@ -34,84 +34,37 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.timeswtdisplay;
+package org.ietr.preesm.plugin.mapper.plot.gantt;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.plugin.mapper.Activator;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.eclipse.ui.PlatformUI;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.task.IPlotter;
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Input of the editor displaying the best latency found in time
+ * Transform class that can be called in workflow. The transform method displays the gantt
+ * chart of the given mapped dag
  * 
  * @author mpelcat
  */
-public class BestLatencyEditorInput implements IEditorInput {
+public class ImplementationEditorTransform implements IPlotter {
 
-	private BestLatencyPlotter plotter = null;
-
-	public BestLatencyEditorInput(BestLatencyPlotter plotter) {
-		super();
-		this.plotter = plotter;
-	}
-
-	
-	public BestLatencyPlotter getPlotter() {
-		return plotter;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#exists()
-	 */
 	@Override
-	public boolean exists() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
+			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-	 */
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
-		return img;
-	}
+		MapperDAG mapperDag = (MapperDAG) dag;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getName()
-	 */
-	@Override
-	public String getName() {
-		return "Best Latency";
-	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getPersistable()
-	 */
-	@Override
-	public IPersistableElement getPersistable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
-	 */
-	@Override
-	public String getToolTipText() {
-		return "Best Latency";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked") 
-	@Override
-	public Object getAdapter(Class adapter) {
-		// TODO Auto-generated method stub
-		return null;
+		PlatformUI.getWorkbench().getDisplay().asyncExec(
+				new ImplementationEditorRunnable(input));
 	}
 
 }

@@ -34,45 +34,27 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
-
-import java.util.HashSet;
-import java.util.Set;
+package org.ietr.preesm.plugin.mapper.plot.bestlatency;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 
 /**
- * Editor of an implementation Gantt chart
+ * Editor displaying the best latency found in time
  * 
  * @author mpelcat
  */
-public class ImplementationEditor extends EditorPart {
+public class BestLatencyEditor extends EditorPart {
 
-	private MapperDAG dag = null;
-	private SDFGraph sdf = null;
-	private MultiCoreArchitecture archi = null;
-	private IScenario scenario = null;
-	private TextParameters params = null;
+	private BestLatencyPlotter plotter = null;
 	
-	public ImplementationEditor() {
+	public BestLatencyEditor() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -98,13 +80,9 @@ public class ImplementationEditor extends EditorPart {
 			setInput(input);
 			setPartName(input.getName());
 			
-			if(input instanceof ImplementationEditorInput){
-				ImplementationEditorInput implinput = (ImplementationEditorInput)input;
-				this.archi = implinput.getArchi();
-				this.dag = implinput.getDag();
-				this.params = implinput.getParams();
-				this.scenario = implinput.getScenario();
-				this.sdf = implinput.getSdf();
+			if(input instanceof BestLatencyEditorInput){
+				BestLatencyEditorInput implinput = (BestLatencyEditorInput)input;
+				this.plotter = implinput.getPlotter();
 			}
 			
 		} catch (Exception e) {
@@ -131,27 +109,10 @@ public class ImplementationEditor extends EditorPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-
-		PropertyBean bean = dag.getPropertyBean();
 		
-		
-		if(dag != null && sdf != null && archi != null && scenario != null && params != null){
+		if(plotter != null){
 
-			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
-			
-			IAbc simu = AbstractAbc
-			.getInstance(abctype, dag, archi);
-
-			// Every send and receive vertices are removed before plotting the graph
-			Set<DAGVertex> vset = new HashSet<DAGVertex>(dag.vertexSet());
-			for(DAGVertex v:vset)
-				if(v instanceof SendVertex || v instanceof ReceiveVertex)
-					dag.removeVertex(v);
-			
-			simu.setDAG(dag);
-
-			simu.getFinalTime();
-			GanttPlotter.plotInComposite(simu, parent);
+			plotter.display(parent);
 		}
 		
 	}
@@ -159,6 +120,14 @@ public class ImplementationEditor extends EditorPart {
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
+		
+	}
+
+	public static void createEditor(BestLatencyPlotter plotter) {
+		IEditorInput input = new BestLatencyEditorInput(plotter);
+
+		PlatformUI.getWorkbench().getDisplay().asyncExec(
+				new BestLatencyEditorRunnable(input));
 		
 	}
 }

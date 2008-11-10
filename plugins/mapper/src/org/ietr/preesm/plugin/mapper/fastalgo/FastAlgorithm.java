@@ -63,7 +63,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;

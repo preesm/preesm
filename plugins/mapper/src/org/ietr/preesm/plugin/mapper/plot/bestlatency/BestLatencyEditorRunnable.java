@@ -34,37 +34,48 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay;
+package org.ietr.preesm.plugin.mapper.plot.bestlatency;
 
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.IPlotter;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt
- * chart of the given mapped dag
+ * Class used by the editor displaying the best latency found in time.
+ * Useful to run editor in display thread.
  * 
  * @author mpelcat
  */
-public class ImplementationEditorTransform implements IPlotter {
+public class BestLatencyEditorRunnable implements Runnable {
 
-	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
-
-		MapperDAG mapperDag = (MapperDAG) dag;
-
-
-		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new ImplementationEditorRunnable(input));
+	private IEditorInput input;
+	
+	public BestLatencyEditorRunnable(IEditorInput input) {
+		super();
+		this.input = input;
 	}
 
+	@Override
+	public void run() {
+
+		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
+				.getWorkbenchWindows()[0];
+
+		if (dwindow != null && input instanceof BestLatencyEditorInput) {
+			IWorkbenchPage page = dwindow.getActivePage();
+			
+			try {
+				page.openEditor(input,
+								"org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor");
+
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 }

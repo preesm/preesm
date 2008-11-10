@@ -66,7 +66,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 
 /**
  * Task scheduling FAST algorithm multithread
