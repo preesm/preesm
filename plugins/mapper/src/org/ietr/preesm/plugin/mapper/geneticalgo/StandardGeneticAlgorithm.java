@@ -61,8 +61,8 @@ import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
-import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -168,14 +168,14 @@ public class StandardGeneticAlgorithm extends Observable {
 			AbcType type, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
-		final PlotBestLatency demo = new PlotBestLatency("Genetic Algorithm");
+		final BestLatencyPlotter demo = new BestLatencyPlotter("Genetic Algorithm");
 
 		// Set data window if necessary
 		if (!pgeneticalgo) {
 
 			demo.setSUBPLOT_COUNT(1);
 			//demo.display();
-			TimeEditor.createEditor(demo);
+			BestLatencyEditor.createEditor(demo);
 			this.addObserver(demo);
 		}
 

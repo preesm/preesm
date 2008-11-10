@@ -43,18 +43,18 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 
 /**
  * Editor displaying the best latency found in time
  * 
  * @author mpelcat
  */
-public class TimeEditor extends EditorPart {
+public class BestLatencyEditor extends EditorPart {
 
-	private PlotBestLatency plotter = null;
+	private BestLatencyPlotter plotter = null;
 	
-	public TimeEditor() {
+	public BestLatencyEditor() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -80,8 +80,8 @@ public class TimeEditor extends EditorPart {
 			setInput(input);
 			setPartName(input.getName());
 			
-			if(input instanceof TimeEditorInput){
-				TimeEditorInput implinput = (TimeEditorInput)input;
+			if(input instanceof BestLatencyEditorInput){
+				BestLatencyEditorInput implinput = (BestLatencyEditorInput)input;
 				this.plotter = implinput.getPlotter();
 			}
 			
@@ -123,11 +123,11 @@ public class TimeEditor extends EditorPart {
 		
 	}
 
-	public static void createEditor(PlotBestLatency plotter) {
-		IEditorInput input = new TimeEditorInput(plotter);
+	public static void createEditor(BestLatencyPlotter plotter) {
+		IEditorInput input = new BestLatencyEditorInput(plotter);
 
 		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new TimeEditorRunnable(input));
+				new BestLatencyEditorRunnable(input));
 		
 	}
 }

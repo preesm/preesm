@@ -62,8 +62,8 @@ import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
@@ -192,14 +192,14 @@ public class FastAlgorithm extends Observable {
 			int MAXSTEP, int MARGIN, boolean alreadyimplanted, boolean pfastused, 
 			BenchmarkWriter writer) {
 
-		final PlotBestLatency demo = new PlotBestLatency("FastAlgorithm");
+		final BestLatencyPlotter demo = new BestLatencyPlotter("FastAlgorithm");
 
 		// initialing the data window if this is necessary
 		if (!pfastused) {
 
 			demo.setSUBPLOT_COUNT(1);
 			//demo.display();
-			TimeEditor.createEditor(demo);
+			BestLatencyEditor.createEditor(demo);
 
 			this.addObserver(demo);
 		}

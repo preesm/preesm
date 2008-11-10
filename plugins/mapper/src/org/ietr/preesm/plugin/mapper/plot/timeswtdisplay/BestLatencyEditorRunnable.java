@@ -48,11 +48,11 @@ import org.eclipse.ui.PlatformUI;
  * 
  * @author mpelcat
  */
-public class TimeEditorRunnable implements Runnable {
+public class BestLatencyEditorRunnable implements Runnable {
 
 	private IEditorInput input;
 	
-	public TimeEditorRunnable(IEditorInput input) {
+	public BestLatencyEditorRunnable(IEditorInput input) {
 		super();
 		this.input = input;
 	}
@@ -63,7 +63,7 @@ public class TimeEditorRunnable implements Runnable {
 		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
 				.getWorkbenchWindows()[0];
 
-		if (dwindow != null && input instanceof TimeEditorInput) {
+		if (dwindow != null && input instanceof BestLatencyEditorInput) {
 			IWorkbenchPage page = dwindow.getActivePage();
 			
 			try {

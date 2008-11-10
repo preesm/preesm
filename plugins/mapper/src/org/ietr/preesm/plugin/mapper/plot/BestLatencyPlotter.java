@@ -80,7 +80,7 @@ import org.jfree.ui.RefineryUtilities;
  * 
  * @author pmenuet
  */
-public class PlotBestLatency extends ApplicationFrame implements
+public class BestLatencyPlotter extends ApplicationFrame implements
 		ActionListener, Observer {
 
 	public class SizeListener implements ControlListener{
@@ -128,7 +128,7 @@ public class PlotBestLatency extends ApplicationFrame implements
 	 * @param title
 	 *            the frame title.
 	 */
-	public PlotBestLatency(final String title) {
+	public BestLatencyPlotter(final String title) {
 
 		super(title);
 

@@ -65,8 +65,8 @@ import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
-import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor;
 
 /**
  * Task scheduling FAST algorithm multithread
@@ -319,12 +319,12 @@ public class PFastAlgorithm extends Observable {
 		}
 
 		// Data window set
-		final PlotBestLatency demo = new PlotBestLatency("PFast Algorithm");
+		final BestLatencyPlotter demo = new BestLatencyPlotter("PFast Algorithm");
 
 		if (!population) {
 			demo.setSUBPLOT_COUNT(1);
 			//demo.display();
-			TimeEditor.createEditor(demo);
+			BestLatencyEditor.createEditor(demo);
 
 			this.addObserver(demo);
 		}

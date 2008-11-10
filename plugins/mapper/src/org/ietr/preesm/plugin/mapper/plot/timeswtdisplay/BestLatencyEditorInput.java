@@ -40,24 +40,24 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.plugin.mapper.Activator;
-import org.ietr.preesm.plugin.mapper.plot.PlotBestLatency;
+import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 
 /**
  * Input of the editor displaying the best latency found in time
  * 
  * @author mpelcat
  */
-public class TimeEditorInput implements IEditorInput {
+public class BestLatencyEditorInput implements IEditorInput {
 
-	private PlotBestLatency plotter = null;
+	private BestLatencyPlotter plotter = null;
 
-	public TimeEditorInput(PlotBestLatency plotter) {
+	public BestLatencyEditorInput(BestLatencyPlotter plotter) {
 		super();
 		this.plotter = plotter;
 	}
 
 	
-	public PlotBestLatency getPlotter() {
+	public BestLatencyPlotter getPlotter() {
 		return plotter;
 	}
 	

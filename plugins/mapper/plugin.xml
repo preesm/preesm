@@ -54,7 +54,7 @@
             name="ImplementationEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
+            class="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor"
             default="true"
             icon="icons/preesm3mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
