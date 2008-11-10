@@ -35,7 +35,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.plugin.abc.looselytimed;
+/**
+ * 
+ */
+package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
@@ -43,21 +46,19 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
-import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
 
 /**
- * A loosely timed architecture simulator associates a simple cost to
- * each communication. This cost is the transfer size multiplied by the
- * medium speed. The communications are parallel with computation and
- * all parallel with each other.
- *         
- * @author mpelcat   
+ * The accurately timed ABC schedules edges and set-up times
+ * 
+ * @author mpelcat
  */
-public class LooselyTimedAbc extends
+public class AccuratelyTimedAbc extends
 		AbstractAbc {
 
 	/**
@@ -70,19 +71,36 @@ public class LooselyTimedAbc extends
 	 * vertices on the different operators
 	 */
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-	
+
+	/**
+	 * Transfer vertex adder for edge scheduling
+	 */
+	protected TransferVertexAdder tvertexAdder;
+
+	/**
+	 * Overhead vertex adder for edge scheduling
+	 */
+	protected OverheadVertexAdder overtexAdder;
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(MapperDAG dag, MultiCoreArchitecture archi) {
+	public AccuratelyTimedAbc(MapperDAG dag,
+			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
+
+		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
+		overtexAdder = new OverheadVertexAdder(orderManager);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
+	/**
+	 * Called when a new vertex operator is set
+	 */
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
 
@@ -102,13 +120,11 @@ public class LooselyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			// precedenceEdgeAdder.deleteScheduleIncomingEdges(implementation,
-			// vertex);
 			transactionManager.undoTransactionList();
 
+			tvertexAdder.addTransferVertices(implementation,transactionManager);
+			overtexAdder.addOverheadVertices(implementation,transactionManager);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
-			// precedenceEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
-			// this);
 
 		}
 	}
@@ -132,6 +148,7 @@ public class LooselyTimedAbc extends
 			PreesmLogger.getLogger().severe(
 					"unimplementation of " + vertex.getName() + " failed");
 		}
+		
 	}
 
 	/**
@@ -141,38 +158,20 @@ public class LooselyTimedAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		timeKeeper.updateTandBLevels();
+		// Only T level necessary. No update of B Level
+		timeKeeper.updateTLevels();
 	}
 
 	/**
-	 * In the loosely timed ABC, the edges receive the communication times.
+	 * Edge scheduling vertices are added. Thus useless edge costs are removed
 	 */
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		ImplementationVertexProperty sourceimp = ((MapperDAGVertex)edge.getSource())
-				.getImplementationVertexProperty();
-		ImplementationVertexProperty destimp = ((MapperDAGVertex)edge.getTarget())
-				.getImplementationVertexProperty();
-
-		Operator sourceOp = sourceimp.getEffectiveOperator();
-		Operator destOp = destimp.getEffectiveOperator();
-
-		if (sourceOp != Operator.NO_COMPONENT
-				&& destOp != Operator.NO_COMPONENT) {
-			if (sourceOp.equals(destOp)) {
-				edge.getTimingEdgeProperty().setCost(0);
-			} else {
-
-				// The transfer evaluation takes into account the route
-
-				edge.getTimingEdgeProperty().setCost(
-						router.evaluateTransfer(edge, sourceOp, destOp));
-			}
-		}
+		edge.getTimingEdgeProperty().setCost(0);
 
 	}
 
 	public AbcType getType(){
-		return AbcType.LooselyTimed;
+		return AbcType.AccuratelyTimed;
 	}
 }

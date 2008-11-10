@@ -52,7 +52,7 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.infinitehomogeneous.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 

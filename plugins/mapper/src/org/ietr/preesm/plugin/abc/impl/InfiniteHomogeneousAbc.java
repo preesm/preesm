@@ -38,94 +38,115 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc.accuratelytimed;
+package org.ietr.preesm.plugin.abc.impl;
+
+import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertexAdder;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * The accurately timed ABC schedules edges and set-up times
- * 
- * @author mpelcat
+ * Simulates an architecture having as many cores as necessary to
+ * execute one operation on one core. All core have the main operator
+ * definition. These cores are all interconnected with media
+ * corresponding to the main medium definition.
+ *         
+ * @author mpelcat   
  */
-public class AccuratelyTimedAbc extends
+public class InfiniteHomogeneousAbc extends
 		AbstractAbc {
-
-	/**
-	 * simulator of the transfers
-	 */
-	protected CommunicationRouter router;
-
-	/**
-	 * Current precedence edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-
-	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected TransferVertexAdder tvertexAdder;
-
-	/**
-	 * Overhead vertex adder for edge scheduling
-	 */
-	protected OverheadVertexAdder overtexAdder;
 
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(MapperDAG dag,
+	public InfiniteHomogeneousAbc(MapperDAG dag,
 			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
-		// The media simulator calculates the edges costs
-		router = new CommunicationRouter(archi);
-
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
-		overtexAdder = new OverheadVertexAdder(orderManager);
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+		// The InfiniteHomogeneousArchitectureSimulator is specifically done
+		// to implant all vertices on the main operator definition but consider
+		// as many cores as there are tasks.
+		implantAllVerticesOnOperator(archi.getMainOperator());
 	}
 
-	/**
-	 * Called when a new vertex operator is set
-	 */
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
+		/*
+		 * implanting a vertex sets the cost of the current vertex and its edges
+		 * 
+		 * As we have an infinite homogeneous architecture, each communication
+		 * is done through the unique type of medium
+		 */
 		if (effectiveOp == Operator.NO_COMPONENT) {
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
+
+			vertex.getTimingVertexProperty().setCost(0);
+			
 		} else {
+			// Setting vertex time
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
-
-			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
+			// Setting incoming edges times
+			Iterator<DAGEdge> iterator = vertex.incomingEdges()
+					.iterator();
 
-			transactionManager.undoTransactionList();
+			while (iterator.hasNext()) {
+				MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
 
-			tvertexAdder.addTransferVertices(implementation,transactionManager);
-			overtexAdder.addOverheadVertices(implementation,transactionManager);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
+				int edgesize = edge.getInitialEdgeProperty().getDataSize();
 
+				/**
+				 * In a Infinite Homogeneous Architecture, each communication is
+				 * supposed to be done on the main medium. The communication
+				 * cost is simply calculated from the main medium speed.
+				 */
+
+				if (archi.getMainMedium() != null) {
+					MediumDefinition def = (MediumDefinition) archi
+							.getMainMedium().getDefinition();
+					Float speed = def.getInvSpeed();
+					speed = edgesize * speed;
+					edge.getTimingEdgeProperty().setCost(speed.intValue());
+				} else {
+
+					PreesmLogger
+							.getLogger()
+							.info(
+									"current architecture has no main medium. infinite homogeneous simulator will use default speed");
+
+					Float speed = 1f;
+					speed = edgesize * speed;
+					edge.getTimingEdgeProperty().setCost(speed.intValue());
+				}
+			}
+
+			// Setting outgoing edges times
+			iterator = vertex.outgoingEdges().iterator();
+
+			while (iterator.hasNext()) {
+				MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
+
+				int edgedatasize = edge.getInitialEdgeProperty().getDataSize();
+
+				// medium is considered 1cycle/unit for the moment (test)
+				edge.getTimingEdgeProperty().setCost(edgedatasize);
+			}
 		}
 	}
 
@@ -137,18 +158,15 @@ public class AccuratelyTimedAbc extends
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		// It also removes incoming and outgoing schedule edges
 		if (effectiveOp == Operator.NO_COMPONENT) {
 			vertex.getTimingVertexProperty().resetCost();
 
 			resetCost(vertex.incomingEdges());
 			resetCost(vertex.outgoingEdges());
-
 		} else {
 			PreesmLogger.getLogger().severe(
 					"unimplementation of " + vertex.getName() + " failed");
 		}
-		
 	}
 
 	/**
@@ -157,21 +175,15 @@ public class AccuratelyTimedAbc extends
 	 */
 	@Override
 	protected final void updateTimings() {
-
-		// Only T level necessary. No update of B Level
-		timeKeeper.updateTLevels();
+		timeKeeper.updateTandBLevels();
 	}
 
-	/**
-	 * Edge scheduling vertices are added. Thus useless edge costs are removed
-	 */
+	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
-
-		edge.getTimingEdgeProperty().setCost(0);
 
 	}
 
 	public AbcType getType(){
-		return AbcType.AccuratelyTimed;
+		return AbcType.InfiniteHomogeneous;
 	}
 }

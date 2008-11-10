@@ -35,7 +35,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 
-package org.ietr.preesm.plugin.abc.sendreceive;
+package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.Operator;
@@ -43,18 +43,21 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
 
 /**
- * A send receive abc adds send and receive operations for each inter-core operations
+ * A loosely timed architecture simulator associates a simple cost to
+ * each communication. This cost is the transfer size multiplied by the
+ * medium speed. The communications are parallel with computation and
+ * all parallel with each other.
  *         
  * @author mpelcat   
  */
-public class SendReceiveAbc extends
+public class LooselyTimedAbc extends
 		AbstractAbc {
 
 	/**
@@ -63,33 +66,23 @@ public class SendReceiveAbc extends
 	protected CommunicationRouter router;
 
 	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected TransferVertexAdder tvertexAdder;
-
-	/**
 	 * Current precedence edge adder: called exclusively by simulator to schedule
 	 * vertices on the different operators
 	 */
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-
+	
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public SendReceiveAbc(MapperDAG dag,
-			MultiCoreArchitecture archi) {
+	public LooselyTimedAbc(MapperDAG dag, MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-		tvertexAdder = new TransferVertexAdder(router, orderManager, true);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
-	/**
-	 * Called when a new vertex operator is set
-	 */
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
 
@@ -109,10 +102,14 @@ public class SendReceiveAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
+			// precedenceEdgeAdder.deleteScheduleIncomingEdges(implementation,
+			// vertex);
 			transactionManager.undoTransactionList();
-			
-			tvertexAdder.addTransferVertices(implementation,transactionManager);
+
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
+			// precedenceEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
+			// this);
+
 		}
 	}
 
@@ -144,19 +141,38 @@ public class SendReceiveAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		timeKeeper.updateTLevels();
+		timeKeeper.updateTandBLevels();
 	}
 
 	/**
-	 * Edge scheduling vertices are added. Thus useless edge costs are removed
+	 * In the loosely timed ABC, the edges receive the communication times.
 	 */
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		edge.getTimingEdgeProperty().setCost(0);
+		ImplementationVertexProperty sourceimp = ((MapperDAGVertex)edge.getSource())
+				.getImplementationVertexProperty();
+		ImplementationVertexProperty destimp = ((MapperDAGVertex)edge.getTarget())
+				.getImplementationVertexProperty();
+
+		Operator sourceOp = sourceimp.getEffectiveOperator();
+		Operator destOp = destimp.getEffectiveOperator();
+
+		if (sourceOp != Operator.NO_COMPONENT
+				&& destOp != Operator.NO_COMPONENT) {
+			if (sourceOp.equals(destOp)) {
+				edge.getTimingEdgeProperty().setCost(0);
+			} else {
+
+				// The transfer evaluation takes into account the route
+
+				edge.getTimingEdgeProperty().setCost(
+						router.evaluateTransfer(edge, sourceOp, destOp));
+			}
+		}
 
 	}
 
 	public AbcType getType(){
-		return AbcType.SendReceive;
+		return AbcType.LooselyTimed;
 	}
 }

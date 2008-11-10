@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.commconten;
+package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
