@@ -34,12 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-/**
- * PREESM
- * Copyright 2007 IETR under CeCILL license.
- *
- * Matthieu WIPLIEZ <Matthieu.Wipliez@insa-rennes.fr>
- */
 package org.ietr.preesm.core.log;
 
 import java.text.DateFormat;

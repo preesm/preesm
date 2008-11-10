@@ -34,15 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
-/**
- * PREESM
- * Copyright IETR 2007 under CeCILL license.
- *
- * Jonathan PIAT <Jonathan.Piat@ens.insa-rennes.fr>
- * Matthieu WIPLIEZ <Matthieu.Wipliez@insa-rennes.fr>
- * Maxime PELCAT <Maxime.Pelcat@insa-rennes.fr>
- */
 package org.ietr.preesm.core.scenario;
 
 import java.util.HashSet;
