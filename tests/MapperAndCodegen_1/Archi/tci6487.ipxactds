@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+   <spirit:vendor/>
+   <spirit:name/>
+   <spirit:library/>
+   <spirit:version/>
+   <spirit:componentInstances>
+      <spirit:componentInstance>
+         <spirit:instanceName>C64_2</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b11</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b2</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>C64_3</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b7</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b3</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>edma3_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="edma" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">communicator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>C64_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>DDR2_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="SharedRAM" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">memory</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>SCR1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="SCR" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">communicationNode</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>RapidIO1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="SCR" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">communicationNode</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>b9</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="bus" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+   </spirit:componentInstances>
+   <spirit:interconnections>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="C64_2"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="C64_1"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="C64_3"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b3"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b2"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b1"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b3"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b7"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b9"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="SCR1"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b11"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b7"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="edma3_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b9"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="DDR2_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="b11"/>
+         <spirit:activeInterface spirit:busRef="intf" spirit:componentRef="RapidIO1"/>
+      </spirit:interconnection>
+   </spirit:interconnections>
+   <spirit:hierConnections>
+      <spirit:hierConnection spirit:interfaceRef="RIOOutput">
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RapidIO1"/>
+      </spirit:hierConnection>
+      <spirit:hierConnection spirit:interfaceRef="RIOInput">
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RapidIO1"/>
+      </spirit:hierConnection>
+   </spirit:hierConnections>
+</spirit:design>

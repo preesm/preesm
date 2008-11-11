@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+   <spirit:vendor/>
+   <spirit:library/>
+   <spirit:version/>
+   <spirit:name/>
+   <spirit:busInterfaces>
+      <spirit:busInterface>
+         <spirit:name>RIOInput</spirit:name>
+         <spirit:busType spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+      </spirit:busInterface>
+      <spirit:busInterface>
+         <spirit:name>RIOOutput</spirit:name>
+         <spirit:busType spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+      </spirit:busInterface>
+   </spirit:busInterfaces>
+   <spirit:model>
+      <spirit:views>
+         <spirit:view>
+            <spirit:name>tci6487design</spirit:name>
+            <spirit:envIdentifier>::Hierarchy</spirit:envIdentifier>
+            <spirit:hierarchyRef spirit:library="preesm" spirit:name="tci6487" spirit:vendor="ti.com" spirit:version="1.0"/>
+         </spirit:view>
+      </spirit:views>
+   </spirit:model>
+   <spirit:memoryMaps>
+      <spirit:memoryMap>
+         <spirit:name>mainMM</spirit:name>
+         <spirit:addressBlock>
+            <spirit:name>memory</spirit:name>
+            <spirit:baseAddress>0x00000000</spirit:baseAddress>
+            <spirit:range>0xFFFFFFFF</spirit:range>
+            <spirit:width>128</spirit:width>
+            <spirit:usage>memory</spirit:usage>
+            <spirit:access>read-write</spirit:access>
+         </spirit:addressBlock>
+      </spirit:memoryMap>
+   </spirit:memoryMaps>
+</spirit:component>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+   <spirit:vendor/>
+   <spirit:name/>
+   <spirit:library/>
+   <spirit:version/>
+   <spirit:componentInstances>
+      <spirit:componentInstance>
+         <spirit:instanceName>tci6487_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="tci6487" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="refinement">tci6487</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>tci6487_2</spirit:instanceName>
+         <spirit:componentRef spirit:library="preesm" spirit:name="tci6487" spirit:vendor="ti.com" spirit:version="1.0"/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="refinement">tci6487</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+   </spirit:componentInstances>
+   <spirit:interconnections>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_1"/>
+         <spirit:activeInterface spirit:busRef="RIOInput" spirit:componentRef="tci6487_2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_2"/>
+         <spirit:activeInterface spirit:busRef="RIOInput" spirit:componentRef="tci6487_1"/>
+      </spirit:interconnection>
+   </spirit:interconnections>
+   <spirit:hierConnections/>
+</spirit:design>
