@@ -9,6 +9,7 @@
          <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -16,6 +17,7 @@
          <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -23,13 +25,7 @@
          <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>c64x_4</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="c64x" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -37,54 +33,9 @@
          <spirit:componentRef spirit:library="" spirit:name="edma" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
             <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">0.5</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">4000</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>FFTC</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="fftc" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>TCP3D</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="tcp3d" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>TCP3E</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="tcp3e" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>EDMA_2</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="edma" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">0.5</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_overhead">4000</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>EDMA_3</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="edma" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">0.5</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_overhead">4000</spirit:configurableElementValue>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>AIF</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="aif" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>
@@ -103,51 +54,6 @@
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_3"/>
          <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_4"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="FFTC"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="TCP3D"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_1"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="TCP3E"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_1"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_2"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_2"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="FFTC"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="c64x_4"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_3"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="EDMA_3"/>
-         <spirit:activeInterface spirit:busRef="edma" spirit:componentRef="TCP3E"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="aif" spirit:componentRef="AIF"/>
-         <spirit:activeInterface spirit:busRef="aif" spirit:componentRef="EDMA_1"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>
