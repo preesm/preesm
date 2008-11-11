@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:vendor/>
-   <spirit:name/>
-   <spirit:library/>
-   <spirit:version/>
+   <spirit:vendor>ti.com</spirit:vendor>
+   <spirit:name>tci6487</spirit:name>
+   <spirit:library>preesm</spirit:library>
+   <spirit:version>1.0</spirit:version>
    <spirit:componentInstances>
       <spirit:componentInstance>
          <spirit:instanceName>C64_2</spirit:instanceName>
@@ -173,10 +173,10 @@
    </spirit:interconnections>
    <spirit:hierConnections>
       <spirit:hierConnection spirit:interfaceRef="RIOOutput">
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RapidIO1"/>
+         <spirit:activeInterface spirit:busRef="RIOline1" spirit:componentRef="RapidIO1"/>
       </spirit:hierConnection>
       <spirit:hierConnection spirit:interfaceRef="RIOInput">
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RapidIO1"/>
+         <spirit:activeInterface spirit:busRef="RIOline2" spirit:componentRef="RapidIO1"/>
       </spirit:hierConnection>
    </spirit:hierConnections>
 </spirit:design>

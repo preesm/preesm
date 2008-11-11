@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:vendor/>
-   <spirit:library/>
-   <spirit:version/>
-   <spirit:name/>
+   <spirit:vendor>ti.com</spirit:vendor>
+   <spirit:library>preesm</spirit:library>
+   <spirit:version>1.0</spirit:version>
+   <spirit:name>tci6487</spirit:name>
    <spirit:busInterfaces>
       <spirit:busInterface>
          <spirit:name>RIOInput</spirit:name>
-         <spirit:busType spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:busType spirit:library="preesm" spirit:name="RIOline2" spirit:vendor="ti.com" spirit:version="1.0"/>
       </spirit:busInterface>
       <spirit:busInterface>
          <spirit:name>RIOOutput</spirit:name>
-         <spirit:busType spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:busType spirit:library="preesm" spirit:name="RIOline1" spirit:vendor="ti.com" spirit:version="1.0"/>
       </spirit:busInterface>
    </spirit:busInterfaces>
    <spirit:model>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
-   <spirit:vendor/>
-   <spirit:name/>
-   <spirit:library/>
-   <spirit:version/>
+   <spirit:vendor>ti.com</spirit:vendor>
+   <spirit:name>board_2tci6487</spirit:name>
+   <spirit:library>preesm</spirit:library>
+   <spirit:version>1.0</spirit:version>
    <spirit:componentInstances>
       <spirit:componentInstance>
          <spirit:instanceName>tci6487_1</spirit:instanceName>
