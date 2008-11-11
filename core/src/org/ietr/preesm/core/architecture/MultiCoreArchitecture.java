@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
  * Architecture based on a fixed number of cores
@@ -198,10 +199,10 @@ public class MultiCoreArchitecture {
 	 */
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
-			boolean isFifo) {
+			boolean isDirected) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)){
 			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
-			if(isFifo){
+			if(isDirected){
 				if(cmp1.getType()==ArchitectureComponentType.fifo){
 					if(((Fifo)cmp1).getOutputInterface()==null){
 						((Fifo)cmp1).setOutputInterface(if1);

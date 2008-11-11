@@ -34,21 +34,31 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.implementation;
+package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+
 
 /**
- * Vertex corresponding to receiving a data.
- * This vertex is mapped on the receiver of 
- * the corresponding route step.
+ * an operator is a hardware calculation entity able to process data.
+ * Operators are connected with media
  * 
  * @author mpelcat
  */
-public class ReceiveVertex extends TransferVertex {
+public class Operator extends ArchitectureComponent {
 
-	public ReceiveVertex(String id, MapperDAG base) {
-		super(id, base);
+	/**
+	 * ID used to reference the element in a property bean in case of a computation vertex
+	 */
+	public static final String propertyBeanName = "Operator";
+	
+	public Operator(String name, OperatorDefinition type) {
+		super(name, type);
+
 	}
-
+	
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.operator;
+	}
 }

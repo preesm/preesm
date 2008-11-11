@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 
 /**
  * Transaction executing the addition of a {@link PrecedenceEdge}.

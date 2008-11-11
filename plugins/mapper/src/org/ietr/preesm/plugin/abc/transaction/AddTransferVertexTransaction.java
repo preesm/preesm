@@ -46,8 +46,8 @@ import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
  * A transaction that adds one transfer vertex in an implementation

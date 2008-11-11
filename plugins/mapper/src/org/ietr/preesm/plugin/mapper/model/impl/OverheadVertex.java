@@ -34,41 +34,21 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.plugin.mapper.model.impl;
+
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * The operator definition specifies the operator characteristics
- *         
+ * An overhead vertex represents a communication overhead to schedule on a core
+ * 
  * @author mpelcat
  */
-public class OperatorDefinition extends ArchitectureComponentDefinition {
+public class OverheadVertex extends MapperDAGVertex {
 
-	public OperatorDefinition(String id) {
-		super(id, "operator");
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof OperatorDefinition) {
-			OperatorDefinition opdef = (OperatorDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
-		}
-
-		return false;
+	public OverheadVertex(String id, MapperDAG base) {
+		super(id, base);
+		// TODO Auto-generated constructor stub
 	}
 
-	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.operator;
-	}
-
-	public OperatorDefinition clone() {
-
-		// A new OperatorDefinition is created with same id
-		OperatorDefinition newdef = new OperatorDefinition(this.getId());
-
-		return newdef;
-	}
-
-
-	public void fill(ArchitectureComponentDefinition origin){
-	}
 }

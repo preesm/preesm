@@ -34,19 +34,20 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.implementation;
+package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * An overhead vertex represents a communication overhead to schedule on a core
+ * Vertex corresponding to sending a data.
+ * This vertex is mapped on the sender of 
+ * the corresponding route step.
  * 
  * @author mpelcat
  */
-public class OverheadVertex extends MapperDAGVertex {
+public class SendVertex extends TransferVertex {
 
-	public OverheadVertex(String id, MapperDAG base) {
+	public SendVertex(String id, MapperDAG base) {
 		super(id, base);
 		// TODO Auto-generated constructor stub
 	}

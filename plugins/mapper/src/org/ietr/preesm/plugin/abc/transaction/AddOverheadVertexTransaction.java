@@ -45,8 +45,8 @@ import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.

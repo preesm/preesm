@@ -34,44 +34,44 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.implementation;
+package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * A precedence edge is automatically generated and expresses the sequential
- * execution of successive vertices
- * 
- * @author mpelcat   
+ * The operator definition specifies the operator characteristics
+ *         
+ * @author mpelcat
  */
-public class PrecedenceEdge extends MapperDAGEdge {
+public class OperatorDefinition extends ArchitectureComponentDefinition {
 
+	public OperatorDefinition(String id) {
+		super(id, "operator");
+	}
 	@Override
-	public String toString() {
+	public boolean equals(Object obj) {
+		if (obj instanceof OperatorDefinition) {
+			OperatorDefinition opdef = (OperatorDefinition) obj;
+			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+		}
 
-		String sourceName = "null", destName = "null";
-
-		if (getSource() != null)
-			sourceName = getSource().getName();
-		if (getSource() != null)
-			destName = getTarget().getName();
-
-		return "precedence(" + sourceName + "," + destName + ")";
+		return false;
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public PrecedenceEdge() {
-		this(null, null);
+	public ArchitectureComponentType getType(){
+		return ArchitectureComponentType.operator;
 	}
 
-	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
-		super(source, destination);
+	public OperatorDefinition clone() {
 
-		getTimingEdgeProperty().setCost(0);
+		// A new OperatorDefinition is created with same id
+		OperatorDefinition newdef = new OperatorDefinition(this.getId());
+
+		return newdef;
+	}
+
+
+	public void fill(ArchitectureComponentDefinition origin){
 	}
 }

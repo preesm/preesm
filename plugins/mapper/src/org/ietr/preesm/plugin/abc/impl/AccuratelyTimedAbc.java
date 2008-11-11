@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -45,9 +45,9 @@ import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertexAdder;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 
 /**
  * The accurately timed ABC schedules edges and set-up times

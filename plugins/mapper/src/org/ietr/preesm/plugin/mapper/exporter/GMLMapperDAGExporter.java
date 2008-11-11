@@ -40,8 +40,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jgrapht.Graph;
@@ -80,6 +80,8 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		addKey("senderGraphName", "senderGraphName", "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
 		addKey("receiverGraphName", "receiverGraphName", "vertex", "string",
+				DAGDefaultEdgePropertyType.class);
+		addKey(Operator.propertyBeanName + "_address", Operator.propertyBeanName + "_address", "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
 	}
 

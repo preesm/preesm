@@ -51,9 +51,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
-import org.ietr.preesm.core.architecture.parser.ArchitectureParser;
+import org.ietr.preesm.core.architecture.parser.DesignParser;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -219,7 +219,7 @@ public class ScenarioParser {
 	static public MultiCoreArchitecture getArchitecture(String url) {
 
 		String filename = url;
-		ArchitectureParser parser = new ArchitectureParser();
+		DesignParser parser = new DesignParser();
 		
 		Path relativePath = new Path(filename);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);

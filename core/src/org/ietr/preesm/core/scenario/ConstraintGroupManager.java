@@ -39,7 +39,7 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**

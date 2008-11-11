@@ -60,11 +60,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * An xml parser retrieving architecture data
+ * An xml parser retrieving architecture data from an IP-XACT component
  * 
  * @author mpelcat
  */
-public class ArchitectureParser {
+public class ComponentParser {
 
 	/**
 	 * xml tree
@@ -76,8 +76,15 @@ public class ArchitectureParser {
 	 */
 	private MultiCoreArchitecture archi = null;
 
-	public ArchitectureParser() {
-		
+	/**
+	 * current component
+	 */
+	private ArchitectureComponent cmp = null;
+
+	public ComponentParser(MultiCoreArchitecture archi,
+			ArchitectureComponent cmp) {
+		this.archi = archi;
+		this.cmp = cmp;
 	}
 
 	public Document getDom() {
@@ -114,113 +121,36 @@ public class ArchitectureParser {
 	/**
 	 * Parses the first level of hierarchy
 	 */
-	public MultiCoreArchitecture parseDocument() {
-		if(dom != null){
+	public void parseDocument() {
+		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
-	
+
 			Node node = docElt.getFirstChild();
-	
-			
+
 			while (node != null) {
-	
+
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
-					if (type.equals("spirit:name")) {
-						archi = new MultiCoreArchitecture(elt.getTextContent());
-					} else if (type.equals("spirit:componentInstances")) {
+					if (type.equals("spirit:memoryMaps")) {
 
-						if(archi==null){
-							PreesmLogger.getLogger().log(Level.SEVERE,"enter a name in the architecture");
-						}
-						
-						parseComponentInstances(elt);
-					} else if (type.equals("spirit:interconnections")) {
-
-						if(archi==null){
-							PreesmLogger.getLogger().log(Level.SEVERE,"enter a name in the architecture");
-						}
-						
-						parseInterconnections(elt);
+						parseMemoryMaps(elt);
 					} 
 				}
-	
+
 				node = node.getNextSibling();
 			}
 		}
-		
-		return archi;
 	}
 
 	/**
-	 * Parses the component instances
+	 * Parses the memory maps to retrieve the address base and range of a component
 	 */
-	private void parseComponentInstances(Element callElt) {
-
-		Node node = callElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("spirit:componentInstance")) {
-					parseComponentInstance(elt);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-	
-	/**
-	 * Parses one component instance
-	 */
-	private void parseComponentInstance(Element callElt) {
-
-		String cmpName = "";
-		String cmpDefId = "";
-		String cmpType = "";
-		Element configElt = null;
-		
-		Node node = callElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("spirit:instanceName")) {
-					cmpName = elt.getTextContent();
-				}
-				else if (type.equals("spirit:componentRef")) {
-					cmpDefId = elt.getAttribute("spirit:name");
-				}
-				else if (type.equals("spirit:configurableElementValues")) {
-					configElt = elt;
-					cmpType = parseComponentType(configElt);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-
-		ArchitectureComponentType type = ArchitectureComponentType.getType(cmpType);
-		ArchitectureComponent cmp = archi.addComponent(ArchitectureComponentType.getType(cmpType), cmpDefId, cmpName);
-
-		if(configElt!= null && type == ArchitectureComponentType.medium){
-			MediumParser.parse((MediumDefinition)cmp.getDefinition(), configElt);
-		}
-	}
-	
-	/**
-	 * Parses a component type and returns the associated value
-	 */
-	private String parseComponentType(Element callElt) {
+	private String parseMemoryMaps(Element callElt) {
 
 		String componentType = "";
-		
+
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -228,9 +158,8 @@ public class ArchitectureParser {
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
-				String configurableElementName = elt.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("componentType")) {
-					componentType = elt.getTextContent();
+				if (eltType.equals("spirit:memoryMap")) {
+					parseMemoryMap(elt);
 				}
 			}
 
@@ -239,11 +168,13 @@ public class ArchitectureParser {
 
 		return componentType;
 	}
-	
+
 	/**
-	 * Parses all interconnections
+	 * Parses the main memory map to retrieve the address base and range of a component
 	 */
-	private void parseInterconnections(Element callElt) {
+	private String parseMemoryMap(Element callElt) {
+
+		String componentType = "";
 
 		Node node = callElt.getFirstChild();
 
@@ -251,24 +182,26 @@ public class ArchitectureParser {
 
 			if (node instanceof Element) {
 				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("spirit:interconnection")) {
-					parseInterconnection(elt);
+				String eltType = elt.getTagName();
+				if (eltType.equals("spirit:name")) {
+				}
+				else if (eltType.equals("spirit:addressBlock")) {
+					parseAddressBlock(elt);
 				}
 			}
 
 			node = node.getNextSibling();
 		}
+
+		return componentType;
 	}
-	
-	/**
-	 * Parses one interconnection
-	 */
-	private void parseInterconnection(Element callElt) {
 
-		List<String> busRefList = new ArrayList<String>();
-		List<String> componentRefList = new ArrayList<String>();
-		boolean isDirected = false;
+	/**
+	 * Parses the main memory map address block to retrieve the address base and range of a component
+	 */
+	private String parseAddressBlock(Element callElt) {
+
+		String componentType = "";
 
 		Node node = callElt.getFirstChild();
 
@@ -276,31 +209,18 @@ public class ArchitectureParser {
 
 			if (node instanceof Element) {
 				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("spirit:activeInterface")) {
-					busRefList.add(elt.getAttribute("spirit:busRef"));
-					componentRefList.add(elt.getAttribute("spirit:componentRef"));
+				String eltType = elt.getTagName();
+				if (eltType.equals("spirit:baseAddress") && cmp != null) {
+					cmp.getDefinition().setBaseAddress(elt.getTextContent());
 				}
-				else if (type.equals("spirit:displayName")) {
-					isDirected = (elt.getTextContent().equalsIgnoreCase("directed"));
+				else if (eltType.equals("spirit:range") && cmp != null) {
+					
 				}
 			}
 
 			node = node.getNextSibling();
 		}
 
-		if(busRefList.size() == 2 && componentRefList.size() == 2){
-
-			ArchitectureComponent cmp1 = archi.getComponent(componentRefList.get(0));
-			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
-			ArchitectureInterface if1 = cmp1.addInterface(new ArchitectureInterface(busRef1,cmp1));
-			
-			ArchitectureComponent cmp2 = archi.getComponent(componentRefList.get(1));
-			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
-			ArchitectureInterface if2 = cmp2.addInterface(new ArchitectureInterface(busRef2,cmp2));
-			
-			archi.connect(cmp1, if1, cmp2, if2, isDirected);
-		}
-			
+		return componentType;
 	}
 }

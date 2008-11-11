@@ -40,9 +40,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.ietr.preesm.plugin.mapper.model.implementation.OverheadVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 

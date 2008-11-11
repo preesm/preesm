@@ -42,8 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Operator;
-import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
 
 /**

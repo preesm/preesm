@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;

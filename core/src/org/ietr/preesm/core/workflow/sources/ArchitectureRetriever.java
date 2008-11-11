@@ -41,7 +41,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.parser.ArchitectureParser;
+import org.ietr.preesm.core.architecture.parser.DesignParser;
 
 /**
  * @author mpelcat
@@ -59,7 +59,7 @@ public class ArchitectureRetriever {
 		super();
 		
 		String filename = architecturePath;
-		ArchitectureParser parser = new ArchitectureParser();
+		DesignParser parser = new DesignParser();
 		
 		Path relativePath = new Path(filename);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);

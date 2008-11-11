@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.implementation;
+package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**

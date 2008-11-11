@@ -105,8 +105,8 @@
                 <xsl:value-of select="concat($task_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_mapping_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.resource_mapping = &quot;EDMA__CCDMA&quot;',$new_line)"/>
-                <xsl:value-of select="concat($task_def,'.srcAddress = &quot;',data[@key='Operator'],'&quot;',$new_line)"/>
-                <xsl:value-of select="concat($task_def,'.destAddress = &quot;',$rcv_task/data[@key='Operator'],'&quot;',$new_line)"/>
+                <xsl:value-of select="concat($task_def,'.srcAddress = &quot;',data[@key='Operator_address'],'&quot;',$new_line)"/>
+                <xsl:value-of select="concat($task_def,'.destAddress = &quot;',$rcv_task/data[@key='Operator_address'],'&quot;',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.sam = 0',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.dam = 0',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.ACNT = ',data[@key='dataSize'],$new_line)"/>

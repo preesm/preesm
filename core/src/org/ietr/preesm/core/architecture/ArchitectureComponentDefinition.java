@@ -54,6 +54,11 @@ public abstract class ArchitectureComponentDefinition {
 	private String id;
 
 	/**
+	 * Base address of the component memory map (example: 0x08000000)
+	 */
+	private String baseAddress = "0x00000000";
+
+	/**
 	 * Constructor with clone
 	 */
 	public ArchitectureComponentDefinition(
@@ -106,4 +111,12 @@ public abstract class ArchitectureComponentDefinition {
 	public abstract ArchitectureComponentDefinition clone();
 	
 	public abstract void fill(ArchitectureComponentDefinition origin);
+
+	public String getBaseAddress() {
+		return baseAddress;
+	}
+
+	public void setBaseAddress(String baseAddress) {
+		this.baseAddress = baseAddress;
+	}
 }

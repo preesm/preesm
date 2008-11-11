@@ -39,8 +39,8 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
@@ -52,9 +52,9 @@ import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertexAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
@@ -130,6 +130,8 @@ public class TagDAG {
 				bean.setValue(Medium.propertyBeanName, ((SendVertex) currentVertex).getRouteStep().getMedium());
 				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty().getDataSize());
 				bean.setValue("senderGraphName", incomingEdge.getSource().getName());
+				bean.setValue(Operator.propertyBeanName + "_address",
+						((SendVertex) currentVertex).getRouteStep().getSender().getDefinition().getBaseAddress());
 			}
 			else if(currentVertex instanceof ReceiveVertex){
 
@@ -140,6 +142,8 @@ public class TagDAG {
 				bean.setValue(Medium.propertyBeanName, ((ReceiveVertex) currentVertex).getRouteStep().getMedium());
 				bean.setValue("dataSize", outgoingEdge.getInitialEdgeProperty().getDataSize());
 				bean.setValue("receiverGraphName", outgoingEdge.getTarget().getName());
+				bean.setValue(Operator.propertyBeanName + "_address",
+						((ReceiveVertex) currentVertex).getRouteStep().getReceiver().getDefinition().getBaseAddress());
 			}
 			else{
 	

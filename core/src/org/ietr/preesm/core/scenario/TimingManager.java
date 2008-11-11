@@ -39,7 +39,7 @@ package org.ietr.preesm.core.scenario;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFVertex;

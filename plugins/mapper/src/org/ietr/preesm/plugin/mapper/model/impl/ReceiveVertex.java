@@ -34,22 +34,21 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.implementation;
+package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
 /**
- * Vertex corresponding to sending a data.
- * This vertex is mapped on the sender of 
+ * Vertex corresponding to receiving a data.
+ * This vertex is mapped on the receiver of 
  * the corresponding route step.
  * 
  * @author mpelcat
  */
-public class SendVertex extends TransferVertex {
+public class ReceiveVertex extends TransferVertex {
 
-	public SendVertex(String id, MapperDAG base) {
+	public ReceiveVertex(String id, MapperDAG base) {
 		super(id, base);
-		// TODO Auto-generated constructor stub
 	}
 
 }

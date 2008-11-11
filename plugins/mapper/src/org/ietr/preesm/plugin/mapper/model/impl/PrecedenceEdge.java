@@ -34,28 +34,44 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.plugin.mapper.model.impl;
 
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * an operator is a hardware calculation entity able to process data.
- * Operators are connected with media
+ * A precedence edge is automatically generated and expresses the sequential
+ * execution of successive vertices
  * 
- * @author mpelcat
+ * @author mpelcat   
  */
-public class Operator extends ArchitectureComponent {
+public class PrecedenceEdge extends MapperDAGEdge {
+
+	@Override
+	public String toString() {
+
+		String sourceName = "null", destName = "null";
+
+		if (getSource() != null)
+			sourceName = getSource().getName();
+		if (getSource() != null)
+			destName = getTarget().getName();
+
+		return "precedence(" + sourceName + "," + destName + ")";
+	}
 
 	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
+	 * 
 	 */
-	public static final String propertyBeanName = "Operator";
-	
-	public Operator(String name, OperatorDefinition type) {
-		super(name, type);
+	private static final long serialVersionUID = 1L;
 
+	public PrecedenceEdge() {
+		this(null, null);
 	}
-	
-	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.operator;
+
+	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
+		super(source, destination);
+
+		getTimingEdgeProperty().setCost(0);
 	}
 }

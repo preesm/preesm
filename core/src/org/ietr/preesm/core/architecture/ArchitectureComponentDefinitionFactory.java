@@ -41,6 +41,7 @@ import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefiniti
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 
 
 /**

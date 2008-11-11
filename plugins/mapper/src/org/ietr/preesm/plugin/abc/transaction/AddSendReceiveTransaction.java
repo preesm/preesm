@@ -38,19 +38,19 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.Operator;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.implementation.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.SendVertex;
-import org.ietr.preesm.plugin.mapper.model.implementation.TransferVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
  * A transaction that adds a send and a receive vertex in an implentation.

@@ -41,20 +41,20 @@
       <task
             id="org.ietr.preesm.plugin.mapper.plot"
             name="Gantt plot transform"
-            type="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditorTransform">
+            type="org.ietr.preesm.plugin.mapper.plot.gantt.ImplementationEditorTransform">
       </task>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"
+            class="org.ietr.preesm.plugin.mapper.plot.gantt.ImplementationEditor"
             default="true"
             icon="icons/preesm2mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"
             name="ImplementationEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.BestLatencyEditor"
+            class="org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor"
             default="true"
             icon="icons/preesm3mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
