@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.parser;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +50,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;

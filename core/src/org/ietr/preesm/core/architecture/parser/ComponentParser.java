@@ -37,9 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,12 +45,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.ArchitectureInterface;
-import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.log.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

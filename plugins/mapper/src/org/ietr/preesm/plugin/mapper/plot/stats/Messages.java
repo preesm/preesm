@@ -34,48 +34,32 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
- * Class used by the editor displaying the implementation gantt chart.
- * Useful to run editor in display thread.
+ * This class is used to gather all texts displayed in scenario editor. The strings
+ * are stored in message.properties and retrieved through {@link Messages}
  * 
  * @author mpelcat
  */
-public class ImplementationEditorRunnable implements Runnable {
+public class Messages {
+	private static final String BUNDLE_NAME = "org.ietr.preesm.plugin.mapper.plot.stats.messages"; //$NON-NLS-1$
 
-	private IEditorInput input;
-	
-	public ImplementationEditorRunnable(IEditorInput input) {
-		super();
-		this.input = input;
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
+			.getBundle(BUNDLE_NAME);
+
+	private Messages() {
 	}
 
-	@Override
-	public void run() {
-
-		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
-				.getWorkbenchWindows()[0];
-
-		if (dwindow != null && input instanceof ImplementationEditorInput) {
-			IWorkbenchPage page = dwindow.getActivePage();
-
-			try {
-				page.openEditor(input,
-								"org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor");
-
-			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public static String getString(String key) {
+		// TODO Auto-generated method stub
+		try {
+			return RESOURCE_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
 		}
-		
 	}
-	
 }

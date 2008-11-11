@@ -34,45 +34,112 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.mapper.Activator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.stats.StatEditorInput;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt
- * chart of the given mapped dag
+ * Input of the editor of implementation statistics
  * 
  * @author mpelcat
  */
-public class ImplementationEditorTransform implements IPlotter {
+public class StatEditorInput implements IEditorInput {
 
+	private MapperDAG dag = null;
+	private SDFGraph sdf = null;
+	private MultiCoreArchitecture archi = null;
+	private IScenario scenario = null;
+	private TextParameters params = null;
+	
+	public StatEditorInput(MultiCoreArchitecture archi, MapperDAG dag,
+			TextParameters params, IScenario scenario, SDFGraph sdf) {
+		super();
+		this.archi = archi;
+		this.dag = dag;
+		this.params = params;
+		this.scenario = scenario;
+		this.sdf = sdf;
+	}
+
+	public MapperDAG getDag() {
+		return dag;
+	}
+
+	public SDFGraph getSdf() {
+		return sdf;
+	}
+
+	public MultiCoreArchitecture getArchi() {
+		return archi;
+	}
+
+	public IScenario getScenario() {
+		return scenario;
+	}
+
+	public TextParameters getParams() {
+		return params;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#exists()
+	 */
 	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
+	public boolean exists() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-		MapperDAG mapperDag = (MapperDAG) dag;
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+	 */
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm4mini.PNG");
+		return img;
+	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getName()
+	 */
+	@Override
+	public String getName() {
+		return "Statistics on " + sdf.getName();
+	}
 
-		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getPersistable()
+	 */
+	@Override
+	public IPersistableElement getPersistable() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		// Run implementation editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
-		
-		input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
+	 */
+	@Override
+	public String getToolTipText() {
+		return "Implementation";
+	}
 
-		// Run statistic editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object getAdapter(Class adapter) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

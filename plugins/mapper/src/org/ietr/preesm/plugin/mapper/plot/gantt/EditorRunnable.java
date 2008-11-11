@@ -37,42 +37,58 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.IPlotter;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatEditorInput;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt
- * chart of the given mapped dag
+ * Class used by mapper editors.
+ * Useful to run editor in display thread.
  * 
  * @author mpelcat
  */
-public class ImplementationEditorTransform implements IPlotter {
+public class EditorRunnable implements Runnable {
 
-	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
-
-		MapperDAG mapperDag = (MapperDAG) dag;
-
-
-		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run implementation editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
-		
-		input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run statistic editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
+	private IEditorInput input;
+	
+	public EditorRunnable(IEditorInput input) {
+		super();
+		this.input = input;
 	}
 
+	@Override
+	public void run() {
+
+		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
+				.getWorkbenchWindows()[0];
+
+		if (dwindow != null && input instanceof ImplementationEditorInput) {
+			IWorkbenchPage page = dwindow.getActivePage();
+
+			try {
+				page.openEditor(input,
+								"org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor");
+
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (dwindow != null && input instanceof StatEditorInput) {
+			IWorkbenchPage page = dwindow.getActivePage();
+
+			try {
+				page.openEditor(input,
+								"org.ietr.preesm.plugin.mapper.plot.stats.StatEditor");
+
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 }

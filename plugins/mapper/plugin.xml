@@ -56,9 +56,16 @@
       <editor
             class="org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor"
             default="true"
-            icon="icons/preesm3mini.PNG"
+            icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
             name="TimeEditor">
+      </editor>
+      <editor
+            class="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
+            default="false"
+            icon="icons/preesm1mini.PNG"
+            id="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
+            name="StatEditor">
       </editor>
    </extension>
 

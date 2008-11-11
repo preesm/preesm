@@ -34,45 +34,54 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.IPlotter;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.stats.StatEditorInput;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.ietr.preesm.core.scenario.Scenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt
- * chart of the given mapped dag
+ * This page contains general informations of the scenario including
+ * current algorithm and current architecture
  * 
  * @author mpelcat
  */
-public class ImplementationEditorTransform implements IPlotter {
+public class OverviewPage extends FormPage {
 
-	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
-
-		MapperDAG mapperDag = (MapperDAG) dag;
-
-
-		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run implementation editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
+	private DirectedAcyclicGraph dag;
+	
+	public OverviewPage(DirectedAcyclicGraph dag, FormEditor editor, String id, String title) {
+		super(editor, id, title);
 		
-		input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run statistic editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
+		this.dag = dag;
 	}
 
+	/**
+	 * Creation of the sections and their initialization
+	 */
+	@Override
+	protected void createFormContent(IManagedForm managedForm) {
+		
+		ScrolledForm form = managedForm.getForm();
+		//FormToolkit toolkit = managedForm.getToolkit();
+		form.setText(Messages.getString("Overview.title"));
+		ColumnLayout layout = new ColumnLayout();
+		layout.topMargin = 0;
+		layout.bottomMargin = 5;
+		layout.leftMargin = 10;
+		layout.rightMargin = 10;
+		layout.horizontalSpacing = 10;
+		layout.verticalSpacing = 10;
+		layout.maxNumColumns = 4;
+		layout.minNumColumns = 1;
+		form.getBody().setLayout(layout);
+		
+	}
+
+
+	
 }
