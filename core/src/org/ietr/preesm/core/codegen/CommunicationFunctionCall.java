@@ -41,7 +41,8 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -122,17 +123,16 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		this.medium = medium;
 	}
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		printer.visit(this, 0); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
 
 		Iterator<Buffer> iterator = bufferSet.iterator();
 
 		while (iterator.hasNext()) {
 			Buffer buf = iterator.next();
 
-			buf.accept(printer); // Accept the code container
-			printer.visit(this, 1); // Visit self
+			buf.accept(printer, currentLocation); // Accept the code container
 		}
 	}
 

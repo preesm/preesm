@@ -52,33 +52,25 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.log.PreesmLogger;
 
 /**
- * @author mpelcat
+ * Prints the generated code in an intermediate xml file and applies the xslt
+ * sheet transformation to this file in order to generate the output
  * 
+ * @author mpelcat
  */
-public class PrinterChooser {
-
-	/**
-	 * The key is the name of the current operator. The value is the code for
-	 * this operator
-	 */
-	private Map<String, String> sourceMap = null;
+public class GenericPrinter {
 
 	/**
 	 * Directory in which we should put the generated files
 	 */
 	private String directory = null;
 
-	public PrinterChooser(String directory) {
+	public GenericPrinter(String directory) {
 		super();
 		this.directory = directory;
-	}
-
-	public Map<String, String> getSourceMap() {
-		return sourceMap;
 	}
 
 	/**
@@ -86,8 +78,6 @@ public class PrinterChooser {
 	 * for each source file and the accept() call of this printer
 	 */
 	public void printList(SourceFileList list) {
-		// Initializes the map
-		sourceMap = new HashMap<String, String>();
 
 		// Iterates the files
 		Iterator<SourceFile> iterator = list.iterator();
@@ -101,53 +91,43 @@ public class PrinterChooser {
 	/**
 	 * Visiting a source file
 	 */
-	public void print(SourceFile file) {
-		Operator operator = file.getOperator();
+	public void print(SourceFile srcFile) {
+
+		Operator operator = srcFile.getOperator();
+
+		// Generating an xml file corresponding to the code of one file
 		String fileName = operator.getName();
 		IPath path = new Path(directory);
-		path = path.append(fileName + ".c");
+		path = path.append(fileName + ".xml");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		AbstractPrinter printer = getPrinter(operator);
-		if (printer == null) {
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"No printer for the type of operator definition: "
-							+ operator.getDefinition().getId());
-		} else {
-			file.accept(printer);
+		XMLPrinter printer = getPrinter(operator);
 
-			String code = printer.getCurrentSource();
-			
-			IFile iFile = workspace.getRoot().getFile(path);
-			try {
-				if(iFile.exists()){
-					iFile.setContents(new ByteArrayInputStream(code.getBytes()), true, true, new NullProgressMonitor());
-				}else{
-					iFile.create(new ByteArrayInputStream(code.getBytes()) ,
-						       false,
-						       new NullProgressMonitor());
-				}
-			} catch (CoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+
+		IFile iFile = workspace.getRoot().getFile(path);
+		try {
+			if (!iFile.exists()) {
+				iFile.create(null, false, new NullProgressMonitor());
 			}
+
+			srcFile.accept(printer, printer.getRoot());
+			printer.writeDom(iFile);
+
+		} catch (CoreException e1) {
+			e1.printStackTrace();
 		}
 	}
 
 	/**
 	 * Getting the file printer corresponding to a given operator
 	 */
-	public AbstractPrinter getPrinter(Operator opRef) {
-		AbstractPrinter printer = null;
-		String opDefId = opRef.getDefinition().getId();
+	public XMLPrinter getPrinter(Operator opRef) {
+		XMLPrinter printer = null;
+		String opRefId = opRef.getDefinition().getId();
 
-		if (opDefId.equals("C64x")) {
-			printer = new C64Printer();
-		} else if (opDefId.equals("PC")) {
-			printer = new PCPrinter();
-		}
+		printer = new XMLPrinter();
+		printer.setCoreType(opRefId);
 
 		return printer;
 	}

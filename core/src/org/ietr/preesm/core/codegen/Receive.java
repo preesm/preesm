@@ -40,7 +40,8 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -62,10 +63,10 @@ public class Receive extends CommunicationFunctionCall {
 		this.source = source;
 	}
 
-	public void accept(AbstractPrinter printer) {
-		printer.visit(this, 0);
-		super.accept(printer);
-		printer.visit(this, 1);
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation);
+		super.accept(printer, currentLocation);
+		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation);
 	}
 
 	public Operator getSource() {

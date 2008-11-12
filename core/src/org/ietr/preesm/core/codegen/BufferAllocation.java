@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
  * A buffer allocation is necessary for every input and output of the SDF
@@ -59,8 +60,8 @@ public class BufferAllocation {
 		this.buffer = buffer;
 	}
 
-	public void accept(AbstractPrinter printer) {
-		printer.visit(this, 0);
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 	}
 
 	public Buffer getBuffer() {

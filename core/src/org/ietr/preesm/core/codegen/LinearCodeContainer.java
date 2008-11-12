@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
  * Code container executed once (no loop)
@@ -45,11 +46,10 @@ import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
  */
 public class LinearCodeContainer extends AbstractCodeContainer {
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		printer.visit(this, 0); // Visit self
-		super.accept(printer); // Accept the code container
-		printer.visit(this, 1); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		super.accept(printer, currentLocation); // Accept the code container
 	}
 
 	/**

@@ -62,49 +62,25 @@ import org.ietr.preesm.core.codegen.VariableAllocation;
  * 
  * @author mpelcat
  */
-public abstract class AbstractPrinter {
+public interface IAbstractPrinter {
 
-	/**
-	 * The current source being filled
-	 */
-	protected String currentSource = null;
-	
-	public AbstractPrinter() {
-		super();
-		currentSource = new String();
-	}
-	
-	public String getCurrentSource() {
-		return currentSource;
-	}
-/*	public void visit(ICodeElement element, int index){
-		if(element instanceof Buffer){
-			visit((Buffer) element, index);
-		}else if(element instanceof CompoundCodeElement){
-			visit((CompoundCodeElement) element, index);
-		}else if(element instanceof FiniteForLoop){
-			visit((FiniteForLoop) element, index);
-		}else if(element instanceof ForLoop){
-			visit((ForLoop) element, index);
-		}
-	}*/
-	public abstract void visit(AbstractBufferContainer element, int index);
-	public abstract void visit(AbstractCodeContainer element, int index);
-	public abstract void visit(Buffer element, int index);
-	public abstract void visit(SubBuffer element, int index);
-	public abstract void visit(BufferAllocation element, int index);
-	public abstract void visit(VariableAllocation element, int index);
-	public abstract void visit(AbstractCodeElement element, int index);
-	public abstract void visit(CommunicationFunctionCall element, int index);
-	public abstract void visit(ForLoop element, int index);
-	public abstract void visit(LinearCodeContainer element, int index);
-	public abstract void visit(FiniteForLoop element, int index);
-	public abstract void visit(Receive element, int index);
-	public abstract void visit(Semaphore element, int index);
-	public abstract void visit(SemaphorePend element, int index);
-	public abstract void visit(SemaphorePost element, int index);
-	public abstract void visit(Send element, int index);
-	public abstract void visit(SourceFile element, int index);
-	public abstract void visit(ThreadDeclaration element, int index);
-	public abstract void visit(UserFunctionCall element, int index);
+	public Object visit(AbstractBufferContainer element, CodeZoneId index, Object currentLocation);
+	public Object visit(AbstractCodeContainer element, CodeZoneId index, Object currentLocation);
+	public Object visit(Buffer element, CodeZoneId index, Object currentLocation);
+	public Object visit(SubBuffer element, CodeZoneId index, Object currentLocation);
+	public Object visit(BufferAllocation element, CodeZoneId index, Object currentLocation);
+	public Object visit(VariableAllocation element, CodeZoneId index, Object currentLocation);
+	public Object visit(AbstractCodeElement element, CodeZoneId index, Object currentLocation);
+	public Object visit(CommunicationFunctionCall element, CodeZoneId index, Object currentLocation);
+	public Object visit(ForLoop element, CodeZoneId index, Object currentLocation);
+	public Object visit(LinearCodeContainer element, CodeZoneId index, Object currentLocation);
+	public Object visit(FiniteForLoop element, int index, Object currentLocation);
+	public Object visit(Receive element, CodeZoneId index, Object currentLocation);
+	public Object visit(Semaphore element, CodeZoneId index, Object currentLocation);
+	public Object visit(SemaphorePend element, CodeZoneId index, Object currentLocation);
+	public Object visit(SemaphorePost element, CodeZoneId index, Object currentLocation);
+	public Object visit(Send element, CodeZoneId index, Object currentLocation);
+	public Object visit(SourceFile element, CodeZoneId index, Object currentLocation);
+	public Object visit(ThreadDeclaration element, CodeZoneId index, Object currentLocation);
+	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
 }

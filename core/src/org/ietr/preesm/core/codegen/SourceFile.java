@@ -41,7 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
  * Source file to be executed on a given core. A source file contains Buffer
@@ -85,20 +86,16 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Accepts a printer visitor
 	 */
-	public void accept(AbstractPrinter printer) {
-		printer.visit(this, 0); // Visit self
-		super.accept(printer); // Accept the buffer allocation
-		printer.visit(this, 1); // Visit self
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		super.accept(printer, currentLocation); // Accept the buffer allocation
 
 		Iterator<ThreadDeclaration> iterator = threads.iterator();
 
 		while (iterator.hasNext()) {
 			ThreadDeclaration thread = iterator.next();
-
-			thread.accept(printer); // Accept the threads
-			printer.visit(this, 2); // Visit self
+			thread.accept(printer, currentLocation); // Accept the threads
 		}
-		printer.visit(this, 3); // Visit self
 	}
 
 	/**

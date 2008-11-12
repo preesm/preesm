@@ -52,6 +52,12 @@ import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.dag.DAGVertex;
 
+/**
+ * Generates code for a communication thread
+ * 
+ * @author Matthieu Wipliez
+ * @author mpelcat
+ */
 public class CommThreadCodeGenerator {
 
 	private CommunicationThreadDeclaration thread;

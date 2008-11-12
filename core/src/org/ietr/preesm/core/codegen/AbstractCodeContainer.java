@@ -40,7 +40,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 
 /**
@@ -61,19 +62,16 @@ public abstract class AbstractCodeContainer {
 		codeElements = new ArrayList<ICodeElement>();
 	}
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		printer.visit(this, 0); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
 
 		Iterator<ICodeElement> iterator = codeElements.iterator();
 
 		while (iterator.hasNext()) {
 			ICodeElement elt = iterator.next();
-			printer.visit(this, 1); // Visit self
-			elt.accept(printer);
-			printer.visit(this, 2); // Visit self
+			elt.accept(printer, currentLocation);
 		}
-		printer.visit(this, 3); // Visit self
 	}
 
 	/**

@@ -39,7 +39,7 @@ package org.ietr.preesm.core.codegen;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 
 public class CompoundCodeElement implements ICodeElement {
@@ -62,9 +62,9 @@ public class CompoundCodeElement implements ICodeElement {
 	}
 
 	@Override
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		for (ICodeElement call : calls) {
-			call.accept(printer);
+			call.accept(printer, currentLocation);
 		}
 	}
 

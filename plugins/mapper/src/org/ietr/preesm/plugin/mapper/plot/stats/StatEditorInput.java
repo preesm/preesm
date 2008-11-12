@@ -103,7 +103,7 @@ public class StatEditorInput implements IEditorInput {
 	 */
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm4mini.PNG");
+		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm1mini.PNG");
 		return img;
 	}
 

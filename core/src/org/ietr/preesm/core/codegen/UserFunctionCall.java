@@ -41,7 +41,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
@@ -70,14 +71,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 		addVertexBuffers(vertex);
 	}
 
-	public void accept(AbstractPrinter printer) {
-		int i = 0;
-		AbstractBufferContainer contains = this.getParentContainer();
-		while (contains instanceof FiniteForLoop) {
-			contains = ((FiniteForLoop) contains).getParentContainer();
-			i++;
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		for (Buffer buffer : availableBuffers) {
+			buffer.accept(printer, currentLocation);
 		}
-		printer.visit(this, i); // Visit self
 	}
 
 	public void addBuffer(Buffer buffer) {

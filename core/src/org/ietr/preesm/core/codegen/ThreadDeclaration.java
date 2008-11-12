@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
  * Declaration of a thread for code generation. Threads can be communication or
@@ -86,18 +87,13 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		endCode = new LinearCodeContainer();
 	}
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		printer.visit(this, 0); // Visit self
-		super.accept(printer); // Accept the buffer allocation
-		printer.visit(this, 1); // Visit self
-
-		beginningCode.accept(printer);
-		printer.visit(this, 2); // Visit self
-		loopCode.accept(printer);
-		printer.visit(this, 3); // Visit self
-		endCode.accept(printer);
-		printer.visit(this, 4); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		super.accept(printer, currentLocation); // Accept the buffer allocation
+		beginningCode.accept(printer, currentLocation);
+		loopCode.accept(printer, currentLocation);
+		endCode.accept(printer, currentLocation);
 	}
 
 	public boolean equals(Object obj) {

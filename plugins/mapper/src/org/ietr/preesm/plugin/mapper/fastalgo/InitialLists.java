@@ -151,7 +151,7 @@ public class InitialLists {
 	 */
 	private boolean checkpredecessor(MapperDAG dag, MapperDAGVertex currentvertex,
 			List<MapperDAGVertex> orderlist,
-			List<MapperDAGVertex> blockingnode, IAbc archi) {
+			List<MapperDAGVertex> blockingnode, IAbc abc) {
 
 		// Variables
 		MapperDAGVertex cpnvertex = null;
@@ -170,7 +170,7 @@ public class InitialLists {
 		// Run backward in the DAG to find the node with its parents in the
 		// CPNdominantlist and with the b-level maximum
 		while (!(orderlist.containsAll(predset))) {
-			cpnvertex = choixIBN(dag, predset, orderlist, archi);
+			cpnvertex = choixIBN(dag, predset, orderlist, abc);
 			predset.clear();
 
 			if (cpnvertex != null) {
@@ -242,16 +242,16 @@ public class InitialLists {
 	 *        List<MapperDAGVertex>
 	 * @return : true if the CPN could be constructed
 	 */
-	private boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderlist,
+	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			List<MapperDAGVertex> blockingnode, List<MapperDAGVertex> fcplist,
-			IAbc archi) {
+			IAbc abc) {
 
 		// variables
 		MapperDAGVertex currentvertex;
 		MapperDAGVertex cpnvertex = null;
 		MapperDAGVertex tempvertex = null;
 		int commax = 0;
-		BLevelIterator iterator = new BLevelIterator(dag, archi, false);
+		BLevelIterator iterator = new BLevelIterator(dag, abc, false);
 
 		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
 		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
@@ -287,15 +287,15 @@ public class InitialLists {
 				currentvertex = (MapperDAGVertex) iter.next();
 				MapperDAG base = (MapperDAG) currentvertex.getBase();
 
-				if (archi.getCost((MapperDAGEdge) cpnvertex.getBase().getEdge(
+				if (abc.getCost((MapperDAGEdge) cpnvertex.getBase().getEdge(
 						cpnvertex, currentvertex)) == commax) {
-					if (archi.getTLevel(currentvertex) < archi
+					if (abc.getTLevel(currentvertex) < abc
 							.getTLevel(tempvertex)) {
 						tempvertex = currentvertex;
 					}
-				} else if (archi.getCost((MapperDAGEdge) base.getEdge(
+				} else if (abc.getCost((MapperDAGEdge) base.getEdge(
 						cpnvertex, currentvertex)) > commax) {
-					commax = archi.getCost((MapperDAGEdge) base.getEdge(
+					commax = abc.getCost((MapperDAGEdge) base.getEdge(
 							cpnvertex, currentvertex));
 					tempvertex = currentvertex;
 				}
@@ -311,7 +311,7 @@ public class InitialLists {
 			while (!(orderlist.contains(currentvertex))) {
 				// If no predecessor was found
 				if(!checkpredecessor(dag, currentvertex, orderlist, blockingnode,
-						archi)){
+						abc)){
 					return false;
 				}
 			}

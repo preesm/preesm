@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 
 /**
@@ -122,9 +123,9 @@ public class Buffer {
 		this.name = null;
 	}
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		printer.visit(this, 0); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 	}
 
 	public BufferAggregate getAggregate() {

@@ -18,19 +18,47 @@
             <spirit:configurableElementValue spirit:referenceId="refinement">tci6487</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>fifo1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>fifo2</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
    </spirit:componentInstances>
    <spirit:interconnections>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>directed</spirit:displayName>
-         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_1"/>
-         <spirit:activeInterface spirit:busRef="RIOInput" spirit:componentRef="tci6487_2"/>
+         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_2"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="fifo1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>directed</spirit:displayName>
-         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_2"/>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="fifo1"/>
          <spirit:activeInterface spirit:busRef="RIOInput" spirit:componentRef="tci6487_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="RIOOutput" spirit:componentRef="tci6487_1"/>
+         <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="fifo2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>directed</spirit:displayName>
+         <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="fifo2"/>
+         <spirit:activeInterface spirit:busRef="RIOInput" spirit:componentRef="tci6487_2"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>

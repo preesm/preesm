@@ -43,7 +43,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.log.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
@@ -91,28 +92,26 @@ public abstract class AbstractBufferContainer {
 		this.semaphoreContainer = new SemaphoreContainer(this);
 	}
 
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		
 		if (buffers.size() > 0) {
-			printer.visit(this, 0); // Visit self
 			Iterator<BufferAllocation> iterator = buffers.iterator();
 
 			while (iterator.hasNext()) {
 				BufferAllocation alloc = iterator.next();
-				alloc.accept(printer); // Accepts allocations
-				printer.visit(this, 2); // Visit self
+				alloc.accept(printer, currentLocation); // Accepts allocations
 			}
 		}
 		if (variables.size() > 0) {
-			printer.visit(this, 1); // Visit self
 			Iterator<VariableAllocation> iterator2 = variables.iterator();
 
 			while (iterator2.hasNext()) {
 				VariableAllocation alloc = iterator2.next();
-				alloc.accept(printer); // Accepts allocations
-				printer.visit(this, 2); // Visit self
+				alloc.accept(printer, currentLocation); // Accepts allocations
 			}
 		}
-		printer.visit(this, 3); // Visit self
 	}
 
 	/**

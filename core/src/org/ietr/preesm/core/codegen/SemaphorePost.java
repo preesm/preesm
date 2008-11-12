@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
@@ -72,10 +73,10 @@ public class SemaphorePost extends AbstractCodeElement {
 		semaphore = semContainer.createSemaphore(agg, semType);
 	}
 
-	public void accept(AbstractPrinter printer) {
-		printer.visit(this, 0); // Visit self
-		semaphore.accept(printer); // Accept the code container
-		printer.visit(this, 1); // Visit self
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		semaphore.accept(printer, currentLocation); // Accept the code container
+		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation); // Visit self
 	}
 
 	public Semaphore getSemaphore() {

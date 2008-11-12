@@ -60,6 +60,12 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
+/**
+ * Generates code for a source file
+ * 
+ * @author Matthieu Wipliez
+ * @author mpelcat
+ */
 public class SourceFileCodeGenerator {
 
 	SourceFile file;

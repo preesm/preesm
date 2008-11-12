@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -71,8 +72,8 @@ public abstract class AbstractCodeElement implements ICodeElement {
 		this.correspondingVertex = correspondingVertex;
 	}
 
-	public void accept(AbstractPrinter printer) {
-		printer.visit(this, 0); // Visit self
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 	}
 
 	@SuppressWarnings("unchecked")

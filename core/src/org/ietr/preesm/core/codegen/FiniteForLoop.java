@@ -44,7 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.AbstractVertex;
@@ -102,18 +103,18 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	}
 
 	@Override
-	public void accept(AbstractPrinter printer) {
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		Iterator<VariableAllocation> iterator2 = variables.iterator();
 
 		while (iterator2.hasNext()) {
 			VariableAllocation alloc = iterator2.next();
-			alloc.accept(printer); // Accepts allocations
+			alloc.accept(printer, currentLocation); // Accepts allocations
 		}
-		printer.visit(this, 1);
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 		for (ICodeElement call : calls) {
-			call.accept(printer);
+			call.accept(printer, currentLocation);
 		}
-		printer.visit(this, 2);
+		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation);
 	}
 
 	@SuppressWarnings("unchecked")

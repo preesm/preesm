@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.AbstractPrinter;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
 
 /**
@@ -47,7 +47,7 @@ import org.sdf4j.model.AbstractVertex;
  */
 public interface ICodeElement {
 
-	public void accept(AbstractPrinter printer);
+	public void accept(IAbstractPrinter printer, Object currentLocation);
 
 	public AbstractVertex<?> getCorrespondingVertex();
 }

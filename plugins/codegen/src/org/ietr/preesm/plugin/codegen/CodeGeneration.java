@@ -53,7 +53,7 @@ import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.codegen.print.PrinterChooser;
+import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -172,6 +172,9 @@ public class CodeGeneration implements ICodeGeneration {
 		codegen.generateSourceFiles(algorithm, architecture);
 	}
 
+	/**
+	 * Transformation method called by the workflow
+	 */
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
 			MultiCoreArchitecture architecture, TextParameters parameters) {
@@ -183,7 +186,7 @@ public class CodeGeneration implements ICodeGeneration {
 		generateSourceFiles(algorithm, architecture, list);
 
 		// Generates the code
-		PrinterChooser printerChooser = new PrinterChooser(sourcePath);
+		GenericPrinter printerChooser = new GenericPrinter(sourcePath);
 		printerChooser.printList(list);
 
 		result.setSourcefilelist(list);

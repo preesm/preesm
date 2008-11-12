@@ -50,6 +50,12 @@ import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.sdf4j.model.dag.DAGVertex;
 
+/**
+ * Generates code for a computation thread
+ * 
+ * @author Matthieu Wipliez
+ * @author mpelcat
+ */
 public class CompThreadCodeGenerator {
 
 	private ComputationThreadDeclaration thread;

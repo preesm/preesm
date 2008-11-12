@@ -52,12 +52,12 @@ import org.sdf4j.model.dag.DirectedAcyclicGraph;
  */
 public class OverviewPage extends FormPage {
 
-	private DirectedAcyclicGraph dag;
+	private StatGenerator statGen = null;
 	
-	public OverviewPage(DirectedAcyclicGraph dag, FormEditor editor, String id, String title) {
+	public OverviewPage(StatGenerator statGen, FormEditor editor, String id, String title) {
 		super(editor, id, title);
 		
-		this.dag = dag;
+		this.statGen = statGen;
 	}
 
 	/**

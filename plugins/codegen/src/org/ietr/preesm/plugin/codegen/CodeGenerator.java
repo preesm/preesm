@@ -46,6 +46,12 @@ import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
+/**
+ * Top-level code generation class. Creates and fills source files
+ * 
+ * @author Matthieu Wipliez
+ * @author mpelcat
+ */
 public class CodeGenerator {
 
 	private SourceFileList list;

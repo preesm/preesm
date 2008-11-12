@@ -62,11 +62,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class StatEditor extends SharedHeaderFormEditor implements IPropertyListener {
 
-	private MapperDAG dag = null;
-	private SDFGraph sdf = null;
-	private MultiCoreArchitecture archi = null;
-	private IScenario scenario = null;
-	private TextParameters params = null;
+	private StatGenerator statGen = null;
 	
 	public StatEditor() {
 		super();
@@ -86,11 +82,8 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 			
 			if(input instanceof StatEditorInput){
 				StatEditorInput statinput = (StatEditorInput)input;
-				this.archi = statinput.getArchi();
-				this.dag = statinput.getDag();
-				this.params = statinput.getParams();
-				this.scenario = statinput.getScenario();
-				this.sdf = statinput.getSdf();
+				this.statGen = new StatGenerator(statinput.getArchi(), statinput.getDag(),
+						statinput.getParams(), statinput.getScenario(), statinput.getSdf());
 			}
 			
 		} catch (Exception e) {
@@ -106,7 +99,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	@Override
 	protected void addPages() {
 		//this.activateSite();
-		IFormPage overviewPage = new OverviewPage(dag,this, "Overview","Overview");
+		IFormPage overviewPage = new OverviewPage(statGen,this, "Overview","Overview");
 		overviewPage.addPropertyListener(this);
 		
 		try {
