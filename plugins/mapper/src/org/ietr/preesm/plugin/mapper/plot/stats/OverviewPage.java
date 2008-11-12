@@ -41,8 +41,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.ietr.preesm.core.scenario.Scenario;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
  * This page contains general informations of the scenario including
@@ -54,6 +52,7 @@ public class OverviewPage extends FormPage {
 
 	private StatGenerator statGen = null;
 	
+
 	public OverviewPage(StatGenerator statGen, FormEditor editor, String id, String title) {
 		super(editor, id, title);
 		
@@ -83,5 +82,8 @@ public class OverviewPage extends FormPage {
 	}
 
 
+	public StatGenerator getStatGen() {
+		return statGen;
+	}
 	
 }

@@ -36,11 +36,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.print;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -52,8 +48,6 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.log.PreesmLogger;
 
 /**
  * Prints the generated code in an intermediate xml file and applies the xslt

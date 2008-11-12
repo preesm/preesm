@@ -64,18 +64,12 @@ public class ComponentParser {
 	private Document dom = null;
 
 	/**
-	 * current architecture
-	 */
-	private MultiCoreArchitecture archi = null;
-
-	/**
 	 * current component
 	 */
 	private ArchitectureComponent cmp = null;
 
 	public ComponentParser(MultiCoreArchitecture archi,
 			ArchitectureComponent cmp) {
-		this.archi = archi;
 		this.cmp = cmp;
 	}
 

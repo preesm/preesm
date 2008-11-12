@@ -36,32 +36,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.print;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import org.ietr.preesm.core.codegen.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.AbstractCodeContainer;
-import org.ietr.preesm.core.codegen.AbstractCodeElement;
-import org.ietr.preesm.core.codegen.Buffer;
-import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.FiniteForLoop;
-import org.ietr.preesm.core.codegen.ForLoop;
-import org.ietr.preesm.core.codegen.LinearCodeContainer;
-import org.ietr.preesm.core.codegen.Receive;
-import org.ietr.preesm.core.codegen.Semaphore;
-import org.ietr.preesm.core.codegen.SemaphorePend;
-import org.ietr.preesm.core.codegen.SemaphorePost;
-import org.ietr.preesm.core.codegen.Send;
-import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.SubBuffer;
-import org.ietr.preesm.core.codegen.ThreadDeclaration;
-import org.ietr.preesm.core.codegen.UserFunctionCall;
-import org.ietr.preesm.core.codegen.VariableAllocation;
-import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
  * Visitor that generates C code from source files for a C64 target

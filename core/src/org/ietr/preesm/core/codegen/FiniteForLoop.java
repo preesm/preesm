@@ -114,7 +114,6 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		for (ICodeElement call : calls) {
 			call.accept(printer, currentLocation);
 		}
-		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -299,8 +299,7 @@ public class DesignParser {
 		if(!componentRefinement.isEmpty()){
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			// get all possible candidates
-			List<IFile> files = new ArrayList<IFile>();
+			
 			String fileExt = "ipxactcmp";
 			IResource resource = workspace.getRoot().findMember(
 					currentFile.getFullPath().removeLastSegments(1) + "/" + componentRefinement + "." + fileExt);

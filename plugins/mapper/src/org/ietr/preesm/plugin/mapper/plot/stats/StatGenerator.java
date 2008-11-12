@@ -25,6 +25,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class StatGenerator {
 
 
+
 	private MapperDAG dag = null;
 	private SDFGraph sdf = null;
 	private MultiCoreArchitecture archi = null;
@@ -50,7 +51,6 @@ public class StatGenerator {
 		List<MapperDAGVertex> testCPN = new ArrayList<MapperDAGVertex>();
 		List<MapperDAGVertex> testBL = new ArrayList<MapperDAGVertex>();
 		List<MapperDAGVertex> testfcp = new ArrayList<MapperDAGVertex>();
-		List<MapperDAGVertex> testOBN = new ArrayList<MapperDAGVertex>();
 
 		IAbc simu = new InfiniteHomogeneousAbc(dag, archi);
 		simu.getFinalTime();
@@ -58,5 +58,25 @@ public class StatGenerator {
 		scheduler.constructCPN(dag, testCPN, testBL, testfcp, simu);
 		
 		PreesmLogger.getLogger().log(Level.INFO, testCPN.toString());
+	}
+
+	public MapperDAG getDag() {
+		return dag;
+	}
+
+	public SDFGraph getSdf() {
+		return sdf;
+	}
+
+	public MultiCoreArchitecture getArchi() {
+		return archi;
+	}
+
+	public IScenario getScenario() {
+		return scenario;
+	}
+
+	public TextParameters getParams() {
+		return params;
 	}
 }

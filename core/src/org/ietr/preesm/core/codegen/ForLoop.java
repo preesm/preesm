@@ -61,7 +61,6 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 		super.accept(printer, currentLocation); // Accept the code container
-		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation); // Visit self
 	}
 
 	@Override
