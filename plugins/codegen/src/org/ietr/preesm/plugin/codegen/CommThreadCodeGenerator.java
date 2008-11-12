@@ -49,7 +49,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**

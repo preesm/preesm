@@ -43,7 +43,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 

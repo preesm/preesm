@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;

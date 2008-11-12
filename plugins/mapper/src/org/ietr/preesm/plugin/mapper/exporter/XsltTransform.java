@@ -36,34 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.tools.XsltTransformer;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -76,88 +56,6 @@ import org.xml.sax.SAXException;
  */
 public class XsltTransform implements IFileConversion {
 
-	private Transformer transformer;
-
-	/**
-	 * Creates a new {@link XsltTransform}
-	 */
-	public XsltTransform(){
-		super();
-	}
-
-	/**
-	 * Sets an XSLT stylesheet contained
-	 * in the file whose name is <code>fileName</code>.
-	 * 
-	 * @param fileName
-	 *            The XSLT stylesheet file name.
-	 * @throws TransformerConfigurationException
-	 *             Thrown if there are errors when parsing the Source or it is
-	 *             not possible to create a {@link Transformer} instance.
-	 */
-	public void setXSLFile(String fileName)
-			throws TransformerConfigurationException {
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		Path relativePath = new Path(fileName);
-		
-		IFile file = workspace.getRoot().getFile(relativePath);
-		
-		TransformerFactory factory = TransformerFactory.newInstance(
-				"net.sf.saxon.TransformerFactoryImpl", null);
-		
-		StreamSource xsltSource;
-		try {
-			xsltSource = new StreamSource(file.getContents());
-			transformer = factory.newTransformer(xsltSource);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Transforms the given input file and generates the output file
-	 */
-	public void transformFileToFile(String sourceFilePath, String destFilePath)  {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		Path relativePath = new Path(sourceFilePath);
-		IFile inputFile = null;
-		Document source = null;
-		DocumentBuilder db = null;
-		
-		try {
-			ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-			inputFile = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-			// Using factory get an instance of document builder
-			db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			source = db.parse(inputFile.getContents());
-
-		} catch (ParserConfigurationException pce) {
-			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());
-		} catch (SAXException se) {
-			PreesmLogger.getLogger().log(Level.SEVERE,se.getMessage());
-		} catch (IOException ioe) {
-			PreesmLogger.getLogger().log(Level.SEVERE,ioe.getMessage());
-		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-		}
-
-		IFile outputIFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(destFilePath));
-		File outputFile= new File(outputIFile.getLocation().toOSString());
-		Source xmlSource = new DOMSource(source.getDocumentElement());
-		Result outputTarget = new StreamResult(outputFile);
-		try {
-			transformer.transform(xmlSource, outputTarget);
-		} catch (TransformerException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-		}
-
-	}
-
 	@Override
 	public TaskResult transform(TextParameters params) {
 
@@ -167,9 +65,10 @@ public class XsltTransform implements IFileConversion {
 		
 		if(!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()){
 			try {
-				XsltTransform xsltTransfo = new XsltTransform();
-				xsltTransfo.setXSLFile(xslPath.toOSString());
+				XsltTransformer xsltTransfo = new XsltTransformer();
+				if(xsltTransfo.setXSLFile(xslPath.toOSString())){
 				xsltTransfo.transformFileToFile(inputPath.toOSString(), outputPath.toOSString());
+				}
 				
 				//xsltTransfo.
 			} catch (TransformerConfigurationException e) {

@@ -40,7 +40,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
-import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * @author mpelcat

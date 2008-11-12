@@ -55,7 +55,7 @@ import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
-import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;

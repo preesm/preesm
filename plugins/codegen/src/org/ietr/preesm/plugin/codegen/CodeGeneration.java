@@ -46,10 +46,10 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
-import org.ietr.preesm.core.log.PreesmLogger;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -130,6 +130,7 @@ public class CodeGeneration implements ICodeGeneration {
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
 			MultiCoreArchitecture architecture, TextParameters parameters) {
 		String sourcePath = parameters.getVariable("sourcePath");
+		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
 
@@ -137,7 +138,7 @@ public class CodeGeneration implements ICodeGeneration {
 		generateSourceFiles(algorithm, architecture, list);
 
 		// Generates the code
-		GenericPrinter printerChooser = new GenericPrinter(sourcePath);
+		GenericPrinter printerChooser = new GenericPrinter(sourcePath,xslPath);
 		printerChooser.printList(list);
 
 		result.setSourcefilelist(list);

@@ -37,6 +37,9 @@ knowledge of the CeCILL-B license and that you accept its terms.
 package org.ietr.preesm.plugin.codegen.print;
 
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -48,6 +51,8 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
  * Prints the generated code in an intermediate xml file and applies the xslt
@@ -60,11 +65,18 @@ public class GenericPrinter {
 	/**
 	 * Directory in which we should put the generated files
 	 */
-	private String directory = null;
+	private String outputPath = null;
 
-	public GenericPrinter(String directory) {
+	/**
+	 * Directory in which we should put the xsl files to transform
+	 * XML into formatted files
+	 */
+	private String xslPath = null;
+
+	public GenericPrinter(String directory, String xslPath) {
 		super();
-		this.directory = directory;
+		this.outputPath = directory;
+		this.xslPath = xslPath;
 	}
 
 	/**
@@ -83,7 +95,8 @@ public class GenericPrinter {
 	}
 
 	/**
-	 * Visiting a source file
+	 * Generates an XML source file and converts it into a target source file thanks
+	 * to an xslt sheet
 	 */
 	public void print(SourceFile srcFile) {
 
@@ -91,15 +104,15 @@ public class GenericPrinter {
 
 		// Generating an xml file corresponding to the code of one file
 		String fileName = operator.getName();
-		IPath path = new Path(directory);
-		path = path.append(fileName + ".xml");
+		IPath xmlPath = new Path(outputPath);
+		xmlPath = xmlPath.append(fileName + ".xml");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 		XMLPrinter printer = getPrinter(operator);
 
 
-		IFile iFile = workspace.getRoot().getFile(path);
+		IFile iFile = workspace.getRoot().getFile(xmlPath);
 		try {
 			if (!iFile.exists()) {
 				iFile.create(null, false, new NullProgressMonitor());
@@ -110,6 +123,24 @@ public class GenericPrinter {
 
 		} catch (CoreException e1) {
 			e1.printStackTrace();
+		}
+
+		if(!xslPath.isEmpty()){
+			IPath specificPath = new Path(outputPath);
+			specificPath = specificPath.append(fileName + ".out");
+	
+			IPath xslFilePath = new Path(xslPath);
+			xslFilePath = xslFilePath.append(operator.getDefinition().getId() + ".xslt");
+	
+			try {
+				XsltTransformer xsltTransfo = new XsltTransformer();
+				if(xsltTransfo.setXSLFile(xslFilePath.toOSString())){
+				xsltTransfo.transformFileToFile(xmlPath.toOSString(), specificPath.toOSString());
+				}
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				PreesmLogger.getLogger().log(Level.INFO, e.getMessage());
+			}
 		}
 	}
 
