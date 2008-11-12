@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="n1" x="20" y="91"/>
+      <vertex id="n2" x="82" y="47"/>
+      <vertex id="n3" x="156" y="169"/>
+      <vertex id="n4" x="144" y="229"/>
+      <vertex id="n5" x="79" y="214"/>
+      <vertex id="n6" x="180" y="32"/>
+      <vertex id="n7" x="147" y="90"/>
+      <vertex id="n8" x="260" y="188"/>
+      <vertex id="n9" x="363" y="120"/>
+   </vertices>
+</layout>

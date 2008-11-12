@@ -2,9 +2,12 @@
    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc">
       <desc>java.lang.String</desc>
    </key>
-   <key attr.name="arguments" for="node" id="arguments"/>
-   <key attr.name="parameters" for="graph" id="parameters"/>
-   <key attr.name="variables" for="graph" id="variables"/>
+   <key attr.name="name" attr.type="string" for="node" id="name">
+      <desc>java.lang.String</desc>
+   </key>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
       <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
@@ -16,42 +19,51 @@
    </key>
    <graph edgedefault="directed">
       <data key="parameters"/>
-      <data key="variables"/>
+      <data key="variables">=</data>
       <node id="n1" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n1</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n2" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n2</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n3" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n3</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n4" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n4</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n5" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n5</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n6" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n6</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n7" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n7</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n8" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n8</data>
+         <data key="arguments">=</data>
       </node>
       <node id="n9" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">n9</data>
+         <data key="arguments">=</data>
       </node>
       <edge source="n1" sourceport="o1" target="n2" targetport="i1">
          <data key="edge_prod">4</data>
