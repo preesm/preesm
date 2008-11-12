@@ -94,51 +94,6 @@ public class CodeGeneration implements ICodeGeneration {
 	}
 
 	/**
-	 * Adding send and receive between v1 and v2. It removes the original vertex
-	 * and copies its buffer aggregate
-	 */
-	public DAGVertex addComVertices(DAGVertex v1, DAGVertex v2, Medium medium,
-			Operator sendOp, Operator receiveOp, int schedulingOrder) {
-		DirectedAcyclicGraph graph = v1.getBase();
-
-		DAGEdge originalEdge = graph.getEdge(v1, v2);
-		Object aggregate = originalEdge.getPropertyBean().getValue(
-				BufferAggregate.propertyBeanName);
-		graph.removeEdge(originalEdge);
-
-		// Tagging the communication vertices with their operator, type and
-		// medium
-		DAGVertex send = new DAGVertex();
-		send.setId("snd" + v2.getName() + sendOp.getName());
-		send.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		send.getPropertyBean().setValue(VertexType.propertyBeanName,
-				VertexType.send);
-		send.getPropertyBean().setValue(Medium.propertyBeanName, medium);
-		send.getPropertyBean().setValue(Operator.propertyBeanName, sendOp);
-
-		DAGVertex receive = new DAGVertex();
-		receive.setId("rcv" + v1.getName() + receiveOp.getName());
-		receive.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		receive.getPropertyBean().setValue(VertexType.propertyBeanName,
-				VertexType.receive);
-		receive.getPropertyBean().setValue(Medium.propertyBeanName, medium);
-		receive.getPropertyBean()
-				.setValue(Operator.propertyBeanName, receiveOp);
-
-		graph.addVertex(send);
-		graph.addVertex(receive);
-
-		graph.addEdge(v1, send).getPropertyBean().setValue(
-				BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(send, receive).getPropertyBean().setValue(
-				BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(receive, v2).getPropertyBean().setValue(
-				BufferAggregate.propertyBeanName, aggregate);
-
-		return receive;
-	}
-
-	/**
 	 * Adding a new edge to graph from a few properties
 	 */
 	public DAGEdge addExampleEdge(DirectedAcyclicGraph graph, String source,

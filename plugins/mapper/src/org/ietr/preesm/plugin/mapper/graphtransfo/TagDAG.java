@@ -54,6 +54,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
@@ -67,6 +68,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * Tags an SDF with the implementation information necessary for code generation
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class TagDAG {
 
@@ -85,27 +87,28 @@ public class TagDAG {
 	}
 
 	/**
-	 * tag adds the send and receive operations necessary to the code generation.
-	 * It also adds the necessary properies.
+	 * tag adds the send and receive operations necessary to the code
+	 * generation. It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,IAbc simu) {
+	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IAbc simu) {
 
 		PropertyBean bean = dag.getPropertyBean();
-		bean.setValue(AbstractAbc.propertyBeanName,simu.getType());
-		bean.setValue("SdfReferenceGraph",dag.getReferenceSdfGraph());
+		bean.setValue(AbstractAbc.propertyBeanName, simu.getType());
+		bean.setValue("SdfReferenceGraph", dag.getReferenceSdfGraph());
 
-		addTransfers(dag,architecture);
+		addTransfers(dag, architecture);
 		addProperties(dag);
 		addAllAggregates(dag);
 	}
 
 	public void addTransfers(MapperDAG dag, MultiCoreArchitecture architecture) {
-		
+
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.
 		SchedulingOrderManager orderMgr = new SchedulingOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		TransferVertexAdder tvAdder = new TransferVertexAdder(new CommunicationRouter(architecture),orderMgr, true);
+		TransferVertexAdder tvAdder = new TransferVertexAdder(
+				new CommunicationRouter(architecture), orderMgr, true);
 		tvAdder.addTransferVertices(dag, new TransactionManager());
 		orderMgr.tagDAG(dag);
 	}
@@ -113,82 +116,182 @@ public class TagDAG {
 	public void addProperties(MapperDAG dag) {
 
 		MapperDAGVertex currentVertex;
-		
+
 		Iterator<DAGVertex> iter = dag.vertexSet().iterator();
-		
+
 		// Tagging the vertices with informations for code generation
 		while (iter.hasNext()) {
-			currentVertex = (MapperDAGVertex)iter.next();
+			currentVertex = (MapperDAGVertex) iter.next();
 			PropertyBean bean = currentVertex.getPropertyBean();
-			
-			if(currentVertex instanceof SendVertex){
 
-				MapperDAGEdge incomingEdge = (MapperDAGEdge)((SendVertex) currentVertex).incomingEdges().toArray()[0];
+			if (currentVertex instanceof SendVertex) {
+
+				MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex)
+						.incomingEdges().toArray()[0];
 				bean.setValue(VertexType.propertyBeanName, VertexType.send);
-				bean.setValue(Operator.propertyBeanName,
-						((SendVertex) currentVertex).getRouteStep().getSender());
-				bean.setValue(Medium.propertyBeanName, ((SendVertex) currentVertex).getRouteStep().getMedium());
-				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty().getDataSize());
-				bean.setValue("senderGraphName", incomingEdge.getSource().getName());
+				bean
+						.setValue(Operator.propertyBeanName,
+								((SendVertex) currentVertex).getRouteStep()
+										.getSender());
+				bean
+						.setValue(Medium.propertyBeanName,
+								((SendVertex) currentVertex).getRouteStep()
+										.getMedium());
+				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty()
+						.getDataSize());
+				bean.setValue("senderGraphName", incomingEdge.getSource()
+						.getName());
 				bean.setValue(Operator.propertyBeanName + "_address",
-						((SendVertex) currentVertex).getRouteStep().getSender().getDefinition().getBaseAddress());
-			}
-			else if(currentVertex instanceof ReceiveVertex){
+						((SendVertex) currentVertex).getRouteStep().getSender()
+								.getDefinition().getBaseAddress());
+			} else if (currentVertex instanceof ReceiveVertex) {
 
-				MapperDAGEdge outgoingEdge = (MapperDAGEdge)((ReceiveVertex) currentVertex).outgoingEdges().toArray()[0];
+				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
+						.outgoingEdges().toArray()[0];
 				bean.setValue(VertexType.propertyBeanName, VertexType.receive);
 				bean.setValue(Operator.propertyBeanName,
-						((ReceiveVertex) currentVertex).getRouteStep().getReceiver());
-				bean.setValue(Medium.propertyBeanName, ((ReceiveVertex) currentVertex).getRouteStep().getMedium());
-				bean.setValue("dataSize", outgoingEdge.getInitialEdgeProperty().getDataSize());
-				bean.setValue("receiverGraphName", outgoingEdge.getTarget().getName());
-				bean.setValue(Operator.propertyBeanName + "_address",
-						((ReceiveVertex) currentVertex).getRouteStep().getReceiver().getDefinition().getBaseAddress());
-			}
-			else{
-	
-				bean.setValue(Operator.propertyBeanName,
-						currentVertex.getImplementationVertexProperty().getEffectiveOperator());
+						((ReceiveVertex) currentVertex).getRouteStep()
+								.getReceiver());
+				bean.setValue(Medium.propertyBeanName,
+						((ReceiveVertex) currentVertex).getRouteStep()
+								.getMedium());
+				bean.setValue("dataSize", outgoingEdge.getInitialEdgeProperty()
+						.getDataSize());
+				bean.setValue("receiverGraphName", outgoingEdge.getTarget()
+						.getName());
+				bean
+						.setValue(Operator.propertyBeanName + "_address",
+								((ReceiveVertex) currentVertex).getRouteStep()
+										.getReceiver().getDefinition()
+										.getBaseAddress());
+			} else {
+
+				bean.setValue(Operator.propertyBeanName, currentVertex
+						.getImplementationVertexProperty()
+						.getEffectiveOperator());
 				bean.setValue(VertexType.propertyBeanName, VertexType.task);
-				
-				Operator effectiveOperator = currentVertex.getImplementationVertexProperty().getEffectiveOperator();
-				int singleRepeatTime = currentVertex.getInitialVertexProperty().getTime(effectiveOperator);
-				int nbRepeat = currentVertex.getInitialVertexProperty().getNbRepeat();
+
+				Operator effectiveOperator = currentVertex
+						.getImplementationVertexProperty()
+						.getEffectiveOperator();
+				int singleRepeatTime = currentVertex.getInitialVertexProperty()
+						.getTime(effectiveOperator);
+				int nbRepeat = currentVertex.getInitialVertexProperty()
+						.getNbRepeat();
 				int totalTime = nbRepeat * singleRepeatTime;
 				bean.setValue("duration", totalTime);
 			}
-			
-			bean.setValue("schedulingOrder", currentVertex.getImplementationVertexProperty().getSchedulingTotalOrder());
-		}
-	}
 
-	//TODO: Remove these fake aggregates
-	public void addAllAggregates(MapperDAG dag) {
-
-		MapperDAGEdge edge;
-		
-		Iterator<DAGEdge> iter = dag.edgeSet().iterator();
-		
-		// Tagging the vertices with informations for code generation
-		while (iter.hasNext()) {
-			edge = (MapperDAGEdge)iter.next();
-			addAggregate(edge, "char", 10);
+			bean.setValue("schedulingOrder", currentVertex
+					.getImplementationVertexProperty()
+					.getSchedulingTotalOrder());
 		}
 	}
 
 	/**
-	 * Adding a properties to an edge from a type and size
+	 * Loop on the edges to add aggregates.
 	 */
-	public void addAggregate(MapperDAGEdge edge, String type, int size) {
+	public void addAllAggregates(MapperDAG dag) {
 
-		edge.getPropertyBean().setValue("dataType", type);
+		MapperDAGEdge edge;
 
-		// Example buffer aggregate with one single buffer
+		Iterator<DAGEdge> iter = dag.edgeSet().iterator();
+
+		// Tagging the vertices with informations for code generation
+		while (iter.hasNext()) {
+			edge = (MapperDAGEdge) iter.next();
+
+			if (edge.getSource() instanceof TransferVertex
+					|| edge.getTarget() instanceof TransferVertex) {
+				addComAggregateFromSDF(edge);
+			} else {
+				addAggregateFromSDF(edge);
+			}
+		}
+	}
+
+	/**
+	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
+	 * sdf edges that were merged into one DAG edge.
+	 * 
+	 * TODO: resolve the size problem
+	 */
+	public void addAggregateFromSDF(MapperDAGEdge edge) {
+
 		BufferAggregate agg = new BufferAggregate();
-		for(AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge.getAggregate()){
-			SDFEdge sdfAgMember = (SDFEdge) aggMember ;
-			agg.add(new BufferProperties(type, sdfAgMember.getSourceInterface().getName(), sdfAgMember.getTargetInterface().getName(), size));
+
+		// Iterating the SDF aggregates
+		for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge
+				.getAggregate()) {
+			SDFEdge sdfAggMember = (SDFEdge) aggMember;
+
+			BufferProperties props = new BufferProperties("char", sdfAggMember
+					.getSourceInterface().getName(), sdfAggMember
+					.getTargetInterface().getName(), sdfAggMember.getProd()
+					.intValue());
+
+			agg.add(props);
 		}
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
+	}
+
+	/**
+	 * Aggregates of communication edges are duplicated from the aggregates of
+	 * the direct edges.
+	 */
+	public void addComAggregateFromSDF(MapperDAGEdge inputEdge) {
+
+		MapperDAGEdge directEdge = getDirectEdge(inputEdge);
+
+		if (directEdge != null) {
+			BufferAggregate agg = new BufferAggregate();
+
+			// Iterating the SDF aggregates
+			for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : directEdge
+					.getAggregate()) {
+				SDFEdge sdfAggMember = (SDFEdge) aggMember;
+
+				BufferProperties props = new BufferProperties("char",
+						sdfAggMember.getSourceInterface().getName(),
+						sdfAggMember.getTargetInterface().getName(),
+						sdfAggMember.getProd().intValue());
+
+				agg.add(props);
+			}
+			inputEdge.getPropertyBean().setValue(BufferAggregate.propertyBeanName,
+					agg);
+		}
+	}
+
+	/**
+	 * Aggregates of communication edges are duplicated from the aggregates of
+	 * the direct edges.
+	 */
+	public MapperDAGEdge getDirectEdge(MapperDAGEdge inputEdge) {
+
+		MapperDAGVertex sender = null;
+		MapperDAGVertex receiver = null;
+		MapperDAGEdge directEdge = inputEdge;
+
+		while (directEdge.getSource() instanceof TransferVertex) {
+			directEdge = (MapperDAGEdge) directEdge.getSource().incomingEdges()
+					.toArray()[0];
+		}
+
+		sender = (MapperDAGVertex) directEdge.getSource();
+
+		while (directEdge.getTarget() instanceof TransferVertex) {
+			directEdge = (MapperDAGEdge) directEdge.getTarget().outgoingEdges()
+					.toArray()[0];
+		}
+
+		receiver = (MapperDAGVertex) directEdge.getTarget();
+
+		if (sender != null && receiver != null) {
+			directEdge = (MapperDAGEdge) sender.getBase().getAllEdges(sender,
+					receiver).toArray()[0];
+		}
+		
+		return directEdge;
 	}
 }

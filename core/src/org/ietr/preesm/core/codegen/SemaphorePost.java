@@ -74,9 +74,8 @@ public class SemaphorePost extends AbstractCodeElement {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
-		semaphore.accept(printer, currentLocation); // Accept the code container
-		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		semaphore.accept(printer, currentLocation); // Accept the semaphore
 	}
 
 	public Semaphore getSemaphore() {

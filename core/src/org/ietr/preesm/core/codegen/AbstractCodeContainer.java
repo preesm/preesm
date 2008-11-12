@@ -64,7 +64,7 @@ public abstract class AbstractCodeContainer {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 
 		Iterator<ICodeElement> iterator = codeElements.iterator();
 

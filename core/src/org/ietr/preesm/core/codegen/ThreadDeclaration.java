@@ -89,7 +89,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 		super.accept(printer, currentLocation); // Accept the buffer allocation
 		beginningCode.accept(printer, currentLocation);
 		loopCode.accept(printer, currentLocation);

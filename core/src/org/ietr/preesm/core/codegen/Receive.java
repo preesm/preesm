@@ -64,7 +64,7 @@ public class Receive extends CommunicationFunctionCall {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation);
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 		super.accept(printer, currentLocation);
 		currentLocation = printer.visit(this, CodeZoneId.end, currentLocation);
 	}

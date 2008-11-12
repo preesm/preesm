@@ -124,11 +124,11 @@ public class AddSendReceiveTransaction extends Transaction {
 		MapperDAGVertex currentTarget = (MapperDAGVertex)edge.getTarget();
 
 		// Careful!!! Those names are used in code generation
-		String sendVertexID = "snd" + currentSource.getName()
-				+ currentTarget.getName() + routeIndex;
+		String sendVertexID = "s_" + currentSource.getName()
+				+ currentTarget.getName() + "_" + routeIndex;
 
-		String receiveVertexID = "rcv" + currentSource.getName()
-		+ currentTarget.getName() + routeIndex;
+		String receiveVertexID = "r_" + currentSource.getName()
+		+ currentTarget.getName() + "_" + routeIndex;
 		
 		Medium currentMedium = step.getMedium();
 

@@ -44,6 +44,7 @@ import org.sdf4j.model.dag.DAGEdge;
  * @author mpelcat
  */
 public class MapperDAGEdge extends DAGEdge {
+
 	/**
 	 * 
 	 */
@@ -74,5 +75,10 @@ public class MapperDAGEdge extends DAGEdge {
 
 	public void setTimingEdgeProperty(TimingEdgeProperty timingEdgeProperty) {
 		this.timingEdgeProperty = timingEdgeProperty;
+	}
+
+	@Override
+	public String toString() {
+		return "<" + getSource().getName() + "," + getTarget().getName() + ">";
 	}
 }

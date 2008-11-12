@@ -94,7 +94,7 @@ public abstract class AbstractBufferContainer {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 		
 		if (buffers.size() > 0) {
 			Iterator<BufferAllocation> iterator = buffers.iterator();

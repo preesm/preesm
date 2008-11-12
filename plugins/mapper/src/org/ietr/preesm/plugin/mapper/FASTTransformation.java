@@ -199,43 +199,6 @@ public class FASTTransformation extends AbstractMapping {
 
 		return edge;
 	}
-	
-	/**
-	 * Adding send and receive between v1 and v2. It removes the original vertex and
-	 * copies its buffer aggregate
-	 */
-	public SDFAbstractVertex addComVertices(SDFAbstractVertex v1, SDFAbstractVertex v2, Medium medium,Operator sendOp,Operator receiveOp, int schedulingOrder) {
-
-		SDFGraph graph = (SDFGraph)v1.getBase();
-
-		SDFEdge originalEdge = graph.getEdge(v1, v2);
-		Object aggregate = originalEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-		graph.removeEdge(originalEdge);
-		
-		// Tagging the communication vertices with their operator, type and medium
-		SDFAbstractVertex send = new SDFVertex();
-		send.setId("snd" + v2.getId() + sendOp.getName());
-		send.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		send.getPropertyBean().setValue(VertexType.propertyBeanName, VertexType.send);
-		send.getPropertyBean().setValue(Medium.propertyBeanName, medium);
-		send.getPropertyBean().setValue(Operator.propertyBeanName, sendOp);
-		
-		SDFAbstractVertex receive = new SDFVertex();
-		receive.setId("rcv" + v1.getId() + receiveOp.getName());
-		receive.getPropertyBean().setValue("schedulingOrder", schedulingOrder);
-		receive.getPropertyBean().setValue(VertexType.propertyBeanName, VertexType.receive);
-		receive.getPropertyBean().setValue(Medium.propertyBeanName, medium);
-		receive.getPropertyBean().setValue(Operator.propertyBeanName, receiveOp);
-		
-		graph.addVertex(send);
-		graph.addVertex(receive);
-		
-		graph.addEdge(v1, send).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(send, receive).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		graph.addEdge(receive, v2).getPropertyBean().setValue(BufferAggregate.propertyBeanName, aggregate);
-		
-		return receive;
-	}
 
 	/**
 	 * Kwok example 2 -> implanted DAG on one processor

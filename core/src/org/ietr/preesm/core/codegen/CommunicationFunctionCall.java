@@ -125,14 +125,18 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		currentLocation = printer
+				.visit(this, CodeZoneId.body, currentLocation); // Visit self
 
-		Iterator<Buffer> iterator = bufferSet.iterator();
+		if (bufferSet != null) {
+			Iterator<Buffer> iterator = bufferSet.iterator();
 
-		while (iterator.hasNext()) {
-			Buffer buf = iterator.next();
+			while (iterator.hasNext()) {
+				Buffer buf = iterator.next();
 
-			buf.accept(printer, currentLocation); // Accept the code container
+				buf.accept(printer, currentLocation); // Accept the code
+														// container
+			}
 		}
 	}
 
@@ -151,12 +155,14 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 		code += medium.getName() + ",";
 
-		Iterator<Buffer> iterator = bufferSet.iterator();
+		if (bufferSet != null) {
+			Iterator<Buffer> iterator = bufferSet.iterator();
 
-		while (iterator.hasNext()) {
-			Buffer buf = iterator.next();
+			while (iterator.hasNext()) {
+				Buffer buf = iterator.next();
 
-			code += buf.toString();
+				code += buf.toString();
+			}
 		}
 
 		return code;

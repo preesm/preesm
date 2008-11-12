@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen;
 
 import java.util.HashSet;
@@ -157,7 +157,8 @@ public class SourceFileCodeGenerator {
 		if (isInputBuffer) {
 			edgeSet = new HashSet<DAGEdge>(vertex.getBase().incomingEdgesOf(
 					vertex));
-			// Removes edges between two operators
+			// Removes edges between two operators. They are replaced by edges 
+			// to communication vertices
 			removeInterEdges(edgeSet);
 		} else {
 			edgeSet = new HashSet<DAGEdge>(vertex.getBase().outgoingEdgesOf(

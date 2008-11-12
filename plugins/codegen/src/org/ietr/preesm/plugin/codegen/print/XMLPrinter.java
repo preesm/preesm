@@ -158,7 +158,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(AbstractBufferContainer element, CodeZoneId index,
 			Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element bufferContainer= dom.createElement("bufferContainer");
 			((Element)currentLocation).appendChild(bufferContainer);
 			currentLocation = bufferContainer;
@@ -229,7 +229,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(UserFunctionCall element, CodeZoneId index,
 			Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element userFunctionCall = dom.createElement("userFunctionCall");
 			((Element)currentLocation).appendChild(userFunctionCall);
 
@@ -252,7 +252,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(ForLoop element, CodeZoneId index,
 			Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element forLoop = dom.createElement("forLoop");
 			((Element)currentLocation).appendChild(forLoop);
 			
@@ -266,7 +266,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(LinearCodeContainer element, CodeZoneId index,
 			Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element linearCodeContainer = dom.createElement("linearCodeContainer");
 			((Element)currentLocation).appendChild(linearCodeContainer);
 			
@@ -286,22 +286,39 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(Semaphore element, CodeZoneId index,
 			Object currentLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (index == CodeZoneId.body) {
+			((Element)currentLocation).setAttribute("number", Integer.toString(element.getSemaphoreNumber()));
+			((Element)currentLocation).setAttribute("type", element.getSemaphoreType().toString());
+		} 
+		
+		return currentLocation;
 	}
 
 	@Override
 	public Object visit(SemaphorePend element, CodeZoneId index,
 			Object currentLocation) {
-		// TODO Auto-generated method stub
-		return null;
+
+		if (index == CodeZoneId.body) {
+			Element semaphorePend = dom.createElement("semaphorePend");
+			((Element)currentLocation).appendChild(semaphorePend);
+			currentLocation = semaphorePend;
+		} 
+		
+		return currentLocation;
 	}
 
 	@Override
 	public Object visit(SemaphorePost element, CodeZoneId index,
 			Object currentLocation) {
-		// TODO Auto-generated method stub
-		return null;
+
+		if (index == CodeZoneId.body) {
+			Element semaphorePost = dom.createElement("semaphorePost");
+			((Element)currentLocation).appendChild(semaphorePost);
+			currentLocation = semaphorePost;
+		} 
+		
+		return currentLocation;
 	}
 
 	// File and threads
@@ -310,7 +327,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(SourceFile element, CodeZoneId index,
 			Object currentLocation) {
 		
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element sourceFileElt= dom.createElement("SourceFile");
 			((Element)currentLocation).appendChild(sourceFileElt);
 			currentLocation = sourceFileElt;
@@ -323,7 +340,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(ThreadDeclaration element, CodeZoneId index,
 			Object currentLocation) {
 		
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element threadElt = dom.createElement("threadDeclaration");
 			((Element)currentLocation).appendChild(threadElt);
 			threadElt.setAttribute("name", element.getName());
@@ -344,7 +361,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(Send element, CodeZoneId index, Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("send");
 			((Element)currentLocation).appendChild(send);
 			
@@ -359,7 +376,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	public Object visit(Receive element, CodeZoneId index,
 			Object currentLocation) {
 
-		if (index == CodeZoneId.begin) {
+		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receive");
 			((Element)currentLocation).appendChild(receive);
 			

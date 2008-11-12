@@ -60,7 +60,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 */
 	private Set<Buffer> availableBuffers;
 
-	@SuppressWarnings("unchecked") 
+	@SuppressWarnings("unchecked")
 	public UserFunctionCall(String name, AbstractVertex vertex,
 			AbstractBufferContainer parentContainer) {
 		super(name, parentContainer, vertex);
@@ -72,7 +72,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.begin, currentLocation); // Visit self
+		currentLocation = printer
+				.visit(this, CodeZoneId.body, currentLocation); // Visit self
 		for (Buffer buffer : availableBuffers) {
 			buffer.accept(printer, currentLocation);
 		}
@@ -87,8 +88,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 
 	public void addBuffers(Set<Buffer> buffers) {
-		for (Buffer buffer : buffers)
-			addBuffer(buffer);
+		if (buffers != null) {
+			for (Buffer buffer : buffers) {
+				addBuffer(buffer);
+			}
+		}
 	}
 
 	/**
