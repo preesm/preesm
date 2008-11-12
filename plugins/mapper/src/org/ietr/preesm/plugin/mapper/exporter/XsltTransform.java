@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.exporter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -62,8 +61,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.log.PreesmLogger;
+import org.ietr.preesm.core.task.IFileConversion;
+import org.ietr.preesm.core.task.TaskResult;
+import org.ietr.preesm.core.task.TextParameters;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
@@ -73,12 +74,19 @@ import org.xml.sax.SAXException;
  * @author mpelcat
  * 
  */
-public class XsltTransformer {
+public class XsltTransform implements IFileConversion {
 
 	private Transformer transformer;
 
 	/**
-	 * Creates a new {@link XsltTransformer} with an XSLT stylesheet contained
+	 * Creates a new {@link XsltTransform}
+	 */
+	public XsltTransform(){
+		super();
+	}
+
+	/**
+	 * Sets an XSLT stylesheet contained
 	 * in the file whose name is <code>fileName</code>.
 	 * 
 	 * @param fileName
@@ -87,7 +95,7 @@ public class XsltTransformer {
 	 *             Thrown if there are errors when parsing the Source or it is
 	 *             not possible to create a {@link Transformer} instance.
 	 */
-	public XsltTransformer(String fileName)
+	public void setXSLFile(String fileName)
 			throws TransformerConfigurationException {
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -106,14 +114,6 @@ public class XsltTransformer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Calls {@link Transformer#setParameter(String, Object)} on the underlying
-	 * {@link #transformer}.
-	 */
-	public void setParameter(String name, Object value) {
-		transformer.setParameter(name, value);
 	}
 
 	/**
@@ -158,31 +158,27 @@ public class XsltTransformer {
 
 	}
 
-	/**
-	 * Transforms the given DOM element (and its children) and returns the
-	 * result as a string. The string may contain text or XML.
-	 * 
-	 * @param element
-	 *            The source element to transform.
-	 * @return The string resulting from the transformation.
-	 * @throws TransformerException
-	 *             If an unrecoverable error occurs during the course of the
-	 *             transformation.
-	 */
-	public String transformDomToString(Element element)
-			throws TransformerException {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		DOMSource source = new DOMSource(element);
-		StreamResult result = new StreamResult(os);
-		transformer.transform(source, result);
-		try {
-			os.close();
-		} catch (IOException e) {
-			// never happens on a byte array output stream
-		}
+	@Override
+	public TaskResult transform(TextParameters params) {
 
-		String value = os.toString();
-		return value;
+		Path inputPath = new Path(params.getVariable("inputFile"));
+		Path outputPath = new Path(params.getVariable("outputFile"));
+		Path xslPath = new Path(params.getVariable("xslFile"));
+		
+		if(!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()){
+			try {
+				XsltTransform xsltTransfo = new XsltTransform();
+				xsltTransfo.setXSLFile(xslPath.toOSString());
+				xsltTransfo.transformFileToFile(inputPath.toOSString(), outputPath.toOSString());
+				
+				//xsltTransfo.
+			} catch (TransformerConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return new TaskResult();
 	}
 
 }

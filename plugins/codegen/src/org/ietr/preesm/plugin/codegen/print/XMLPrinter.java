@@ -152,7 +152,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	// Buffers
 	
 	@Override
-	public Object visit(AbstractBufferContainer element, CodeZoneId index,
+	public Object visit(AbstractBufferContainer domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
@@ -165,50 +165,50 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(Buffer element, CodeZoneId index, Object currentLocation) {
+	public Object visit(Buffer domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element buffer = dom.createElement("buffer");
 			((Element)currentLocation).appendChild(buffer);
 
-			buffer.setAttribute("name", element.getName());
+			buffer.setAttribute("name", domElt.getName());
 		} 
 		
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(SubBuffer element, CodeZoneId index,
+	public Object visit(SubBuffer domElt, CodeZoneId index,
 			Object currentLocation) {
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(BufferAllocation element, CodeZoneId index,
+	public Object visit(BufferAllocation domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element bufferAllocation = dom.createElement("bufferAllocation");
 			((Element)currentLocation).appendChild(bufferAllocation);
 			
-			bufferAllocation.setAttribute("name", element.getBuffer().getName());
-			bufferAllocation.setAttribute("size", element.getBuffer().getSize().toString());
-			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
+			bufferAllocation.setAttribute("name", domElt.getBuffer().getName());
+			bufferAllocation.setAttribute("size", domElt.getBuffer().getSize().toString());
+			bufferAllocation.setAttribute("type", domElt.getBuffer().getType().getTypeName());
 		} 
 		
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(VariableAllocation element, CodeZoneId index,
+	public Object visit(VariableAllocation domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element variableAllocation = dom.createElement("variableAllocation");
 			((Element)currentLocation).appendChild(variableAllocation);
 			
-			variableAllocation.setAttribute("name", element.getVariable().getName());
-			variableAllocation.setAttribute("type", element.getVariable().getType().getTypeName());
+			variableAllocation.setAttribute("name", domElt.getVariable().getName());
+			variableAllocation.setAttribute("type", domElt.getVariable().getType().getTypeName());
 		} 
 		
 		return currentLocation;
@@ -217,20 +217,20 @@ public class XMLPrinter implements IAbstractPrinter {
 	// Calls
 	
 	@Override
-	public Object visit(AbstractCodeElement element, CodeZoneId index,
+	public Object visit(AbstractCodeElement domElt, CodeZoneId index,
 			Object currentLocation) {
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(UserFunctionCall element, CodeZoneId index,
+	public Object visit(UserFunctionCall domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element userFunctionCall = dom.createElement("userFunctionCall");
 			((Element)currentLocation).appendChild(userFunctionCall);
 
-			userFunctionCall.setAttribute("name", element.getName());
+			userFunctionCall.setAttribute("name", domElt.getName());
 			currentLocation = userFunctionCall;
 		} 
 		
@@ -240,13 +240,13 @@ public class XMLPrinter implements IAbstractPrinter {
 	// Code containers
 
 	@Override
-	public Object visit(AbstractCodeContainer element, CodeZoneId index,
+	public Object visit(AbstractCodeContainer domElt, CodeZoneId index,
 			Object currentLocation) {
 		return currentLocation;
 	}
 	
 	@Override
-	public Object visit(ForLoop element, CodeZoneId index,
+	public Object visit(ForLoop domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
@@ -260,7 +260,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(LinearCodeContainer element, CodeZoneId index,
+	public Object visit(LinearCodeContainer domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
@@ -274,26 +274,26 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(FiniteForLoop element, int index, Object currentLocation) {
+	public Object visit(FiniteForLoop domElt, int index, Object currentLocation) {
 		return currentLocation;
 	}
 
 	// Synchro
 
 	@Override
-	public Object visit(Semaphore element, CodeZoneId index,
+	public Object visit(Semaphore domElt, CodeZoneId index,
 			Object currentLocation) {
 		
 		if (index == CodeZoneId.body) {
-			((Element)currentLocation).setAttribute("number", Integer.toString(element.getSemaphoreNumber()));
-			((Element)currentLocation).setAttribute("type", element.getSemaphoreType().toString());
+			((Element)currentLocation).setAttribute("number", Integer.toString(domElt.getSemaphoreNumber()));
+			((Element)currentLocation).setAttribute("type", domElt.getSemaphoreType().toString());
 		} 
 		
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(SemaphorePend element, CodeZoneId index,
+	public Object visit(SemaphorePend domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
@@ -306,7 +306,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(SemaphorePost element, CodeZoneId index,
+	public Object visit(SemaphorePost domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
@@ -321,7 +321,7 @@ public class XMLPrinter implements IAbstractPrinter {
 	// File and threads
 	
 	@Override
-	public Object visit(SourceFile element, CodeZoneId index,
+	public Object visit(SourceFile domElt, CodeZoneId index,
 			Object currentLocation) {
 		
 		if (index == CodeZoneId.body) {
@@ -334,13 +334,13 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(ThreadDeclaration element, CodeZoneId index,
+	public Object visit(ThreadDeclaration domElt, CodeZoneId index,
 			Object currentLocation) {
 		
 		if (index == CodeZoneId.body) {
 			Element threadElt = dom.createElement("threadDeclaration");
 			((Element)currentLocation).appendChild(threadElt);
-			threadElt.setAttribute("name", element.getName());
+			threadElt.setAttribute("name", domElt.getName());
 			currentLocation = threadElt;
 		}
 		
@@ -350,35 +350,35 @@ public class XMLPrinter implements IAbstractPrinter {
 	// Communication
 	
 	@Override
-	public Object visit(CommunicationFunctionCall element, CodeZoneId index,
+	public Object visit(CommunicationFunctionCall domElt, CodeZoneId index,
 			Object currentLocation) {
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(Send element, CodeZoneId index, Object currentLocation) {
+	public Object visit(Send domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("send");
 			((Element)currentLocation).appendChild(send);
 			
-			send.setAttribute("medium", element.getMedium().getName());
-			send.setAttribute("target", element.getTarget().getName());
+			send.setAttribute("medium", domElt.getMedium().getName());
+			send.setAttribute("target", domElt.getTarget().getName());
 		} 
 		
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(Receive element, CodeZoneId index,
+	public Object visit(Receive domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receive");
 			((Element)currentLocation).appendChild(receive);
 			
-			receive.setAttribute("medium", element.getMedium().getName());
-			receive.setAttribute("source", element.getSource().getName());
+			receive.setAttribute("medium", domElt.getMedium().getName());
+			receive.setAttribute("source", domElt.getSource().getName());
 		} 
 		
 		return currentLocation;

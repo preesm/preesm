@@ -59,6 +59,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.ICodeTranslation;
 import org.ietr.preesm.core.task.IExporter;
+import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.IPlotter;
@@ -253,6 +254,15 @@ public class Workflow {
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
 
 						nodeResult = tranform.transform(sdf, parameters);
+					} else if (transformation instanceof IFileConversion) {
+						monitor.subTask("converting file");
+						numberOfTasksDone++;
+						monitor.worked(numberOfTasksDone);
+
+						// mapping
+						IFileConversion tranform = (IFileConversion) transformation;
+
+						nodeResult = tranform.transform(parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
 						numberOfTasksDone++;

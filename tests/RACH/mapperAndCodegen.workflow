@@ -13,6 +13,7 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
       <data key="variables">
          <variable name="sourcePath" value="/RACH/Code"/>
+         <variable name="xslLibraryPath" value="/RACH/Code/XSL/main.xslt"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
@@ -21,8 +22,13 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform" taskId="DAGExporter">
       <data key="variables">
          <variable name="path" value="/RACH/DAG/outDAG.xml"/>
-         <variable name="transformedPath" value="/RACH/DAG/outDAG.lua"/>
-         <variable name="xslPath" value="/RACH/DAG/LUAXSL.xslt"/>
+      </data>
+   </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.XsltTransform" taskId="XSL Transform">
+      <data key="variables">
+         <variable name="inputFile" value="/RACH/DAG/outDAG.xml"/>
+         <variable name="outputFile" value="/RACH/DAG/out.lua"/>
+         <variable name="xslFile" value="/RACH/DAG/LUAXSL.xslt"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
@@ -40,4 +46,5 @@
    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAGExporter"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="DAGExporter"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAGExporter"/>
+   <preesm:dataTransfer from="DAGExporter" sourceport="" targetport="" to="XSL Transform"/>
 </preesm:workflow>

@@ -43,6 +43,11 @@
             name="Gantt plot transform"
             type="org.ietr.preesm.plugin.mapper.plot.gantt.ImplementationEditorTransform">
       </task>
+      <task
+            id="org.ietr.preesm.XsltTransform"
+            name="Xslt file transformation"
+            type="org.ietr.preesm.plugin.mapper.exporter.XsltTransform">
+      </task>
    </extension>
    <extension
          point="org.eclipse.ui.editors">

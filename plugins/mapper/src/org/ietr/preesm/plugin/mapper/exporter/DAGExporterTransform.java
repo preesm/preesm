@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.exporter;
 
-import javax.xml.transform.TransformerConfigurationException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -63,24 +61,10 @@ public class DAGExporterTransform implements IExporter{
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
 
 		Path graphmlPath = new Path(params.getVariable("path"));
-		Path transformedPath = new Path(params.getVariable("transformedPath"));
-		Path xslPath = new Path(params.getVariable("xslPath"));
 		
 		// Exporting the DAG in a GraphML
-		if(!graphmlPath.isEmpty() && !transformedPath.isEmpty()){
+		if(!graphmlPath.isEmpty()){
 			exportGraphML(dag, graphmlPath);
-		}
-		
-		if(!graphmlPath.isEmpty() && !transformedPath.isEmpty() && !xslPath.isEmpty()){
-			try {
-				XsltTransformer xsltTransfo = new XsltTransformer(xslPath.toOSString());
-				xsltTransfo.transformFileToFile(graphmlPath.toOSString(), transformedPath.toOSString());
-				
-				//xsltTransfo.
-			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 	
