@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
+import java.util.logging.Level;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -43,6 +45,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * The statistic editor displays statistics on the generated implementation
@@ -64,7 +67,6 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 
-		try {
 			setSite(site);
 			setInput(input);
 			setPartName(input.getName());
@@ -74,12 +76,13 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 				this.statGen = new StatGenerator(statinput.getArchi(), statinput.getDag(),
 						statinput.getParams(), statinput.getScenario(), statinput.getSdf());
 			}
-			
+			/*
 		} catch (Exception e) {
 			// Editor might not exist anymore if switching databases.  So
 			// just close it.
+			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
 			this.getEditorSite().getPage().closeEditor(this, false);
-		} 
+		} */
 	}
 
 	/**
@@ -88,11 +91,17 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	@Override
 	protected void addPages() {
 		//this.activateSite();
+		IFormPage ganttPage = new GanttPage(statGen,this, "Gantt","Gantt");
+		ganttPage.addPropertyListener(this);
 		IFormPage overviewPage = new OverviewPage(statGen,this, "Overview","Overview");
 		overviewPage.addPropertyListener(this);
+		PerformancePage performancePage = new PerformancePage(statGen,this, "Performance","Performance");
+		performancePage.addPropertyListener(this);
 		
 		try {
+			addPage(ganttPage);
 			addPage(overviewPage);
+			addPage(performancePage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

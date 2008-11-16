@@ -34,14 +34,13 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.plugin.mapper.plot.stats.StatEditorInput;
 
 /**
  * Class used by mapper editors.
@@ -64,19 +63,7 @@ public class EditorRunnable implements Runnable {
 		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
 				.getWorkbenchWindows()[0];
 
-		if (dwindow != null && input instanceof ImplementationEditorInput) {
-			IWorkbenchPage page = dwindow.getActivePage();
-
-			try {
-				page.openEditor(input,
-								"org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor");
-
-			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else if (dwindow != null && input instanceof StatEditorInput) {
+		if (dwindow != null && input instanceof StatEditorInput) {
 			IWorkbenchPage page = dwindow.getActivePage();
 
 			try {

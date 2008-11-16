@@ -146,5 +146,6 @@ public class SDFTreeSection extends SectionPart {
 
 		combo.setData(archi);
 		combo.addSelectionListener(checkStateListener);
+		combo.select(0);
 	}
 }

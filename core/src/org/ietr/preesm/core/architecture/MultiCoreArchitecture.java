@@ -68,11 +68,6 @@ public class MultiCoreArchitecture {
 	 */
 	private Set<Interconnection> interconnections;
 
-//	/**
-//	 * List of the fifos between components.
-//	 */
-//	private Set<Fifo> fifos;
-
 	/**
 	 * List of the bus references associated to interfaces
 	 */
@@ -84,6 +79,12 @@ public class MultiCoreArchitecture {
 	private String name;
 
 	/**
+	 * main operator and medium.
+	 */
+	private Operator mainOperator = null;
+	private Medium mainMedium = null;
+
+	/**
 	 * Creating an empty architecture.
 	 */
 	public MultiCoreArchitecture(String name) {
@@ -92,7 +93,7 @@ public class MultiCoreArchitecture {
 		busReferences = new HashMap<String, BusReference>();
 
 		interconnections = new HashSet<Interconnection>();
-//		fifos = new HashSet<Fifo>();
+		// fifos = new HashSet<Fifo>();
 
 		this.name = name;
 	}
@@ -169,29 +170,31 @@ public class MultiCoreArchitecture {
 
 		while (intIt.hasNext()) {
 			Interconnection nextInt = intIt.next();
-			newArchi.connect(nextInt.getCp1(), nextInt.getIf1(), nextInt.getCp2(), nextInt.getIf2(), false);
+			newArchi.connect(nextInt.getCp1(), nextInt.getIf1(), nextInt
+					.getCp2(), nextInt.getIf2(), false);
 		}
 		return newArchi;
 	}
 
-//	/**
-//	 * Connects a medium and an operator
-//	 * 
-//	 * @return true if the medium could be added
-//	 */
-//	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
-//			ArchitectureComponent cmp2, ArchitectureInterface if2,
-//			boolean isFifo) {
-//
-//		if (isFifo) {
-//			fifos.add(new Fifo(cmp1, if1, cmp2, if2));
-//		} else {
-//			if (!existInterconnection(cmp1, if1, cmp2, if2))
-//				interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
-//		}
-//
-//	}
-	
+	// /**
+	// * Connects a medium and an operator
+	// *
+	// * @return true if the medium could be added
+	// */
+	// public void connect(ArchitectureComponent cmp1, ArchitectureInterface
+	// if1,
+	// ArchitectureComponent cmp2, ArchitectureInterface if2,
+	// boolean isFifo) {
+	//
+	// if (isFifo) {
+	// fifos.add(new Fifo(cmp1, if1, cmp2, if2));
+	// } else {
+	// if (!existInterconnection(cmp1, if1, cmp2, if2))
+	// interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+	// }
+	//
+	// }
+
 	/**
 	 * Connect two components. If the connection is directed, cmp1 and cmp2 are
 	 * source and target components relatively.
@@ -200,16 +203,16 @@ public class MultiCoreArchitecture {
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
 			boolean isDirected) {
-		if (!existInterconnection(cmp1, if1, cmp2, if2)){
+		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
 			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
-			if(isDirected){
-				if(cmp1.getType()==ArchitectureComponentType.fifo){
-					if(((Fifo)cmp1).getOutputInterface()==null){
-						((Fifo)cmp1).setOutputInterface(if1);
+			if (isDirected) {
+				if (cmp1.getType() == ArchitectureComponentType.fifo) {
+					if (((Fifo) cmp1).getOutputInterface() == null) {
+						((Fifo) cmp1).setOutputInterface(if1);
 					}
-				} else if(cmp2.getType()==ArchitectureComponentType.fifo){
-					if(((Fifo)cmp2).getInputInterface()==null){
-						((Fifo)cmp2).setInputInterface(if2);
+				} else if (cmp2.getType() == ArchitectureComponentType.fifo) {
+					if (((Fifo) cmp2).getInputInterface() == null) {
+						((Fifo) cmp2).setInputInterface(if2);
 					}
 				}
 			}
@@ -255,21 +258,29 @@ public class MultiCoreArchitecture {
 	}
 
 	public Medium getMainMedium() {
-		Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.medium);
-		if (!cmpSet.isEmpty())
-			return (Medium) getComponents(ArchitectureComponentType.medium)
-					.toArray()[0];
-		else
-			return null;
+		if (mainMedium == null) {
+			Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.medium);
+			if (!cmpSet.isEmpty())
+				return (Medium) getComponents(ArchitectureComponentType.medium)
+						.toArray()[0];
+			else
+				return null;
+		} else {
+			return mainMedium;
+		}
 	}
 
 	public Operator getMainOperator() {
-		Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.operator);
-		if (!cmpSet.isEmpty())
-			return (Operator) getComponents(ArchitectureComponentType.operator)
-					.toArray()[0];
-		else
-			return null;
+		if (mainOperator == null) {
+			Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.operator);
+			if (!cmpSet.isEmpty())
+				return (Operator) getComponents(
+						ArchitectureComponentType.operator).toArray()[0];
+			else
+				return null;
+		} else {
+			return mainOperator;
+		}
 	}
 
 	/**
@@ -398,5 +409,23 @@ public class MultiCoreArchitecture {
 	public String getName() {
 		return name;
 	}
+	
+	public void setMainOperator(String mainOperatorName) {
+		Operator o = (Operator)getComponent(ArchitectureComponentType.operator,
+				mainOperatorName);
+		if(o != null){
+			this.mainOperator = o;
+		}
+	}
+
+	public void setMainMedium(String mainMediumName) {
+		Medium m = (Medium)getComponent(ArchitectureComponentType.medium,
+				mainMediumName);
+		if(m != null){
+			this.mainMedium = m;
+		}
+			
+	}
+
 
 }

@@ -41,7 +41,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.plot"
             name="Gantt plot transform"
-            type="org.ietr.preesm.plugin.mapper.plot.gantt.ImplementationEditorTransform">
+            type="org.ietr.preesm.plugin.mapper.plot.stats.StatEditorTransform">
       </task>
       <task
             id="org.ietr.preesm.XsltTransform"

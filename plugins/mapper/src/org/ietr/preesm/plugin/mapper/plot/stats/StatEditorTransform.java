@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
@@ -43,7 +43,6 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.stats.StatEditorInput;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -53,22 +52,15 @@ import org.sdf4j.model.sdf.SDFGraph;
  * 
  * @author mpelcat
  */
-public class ImplementationEditorTransform implements IPlotter {
+public class StatEditorTransform implements IPlotter {
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
 			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
 
 		MapperDAG mapperDag = (MapperDAG) dag;
-
-
-		IEditorInput input = new ImplementationEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run implementation editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
 		
-		input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
+		IEditorInput input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
 
 		// Run statistic editor
 		PlatformUI.getWorkbench().getDisplay().asyncExec(

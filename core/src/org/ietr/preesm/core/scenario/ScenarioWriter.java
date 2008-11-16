@@ -90,8 +90,23 @@ public class ScenarioWriter {
 		addFiles(root);
 		addConstraints(root);
 		addTimings(root);
+		addSimuParams(root);
 		
 		return dom;
+	}
+	
+	private void addSimuParams(Element parent) {
+
+		Element params= dom.createElement("simuParams");
+		parent.appendChild(params);
+		
+		Element core = dom.createElement("mainCore");
+		params.appendChild(core);
+		core.setTextContent(scenario.getSimulationManager().getMainOperatorName());
+		
+		Element medium = dom.createElement("mainMedium");
+		params.appendChild(medium);
+		medium.setTextContent(scenario.getSimulationManager().getMainMediumName());	
 	}
 	
 	public void writeDom(IFile file) {

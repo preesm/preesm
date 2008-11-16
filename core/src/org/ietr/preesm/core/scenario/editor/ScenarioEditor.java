@@ -107,11 +107,14 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		constraintsPage.addPropertyListener(this);
 		IFormPage timingsPage = new TimingsPage(scenario,this, "Timings","Timings");
 		timingsPage.addPropertyListener(this);
+		SimulationPage simulationPage = new SimulationPage(scenario,this, "Simulation","Simulation");
+		simulationPage.addPropertyListener(this);
 		
 		try {
 			addPage(overviewPage);
 			addPage(constraintsPage);
 			addPage(timingsPage);
+			addPage(simulationPage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -50,6 +50,11 @@ public class Scenario implements IScenario {
 	private TimingManager timingmanager = null;
 
 	/**
+	 * Manager of simulation parameters
+	 */
+	private SimulationManager simulationManager = null;
+
+	/**
 	 * Path to the algorithm file
 	 */
 	private String algorithmURL = "";
@@ -59,9 +64,11 @@ public class Scenario implements IScenario {
 	 */
 	private String architectureURL = "";
 
+
 	public Scenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
+		simulationManager = new SimulationManager();
 	}
 
 	public ConstraintGroupManager getConstraintGroupManager() {
@@ -93,6 +100,9 @@ public class Scenario implements IScenario {
 	public void setArchitectureURL(String architectureURL) {
 		this.architectureURL = architectureURL;
 	}
-	
-	
+
+	@Override
+	public SimulationManager getSimulationManager() {
+		return simulationManager;
+	}
 }

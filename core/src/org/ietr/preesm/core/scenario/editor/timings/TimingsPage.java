@@ -214,7 +214,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
 		coreCombo.addSelectionListener(labelProvider);
-
+		coreCombo.select(0);
 		
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);

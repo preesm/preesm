@@ -147,6 +147,8 @@ public class ScenarioParser {
 						parseConstraintGroups(elt);
 					} else if (type.equals("timings")) {
 						parseTimings(elt);
+					} else if (type.equals("simuParams")) {
+						parseSimuParams(elt);
 					}
 				}
 	
@@ -155,6 +157,31 @@ public class ScenarioParser {
 		}
 
 		return scenario;
+	}
+
+	/**
+	 * Parses the simulation parameters
+	 */
+	private void parseSimuParams(Element filesElt) {
+
+		Node node = filesElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				String content = elt.getTextContent();
+				if (type.equals("mainCore")) {
+					scenario.getSimulationManager().setMainOperatorName(content);
+				}
+				else if (type.equals("mainMedium")){
+					scenario.getSimulationManager().setMainMediumName(content);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
 	}
 
 	/**

@@ -62,4 +62,9 @@ public interface IScenario {
 	 * Relative path to architecture file
 	 */
 	public String getArchitectureURL();
+
+	/**
+	 * Manager of implementation timings.
+	 */
+	public SimulationManager getSimulationManager();
 }

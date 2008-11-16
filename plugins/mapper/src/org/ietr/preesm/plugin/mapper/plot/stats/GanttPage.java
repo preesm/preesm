@@ -34,20 +34,17 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.gantt;
+package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -57,106 +54,68 @@ import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Editor of an implementation Gantt chart
+ * This page contains the gantt display
  * 
  * @author mpelcat
  */
-public class ImplementationEditor extends EditorPart {
+public class GanttPage extends FormPage {
 
-	private MapperDAG dag = null;
-	private SDFGraph sdf = null;
-	private MultiCoreArchitecture archi = null;
-	private IScenario scenario = null;
-	private TextParameters params = null;
+	private StatGenerator statGen = null;
 	
-	public ImplementationEditor() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
+	public GanttPage(StatGenerator statGen, FormEditor editor, String id, String title) {
+		super(editor, id, title);
 		
+		this.statGen = statGen;
 	}
 
+	/**
+	 * Creation of the sections and their initialization
+	 */
 	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
+	protected void createFormContent(IManagedForm managedForm) {
 		
-	}
-
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		ScrolledForm form = managedForm.getForm();
+		ColumnLayout layout = new ColumnLayout();
+		layout.topMargin = 0;
+		layout.bottomMargin = 5;
+		layout.leftMargin = 10;
+		layout.rightMargin = 10;
+		layout.horizontalSpacing = 10;
+		layout.verticalSpacing = 10;
+		layout.maxNumColumns = 4;
+		layout.minNumColumns = 1;
+		form.getBody().setLayout(layout);
 		
-		try {
-			setSite(site);
-			setInput(input);
-			setPartName(input.getName());
-			
-			if(input instanceof ImplementationEditorInput){
-				ImplementationEditorInput implinput = (ImplementationEditorInput)input;
-				this.archi = implinput.getArchi();
-				this.dag = implinput.getDag();
-				this.params = implinput.getParams();
-				this.scenario = implinput.getScenario();
-				this.sdf = implinput.getSdf();
-			}
-			
-		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases.  So
-			// just close it.
-			this.getEditorSite().getPage().closeEditor(this, false);
-		} 
-
-	}
-
-	@Override
-	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void createPartControl(Composite parent) {
-
-		PropertyBean bean = dag.getPropertyBean();
+		MapperDAG dag = statGen.getDag().clone();
+		MultiCoreArchitecture archi = statGen.getArchi();
 		
 		
-		if(dag != null && sdf != null && archi != null && scenario != null && params != null){
+		if(dag != null && archi != null){
 
+
+			// Gets the appropriate abc to generate the gantt.
+			PropertyBean bean = dag.getPropertyBean();
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
 			
 			IAbc simu = AbstractAbc
 			.getInstance(abctype, dag, archi);
 
-			// Every send and receive vertices are removed before plotting the graph
-			Set<DAGVertex> vset = new HashSet<DAGVertex>(dag.vertexSet());
-			for(DAGVertex v:vset)
-				if(v instanceof SendVertex || v instanceof ReceiveVertex)
-					dag.removeVertex(v);
+			StatGenerator.removeSendReceive(dag);
 			
 			simu.setDAG(dag);
 
 			simu.getFinalTime();
-			GanttPlotter.plotInComposite(simu, parent);
+			GanttPlotter.plotInComposite(simu, form.getBody());
 		}
 		
 	}
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-		
+
+	public StatGenerator getStatGen() {
+		return statGen;
 	}
+	
 }

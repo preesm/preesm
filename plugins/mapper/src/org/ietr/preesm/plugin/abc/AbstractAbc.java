@@ -405,37 +405,46 @@ public abstract class AbstractAbc implements IAbc {
 							implant(currentvertex, op, true);
 							foundAlternative = true;
 
-							PreesmLogger.getLogger().info(
-									"The vertex: " + currentvertex.getName()
-											+ " could not be mapped on main operator "
-											+ operator.getName()
-											+ ". An alternative with same definition was found.");
+							PreesmLogger
+									.getLogger()
+									.info(
+											"The vertex: "
+													+ currentvertex.getName()
+													+ " could not be mapped on main operator "
+													+ operator.getName()
+													+ ". An alternative with same definition was found.");
 						}
 					}
 				}
 
-				if (!foundAlternative){
+				if (!foundAlternative) {
 
 					for (Operator op : currentvertex.getInitialVertexProperty()
 							.getOperatorSet()) {
 						if (isImplantable(currentvertex, op)) {
-								implant(currentvertex, op, true);
-								foundAlternative = true;
+							implant(currentvertex, op, true);
+							foundAlternative = true;
 
-								PreesmLogger.getLogger().info(
-										"The vertex: " + currentvertex.getName()
-												+ " could not be mapped on main operator "
-												+ operator.getName()
-												+ ". An alternative with another definition was found.");
+							PreesmLogger
+									.getLogger()
+									.info(
+											"The vertex: "
+													+ currentvertex.getName()
+													+ " could not be mapped on main operator "
+													+ operator.getName()
+													+ ". An alternative with another definition was found.");
 						}
 					}
 				}
 
-				if (!foundAlternative)
+				if (!foundAlternative) {
 					PreesmLogger
 							.getLogger()
 							.severe(
 									"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
+					PreesmLogger.getLogger().severe(
+							"Problem with: " + currentvertex.getName());
+				}
 			}
 		}
 
@@ -457,18 +466,16 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	/**
-	 * Plots the current implementation. If delegatedisplay=false, the
-	 * gantt is displayed in a shell. Otherwise, it is displayed
-	 * in Eclipse.
+	 * Plots the current implementation. If delegatedisplay=false, the gantt is
+	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
 	 */
 	public GanttPlotter plotImplementation(boolean delegateDisplay) {
-		
-		if(!delegateDisplay){
+
+		if (!delegateDisplay) {
 			updateTimings();
 			GanttPlotter.plot(implementation, this);
 			return null;
-		}
-		else{			
+		} else {
 			updateTimings();
 			return new GanttPlotter("Solution gantt", implementation, this);
 		}

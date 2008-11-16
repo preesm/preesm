@@ -208,6 +208,10 @@ public class Workflow {
 							architecturePath);
 					nodeResult.setArchitecture(retriever.getArchitecture());
 					architecture = nodeResult.getArchitecture();
+					
+					// Setting main core and medium
+					architecture.setMainOperator(scenario.getSimulationManager().getMainOperatorName());
+					architecture.setMainMedium(scenario.getSimulationManager().getMainMediumName());
 				}
 
 			} else if (node.isScenarioNode()) {

@@ -10,23 +10,32 @@
         <xsl:apply-templates select="graph"/>
     </xsl:template>
     
-    <xsl:template match="graph">      
+    <xsl:template match="graph">   
         
-        --General Config
+--************--
+--* Scenario *--
+--************--
+
+-- initializations
+
+BaseCategories = { }
+UserCategories = { }
+Connections={}
+Users={}
+Tasks={}
+
+--  defining base category. This category can then be used directly or reused in a parent category
+
+BaseCategories.single_trace_category = "nerios.graphml"
+
+-- Instantiating a user
+
+Users.p ="single_trace_category"
+
+-- Configuring the tasks
+
+Tasks.p={}
         
-        --VPU1={}
-        --VPU1.enable_preemption=true
-        --VPU2={}
-        --VPU2.enable_preemption=true
-        
-        
-        EDMA__CCDMA ={}
-        
-        EDMA__CCDMA.evt_queue_priority = {0,1,2,3,4,5}
-        EDMA__CCDMA.tc_address_map = { 0x02A20000,0x02A28000,0x02A30000,0x02A38000,0x02A40000,0x02A48000 }
-        
-        Tasks = {}
-        Tasks.p = {}
         <xsl:value-of select="$new_line"/>
         <xsl:apply-templates select="node"/>
         <xsl:apply-templates select="edge"/>
@@ -81,6 +90,9 @@
                 <xsl:value-of select="concat($task_duration_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_mapping_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_prioriti_decl,$new_line)"/>
+                
+                <!-- Removed transfer generation -->
+                <xsl:if test="1=0">
                 <xsl:call-template name="addXin">
                     <xsl:with-param name="currentTask" select="$task_name"/>
                 </xsl:call-template>
@@ -88,8 +100,10 @@
                     <xsl:with-param name="currentTask" select="$task_name"/>
                 </xsl:call-template>
                 <xsl:value-of select="$new_line"/>
+                </xsl:if>
             </xsl:when>
-            <xsl:when test="data[@key='vertexType']='send'" >
+            <!-- Removed transfer generation -->
+            <xsl:when test="data[@key='vertexType']='send712'" >
                 <!-- Name of the task -->
                 <xsl:variable name="task_name" select="data[@key='name']" />
                 <!-- Name of the task in lua form -->
