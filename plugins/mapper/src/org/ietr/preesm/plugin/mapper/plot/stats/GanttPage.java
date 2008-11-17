@@ -95,7 +95,6 @@ public class GanttPage extends FormPage {
 		
 		if(dag != null && archi != null){
 
-
 			// Gets the appropriate abc to generate the gantt.
 			PropertyBean bean = dag.getPropertyBean();
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);

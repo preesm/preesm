@@ -10,23 +10,32 @@
         <xsl:apply-templates select="graph"/>
     </xsl:template>
     
-    <xsl:template match="graph">      
+    <xsl:template match="graph">   
         
-        --General Config
+--************--
+--* Scenario *--
+--************--
+
+-- initializations
+
+BaseCategories = { }
+UserCategories = { }
+Connections={}
+Users={}
+Tasks={}
+
+--  defining base category. This category can then be used directly or reused in a parent category
+
+BaseCategories.single_trace_category = "nerios.graphml"
+
+-- Instantiating a user
+
+Users.p ="single_trace_category"
+
+-- Configuring the tasks
+
+Tasks.p={}
         
-        --VPU1={}
-        --VPU1.enable_preemption=true
-        --VPU2={}
-        --VPU2.enable_preemption=true
-        
-        
-        EDMA__CCDMA ={}
-        
-        EDMA__CCDMA.evt_queue_priority = {0,1,2,3,4,5}
-        EDMA__CCDMA.tc_address_map = { 0x02A20000,0x02A28000,0x02A30000,0x02A38000,0x02A40000,0x02A48000 }
-        
-        Tasks = {}
-        Tasks.p = {}
         <xsl:value-of select="$new_line"/>
         <xsl:apply-templates select="node"/>
         <xsl:apply-templates select="edge"/>
@@ -40,7 +49,7 @@
         <xsl:if test="$input_transfers/last()!=0">
             <xsl:value-of select="concat($task_def,'.Xin= {')"/>
             <xsl:for-each select="$input_transfers">
-                <xsl:variable name="transfer_def" select="concat('Tasks.p.',data[@key='name'])" />
+                <xsl:variable name="transfer_def" select="concat('Tasks.p.s_',substring(data[@key='name'],3))" />
                 <xsl:value-of select="concat('&quot;',$transfer_def,'&quot;')"/>
                 <xsl:if test="position()!=last()">,</xsl:if>
             </xsl:for-each>
@@ -81,6 +90,9 @@
                 <xsl:value-of select="concat($task_duration_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_mapping_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_prioriti_decl,$new_line)"/>
+                
+                <!-- Removed transfer generation -->
+                <xsl:if test="1=1">
                 <xsl:call-template name="addXin">
                     <xsl:with-param name="currentTask" select="$task_name"/>
                 </xsl:call-template>
@@ -88,7 +100,9 @@
                     <xsl:with-param name="currentTask" select="$task_name"/>
                 </xsl:call-template>
                 <xsl:value-of select="$new_line"/>
+                </xsl:if>
             </xsl:when>
+            <!-- Removed transfer generation -->
             <xsl:when test="data[@key='vertexType']='send'" >
                 <!-- Name of the task -->
                 <xsl:variable name="task_name" select="data[@key='name']" />
@@ -96,7 +110,7 @@
                 <xsl:variable name="task_def" select="concat('Tasks.p.',$task_name)" />
                 
                 <!-- Corresponding receiver task -->
-                <xsl:variable name="rcv_name" select="concat('rcv',substring-after($task_name,'snd'))" />
+                <xsl:variable name="rcv_name" select="concat('r_',substring-after($task_name,'s_'))" />
                 <xsl:variable name="rcv_task" select="//node[data[@key='name']=$rcv_name]" />
                 <xsl:variable name="task_decl" select="concat($task_def,' = {}')" />
                 <xsl:variable name="task_mapping_decl" select="concat($task_def,'.CPU_mapping = &quot;','VpuBidon','&quot;')" />
@@ -105,8 +119,8 @@
                 <xsl:value-of select="concat($task_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_mapping_decl,$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.resource_mapping = &quot;EDMA__CCDMA&quot;',$new_line)"/>
-                <xsl:value-of select="concat($task_def,'.srcAddress = &quot;',data[@key='Operator'],'&quot;',$new_line)"/>
-                <xsl:value-of select="concat($task_def,'.destAddress = &quot;',$rcv_task/data[@key='Operator'],'&quot;',$new_line)"/>
+                <xsl:value-of select="concat($task_def,'.srcAddress = &quot;',data[@key='Operator_address'],'&quot;',$new_line)"/>
+                <xsl:value-of select="concat($task_def,'.destAddress = &quot;',$rcv_task/data[@key='Operator_address'],'&quot;',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.sam = 0',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.dam = 0',$new_line)"/>
                 <xsl:value-of select="concat($task_def,'.ACNT = ',data[@key='dataSize'],$new_line)"/>

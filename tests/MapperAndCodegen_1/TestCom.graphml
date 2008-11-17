@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc">
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc">
       <desc>java.lang.String</desc>
    </key>
