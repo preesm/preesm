@@ -53,7 +53,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFDefaultEdgePropertyType;
+import org.sdf4j.model.sdf.SDFIntEdgePropertyType;
 
 /**
  * Code generation.
@@ -100,7 +100,7 @@ public class CodeGeneration implements ICodeGeneration {
 		edge.getPropertyBean().setValue("dataType", type);
 
 		// DAG => prod = cons
-		edge.setWeight(new SDFDefaultEdgePropertyType(prodCons));
+		edge.setWeight(new SDFIntEdgePropertyType(prodCons));
 
 		// DAG => no delay
 

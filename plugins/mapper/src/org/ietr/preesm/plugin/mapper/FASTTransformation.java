@@ -66,9 +66,9 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.sdf.SDFDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.sdf.SDFIntEdgePropertyType;
 import org.sdf4j.model.sdf.SDFVertex;
 
 /**
@@ -183,11 +183,11 @@ public class FASTTransformation extends AbstractMapping {
 		edge.getPropertyBean().setValue("dataType", type);
 
 		// DAG => prod = cons
-		edge.setProd(new SDFDefaultEdgePropertyType(prodCons));
-		edge.setCons(new SDFDefaultEdgePropertyType(prodCons));
+		edge.setProd(new SDFIntEdgePropertyType(prodCons));
+		edge.setCons(new SDFIntEdgePropertyType(prodCons));
 
 		// DAG => no delay
-		edge.setDelay(new SDFDefaultEdgePropertyType(0));
+		edge.setDelay(new SDFIntEdgePropertyType(0));
 
 		// Example buffer aggregate with one single buffer
 		BufferAggregate agg = new BufferAggregate();
