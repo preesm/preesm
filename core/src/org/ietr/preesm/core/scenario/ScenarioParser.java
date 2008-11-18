@@ -54,6 +54,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.codegen.DataType;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -130,14 +131,14 @@ public class ScenarioParser {
 	 * Parses the first level of hierarchy
 	 */
 	public Scenario parseDocument() {
-		if(dom != null){
+		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
-	
+
 			Node node = docElt.getFirstChild();
-	
+
 			while (node != null) {
-	
+
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
@@ -151,7 +152,7 @@ public class ScenarioParser {
 						parseSimuParams(elt);
 					}
 				}
-	
+
 				node = node.getNextSibling();
 			}
 		}
@@ -173,10 +174,40 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
 				if (type.equals("mainCore")) {
-					scenario.getSimulationManager().setMainOperatorName(content);
-				}
-				else if (type.equals("mainMedium")){
+					scenario.getSimulationManager()
+							.setMainOperatorName(content);
+				} else if (type.equals("mainMedium")) {
 					scenario.getSimulationManager().setMainMediumName(content);
+				} else if (type.equals("dataTypes")) {
+					parseDataTypes(elt);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+	}
+
+	/**
+	 * Retrieves the data types
+	 */
+	private void parseDataTypes(Element dataTypeElt) {
+
+		Node node = dataTypeElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("dataType")) {
+					String name = elt.getAttribute("name");
+					String size = elt.getAttribute("size");
+
+					if (!name.isEmpty() && !size.isEmpty()) {
+						DataType dataType = new DataType(name, Integer
+								.parseInt(size));
+						scenario.getSimulationManager().putDataType(dataType);
+					}
 				}
 			}
 
@@ -200,12 +231,10 @@ public class ScenarioParser {
 				if (type.equals("algorithm")) {
 					scenario.setAlgorithmURL(url);
 					algo = getAlgorithm(url);
-				}
-				else if (type.equals("architecture")){
+				} else if (type.equals("architecture")) {
 					scenario.setArchitectureURL(url);
 					archi = getArchitecture(url);
-				}
-				else if (type.equals("timingfile")){
+				} else if (type.equals("timingfile")) {
 					scenario.getTimingManager().setTimingFileURL(url, null);
 				}
 			}
@@ -227,8 +256,8 @@ public class ScenarioParser {
 
 			GMLSDFImporter importer = new GMLSDFImporter();
 			try {
-				graph = (SDFGraph) importer.parse(new File(file
-						.getLocation().toOSString()));
+				graph = (SDFGraph) importer.parse(new File(file.getLocation()
+						.toOSString()));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (InvalidFileException e) {
@@ -247,10 +276,11 @@ public class ScenarioParser {
 
 		String filename = url;
 		DesignParser parser = new DesignParser();
-		
+
 		Path relativePath = new Path(filename);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
+				relativePath);
+
 		parser.parseXmlFile(file);
 		return parser.parseDocument();
 	}
@@ -299,8 +329,8 @@ public class ScenarioParser {
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {
-						Operator def = (Operator)archi
-								.getComponent(ArchitectureComponentType.operator,name);
+						Operator def = (Operator) archi.getComponent(
+								ArchitectureComponentType.operator, name);
 						if (def != null)
 							cg.addOperator(def);
 					}
@@ -327,7 +357,7 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				if (type.equals("timing")) {
 					Timing timing = getTiming(elt);
-					if(timing!=null)
+					if (timing != null)
 						scenario.getTimingManager().addTiming(timing);
 				}
 			}
@@ -358,8 +388,9 @@ public class ScenarioParser {
 				}
 
 				SDFAbstractVertex vertex = algo.getVertex(vertexname);
-				OperatorDefinition opdef = (OperatorDefinition)archi
-						.getComponentDefinition(ArchitectureComponentType.operator,opdefname);
+				OperatorDefinition opdef = (OperatorDefinition) archi
+						.getComponentDefinition(
+								ArchitectureComponentType.operator, opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef, vertex, time);

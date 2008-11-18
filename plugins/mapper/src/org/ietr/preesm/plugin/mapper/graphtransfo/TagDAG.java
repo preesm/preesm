@@ -143,7 +143,7 @@ public class TagDAG {
 						.getName());
 				bean.setValue(Operator.propertyBeanName + "_address",
 						((SendVertex) currentVertex).getRouteStep().getSender()
-								.getDefinition().getBaseAddress());
+								.getBaseAddress());
 			} else if (currentVertex instanceof ReceiveVertex) {
 
 				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
@@ -162,7 +162,7 @@ public class TagDAG {
 				bean
 						.setValue(Operator.propertyBeanName + "_address",
 								((ReceiveVertex) currentVertex).getRouteStep()
-										.getReceiver().getDefinition()
+										.getReceiver()
 										.getBaseAddress());
 			} else {
 

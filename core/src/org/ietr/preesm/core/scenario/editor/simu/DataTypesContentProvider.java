@@ -33,77 +33,47 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.scenario.editor.simu;
 
-package org.ietr.preesm.core.architecture;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * The architecture component definition gives component specifications
+ * Provides the elements contained in the data types editor
  * 
  * @author mpelcat
  */
-public abstract class ArchitectureComponentDefinition {
+public class DataTypesContentProvider implements IStructuredContentProvider{
 
-	/**
-	 * Category of the component definition: "medium" or "operator"
-	 */
-	protected String category;
+	Object[] elementTable = null;
+	
+	@Override
+	public Object[] getElements(Object inputElement) {
 
-	/**
-	 * ID of the architecture component definition (examples: TCP, C64x+...)
-	 */
-	private String id;
 
-	/**
-	 * Constructor with clone
-	 */
-	public ArchitectureComponentDefinition(
-			ArchitectureComponentDefinition origin) {
-		this.id = origin.id;
-
-		this.category = origin.category;
-	}
-
-	/**
-	 * Constructor
-	 */
-	public ArchitectureComponentDefinition(String id, String category) {
-		this.id = new String(id);
-
-		this.category = new String(category);
+		if(inputElement instanceof Scenario){
+			Scenario inputScenario = (Scenario)inputElement;
+			
+			// Retrieving the data types from the scenario
+			elementTable = inputScenario.getSimulationManager().getDataTypes().values().toArray();
+		}
+		return elementTable;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-
-		if (obj instanceof ArchitectureComponentDefinition) {
-			ArchitectureComponentDefinition def = (ArchitectureComponentDefinition) obj;
-			return id.equalsIgnoreCase(def.getId())
-					&& category.equalsIgnoreCase(def.category);
-		}
-		return false;
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public String getId() {
-		return id;
+	@Override
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Compares two definitions for category
-	 */
-	public boolean sameCategory(ArchitectureComponentDefinition othertype) {
-		return (category.compareToIgnoreCase(othertype.category) == 0);
-	}
-
-	/**
-	 * Compares two definitions for id
-	 */
-	public boolean sameId(ArchitectureComponentDefinition othertype) {
-		return (id.compareToIgnoreCase(othertype.id) == 0);
-	}
-
-	public abstract ArchitectureComponentType getType();
-	
-	public abstract ArchitectureComponentDefinition clone();
-	
-	public abstract void fill(ArchitectureComponentDefinition origin);
 }

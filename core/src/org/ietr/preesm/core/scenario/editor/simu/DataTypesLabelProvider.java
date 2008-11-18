@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.scenario.editor.timings;
+package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -53,23 +53,21 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFVertex;
 
 /**
- * Displays the labels for tasks timings. These labels are the time of each task
+ * Displays the labels for data types and their sizes
  * 
  * @author mpelcat
  */
-public class SDFTableLabelProvider implements ITableLabelProvider,
-		SelectionListener {
+public class DataTypesLabelProvider implements ITableLabelProvider {
 
 	private Scenario scenario = null;
-
-	private OperatorDefinition currentOpDef = null;
-
+	
 	private TableViewer tableViewer = null;
 
 	/**
@@ -77,7 +75,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(Scenario scenario, TableViewer tableViewer, IPropertyListener propertyListener) {
+	public DataTypesLabelProvider(Scenario scenario, TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
@@ -94,17 +92,14 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	public String getColumnText(Object element, int columnIndex) {
 		String text = "";
 
-		if (element instanceof SDFAbstractVertex) {
-			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
+		if (element instanceof DataType) {
+			DataType type = (DataType) element;
 
 			if (columnIndex == 0)
-				text = vertex.getName();
-			else if (columnIndex == 1 && scenario != null
-					&& currentOpDef != null) {
-				int time = scenario.getTimingManager().getTimingOrDefault(
-						vertex, currentOpDef);
+				text = type.getTypeName();
+			else if (columnIndex == 1 && scenario != null) {
 
-				text = Integer.toString(time);
+				text = Integer.toString(type.getSize());
 			}
 		}
 
@@ -135,59 +130,36 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	}
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-
-	}
-
-	/**
-	 * Core combo box listener that selects the current core
-	 */
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() instanceof Combo) {
-			Combo combo = ((Combo) e.getSource());
-			String item = combo.getItem(combo.getSelectionIndex());
-
-			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo.getData();
-			currentOpDef = (OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,item);
-
-			tableViewer.refresh();
-		}
-
-	}
-
 	public void handleDoubleClick(IStructuredSelection selection) {
 
 		IInputValidator validator = new IInputValidator() {
 
 			public String isValid(String newText) {
 				String message = null;
-				int time = 0;
+				int size = 0;
 
 				try {
-					time = Integer.valueOf(newText);
+					size = Integer.valueOf(newText);
 				} catch (NumberFormatException e) {
-					time = 0;
+					size = 0;
 				}
 
-				if (time == 0)
-					message = "invalid timing";
+				if (size == 0)
+					message = "invalid data type size";
 
 				return message;
 			}
 
 		};
 
-		if (selection.getFirstElement() instanceof SDFVertex
-				&& currentOpDef != null) {
-			SDFVertex vertex = (SDFVertex) selection.getFirstElement();
+		if (selection.getFirstElement() instanceof DataType) {
+			DataType dataType = (DataType) selection.getFirstElement();
 
-			String title = Messages.getString("Timings.dialog.title");
-			String message = Messages.getString("Timings.dialog.message")
-					+ vertex.getName();
-			String init = String.valueOf(scenario.getTimingManager()
-					.getTimingOrDefault(vertex, currentOpDef));
+			String title = Messages.getString("Simulation.DataTypes.dialog.title");
+			String message = Messages.getString("Simulation.DataTypes.dialog.message")
+					+ dataType.getTypeName();
+			
+			String init = String.valueOf(dataType.getSize());
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,
@@ -195,8 +167,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			if (dialog.open() == Window.OK) {
 				String value = dialog.getValue();
 
-				scenario.getTimingManager().setTiming(vertex, currentOpDef,
-						Integer.valueOf(value));
+				dataType.setSize(Integer.valueOf(value));
+				scenario.getSimulationManager().putDataType(dataType);
 
 				tableViewer.refresh();
 				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

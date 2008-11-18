@@ -45,13 +45,34 @@ public class DataType {
 
 	private String typeName;
 
+	/**
+	 * Size in base units (usually bytes)
+	 */
+	private Integer size;
+
+	public static final Integer defaultDataTypeSize = 1;
+
 	public DataType(String typeName) {
 		super();
 		this.typeName = typeName;
+		this.size = defaultDataTypeSize;
+	}
+	
+	public DataType(String typeName, Integer size) {
+		super();
+		this.typeName = typeName;
+		this.size = size;
 	}
 
 	public String getTypeName() {
 		return typeName;
 	}
+	
+	public Integer getSize() {
+		return size;
+	}
 
+	public void setSize(Integer size) {
+		this.size = size;
+	}
 }

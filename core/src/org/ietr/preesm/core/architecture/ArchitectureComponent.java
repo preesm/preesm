@@ -69,6 +69,11 @@ public abstract class ArchitectureComponent {
 	private String name;
 
 	/**
+	 * Base address of the component memory map (example: 0x08000000)
+	 */
+	private String baseAddress = "0x00000000";
+
+	/**
 	 * Constructor from a type and a name
 	 */
 	public ArchitectureComponent(String name,
@@ -164,6 +169,14 @@ public abstract class ArchitectureComponent {
 		}
 
 		return newCmp;
+	}
+
+	public String getBaseAddress() {
+		return baseAddress;
+	}
+
+	public void setBaseAddress(String baseAddress) {
+		this.baseAddress = baseAddress;
 	}
 
 }

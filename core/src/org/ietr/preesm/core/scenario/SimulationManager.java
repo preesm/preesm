@@ -3,6 +3,11 @@
  */
 package org.ietr.preesm.core.scenario;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.ietr.preesm.core.codegen.DataType;
+
 /**
  * Handles simulation parameters
  * 
@@ -16,11 +21,18 @@ public class SimulationManager {
 	private String mainMediumName = "";
 	private String mainOperatorName = "";
 
+	/**
+	 * Names of the data types with their size
+	 */
+	private Map<String,DataType> dataTypes;
+	
+	
 	public SimulationManager() {
 		super();
-		// TODO Auto-generated constructor stub
+
+		dataTypes = new HashMap<String, DataType>();
 	}
-	
+
 	public String getMainMediumName() {
 		return mainMediumName;
 	}
@@ -35,5 +47,17 @@ public class SimulationManager {
 
 	public void setMainOperatorName(String mainOperatorName) {
 		this.mainOperatorName = mainOperatorName;
+	}
+	
+	public Map<String, DataType> getDataTypes() {
+		return dataTypes;
+	}
+	
+	public void putDataType(DataType dataType) {
+		dataTypes.put(dataType.getTypeName(), dataType);
+	}
+	
+	public void removeDataType(String dataTypeName) {
+		dataTypes.remove(dataTypeName);
 	}
 }

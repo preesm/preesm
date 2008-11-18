@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
    <vertices>
-      <vertex id="__algorithm" x="195" y="113"/>
-      <vertex id="__architecture" x="321" y="199"/>
+      <vertex id="__algorithm" x="219" y="135"/>
+      <vertex id="__architecture" x="196" y="311"/>
       <vertex id="__scenario" x="99" y="224"/>
-      <vertex id="FAST scheduler" x="345" y="48"/>
-      <vertex id="codegen" x="593" y="72"/>
-      <vertex id="DAG Plotter" x="560" y="283"/>
+      <vertex id="FAST scheduler" x="474" y="198"/>
+      <vertex id="codegen" x="628" y="87"/>
+      <vertex id="DAG Plotter" x="640" y="306"/>
    </vertices>
 </layout>

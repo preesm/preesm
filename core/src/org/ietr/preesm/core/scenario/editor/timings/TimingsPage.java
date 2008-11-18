@@ -204,7 +204,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		// table.setSize(100, 100);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		
@@ -214,7 +213,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
 		coreCombo.addSelectionListener(labelProvider);
-		coreCombo.select(0);
 		
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
@@ -287,12 +285,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
 		Composite client = createSection(mform, title, desc, 2,gridData);
+
 		FormToolkit toolkit = mform.getToolkit();
 
 		GridData gd = new GridData();
 		toolkit.createLabel(client, fileEdit);
-
+		
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+
 		text.setData(title);
 		text.addModifyListener(new ModifyListener(){
 

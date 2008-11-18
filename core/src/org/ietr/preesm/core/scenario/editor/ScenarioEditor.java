@@ -49,6 +49,7 @@ import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.ScenarioWriter;
 import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
+import org.ietr.preesm.core.scenario.editor.simu.SimulationPage;
 import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
 
 /**

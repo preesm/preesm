@@ -197,7 +197,7 @@ public class ComponentParser {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
 				if (eltType.equals("spirit:baseAddress") && cmp != null) {
-					cmp.getDefinition().setBaseAddress(elt.getTextContent());
+					cmp.setBaseAddress(elt.getTextContent());
 				}
 				else if (eltType.equals("spirit:range") && cmp != null) {
 					

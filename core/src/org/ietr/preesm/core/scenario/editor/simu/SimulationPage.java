@@ -34,21 +34,38 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.simu;
 
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -66,15 +83,20 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
+import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.timings.SDFListContentProvider;
+import org.ietr.preesm.core.scenario.editor.timings.SDFTableLabelProvider;
 
 /**
  * This page contains parameters to influence the deployment simulator
  * 
  * @author mpelcat
  */
-public class SimulationPage extends FormPage {
+public class SimulationPage extends FormPage implements IPropertyListener {
 
 	private class ComboBoxListener implements SelectionListener {
 
@@ -141,17 +163,9 @@ public class SimulationPage extends FormPage {
 		ScrolledForm form = managedForm.getForm();
 		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Simulation.title"));
-		ColumnLayout layout = new ColumnLayout();
-		layout.topMargin = 0;
-		layout.bottomMargin = 5;
-		layout.leftMargin = 10;
-		layout.rightMargin = 10;
-		layout.horizontalSpacing = 10;
-		layout.verticalSpacing = 10;
-		layout.maxNumColumns = 4;
-		layout.minNumColumns = 1;
+		GridLayout layout = new GridLayout(2,true);
 		form.getBody().setLayout(layout);
-
+		
 		// Main operator chooser section
 		createComboBoxSection(managedForm, Messages
 				.getString("Simulation.mainOperator.title"), Messages
@@ -163,14 +177,19 @@ public class SimulationPage extends FormPage {
 				.getString("Simulation.mainMedium.title"), Messages
 				.getString("Simulation.mainMedium.description"), Messages
 				.getString("Simulation.mainMediumSelectionTooltip"), "medium");
+		
+		createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
+				Messages.getString("Simulation.DataTypes.description"));
 
+		managedForm.refresh();
 	}
 
 	/**
-	 * Creates a blank section with expansion capabilities
+	 * Creates a generic section
 	 */
-	private Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns) {
+	public Composite createSection(IManagedForm mform, String title,
+			String desc, int numColumns, GridData gridData) {
+
 		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
@@ -178,7 +197,6 @@ public class SimulationPage extends FormPage {
 				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
 		section.setText(title);
 		section.setDescription(desc);
-
 		toolkit.createCompositeSeparator(section);
 		Composite client = toolkit.createComposite(section);
 		GridLayout layout = new GridLayout();
@@ -191,6 +209,7 @@ public class SimulationPage extends FormPage {
 				form.reflow(false);
 			}
 		});
+		section.setLayoutData(gridData);
 		return client;
 	}
 
@@ -199,10 +218,11 @@ public class SimulationPage extends FormPage {
 	 */
 	private void createComboBoxSection(IManagedForm managedForm, String title,
 			String desc, String tooltip, String type) {
-
 		// Creates the section
-		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 2);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = 60;
+		Composite container = createSection(managedForm, title, desc, 2,gridData);
+
 		FormToolkit toolkit = managedForm.getToolkit();
 
 		Combo coreCombo = addCoreSelector(container, toolkit, tooltip, type);
@@ -242,5 +262,154 @@ public class SimulationPage extends FormPage {
 		combo.setData(archi);
 
 		return combo;
+	}
+
+	/**
+	 * Creates the section editing timings
+	 */
+	private void createDataTypesSection(IManagedForm managedForm, String title,
+			String desc) {
+		
+		// Creates the section
+		managedForm.getForm().setLayout(new FillLayout());
+		Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
+		FormToolkit toolkit = managedForm.getToolkit();
+		
+		addTable(container, toolkit);
+	}
+	
+
+	/**
+	 * Adds a table to edit data types
+	 */
+	protected void addTable(Composite parent, FormToolkit toolkit) {
+
+		// Buttons to add and remove data types
+		Composite buttonscps = toolkit.createComposite(parent);
+		buttonscps.setLayout(new GridLayout(2,true));
+		final Button addButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.addType"), SWT.PUSH);
+		final Button removeButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.removeType"), SWT.PUSH);
+
+		Composite tablecps = toolkit.createComposite(parent);
+		tablecps.setVisible(true);
+
+		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		
+		
+		Table table = tableViewer.getTable();
+		table.setLayout(new GridLayout());
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		// table.setSize(100, 100);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		
+		tableViewer.setContentProvider(new DataTypesContentProvider());
+
+		final DataTypesLabelProvider labelProvider = new DataTypesLabelProvider(
+				scenario, tableViewer, this);
+		tableViewer.setLabelProvider(labelProvider);
+		
+		// Create columns
+		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
+		column1.setText(Messages.getString("Simulation.DataTypes.typeColumn"));
+		
+		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
+		column2.setText(Messages.getString("Simulation.DataTypes.sizeColumn"));
+		
+		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent e) {
+				labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
+			}
+		});
+		
+		final Table tref = table;
+		final Composite comp = tablecps;
+
+		// Setting the column width
+		tablecps.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				Rectangle area = comp.getClientArea();
+				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				ScrollBar vBar = tref.getVerticalBar();
+				int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
+				if (size.y > area.height + tref.getHeaderHeight()) {
+					Point vBarSize = vBar.getSize();
+					width -= vBarSize.x;
+				}
+				Point oldSize = tref.getSize();
+				if (oldSize.x > area.width) {
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth(width - column1.getWidth());
+					tref.setSize(area.width, area.height);
+				} else {
+					tref.setSize(area.width, area.height);
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth(width - column1.getWidth());
+				}
+			}
+		});
+
+		tableViewer.setInput(scenario);
+		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
+		
+
+		// Adding the new data type on click on add button
+		addButton.addSelectionListener(new SelectionAdapter(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String dialogTitle = Messages.getString("Simulation.DataTypes.addType.dialog.title");
+				String dialogMessage = Messages.getString("Simulation.DataTypes.addType.dialog.message");
+				String init = "newType";
+
+				IInputValidator validator = new IInputValidator() {
+
+					// No verification on data type name
+					public String isValid(String newText) {
+						return null;
+					}
+
+				};
+				
+				InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell(), dialogTitle, dialogMessage,
+						init, validator);
+				if (dialog.open() == Window.OK) {
+					DataType dataType = new DataType(dialog.getValue());
+					scenario.getSimulationManager().putDataType(dataType);
+					tableViewer.refresh();
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				}
+			}
+			
+		});
+
+		// Removing a data type on click on remove button
+		removeButton.addSelectionListener(new SelectionAdapter(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection)tableViewer.getSelection();
+				if(selection != null && selection.getFirstElement() instanceof DataType){
+					DataType dataType = (DataType)selection.getFirstElement();
+					scenario.getSimulationManager().removeDataType(dataType.getTypeName());
+					tableViewer.refresh();
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Function of the property listener used to transmit the dirty property
+	 */
+	@Override
+	public void propertyChanged(Object source, int propId) {
+		if(propId == PROP_DIRTY)
+			firePropertyChange(PROP_DIRTY);
+		
 	}
 }

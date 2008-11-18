@@ -42,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.DataType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -107,6 +108,21 @@ public class ScenarioWriter {
 		Element medium = dom.createElement("mainMedium");
 		params.appendChild(medium);
 		medium.setTextContent(scenario.getSimulationManager().getMainMediumName());	
+
+		Element dataTypes = dom.createElement("dataTypes");
+		params.appendChild(dataTypes);
+		
+		for(DataType dataType:scenario.getSimulationManager().getDataTypes().values()){
+			addDataType(dataTypes, dataType);
+		}
+	}
+
+	private void addDataType(Element parent, DataType dataType) {
+
+		Element dataTypeElt = dom.createElement("dataType");
+		parent.appendChild(dataTypeElt);
+		dataTypeElt.setAttribute("name", dataType.getTypeName());
+		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
 	}
 	
 	public void writeDom(IFile file) {
