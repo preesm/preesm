@@ -42,17 +42,26 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
+import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * The TransferVertexAdder creates the vertices allowing edge scheduling
@@ -71,12 +80,19 @@ public class TransferVertexAdder {
 	 */
 	private boolean sendReceive;
 
+	/**
+	 * True if we the edge that will go through transfers replaces the original edge.
+	 * False if both paths are kept
+	 */
+	private boolean rmvOrigEdge;
+
 	public TransferVertexAdder(CommunicationRouter router,
-			SchedulingOrderManager orderManager, boolean sendReceive) {
+			SchedulingOrderManager orderManager, boolean sendReceive, boolean rmvOrigEdge) {
 		super();
 		this.router = router;
 		this.orderManager = orderManager;
 		this.sendReceive = sendReceive;
+		this.rmvOrigEdge = rmvOrigEdge;
 	}
 
 	/**
@@ -186,8 +202,36 @@ public class TransferVertexAdder {
 			}
 			
 			transactionManager.add(transaction,refVertex);
+
+			if(rmvOrigEdge){
+				transactionManager.add(new RemoveEdgeTransaction(edge,implementation),refVertex);
+			}
 			
 			i++;
 		}
+	}
+
+	/**
+	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
+	 * sdf edges that were merged into one DAG edge.
+	 */
+	public void addAggregateFromSDF(MapperDAGEdge edge, IScenario scenario) {
+
+		BufferAggregate agg = new BufferAggregate();
+
+		// Iterating the SDF aggregates
+		for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : edge
+				.getAggregate()) {
+			SDFEdge sdfAggMember = (SDFEdge) aggMember;
+
+			DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
+			BufferProperties props = new BufferProperties(dataType, sdfAggMember
+					.getSourceInterface().getName(), sdfAggMember
+					.getTargetInterface().getName(), sdfAggMember.getProd()
+					.intValue());
+
+			agg.add(props);
+		}
+		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 	}
 }

@@ -89,7 +89,7 @@ public class AccuratelyTimedAbc extends
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
 
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false);
+		tvertexAdder = new TransferVertexAdder(router, orderManager, false, false);
 		overtexAdder = new OverheadVertexAdder(orderManager);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}

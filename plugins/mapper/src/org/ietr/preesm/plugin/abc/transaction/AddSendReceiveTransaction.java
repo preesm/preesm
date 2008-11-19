@@ -174,6 +174,9 @@ public class AddSendReceiveTransaction extends Transaction {
 				newEdge2.getTimingEdgeProperty().setCost(0);
 				newEdge3.getTimingEdgeProperty().setCost(0);
 
+				newEdge1.setAggregate(edge.getAggregate());
+				newEdge2.setAggregate(edge.getAggregate());
+				newEdge3.setAggregate(edge.getAggregate());
 			}
 		}
 	}

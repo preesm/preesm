@@ -157,6 +157,8 @@ public class AddTransferVertexTransaction extends Transaction {
 				newInEdge.getTimingEdgeProperty().setCost(0);
 				newOutEdge.getTimingEdgeProperty().setCost(0);
 
+				newInEdge.setAggregate(edge.getAggregate());
+				newOutEdge.setAggregate(edge.getAggregate());
 			}
 		}
 	}

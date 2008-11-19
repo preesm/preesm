@@ -60,10 +60,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.task.IFileConversion;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

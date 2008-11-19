@@ -203,7 +203,7 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2);
 
 		transfoResult.setDAG(dag);
 

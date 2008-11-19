@@ -44,6 +44,7 @@ import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
@@ -164,7 +165,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2);
 
 		result.setDAG(dag);
 
@@ -191,7 +192,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		// Example buffer aggregate with one single buffer
 		BufferAggregate agg = new BufferAggregate();
-		agg.add(new BufferProperties(type, "out", "in", prodCons));
+		agg.add(new BufferProperties(new DataType(type), "out", "in", prodCons));
 
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 

@@ -53,6 +53,10 @@ public class SimulationManager {
 		return dataTypes;
 	}
 	
+	public DataType getDataType(String name) {
+		return dataTypes.get(name);
+	}
+	
 	public void putDataType(DataType dataType) {
 		dataTypes.put(dataType.getTypeName(), dataType);
 	}

@@ -41,9 +41,11 @@ import java.util.Iterator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -90,7 +92,7 @@ public class TagDAG {
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IAbc simu) {
+	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario, IAbc simu) {
 
 		PropertyBean bean = dag.getPropertyBean();
 		bean.setValue(AbstractAbc.propertyBeanName, simu.getType());
@@ -98,7 +100,7 @@ public class TagDAG {
 
 		addTransfers(dag, architecture);
 		addProperties(dag);
-		addAllAggregates(dag);
+		addAllAggregates(dag,scenario);
 	}
 
 	public void addTransfers(MapperDAG dag, MultiCoreArchitecture architecture) {
@@ -108,7 +110,7 @@ public class TagDAG {
 		SchedulingOrderManager orderMgr = new SchedulingOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(
-				new CommunicationRouter(architecture), orderMgr, true);
+				new CommunicationRouter(architecture), orderMgr, true, true);
 		tvAdder.addTransferVertices(dag, new TransactionManager());
 		orderMgr.tagDAG(dag);
 	}
@@ -191,7 +193,7 @@ public class TagDAG {
 	/**
 	 * Loop on the edges to add aggregates.
 	 */
-	public void addAllAggregates(MapperDAG dag) {
+	public void addAllAggregates(MapperDAG dag, IScenario scenario) {
 
 		MapperDAGEdge edge;
 
@@ -203,9 +205,9 @@ public class TagDAG {
 
 			if (edge.getSource() instanceof TransferVertex
 					|| edge.getTarget() instanceof TransferVertex) {
-				addComAggregateFromSDF(edge);
+				addAggregateFromSDF(edge,scenario);
 			} else {
-				addAggregateFromSDF(edge);
+				addAggregateFromSDF(edge,scenario);
 			}
 		}
 	}
@@ -213,10 +215,8 @@ public class TagDAG {
 	/**
 	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
 	 * sdf edges that were merged into one DAG edge.
-	 * 
-	 * TODO: resolve the size problem
 	 */
-	public void addAggregateFromSDF(MapperDAGEdge edge) {
+	public void addAggregateFromSDF(MapperDAGEdge edge, IScenario scenario) {
 
 		BufferAggregate agg = new BufferAggregate();
 
@@ -225,7 +225,8 @@ public class TagDAG {
 				.getAggregate()) {
 			SDFEdge sdfAggMember = (SDFEdge) aggMember;
 
-			BufferProperties props = new BufferProperties("char", sdfAggMember
+			DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
+			BufferProperties props = new BufferProperties(dataType, sdfAggMember
 					.getSourceInterface().getName(), sdfAggMember
 					.getTargetInterface().getName(), sdfAggMember.getProd()
 					.intValue());
@@ -235,63 +236,4 @@ public class TagDAG {
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 	}
 
-	/**
-	 * Aggregates of communication edges are duplicated from the aggregates of
-	 * the direct edges.
-	 */
-	public void addComAggregateFromSDF(MapperDAGEdge inputEdge) {
-
-		MapperDAGEdge directEdge = getDirectEdge(inputEdge);
-
-		if (directEdge != null) {
-			BufferAggregate agg = new BufferAggregate();
-
-			// Iterating the SDF aggregates
-			for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : directEdge
-					.getAggregate()) {
-				SDFEdge sdfAggMember = (SDFEdge) aggMember;
-
-				BufferProperties props = new BufferProperties("char",
-						sdfAggMember.getSourceInterface().getName(),
-						sdfAggMember.getTargetInterface().getName(),
-						sdfAggMember.getProd().intValue());
-
-				agg.add(props);
-			}
-			inputEdge.getPropertyBean().setValue(BufferAggregate.propertyBeanName,
-					agg);
-		}
-	}
-
-	/**
-	 * Aggregates of communication edges are duplicated from the aggregates of
-	 * the direct edges.
-	 */
-	public MapperDAGEdge getDirectEdge(MapperDAGEdge inputEdge) {
-
-		MapperDAGVertex sender = null;
-		MapperDAGVertex receiver = null;
-		MapperDAGEdge directEdge = inputEdge;
-
-		while (directEdge.getSource() instanceof TransferVertex) {
-			directEdge = (MapperDAGEdge) directEdge.getSource().incomingEdges()
-					.toArray()[0];
-		}
-
-		sender = (MapperDAGVertex) directEdge.getSource();
-
-		while (directEdge.getTarget() instanceof TransferVertex) {
-			directEdge = (MapperDAGEdge) directEdge.getTarget().outgoingEdges()
-					.toArray()[0];
-		}
-
-		receiver = (MapperDAGVertex) directEdge.getTarget();
-
-		if (sender != null && receiver != null) {
-			directEdge = (MapperDAGEdge) sender.getBase().getAllEdges(sender,
-					receiver).toArray()[0];
-		}
-		
-		return directEdge;
-	}
 }

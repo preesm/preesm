@@ -36,24 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * This page displays the quality of the current implementation compared to the 

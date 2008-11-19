@@ -34,59 +34,52 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen.sdfProperties;
+package org.ietr.preesm.plugin.abc.transaction;
 
-import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 
 /**
- * Objects used to tag the DAG edges. The buffer couple definition 
- * is transmitted to the code generation. One buffer is created 
- * for the source and one for the destination.
+ * A transaction that removes one edge in an implementation
  * 
  * @author mpelcat
- *
  */
-public class BufferProperties {
+public class RemoveEdgeTransaction extends Transaction {
+	// Inputs
+	/**
+	 * Implementation DAG from which the edge is removed
+	 */
+	private MapperDAG implementation = null;
 	
-	private DataType dataType;
+	/**
+	 * edge removed
+	 */
+	private MapperDAGEdge edge = null;
 	
-	private String destInputPortID;
 	
-	private int size;
-	
-	private String sourceOutputPortID;
-
-	public BufferProperties(DataType dataType, String sourceOutputPortID, String destInputPortID,
-			int size) {
+	public RemoveEdgeTransaction(MapperDAGEdge edge,
+			MapperDAG implementation) {
 		super();
-		this.dataType = dataType;
-		this.destInputPortID = destInputPortID;
-		this.size = size;
-		this.sourceOutputPortID = sourceOutputPortID;
+		this.edge = edge;
+		this.implementation = implementation;
 	}
 
-	public String getDataType() {
-		String typeName = "";
-		if(dataType == null){
-			typeName = "typeNotFound";
-		}
-		else{
-			typeName = dataType.getTypeName();
-		}
-		return typeName;
+	@Override
+	public void execute() {
+		super.execute();
+
+		implementation.removeEdge(edge);
 	}
 
-	public String getDestInputPortID() {
-		return destInputPortID;
+	@Override
+	public void undo() {
+		super.undo();
+
+		MapperDAGEdge newEdge = (MapperDAGEdge)implementation.addEdge(edge.getSource(),edge.getTarget());
+		newEdge.setAggregate(edge.getAggregate());
+		newEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty());
+		newEdge.setTimingEdgeProperty(edge.getTimingEdgeProperty());
+		newEdge.setWeight(edge.getWeight());
 	}
 
-	public int getSize() {
-		return size;
-	}
-
-	public String getSourceOutputPortID() {
-		return sourceOutputPortID;
-	}
-	
-	
 }

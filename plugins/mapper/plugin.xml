@@ -52,13 +52,6 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.gantt.ImplementationEditor"
-            default="true"
-            icon="icons/preesm2mini.PNG"
-            id="org.ietr.preesm.plugin.mapper.plot.ganttswtdisplay.ImplementationEditor"
-            name="ImplementationEditor">
-      </editor>
-      <editor
             class="org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor"
             default="true"
             icon="icons/preesm4mini.PNG"
@@ -68,7 +61,7 @@
       <editor
             class="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
             default="false"
-            icon="icons/preesm1mini.PNG"
+            icon="icons/preesm2mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
             name="StatEditor">
       </editor>

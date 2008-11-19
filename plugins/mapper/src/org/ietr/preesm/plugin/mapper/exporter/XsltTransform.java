@@ -42,10 +42,7 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.tools.XsltTransformer;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * This class provides methods to transform an XML file or a DOM element to a string

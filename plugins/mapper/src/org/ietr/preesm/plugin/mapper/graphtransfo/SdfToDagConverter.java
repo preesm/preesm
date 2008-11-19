@@ -111,13 +111,14 @@ public class SdfToDagConverter {
 	}
 
 	/**
-	 * Converts a SDF in a DAG and retrieves the interesting properties form the
+	 * Converts a SDF in a DAG and retrieves the interesting properties from the
 	 * SDF.
 	 * 
 	 * @author mpelcat
 	 */
-	public static MapperDAG convert(SDFGraph sdfIn, MultiCoreArchitecture architecture,
-			IScenario scenario, boolean display) {
+	public static MapperDAG convert(SDFGraph sdfIn,
+			MultiCoreArchitecture architecture, IScenario scenario,
+			boolean display) {
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
 		MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
@@ -139,9 +140,6 @@ public class SdfToDagConverter {
 			SDFAdapterDemo applet1 = new SDFAdapterDemo();
 			applet1.init(sdf);
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
-			for (DAGEdge testEdge : dag.edgeSet()) {
-				testEdge.getWeight();
-			}
 			applet2.init(dag);
 		}
 
@@ -186,9 +184,12 @@ public class SdfToDagConverter {
 					Timing timing = listiterator.next();
 					currentVertexInit.addTiming(timing);
 				}
-			}else{
-				for(ArchitectureComponent op : architecture.getComponents(ArchitectureComponentType.operator)){
-					Timing time = new Timing((OperatorDefinition) op.getDefinition(), currentVertex.getCorrespondingSDFVertex(), 1);
+			} else {
+				for (ArchitectureComponent op : architecture
+						.getComponents(ArchitectureComponentType.operator)) {
+					Timing time = new Timing((OperatorDefinition) op
+							.getDefinition(), currentVertex
+							.getCorrespondingSDFVertex(), 1);
 					time.setTime(Timing.DEFAULTTASKTIME);
 					currentVertexInit.addTiming(time);
 				}
@@ -197,7 +198,8 @@ public class SdfToDagConverter {
 		}
 
 		/**
-		 * Importing data edge weights
+		 * Importing data edge weights and multiplying by type size when
+		 * available
 		 */
 		Iterator<DAGEdge> edgeiterator = dag.edgeSet().iterator();
 
@@ -208,10 +210,13 @@ public class SdfToDagConverter {
 
 			int weight = currentEdge.getWeight().intValue();
 			currentEdgeInit.setDataSize(weight);
+			// TODO: in SDF4J, transmit the data types and sizes to be used here
+			// to calculate weight from scenario data
 		}
 
 		/**
-		 * Importing scenario: Only the timings corresponding to allowed mappings are set.
+		 * Importing scenario: Only the timings corresponding to allowed
+		 * mappings are set.
 		 */
 
 		// Iterating over constraint groups
@@ -238,20 +243,20 @@ public class SdfToDagConverter {
 					MapperDAGVertex currentvertex = vertexit.next();
 
 					// Iterating over operators in constraint group
-					Iterator<Operator> opit = cg
-							.getOperators().iterator();
+					Iterator<Operator> opit = cg.getOperators().iterator();
 
 					while (opit.hasNext()) {
 						Operator currentop = opit.next();
 
-						
 						if (!currentvertex.getInitialVertexProperty()
 								.isImplantable(currentop)) {
 
-							currentvertex.getInitialVertexProperty().addOperator(currentop);
+							currentvertex.getInitialVertexProperty()
+									.addOperator(currentop);
 							// If no timing is set, we add a unavailable timing
-							Timing newTiming = new Timing((OperatorDefinition)currentop.getDefinition(),
-									currentsdfvertex);
+							Timing newTiming = new Timing(
+									(OperatorDefinition) currentop
+											.getDefinition(), currentsdfvertex);
 							currentvertex.getInitialVertexProperty().addTiming(
 									newTiming);
 						}

@@ -71,6 +71,7 @@ public class DAGExporterTransform implements IExporter{
 	public void exportGraphML(DirectedAcyclicGraph dag, Path path){
 
 		MapperDAG mapperDag = (MapperDAG)dag;
+		
 		GMLMapperDAGExporter exporter = new GMLMapperDAGExporter() ;
 		MapperDAG clone = mapperDag.clone() ;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();

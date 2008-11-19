@@ -39,16 +39,11 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.eclipse.swt.SWT;
@@ -57,10 +52,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
-import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
-import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
-import org.ietr.preesm.plugin.mapper.pgeneticalgo.PGeneticAlgo;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;

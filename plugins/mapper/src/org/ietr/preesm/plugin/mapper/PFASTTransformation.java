@@ -157,7 +157,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2);
 
 		result.setDAG(dag);
 

@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
@@ -106,7 +107,7 @@ public class CodeGeneration implements ICodeGeneration {
 
 		// Example buffer aggregate with one single buffer
 		BufferAggregate agg = new BufferAggregate();
-		agg.add(new BufferProperties(type, "out", "in", prodCons));
+		agg.add(new BufferProperties(new DataType(type), "out", "in", prodCons));
 
 		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
 

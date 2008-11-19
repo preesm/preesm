@@ -3,9 +3,7 @@
  */
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -18,17 +16,11 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;

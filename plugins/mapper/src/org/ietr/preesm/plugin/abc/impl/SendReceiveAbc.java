@@ -82,7 +82,7 @@ public class SendReceiveAbc extends
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-		tvertexAdder = new TransferVertexAdder(router, orderManager, true);
+		tvertexAdder = new TransferVertexAdder(router, orderManager, true, false);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 

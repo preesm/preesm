@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
+
 /**
  * Properties of an edge set when converting dag to mapper dag
  * 
@@ -43,11 +44,10 @@ package org.ietr.preesm.plugin.mapper.model;
  */
 public class InitialEdgeProperty {
 
-	private int dataSize;
+	private int dataSize = 0;
 
 	public InitialEdgeProperty() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public InitialEdgeProperty(int dataSize) {
