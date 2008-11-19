@@ -172,6 +172,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(buffer);
 
 			buffer.setAttribute("name", domElt.getName());
+			buffer.setAttribute("size", domElt.getSize().toString());
+			buffer.setAttribute("type", domElt.getType().getTypeName());
 		} 
 		
 		return currentLocation;
@@ -363,7 +365,9 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(send);
 			
 			send.setAttribute("medium", domElt.getMedium().getName());
+			send.setAttribute("mediumDef", domElt.getMedium().getDefinition().getId());
 			send.setAttribute("target", domElt.getTarget().getName());
+			currentLocation = send;
 		} 
 		
 		return currentLocation;
@@ -378,7 +382,9 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(receive);
 			
 			receive.setAttribute("medium", domElt.getMedium().getName());
+			receive.setAttribute("mediumDef", domElt.getMedium().getDefinition().getId());
 			receive.setAttribute("source", domElt.getSource().getName());
+			currentLocation = receive;
 		} 
 		
 		return currentLocation;
