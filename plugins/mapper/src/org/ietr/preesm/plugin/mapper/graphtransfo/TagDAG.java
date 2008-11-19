@@ -110,7 +110,7 @@ public class TagDAG {
 		SchedulingOrderManager orderMgr = new SchedulingOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(
-				new CommunicationRouter(architecture), orderMgr, true, true);
+				new CommunicationRouter(architecture), orderMgr, true, false);
 		tvAdder.addTransferVertices(dag, new TransactionManager());
 		orderMgr.tagDAG(dag);
 	}
