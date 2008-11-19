@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Sensor" x="57" y="133"/>
+      <vertex id="Gen_int" x="170" y="73"/>
+      <vertex id="Copy" x="305" y="70"/>
+      <vertex id="Actuator" x="446" y="118"/>
+      <vertex id="ParallelTest" x="162" y="203"/>
+      <vertex id="ParallelTest2" x="305" y="202"/>
+   </vertices>
+</layout>

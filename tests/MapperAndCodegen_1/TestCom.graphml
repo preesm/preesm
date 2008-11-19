@@ -2,9 +2,12 @@
    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc">
       <desc>java.lang.String</desc>
    </key>
-   <key attr.name="arguments" for="node" id="arguments"/>
-   <key attr.name="parameters" for="graph" id="parameters"/>
-   <key attr.name="variables" for="graph" id="variables"/>
+   <key attr.name="name" attr.type="string" for="node" id="name">
+      <desc>java.lang.String</desc>
+   </key>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
       <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
@@ -14,67 +17,83 @@
    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
       <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
+   </key>
    <graph edgedefault="directed">
       <data key="parameters"/>
-      <data key="variables"/>
+      <data key="variables">=</data>
       <node id="Sensor" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">Sensor</data>
+         <data key="arguments">=</data>
       </node>
       <node id="Gen_int" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">Gen_int</data>
+         <data key="arguments">=</data>
       </node>
       <node id="Copy" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">Copy</data>
+         <data key="arguments">=</data>
       </node>
       <node id="Actuator" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">Actuator</data>
+         <data key="arguments">=</data>
       </node>
       <node id="ParallelTest" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">ParallelTest</data>
+         <data key="arguments">=</data>
       </node>
       <node id="ParallelTest2" kind="vertex">
          <data key="graph_desc"/>
-         <data key="arguments"/>
+         <data key="name">ParallelTest2</data>
+         <data key="arguments">=</data>
       </node>
       <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
       <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
          <data key="edge_prod">10</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
       <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">10</data>
+         <data key="data_type"/>
       </edge>
       <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
       <edge source="Sensor" sourceport="o2" target="ParallelTest" targetport="i1">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
       <edge source="ParallelTest" sourceport="o1" target="ParallelTest2" targetport="i1">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
       <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type"/>
       </edge>
    </graph>
 </graphml>
