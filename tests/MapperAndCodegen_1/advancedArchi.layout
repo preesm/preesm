@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="C64_2" x="25" y="13"/>
+      <vertex id="C64_1" x="25" y="69"/>
+      <vertex id="C64_3" x="22" y="124"/>
+      <vertex id="SCR1" x="145" y="76"/>
+      <vertex id="RapidIO1" x="115" y="212"/>
+      <vertex id="DDR2_1" x="269" y="93"/>
+      <vertex id="b1" x="85" y="76"/>
+      <vertex id="b2" x="86" y="15"/>
+      <vertex id="b3" x="87" y="134"/>
+      <vertex id="b4" x="476" y="310"/>
+      <vertex id="edma3_1" x="260" y="20"/>
+      <vertex id="b5" x="471" y="417"/>
+      <vertex id="b6" x="467" y="471"/>
+      <vertex id="C64_4" x="379" y="286"/>
+      <vertex id="b7" x="208" y="26"/>
+      <vertex id="SCR2" x="541" y="358"/>
+      <vertex id="b8" x="620" y="301"/>
+      <vertex id="RapidIO2" x="119" y="344"/>
+      <vertex id="b9" x="215" y="102"/>
+      <vertex id="DDR2_2" x="681" y="388"/>
+      <vertex id="b10" x="613" y="386"/>
+      <vertex id="b11" x="55" y="187"/>
+      <vertex id="b12" x="473" y="359"/>
+      <vertex id="C64_5" x="400" y="422"/>
+      <vertex id="edma3_2" x="674" y="297"/>
+      <vertex id="C64_6" x="400" y="476"/>
+      <vertex id="fifo1" x="31" y="284"/>
+      <vertex id="fifo2" x="224" y="266"/>
+   </vertices>
+</layout>
