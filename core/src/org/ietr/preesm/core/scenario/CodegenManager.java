@@ -6,7 +6,6 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ietr.preesm.core.codegen.DataType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
