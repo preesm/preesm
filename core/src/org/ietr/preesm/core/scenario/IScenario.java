@@ -67,4 +67,9 @@ public interface IScenario {
 	 * Manager of implementation timings.
 	 */
 	public SimulationManager getSimulationManager();
+
+	/**
+	 * Manager of code generation properties.
+	 */
+	public CodegenManager getCodegenManager();
 }

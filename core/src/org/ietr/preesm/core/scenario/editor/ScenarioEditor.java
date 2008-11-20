@@ -48,6 +48,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.ScenarioWriter;
+import org.ietr.preesm.core.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
 import org.ietr.preesm.core.scenario.editor.simu.SimulationPage;
 import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
@@ -110,12 +111,15 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		timingsPage.addPropertyListener(this);
 		SimulationPage simulationPage = new SimulationPage(scenario,this, "Simulation","Simulation");
 		simulationPage.addPropertyListener(this);
+		CodegenPage codegenPage = new CodegenPage(scenario,this, "Codegen","Codegen");
+		codegenPage.addPropertyListener(this);
 		
 		try {
 			addPage(overviewPage);
 			addPage(constraintsPage);
 			addPage(timingsPage);
 			addPage(simulationPage);
+			addPage(codegenPage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

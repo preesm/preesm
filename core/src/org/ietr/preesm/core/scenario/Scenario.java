@@ -55,6 +55,11 @@ public class Scenario implements IScenario {
 	private SimulationManager simulationManager = null;
 
 	/**
+	 * Manager of code generation parameters
+	 */
+	private CodegenManager codegenManager = null;
+
+	/**
 	 * Path to the algorithm file
 	 */
 	private String algorithmURL = "";
@@ -69,6 +74,7 @@ public class Scenario implements IScenario {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
 		simulationManager = new SimulationManager();
+		codegenManager = new CodegenManager();
 	}
 
 	public ConstraintGroupManager getConstraintGroupManager() {
@@ -101,8 +107,11 @@ public class Scenario implements IScenario {
 		this.architectureURL = architectureURL;
 	}
 
-	@Override
 	public SimulationManager getSimulationManager() {
 		return simulationManager;
+	}
+
+	public CodegenManager getCodegenManager() {
+		return codegenManager;
 	}
 }

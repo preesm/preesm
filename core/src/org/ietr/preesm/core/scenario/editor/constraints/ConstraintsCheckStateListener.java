@@ -42,18 +42,27 @@ import java.util.Set;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
+import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.SDFTreeContentProvider;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -65,8 +74,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * 
  * @author mpelcat
  */
-public class SDFCheckStateListener implements SelectionListener,
-		ICheckStateListener {
+public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 	/**
 	 * Currently edited scenario
@@ -98,7 +106,7 @@ public class SDFCheckStateListener implements SelectionListener,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFCheckStateListener(Section section, Scenario scenario) {
+	public ConstraintsCheckStateListener(Section section, Scenario scenario) {
 		super();
 		this.scenario = scenario;
 		this.section = section;
@@ -213,5 +221,27 @@ public class SDFCheckStateListener implements SelectionListener,
 			
 			propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
 		}
+	}
+
+	/**
+	 * Adds a combo box for the core selection
+	 */
+	public void addComboBoxSelector(Composite parent, FormToolkit toolkit) {
+		Composite combocps = toolkit.createComposite(parent);
+		combocps.setLayout(new FillLayout());
+		combocps.setVisible(true);
+		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+		combo.setToolTipText(Messages
+				.getString("Constraints.coreSelectionTooltip"));
+
+		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
+				.getArchitectureURL());
+
+		for (ArchitectureComponent def : archi.getComponents(ArchitectureComponentType.operator)) {
+			combo.add(def.getName());
+		}
+
+		combo.setData(archi);
+		combo.addSelectionListener(this);
 	}
 }

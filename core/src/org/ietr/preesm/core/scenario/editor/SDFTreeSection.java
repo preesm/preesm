@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.scenario.editor.constraints;
+package org.ietr.preesm.core.scenario.editor;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -53,10 +53,10 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsCheckStateListener;
 
 /**
- * Tree representing a SDF graph in the constraint page
+ * Tree representing a SDF graph in the constraint page and the code generation page.
  * 
  * @author mpelcat
  */
@@ -73,28 +73,20 @@ public class SDFTreeSection extends SectionPart {
 	private Section section = null;
 
 	/**
-	 * Currently edited scenario
-	 */
-	private Scenario scenario = null;
-
-	/**
 	 * Creates the tree view
 	 */
 	public SDFTreeSection(Scenario scenario, Section inputSection,
-			FormToolkit toolkit, int style, IPropertyListener listener) {
+			FormToolkit toolkit, int style, IPropertyListener listener, ISDFCheckStateListener checkStateListener) {
 		super(inputSection);
 
-		this.scenario = scenario;
 		this.section = inputSection;
 
 		section.setVisible(true);
 		Composite container = toolkit.createComposite(getSection());
 		container.setLayout(new GridLayout());
 
-		SDFCheckStateListener checkStateListener = new SDFCheckStateListener(
-				section, scenario);
 		// Creating a selector for available cores
-		addCoreSelector(container, toolkit, checkStateListener);
+		checkStateListener.addComboBoxSelector(container, toolkit);
 
 		// Creating the tree view
 		treeviewer = new CheckboxTreeViewer(toolkit.createTree(container,
@@ -107,7 +99,7 @@ public class SDFTreeSection extends SectionPart {
 
 		// The check state listener modifies the check status of elements
 		checkStateListener.setTreeViewer(treeviewer, contentProvider, listener);
-		treeviewer.setLabelProvider(new SDFLabelProvider());
+		treeviewer.setLabelProvider(new SDFTreeLabelProvider());
 		treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
 		treeviewer.addCheckStateListener(checkStateListener);
@@ -125,26 +117,4 @@ public class SDFTreeSection extends SectionPart {
 
 	}
 
-	/**
-	 * Adds a combo box for the core selection
-	 */
-	protected void addCoreSelector(Composite parent, FormToolkit toolkit,
-			SDFCheckStateListener checkStateListener) {
-		Composite combocps = toolkit.createComposite(parent);
-		combocps.setLayout(new FillLayout());
-		combocps.setVisible(true);
-		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-		combo.setToolTipText(Messages
-				.getString("Constraints.coreSelectionTooltip"));
-
-		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
-				.getArchitectureURL());
-
-		for (ArchitectureComponent def : archi.getComponents(ArchitectureComponentType.operator)) {
-			combo.add(def.getName());
-		}
-
-		combo.setData(archi);
-		combo.addSelectionListener(checkStateListener);
-	}
 }
