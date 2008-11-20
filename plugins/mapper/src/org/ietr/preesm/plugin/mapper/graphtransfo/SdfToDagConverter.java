@@ -62,8 +62,10 @@ import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
+import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.DAGTransformation;
 import org.sdf4j.visitors.TopologyVisitor;
@@ -133,7 +135,7 @@ public class SdfToDagConverter {
 		sdf.accept(visitor);
 
 		// Adds the necessary properties to vertices and edges
-		addInitialProperty(dag, architecture, scenario);
+		addInitialProperties(dag, architecture, scenario);
 
 		// Displays the DAG
 		if (display) {
@@ -149,16 +151,28 @@ public class SdfToDagConverter {
 	/**
 	 * Retrieves the constraints and adds them to the DAG initial properties
 	 * 
-	 * @param dag
-	 * @param architecture
-	 * @param constraints
 	 * @return The DAG with initial properties
 	 */
-	public static MapperDAG addInitialProperty(MapperDAG dag,
+	public static MapperDAG addInitialProperties(MapperDAG dag,
+			MultiCoreArchitecture architecture, IScenario scenario) {
+
+		addInitialVertexProperties(dag, architecture, scenario);
+		addInitialEdgeProperties(dag, architecture, scenario);
+		addInitialConstraintsProperties(dag, architecture, scenario);
+		
+		return null;
+	}
+
+	/**
+	 * Retrieves the vertex timings and adds them to the DAG initial properties
+	 * 
+	 * @return The DAG with initial properties
+	 */
+	public static void addInitialVertexProperties(MapperDAG dag,
 			MultiCoreArchitecture architecture, IScenario scenario) {
 
 		/**
-		 * Importing constraint timings
+		 * Importing default timings
 		 */
 		// Iterating over dag vertices
 		TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -169,8 +183,8 @@ public class SdfToDagConverter {
 			InitialVertexProperty currentVertexInit = currentVertex
 					.getInitialVertexProperty();
 
+			// Setting repetition number
 			int nbRepeat = currentVertex.getNbRepeat().intValue();
-
 			currentVertexInit.setNbRepeat(nbRepeat);
 
 			List<Timing> timelist = scenario.getTimingManager()
@@ -196,6 +210,15 @@ public class SdfToDagConverter {
 			}
 
 		}
+	}
+
+	/**
+	 * Retrieves the edge weights and adds them to the DAG initial properties
+	 * 
+	 * @return The DAG with initial properties
+	 */
+	public static void addInitialEdgeProperties(MapperDAG dag,
+			MultiCoreArchitecture architecture, IScenario scenario) {
 
 		/**
 		 * Importing data edge weights and multiplying by type size when
@@ -208,12 +231,32 @@ public class SdfToDagConverter {
 			InitialEdgeProperty currentEdgeInit = currentEdge
 					.getInitialEdgeProperty();
 
-			int weight = currentEdge.getWeight().intValue();
-			currentEdgeInit.setDataSize(weight);
-			// TODO: in SDF4J, transmit the data types and sizes to be used here
-			// to calculate weight from scenario data
-		}
+			// Old version using directly the weights set by the SDF4J sdf2dag
+			/*
+				int weight = currentEdge.getWeight().intValue();
+			*/ 
+			int weight = 0;
 
+			// Calculating the edge weight for simulation:
+			// edge production * number of source repetitions * type size
+			for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : currentEdge
+					.getAggregate()){
+				SDFEdge sdfAggMember = (SDFEdge) aggMember;
+				int prod = sdfAggMember.getProd().intValue();
+				int nbRepeat = currentEdge.getSource().getNbRepeat().intValue();
+				int typeSize = scenario.getSimulationManager().getDataTypeSizeOrDefault(sdfAggMember.getDataType().toString());
+				weight += prod * nbRepeat * typeSize;
+			}
+			
+			currentEdgeInit.setDataSize(weight);
+		}
+	}
+
+	/**
+	 * Retrieves the constraints and adds them to the DAG initial properties
+	 */
+	public static void addInitialConstraintsProperties(MapperDAG dag,
+			MultiCoreArchitecture architecture, IScenario scenario) {
 		/**
 		 * Importing scenario: Only the timings corresponding to allowed
 		 * mappings are set.
@@ -266,7 +309,5 @@ public class SdfToDagConverter {
 			}
 
 		}
-
-		return null;
 	}
 }

@@ -57,6 +57,15 @@ public class SimulationManager {
 		return dataTypes.get(name);
 	}
 	
+	public int getDataTypeSizeOrDefault(String name) {
+		if(dataTypes.get(name) == null){
+			return DataType.defaultDataTypeSize;
+		}
+		else{
+			return dataTypes.get(name).getSize();
+		}
+	}
+	
 	public void putDataType(DataType dataType) {
 		dataTypes.put(dataType.getTypeName(), dataType);
 	}

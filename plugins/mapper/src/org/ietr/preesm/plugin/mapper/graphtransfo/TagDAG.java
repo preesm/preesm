@@ -67,7 +67,8 @@ import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Tags an SDF with the implementation information necessary for code generation
+ * Tags an SDF with the implementation information necessary for code generation,
+ * and DAG exporting
  * 
  * @author pmenuet
  * @author mpelcat

@@ -127,7 +127,7 @@ public class GenericPrinter {
 
 		if(!xslPath.isEmpty()){
 			IPath specificPath = new Path(outputPath);
-			specificPath = specificPath.append(fileName + ".out");
+			specificPath = specificPath.append(fileName + ".c");
 	
 			IPath xslFilePath = new Path(xslPath);
 			xslFilePath = xslFilePath.append(operator.getDefinition().getId() + ".xslt");
