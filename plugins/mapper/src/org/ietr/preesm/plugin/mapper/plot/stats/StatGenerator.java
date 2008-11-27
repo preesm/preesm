@@ -18,10 +18,12 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.sdf4j.model.PropertyBean;
+import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -31,8 +33,6 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  */
 public class StatGenerator {
-
-
 
 	private MapperDAG dag = null;
 	private SDFGraph sdf = null;
@@ -50,11 +50,12 @@ public class StatGenerator {
 		this.scenario = scenario;
 		this.sdf = sdf;
 
-		//initAbc();
+		initAbc();
 		
 		//getDAGComplexSpanLength();
 		//getDAGComplexWorkLength();
 		//getLoad(archi.getMainOperator());
+		//getMem(archi.getMainOperator());
 	}
 	
 	/**
@@ -114,8 +115,11 @@ public class StatGenerator {
 		}
 		return -1;
 	}
-	
-	public float getLoad(Operator operator){
+
+	/**
+	 * The load is the percentage of a processing resource used for the given algorithm
+	 */
+	public Float getLoad(Operator operator){
 
 		float load = 0;
 		
@@ -132,11 +136,32 @@ public class StatGenerator {
 
 			load = ((float)operatorTime)/totalLatency;
 		}
-		
-
-		PreesmLogger.getLogger().log(Level.INFO, "load of " + operator.getName() + " : " + load);
-		
+				
 		return load;
+		
+	}
+
+	/**
+	 * The memory is the sum of all buffers allocated by the mapping
+	 */
+	public Integer getMem(Operator operator){
+
+		int mem = 0;
+		
+		if(abc != null){
+			
+			for(DAGEdge e : abc.getDAG().edgeSet()){
+				MapperDAGEdge me = (MapperDAGEdge)e;
+				MapperDAGVertex scr = (MapperDAGVertex)me.getSource();
+				MapperDAGVertex tgt = (MapperDAGVertex)me.getTarget();
+				if(scr.getImplementationVertexProperty().getEffectiveComponent().equals(operator) || 
+						tgt.getImplementationVertexProperty().getEffectiveComponent().equals(operator)){
+					mem += me.getInitialEdgeProperty().getDataSize();
+				}
+			}
+		}
+				
+		return mem;
 		
 	}
 

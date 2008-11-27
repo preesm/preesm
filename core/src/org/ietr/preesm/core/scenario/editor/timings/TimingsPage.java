@@ -43,6 +43,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -177,7 +179,26 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
+		comboDataInit(combo);
+		combo.addFocusListener(new FocusListener(){
 
+			@Override
+			public void focusGained(FocusEvent e) {
+				comboDataInit((Combo)e.getSource());
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+			
+		});
+		return combo;
+	}
+	
+	private void comboDataInit(Combo combo){
+
+		combo.removeAll();
 		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
 				.getArchitectureURL());
 
@@ -186,8 +207,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		}
 
 		combo.setData(archi);
-
-		return combo;
 	}
 
 	/**

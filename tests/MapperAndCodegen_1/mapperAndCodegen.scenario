@@ -7,75 +7,82 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="C64_4"/>
-            <task name="n6"/>
+            <operator name="C64_1"/>
             <task name="n4"/>
+            <task name="n5"/>
             <task name="n9"/>
             <task name="n8"/>
-            <task name="n2"/>
-            <task name="n7"/>
-            <task name="n5"/>
-            <task name="n1"/>
             <task name="n3"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n1"/>
+            <task name="n7"/>
+        </constraintGroup>
+        <constraintGroup>
+            <task name="n4"/>
+            <task name="n5"/>
+            <task name="n9"/>
+            <task name="n8"/>
+            <task name="n3"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n1"/>
+            <task name="n7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_3"/>
-            <task name="n6"/>
             <task name="n4"/>
+            <task name="n5"/>
             <task name="n9"/>
             <task name="n8"/>
-            <task name="n2"/>
-            <task name="n7"/>
-            <task name="n5"/>
-            <task name="n1"/>
             <task name="n3"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n1"/>
+            <task name="n7"/>
         </constraintGroup>
         <constraintGroup>
-            <task name="n6"/>
             <task name="n4"/>
+            <task name="n5"/>
             <task name="n9"/>
             <task name="n8"/>
-            <task name="n7"/>
-            <task name="n2"/>
-            <task name="n5"/>
-            <task name="n1"/>
             <task name="n3"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_1"/>
             <task name="n6"/>
-            <task name="n4"/>
-            <task name="n9"/>
-            <task name="n8"/>
             <task name="n2"/>
-            <task name="n7"/>
-            <task name="n5"/>
             <task name="n1"/>
-            <task name="n3"/>
+            <task name="n7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_2"/>
-            <task name="n6"/>
             <task name="n4"/>
+            <task name="n5"/>
             <task name="n9"/>
             <task name="n8"/>
-            <task name="n2"/>
-            <task name="n7"/>
-            <task name="n5"/>
-            <task name="n1"/>
             <task name="n3"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n1"/>
+            <task name="n7"/>
         </constraintGroup>
         <constraintGroup>
-            <task name="n6"/>
+            <operator name="C64_4"/>
             <task name="n4"/>
+            <task name="n5"/>
             <task name="n9"/>
             <task name="n8"/>
-            <task name="n7"/>
-            <task name="n2"/>
-            <task name="n5"/>
-            <task name="n1"/>
             <task name="n3"/>
+            <task name="n6"/>
+            <task name="n2"/>
+            <task name="n1"/>
+            <task name="n7"/>
         </constraintGroup>
     </constraints>
     <timings/>
+    <simuParams>
+        <mainCore>C64_1</mainCore>
+        <mainMedium>EDMA3_1</mainMedium>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+    </simuParams>
 </scenario>

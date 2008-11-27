@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.util.HashSet;
@@ -43,6 +43,8 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -52,9 +54,11 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -66,9 +70,8 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection
- * modification of the current core definition. It updates the check
- * state of the vertices depending on the constraint groups in the
- * scenario
+ * modification of the current core definition. It updates the check state of
+ * the vertices depending on the constraint groups in the scenario
  * 
  * @author mpelcat
  */
@@ -78,7 +81,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * Currently edited scenario
 	 */
 	private Scenario scenario = null;
-	
+
 	/**
 	 * Current operator
 	 */
@@ -113,7 +116,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Sets the different necessary attributes
 	 */
-	public void setTreeViewer(CheckboxTreeViewer treeViewer, SDFTreeContentProvider contentProvider,IPropertyListener propertyListener) {
+	public void setTreeViewer(CheckboxTreeViewer treeViewer,
+			SDFTreeContentProvider contentProvider,
+			IPropertyListener propertyListener) {
 		this.treeViewer = treeViewer;
 		this.contentProvider = contentProvider;
 		this.propertyListener = propertyListener;
@@ -142,8 +147,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	}
 
 	/**
-	 * Adds or remove constraints for all vertices in the graph depending 
-	 * on the isChecked status
+	 * Adds or remove constraints for all vertices in the graph depending on the
+	 * isChecked status
 	 */
 	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
 		if (currentOpDef != null) {
@@ -187,8 +192,10 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 			Combo combo = ((Combo) e.getSource());
 			String item = combo.getItem(combo.getSelectionIndex());
 
-			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo.getData();
-			currentOpDef = (Operator)archi.getComponent(ArchitectureComponentType.operator,item);
+			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo
+					.getData();
+			currentOpDef = (Operator) archi.getComponent(
+					ArchitectureComponentType.operator, item);
 			updateCheck();
 		}
 
@@ -204,19 +211,19 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
 					.getOpConstraintGroups(currentOpDef)) {
-				
+
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group
-				for(SDFAbstractVertex vertex:cg.getVertices()){
+				for (SDFAbstractVertex vertex : cg.getVertices()) {
 					cgSet.add(currentGraph.getVertex(vertex.getName()));
 				}
 			}
 
 			treeViewer.setCheckedElements(cgSet.toArray());
-			
-			if(cgSet.size() == currentGraph.vertexSet().size())
-				treeViewer.setChecked(currentGraph,true);
-			
+
+			if (cgSet.size() == currentGraph.vertexSet().size())
+				treeViewer.setChecked(currentGraph, true);
+
 			propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
 		}
 	}
@@ -232,14 +239,34 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
 
+		combo.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				comboDataInit((Combo) e.getSource());
+
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+
+		});
+
+		combo.addSelectionListener(this);
+	}
+
+	private void comboDataInit(Combo combo) {
+
+		combo.removeAll();
 		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
 				.getArchitectureURL());
 
-		for (ArchitectureComponent def : archi.getComponents(ArchitectureComponentType.operator)) {
+		for (ArchitectureComponent def : archi
+				.getComponents(ArchitectureComponentType.operator)) {
 			combo.add(def.getName());
 		}
 
 		combo.setData(archi);
-		combo.addSelectionListener(this);
 	}
 }

@@ -43,6 +43,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
+import org.ietr.preesm.plugin.mapper.plot.stats.overview.OverviewPage;
 
 /**
  * The statistic editor displays statistics on the generated implementation
@@ -97,7 +98,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 		try {
 			addPage(ganttPage);
 			addPage(overviewPage);
-			addPage(performancePage);
+			//addPage(performancePage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
