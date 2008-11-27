@@ -38,7 +38,11 @@ package org.ietr.preesm.core.scenario.editor;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -107,6 +111,17 @@ public class SDFTreeSection extends SectionPart {
 		toolkit.paintBordersFor(container);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		section.setClient(container);
+		
+		// Tree is refreshed in case of algorithm modifications
+		section.addPaintListener(new PaintListener(){
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				treeviewer.refresh();
+				
+			}
+			
+		});
 
 	}
 

@@ -64,11 +64,11 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 			Scenario inputScenario = (Scenario)inputElement;
 			
 			// Opening algorithm from file
-			if(inputScenario != scenario){
+			//if(inputScenario != scenario){
 				scenario = inputScenario;
 				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
 				elementTable = currentGraph.vertexSet().toArray();
-			}
+			//}
 		}
 		return elementTable;
 	}

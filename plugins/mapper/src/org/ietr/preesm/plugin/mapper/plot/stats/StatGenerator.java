@@ -40,6 +40,7 @@ public class StatGenerator {
 	private IScenario scenario = null;
 	private TextParameters params = null;
 	private IAbc abc = null;
+	private int finalTime = 0;
 
 	public StatGenerator(MultiCoreArchitecture archi, MapperDAG dag,
 			TextParameters params, IScenario scenario, SDFGraph sdf) {
@@ -119,22 +120,18 @@ public class StatGenerator {
 	/**
 	 * The load is the percentage of a processing resource used for the given algorithm
 	 */
-	public Float getLoad(Operator operator){
+	public Integer getLoad(Operator operator){
 
-		float load = 0;
+		Integer load = 0;
 		
 		if(abc != null){
-			int totalLatency = abc.getFinalTime();
-			int operatorTime = 0;
 			
 			for(DAGVertex v : abc.getDAG().vertexSet()){
 				MapperDAGVertex mv = (MapperDAGVertex)v;
 				if(mv.getImplementationVertexProperty().getEffectiveComponent().equals(operator)){
-					operatorTime += abc.getCost(mv);
+					load += abc.getCost(mv);
 				}
 			}
-
-			load = ((float)operatorTime)/totalLatency;
 		}
 				
 		return load;
@@ -184,6 +181,10 @@ public class StatGenerator {
 	public TextParameters getParams() {
 		return params;
 	}
+
+	public int getFinalTime() {
+		return finalTime;
+	}
 	
 	public static void removeSendReceive(MapperDAG localDag){
 
@@ -214,7 +215,7 @@ public class StatGenerator {
 			StatGenerator.removeSendReceive(localDag);
 
 			abc.setDAG(localDag);			
-			abc.getFinalTime();
+			finalTime = abc.getFinalTime();
 			
 			PreesmLogger.getLogger().log(Level.INFO, "stat abc of type " + abctype.toString() + " initialized");
 		}

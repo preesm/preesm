@@ -29,16 +29,20 @@ public class DeploymentProperties implements IStructuredContentProvider,
 
 	private StatGenerator statGen;
 
-	private Map<Operator, Float> loads;
+	private Map<Operator, Integer> loads;
 	private Map<Operator, Integer> memoryNeeds;
+	
+	private int repetitionPeriod;
 
 	public DeploymentProperties(StatGenerator statGen) {
 		super();
 		this.statGen = statGen;
 
-		loads = new HashMap<Operator, Float>();
+		loads = new HashMap<Operator, Integer>();
 		memoryNeeds = new HashMap<Operator, Integer>();
 
+		repetitionPeriod = statGen.getFinalTime();
+			
 		initData();
 	}
 
@@ -51,6 +55,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			loads.put(op, statGen.getLoad(op));
 			memoryNeeds.put(op, statGen.getMem(op));
 		}
+
 	}
 
 	@Override
@@ -86,7 +91,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			if (columnIndex == 0) {
 				text = op.getName();
 			} else if (columnIndex == 1) {
-				double d = Math.ceil(loads.get(op) * 10000);
+				double d = Math.ceil(loads.get(op) * 10000 / repetitionPeriod);
 				d = d/100;
 
 				text =String.valueOf(d);
@@ -114,6 +119,16 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	public void removeListener(ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setRepetitionPeriod(Integer repetitionPeriod) {
+		if(repetitionPeriod != 0)
+			this.repetitionPeriod = repetitionPeriod;
+	}
+
+
+	public int getRepetitionPeriod() {
+		return repetitionPeriod;
 	}
 
 }

@@ -47,6 +47,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -218,7 +220,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
 
-		TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
@@ -276,6 +278,17 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		tableViewer.setInput(scenario);
 		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL));
+
+		// Tree is refreshed in case of algorithm modifications
+		parent.addPaintListener(new PaintListener(){
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				tableViewer.refresh();
+				
+			}
+			
+		});
 	}
 
 	/**

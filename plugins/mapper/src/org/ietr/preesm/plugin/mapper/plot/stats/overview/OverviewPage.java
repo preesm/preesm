@@ -43,6 +43,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -53,6 +55,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -140,8 +143,24 @@ public class OverviewPage extends FormPage {
 				| GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		addTable(container, toolkit);
+		final DeploymentProperties props = new DeploymentProperties(statGen);
+		Text text = addPaceEditor(container, toolkit, props);
+		addTable(container, toolkit, text, props);
 		
+	}
+	
+	private Text addPaceEditor(Composite parent, FormToolkit toolkit, DeploymentProperties props) {
+
+		toolkit.createLabel(parent, Messages.getString("Overview.properties.paceEditor.label"));
+
+		Text text = toolkit.createText(parent, String.valueOf(props.getRepetitionPeriod()), SWT.SINGLE);
+		
+		
+		GridData gd = new GridData();
+		gd.widthHint =400;
+		text.setLayoutData(gd);
+		
+		return text;
 	}
 
 	public StatGenerator getStatGen() {
@@ -152,21 +171,19 @@ public class OverviewPage extends FormPage {
 	/**
 	 * Adds a table to edit timings
 	 */
-	protected void addTable(Composite parent, FormToolkit toolkit) {
+	protected void addTable(Composite parent, FormToolkit toolkit,Text text,final DeploymentProperties props) {
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
 
-		TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		
-		DeploymentProperties props = new DeploymentProperties(statGen);
-		
+
 		tableViewer.setContentProvider(props);
 		tableViewer.setLabelProvider(props);
 		
@@ -212,5 +229,13 @@ public class OverviewPage extends FormPage {
 		tableViewer.setInput(props);
 		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL));
+		
+		text.addModifyListener(new ModifyListener(){
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)e.getSource();				
+				props.setRepetitionPeriod(Integer.valueOf(text.getText()));
+				tableViewer.refresh();
+			}});
 	}
 }

@@ -107,11 +107,11 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			Scenario inputScenario = (Scenario)inputElement;
 			
 			// Opening algorithm from file
-			if(inputScenario != scenario){
+			//if(inputScenario != scenario){
 				scenario = inputScenario;
 				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
 				table[0] = currentGraph;
-			}
+			//}
 		}
 		return table;
 	}
