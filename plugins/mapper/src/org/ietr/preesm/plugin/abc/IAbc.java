@@ -86,6 +86,11 @@ public interface IAbc {
 	public int getFinalTime(ArchitectureComponent component);
 
 	/**
+	 * Returns the sum of execution times on the given component
+	 */
+	public int getLoad(ArchitectureComponent component);
+
+	/**
 	 * Gets the rank of the given vertex on its operator. -1 if the vertex has
 	 * no rank
 	 */

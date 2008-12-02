@@ -193,7 +193,7 @@ public class FastPopulation {
 
 		// variables
 		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINEST);
+		//logger.setLevel(Level.FINEST);
 		ListScheduler scheduler = new ListScheduler();
 		Iterator<MapperDAG> iterator = this.getPopulation().iterator();
 		MapperDAG temp;

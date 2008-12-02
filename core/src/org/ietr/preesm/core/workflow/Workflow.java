@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.workflow;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -82,8 +83,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * This class provides methods to check and execute a workflow. A workflow
- * consists of several transformation plug-ins applied to an algorithm or an
- * algorithm *and* an architecture.
+ * consists of several transformation plug-ins applied to a scenario
  * 
  * @author Matthieu Wipliez
  * 
@@ -143,8 +143,8 @@ public class Workflow {
 		// Activates the Preesm perspective
 		activatePerspective();
 
-		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
-		int numberOfTasksDone = 0;
+
+		WorkflowStepManager stepManager = new WorkflowStepManager(monitor,workflow.vertexSet().size());
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		MultiCoreArchitecture architecture = null;
@@ -185,46 +185,11 @@ public class Workflow {
 			}
 			TaskResult nodeResult = new TaskResult();
 			if (node.isAlgorithmNode()) {
-				monitor.subTask("loading algorithm");
-				numberOfTasksDone++;
-				monitor.worked(numberOfTasksDone);
-
-				if (scenario != null) {
-					String algorithmPath = scenario.getAlgorithmURL();
-					AlgorithmRetriever retriever = new AlgorithmRetriever(
-							algorithmPath);
-					nodeResult.setSDF(retriever.getAlgorithm());
-					sdf = nodeResult.getSDF();
-				}
-
-			} else if (node.isArchitectureNode()) {
-				monitor.subTask("loading architecture");
-				numberOfTasksDone++;
-				monitor.worked(numberOfTasksDone);
-
-				if (scenario != null) {
-					String architecturePath = scenario.getArchitectureURL();
-					ArchitectureRetriever retriever = new ArchitectureRetriever(
-							architecturePath);
-					nodeResult.setArchitecture(retriever.getArchitecture());
-					architecture = nodeResult.getArchitecture();
-					
-					// Setting main core and medium
-					architecture.setMainOperator(scenario.getSimulationManager().getMainOperatorName());
-					architecture.setMainMedium(scenario.getSimulationManager().getMainMediumName());
-				}
-
+				stepManager.retrieveAlgorithm("loading algorithm",scenario,nodeResult);
+			} else if (node.isArchitectureNode()) {				
+				stepManager.retrieveArchitecture("loading architecture",scenario,nodeResult);
 			} else if (node.isScenarioNode()) {
-				monitor.subTask("loading scenario");
-				numberOfTasksDone++;
-				monitor.worked(numberOfTasksDone);
-
-				ScenarioRetriever retriever = new ScenarioRetriever(
-						scenarioConfiguration);
-				IScenario theScenario = retriever.getScenario();
-
-				nodeResult.setScenario(theScenario);
-
+				stepManager.retrieveScenario("loading scenario",scenarioConfiguration,nodeResult);
 			} else if (node.isTaskNode()) {
 
 				// A transformation is taken into account only if connected.
@@ -240,8 +205,7 @@ public class Workflow {
 
 					if (transformation instanceof IMapping) {
 						monitor.subTask("scheduling");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "scheduling");
 
 						// mapping
 						IMapping mapping = (IMapping) transformation;
@@ -251,8 +215,7 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "transforming");
 
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
@@ -260,8 +223,7 @@ public class Workflow {
 						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "converting file");
 
 						// mapping
 						IFileConversion tranform = (IFileConversion) transformation;
@@ -269,8 +231,7 @@ public class Workflow {
 						nodeResult = tranform.transform(parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "code generation");
 
 						// generic code generation
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
@@ -286,16 +247,14 @@ public class Workflow {
 
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "code translation");
 
 						// code translation
 						ICodeTranslation codeTrans = (ICodeTranslation) transformation;
 						codeTrans.transform(sourceFiles);
 					} else if (transformation instanceof IExporter) {
-						monitor.subTask(" content exporter");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						monitor.subTask("content exporter");
+						PreesmLogger.getLogger().log(Level.INFO, "content exporter");
 						// code translation
 						IExporter exporter = (IExporter) transformation;
 
@@ -317,8 +276,7 @@ public class Workflow {
 						}
 					} else if (transformation instanceof IPlotter) {
 						monitor.subTask("plot");
-						numberOfTasksDone++;
-						monitor.worked(numberOfTasksDone);
+						PreesmLogger.getLogger().log(Level.INFO, "plot");
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
@@ -392,7 +350,10 @@ public class Workflow {
 	}
 
 	private void activatePerspective() {
-		Activator.getDefault().getWorkbench().getDisplay().asyncExec(
+		PreesmLogger.getLogger().createConsole();
+		PreesmLogger.getLogger().setLevel(Level.INFO);
+		
+		Activator.getDefault().getWorkbench().getDisplay().syncExec(
 				new Runnable() {
 					@Override
 					public void run() {
@@ -407,7 +368,5 @@ public class Workflow {
 						}
 					}
 				});
-
-		PreesmLogger.getLogger().createConsole();
 	}
 }

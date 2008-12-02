@@ -45,6 +45,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -88,6 +90,7 @@ import org.ietr.preesm.core.scenario.editor.Messages;
 public class TimingsPage extends FormPage implements IPropertyListener {
 
 	final Scenario scenario;
+	TableViewer tableViewer = null;
 
 	public TimingsPage(Scenario scenario, FormEditor editor, String id,
 			String title) {
@@ -220,7 +223,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
 
-		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+		tableViewer = new TableViewer(tablecps, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
@@ -333,10 +336,30 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				Text text = (Text)e.getSource();
 				
 				scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
+				tableViewer.refresh();
 				
 				firePropertyChange(PROP_DIRTY);
 				
 			}});
+
+		text.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode == SWT.CR){
+					Text text = (Text)e.getSource();
+					scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
+					tableViewer.refresh();
+				}
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+			}
+			
+		});
 		
 		gd.widthHint =400;
 		text.setLayoutData(gd);

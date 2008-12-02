@@ -91,7 +91,10 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			if (columnIndex == 0) {
 				text = op.getName();
 			} else if (columnIndex == 1) {
-				double d = Math.ceil(loads.get(op) * 10000 / repetitionPeriod);
+				double d = loads.get(op);
+				d = d * 10000;
+				d = d / repetitionPeriod;
+				d = Math.ceil(d);
 				d = d/100;
 
 				text =String.valueOf(d);

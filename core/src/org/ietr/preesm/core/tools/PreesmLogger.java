@@ -52,8 +52,10 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import org.ietr.preesm.core.ui.Activator;
 
 /**
- * @author mwipliez
+ * Displaying information or error messages through the console
  * 
+ * @author mwipliez
+ * @author mpelcat
  */
 public class PreesmLogger extends Logger {
 
@@ -117,7 +119,7 @@ public class PreesmLogger extends Logger {
 							new Runnable() {
 								@Override
 								public void run() {
-									if (levelVal < Level.INFO.intValue())
+									if (levelVal <= Level.INFO.intValue())
 										stream.setColor(new Color(null, 0, 0, 0));
 									else
 										stream.setColor(new Color(null, 255, 0, 0));

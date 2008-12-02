@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -233,5 +234,11 @@ public class CodegenPhasesCheckStateListener implements ISDFCheckStateListener {
 
 		combo.setData(scenario.getCodegenManager());
 		combo.addSelectionListener(this);
+	}
+
+	@Override
+	public void paintControl(PaintEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

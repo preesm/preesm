@@ -130,7 +130,6 @@ public class FASTTransformation extends AbstractMapping {
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters, IScenario scenario) {
 
-		PreesmLogger.getLogger().setLevel(Level.FINER);
 		FastAlgoParameters parameters;
 		TaskResult result = new TaskResult();
 		

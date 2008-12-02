@@ -312,6 +312,7 @@ public class InitialLists {
 				// If no predecessor was found
 				if(!checkpredecessor(dag, currentvertex, orderlist, blockingnode,
 						abc)){
+					PreesmLogger.getLogger().log(Level.SEVERE, "No predecessor was found for vertex: " + currentvertex.getName());
 					return false;
 				}
 			}
@@ -367,8 +368,10 @@ public class InitialLists {
 
 		// construction step by step of all the lists
 		if(!constructCPN(dag, cpnDominantList, blockingNodesList,
-				finalcriticalpathList, simu))
+				finalcriticalpathList, simu)){
+			PreesmLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
 			return false;
+		}
 		
 		constructCPNobn(dag, cpnDominantList, blockingNodesList, OBNlist, simu);
 

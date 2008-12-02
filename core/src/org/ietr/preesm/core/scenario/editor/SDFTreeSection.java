@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
@@ -53,7 +53,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
 
 /**
- * Tree representing a SDF graph in the constraint page and the code generation page.
+ * Tree representing a SDF graph in the constraint page and the code generation
+ * page.
  * 
  * @author mpelcat
  */
@@ -73,7 +74,8 @@ public class SDFTreeSection extends SectionPart {
 	 * Creates the tree view
 	 */
 	public SDFTreeSection(Scenario scenario, Section inputSection,
-			FormToolkit toolkit, int style, IPropertyListener listener, ISDFCheckStateListener checkStateListener) {
+			FormToolkit toolkit, int style, IPropertyListener listener,
+			ISDFCheckStateListener checkStateListener) {
 		super(inputSection);
 
 		this.section = inputSection;
@@ -109,19 +111,12 @@ public class SDFTreeSection extends SectionPart {
 		treeviewer.setUseHashlookup(true);
 		treeviewer.setInput(scenario);
 		toolkit.paintBordersFor(container);
-		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
 		section.setClient(container);
-		
-		// Tree is refreshed in case of algorithm modifications
-		section.addPaintListener(new PaintListener(){
 
-			@Override
-			public void paintControl(PaintEvent e) {
-				treeviewer.refresh();
-				
-			}
-			
-		});
+		// Tree is refreshed in case of algorithm modifications
+		section.addPaintListener(checkStateListener);
 
 	}
 

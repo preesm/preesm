@@ -261,6 +261,24 @@ public abstract class AbstractAbc implements IAbc {
 
 		return finalTime;
 	}
+	
+	@Override
+	public final int getLoad(ArchitectureComponent component) {
+
+		Integer load = 0;
+		
+		if(implementation != null){
+			
+			for(DAGVertex v : implementation.vertexSet()){
+				MapperDAGVertex mv = (MapperDAGVertex)v;
+				if(mv.getImplementationVertexProperty().getEffectiveComponent().equals(component)){
+					load += getCost(mv);
+				}
+			}
+		}
+				
+		return load;
+	}
 
 	/**
 	 * *********Implantation accesses**********

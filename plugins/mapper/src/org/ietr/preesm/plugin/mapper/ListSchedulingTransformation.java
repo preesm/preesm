@@ -148,8 +148,10 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		InitialLists initial = new InitialLists();
 
-		if(!initial.constructInitialLists(dag, simu))
-				return null;
+		if(!initial.constructInitialLists(dag, simu)){
+			PreesmLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+			return null;
+		}
 
 		simu.resetDAG();
 

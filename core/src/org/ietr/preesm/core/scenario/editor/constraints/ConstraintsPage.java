@@ -37,6 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario.editor.constraints;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -71,7 +73,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Currently edited scenario
 	 */
-	private Scenario scenario;
+	private Scenario scenario = null;
+	private ConstraintsCheckStateListener checkStateListener = null;
 
 	public ConstraintsPage(Scenario scenario, FormEditor editor, String id, String title) {
 		super(editor, id, title);
@@ -161,7 +164,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		section.setLayout(new ColumnLayout());
 	
 
-		ConstraintsCheckStateListener checkStateListener = new ConstraintsCheckStateListener(
+		checkStateListener = new ConstraintsCheckStateListener(
 				section, scenario);
 		
 		// Creates the section part containing the tree with SDF vertices
@@ -207,12 +210,27 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text)e.getSource();
 
-				ExcelConstraintsParser parser = new ExcelConstraintsParser(scenario);
-				parser.parse(text.getText());
-				
-				firePropertyChange(PROP_DIRTY);
+				importData(text);
 				
 			}});
+		
+		text.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode == SWT.CR){
+					Text text = (Text)e.getSource();
+					importData(text);
+				}
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+			}
+			
+		});
 		
 		gd.widthHint =400;
 		text.setLayoutData(gd);
@@ -222,5 +240,17 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		button.addSelectionListener(adapter);
 		
 		toolkit.paintBordersFor(client);
+	}
+	
+	private void importData(Text text){
+
+		ExcelConstraintsParser parser = new ExcelConstraintsParser(scenario);
+		parser.parse(text.getText());
+		
+		firePropertyChange(PROP_DIRTY);
+		
+		if(checkStateListener != null){
+			checkStateListener.updateCheck();
+		}
 	}
 }

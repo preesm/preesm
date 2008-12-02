@@ -122,20 +122,7 @@ public class StatGenerator {
 	 */
 	public Integer getLoad(Operator operator){
 
-		Integer load = 0;
-		
-		if(abc != null){
-			
-			for(DAGVertex v : abc.getDAG().vertexSet()){
-				MapperDAGVertex mv = (MapperDAGVertex)v;
-				if(mv.getImplementationVertexProperty().getEffectiveComponent().equals(operator)){
-					load += abc.getCost(mv);
-				}
-			}
-		}
-				
-		return load;
-		
+		return abc.getLoad(operator);
 	}
 
 	/**

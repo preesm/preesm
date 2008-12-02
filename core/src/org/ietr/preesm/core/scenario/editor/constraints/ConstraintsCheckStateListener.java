@@ -45,6 +45,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -268,5 +269,11 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		}
 
 		combo.setData(archi);
+	}
+
+	@Override
+	public void paintControl(PaintEvent e) {
+		updateCheck();
+		
 	}
 }
