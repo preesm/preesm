@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
@@ -50,6 +49,12 @@ public class ProcessorDefinition extends ArchitectureComponentDefinition {
 		super(id, "processor");
 	}
 
+	public ProcessorDefinition clone() {
+		// A new ProcessorDefinition is created with same id
+		ProcessorDefinition newdef = new ProcessorDefinition(this.getId());
+		return newdef;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ProcessorDefinition) {
@@ -59,18 +64,10 @@ public class ProcessorDefinition extends ArchitectureComponentDefinition {
 		return false;
 	}
 
+	public void fill(ArchitectureComponentDefinition origin) {
+	}
+
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.processor;
-	}
-
-	public ProcessorDefinition clone() {
-
-		// A new ProcessorDefinition is created with same id
-		ProcessorDefinition newdef = new ProcessorDefinition(this.getId());
-
-		return newdef;
-	}
-
-	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }

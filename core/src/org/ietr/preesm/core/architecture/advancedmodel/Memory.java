@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.HashSet;
@@ -68,14 +67,13 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 
 	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
 		commPerformers.add(commPerformer);
-
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.memory;
 	}
 
 	public Set<ICommunicationPerformer> getCommunicationPerformers() {
 		return commPerformers;
+	}
+
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.memory;
 	}
 }

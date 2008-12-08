@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.Map;
@@ -64,11 +63,6 @@ public class Communicator extends ArchitectureComponent implements
 
 	public Communicator(String name, CommunicatorDefinition type) {
 		super(name, type);
-
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.communicator;
 	}
 
 	public void addSetupTime(Processor proc, double time) {
@@ -85,5 +79,9 @@ public class Communicator extends ArchitectureComponent implements
 
 	public Map<Processor, Double> getSetupTimes() {
 		return setupTimes;
+	}
+
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.communicator;
 	}
 }

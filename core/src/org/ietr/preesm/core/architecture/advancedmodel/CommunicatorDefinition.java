@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
@@ -49,28 +48,25 @@ public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 	public CommunicatorDefinition(String id) {
 		super(id, "communicator");
 	}
+
+	public CommunicatorDefinition clone() {
+		CommunicatorDefinition newdef = new CommunicatorDefinition(this.getId());
+		return newdef;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CommunicatorDefinition) {
 			CommunicatorDefinition opdef = (CommunicatorDefinition) obj;
 			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
 		}
-
 		return false;
 	}
 
-	public ArchitectureComponentType getType(){
+	public void fill(ArchitectureComponentDefinition origin) {
+	}
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicator;
-	}
-
-	public CommunicatorDefinition clone() {
-
-		CommunicatorDefinition newdef = new CommunicatorDefinition(this.getId());
-
-		return newdef;
-	}
-
-
-	public void fill(ArchitectureComponentDefinition origin){
 	}
 }

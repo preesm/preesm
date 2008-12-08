@@ -9,6 +9,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -16,6 +17,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -23,6 +25,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -30,6 +33,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="C64x" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -37,6 +41,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="EDMA3" spirit:vendor="ti.com" spirit:version="1.0"/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
             <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">10</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">10</spirit:configurableElementValue>
          </spirit:configurableElementValues>

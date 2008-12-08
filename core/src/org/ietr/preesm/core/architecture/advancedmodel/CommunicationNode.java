@@ -33,12 +33,10 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 
 /**
  * a communication node (exemple: a switch)
@@ -48,16 +46,16 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 public class CommunicationNode extends ArchitectureComponent {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
+	 * ID used to reference the element in a property bean in case of a
+	 * computation vertex
 	 */
 	public static final String propertyBeanName = "communicationNode";
-	
+
 	public CommunicationNode(String name, CommunicationNodeDefinition type) {
 		super(name, type);
-
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicationNode;
 	}
 }

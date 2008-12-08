@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.HashMap;
@@ -75,12 +74,16 @@ public class Processor extends ArchitectureComponent implements ITerminal,
 		setupTimes = new HashMap<Communicator, Double>();
 	}
 
+	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
+		commPerformers.add(commPerformer);
+	}
+
 	public void addSetupTime(Communicator comm, double time) {
 		setupTimes.put(comm, time);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.processor;
+	public Set<ICommunicationPerformer> getCommunicationPerformers() {
+		return commPerformers;
 	}
 
 	public Set<Communicator> getCommunicators() {
@@ -95,12 +98,7 @@ public class Processor extends ArchitectureComponent implements ITerminal,
 		return setupTimes;
 	}
 
-	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
-		commPerformers.add(commPerformer);
-
-	}
-
-	public Set<ICommunicationPerformer> getCommunicationPerformers() {
-		return commPerformers;
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.processor;
 	}
 }

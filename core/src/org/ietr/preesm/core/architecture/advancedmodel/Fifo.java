@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -53,13 +52,13 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	 * communication vertex
 	 */
 	public static final String propertyBeanName = "fifo";
-	
-//	private ArchitectureComponent srcCmp;
-//	private ArchitectureInterface srcIf;
-//
-//	private ArchitectureComponent dstCmp;
-//	private ArchitectureInterface dstIf;
-	
+
+	// private ArchitectureComponent srcCmp;
+	// private ArchitectureInterface srcIf;
+	//
+	// private ArchitectureComponent dstCmp;
+	// private ArchitectureInterface dstIf;
+
 	private ArchitectureInterface inputInterface;
 
 	private ArchitectureInterface outputInterface;
@@ -70,122 +69,124 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	 */
 	private double dataRate;
 
-//	public Fifo(ArchitectureComponent srcCmp, ArchitectureInterface srcIf,
-//			ArchitectureComponent dstCmp, ArchitectureInterface dstIf) {
-//		super("fifo", new FifoDefinition("fifo"));
-//		this.srcCmp = srcCmp;
-//		this.dstCmp = dstCmp;
-//
-//		this.srcIf = srcIf;
-//		this.dstIf = dstIf;
-//
-//		dataRate = 0;
-//	}
+	// public Fifo(ArchitectureComponent srcCmp, ArchitectureInterface srcIf,
+	// ArchitectureComponent dstCmp, ArchitectureInterface dstIf) {
+	// super("fifo", new FifoDefinition("fifo"));
+	// this.srcCmp = srcCmp;
+	// this.dstCmp = dstCmp;
+	//
+	// this.srcIf = srcIf;
+	// this.dstIf = dstIf;
+	//
+	// dataRate = 0;
+	// }
 
 	public Fifo(String name, FifoDefinition type) {
 		super(name, type);
 		dataRate = 0;
 	}
 
-//	public Fifo(String name, FifoDefinition type, ArchitectureComponent srcCmp,
-//			ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
-//			ArchitectureInterface dstIf) {
-//		super(name, type);
-//		this.srcCmp = srcCmp;
-//		this.dstCmp = dstCmp;
-//
-//		this.srcIf = srcIf;
-//		this.dstIf = dstIf;
-//	}
+	// public Fifo(String name, FifoDefinition type, ArchitectureComponent
+	// srcCmp,
+	// ArchitectureInterface srcIf, ArchitectureComponent dstCmp,
+	// ArchitectureInterface dstIf) {
+	// super(name, type);
+	// this.srcCmp = srcCmp;
+	// this.dstCmp = dstCmp;
+	//
+	// this.srcIf = srcIf;
+	// this.dstIf = dstIf;
+	// }
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.fifo;
+	public double getDataRate() {
+		return dataRate;
 	}
 
-//	@Override
-//	public boolean equals(Object obj) {
-//
-//		if (obj instanceof Fifo) {
-//			Fifo intc = (Fifo) obj;
-//			return intc.srcCmp.equals(this.srcCmp)
-//					&& intc.dstCmp.equals(this.dstCmp)
-//					&& intc.srcIf.equals(this.srcIf)
-//					&& intc.dstIf.equals(this.dstIf);
-//		}
-//		return false;
-//	}
-//
-//	public ArchitectureComponent getSrcCmp() {
-//		return srcCmp;
-//	}
-//
-//	public ArchitectureComponent getDstCmp() {
-//		return dstCmp;
-//	}
-//
-//	public ArchitectureInterface getSrcIf() {
-//		return srcIf;
-//	}
-//
-//	public ArchitectureInterface getDstIf() {
-//		return dstIf;
-//	}
-//
-//	public void setSrcCmp(ArchitectureComponent srcCmp) {
-//		this.srcCmp = srcCmp;
-//	}
-//
-//	public void setSrcIf(ArchitectureInterface srcIf) {
-//		this.srcIf = srcIf;
-//	}
-//
-//	public void setDstCmp(ArchitectureComponent dstCmp) {
-//		this.dstCmp = dstCmp;
-//	}
-//
-//	public void setDstIf(ArchitectureInterface dstIf) {
-//		this.dstIf = dstIf;
-//	}
-//
-//	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
-//
-//		if (srcCmp.getType() == type)
-//			return srcIf;
-//		else if (dstCmp.getType() == type)
-//			return dstIf;
-//		else
-//			return null;
-//	}
-	
+	// @Override
+	// public boolean equals(Object obj) {
+	//
+	// if (obj instanceof Fifo) {
+	// Fifo intc = (Fifo) obj;
+	// return intc.srcCmp.equals(this.srcCmp)
+	// && intc.dstCmp.equals(this.dstCmp)
+	// && intc.srcIf.equals(this.srcIf)
+	// && intc.dstIf.equals(this.dstIf);
+	// }
+	// return false;
+	// }
+	//
+	// public ArchitectureComponent getSrcCmp() {
+	// return srcCmp;
+	// }
+	//
+	// public ArchitectureComponent getDstCmp() {
+	// return dstCmp;
+	// }
+	//
+	// public ArchitectureInterface getSrcIf() {
+	// return srcIf;
+	// }
+	//
+	// public ArchitectureInterface getDstIf() {
+	// return dstIf;
+	// }
+	//
+	// public void setSrcCmp(ArchitectureComponent srcCmp) {
+	// this.srcCmp = srcCmp;
+	// }
+	//
+	// public void setSrcIf(ArchitectureInterface srcIf) {
+	// this.srcIf = srcIf;
+	// }
+	//
+	// public void setDstCmp(ArchitectureComponent dstCmp) {
+	// this.dstCmp = dstCmp;
+	// }
+	//
+	// public void setDstIf(ArchitectureInterface dstIf) {
+	// this.dstIf = dstIf;
+	// }
+	//
+	// public ArchitectureInterface getInterface(ArchitectureComponentType type)
+	// {
+	//
+	// if (srcCmp.getType() == type)
+	// return srcIf;
+	// else if (dstCmp.getType() == type)
+	// return dstIf;
+	// else
+	// return null;
+	// }
+
 	public ArchitectureInterface getInputInterface() {
 		return inputInterface;
-	}
-
-	public void setInputInterface(ArchitectureInterface inputInterface) {
-		if(this.inputInterface!=null){
-			availableInterfaces.remove(this.inputInterface);
-		}
-		this.inputInterface = inputInterface;
-		this.addInterface(inputInterface);
 	}
 
 	public ArchitectureInterface getOutputInterface() {
 		return outputInterface;
 	}
 
-	public void setOutputInterface(ArchitectureInterface outputInterface) {
-		if(this.outputInterface!=null){
-			availableInterfaces.remove(this.outputInterface);
-		}
-		this.outputInterface = outputInterface;
-		this.addInterface(outputInterface);
-	}
-	
-	public double getDataRate() {
-		return dataRate;
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.fifo;
 	}
 
 	public void setDataRate(double dataRate) {
 		this.dataRate = dataRate;
+	}
+
+	public void setInputInterface(ArchitectureInterface inputInterface) {
+		if (this.inputInterface != null) {
+			availableInterfaces.remove(this.inputInterface);
+		}
+		this.inputInterface = inputInterface;
+		this.addInterface(inputInterface);
+	}
+
+	public void setOutputInterface(ArchitectureInterface outputInterface) {
+		if (this.outputInterface != null) {
+			availableInterfaces.remove(this.outputInterface);
+		}
+		this.outputInterface = outputInterface;
+		this.addInterface(outputInterface);
 	}
 }

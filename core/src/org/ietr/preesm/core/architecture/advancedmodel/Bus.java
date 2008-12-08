@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -64,12 +63,12 @@ public class Bus extends ArchitectureComponent implements ILink {
 		dataRate = 0;
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.bus;
-	}
-
 	public double getDataRate() {
 		return dataRate;
+	}
+
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.bus;
 	}
 
 	public void setDataRate(double dataRate) {

@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -58,16 +57,12 @@ public class NodeLinkTuple {
 		}
 	}
 
-	public CommunicationNode getNode() {
-		return node;
-	}
-
-	public void setNode(CommunicationNode node) {
-		this.node = node;
-	}
-
 	public ArchitectureComponent getLink() {
 		return link;
+	}
+
+	public CommunicationNode getNode() {
+		return node;
 	}
 
 	public boolean setLink(ArchitectureComponent link) {
@@ -78,5 +73,9 @@ public class NodeLinkTuple {
 		} else {
 			return false;
 		}
+	}
+
+	public void setNode(CommunicationNode node) {
+		this.node = node;
 	}
 }

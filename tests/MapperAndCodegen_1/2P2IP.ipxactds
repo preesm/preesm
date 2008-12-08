@@ -9,6 +9,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="microblaze" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">processor</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -16,6 +17,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="microblaze" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">processor</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -23,6 +25,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="IP1" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">ipCoprocessor</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -30,6 +33,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="IP2" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">ipCoprocessor</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -37,6 +41,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="dma" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">communicator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -44,6 +49,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="dma" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">communicator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -51,6 +57,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="crossbar" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">communicationNode</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -58,6 +65,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="plb" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -65,6 +73,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="plb" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -72,6 +81,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="fsl" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -79,6 +89,7 @@
          <spirit:componentRef spirit:library="preesm" spirit:name="fsl" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>

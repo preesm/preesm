@@ -31,7 +31,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.commcontenlistsched"
             name="Communication contentious list scheduling"
-            type="org.ietr.preesm.plugin.mapper.CommContenListSchedTransformation">
+            type="org.ietr.preesm.plugin.mapper.ListSchedTransformation">
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.graphtransfo.DAGExporterTransform"

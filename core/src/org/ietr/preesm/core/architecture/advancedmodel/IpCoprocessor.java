@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.Set;
@@ -53,7 +52,7 @@ public class IpCoprocessor extends ArchitectureComponent implements ITerminal {
 	 * computation vertex
 	 */
 	public static final String propertyBeanName = "ipcoprocessor";
-	
+
 	/**
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
@@ -68,13 +67,13 @@ public class IpCoprocessor extends ArchitectureComponent implements ITerminal {
 		commPerformers.add(commPerformer);
 
 	}
-	
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.ipCoprocessor;
-	}
-	
+
 	public Set<ICommunicationPerformer> getCommunicationPerformers() {
 		return commPerformers;
+	}
+
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.ipCoprocessor;
 	}
 
 }
