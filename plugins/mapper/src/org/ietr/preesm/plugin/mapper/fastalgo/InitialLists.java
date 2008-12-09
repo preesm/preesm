@@ -49,6 +49,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -494,7 +495,7 @@ public class InitialLists {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dagtest = new DAGCreator().dagexample1(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(dagtest, archi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, dagtest, archi);
 		simu.getFinalTime();
 
 		InitialLists scheduler = new InitialLists();

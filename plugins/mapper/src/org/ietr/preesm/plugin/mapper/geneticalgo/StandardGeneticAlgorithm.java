@@ -57,6 +57,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -277,7 +278,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 		// MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
@@ -301,7 +302,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		Chromosome chromosome7 = skipListSet.first().clone();
 		chromosome7.evaluate(AbcType.AccuratelyTimed);
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.AccuratelyTimed,
+				.getInstance(AbcType.AccuratelyTimed, EdgeSchedType.none,
 						chromosome7.getDag(), archi);
 		simu2.setDAG(chromosome7.getDag());
 		simu2.plotImplementation(false);

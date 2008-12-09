@@ -55,6 +55,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
@@ -103,7 +104,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		PFASTTransformation transformation = new PFASTTransformation();
 		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, 5, 3,
-				AbcType.LooselyTimed);
+				AbcType.LooselyTimed, EdgeSchedType.none);
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
 		logger.log(Level.FINER, "Test fast finished");
@@ -131,7 +132,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -142,7 +143,7 @@ public class PFASTTransformation extends AbstractMapping {
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
 
 		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 

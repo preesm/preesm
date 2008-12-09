@@ -37,6 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper;
 
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Common behavior of all the mapping algorithm parameters
@@ -48,10 +50,24 @@ public abstract class AbstractParameters {
 	protected TextParameters textParameters = null;
 
 	/**
+	 * Simulator type
+	 */
+	private AbcType simulatorType = null;
+	
+	/**
+	 * Edge scheduling type
+	 */
+	private EdgeSchedType edgeSchedType = null;
+
+	/**
 	 * Constructor creating a new text parameter
 	 */
-	public AbstractParameters() {
+	public AbstractParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		textParameters = new TextParameters();
+		this.simulatorType = simulatorType;
+		this.edgeSchedType = edgeSchedType;
+		textParameters.addVariable("simulatorType", simulatorType.toString());
+		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
 	}
 	
 	/**
@@ -59,6 +75,8 @@ public abstract class AbstractParameters {
 	 */
 	public AbstractParameters(TextParameters textParameters) {
 		this.textParameters = textParameters;
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
+		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));
 	}
 	
 	
@@ -67,5 +85,17 @@ public abstract class AbstractParameters {
 	 */
 	public TextParameters textParameters(){
 		return textParameters;
+	}
+	
+	public AbcType getSimulatorType() {
+		return simulatorType;
+	}
+
+	public void setSimulatorType(AbcType simulatorType) {
+		this.simulatorType = simulatorType;
+	}
+
+	public EdgeSchedType getEdgeSchedType() {
+		return edgeSchedType;
 	}
 }

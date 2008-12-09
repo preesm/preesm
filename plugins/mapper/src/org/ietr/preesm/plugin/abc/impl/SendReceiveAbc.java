@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -76,7 +77,7 @@ public class SendReceiveAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public SendReceiveAbc(MapperDAG dag,
+	public SendReceiveAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
@@ -110,7 +111,7 @@ public class SendReceiveAbc extends
 
 			transactionManager.undoTransactionList();
 			
-			tvertexAdder.addTransferVertices(implementation,transactionManager);
+			tvertexAdder.addTransferVertices(implementation,transactionManager, null);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 		}
 	}

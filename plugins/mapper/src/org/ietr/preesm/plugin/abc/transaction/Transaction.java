@@ -36,15 +36,21 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+
 /**
- * Transactions are used to add implementation vertices and edges to a graph.
+ * Transactions are used to modify a graph with the possibility to withdraw
+ * actions at any time
  * 
  * @author mpelcat
  */
 public abstract class Transaction {
 
+	// true if this transaction has already been executed
 	private boolean isExecuted;
 	
+	// Vertex that fired the current transaction
+	private MapperDAGVertex ref;
 
 	public Transaction() {
 		super();
@@ -61,5 +67,13 @@ public abstract class Transaction {
 
 	public void undo(){
 		isExecuted = false;
+	}
+
+	public MapperDAGVertex getRef() {
+		return ref;
+	}
+
+	public void setRef(MapperDAGVertex ref) {
+		this.ref = ref;
 	}
 }

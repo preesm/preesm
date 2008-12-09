@@ -58,6 +58,7 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -311,7 +312,7 @@ public class ListScheduler {
 		// Converting sdf dag in mapper dag
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -332,7 +333,7 @@ public class ListScheduler {
 
 		ListScheduler scheduler = new ListScheduler();
 		simu.resetImplementation();
-		IAbc simu2 = new LooselyTimedAbc(
+		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.none, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating first scheduling ");

@@ -36,17 +36,23 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * An approximately timed architecture simulator associates a complex
@@ -80,7 +86,7 @@ public class ApproximatelyTimedAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public ApproximatelyTimedAbc(MapperDAG dag,
+	public ApproximatelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
@@ -96,6 +102,9 @@ public class ApproximatelyTimedAbc extends
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
 
+		PreesmLogger.getLogger().log(Level.INFO,
+				"mapping " + vertex.getName());
+		
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
@@ -112,10 +121,44 @@ public class ApproximatelyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
+			transactionManager.undoTransactions(vertex);
+			
+			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
+			precedenceEdgeAdder.addPrecedenceEdge(implementation,transactionManager,vertex,vertex);
+			
+			addTransferPrecedenceEdges(implementation,transactionManager,vertex);
+
+			/*
+			// Exhaustive recalculation
 			transactionManager.undoTransactionList();
 			
-			tvertexAdder.addTransferVertices(implementation,transactionManager);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
+			tvertexAdder.addTransferVertices(implementation,transactionManager,null);
+			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);*/
+
+		}
+	}
+
+	/**
+	 * Adds all necessary schedule edges for the transfers of a given
+	 * vertex
+	 */
+	public void addTransferPrecedenceEdges(MapperDAG implementation,
+			TransactionManager transactionManager, MapperDAGVertex refVertex) {
+
+		for (DAGEdge edge : refVertex.incomingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
+			if (vertex instanceof TransferVertex) {
+				precedenceEdgeAdder.addPrecedenceEdge(implementation, transactionManager, vertex,
+						refVertex);
+			}
+		}
+
+		for (DAGEdge edge : refVertex.outgoingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
+			if (vertex instanceof TransferVertex) {
+				precedenceEdgeAdder.addPrecedenceEdge(implementation, transactionManager, vertex,
+						refVertex);
+			}
 		}
 	}
 

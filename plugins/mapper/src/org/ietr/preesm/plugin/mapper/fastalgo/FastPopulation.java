@@ -39,16 +39,14 @@ package org.ietr.preesm.plugin.mapper.fastalgo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
@@ -167,7 +165,7 @@ public class FastPopulation {
 			tempdag = dag.clone();
 
 			// perform the initialization
-			IAbc simu = new InfiniteHomogeneousAbc(
+			IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 					tempdag, this.getArchi());
 			InitialLists initial = new InitialLists();
 			initial.constructInitialLists(tempdag, simu);
@@ -192,7 +190,7 @@ public class FastPopulation {
 	public void populationDisplay() {
 
 		// variables
-		Logger logger = PreesmLogger.getLogger();
+		//Logger logger = PreesmLogger.getLogger();
 		//logger.setLevel(Level.FINEST);
 		ListScheduler scheduler = new ListScheduler();
 		Iterator<MapperDAG> iterator = this.getPopulation().iterator();
@@ -202,7 +200,7 @@ public class FastPopulation {
 		while (iterator.hasNext()) {
 			temp = iterator.next().clone();
 			IAbc simu2 = AbstractAbc
-					.getInstance(this.getSimulatorType(), temp, this.getArchi());
+					.getInstance(this.getSimulatorType(), EdgeSchedType.none, temp, this.getArchi());
 
 			scheduler.dagimplanteddisplay(temp, simu2);
 			simu2.setDAG(temp);

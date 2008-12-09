@@ -51,6 +51,7 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
@@ -120,7 +121,7 @@ public class ListSchedulingArchiTester {
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"List scheduling initialization");
 		IAbc simu = AbstractAbc
-				.getInstance(AbcType.InfiniteHomogeneous,
+				.getInstance(AbcType.InfiniteHomogeneous, EdgeSchedType.none,
 						dag, archi);
 		InitialLists initial = new InitialLists();
 
@@ -151,7 +152,7 @@ public class ListSchedulingArchiTester {
 			simulatorType = AbcType.AccuratelyTimed;
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"Evaluating List scheduling ");
 		scheduler.schedule(dag, initial.getCpnDominantList(), initial

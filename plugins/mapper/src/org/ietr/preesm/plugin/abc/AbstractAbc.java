@@ -52,6 +52,7 @@ import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -114,21 +115,21 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(AbcType simulatorType, MapperDAG dag,
+	public static IAbc getInstance(AbcType simulatorType, EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi) {
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			return new InfiniteHomogeneousAbc(dag, archi);
+			return new InfiniteHomogeneousAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			return new LooselyTimedAbc(dag, archi);
+			return new LooselyTimedAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
-			return new ApproximatelyTimedAbc(dag, archi);
+			return new ApproximatelyTimedAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
-			return new AccuratelyTimedAbc(dag, archi);
+			return new AccuratelyTimedAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.CommConten) {
-			return new CommContenAbc(dag, archi);
+			return new CommContenAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.SendReceive) {
-			return new SendReceiveAbc(dag, archi);
+			return new SendReceiveAbc(edgeSchedType, dag, archi);
 		}
 
 		return null;

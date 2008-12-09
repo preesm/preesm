@@ -45,6 +45,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -144,7 +145,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		}
 
 		// Create the CPN Dominant Sequence
-		IAbc IHsimu = new InfiniteHomogeneousAbc(
+		IAbc IHsimu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				callableDAG.clone(), callableArchi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);

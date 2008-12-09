@@ -50,7 +50,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class SDFListContentProvider implements IStructuredContentProvider{
 
 	
-	private Scenario scenario = null;
+	//private Scenario scenario = null;
 	
 	private SDFGraph currentGraph = null;
 
@@ -65,7 +65,7 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 			
 			// Opening algorithm from file
 			//if(inputScenario != scenario){
-				scenario = inputScenario;
+				//scenario = inputScenario;
 				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
 				elementTable = currentGraph.vertexSet().toArray();
 			//}

@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.IGraphTransformation;

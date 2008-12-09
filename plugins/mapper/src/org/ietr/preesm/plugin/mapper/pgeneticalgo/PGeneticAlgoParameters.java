@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.pgeneticalgo;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Parameters for task scheduling genetic algorithm multithread
@@ -46,9 +47,6 @@ import org.ietr.preesm.plugin.mapper.AbstractParameters;
  * @author pmenuet
  */
 public class PGeneticAlgoParameters extends AbstractParameters {
-
-	// Type of simulator used to perform the PGenetic Algorithm
-	private AbcType simulatorType;
 
 	// Number of individuals the algorithm will keep in the best population
 	private int populationSize;
@@ -72,7 +70,6 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 		this.generationNumber = textParameters.getIntVariable("generationNumber");
 		this.populationSize = textParameters.getIntVariable("populationSize");
 		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 		this.pfastused2makepopulation = textParameters.getBooleanVariable("pfastused2makepopulation");
 	
 	}
@@ -88,9 +85,9 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 	 */
 	public PGeneticAlgoParameters(int generationNumber,
 			int populationSize, int procNumber,
-			AbcType simulatorType,
+			AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean pfastused2makepopulation) {
-		super();
+		super(simulatorType,edgeSchedType);
 
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
@@ -101,15 +98,7 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 		this.generationNumber = generationNumber;
 		this.populationSize = populationSize;
 		this.procNumber = procNumber;
-		this.simulatorType = simulatorType;
 		this.pfastused2makepopulation = pfastused2makepopulation;
-	}
-
-	/**
-	 * @return the type
-	 */
-	public AbcType getSimulatorType() {
-		return simulatorType;
 	}
 
 	/**
@@ -125,14 +114,6 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 	 */
 	public void setPfastused2makepopulation(boolean pfastused2makepopulation) {
 		this.pfastused2makepopulation = pfastused2makepopulation;
-	}
-
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
 	}
 
 	/**

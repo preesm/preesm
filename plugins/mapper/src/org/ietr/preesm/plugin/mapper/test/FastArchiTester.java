@@ -53,6 +53,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
@@ -137,7 +138,7 @@ public class FastArchiTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 		logger.log(Level.FINEST, "Initialization list scheduling");
 
@@ -176,7 +177,7 @@ public class FastArchiTester {
 
 		// display
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
 		logger.log(Level.FINE, "FinalSPlength " + simu2.getFinalTime());

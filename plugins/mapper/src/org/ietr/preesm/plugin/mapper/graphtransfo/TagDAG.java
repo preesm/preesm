@@ -112,7 +112,7 @@ public class TagDAG {
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(
 				new CommunicationRouter(architecture), orderMgr, true, false);
-		tvAdder.addTransferVertices(dag, new TransactionManager());
+		tvAdder.addTransferVertices(dag, new TransactionManager(), null);
 		orderMgr.tagDAG(dag);
 	}
 

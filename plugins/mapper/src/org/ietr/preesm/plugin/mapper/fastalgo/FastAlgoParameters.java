@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.fastalgo;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm
@@ -69,18 +70,12 @@ public class FastAlgoParameters extends AbstractParameters {
 	 */
 	private int maxStep;
 
-	/**
-	 * Simulator type
-	 */
-	private AbcType simulatorType;
-
 	public FastAlgoParameters(TextParameters textParameters) {
 		super(textParameters);
 		
 		this.maxCount = textParameters.getIntVariable("maxCount");
 		this.maxStep = textParameters.getIntVariable("maxStep");
 		this.margIn = textParameters.getIntVariable("margIn");
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
 	/**
@@ -90,8 +85,8 @@ public class FastAlgoParameters extends AbstractParameters {
 	 */
 
 	public FastAlgoParameters(int maxCount, int maxStep, int margIn,
-			AbcType simulatorType) {
-		super();
+			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		super(simulatorType,edgeSchedType);
 		textParameters.addVariable("maxCount",maxCount);
 		textParameters.addVariable("maxStep",maxStep);
 		textParameters.addVariable("margIn",margIn);
@@ -100,7 +95,6 @@ public class FastAlgoParameters extends AbstractParameters {
 		this.maxCount = maxCount;
 		this.maxStep = maxStep;
 		this.margIn = margIn;
-		this.simulatorType = simulatorType;
 	}
 
 	/**
@@ -111,14 +105,6 @@ public class FastAlgoParameters extends AbstractParameters {
 
 	public int getMargIn() {
 		return margIn;
-	}
-
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
-
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
 	}
 
 	public int getMaxCount() {

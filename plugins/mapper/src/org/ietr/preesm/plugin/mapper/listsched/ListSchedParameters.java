@@ -38,22 +38,15 @@ package org.ietr.preesm.plugin.mapper.listsched;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  */
 
 public class ListSchedParameters extends AbstractParameters {
 
-	/**
-	 * Simulator type
-	 */
-	private AbcType simulatorType;
-
 	public ListSchedParameters(TextParameters textParameters) {
 		super(textParameters);
-
-		this.simulatorType = AbcType.fromString(textParameters
-				.getVariable("simulatorType"));
 	}
 
 	/**
@@ -63,20 +56,8 @@ public class ListSchedParameters extends AbstractParameters {
 	 */
 
 	public ListSchedParameters(int maxCount, int maxStep, int margIn,
-			AbcType simulatorType) {
-		super();
+			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		super(simulatorType,edgeSchedType);
 
-	}
-
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
-
-	/**
-	 * @param simulatorType
-	 *            the simulatorType to set
-	 */
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
 	}
 }

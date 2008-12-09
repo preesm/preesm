@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.pfastalgo;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread
@@ -82,11 +83,6 @@ public class PFastAlgoParameters extends AbstractParameters {
 	private int procNumber;
 
 	/**
-	 * simulator type
-	 */
-	private AbcType simulatorType;
-
-	/**
 	 * Constructors
 	 */
 
@@ -97,13 +93,12 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.margIn = textParameters.getIntVariable("margIn");
 		this.nodesmin = textParameters.getIntVariable("nodesmin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
 	public PFastAlgoParameters(int margIn, int maxCount, int maxStep,
 			int nodesmin, int procNumber,
-			AbcType simulatorType) {
-		super();
+			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		super(simulatorType,edgeSchedType);
 		textParameters.addVariable("margIn", margIn);
 		textParameters.addVariable("maxCount", maxCount);
 		textParameters.addVariable("maxStep", maxStep);
@@ -116,20 +111,11 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.maxStep = maxStep;
 		this.nodesmin = nodesmin;
 		this.procNumber = procNumber;
-		this.simulatorType = simulatorType;
 	}
 
 	/**
 	 * Getters and Setters
 	 */
-
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
-
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
-	}
 
 	public int getProcNumber() {
 		return procNumber;

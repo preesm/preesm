@@ -59,6 +59,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
@@ -116,7 +117,7 @@ public class PFastAlgorithm extends Observable {
 		public FinalTimeComparator(AbcType type,
 				MapperDAG dag, MultiCoreArchitecture archi) {
 			super();
-			this.simulator = AbstractAbc.getInstance(type,
+			this.simulator = AbstractAbc.getInstance(type, EdgeSchedType.none,
 					dag, archi);
 		}
 
@@ -304,7 +305,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dagfinal;
 		ListScheduler scheduler = new ListScheduler();
 		IAbc archisimu = AbstractAbc
-				.getInstance(simulatorType, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 		Logger logger = PreesmLogger.getLogger();
 
@@ -462,7 +463,7 @@ public class PFastAlgorithm extends Observable {
 		logger.log(Level.FINER, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 
 		InitialLists initial = new InitialLists();

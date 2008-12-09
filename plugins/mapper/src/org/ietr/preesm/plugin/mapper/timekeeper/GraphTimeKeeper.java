@@ -51,6 +51,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -521,7 +522,7 @@ public class GraphTimeKeeper {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simulator = new LooselyTimedAbc(dag, archi);
+		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.none, dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());

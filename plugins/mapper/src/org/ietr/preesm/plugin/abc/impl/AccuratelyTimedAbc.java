@@ -42,20 +42,24 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * The accurately timed ABC schedules edges and set-up times
  * 
  * @author mpelcat
  */
-public class AccuratelyTimedAbc extends
-		AbstractAbc {
+public class AccuratelyTimedAbc extends AbstractAbc {
 
 	/**
 	 * simulator of the transfers
@@ -63,8 +67,8 @@ public class AccuratelyTimedAbc extends
 	protected CommunicationRouter router;
 
 	/**
-	 * Current precedence edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
+	 * Current precedence edge adder: called exclusively by simulator to
+	 * schedule vertices on the different operators
 	 */
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
@@ -82,14 +86,14 @@ public class AccuratelyTimedAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(MapperDAG dag,
-			MultiCoreArchitecture archi) {
+	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
 
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false, false);
+		tvertexAdder = new TransferVertexAdder(router, orderManager, false,
+				false);
 		overtexAdder = new OverheadVertexAdder(orderManager);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
@@ -116,12 +120,69 @@ public class AccuratelyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			transactionManager.undoTransactionList();
+			transactionManager.undoTransactions(vertex);
 
-			tvertexAdder.addTransferVertices(implementation,transactionManager);
-			overtexAdder.addOverheadVertices(implementation,transactionManager);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
+			tvertexAdder.addTransferVertices(implementation,
+					transactionManager, vertex);
+			overtexAdder.addOverheadVertices(implementation,
+					transactionManager, vertex);
 
+			addOverheadAndTransferPrecedenceEdges(implementation,
+					transactionManager, vertex);
+			
+			precedenceEdgeAdder.addPrecedenceEdge(implementation,
+					transactionManager, vertex, vertex);
+			/*
+			 * transactionManager.undoTransactionList();
+			 * 
+			 * 
+			 * tvertexAdder.addTransferVertices(implementation,transactionManager
+			 * , null);
+			 * overtexAdder.addOverheadVertices(implementation,transactionManager
+			 * );precedenceEdgeAdder.addPrecedenceEdges(implementation,
+			 * transactionManager);
+			 */
+		}
+	}
+
+	/**
+	 * Adds all necessary schedule edges for the transfers and overheads of a given vertex
+	 */
+	public void addOverheadAndTransferPrecedenceEdges(MapperDAG implementation,
+			TransactionManager transactionManager, MapperDAGVertex refVertex) {
+
+		for (DAGEdge edge : refVertex.incomingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
+			if (vertex instanceof TransferVertex) {
+				precedenceEdgeAdder.addPrecedenceEdge(implementation,
+						transactionManager, vertex, refVertex);
+
+				for (DAGEdge oE : vertex.incomingEdges()) {
+					MapperDAGVertex oV = (MapperDAGVertex) oE.getSource();
+					if (oE.getSource() instanceof OverheadVertex) {
+						precedenceEdgeAdder.addPrecedenceEdge(implementation,
+								transactionManager, oV, refVertex);
+					}
+				}
+
+			}
+		}
+
+		for (DAGEdge edge : refVertex.outgoingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
+			if (vertex instanceof OverheadVertex) {
+				precedenceEdgeAdder.addPrecedenceEdge(implementation,
+						transactionManager, vertex, refVertex);
+
+				for (DAGEdge tE : vertex.outgoingEdges()) {
+					MapperDAGVertex tV = (MapperDAGVertex) tE.getTarget();
+					if (tV instanceof TransferVertex) {
+
+						precedenceEdgeAdder.addPrecedenceEdge(implementation,
+								transactionManager, tV, refVertex);
+					}
+				}
+			}
 		}
 	}
 
@@ -144,7 +205,7 @@ public class AccuratelyTimedAbc extends
 			PreesmLogger.getLogger().severe(
 					"unimplementation of " + vertex.getName() + " failed");
 		}
-		
+
 	}
 
 	/**
@@ -167,7 +228,7 @@ public class AccuratelyTimedAbc extends
 
 	}
 
-	public AbcType getType(){
+	public AbcType getType() {
 		return AbcType.AccuratelyTimed;
 	}
 }

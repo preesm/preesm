@@ -16,7 +16,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Gathering the properties that will be displayed in the overview page of the

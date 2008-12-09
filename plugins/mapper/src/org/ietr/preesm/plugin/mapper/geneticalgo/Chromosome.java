@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
@@ -164,7 +165,7 @@ public class Chromosome {
 	public void evaluate(AbcType simulatorType) {
 		this.updateDAG();
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, this.dag, this.archi);
+				.getInstance(simulatorType, EdgeSchedType.none, this.dag, this.archi);
 		simulator.setDAG(this.getDag());
 		this.setEvaluateCost(simulator.getFinalTime());
 		this.setDirty(false);
@@ -261,12 +262,12 @@ public class Chromosome {
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		ListScheduler scheduler = new ListScheduler();
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
-		IAbc archisimu = new LooselyTimedAbc(
+		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.none, 
 				dag, archi);
 		scheduler.schedule(dag, initialLists.getCpnDominantList(), initialLists
 				.getBlockingNodesList(), initialLists
@@ -279,7 +280,7 @@ public class Chromosome {
 		chromosome.evaluate(AbcType.LooselyTimed);
 
 		IAbc simu3 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
 						.getDag(), archi);
 		simu3.setDAG(chromosome.getDag());
 		simu3.plotImplementation(false);
@@ -288,7 +289,7 @@ public class Chromosome {
 		Chromosome chromosome2 = chromosome.clone();
 
 		IAbc simu4 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed,
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none,
 						chromosome2.getDag(), archi);
 		simu4.setDAG(chromosome2.getDag());
 		simu4.plotImplementation(false);
@@ -299,7 +300,7 @@ public class Chromosome {
 				AbcType.LooselyTimed);
 
 		IAbc simu5 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
 						.getDag(), archi);
 		simu5.setDAG(chromosome.getDag());
 		simu5.plotImplementation(false);
@@ -308,7 +309,7 @@ public class Chromosome {
 				AbcType.LooselyTimed);
 
 		IAbc simu6 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
 						.getDag(), archi);
 		simu6.setDAG(chromosome.getDag());
 		simu6.plotImplementation(false);
@@ -317,7 +318,7 @@ public class Chromosome {
 				AbcType.LooselyTimed);
 
 		IAbc simu7 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
 						.getDag(), archi);
 		simu7.setDAG(chromosome.getDag());
 		simu7.plotImplementation(false);
@@ -326,7 +327,7 @@ public class Chromosome {
 				AbcType.LooselyTimed);
 
 		IAbc simu1 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
 						.getDag(), archi);
 		simu1.setDAG(chromosome.getDag());
 		simu1.plotImplementation(false);
@@ -338,7 +339,7 @@ public class Chromosome {
 		chromosome3.evaluate(AbcType.LooselyTimed);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed,
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none,
 						chromosome3.getDag(), archi);
 		simu2.setDAG(chromosome3.getDag());
 		simu2.plotImplementation(false);

@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.mapper.model.impl;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.Schedule;
@@ -47,13 +48,14 @@ import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * The edge adder automatically generates edges between vertices
- * successive on a single operator. It can also remove all the edges of
- * type PrecedenceEdgeAdder from the graph
+ * The edge adder automatically generates edges between vertices successive on a
+ * single operator. It can also remove all the edges of type PrecedenceEdgeAdder
+ * from the graph
  * 
- * @author mpelcat   
+ * @author mpelcat
  */
 public class PrecedenceEdgeAdder {
 
@@ -66,34 +68,59 @@ public class PrecedenceEdgeAdder {
 	}
 
 	/**
-	 * Adds all necessary schedule edges to an implementation respecting
-	 * the order given by the scheduling order manager.
+	 * Adds a schedule edge to the given vertex if necessary to differ its
+	 * execution when the core is available
 	 */
-	public void addPrecedenceEdge(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
+	public void addPrecedenceEdge(MapperDAG implementation,
+			TransactionManager transactionManager,
+			MapperDAGVertex scheduledVertex,
+			MapperDAGVertex transactionRefVertex) {
 
-			Schedule schedule = orderManager
-					.getSchedule(refVertex.getImplementationVertexProperty().getEffectiveComponent());
+		if (scheduledVertex.getImplementationVertexProperty()
+				.getEffectiveComponent() == null)
+			return;
 
-			MapperDAGVertex prevVertex = schedule.getPreviousVertex(refVertex);
+		Schedule schedule = orderManager.getSchedule(scheduledVertex
+				.getImplementationVertexProperty().getEffectiveComponent());
 
-			if (implementation.getAllEdges(prevVertex, refVertex).isEmpty()) {
-				// Adds a transaction
-				Transaction transaction = new AddPrecedenceEdgeTransaction(implementation,prevVertex,refVertex);
-				transactionManager.add(transaction,refVertex);
-			}
+		MapperDAGVertex prevVertex = schedule
+				.getPreviousVertex(scheduledVertex);
+		Set<DAGEdge> prevEdges = implementation.getAllEdges(prevVertex,
+				scheduledVertex);
+
+		if (prevEdges != null && prevEdges.isEmpty()) {
+
+			// Adds a transaction
+			Transaction transaction = new AddPrecedenceEdgeTransaction(
+					implementation, prevVertex, scheduledVertex);
+			transactionManager.add(transaction, transactionRefVertex);
+		}
+
+		MapperDAGVertex nextVertex = schedule.getNextVertex(scheduledVertex); 
+		Set<DAGEdge> nextEdges = implementation.getAllEdges(scheduledVertex,
+				nextVertex);
+
+		if (nextEdges != null && nextEdges.isEmpty()) {
+
+			// Adds a transaction
+			Transaction transaction = new AddPrecedenceEdgeTransaction(
+					implementation, scheduledVertex, nextVertex);
+			transactionManager.add(transaction, transactionRefVertex);
+		}
 
 		// Executes the transactions
 		transactionManager.executeTransactionList();
 	}
 
 	/**
-	 * Adds all necessary schedule edges to an implementation respecting
-	 * the order given by the scheduling order manager.
+	 * Adds all necessary schedule edges to an implementation respecting the
+	 * order given by the scheduling order manager.
 	 */
-	public void addPrecedenceEdges(MapperDAG implementation, TransactionManager transactionManager) {
+	public void addPrecedenceEdges(MapperDAG implementation,
+			TransactionManager transactionManager) {
 
-		Iterator<ArchitectureComponent> schedIt = orderManager.getArchitectureComponents()
-				.iterator();
+		Iterator<ArchitectureComponent> schedIt = orderManager
+				.getArchitectureComponents().iterator();
 
 		// Iterates the schedules
 		while (schedIt.hasNext()) {
@@ -115,8 +142,9 @@ public class PrecedenceEdgeAdder {
 
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
-						Transaction transaction = new AddPrecedenceEdgeTransaction(implementation,src,dst);
-						transactionManager.add(transaction,null);
+						Transaction transaction = new AddPrecedenceEdgeTransaction(
+								implementation, src, dst);
+						transactionManager.add(transaction, null);
 					}
 				}
 			}

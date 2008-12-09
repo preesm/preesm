@@ -59,6 +59,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -111,7 +112,7 @@ public class FastAlgorithm extends Observable {
 		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -143,7 +144,7 @@ public class FastAlgorithm extends Observable {
 						.getFinalcriticalpathList(), 50, 50, 5, false, true, null);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, dag, archi);
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, dag, archi);
 
 		simu2.setDAG(dag);
 		logger.log(Level.FINER, "Displaying dag implanted 2");
@@ -206,7 +207,7 @@ public class FastAlgorithm extends Observable {
 
 		// Variables
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
 		ListScheduler scheduler = new ListScheduler();
 		Iterator<Operator> prociter;
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(

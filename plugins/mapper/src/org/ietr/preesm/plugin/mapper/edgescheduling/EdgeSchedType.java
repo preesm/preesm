@@ -33,14 +33,40 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
+ 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
 /**
- * Methods common to every edge schedulers
+ * Types of edge scheduler to be used in parameters
  * 
  * @author mpelcat
  */
-public abstract class AbstractEdgeScheduler implements IEdgeScheduler {
+public enum EdgeSchedType {
 
+	none,
+
+	exhaustive;
+
+	@Override
+	public String toString() {
+
+		if (this == none) {
+			return "none";
+		} else if (this == exhaustive) {
+			return "exhaustive";
+		}
+
+		return null;
+	}
+
+	public static EdgeSchedType fromString(String type) {
+
+		if (type.equalsIgnoreCase("none")) {
+			return none;
+		} else if (type.equalsIgnoreCase("exhaustive")) {
+			return exhaustive;
+		} 
+
+		return null;
+	}
 }

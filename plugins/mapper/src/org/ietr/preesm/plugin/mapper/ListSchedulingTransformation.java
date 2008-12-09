@@ -55,6 +55,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
 import org.ietr.preesm.plugin.mapper.fastalgo.ListSchedulingParameters;
@@ -105,7 +106,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		}
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed);
+		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed, EdgeSchedType.none);
 
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		applet1.init(graph);
@@ -143,7 +144,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -156,7 +157,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
 
 		ListScheduler scheduler = new ListScheduler();
 

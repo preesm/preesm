@@ -50,7 +50,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 public class TransactionManager {
 	
 	LinkedList<Transaction> transactionList = new LinkedList<Transaction>();
-	LinkedList<MapperDAGVertex> refVertexList = new LinkedList<MapperDAGVertex>();
 	
 	public void executeTransactionList(){
 		Iterator<Transaction> it = transactionList.iterator();
@@ -74,23 +73,28 @@ public class TransactionManager {
 	
 	public void undoTransactions(MapperDAGVertex refVertex){
 		
-		Iterator<MapperDAGVertex> it = refVertexList.descendingIterator();
+		// All transactions relative to a vertex are grouped. Once we are out
+		// of this group, we can stop undoing them
+		boolean alreadyUndoneFew=false;
+		
+		Iterator<Transaction> it = transactionList.descendingIterator();
 		
 		while(it.hasNext()){
-			MapperDAGVertex currentV = it.next();
-			if(currentV.equals(refVertex)){
-				int index = refVertexList.indexOf(currentV);
-				Transaction currentT = transactionList.get(index);
+			Transaction currentT = it.next();
+			if(currentT.getRef() != null && currentT.getRef().equals(refVertex)){
 				if(currentT.isExecuted())
 					currentT.undo();
-				transactionList.remove(index);
-				it.remove();
+				it.remove(); // Removing the transation from the list
+				alreadyUndoneFew = true;
+			}
+			else if(alreadyUndoneFew){
+				return;
 			}
 		}
 	}
 	
 	public void add(Transaction transaction, MapperDAGVertex refVertex){
+		transaction.setRef(refVertex);
 		transactionList.add(transaction);
-		refVertexList.add(refVertex);
 	}
 }

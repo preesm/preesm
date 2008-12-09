@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.fastalgo;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Parameters for list scheduling
@@ -47,36 +48,12 @@ import org.ietr.preesm.plugin.mapper.AbstractParameters;
  */
 public class ListSchedulingParameters extends AbstractParameters {
 
-	private AbcType simulatorType;
-
-	/**
-	 * 
-	 */
 	public ListSchedulingParameters(TextParameters textParameters) {
 		super(textParameters);
-
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 	}
 
-	public ListSchedulingParameters(AbcType simulatorType) {
-		super();
-		textParameters.addVariable("simulatorType", simulatorType.toString());
-		this.simulatorType = simulatorType;
-	}
-
-	/**
-	 * @return the simulatorType
-	 */
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
-
-	/**
-	 * @param simulatorType
-	 *            the simulatorType to set
-	 */
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
+	public ListSchedulingParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		super(simulatorType,edgeSchedType);
 	}
 
 }

@@ -56,6 +56,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
@@ -136,7 +137,7 @@ public class StandardGeneticAlgoTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -179,7 +180,7 @@ public class StandardGeneticAlgoTester {
 						5, 10, false);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, concurrentSkipListSet.first()
+				.getInstance(simulatorType, EdgeSchedType.none, concurrentSkipListSet.first()
 						.getDag(), archi);
 		simu2.resetImplementation();
 		concurrentSkipListSet.first().updateDAG();

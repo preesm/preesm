@@ -63,6 +63,16 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 			return null;
 		return (get(indexOf(vertex) - 1));
 	}
+	
+	/**
+	 * Gets the next vertex in the current schedule
+	 */
+	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
+		int currentIndex = indexOf(vertex);
+		if (currentIndex < 0 || indexOf(vertex) >= this.size() - 1)
+			return null;
+		return (get(currentIndex + 1));
+	}
 
 	/**
 	 * Appends a vertex at the end of the schedule

@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.geneticalgo;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Specific parameters of genetic algorithm
@@ -46,9 +47,6 @@ import org.ietr.preesm.plugin.mapper.AbstractParameters;
  * @author pmenuet
  */
 public class GeneticAlgoParameters extends AbstractParameters {
-
-	// Architecture simulator on which the genetic algorithm is performed
-	private AbcType simulatorType;
 
 	// Number of individuals in the population
 	private int populationSize;
@@ -64,9 +62,9 @@ public class GeneticAlgoParameters extends AbstractParameters {
 	 * 
 	 */
 	public GeneticAlgoParameters(int generationNumber, int populationSize,
-			AbcType simulatorType,
+			AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean pfastused2makepopulation) {
-		super();
+		super(simulatorType,edgeSchedType);
 		
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
@@ -75,7 +73,6 @@ public class GeneticAlgoParameters extends AbstractParameters {
 		
 		this.generationNumber = generationNumber;
 		this.populationSize = populationSize;
-		this.simulatorType = simulatorType;
 		this.pfastused2makepopulation = pfastused2makepopulation;
 	}
 
@@ -84,7 +81,6 @@ public class GeneticAlgoParameters extends AbstractParameters {
 		
 		this.generationNumber = textParameters.getIntVariable("generationNumber");
 		this.populationSize = textParameters.getIntVariable("populationSize");
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 		this.pfastused2makepopulation = textParameters.getBooleanVariable("pfastused2makepopulation");
 	}
 
@@ -103,14 +99,6 @@ public class GeneticAlgoParameters extends AbstractParameters {
 
 	public void setPfastused2makepopulation(boolean pfastused2makepopulation) {
 		this.pfastused2makepopulation = pfastused2makepopulation;
-	}
-
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
-
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
 	}
 
 	public void setPopulationSize(int populationSize) {

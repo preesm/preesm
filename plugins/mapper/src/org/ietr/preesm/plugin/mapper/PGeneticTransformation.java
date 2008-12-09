@@ -57,6 +57,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.fastalgo.FastPopulation;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
@@ -111,7 +112,7 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		PGeneticTransformation transformation = new PGeneticTransformation();
 		PGeneticAlgoParameters parameters = new PGeneticAlgoParameters(
-				100, 10, 3, AbcType.LooselyTimed, true);
+				100, 10, 3, AbcType.LooselyTimed, EdgeSchedType.none, true);
 
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
@@ -143,7 +144,7 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -160,7 +161,7 @@ public class PGeneticTransformation extends AbstractMapping {
 
 			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, 5,
 					parameters.getProcessorNumber(), parameters
-							.getSimulatorType());
+							.getSimulatorType(), EdgeSchedType.none);
 
 			dag = pfastAlgorithm.map(dag, architecture, parameter
 					.getProcNumber(), parameter.getNodesmin(), initial,
@@ -175,14 +176,14 @@ public class PGeneticTransformation extends AbstractMapping {
 					.getSimulatorType(), architecture);
 
 			FastAlgoParameters parameter = new FastAlgoParameters(50, 50, 8,
-					parameters.getSimulatorType());
+					parameters.getSimulatorType(), EdgeSchedType.none);
 
 			population.constructPopulation(dag, parameter.getMaxCount(),
 					parameter.getMaxStep(), parameter.getMargIn());
 		}
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
 
 		PGeneticAlgo geneticAlgorithm = new PGeneticAlgo();
 

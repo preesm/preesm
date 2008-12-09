@@ -64,6 +64,7 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
@@ -329,7 +330,7 @@ public class PGeneticAlgo extends Observable {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 		// MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);

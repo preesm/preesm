@@ -36,9 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.impl;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
@@ -98,47 +96,19 @@ public class TransferVertexAdder {
 	/**
 	 * Adds all necessary transfer vertices
 	 */
-	public void addTransferVertices(MapperDAG implementation, TransactionManager transactionManager) {
-		
-		// We iterate the edges and process the ones with different allocations
-		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
-
-			if (!(currentEdge instanceof PrecedenceEdge)) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex)currentEdge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex)currentEdge
-						.getTarget()).getImplementationVertexProperty();
-
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
-						// Adds several transfers for one edge depending on the route steps
-						addTransferVertices(currentEdge, implementation,
-								 transactionManager,null);
-					}
-				}
-			}
-		}
-
-		transactionManager.executeTransactionList();
-	}
-
-	/**
-	 * Adds all necessary transfer vertices
-	 */
 	public void addTransferVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
-
-		Set<DAGEdge> edgeSet = new HashSet<DAGEdge>();
-		edgeSet.addAll(refVertex.incomingEdges());
-		edgeSet.addAll(refVertex.outgoingEdges());
 		
 		// We iterate the edges and process the ones with different allocations
-		//Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
-		Iterator<DAGEdge> iterator = edgeSet.iterator();
+		Iterator<DAGEdge> iterator = null;
+		
+		if(refVertex != null){
+			// Adding transfer vertices only for the inputs of a given vertex
+			iterator = refVertex.incomingEdges().iterator();
+		}
+		else{
+			// Adding transfer vertices for every eligible edges
+			iterator = implementation.edgeSet().iterator();
+		}
 
 		while (iterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();

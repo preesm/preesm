@@ -96,7 +96,9 @@ public class OverheadVertexAdder {
 		Set<DAGEdge> edgeSet = new HashSet<DAGEdge>();
 		
 		for(DAGEdge edge:refVertex.incomingEdges()){
-			edgeSet.addAll(edge.getSource().incomingEdges());
+			if(edge != null && edge.getSource() != null && edge.getSource().incomingEdges() != null){
+				edgeSet.addAll(edge.getSource().incomingEdges());
+			}
 		}
 		
 		edgeSet.addAll(refVertex.outgoingEdges());

@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -74,7 +75,7 @@ public class LooselyTimedAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(MapperDAG dag, MultiCoreArchitecture archi) {
+	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
@@ -101,14 +102,8 @@ public class LooselyTimedAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			// precedenceEdgeAdder.deleteScheduleIncomingEdges(implementation,
-			// vertex);
-			transactionManager.undoTransactionList();
-
-			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
-			// precedenceEdgeAdder.addScheduleIncomingEdge(implementation, vertex,
-			// this);
-
+			transactionManager.undoTransactions(vertex);
+			precedenceEdgeAdder.addPrecedenceEdge(implementation,transactionManager,vertex,vertex);
 		}
 	}
 
@@ -140,7 +135,7 @@ public class LooselyTimedAbc extends
 	@Override
 	protected final void updateTimings() {
 
-		timeKeeper.updateTandBLevels();
+		timeKeeper.updateTLevels();
 	}
 
 	/**

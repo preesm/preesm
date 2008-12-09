@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
@@ -98,7 +99,7 @@ public class FastAlgoTest extends TestCase {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
 				dag, archi);
 		simu.getFinalTime();
 		InitialLists initial = new InitialLists();
@@ -115,7 +116,7 @@ public class FastAlgoTest extends TestCase {
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 16, false, false, null);
 
-		IAbc simu2 = new LooselyTimedAbc(
+		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.none, 
 				dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);

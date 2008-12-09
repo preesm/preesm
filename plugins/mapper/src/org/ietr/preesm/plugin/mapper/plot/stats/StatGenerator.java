@@ -17,6 +17,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -76,7 +77,7 @@ public class StatGenerator {
 		mainMediumDef.setInvSpeed(0);
 		mainMediumDef.setOverhead(0);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(taskDag, localArchi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, taskDag, localArchi);
 		int span = simu.getFinalTime();
 		
 		PreesmLogger.getLogger().log(Level.INFO, "infinite homogeneous timing: " + span);
@@ -103,7 +104,7 @@ public class StatGenerator {
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
 			
 			IAbc simu = AbstractAbc
-			.getInstance(abctype, localDag, archi);
+			.getInstance(abctype, EdgeSchedType.none, localDag, archi);
 
 			simu.resetDAG();
 			simu.implantAllVerticesOnOperator(archi.getMainOperator());
@@ -197,7 +198,7 @@ public class StatGenerator {
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
 			
 			abc = AbstractAbc
-			.getInstance(abctype, localDag, archi);
+			.getInstance(abctype, EdgeSchedType.none, localDag, archi);
 
 			StatGenerator.removeSendReceive(localDag);
 
