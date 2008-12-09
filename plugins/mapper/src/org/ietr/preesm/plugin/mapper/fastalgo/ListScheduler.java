@@ -312,7 +312,7 @@ public class ListScheduler {
 		// Converting sdf dag in mapper dag
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -333,7 +333,7 @@ public class ListScheduler {
 
 		ListScheduler scheduler = new ListScheduler();
 		simu.resetImplementation();
-		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.none, 
+		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating first scheduling ");

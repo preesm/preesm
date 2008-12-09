@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
  * Operator able to perform cross overs between 2 chromosomes
@@ -68,7 +69,7 @@ public class CrossOverOperator {
 	 * @return : Chromosome
 	 */
 	public Chromosome transform(Chromosome chromosome1, Chromosome chromosome2,
-			AbcType simulatorType) {
+			AbcType simulatorType, EdgeSchedType edgeSchedType) {
 
 		// variables
 		List<Gene> temp1 = new ArrayList<Gene>();
@@ -119,7 +120,7 @@ public class CrossOverOperator {
 
 		// Set the data in the son
 		chromosome.setChromoList(temp);
-		chromosome.evaluate(simulatorType);
+		chromosome.evaluate(simulatorType, edgeSchedType);
 
 		return chromosome;
 	}

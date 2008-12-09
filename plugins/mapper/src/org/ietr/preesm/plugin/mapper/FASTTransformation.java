@@ -112,7 +112,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		FASTTransformation transformation = new FASTTransformation();
 		FastAlgoParameters parameters = new FastAlgoParameters(500, 500, 16,
-				AbcType.LooselyTimed, EdgeSchedType.none);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
 		logger.log(Level.FINER, "Test fast finished");
@@ -138,7 +138,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -153,7 +153,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm();
 
-		dag = fastAlgorithm.map("test", parameters.getSimulatorType(), dag,
+		dag = fastAlgorithm.map("test", parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag,
 				architecture, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), parameters.getMaxCount(),
@@ -161,13 +161,12 @@ public class FASTTransformation extends AbstractMapping {
 
 		simu2.setDAG(dag);
 
-		//simu2.plotImplementation();
-
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,scenario,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		result.setDAG(dag);
+		result.setCustomData(simu2);
 
 		return result;
 	}

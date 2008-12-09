@@ -65,6 +65,7 @@ public class FastPopulation {
 
 	// Simulator used to make this population
 	private AbcType simulatorType;
+	private EdgeSchedType edgeSchedType;
 
 	// architecture used to make this population
 	private MultiCoreArchitecture archi;
@@ -84,12 +85,13 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum,
-			AbcType simulatorType, MultiCoreArchitecture archi) {
+			AbcType simulatorType, EdgeSchedType edgeSchedType, MultiCoreArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.simulatorType = simulatorType;
 		this.archi = archi;
 		this.population = new ArrayList<MapperDAG>();
+		this.edgeSchedType = edgeSchedType;
 	}
 
 	/**
@@ -99,11 +101,12 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, List<MapperDAG> population,
-			AbcType simulatorType, MultiCoreArchitecture archi) {
+			AbcType simulatorType, EdgeSchedType edgeSchedType, MultiCoreArchitecture archi) {
 		super();
 		this.populationNum = populationNum;
 		this.population = population;
 		this.simulatorType = simulatorType;
+		this.edgeSchedType = edgeSchedType;
 		this.archi = archi;
 	}
 
@@ -165,7 +168,7 @@ public class FastPopulation {
 			tempdag = dag.clone();
 
 			// perform the initialization
-			IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+			IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 					tempdag, this.getArchi());
 			InitialLists initial = new InitialLists();
 			initial.constructInitialLists(tempdag, simu);
@@ -173,7 +176,7 @@ public class FastPopulation {
 
 			// perform the fast algo
 			FastAlgorithm algorithm = new FastAlgorithm();
-			tempdag = algorithm.map("population", this.simulatorType, tempdag,
+			tempdag = algorithm.map("population", this.simulatorType, this.edgeSchedType, tempdag,
 					this.archi, initial.getCpnDominantList(),
 					initial.getBlockingNodesList(),
 					initial.getFinalcriticalpathList(), MAXCOUNT, MAXSTEP,
@@ -200,7 +203,7 @@ public class FastPopulation {
 		while (iterator.hasNext()) {
 			temp = iterator.next().clone();
 			IAbc simu2 = AbstractAbc
-					.getInstance(this.getSimulatorType(), EdgeSchedType.none, temp, this.getArchi());
+					.getInstance(this.getSimulatorType(), edgeSchedType, temp, this.getArchi());
 
 			scheduler.dagimplanteddisplay(temp, simu2);
 			simu2.setDAG(temp);
@@ -221,7 +224,7 @@ public class FastPopulation {
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		FastPopulation population = new FastPopulation(5,
-				AbcType.LooselyTimed, archi);
+				AbcType.LooselyTimed, EdgeSchedType.Simple, archi);
 		population.constructPopulation(dag, 20, 10, 3);
 		population.populationDisplay();
 

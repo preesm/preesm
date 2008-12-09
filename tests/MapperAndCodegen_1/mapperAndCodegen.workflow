@@ -4,10 +4,11 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="margIn" value="10"/>
-         <variable name="maxCount" value="400"/>
-         <variable name="maxStep" value="400"/>
-         <variable name="simulatorType" value="ApproximatelyTimed"/>
+         <variable name="edgeSchedType" value="Switcher"/>
+         <variable name="margIn" value="30"/>
+         <variable name="maxCount" value="800"/>
+         <variable name="maxStep" value="800"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
@@ -24,10 +25,8 @@
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="FAST scheduler"/>
    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="codegen"/>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="DAG Plotter"/>
-   <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="DAG Plotter"/>
+   <preesm:dataTransfer from="FAST scheduler" sourceport="customData" targetport="customData" to="DAG Plotter"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAG Plotter"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="DAG Plotter"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="codegen"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__architecture"/>

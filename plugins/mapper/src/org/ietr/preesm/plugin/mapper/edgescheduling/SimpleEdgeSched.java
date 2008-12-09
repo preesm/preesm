@@ -36,11 +36,29 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+
 /**
- * Methods common to every edge schedulers
+ * An edge scheduler that simply adds the transfer as soon as possible after the sender
  * 
  * @author mpelcat
  */
-public abstract class AbstractEdgeScheduler implements IEdgeScheduler {
+public class SimpleEdgeSched extends AbstractEdgeSched {
+
+	public SimpleEdgeSched(SchedulingOrderManager orderManager) {
+		super(orderManager);
+	}
+
+	public static void main(String[] args) {
+
+	}
+
+	@Override
+	public void schedule(TransferVertex vertex, MapperDAGVertex source) {
+		orderManager.insertVertexAfter(source, vertex);
+
+	}
 
 }

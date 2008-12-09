@@ -111,7 +111,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		StandardGeneticTransformation transformation = new StandardGeneticTransformation();
 		GeneticAlgoParameters parameters = new GeneticAlgoParameters(100, 25,
-				AbcType.ApproximatelyTimed, EdgeSchedType.none, false);
+				AbcType.ApproximatelyTimed, EdgeSchedType.Simple, false);
 
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
@@ -140,7 +140,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -156,22 +156,22 @@ public class StandardGeneticTransformation extends AbstractMapping {
 			PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
 			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, 5,
-					3, parameters.getSimulatorType(), EdgeSchedType.none);
+					3, parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 			dag = pfastAlgorithm.map(dag, architecture, parameter
 					.getProcNumber(), parameter.getNodesmin(), initial,
 					parameter.getMaxCount(), parameter.getMaxStep(), parameter
-							.getMargIn(), parameters.getSimulatorType(), true,
+							.getMargIn(), parameters.getSimulatorType(),parameters.getEdgeSchedType(), true,
 					parameters.getPopulationSize(), populationDAG);
 
 		} else {
 
 			FastPopulation population = new FastPopulation(parameters
 					.getPopulationSize(), populationDAG, parameters
-					.getSimulatorType(), architecture);
+					.getSimulatorType(),parameters.getEdgeSchedType(), architecture);
 
 			FastAlgoParameters parameter = new FastAlgoParameters(50, 50, 8,
-					parameters.getSimulatorType(), EdgeSchedType.none);
+					parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 			population.constructPopulation(dag, parameter.getMaxCount(),
 					parameter.getMaxStep(), parameter.getMargIn());
@@ -184,13 +184,13 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		ConcurrentSkipListSet<Chromosome> result;
 		result = geneticAlgorithm.runGeneticAlgo("test", populationDAG,
-				architecture, parameters.getSimulatorType(), parameters
+				architecture, parameters.getSimulatorType(),parameters.getEdgeSchedType(), parameters
 						.getPopulationSize(), parameters.getGenerationNumber(),
 				false);
 
 		Chromosome chromosome = result.first().clone();
 
-		chromosome.evaluate(parameters.getSimulatorType());
+		chromosome.evaluate(parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 		dag = chromosome.getDag();
 
@@ -200,9 +200,10 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,scenario,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		transfoResult.setDAG(dag);
+		transfoResult.setCustomData(simu2);
 
 		return transfoResult;
 	}

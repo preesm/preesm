@@ -101,9 +101,8 @@ public class LooselyTimedAbc extends
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
-
-			transactionManager.undoTransactions(vertex);
-			precedenceEdgeAdder.addPrecedenceEdge(implementation,transactionManager,vertex,vertex);
+			
+			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
 		}
 	}
 
@@ -122,6 +121,7 @@ public class LooselyTimedAbc extends
 			resetCost(vertex.incomingEdges());
 			resetCost(vertex.outgoingEdges());
 
+			transactionManager.undoTransactions(vertex);
 		} else {
 			PreesmLogger.getLogger().severe(
 					"unimplementation of " + vertex.getName() + " failed");

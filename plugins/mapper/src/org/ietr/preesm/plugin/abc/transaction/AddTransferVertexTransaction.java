@@ -43,6 +43,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -50,12 +51,18 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * A transaction that adds one transfer vertex in an implementation
+ * A transaction that adds one transfer vertex in an implementation and schedules it
+ * given the right edge scheduler
  * 
  * @author mpelcat
  */
 public class AddTransferVertexTransaction extends Transaction {
 	// Inputs
+	/**
+	 * Scheduling the transfer vertices on the media
+	 */
+	protected IEdgeSched edgeScheduler = null;
+	
 	/**
 	 * Implementation DAG to which the vertex is added
 	 */
@@ -70,11 +77,6 @@ public class AddTransferVertexTransaction extends Transaction {
 	 * Original edge corresponding to this overhead
 	 */
 	private MapperDAGEdge edge = null;
-
-	/**
-	 * manager keeping scheduling orders
-	 */
-	private SchedulingOrderManager orderManager = null;
 
 	/**
 	 * Cost of the transfer to give to the transfer vertex
@@ -99,13 +101,13 @@ public class AddTransferVertexTransaction extends Transaction {
 	private MapperDAGEdge newOutEdge = null;
 	
 	
-	public AddTransferVertexTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, SchedulingOrderManager orderManager,
+	public AddTransferVertexTransaction(IEdgeSched edgeScheduler, MapperDAGEdge edge,
+			MapperDAG implementation,
 			int routeIndex, RouteStep step, int transferCost) {
 		super();
+		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;
 		this.implementation = implementation;
-		this.orderManager = orderManager;
 		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
@@ -144,7 +146,7 @@ public class AddTransferVertexTransaction extends Transaction {
 				tVertex.getImplementationVertexProperty().setEffectiveMedium(
 						currentMedium);
 
-				orderManager.insertVertexAfter(currentSource, tVertex);
+				edgeScheduler.schedule(tVertex, currentSource);
 				
 				implementation.addVertex(tVertex);
 
@@ -170,7 +172,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(tVertex);
-		orderManager.remove(tVertex, true);
+		edgeScheduler.getOrderManager().remove(tVertex, true);
 	}
 
 }

@@ -4,8 +4,8 @@
       <vertex id="__algorithm" x="219" y="135"/>
       <vertex id="__architecture" x="196" y="311"/>
       <vertex id="__scenario" x="99" y="224"/>
-      <vertex id="FAST scheduler" x="474" y="198"/>
+      <vertex id="FAST scheduler" x="468" y="172"/>
       <vertex id="codegen" x="628" y="87"/>
-      <vertex id="DAG Plotter" x="640" y="306"/>
+      <vertex id="DAG Plotter" x="682" y="247"/>
    </vertices>
 </layout>

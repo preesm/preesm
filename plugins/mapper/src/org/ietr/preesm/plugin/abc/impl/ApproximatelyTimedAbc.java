@@ -45,7 +45,9 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -83,6 +85,11 @@ public class ApproximatelyTimedAbc extends
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
 	/**
+	 * Scheduling the transfer vertices on the media
+	 */
+	protected IEdgeSched edgeScheduler;
+
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
@@ -91,8 +98,9 @@ public class ApproximatelyTimedAbc extends
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,orderManager);
 		router = new CommunicationRouter(archi);
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false, false);
+		tvertexAdder = new TransferVertexAdder(edgeScheduler, router, orderManager, false, false);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
@@ -101,10 +109,10 @@ public class ApproximatelyTimedAbc extends
 	 */
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
-
+/*
 		PreesmLogger.getLogger().log(Level.INFO,
 				"mapping " + vertex.getName());
-		
+		*/
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
@@ -122,11 +130,10 @@ public class ApproximatelyTimedAbc extends
 			setEdgesCosts(vertex.outgoingEdges());
 
 			transactionManager.undoTransactions(vertex);
-			
+
+			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
 			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
-			precedenceEdgeAdder.addPrecedenceEdge(implementation,transactionManager,vertex,vertex);
-			
-			addTransferPrecedenceEdges(implementation,transactionManager,vertex);
+			scheduleT(implementation,transactionManager,vertex);
 
 			/*
 			// Exhaustive recalculation
@@ -142,22 +149,21 @@ public class ApproximatelyTimedAbc extends
 	 * Adds all necessary schedule edges for the transfers of a given
 	 * vertex
 	 */
-	public void addTransferPrecedenceEdges(MapperDAG implementation,
+	public void scheduleT(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
 		for (DAGEdge edge : refVertex.incomingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.addPrecedenceEdge(implementation, transactionManager, vertex,
-						refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+
 			}
 		}
 
 		for (DAGEdge edge : refVertex.outgoingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.addPrecedenceEdge(implementation, transactionManager, vertex,
-						refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
 			}
 		}
 	}

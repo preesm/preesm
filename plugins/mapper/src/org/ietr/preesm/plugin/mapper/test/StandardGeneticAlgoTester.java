@@ -137,7 +137,7 @@ public class StandardGeneticAlgoTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -169,18 +169,20 @@ public class StandardGeneticAlgoTester {
 		if (choixsimu == 2)
 			simulatorType = AbcType.AccuratelyTimed;
 
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
+		
 		List<MapperDAG> populist = new ArrayList<MapperDAG>();
-		algorithm.map(dag, archi, 2, 5, initial, 20, 10, 4, simulatorType,
+		algorithm.map(dag, archi, 2, 5, initial, 20, 10, 4, simulatorType, edgeSchedType,
 				true, 5, populist);
 
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 
 		ConcurrentSkipListSet<Chromosome> concurrentSkipListSet = geneticAlgorithm
-				.runGeneticAlgo("Genetic Algo", populist, archi, simulatorType,
+				.runGeneticAlgo("Genetic Algo", populist, archi, simulatorType, edgeSchedType,
 						5, 10, false);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, concurrentSkipListSet.first()
+				.getInstance(simulatorType, EdgeSchedType.Simple, concurrentSkipListSet.first()
 						.getDag(), archi);
 		simu2.resetImplementation();
 		concurrentSkipListSet.first().updateDAG();

@@ -112,7 +112,7 @@ public class FastAlgorithm extends Observable {
 		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -138,13 +138,13 @@ public class FastAlgorithm extends Observable {
 		logger.log(Level.FINEST, "Evaluating fast algo");
 		FastAlgorithm algorithm = new FastAlgorithm();
 
-		dag = algorithm.map("test", AbcType.LooselyTimed,
+		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 5, false, true, null);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, dag, archi);
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, dag, archi);
 
 		simu2.setDAG(dag);
 		logger.log(Level.FINER, "Displaying dag implanted 2");
@@ -186,7 +186,7 @@ public class FastAlgorithm extends Observable {
 	 */
 
 	public MapperDAG map(String threadName,
-			AbcType simulatorType, MapperDAG dag,
+			AbcType simulatorType,EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, List<MapperDAGVertex> CpnDominantList,
 			List<MapperDAGVertex> BlockingNodesList,
 			List<MapperDAGVertex> FinalcriticalpathList, int MAXCOUNT,
@@ -207,7 +207,7 @@ public class FastAlgorithm extends Observable {
 
 		// Variables
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
+				.getInstance(simulatorType, edgeSchedType, dag, archi);
 		ListScheduler scheduler = new ListScheduler();
 		Iterator<Operator> prociter;
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
@@ -239,7 +239,6 @@ public class FastAlgorithm extends Observable {
 		}
 		// display initial time after the list scheduling
 		int initial = simulator.getFinalTime();
-		
 		logger.log(Level.FINE, "InitialSP " + initial);
 		
 		// The writer allows textual logs
@@ -339,6 +338,7 @@ public class FastAlgorithm extends Observable {
 				// step 14
 
 				bestSL = simulator.getFinalTime();
+				
 				dagfinal2.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
 

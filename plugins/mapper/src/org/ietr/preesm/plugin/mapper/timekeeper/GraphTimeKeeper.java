@@ -481,6 +481,10 @@ public class GraphTimeKeeper {
 			calculateTLevel();
 			setAsClean();
 		}
+		else{
+			int i=0;
+			i++;
+		}
 
 	}
 
@@ -522,7 +526,7 @@ public class GraphTimeKeeper {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.none, dag, archi);
+		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());

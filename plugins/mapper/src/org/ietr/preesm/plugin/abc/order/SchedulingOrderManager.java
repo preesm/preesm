@@ -259,7 +259,7 @@ public class SchedulingOrderManager {
 	 * Adds the schedule corresponding to the vertex effective component if not
 	 * present
 	 */
-	public void AddScheduleIfNotPresent(MapperDAGVertex vertex) {
+	private void AddScheduleIfNotPresent(MapperDAGVertex vertex) {
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -316,9 +316,40 @@ public class SchedulingOrderManager {
 	/**
 	 * Sets the total order of vertex implementation property in DAG
 	 */
-	public void tagVertex(MapperDAGVertex vertex) {
+	private void tagVertex(MapperDAGVertex vertex) {
 
 		vertex.getImplementationVertexProperty().setSchedulingTotalOrder(
 				totalOrder.indexOf(vertex));
+	}
+
+	/**
+	 * Gets the previous vertex in the same schedule
+	 */
+	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
+
+		MapperDAGVertex prevVertex = null;
+		
+		Schedule schedule = getSchedule(vertex
+				.getImplementationVertexProperty().getEffectiveComponent());
+
+		if(schedule != null)
+			prevVertex = schedule.getPreviousVertex(vertex);
+		
+		return prevVertex;
+	}
+
+	/**
+	 * Gets the next vertex in the same schedule
+	 */
+	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
+		MapperDAGVertex nextVertex = null;
+			
+		Schedule schedule = getSchedule(vertex
+				.getImplementationVertexProperty().getEffectiveComponent());
+
+		if(schedule != null)
+			nextVertex = schedule.getNextVertex(vertex);
+		
+		return nextVertex;
 	}
 }

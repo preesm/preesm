@@ -43,6 +43,7 @@ import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -56,6 +57,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 
 	// Simulator chosen
 	private AbcType simulatorType;
+	private EdgeSchedType edgeSchedType;
 
 	// Architecture chosen
 	private MultiCoreArchitecture architecture;
@@ -125,7 +127,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 		// perform the standard genetic algorithm
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 		outputChromosomeList.addAll(geneticAlgorithm.runGeneticAlgo(threadName,
-				callableMapperDAGList, architecture, simulatorType,
+				callableMapperDAGList, architecture, simulatorType, edgeSchedType,
 				populationSize, generationNumber, true));
 
 		return outputChromosomeList;

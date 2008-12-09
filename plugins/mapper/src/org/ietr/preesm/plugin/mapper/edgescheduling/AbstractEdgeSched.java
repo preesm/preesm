@@ -36,19 +36,63 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.ApproximatelyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
+import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+
 /**
- * Just for test. An edge scheduler that does not change anything.
+ * Methods common to every edge schedulers
  * 
  * @author mpelcat
  */
-public class SimpleEdgeScheduler extends AbstractEdgeScheduler {
+public abstract class AbstractEdgeSched implements IEdgeSched {
 
 	/**
-	 * @param args
+	 * ID used to reference the element in a property bean in case of a
+	 * computation vertex
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static final String propertyBeanName = "EdgeSchedReferenceType";
+	
+	/**
+	 * Contains the rank list of all the vertices in an implementation
+	 */
+	protected SchedulingOrderManager orderManager = null;
 
+	public AbstractEdgeSched(SchedulingOrderManager orderManager) {
+		super();
+		this.orderManager = orderManager;
 	}
 
+	/**
+	 * Gets the edge scheduler from an edge scheduler type
+	 */
+	public static IEdgeSched getInstance(EdgeSchedType edgeSchedType,
+			SchedulingOrderManager orderManager) {
+
+		AbstractEdgeSched edgeSched = null;
+		
+		if (edgeSchedType == EdgeSchedType.Simple) {
+			edgeSched = new SimpleEdgeSched(orderManager);
+		} else if (edgeSchedType == EdgeSchedType.Switcher) {
+			edgeSched = new SwitcherEdgeSched(orderManager);
+		}
+		else{
+			// Default scheduler
+			edgeSched = new SimpleEdgeSched(orderManager);
+		}
+
+		return edgeSched;
+	}
+	
+	public SchedulingOrderManager getOrderManager() {
+		return orderManager;
+	}
 }

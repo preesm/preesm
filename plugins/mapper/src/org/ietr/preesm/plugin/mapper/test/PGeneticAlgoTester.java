@@ -141,7 +141,7 @@ public class PGeneticAlgoTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -173,17 +173,19 @@ public class PGeneticAlgoTester {
 		if (choixsimu == 2)
 			simulatorType = AbcType.AccuratelyTimed;
 
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
+		
 		List<MapperDAG> populist = new ArrayList<MapperDAG>();
 		algorithm.map(dag, archi, nboperator, 10, initial, 20, 10, 4,
-				simulatorType, true, 10, populist);
+				simulatorType,edgeSchedType, true, 10, populist);
 
 		PGeneticAlgo geneticAlgorithm = new PGeneticAlgo();
 
 		List<Chromosome> list = geneticAlgorithm.map(populist, archi,
-				simulatorType, 10, 25, nboperator);
+				simulatorType,edgeSchedType, 10, 25, nboperator);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, list.get(0).getDag(), archi);
+				.getInstance(simulatorType, EdgeSchedType.Simple, list.get(0).getDag(), archi);
 		simu2.resetImplementation();
 		simu2.setDAG(list.get(0).getDag());
 		simu2.plotImplementation(false);

@@ -36,11 +36,31 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+
 /**
- * Specification of the edgeScheduler interface
+ * An advanced edge scheduler
  * 
  * @author mpelcat
  */
-public interface IEdgeScheduler {
+public class SwitcherEdgeSched extends AbstractEdgeSched {
+
+	public SwitcherEdgeSched(SchedulingOrderManager orderManager) {
+		super(orderManager);
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+	}
+
+	@Override
+	public void schedule(TransferVertex vertex, MapperDAGVertex source) {
+		orderManager.insertVertexAfter(source, vertex);
+	}
 
 }

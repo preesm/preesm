@@ -90,7 +90,6 @@ public class FastAlgoParameters extends AbstractParameters {
 		textParameters.addVariable("maxCount",maxCount);
 		textParameters.addVariable("maxStep",maxStep);
 		textParameters.addVariable("margIn",margIn);
-		textParameters.addVariable("simulatorType", simulatorType.toString());
 		
 		this.maxCount = maxCount;
 		this.maxStep = maxStep;

@@ -104,7 +104,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		PFASTTransformation transformation = new PFASTTransformation();
 		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, 5, 3,
-				AbcType.LooselyTimed, EdgeSchedType.none);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 		transformation.transform(graph, archi, parameters.textParameters(), scenario);
 
 		logger.log(Level.FINER, "Test fast finished");
@@ -132,7 +132,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -150,7 +150,7 @@ public class PFASTTransformation extends AbstractMapping {
 		dag = pfastAlgorithm.map(dag, architecture, parameters.getProcNumber(),
 				parameters.getNodesmin(), initial, parameters.getMaxCount(),
 				parameters.getMaxStep(), parameters.getMargIn(), parameters
-						.getSimulatorType(), false, 0, null);
+						.getSimulatorType(),parameters.getEdgeSchedType(), false, 0, null);
 
 		simu2.setDAG(dag);
 
@@ -158,9 +158,10 @@ public class PFASTTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,scenario,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		result.setDAG(dag);
+		result.setCustomData(simu2);
 
 		return result;
 	}

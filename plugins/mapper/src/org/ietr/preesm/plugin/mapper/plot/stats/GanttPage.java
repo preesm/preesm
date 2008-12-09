@@ -45,6 +45,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
@@ -84,18 +85,19 @@ public class GanttPage extends FormPage {
 		layout.minNumColumns = 1;
 		form.getBody().setLayout(layout);
 		
-		MapperDAG dag = statGen.getDag().clone();
-		MultiCoreArchitecture archi = statGen.getArchi();
-		
-		
+		IAbc abc = statGen.getAbc();
+
+		GanttPlotter.plotInComposite(abc, form.getBody());
+		/*
 		if(dag != null && archi != null){
 
 			// Gets the appropriate abc to generate the gantt.
 			PropertyBean bean = dag.getPropertyBean();
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
+			EdgeSchedType edgeSchedType = (EdgeSchedType)bean.getValue(AbstractEdgeSched.propertyBeanName);
 			
 			IAbc simu = AbstractAbc
-			.getInstance(abctype, EdgeSchedType.none, dag, archi);
+			.getInstance(abctype, edgeSchedType, dag, archi);
 
 			StatGenerator.removeSendReceive(dag);
 			
@@ -103,7 +105,7 @@ public class GanttPage extends FormPage {
 
 			simu.getFinalTime();
 			GanttPlotter.plotInComposite(simu, form.getBody());
-		}
+		}*/
 		
 	}
 

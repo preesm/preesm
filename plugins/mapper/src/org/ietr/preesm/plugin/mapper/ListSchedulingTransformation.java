@@ -106,7 +106,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		}
 
 		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed, EdgeSchedType.none);
+		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		applet1.init(graph);
@@ -144,7 +144,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture);
 
 		InitialLists initial = new InitialLists();
@@ -174,9 +174,10 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,scenario,simu2);
+		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		result.setDAG(dag);
+		result.setCustomData(simu2);
 
 		return result;
 	}

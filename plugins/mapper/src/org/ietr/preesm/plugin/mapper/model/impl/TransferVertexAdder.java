@@ -51,6 +51,7 @@ import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -84,9 +85,15 @@ public class TransferVertexAdder {
 	 */
 	private boolean rmvOrigEdge;
 
-	public TransferVertexAdder(CommunicationRouter router,
+	/**
+	 * Scheduling the transfer vertices on the media
+	 */
+	protected IEdgeSched edgeScheduler;
+
+	public TransferVertexAdder(IEdgeSched edgeScheduler, CommunicationRouter router,
 			SchedulingOrderManager orderManager, boolean sendReceive, boolean rmvOrigEdge) {
 		super();
+		this.edgeScheduler = edgeScheduler;
 		this.router = router;
 		this.orderManager = orderManager;
 		this.sendReceive = sendReceive;
@@ -168,7 +175,7 @@ public class TransferVertexAdder {
 				int transferCost = router.evaluateTransfer(edge, step.getSender(), step
 						.getReceiver());
 				
-				transaction = new AddTransferVertexTransaction(edge,implementation,orderManager,i,step,transferCost);
+				transaction = new AddTransferVertexTransaction(edgeScheduler,edge,implementation,i,step,transferCost);
 			}
 			
 			transactionManager.add(transaction,refVertex);

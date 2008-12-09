@@ -42,6 +42,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.Activator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -53,32 +54,16 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class StatEditorInput implements IEditorInput {
 
-	private MapperDAG dag = null;
-	private SDFGraph sdf = null;
-	private MultiCoreArchitecture archi = null;
+	private IAbc abc = null;
 	private IScenario scenario = null;
 	private TextParameters params = null;
 	
-	public StatEditorInput(MultiCoreArchitecture archi, MapperDAG dag,
-			TextParameters params, IScenario scenario, SDFGraph sdf) {
+	public StatEditorInput(IAbc abc, IScenario scenario,
+			TextParameters params) {
 		super();
-		this.archi = archi;
-		this.dag = dag;
+		this.abc = abc;
 		this.params = params;
 		this.scenario = scenario;
-		this.sdf = sdf;
-	}
-
-	public MapperDAG getDag() {
-		return dag;
-	}
-
-	public SDFGraph getSdf() {
-		return sdf;
-	}
-
-	public MultiCoreArchitecture getArchi() {
-		return archi;
 	}
 
 	public IScenario getScenario() {
@@ -87,6 +72,14 @@ public class StatEditorInput implements IEditorInput {
 
 	public TextParameters getParams() {
 		return params;
+	}
+
+	public IAbc getAbc() {
+		return abc;
+	}
+
+	public void setAbc(IAbc abc) {
+		this.abc = abc;
 	}
 	
 	/* (non-Javadoc)
@@ -112,7 +105,7 @@ public class StatEditorInput implements IEditorInput {
 	 */
 	@Override
 	public String getName() {
-		return "Statistics on " + sdf.getName();
+		return "Statistics";
 	}
 
 	/* (non-Javadoc)

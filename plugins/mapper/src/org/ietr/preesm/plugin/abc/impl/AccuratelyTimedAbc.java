@@ -43,7 +43,9 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -83,19 +85,26 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	protected OverheadVertexAdder overtexAdder;
 
 	/**
+	 * Scheduling the transfer vertices on the media
+	 */
+	protected IEdgeSched edgeScheduler;
+
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi) {
+	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+			MultiCoreArchitecture archi) {
 		super(dag, archi);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-
-		tvertexAdder = new TransferVertexAdder(router, orderManager, false,
-				false);
-		overtexAdder = new OverheadVertexAdder(orderManager);
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
+				orderManager);
+		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
+				orderManager, false, false);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+		overtexAdder = new OverheadVertexAdder(orderManager);
 	}
 
 	/**
@@ -122,46 +131,30 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 			transactionManager.undoTransactions(vertex);
 
-			tvertexAdder.addTransferVertices(implementation,
-					transactionManager, vertex);
+			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
+			scheduleT(implementation,transactionManager,vertex);
 			overtexAdder.addOverheadVertices(implementation,
 					transactionManager, vertex);
-
-			addOverheadAndTransferPrecedenceEdges(implementation,
-					transactionManager, vertex);
-			
-			precedenceEdgeAdder.addPrecedenceEdge(implementation,
-					transactionManager, vertex, vertex);
-			/*
-			 * transactionManager.undoTransactionList();
-			 * 
-			 * 
-			 * tvertexAdder.addTransferVertices(implementation,transactionManager
-			 * , null);
-			 * overtexAdder.addOverheadVertices(implementation,transactionManager
-			 * );precedenceEdgeAdder.addPrecedenceEdges(implementation,
-			 * transactionManager);
-			 */
+			scheduleO(implementation,transactionManager,vertex);
 		}
 	}
 
 	/**
-	 * Adds all necessary schedule edges for the transfers and overheads of a given vertex
+	 * Adds all necessary schedule edges for the transfers and overheads of a
+	 * given vertex
 	 */
-	public void addOverheadAndTransferPrecedenceEdges(MapperDAG implementation,
+	public void scheduleO(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
 		for (DAGEdge edge : refVertex.incomingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.addPrecedenceEdge(implementation,
-						transactionManager, vertex, refVertex);
-
-				for (DAGEdge oE : vertex.incomingEdges()) {
-					MapperDAGVertex oV = (MapperDAGVertex) oE.getSource();
-					if (oE.getSource() instanceof OverheadVertex) {
-						precedenceEdgeAdder.addPrecedenceEdge(implementation,
-								transactionManager, oV, refVertex);
+				for(DAGEdge edge2 : vertex.incomingEdges()){
+					vertex = (MapperDAGVertex) edge2.getSource();
+					if (vertex instanceof OverheadVertex) {
+						OverheadVertex oV = (OverheadVertex)vertex;
+						precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,oV,refVertex);
 					}
 				}
 
@@ -171,17 +164,31 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 		for (DAGEdge edge : refVertex.outgoingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
 			if (vertex instanceof OverheadVertex) {
-				precedenceEdgeAdder.addPrecedenceEdge(implementation,
-						transactionManager, vertex, refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+			}
+		}
+	}
 
-				for (DAGEdge tE : vertex.outgoingEdges()) {
-					MapperDAGVertex tV = (MapperDAGVertex) tE.getTarget();
-					if (tV instanceof TransferVertex) {
+	/**
+	 * Adds all necessary schedule edges for the transfers of a given
+	 * vertex
+	 */
+	public void scheduleT(MapperDAG implementation,
+			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
-						precedenceEdgeAdder.addPrecedenceEdge(implementation,
-								transactionManager, tV, refVertex);
-					}
-				}
+		for (DAGEdge edge : refVertex.incomingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
+			if (vertex instanceof TransferVertex) {
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+
+			}
+		}
+
+		for (DAGEdge edge : refVertex.outgoingEdges()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
+			if (vertex instanceof OverheadVertex) {
+				TransferVertex tV = (TransferVertex)((MapperDAGEdge)vertex.outgoingEdges().toArray()[0]).getTarget();
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,tV,refVertex);
 			}
 		}
 	}

@@ -82,16 +82,17 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		AbcType simulatorType = null;
+		private AbcType simulatorType = null;
+		private EdgeSchedType edgeSchedType = null;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
 			int difference = 0;
 			if (o1.isDirty())
-				o1.evaluate(simulatorType);
+				o1.evaluate(simulatorType, edgeSchedType);
 			if (o2.isDirty())
-				o2.evaluate(simulatorType);
+				o2.evaluate(simulatorType, edgeSchedType);
 
 			difference = o1.getEvaluateCost() - o2.getEvaluateCost();
 
@@ -108,10 +109,11 @@ public class StandardGeneticAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type,
+		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
 				Chromosome chromosome) {
 			super();
 			this.simulatorType = type;
+			this.edgeSchedType = edgeSchedType;
 		}
 
 	}
@@ -166,7 +168,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
 			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
-			AbcType type, int populationSize,
+			AbcType type, EdgeSchedType edgeSchedType, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
 		final BestLatencyPlotter demo = new BestLatencyPlotter("Genetic Algorithm");
@@ -189,7 +191,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		MutationOperator mutationOperator = new MutationOperator();
 		CrossOverOperator crossOverOperator = new CrossOverOperator();
 		ConcurrentSkipListSet<Chromosome> chromoSet = new ConcurrentSkipListSet<Chromosome>(
-				new FinalTimeComparator(type, population.get(0)));
+				new FinalTimeComparator(type,edgeSchedType, population.get(0)));
 		chromoSet.addAll(population);
 		Chromosome chromosome;
 		Chromosome chromosome1;
@@ -223,7 +225,7 @@ public class StandardGeneticAlgorithm extends Observable {
 
 				// mutation
 				chromosome = iter.next();
-				chromoSet.add(mutationOperator.transform(chromosome, type));
+				chromoSet.add(mutationOperator.transform(chromosome, type, edgeSchedType));
 
 				// cross over
 				chromosome = iter.next();
@@ -232,7 +234,7 @@ public class StandardGeneticAlgorithm extends Observable {
 					chromosome1 = iter.next();
 				}
 				chromoSet.add(crossOverOperator.transform(chromosome1,
-						chromosome, type));
+						chromosome, type, edgeSchedType));
 
 			}
 
@@ -278,7 +280,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 		// MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
@@ -286,23 +288,24 @@ public class StandardGeneticAlgorithm extends Observable {
 
 		// Simulator Type
 		AbcType type = AbcType.AccuratelyTimed;
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
 
 		// create population using Pfast
 		PFastAlgorithm algorithm = new PFastAlgorithm();
 		List<MapperDAG> population = new ArrayList<MapperDAG>();
-		algorithm.map(dag, archi, 2, 2, initialLists, 10, 6, 3, type, true, 4,
+		algorithm.map(dag, archi, 2, 2, initialLists, 10, 6, 3, type, edgeSchedType, true, 4,
 				population);
 
 		// Perform the StandardGeneticAlgo
 		ConcurrentSkipListSet<Chromosome> skipListSet;
 		skipListSet = geneticAlgorithm.runGeneticAlgo("test", population,
-				archi, AbcType.AccuratelyTimed, 6, 25, false);
+				archi, type, edgeSchedType, 6, 25, false);
 
 		// best solution
 		Chromosome chromosome7 = skipListSet.first().clone();
-		chromosome7.evaluate(AbcType.AccuratelyTimed);
+		chromosome7.evaluate(type, edgeSchedType);
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.AccuratelyTimed, EdgeSchedType.none,
+				.getInstance(type, edgeSchedType,
 						chromosome7.getDag(), archi);
 		simu2.setDAG(chromosome7.getDag());
 		simu2.plotImplementation(false);

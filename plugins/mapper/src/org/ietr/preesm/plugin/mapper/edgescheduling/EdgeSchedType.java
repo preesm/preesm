@@ -43,17 +43,17 @@ package org.ietr.preesm.plugin.mapper.edgescheduling;
  */
 public enum EdgeSchedType {
 
-	none,
+	Simple,
 
-	exhaustive;
+	Switcher;
 
 	@Override
 	public String toString() {
 
-		if (this == none) {
-			return "none";
-		} else if (this == exhaustive) {
-			return "exhaustive";
+		if (this == Simple) {
+			return "Simple";
+		} else if (this == Switcher) {
+			return "Switcher";
 		}
 
 		return null;
@@ -61,10 +61,10 @@ public enum EdgeSchedType {
 
 	public static EdgeSchedType fromString(String type) {
 
-		if (type.equalsIgnoreCase("none")) {
-			return none;
-		} else if (type.equalsIgnoreCase("exhaustive")) {
-			return exhaustive;
+		if (type.equalsIgnoreCase("Simple")) {
+			return Simple;
+		} else if (type.equalsIgnoreCase("Switcher")) {
+			return Switcher;
 		} 
 
 		return null;

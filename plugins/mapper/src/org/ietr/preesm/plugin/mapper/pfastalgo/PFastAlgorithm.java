@@ -114,10 +114,10 @@ public class PFastAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, MapperDAG, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type,
+		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
 				MapperDAG dag, MultiCoreArchitecture archi) {
 			super();
-			this.simulator = AbstractAbc.getInstance(type, EdgeSchedType.none,
+			this.simulator = AbstractAbc.getInstance(type, edgeSchedType,
 					dag, archi);
 		}
 
@@ -286,7 +286,7 @@ public class PFastAlgorithm extends Observable {
 
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
-			int margIn, AbcType simulatorType,
+			int margIn, AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean population, int populationsize,
 			List<MapperDAG> populationList) {
 
@@ -305,7 +305,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dagfinal;
 		ListScheduler scheduler = new ListScheduler();
 		IAbc archisimu = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
+				.getInstance(simulatorType, edgeSchedType, dag, archi);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 		Logger logger = PreesmLogger.getLogger();
 
@@ -313,7 +313,7 @@ public class PFastAlgorithm extends Observable {
 		if (nboperator == 0) {
 			FastAlgorithm algorithm = new FastAlgorithm();
 
-			dag = algorithm.map("Fast", simulatorType, dag, archi,
+			dag = algorithm.map("Fast", simulatorType, edgeSchedType, dag, archi,
 					cpnDominantVector, blockingnodeVector, fcpVector, maxCount,
 					maxStep, margIn, false, false, null);
 			return dag;
@@ -346,7 +346,7 @@ public class PFastAlgorithm extends Observable {
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
-				new FinalTimeComparator(simulatorType, dagfinal, archi));
+				new FinalTimeComparator(simulatorType, edgeSchedType, dagfinal, archi));
 
 		// step 5/7/8
 		for (int j = 2; totalsearchcount < maxCount; j++) {
@@ -376,7 +376,7 @@ public class PFastAlgorithm extends Observable {
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
 						subiter.next(), maxcounttemp, maxStep, margIn, true,
-						simulatorType);
+						simulatorType, edgeSchedType);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
 				futureTasks.add(task);
@@ -463,7 +463,7 @@ public class PFastAlgorithm extends Observable {
 		logger.log(Level.FINER, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		InitialLists initial = new InitialLists();
@@ -480,7 +480,7 @@ public class PFastAlgorithm extends Observable {
 
 		logger.log(Level.FINER, "Evaluating pfast algorithm ");
 		pfastAlgorithm.map(dag, archi, 1, 3, initial, 30, 30, 6,
-				AbcType.LooselyTimed, true, 10, null);
+				AbcType.LooselyTimed, EdgeSchedType.Simple, true, 10, null);
 
 		logger.log(Level.FINER, "Test finished");
 

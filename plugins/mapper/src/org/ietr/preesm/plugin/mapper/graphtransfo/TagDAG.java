@@ -51,6 +51,8 @@ import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -93,10 +95,11 @@ public class TagDAG {
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario, IAbc simu) {
+	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) {
 
 		PropertyBean bean = dag.getPropertyBean();
 		bean.setValue(AbstractAbc.propertyBeanName, simu.getType());
+		bean.setValue(AbstractEdgeSched.propertyBeanName, edgeSchedType);
 		bean.setValue("SdfReferenceGraph", dag.getReferenceSdfGraph());
 
 		addTransfers(dag, architecture);
@@ -110,7 +113,7 @@ public class TagDAG {
 		// TODO: add a scheduling order for Send/Receive.
 		SchedulingOrderManager orderMgr = new SchedulingOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		TransferVertexAdder tvAdder = new TransferVertexAdder(
+		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(EdgeSchedType.Simple,orderMgr),
 				new CommunicationRouter(architecture), orderMgr, true, false);
 		tvAdder.addTransferVertices(dag, new TransactionManager(), null);
 		orderMgr.tagDAG(dag);

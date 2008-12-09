@@ -44,6 +44,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
+import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -68,50 +69,23 @@ public class PrecedenceEdgeAdder {
 	}
 
 	/**
-	 * Adds a schedule edge to the given vertex if necessary to differ its
-	 * execution when the core is available
+	 * Adds the schedule edges to schedule a new vertex
 	 */
-	public void addPrecedenceEdge(MapperDAG implementation,
+	public void scheduleNewVertex(MapperDAG implementation,
 			TransactionManager transactionManager,
 			MapperDAGVertex scheduledVertex,
 			MapperDAGVertex transactionRefVertex) {
 
-		if (scheduledVertex.getImplementationVertexProperty()
-				.getEffectiveComponent() == null)
-			return;
 
-		Schedule schedule = orderManager.getSchedule(scheduledVertex
-				.getImplementationVertexProperty().getEffectiveComponent());
-
-		MapperDAGVertex prevVertex = schedule
-				.getPreviousVertex(scheduledVertex);
-		Set<DAGEdge> prevEdges = implementation.getAllEdges(prevVertex,
-				scheduledVertex);
-
-		if (prevEdges != null && prevEdges.isEmpty()) {
-
-			// Adds a transaction
-			Transaction transaction = new AddPrecedenceEdgeTransaction(
-					implementation, prevVertex, scheduledVertex);
-			transactionManager.add(transaction, transactionRefVertex);
-		}
-
-		MapperDAGVertex nextVertex = schedule.getNextVertex(scheduledVertex); 
-		Set<DAGEdge> nextEdges = implementation.getAllEdges(scheduledVertex,
-				nextVertex);
-
-		if (nextEdges != null && nextEdges.isEmpty()) {
-
-			// Adds a transaction
-			Transaction transaction = new AddPrecedenceEdgeTransaction(
-					implementation, scheduledVertex, nextVertex);
-			transactionManager.add(transaction, transactionRefVertex);
-		}
+		Transaction transaction = new SchedNewVertexTransaction(
+				orderManager, implementation, scheduledVertex);
+		
+		transactionManager.add(transaction, transactionRefVertex);
 
 		// Executes the transactions
 		transactionManager.executeTransactionList();
 	}
-
+	
 	/**
 	 * Adds all necessary schedule edges to an implementation respecting the
 	 * order given by the scheduling order manager.
@@ -143,7 +117,8 @@ public class PrecedenceEdgeAdder {
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
 						Transaction transaction = new AddPrecedenceEdgeTransaction(
-								implementation, src, dst);
+								orderManager, implementation, src, dst,
+								AddPrecedenceEdgeTransaction.simpleDelete);
 						transactionManager.add(transaction, null);
 					}
 				}

@@ -46,7 +46,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 	private void initData() {
-		Set<ArchitectureComponent> opSet = statGen.getArchi().getComponents(
+		Set<ArchitectureComponent> opSet = statGen.getAbc().getArchitecture().getComponents(
 				ArchitectureComponentType.operator);
 
 		for (ArchitectureComponent cmp : opSet) {

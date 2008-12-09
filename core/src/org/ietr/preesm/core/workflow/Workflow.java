@@ -83,7 +83,8 @@ import org.sdf4j.model.sdf.SDFGraph;
  * consists of several transformation plug-ins applied to a scenario
  * 
  * @author Matthieu Wipliez
- * 
+ * @author mpelcat
+ * @author jpiat
  */
 public class Workflow {
 
@@ -147,6 +148,7 @@ public class Workflow {
 		MultiCoreArchitecture architecture = null;
 		IScenario scenario = null;
 		SourceFileList sourceFiles = null;
+		Object customData = null; // This input type is known from the sender and the receiver
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -177,6 +179,9 @@ public class Workflow {
 					}
 					if (edge.getCarriedData().getScenario() != null) {
 						scenario = edge.getCarriedData().getScenario();
+					}
+					if (edge.getCarriedData().getCustomData() != null) {
+						customData = edge.getCarriedData().getCustomData();
 					}
 				}
 			}
@@ -277,8 +282,8 @@ public class Workflow {
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
-						plotter.transform(dag, sdf, architecture, scenario,
-								parameters);
+						
+						plotter.transform(customData,scenario,parameters);
 					}
 				}
 

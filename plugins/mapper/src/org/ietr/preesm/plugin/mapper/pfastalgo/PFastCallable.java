@@ -60,6 +60,7 @@ class PFastCallable implements Callable<MapperDAG> {
 
 	// Simulator chosen
 	private AbcType simulatorType;
+	private EdgeSchedType edgeSchedType;
 
 	// thread named by threadName
 	private String threadName;
@@ -103,7 +104,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	public PFastCallable(String name, MapperDAG inputDAG,
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
 			int maxCount, int maxStep, int margIn, boolean alreadyImplanted,
-			AbcType simulatorType) {
+			AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;
@@ -113,6 +114,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		this.margIn = margIn;
 		this.alreadyImplanted = alreadyImplanted;
 		this.simulatorType = simulatorType;
+		this.edgeSchedType = edgeSchedType;
 	}
 
 	/**
@@ -145,7 +147,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		}
 
 		// Create the CPN Dominant Sequence
-		IAbc IHsimu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc IHsimu = new InfiniteHomogeneousAbc(edgeSchedType, 
 				callableDAG.clone(), callableArchi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
@@ -153,7 +155,7 @@ class PFastCallable implements Callable<MapperDAG> {
 
 		// performing the fast algorithm
 		FastAlgorithm algo = new FastAlgorithm();
-		outputDAG = algo.map(threadName, simulatorType, callableDAG,
+		outputDAG = algo.map(threadName, simulatorType, edgeSchedType, callableDAG,
 				callableArchi, initialLists.getCpnDominantList(),
 				callableBlockingNodes, initialLists.getFinalcriticalpathList(),
 				maxCount, maxStep, margIn, alreadyImplanted, true, null);

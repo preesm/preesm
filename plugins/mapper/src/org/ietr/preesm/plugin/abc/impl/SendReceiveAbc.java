@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -83,7 +84,7 @@ public class SendReceiveAbc extends
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
-		tvertexAdder = new TransferVertexAdder(router, orderManager, true, false);
+		tvertexAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 

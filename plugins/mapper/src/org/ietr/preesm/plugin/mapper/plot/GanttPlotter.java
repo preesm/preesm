@@ -263,7 +263,7 @@ public class GanttPlotter extends ApplicationFrame {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.none, 
+		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");

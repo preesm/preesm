@@ -162,10 +162,10 @@ public class Chromosome {
 	 * 
 	 * @return : void
 	 */
-	public void evaluate(AbcType simulatorType) {
+	public void evaluate(AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		this.updateDAG();
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, this.dag, this.archi);
+				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi);
 		simulator.setDAG(this.getDag());
 		this.setEvaluateCost(simulator.getFinalTime());
 		this.setDirty(false);
@@ -262,12 +262,12 @@ public class Chromosome {
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		ListScheduler scheduler = new ListScheduler();
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
-		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.none, 
+		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		scheduler.schedule(dag, initialLists.getCpnDominantList(), initialLists
 				.getBlockingNodesList(), initialLists
@@ -277,10 +277,10 @@ public class Chromosome {
 		Chromosome chromosome = new Chromosome(dag, archi);
 
 		// test Evaluate
-		chromosome.evaluate(AbcType.LooselyTimed);
+		chromosome.evaluate(AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu3 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, chromosome
 						.getDag(), archi);
 		simu3.setDAG(chromosome.getDag());
 		simu3.plotImplementation(false);
@@ -289,7 +289,7 @@ public class Chromosome {
 		Chromosome chromosome2 = chromosome.clone();
 
 		IAbc simu4 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none,
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple,
 						chromosome2.getDag(), archi);
 		simu4.setDAG(chromosome2.getDag());
 		simu4.plotImplementation(false);
@@ -297,37 +297,37 @@ public class Chromosome {
 		// test MutationOperator
 		MutationOperator mutationOperator = new MutationOperator();
 		chromosome = mutationOperator.transform(chromosome,
-				AbcType.LooselyTimed);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu5 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, chromosome
 						.getDag(), archi);
 		simu5.setDAG(chromosome.getDag());
 		simu5.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
-				AbcType.LooselyTimed);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu6 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, chromosome
 						.getDag(), archi);
 		simu6.setDAG(chromosome.getDag());
 		simu6.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
-				AbcType.LooselyTimed);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu7 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, chromosome
 						.getDag(), archi);
 		simu7.setDAG(chromosome.getDag());
 		simu7.plotImplementation(false);
 
 		chromosome = mutationOperator.transform(chromosome,
-				AbcType.LooselyTimed);
+				AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu1 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none, chromosome
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, chromosome
 						.getDag(), archi);
 		simu1.setDAG(chromosome.getDag());
 		simu1.plotImplementation(false);
@@ -335,11 +335,11 @@ public class Chromosome {
 		// test crossOverOperator
 		CrossOverOperator crossOverOperator = new CrossOverOperator();
 		Chromosome chromosome3 = crossOverOperator.transform(chromosome2,
-				chromosome, AbcType.LooselyTimed);
-		chromosome3.evaluate(AbcType.LooselyTimed);
+				chromosome, AbcType.LooselyTimed, EdgeSchedType.Simple);
+		chromosome3.evaluate(AbcType.LooselyTimed, EdgeSchedType.Simple);
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.none,
+				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple,
 						chromosome3.getDag(), archi);
 		simu2.setDAG(chromosome3.getDag());
 		simu2.plotImplementation(false);

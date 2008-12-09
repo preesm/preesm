@@ -71,8 +71,8 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 			
 			if(input instanceof StatEditorInput){
 				StatEditorInput statinput = (StatEditorInput)input;
-				this.statGen = new StatGenerator(statinput.getArchi(), statinput.getDag(),
-						statinput.getParams(), statinput.getScenario(), statinput.getSdf());
+				this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(),
+						statinput.getParams());
 			}
 			/*
 		} catch (Exception e) {

@@ -92,7 +92,6 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
 		textParameters.addVariable("processorNumber", procNumber);
-		textParameters.addVariable("simulatorType", simulatorType.toString());
 		textParameters.addVariable("pfastused2makepopulation", pfastused2makepopulation);
 		
 		this.generationNumber = generationNumber;

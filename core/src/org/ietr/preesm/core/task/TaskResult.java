@@ -69,12 +69,15 @@ public class TaskResult {
 	 */
 	private SourceFileList sourcefilelist;
 	
-	
 	/**
 	 * Returned scenario
 	 */
 	private IScenario scenario ;
 	
+	/**
+	 * Returned custom input
+	 */
+	private Object customData ;
 
 	/**
 	 * Creates a result with no contents.
@@ -85,6 +88,7 @@ public class TaskResult {
 		architecture = null;
 		sourcefilelist = null;
 		scenario = null;
+		customData = null;
 	}
 
 	/**
@@ -122,7 +126,11 @@ public class TaskResult {
 	public IScenario getScenario(){
 		return scenario ;
 	}
-
+	
+	public Object getCustomData() {
+		return customData;
+	}
+	
 	/**
 	 * Returns true if the algorithm of this result exists.
 	 */
@@ -169,6 +177,10 @@ public class TaskResult {
 	
 	public void setScenario(IScenario scenario){
 		this.scenario = scenario ;
+	}
+
+	public void setCustomData(Object customData) {
+		this.customData = customData;
 	}
 
 	public String toString() {

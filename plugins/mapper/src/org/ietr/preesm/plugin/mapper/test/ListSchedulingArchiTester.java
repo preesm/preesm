@@ -121,7 +121,7 @@ public class ListSchedulingArchiTester {
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"List scheduling initialization");
 		IAbc simu = AbstractAbc
-				.getInstance(AbcType.InfiniteHomogeneous, EdgeSchedType.none,
+				.getInstance(AbcType.InfiniteHomogeneous, EdgeSchedType.Simple,
 						dag, archi);
 		InitialLists initial = new InitialLists();
 
@@ -152,7 +152,7 @@ public class ListSchedulingArchiTester {
 			simulatorType = AbcType.AccuratelyTimed;
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"Evaluating List scheduling ");
 		scheduler.schedule(dag, initial.getCpnDominantList(), initial

@@ -33,26 +33,28 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.core.task;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
+package org.ietr.preesm.plugin.mapper.edgescheduling;
+
+import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * This interface defines methods to plot a graph or an implementation
+ * Specification of the edgeScheduler interface
  * 
  * @author mpelcat
  */
-public interface IPlotter extends ITask {
+public interface IEdgeSched {
 
 	/**
-	 * Method to plot a given implementation using the given parameters
-	 * @param algorithm The algorithm to export
-	 * @param params The parameters rulling the exportation
+	 * Schedules a transfer which source is given.
+	 * Scheduling consists in giving a total order.
 	 */
-	public void transform(Object simulator, IScenario scenario, TextParameters params);
-	
+	void schedule(TransferVertex tVertex, MapperDAGVertex source);
+
+	/**
+	 * Gets the internal order manager
+	 */
+	public SchedulingOrderManager getOrderManager();
 }

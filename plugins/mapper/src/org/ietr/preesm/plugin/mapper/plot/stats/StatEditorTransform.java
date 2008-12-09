@@ -42,6 +42,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -55,16 +56,18 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class StatEditorTransform implements IPlotter {
 
 	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
+	public void transform(Object simulator, IScenario scenario, TextParameters params) {
 
-		MapperDAG mapperDag = (MapperDAG) dag;
-		
-		IEditorInput input = new StatEditorInput(archi, mapperDag, params, scenario, sdf);
-
-		// Run statistic editor
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new EditorRunnable(input));
+		if(simulator instanceof IAbc){
+			IAbc abc = (IAbc) simulator;
+			MapperDAG mapperDag = (MapperDAG) abc.getDAG();
+			
+			IEditorInput input = new StatEditorInput(abc, scenario, params);
+	
+			// Run statistic editor
+			PlatformUI.getWorkbench().getDisplay().asyncExec(
+					new EditorRunnable(input));
+		}
 	}
 
 }

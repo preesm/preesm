@@ -78,16 +78,9 @@ public class PerformancePage extends FormPage {
 		layout.maxNumColumns = 4;
 		layout.minNumColumns = 1;
 		form.getBody().setLayout(layout);
-		
-		MapperDAG dag = statGen.getDag().clone();
-		MultiCoreArchitecture archi = statGen.getArchi();
-		
-		
-		if(dag != null && archi != null){
 
-			PerformancePlotter plotter = new PerformancePlotter("Performance");
-			plotter.display(form.getBody());
-		}
+		PerformancePlotter plotter = new PerformancePlotter("Performance");
+		plotter.display(form.getBody());
 		
 	}
 

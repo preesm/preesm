@@ -36,97 +36,89 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.Set;
+
 import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Transaction executing the addition of a {@link PrecedenceEdge}.
+ * Transaction generating the appropriate Precedence Edges to add a new vertex
+ * in the middle of a schedule.
  * 
  * @author mpelcat
  */
-public class AddPrecedenceEdgeTransaction extends Transaction {
+public class SchedNewVertexTransaction extends Transaction {
 
 	// Inputs
 	/**
 	 * The object handling the schedulings as well as the total order.
 	 */
 	private SchedulingOrderManager orderManager;
-	
+
+	/**
+	 * Vertex to add in the schedule
+	 */
+	private MapperDAGVertex newVertex = null;
+
 	/**
 	 * Implementation DAG to which the edge is added
 	 */
 	private MapperDAG implementation = null;
 
 	/**
-	 * Source of the added edge
+	 * Added edges
 	 */
-	private MapperDAGVertex source = null;
+	private PrecedenceEdge precEdge1 = null;
+	private PrecedenceEdge precEdge2 = null;
 
-	/**
-	 * Destination of the added edge
-	 */
-	private MapperDAGVertex destination = null;
-
-	/**
-	 * Boolean precising which one between the source and the target created
-	 * this transaction
-	 */
-	public static final int simpleDelete = 0; // Removing the edge only
-	public static final int compensateSourceRemoval = 1; // Removing the edge
-	// and adding a new edge between the target and its predecessor
-	public static final int compensateTargetRemoval = 2; // Removing the edge
-	// and adding a new edge between the source and its successor
-	private int undoType = simpleDelete;
-
-	// Generated objects
-	/**
-	 * edges added
-	 */
-	private PrecedenceEdge precedenceEdge = null;
-
-	public AddPrecedenceEdgeTransaction(SchedulingOrderManager orderManager, MapperDAG implementation,
-			MapperDAGVertex source, MapperDAGVertex destination, int undoType) {
+	public SchedNewVertexTransaction(SchedulingOrderManager orderManager, MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
 		this.orderManager = orderManager;
-		this.destination = destination;
+		this.newVertex = newVertex;
 		this.implementation = implementation;
-		this.source = source;
-		this.undoType = undoType;
 	}
 
+	private PrecedenceEdge addPrecedenceEdge(MapperDAGVertex v1, MapperDAGVertex v2){
+		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
+		precedenceEdge.getTimingEdgeProperty().setCost(0);
+		implementation.addEdge(v1, v2, precedenceEdge);
+		return precedenceEdge;
+	}
+	
 	@Override
 	public void execute() {
 		super.execute();
 
-		precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
-		implementation.addEdge(source, destination, precedenceEdge);
+		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
+		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
+		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
+		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
+		
+		if(prevEdges != null && prevEdges.isEmpty())
+			precEdge1 = addPrecedenceEdge(prev, newVertex);
+		
+		if(nextEdges != null && nextEdges.isEmpty())
+			precEdge2 = addPrecedenceEdge(newVertex, next);
 	}
 
 	@Override
 	public void undo() {
 		super.undo();
 
-		// Clever Undo. Removes the precedence edge but adds a new edge if
-		// necessary between the preceding and following vertices in the 
-		// current schedule.
-		implementation.removeEdge(precedenceEdge);
+		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
+		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
 		
-		if(undoType == compensateSourceRemoval){
-			MapperDAGVertex prev = orderManager.getPreviousVertex(destination);
-			
-			if(prev != null){
-				precedenceEdge = new PrecedenceEdge();
-				precedenceEdge.getTimingEdgeProperty().setCost(0);
-				implementation.addEdge(prev, destination, precedenceEdge);
-			}
-		}
-		else if(undoType == compensateTargetRemoval){
-			
-		}
-
+		implementation.removeEdge(precEdge1);
+		implementation.removeEdge(precEdge2);
+		
+		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
+		
+		if(edges != null && edges.isEmpty())
+			addPrecedenceEdge(prev, next);
+		
 	}
 
 }

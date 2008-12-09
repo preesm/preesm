@@ -90,16 +90,17 @@ public class PGeneticAlgo extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		AbcType simulatorType = null;
+		private AbcType simulatorType = null;
+		private EdgeSchedType edgeSchedType = null;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
 			int difference = 0;
 			if (o1.isDirty())
-				o1.evaluate(simulatorType);
+				o1.evaluate(simulatorType,edgeSchedType);
 			if (o2.isDirty())
-				o2.evaluate(simulatorType);
+				o2.evaluate(simulatorType,edgeSchedType);
 
 			difference = o1.getEvaluateCost() - o2.getEvaluateCost();
 
@@ -116,10 +117,11 @@ public class PGeneticAlgo extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type,
+		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
 				Chromosome chromosome) {
 			super();
 			this.simulatorType = type;
+			this.edgeSchedType = edgeSchedType;
 		}
 
 	}
@@ -144,7 +146,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, AbcType type,
+			MultiCoreArchitecture archi, AbcType type,EdgeSchedType edgeSchedType,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
@@ -160,7 +162,7 @@ public class PGeneticAlgo extends Observable {
 
 		// best Population
 		ConcurrentSkipListSet<Chromosome> result = new ConcurrentSkipListSet<Chromosome>(
-				new FinalTimeComparator(type, population.get(0)));
+				new FinalTimeComparator(type,edgeSchedType, population.get(0)));
 		Logger logger = PreesmLogger.getLogger();
 
 		// if only one processor is used we must do the Standard Genetic
@@ -168,7 +170,7 @@ public class PGeneticAlgo extends Observable {
 		if (processorNumber == 0) {
 			StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 			result = geneticAlgorithm.runGeneticAlgo("genetic algorithm",
-					populationDAG, archi, type, populationSize,
+					populationDAG, archi, type,edgeSchedType, populationSize,
 					generationNumber, false);
 			List<Chromosome> result2 = new ArrayList<Chromosome>();
 			result2.addAll(result);
@@ -199,7 +201,7 @@ public class PGeneticAlgo extends Observable {
 
 		// simple verification and variables
 		if (result.first().isDirty())
-			result.first().evaluate(type);
+			result.first().evaluate(type, edgeSchedType);
 		int iBest = result.first().getEvaluateCost();
 		setChanged();
 		notifyObservers(iBest);
@@ -330,23 +332,24 @@ public class PGeneticAlgo extends Observable {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 		// MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
 
 		AbcType simulatorType = AbcType.ApproximatelyTimed;
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
 
 		PFastAlgorithm fastAlgorithm = new PFastAlgorithm();
 
 		List<MapperDAG> popuList = new ArrayList<MapperDAG>();
 		fastAlgorithm.map(dag, archi, 2, 5, initialLists, 10, 6, 3,
-				simulatorType, true, 4, popuList);
+				simulatorType,edgeSchedType, true, 4, popuList);
 
 		PGeneticAlgo geneticAlgo = new PGeneticAlgo();
 
-		geneticAlgo.map(popuList, archi, simulatorType, 4, 5, 2);
+		geneticAlgo.map(popuList, archi, simulatorType,edgeSchedType, 4, 5, 2);
 		logger.log(Level.FINE, "test finished");
 	}
 

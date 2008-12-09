@@ -99,7 +99,7 @@ public class FastAlgoTest extends TestCase {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		simu.getFinalTime();
 		InitialLists initial = new InitialLists();
@@ -111,12 +111,12 @@ public class FastAlgoTest extends TestCase {
 		ListScheduler scheduler = new ListScheduler();
 		FastAlgorithm algorithm = new FastAlgorithm();
 
-		dag = algorithm.map("test", AbcType.LooselyTimed,
+		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 16, false, false, null);
 
-		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.none, 
+		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);

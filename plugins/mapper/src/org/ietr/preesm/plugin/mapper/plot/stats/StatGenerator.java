@@ -17,6 +17,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -35,24 +36,18 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class StatGenerator {
 
-	private MapperDAG dag = null;
-	private SDFGraph sdf = null;
-	private MultiCoreArchitecture archi = null;
+	private IAbc abc = null;
+
 	private IScenario scenario = null;
 	private TextParameters params = null;
-	private IAbc abc = null;
 	private int finalTime = 0;
 
-	public StatGenerator(MultiCoreArchitecture archi, MapperDAG dag,
-			TextParameters params, IScenario scenario, SDFGraph sdf) {
+	public StatGenerator(IAbc abc, IScenario scenario,
+			TextParameters params) {
 		super();
-		this.archi = archi;
-		this.dag = dag;
 		this.params = params;
 		this.scenario = scenario;
-		this.sdf = sdf;
-
-		initAbc();
+		this.abc = abc;
 		
 		//getDAGComplexSpanLength();
 		//getDAGComplexWorkLength();
@@ -68,16 +63,16 @@ public class StatGenerator {
 	 */
 	public int getDAGComplexSpanLength(){
 
-		MapperDAG taskDag = dag.clone();
+		MapperDAG taskDag = abc.getDAG().clone();
 		removeSendReceive(taskDag);
 		
-		MultiCoreArchitecture localArchi = archi.clone();
+		MultiCoreArchitecture localArchi = abc.getArchitecture().clone();
 
 		MediumDefinition mainMediumDef = (MediumDefinition)localArchi.getMainMedium().getDefinition();
 		mainMediumDef.setInvSpeed(0);
 		mainMediumDef.setOverhead(0);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, taskDag, localArchi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag, localArchi);
 		int span = simu.getFinalTime();
 		
 		PreesmLogger.getLogger().log(Level.INFO, "infinite homogeneous timing: " + span);
@@ -92,9 +87,8 @@ public class StatGenerator {
 	public int getDAGComplexWorkLength(){
 
 		int work = 0;
-		MapperDAG localDag = getDag().clone();
-		StatGenerator.removeSendReceive(localDag);
-		MultiCoreArchitecture archi = getArchi();
+		MapperDAG localDag = abc.getDAG().clone();
+		MultiCoreArchitecture archi = abc.getArchitecture().clone();
 		
 		
 		if(localDag != null && archi != null){
@@ -102,9 +96,10 @@ public class StatGenerator {
 			// Gets the appropriate abc to generate the gantt.
 			PropertyBean bean = localDag.getPropertyBean();
 			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
+			EdgeSchedType edgeSchedType = (EdgeSchedType)bean.getValue(AbstractEdgeSched.propertyBeanName);
 			
 			IAbc simu = AbstractAbc
-			.getInstance(abctype, EdgeSchedType.none, localDag, archi);
+			.getInstance(abctype, edgeSchedType, localDag, archi);
 
 			simu.resetDAG();
 			simu.implantAllVerticesOnOperator(archi.getMainOperator());
@@ -150,18 +145,6 @@ public class StatGenerator {
 		
 	}
 
-	public MapperDAG getDag() {
-		return dag;
-	}
-
-	public SDFGraph getSdf() {
-		return sdf;
-	}
-
-	public MultiCoreArchitecture getArchi() {
-		return archi;
-	}
-
 	public IScenario getScenario() {
 		return scenario;
 	}
@@ -174,6 +157,10 @@ public class StatGenerator {
 		return finalTime;
 	}
 	
+	public IAbc getAbc() {
+		return abc;
+	}
+	
 	public static void removeSendReceive(MapperDAG localDag){
 
 		// Every send and receive vertices are removed
@@ -182,30 +169,5 @@ public class StatGenerator {
 			if(v instanceof SendVertex || v instanceof ReceiveVertex)
 				localDag.removeVertex(v);
 		
-	}
-
-	
-	public void initAbc(){
-
-		MapperDAG localDag = getDag().clone();
-		MultiCoreArchitecture archi = getArchi();
-		
-		
-		if(localDag != null && archi != null){
-
-			// Gets the appropriate abc to generate the gantt.
-			PropertyBean bean = localDag.getPropertyBean();
-			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
-			
-			abc = AbstractAbc
-			.getInstance(abctype, EdgeSchedType.none, localDag, archi);
-
-			StatGenerator.removeSendReceive(localDag);
-
-			abc.setDAG(localDag);			
-			finalTime = abc.getFinalTime();
-			
-			PreesmLogger.getLogger().log(Level.INFO, "stat abc of type " + abctype.toString() + " initialized");
-		}
 	}
 }

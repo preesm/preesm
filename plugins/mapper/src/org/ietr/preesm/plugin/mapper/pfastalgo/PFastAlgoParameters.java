@@ -104,7 +104,6 @@ public class PFastAlgoParameters extends AbstractParameters {
 		textParameters.addVariable("maxStep", maxStep);
 		textParameters.addVariable("nodesmin", nodesmin);
 		textParameters.addVariable("procNumber", procNumber);
-		textParameters.addVariable("simulatorType", simulatorType.toString());
 		
 		this.margIn = margIn;
 		this.maxCount = maxCount;

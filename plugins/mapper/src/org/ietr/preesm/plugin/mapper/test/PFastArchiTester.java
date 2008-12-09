@@ -141,7 +141,7 @@ public class PFastArchiTester {
 
 		logger.log(Level.FINEST, "Initialization list scheduling");
 		InitialLists initial = new InitialLists();
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating constructInitialList ");
@@ -170,12 +170,14 @@ public class PFastArchiTester {
 		if (choixsimu == 2)
 			simulatorType = AbcType.AccuratelyTimed;
 
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
+		
 		dag = pfastAlgorithm.map(dag, archi, nboperator, 3, initial, 20, 20, 6,
-				simulatorType, false, 10, null);
+				simulatorType, edgeSchedType, false, 10, null);
 
 		// display the found solution
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
 		int finale = simu2.getFinalTime();

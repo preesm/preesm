@@ -138,7 +138,7 @@ public class FastArchiTester {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINE);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.none, 
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
 		logger.log(Level.FINEST, "Initialization list scheduling");
 
@@ -171,13 +171,15 @@ public class FastArchiTester {
 		if (choixsimu == 2)
 			simulatorType = AbcType.AccuratelyTimed;
 
-		dag = algorithm.map("test", simulatorType, dag, archi, initial
+		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
+		
+		dag = algorithm.map("test", simulatorType, edgeSchedType, dag, archi, initial
 				.getCpnDominantList(), initial.getBlockingNodesList(), initial
 				.getFinalcriticalpathList(), 40, 40, 6, false, false, null);
 
 		// display
 		IAbc simu2 = AbstractAbc
-				.getInstance(simulatorType, EdgeSchedType.none, dag, archi);
+				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
 		logger.log(Level.FINE, "FinalSPlength " + simu2.getFinalTime());
