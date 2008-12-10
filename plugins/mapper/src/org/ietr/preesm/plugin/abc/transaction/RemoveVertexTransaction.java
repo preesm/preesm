@@ -38,95 +38,51 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 
 /**
- * Transaction executing the addition of a {@link PrecedenceEdge}.
+ * A transaction that removes one vertex in an implementation
  * 
  * @author mpelcat
  */
-public class AddPrecedenceEdgeTransaction extends Transaction {
-
+public class RemoveVertexTransaction extends Transaction {
 	// Inputs
 	/**
-	 * The object handling the schedulings as well as the total order.
-	 */
-	private SchedOrderManager orderManager;
-	
-	/**
-	 * Implementation DAG to which the edge is added
+	 * Implementation DAG from which the vertex is removed
 	 */
 	private MapperDAG implementation = null;
-
+	
 	/**
-	 * Source of the added edge
+	 * vertex removed
 	 */
-	private MapperDAGVertex source = null;
-
+	private MapperDAGVertex vertex = null;
+	
 	/**
-	 * Destination of the added edge
+	 * Order manager
 	 */
-	private MapperDAGVertex destination = null;
-
-	/**
-	 * Boolean precising which one between the source and the target created
-	 * this transaction
-	 */
-	public static final int simpleDelete = 0; // Removing the edge only
-	public static final int compensateSourceRemoval = 1; // Removing the edge
-	// and adding a new edge between the target and its predecessor
-	public static final int compensateTargetRemoval = 2; // Removing the edge
-	// and adding a new edge between the source and its successor
-	private int undoType = simpleDelete;
-
-	// Generated objects
-	/**
-	 * edges added
-	 */
-	private PrecedenceEdge precedenceEdge = null;
-
-	public AddPrecedenceEdgeTransaction(SchedOrderManager orderManager, MapperDAG implementation,
-			MapperDAGVertex source, MapperDAGVertex destination, int undoType) {
+	private SchedOrderManager orderManager = null;
+	
+	
+	public RemoveVertexTransaction(MapperDAGVertex vertex,
+			MapperDAG implementation,SchedOrderManager orderManager) {
 		super();
-		this.orderManager = orderManager;
-		this.destination = destination;
+		this.vertex = vertex;
 		this.implementation = implementation;
-		this.source = source;
-		this.undoType = undoType;
+		this.orderManager = orderManager;
 	}
 
 	@Override
 	public void execute() {
 		super.execute();
 
-		precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
-		implementation.addEdge(source, destination, precedenceEdge);
+		implementation.removeVertex(vertex);
+		orderManager.remove(vertex, true);
 	}
 
 	@Override
 	public void undo() {
 		super.undo();
-
-		// Clever Undo. Removes the precedence edge but adds a new edge if
-		// necessary between the preceding and following vertices in the 
-		// current schedule.
-		implementation.removeEdge(precedenceEdge);
-		
-		if(undoType == compensateSourceRemoval){
-			MapperDAGVertex prev = orderManager.getPreviousVertex(destination);
-			
-			if(prev != null){
-				precedenceEdge = new PrecedenceEdge();
-				precedenceEdge.getTimingEdgeProperty().setCost(0);
-				implementation.addEdge(prev, destination, precedenceEdge);
-			}
-		}
-		else if(undoType == compensateTargetRemoval){
-			
-		}
-
 	}
 
 }

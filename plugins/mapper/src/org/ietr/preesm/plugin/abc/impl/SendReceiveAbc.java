@@ -110,7 +110,7 @@ public class SendReceiveAbc extends
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 
-			transactionManager.undoTransactionList();
+			transactionManager.undo();
 			
 			tvertexAdder.addTransferVertices(implementation,transactionManager, null);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);

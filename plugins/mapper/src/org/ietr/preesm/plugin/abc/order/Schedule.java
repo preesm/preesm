@@ -105,6 +105,18 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 			}
 	}
 
+	/**
+	 * Inserts a vertex before the given one
+	 */
+	public void insertVertexBefore(MapperDAGVertex next,
+			MapperDAGVertex vertex) {
+
+		if (!contains(vertex))
+			if (indexOf(next) >= 0) {
+				add(indexOf(next),vertex);
+			}
+	}
+
 	@Override
 	public String toString() {
 		return "{" + super.toString() + "}";

@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
@@ -51,10 +51,10 @@ public interface IEdgeSched {
 	 * Schedules a transfer which source is given.
 	 * Scheduling consists in giving a total order.
 	 */
-	void schedule(TransferVertex tVertex, MapperDAGVertex source);
+	void schedule(TransferVertex tVertex, MapperDAGVertex source, MapperDAGVertex target);
 
 	/**
 	 * Gets the internal order manager
 	 */
-	public SchedulingOrderManager getOrderManager();
+	public SchedOrderManager getOrderManager();
 }

@@ -51,10 +51,12 @@ import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * An approximately timed architecture simulator associates a complex
@@ -113,7 +115,7 @@ public class ApproximatelyTimedAbc extends
 		PreesmLogger.getLogger().log(Level.INFO,
 				"mapping " + vertex.getName());
 		*/
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
+ 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
 		if (effectiveOp == Operator.NO_COMPONENT) {
@@ -130,8 +132,10 @@ public class ApproximatelyTimedAbc extends
 			setEdgesCosts(vertex.outgoingEdges());
 
 			transactionManager.undoTransactions(vertex);
-
+			
 			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+			transactionManager.execute();
+			
 			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
 			scheduleT(implementation,transactionManager,vertex);
 
@@ -145,10 +149,6 @@ public class ApproximatelyTimedAbc extends
 		}
 	}
 
-	/**
-	 * Adds all necessary schedule edges for the transfers of a given
-	 * vertex
-	 */
 	public void scheduleT(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
@@ -166,6 +166,8 @@ public class ApproximatelyTimedAbc extends
 				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
 			}
 		}
+
+		transactionManager.execute();
 	}
 
 	@Override

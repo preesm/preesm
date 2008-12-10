@@ -130,13 +130,16 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			setEdgesCosts(vertex.outgoingEdges());
 
 			transactionManager.undoTransactions(vertex);
-
+			
 			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+			transactionManager.execute();
+			
 			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
 			scheduleT(implementation,transactionManager,vertex);
+			
 			overtexAdder.addOverheadVertices(implementation,
 					transactionManager, vertex);
-			scheduleO(implementation,transactionManager,vertex);
+			//scheduleO(implementation,transactionManager,vertex);
 		}
 	}
 
@@ -167,12 +170,10 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
 			}
 		}
+
+		transactionManager.execute();
 	}
 
-	/**
-	 * Adds all necessary schedule edges for the transfers of a given
-	 * vertex
-	 */
 	public void scheduleT(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
@@ -186,11 +187,12 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 		for (DAGEdge edge : refVertex.outgoingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
-			if (vertex instanceof OverheadVertex) {
-				TransferVertex tV = (TransferVertex)((MapperDAGEdge)vertex.outgoingEdges().toArray()[0]).getTarget();
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,tV,refVertex);
+			if (vertex instanceof TransferVertex) {
+				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
 			}
 		}
+
+		transactionManager.execute();
 	}
 
 	@Override

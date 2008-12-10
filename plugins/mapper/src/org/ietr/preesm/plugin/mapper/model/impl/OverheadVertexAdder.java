@@ -40,7 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -55,9 +55,9 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class OverheadVertexAdder {
 
-	private SchedulingOrderManager orderManager;
+	private SchedOrderManager orderManager;
 
-	public OverheadVertexAdder(SchedulingOrderManager orderManager) {
+	public OverheadVertexAdder(SchedOrderManager orderManager) {
 		super();
 		this.orderManager = orderManager;
 	}
@@ -85,7 +85,7 @@ public class OverheadVertexAdder {
 			}
 		}
 
-		transactionManager.executeTransactionList();
+		transactionManager.execute();
 	}
 
 	/**
@@ -121,6 +121,6 @@ public class OverheadVertexAdder {
 			}
 		}
 
-		transactionManager.executeTransactionList();
+		transactionManager.execute();
 	}
 }

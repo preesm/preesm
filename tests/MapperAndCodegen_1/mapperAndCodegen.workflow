@@ -8,7 +8,7 @@
          <variable name="margIn" value="30"/>
          <variable name="maxCount" value="800"/>
          <variable name="maxStep" value="800"/>
-         <variable name="simulatorType" value="AccuratelyTimed"/>
+         <variable name="simulatorType" value="ApproximatelyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">

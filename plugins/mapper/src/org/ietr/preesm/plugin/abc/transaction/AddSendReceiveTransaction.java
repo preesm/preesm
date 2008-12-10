@@ -43,7 +43,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -77,7 +77,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	/**
 	 * manager keeping scheduling orders
 	 */
-	private SchedulingOrderManager orderManager = null;
+	private SchedOrderManager orderManager = null;
 
 	/**
 	 * Cost of the transfer to give to the transfer vertex
@@ -105,7 +105,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	
 	
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, SchedulingOrderManager orderManager,
+			MapperDAG implementation, SchedOrderManager orderManager,
 			int routeIndex, RouteStep step, int transferCost) {
 		super();
 		this.edge = edge;

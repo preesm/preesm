@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
@@ -47,7 +47,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
  */
 public class SimpleEdgeSched extends AbstractEdgeSched {
 
-	public SimpleEdgeSched(SchedulingOrderManager orderManager) {
+	public SimpleEdgeSched(SchedOrderManager orderManager) {
 		super(orderManager);
 	}
 
@@ -56,7 +56,7 @@ public class SimpleEdgeSched extends AbstractEdgeSched {
 	}
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source) {
+	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
 		orderManager.insertVertexAfter(source, vertex);
 
 	}

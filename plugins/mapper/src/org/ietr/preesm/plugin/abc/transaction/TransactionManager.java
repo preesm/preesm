@@ -51,17 +51,21 @@ public class TransactionManager {
 	
 	LinkedList<Transaction> transactionList = new LinkedList<Transaction>();
 	
-	public void executeTransactionList(){
+	public void execute(){
 		Iterator<Transaction> it = transactionList.iterator();
 		
 		while(it.hasNext()){
 			Transaction currentT = it.next();
-			if(!currentT.isExecuted())
+			if(!currentT.isExecuted()){
 				currentT.execute();
+				if(currentT.getRef() == null){
+					it.remove();
+				}
+			}
 		}
 	}
 	
-	public void undoTransactionList(){
+	public void undo(){
 		
 		while(!transactionList.isEmpty()){
 			Transaction currentT = transactionList.getLast();
@@ -96,5 +100,9 @@ public class TransactionManager {
 	public void add(Transaction transaction, MapperDAGVertex refVertex){
 		transaction.setRef(refVertex);
 		transactionList.add(transaction);
+	}
+	
+	public void clear(){
+		transactionList.clear();
 	}
 }

@@ -50,7 +50,7 @@ import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -88,7 +88,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	protected SchedulingOrderManager orderManager = null;
+	protected SchedOrderManager orderManager = null;
 
 	/**
 	 * Current directed acyclic graph. It is the external dag graph
@@ -140,7 +140,7 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	public AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi) {
 
-		orderManager = new SchedulingOrderManager();
+		orderManager = new SchedOrderManager();
 
 		this.dag = dag;
 		// implementation is a duplicate from dag
@@ -303,7 +303,7 @@ public abstract class AbstractAbc implements IAbc {
 	public final int getSchedulingTotalOrder(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
-		return orderManager.getSchedulingTotalOrder(vertex);
+		return orderManager.totalIndexOf(vertex);
 	}
 
 	/**

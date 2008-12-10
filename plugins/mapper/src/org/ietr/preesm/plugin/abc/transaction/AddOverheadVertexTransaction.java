@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -74,7 +74,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	/**
 	 * manager keeping scheduling orders
 	 */
-	private SchedulingOrderManager orderManager = null;
+	private SchedOrderManager orderManager = null;
 	
 	// Generated objects
 	/**
@@ -90,7 +90,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	
 	
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, RouteStep step,SchedulingOrderManager orderManager) {
+			MapperDAG implementation, RouteStep step,SchedOrderManager orderManager) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;

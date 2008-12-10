@@ -36,10 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-
+import org.ietr.preesm.core.architecture.*;
 /**
  * An advanced edge scheduler
  * 
@@ -47,8 +48,12 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
  */
 public class SwitcherEdgeSched extends AbstractEdgeSched {
 
-	public SwitcherEdgeSched(SchedulingOrderManager orderManager) {
+	private IntervalFinder intervalFinder = null;
+	
+	public SwitcherEdgeSched(SchedOrderManager orderManager) {
 		super(orderManager);
+		
+		intervalFinder = new IntervalFinder(orderManager);
 	}
 
 	/**
@@ -59,8 +64,26 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	}
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source) {
-		orderManager.insertVertexAfter(source, vertex);
+	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
+		/*
+		intervalFinder.displayCurrentSchedule(vertex, source);
+		
+		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
+		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
+		TimingVertexProperty props = vertex.getTimingVertexProperty();
+		int availability = sourceProps.getTlevel() + sourceProps.getCost();
+		int transferSize = props.getCost();
+		
+		if(availability >= 0 && transferSize >= 0){
+			MapperDAGVertex followingV = intervalFinder.find(component, availability, transferSize);
+			//orderManager.insertVertexBefore(followingV, vertex);
+		}*/
+
+		MapperDAGVertex tutu = orderManager.getNextVertex(source);
+		if(tutu != null && orderManager.totalIndexOf(target)>orderManager.totalIndexOf(tutu))
+			orderManager.insertVertexAfter(tutu, vertex);
+		else
+			orderManager.insertVertexAfter(source, vertex);
 	}
 
 }

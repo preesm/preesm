@@ -103,6 +103,7 @@ public class LooselyTimedAbc extends
 			setEdgesCosts(vertex.outgoingEdges());
 			
 			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+			transactionManager.execute();
 		}
 	}
 

@@ -56,7 +56,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class SchedulingOrderManager {
+public class SchedOrderManager {
 
 	/**
 	 * Contains the rank list of all the vertices in an implementation
@@ -68,7 +68,7 @@ public class SchedulingOrderManager {
 	 */
 	Schedule totalOrder = null;
 
-	public SchedulingOrderManager() {
+	public SchedOrderManager() {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
 		totalOrder = new Schedule();
@@ -90,7 +90,7 @@ public class SchedulingOrderManager {
 			Schedule currentSched = getSchedule(currImpProp
 					.getEffectiveComponent());
 
-			int newSchedulingTotalOrder = getSchedulingTotalOrder(vertex);
+			int newSchedulingTotalOrder = totalIndexOf(vertex);
 
 			// Iterates the schedule
 			Iterator<MapperDAGVertex> it = currentSched.iterator();
@@ -100,7 +100,7 @@ public class SchedulingOrderManager {
 				MapperDAGVertex current = it.next();
 
 				// Looking for the preceding vertex with maximum total order
-				int currentTotalOrder = getSchedulingTotalOrder(current);
+				int currentTotalOrder = totalIndexOf(current);
 
 				if (currentTotalOrder < newSchedulingTotalOrder
 						&& currentTotalOrder > maxPrec)
@@ -144,28 +144,85 @@ public class SchedulingOrderManager {
 	}
 
 	/**
+	 * Appends the vertex at the beginning of a schedule and at the end of total order
+	 */
+	public void addFirst(MapperDAGVertex vertex) {
+
+		AddScheduleIfNotPresent(vertex);
+
+		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
+			ArchitectureComponent effectiveCmp = vertex
+					.getImplementationVertexProperty().getEffectiveComponent();
+
+			// Gets the schedule of vertex
+			Schedule currentSchedule = getSchedule(effectiveCmp);
+
+			currentSchedule.addFirst(vertex);
+
+			if (totalOrder.contains(vertex))
+				totalOrder.remove(vertex);
+
+			totalOrder.addFirst(vertex);
+
+		}
+	}
+
+	/**
 	 * Inserts vertex after previous
 	 */
 	public void insertVertexAfter(MapperDAGVertex previous,
 			MapperDAGVertex vertex) {
 
-		AddScheduleIfNotPresent(vertex);
+		if (previous == null) {
+			addVertex(vertex);
+		} else {
+			AddScheduleIfNotPresent(vertex);
 
-		ImplementationVertexProperty prevImpProp = previous
-				.getImplementationVertexProperty();
-		ImplementationVertexProperty currImpProp = vertex
-				.getImplementationVertexProperty();
+			ImplementationVertexProperty prevImpProp = previous
+					.getImplementationVertexProperty();
+			ImplementationVertexProperty currImpProp = vertex
+					.getImplementationVertexProperty();
 
-		if (prevImpProp.hasEffectiveComponent()
-				&& currImpProp.hasEffectiveComponent()) {
+			if (prevImpProp.hasEffectiveComponent()
+					&& currImpProp.hasEffectiveComponent()) {
 
-			if (!totalOrder.contains(vertex)) {
-				if (totalOrder.indexOf(previous) >= 0) {
-					totalOrder.insertVertexAfter(previous, vertex);
+				if (!totalOrder.contains(vertex)) {
+					if (totalOrder.indexOf(previous) >= 0) {
+						totalOrder.insertVertexAfter(previous, vertex);
+					}
 				}
-			}
-			insertVertexInTotalOrder(vertex);
+				insertVertexInTotalOrder(vertex);
 
+			}
+		}
+	}
+
+	/**
+	 * Inserts vertex after previous
+	 */
+	public void insertVertexBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
+
+		if (next == null) {
+			addFirst(vertex);
+		} else {
+			AddScheduleIfNotPresent(vertex);
+
+			ImplementationVertexProperty prevImpProp = next
+					.getImplementationVertexProperty();
+			ImplementationVertexProperty currImpProp = vertex
+					.getImplementationVertexProperty();
+
+			if (prevImpProp.hasEffectiveComponent()
+					&& currImpProp.hasEffectiveComponent()) {
+
+				if (!totalOrder.contains(vertex)) {
+					if (totalOrder.indexOf(next) >= 0) {
+						totalOrder.insertVertexBefore(next, vertex);
+					}
+				}
+				insertVertexInTotalOrder(vertex);
+
+			}
 		}
 
 	}
@@ -190,7 +247,7 @@ public class SchedulingOrderManager {
 	/**
 	 * Gets the total scheduling order
 	 */
-	public int getSchedulingTotalOrder(MapperDAGVertex vertex) {
+	public int totalIndexOf(MapperDAGVertex vertex) {
 		return totalOrder.indexOf(vertex);
 	}
 
@@ -286,14 +343,13 @@ public class SchedulingOrderManager {
 
 		ConcurrentSkipListSet<DAGVertex> newTotalOrder = new ConcurrentSkipListSet<DAGVertex>(
 				new SchedulingOrderComparator());
-		
+
 		newTotalOrder.addAll(dag.vertexSet());
 
-		for(DAGVertex vertex:newTotalOrder){
+		for (DAGVertex vertex : newTotalOrder) {
 			addVertex((MapperDAGVertex) vertex);
 		}
 
-		
 	}
 
 	/**
@@ -328,13 +384,13 @@ public class SchedulingOrderManager {
 	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
 
 		MapperDAGVertex prevVertex = null;
-		
+
 		Schedule schedule = getSchedule(vertex
 				.getImplementationVertexProperty().getEffectiveComponent());
 
-		if(schedule != null)
+		if (schedule != null)
 			prevVertex = schedule.getPreviousVertex(vertex);
-		
+
 		return prevVertex;
 	}
 
@@ -343,13 +399,13 @@ public class SchedulingOrderManager {
 	 */
 	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
 		MapperDAGVertex nextVertex = null;
-			
+
 		Schedule schedule = getSchedule(vertex
 				.getImplementationVertexProperty().getEffectiveComponent());
 
-		if(schedule != null)
+		if (schedule != null)
 			nextVertex = schedule.getNextVertex(vertex);
-		
+
 		return nextVertex;
 	}
 }

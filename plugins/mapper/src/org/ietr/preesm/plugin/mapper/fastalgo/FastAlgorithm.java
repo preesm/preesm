@@ -338,6 +338,7 @@ public class FastAlgorithm extends Observable {
 				// step 14
 
 				bestSL = simulator.getFinalTime();
+				simulator.plotImplementation(false);
 				
 				dagfinal2.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);

@@ -42,7 +42,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.Schedule;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
@@ -60,9 +60,9 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class PrecedenceEdgeAdder {
 
-	private SchedulingOrderManager orderManager;
+	private SchedOrderManager orderManager;
 
-	public PrecedenceEdgeAdder(SchedulingOrderManager orderManager) {
+	public PrecedenceEdgeAdder(SchedOrderManager orderManager) {
 		super();
 
 		this.orderManager = orderManager;
@@ -81,9 +81,6 @@ public class PrecedenceEdgeAdder {
 				orderManager, implementation, scheduledVertex);
 		
 		transactionManager.add(transaction, transactionRefVertex);
-
-		// Executes the transactions
-		transactionManager.executeTransactionList();
 	}
 	
 	/**
@@ -126,7 +123,7 @@ public class PrecedenceEdgeAdder {
 		}
 
 		// Executes the transactions
-		transactionManager.executeTransactionList();
+		transactionManager.execute();
 	}
 
 }

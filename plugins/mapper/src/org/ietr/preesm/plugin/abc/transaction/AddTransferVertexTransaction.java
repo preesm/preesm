@@ -42,7 +42,7 @@ import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderManager;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -146,7 +146,7 @@ public class AddTransferVertexTransaction extends Transaction {
 				tVertex.getImplementationVertexProperty().setEffectiveMedium(
 						currentMedium);
 
-				edgeScheduler.schedule(tVertex, currentSource);
+				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
 				
 				implementation.addVertex(tVertex);
 
