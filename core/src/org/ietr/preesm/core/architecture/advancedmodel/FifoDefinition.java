@@ -41,12 +41,19 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * Parameters for a Fifo
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class FifoDefinition extends ArchitectureComponentDefinition {
 
+	/**
+	 * The average data rate of this link is the number of bytes transferred in
+	 * a time unit.
+	 */
+	private double dataRate;
+
 	public FifoDefinition(String id) {
 		super(id, "fifo");
+		dataRate = 0;
 	}
 
 	public FifoDefinition clone() {
@@ -68,5 +75,13 @@ public class FifoDefinition extends ArchitectureComponentDefinition {
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.fifo;
+	}
+
+	public double getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(double dataRate) {
+		this.dataRate = dataRate;
 	}
 }

@@ -39,7 +39,10 @@ package org.ietr.preesm.core.architecture;
 import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 
@@ -62,6 +65,12 @@ public class ArchitectureComponentDefinitionFactory {
 			else if(type == ArchitectureComponentType.operator){
 				result = new OperatorDefinition(name);
 			}
+			else if(type == ArchitectureComponentType.processor){
+				result = new ProcessorDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.ipCoprocessor){
+				result = new IpCoprocessorDefinition(name);
+			}
 			else if(type == ArchitectureComponentType.communicationNode){
 				result = new CommunicationNodeDefinition(name);
 			}
@@ -73,6 +82,9 @@ public class ArchitectureComponentDefinitionFactory {
 			}
 			else if(type == ArchitectureComponentType.bus){
 				result = new BusDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.fifo){
+				result = new FifoDefinition(name);
 			}
 		}
 		

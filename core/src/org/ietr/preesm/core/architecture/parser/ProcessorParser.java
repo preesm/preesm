@@ -33,39 +33,47 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-package org.ietr.preesm.core.architecture.advancedmodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+package org.ietr.preesm.core.architecture.parser;
+
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * A bus is a hyperedge used to connect different nodes and transfer data
- * between them.
+ * A processor has specific properties parsed in this class
  * 
  * @author pmu
  */
-public class Bus extends ArchitectureComponent implements ILink {
+public class ProcessorParser {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
+	 * Parsing processor specific data from DOM document and filling the
+	 * processor
 	 */
-	public static final String propertyBeanName = "bus";
+	static void parse(Processor proc, Element callElt) {
+		Node node = callElt.getFirstChild();
 
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
+		while (node != null) {
 
-	}
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String eltType = elt.getTagName();
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("setupTime")) {
+					String value = elt.getTextContent();
+					// TODO : parse setupTime for different communicators
+					// setupTimes have the format of
+					// (communicator_1:setupTime_1)
+					// (communicator_2:setupTime_2)...
+					// (communicator_n:setupTime_n)
+				}
+			}
 
-	public double getDataRate() {
-		return ((BusDefinition) this.getDefinition()).getDataRate();
-	}
+			node = node.getNextSibling();
+		}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.bus;
-	}
-
-	public void setDataRate(double dataRate) {
-		((BusDefinition) this.getDefinition()).setDataRate(dataRate);
 	}
 }

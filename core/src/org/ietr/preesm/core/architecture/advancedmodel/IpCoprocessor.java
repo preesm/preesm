@@ -39,13 +39,15 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 
 /**
  * An IP coprocessor is a hardware entity only used to execute computations.
  * 
  * @author pmu
  */
-public class IpCoprocessor extends ArchitectureComponent implements ITerminal {
+public class IpCoprocessor extends ArchitectureComponent implements IOperator,
+		ITerminal {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a

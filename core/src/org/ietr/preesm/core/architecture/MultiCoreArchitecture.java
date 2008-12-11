@@ -123,12 +123,16 @@ public class MultiCoreArchitecture {
 	 */
 	public ArchitectureComponent addComponent(ArchitectureComponentType type,
 			String defId, String name) {
-		ArchitectureComponentDefinition newDef = addComponentDefinition(type,
-				defId);
-		ArchitectureComponent cmp = ArchitectureComponentFactory.createElement(
-				newDef, name);
-		architectureComponents.put(name, cmp);
-		return cmp;
+		if (architectureComponents.containsKey(name)) {
+			return architectureComponents.get(name);
+		} else {
+			ArchitectureComponentDefinition newDef = addComponentDefinition(
+					type, defId);
+			ArchitectureComponent cmp = ArchitectureComponentFactory
+					.createElement(newDef, name);
+			architectureComponents.put(name, cmp);
+			return cmp;
+		}
 	}
 
 	/**
@@ -409,23 +413,22 @@ public class MultiCoreArchitecture {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setMainOperator(String mainOperatorName) {
-		Operator o = (Operator)getComponent(ArchitectureComponentType.operator,
-				mainOperatorName);
-		if(o != null){
+		Operator o = (Operator) getComponent(
+				ArchitectureComponentType.operator, mainOperatorName);
+		if (o != null) {
 			this.mainOperator = o;
 		}
 	}
 
 	public void setMainMedium(String mainMediumName) {
-		Medium m = (Medium)getComponent(ArchitectureComponentType.medium,
+		Medium m = (Medium) getComponent(ArchitectureComponentType.medium,
 				mainMediumName);
-		if(m != null){
+		if (m != null) {
 			this.mainMedium = m;
 		}
-			
-	}
 
+	}
 
 }

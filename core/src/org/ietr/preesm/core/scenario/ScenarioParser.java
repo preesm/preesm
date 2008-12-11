@@ -51,6 +51,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
@@ -331,6 +333,16 @@ public class ScenarioParser {
 					} else if (type.equals("operator")) {
 						Operator def = (Operator) archi.getComponent(
 								ArchitectureComponentType.operator, name);
+						if (def != null)
+							cg.addOperator(def);
+					} else if (type.equals("processor")) {
+						Processor def = (Processor) archi.getComponent(
+								ArchitectureComponentType.processor, name);
+						if (def != null)
+							cg.addOperator(def);
+					} else if (type.equals("ipCoprocessor")) {
+						IpCoprocessor def = (IpCoprocessor) archi.getComponent(
+								ArchitectureComponentType.ipCoprocessor, name);
 						if (def != null)
 							cg.addOperator(def);
 					}

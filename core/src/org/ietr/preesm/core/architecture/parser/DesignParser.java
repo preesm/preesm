@@ -55,6 +55,13 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.Bus;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
+import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
+import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.Memory;
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
@@ -78,7 +85,7 @@ public class DesignParser {
 	 * current architecture
 	 */
 	private MultiCoreArchitecture archi = null;
-	
+
 	private IFile currentFile = null;
 
 	public DesignParser() {
@@ -93,7 +100,7 @@ public class DesignParser {
 	 * Retrieves the DOM document
 	 */
 	public void parseXmlFile(IFile file) {
-		
+
 		currentFile = file;
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -191,7 +198,7 @@ public class DesignParser {
 		String cmpDefId = "";
 		String cmpType = "";
 		IFile cmpFile = null;
-		
+
 		Element configElt = null;
 
 		Node node = callElt.getFirstChild();
@@ -230,8 +237,28 @@ public class DesignParser {
 						configElt);
 			}
 
+			// parse components for advanced architecture
+			if (configElt != null) {
+				if (type == ArchitectureComponentType.processor) {
+					ProcessorParser.parse((Processor) cmp, configElt);
+				} else if (type == ArchitectureComponentType.ipCoprocessor) {
+					IpCoprocessorParser.parse((IpCoprocessor) cmp, configElt);
+				} else if (type == ArchitectureComponentType.memory) {
+					MemoryParser.parse((Memory) cmp, configElt);
+				} else if (type == ArchitectureComponentType.bus) {
+					BusParser.parse((Bus) cmp, configElt);
+				} else if (type == ArchitectureComponentType.fifo) {
+					FifoParser.parse((Fifo) cmp, configElt);
+				} else if (type == ArchitectureComponentType.communicationNode) {
+					CommunicationNodeParser.parse((CommunicationNode) cmp,
+							configElt);
+				} else if (type == ArchitectureComponentType.communicator) {
+					CommunicatorParser.parse((Communicator) cmp, configElt);
+				}
+			}
+
 			// Parsing the component file if present and retrieving data
-			if(cmpFile != null){
+			if (cmpFile != null) {
 				ComponentParser cmpParser = new ComponentParser(archi, cmp);
 				cmpParser.parseXmlFile(cmpFile);
 				cmpParser.parseDocument();
@@ -240,9 +267,9 @@ public class DesignParser {
 	}
 
 	/**
-	 * Parses a component type and returns the associated value. The component type
-	 * is the most important property of a component. It states how to consider
-	 * the component (as an operator or as a medium for instance)
+	 * Parses a component type and returns the associated value. The component
+	 * type is the most important property of a component. It states how to
+	 * consider the component (as an operator or as a medium for instance)
 	 */
 	private String parseComponentType(Element callElt) {
 
@@ -271,10 +298,11 @@ public class DesignParser {
 
 	/**
 	 * The refinement is the file containing the IP-XACT component definition.
-	 * If such a file is found, a parser is called and information is retrieved from it.
+	 * If such a file is found, a parser is called and information is retrieved
+	 * from it.
 	 */
 	private IFile findComponentRefinement(Element callElt) {
-		
+
 		IFile file = null;
 		String componentRefinement = "";
 
@@ -296,18 +324,19 @@ public class DesignParser {
 			node = node.getNextSibling();
 		}
 
-		if(!componentRefinement.isEmpty()){
+		if (!componentRefinement.isEmpty()) {
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			
+
 			String fileExt = "ipxactcmp";
 			IResource resource = workspace.getRoot().findMember(
-					currentFile.getFullPath().removeLastSegments(1) + "/" + componentRefinement + "." + fileExt);
+					currentFile.getFullPath().removeLastSegments(1) + "/"
+							+ componentRefinement + "." + fileExt);
 			if (resource instanceof IFile) {
 				file = ((IFile) resource);
 			}
 		}
-		
+
 		return file;
 	}
 

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario;
 
 import java.io.ByteArrayInputStream;
@@ -41,6 +41,9 @@ import java.io.ByteArrayOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -63,56 +66,60 @@ public class ScenarioWriter {
 	 * Current document
 	 */
 	private Document dom;
-	
+
 	/**
 	 * Current scenario
 	 */
 	private Scenario scenario;
-	
+
 	public ScenarioWriter(Scenario scenario) {
 		super();
 
 		this.scenario = scenario;
 
-        try {
+		try {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("", "scenario",null);
+			dom = impl.createDocument("", "scenario", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 
 	}
+
 	public Document generateScenarioDOM() {
 
 		Element root = dom.getDocumentElement();
-		
+
 		addFiles(root);
 		addConstraints(root);
 		addTimings(root);
 		addSimuParams(root);
-		
+
 		return dom;
 	}
-	
+
 	private void addSimuParams(Element parent) {
 
-		Element params= dom.createElement("simuParams");
+		Element params = dom.createElement("simuParams");
 		parent.appendChild(params);
-		
+
 		Element core = dom.createElement("mainCore");
 		params.appendChild(core);
-		core.setTextContent(scenario.getSimulationManager().getMainOperatorName());
-		
+		core.setTextContent(scenario.getSimulationManager()
+				.getMainOperatorName());
+
 		Element medium = dom.createElement("mainMedium");
 		params.appendChild(medium);
-		medium.setTextContent(scenario.getSimulationManager().getMainMediumName());	
+		medium.setTextContent(scenario.getSimulationManager()
+				.getMainMediumName());
 
 		Element dataTypes = dom.createElement("dataTypes");
 		params.appendChild(dataTypes);
-		
-		for(DataType dataType:scenario.getSimulationManager().getDataTypes().values()){
+
+		for (DataType dataType : scenario.getSimulationManager().getDataTypes()
+				.values()) {
 			addDataType(dataTypes, dataType);
 		}
 	}
@@ -124,7 +131,7 @@ public class ScenarioWriter {
 		dataTypeElt.setAttribute("name", dataType.getTypeName());
 		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
 	}
-	
+
 	public void writeDom(IFile file) {
 
 		try {
@@ -139,42 +146,43 @@ public class ScenarioWriter {
 			LSSerializer serializer = implLS.createLSSerializer();
 			serializer.getDomConfig().setParameter("format-pretty-print", true);
 			serializer.write(dom, output);
-			
+
 			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
 					false, new NullProgressMonitor());
 			out.close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void addFiles(Element parent) {
 
-		Element files= dom.createElement("files");
+		Element files = dom.createElement("files");
 		parent.appendChild(files);
-		
+
 		Element algo = dom.createElement("algorithm");
 		files.appendChild(algo);
 		algo.setAttribute("url", scenario.getAlgorithmURL());
-		
+
 		Element archi = dom.createElement("architecture");
 		files.appendChild(archi);
 		archi.setAttribute("url", scenario.getArchitectureURL());
-		
+
 		Element timings = dom.createElement("timingfile");
 		files.appendChild(timings);
-		timings.setAttribute("url", scenario.getTimingManager().getTimingFileURL());
-		
-		
+		timings.setAttribute("url", scenario.getTimingManager()
+				.getTimingFileURL());
+
 	}
 
 	private void addConstraints(Element parent) {
 
 		Element constraints = dom.createElement("constraints");
 		parent.appendChild(constraints);
-		
-		for(ConstraintGroup cst:scenario.getConstraintGroupManager().getConstraintGroups()){
+
+		for (ConstraintGroup cst : scenario.getConstraintGroupManager()
+				.getConstraintGroups()) {
 			addConstraint(constraints, cst);
 		}
 	}
@@ -183,14 +191,27 @@ public class ScenarioWriter {
 
 		Element constraintGroupElt = dom.createElement("constraintGroup");
 		parent.appendChild(constraintGroupElt);
-		
-		for(Operator opdef:cst.getOperators()){
-			Element opdefelt = dom.createElement("operator");
-			constraintGroupElt.appendChild(opdefelt);
-			opdefelt.setAttribute("name", opdef.getName());
+
+		for (IOperator opdef : cst.getOperators()) {
+			if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.operator) {
+				Element opdefelt = dom.createElement("operator");
+				constraintGroupElt.appendChild(opdefelt);
+				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
+						.getName());
+			} else if(((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.processor){
+				Element opdefelt = dom.createElement("processor");
+				constraintGroupElt.appendChild(opdefelt);
+				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
+						.getName());
+			} else if(((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.ipCoprocessor){
+				Element opdefelt = dom.createElement("ipCoprocessor");
+				constraintGroupElt.appendChild(opdefelt);
+				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
+						.getName());
+			}
 		}
-		
-		for(SDFAbstractVertex vtx:cst.getVertices()){
+
+		for (SDFAbstractVertex vtx : cst.getVertices()) {
 			Element vtxelt = dom.createElement("task");
 			constraintGroupElt.appendChild(vtxelt);
 			vtxelt.setAttribute("name", vtx.getName());
@@ -201,8 +222,8 @@ public class ScenarioWriter {
 
 		Element timings = dom.createElement("timings");
 		parent.appendChild(timings);
-		
-		for(Timing timing:scenario.getTimingManager().getTimings()){
+
+		for (Timing timing : scenario.getTimingManager().getTimings()) {
 			addTiming(timings, timing);
 		}
 	}
@@ -212,7 +233,8 @@ public class ScenarioWriter {
 		Element timingelt = dom.createElement("timing");
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("vertexname", timing.getVertex().getName());
-		timingelt.setAttribute("opname", timing.getOperatorDefinition().getId());
+		timingelt
+				.setAttribute("opname", timing.getOperatorDefinition().getId());
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
 	}
 }

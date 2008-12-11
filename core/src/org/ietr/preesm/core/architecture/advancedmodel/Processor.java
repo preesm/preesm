@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 
 /**
  * A processor is a hardware entity used to execute computations and perform
@@ -48,8 +49,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author pmu
  */
-public class Processor extends ArchitectureComponent implements ITerminal,
-		ICommunicationPerformer {
+public class Processor extends ArchitectureComponent implements IOperator,
+		ITerminal, ICommunicationPerformer {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a
@@ -61,7 +62,7 @@ public class Processor extends ArchitectureComponent implements ITerminal,
 	 * A communicator can be configured by this processor by using some time.
 	 * The used time for the communicator is stored in setupTimes.
 	 */
-	private Map<Communicator, Double> setupTimes;
+	private Map<String, Double> setupTimes;
 
 	/**
 	 * Communication performers are communicators and processors that can access
@@ -71,22 +72,22 @@ public class Processor extends ArchitectureComponent implements ITerminal,
 
 	public Processor(String name, ProcessorDefinition definition) {
 		super(name, definition);
-		setupTimes = new HashMap<Communicator, Double>();
+		setupTimes = new HashMap<String, Double>();
 	}
 
 	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
 		commPerformers.add(commPerformer);
 	}
 
-	public void addSetupTime(Communicator comm, double time) {
-		setupTimes.put(comm, time);
+	public void addSetupTime(String commName, double time) {
+		setupTimes.put(commName, time);
 	}
 
 	public Set<ICommunicationPerformer> getCommunicationPerformers() {
 		return commPerformers;
 	}
 
-	public Set<Communicator> getCommunicators() {
+	public Set<String> getCommunicators() {
 		return setupTimes.keySet();
 	}
 
@@ -94,7 +95,7 @@ public class Processor extends ArchitectureComponent implements ITerminal,
 		return setupTimes.get(comm);
 	}
 
-	public Map<Communicator, Double> getSetupTimes() {
+	public Map<String, Double> getSetupTimes() {
 		return setupTimes;
 	}
 

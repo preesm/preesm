@@ -33,39 +33,39 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-package org.ietr.preesm.core.architecture.advancedmodel;
+package org.ietr.preesm.core.architecture.parser;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * A bus is a hyperedge used to connect different nodes and transfer data
- * between them.
+ * A communication node has specific properties parsed in this class
  * 
  * @author pmu
  */
-public class Bus extends ArchitectureComponent implements ILink {
+public class CommunicationNodeParser {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
+	 * Parsing CommunicationNode specific data from DOM document
 	 */
-	public static final String propertyBeanName = "bus";
+	static void parse(CommunicationNode commNode, Element callElt) {
+		Node node = callElt.getFirstChild();
 
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
+		while (node != null) {
+			if (node instanceof Element) {
+				// Element elt = (Element) node;
+				// String eltType = elt.getTagName();
+				// String configurableElementName = elt
+				// .getAttribute("spirit:referenceId");
+				// if (eltType.equals("spirit:configurableElementValue")
+				// && configurableElementName.equals("dataRate")) {
+				// String value = elt.getTextContent();
+				// def.setDataRate(Double.parseDouble(value));
+				// }
+			}
 
-	}
-
-	public double getDataRate() {
-		return ((BusDefinition) this.getDefinition()).getDataRate();
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.bus;
-	}
-
-	public void setDataRate(double dataRate) {
-		((BusDefinition) this.getDefinition()).setDataRate(dataRate);
+			node = node.getNextSibling();
+		}
 	}
 }

@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 
 
 /**
@@ -46,7 +47,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author mpelcat
  */
-public class Operator extends ArchitectureComponent {
+public class Operator extends ArchitectureComponent implements IOperator {
 
 	/**
 	 * ID used to reference the element in a property bean in case of a computation vertex

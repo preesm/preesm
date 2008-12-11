@@ -39,6 +39,7 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -67,7 +68,7 @@ public class ConstraintGroupManager {
 	/**
 	 * Adding a simple constraint on one vertex and one core
 	 */
-	public void addConstraint(Operator currentOp, SDFAbstractVertex vertex) {
+	public void addConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
@@ -85,7 +86,7 @@ public class ConstraintGroupManager {
 	/**
 	 * Adding a constraint group on several vertices and one core
 	 */
-	public void addConstraints(Operator currentOp, Set<SDFAbstractVertex> vertexSet) {
+	public void addConstraints(IOperator currentOp, Set<SDFAbstractVertex> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
@@ -103,7 +104,7 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a simple constraint on one vertex and one core
 	 */
-	public void removeConstraint(Operator currentOp, SDFAbstractVertex vertex) {
+	public void removeConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
@@ -117,7 +118,7 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a constraint group on several vertices and one core
 	 */
-	public void removeConstraints(Operator currentOp, Set<SDFAbstractVertex> vertexSet) {
+	public void removeConstraints(IOperator currentOp, Set<SDFAbstractVertex> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 		
@@ -146,7 +147,7 @@ public class ConstraintGroupManager {
 	}
 
 	public Set<ConstraintGroup> getOpConstraintGroups(
-			Operator currentOp) {
+			IOperator currentOp) {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {

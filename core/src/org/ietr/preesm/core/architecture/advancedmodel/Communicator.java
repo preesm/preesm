@@ -59,25 +59,25 @@ public class Communicator extends ArchitectureComponent implements
 	 * This communicator can be configured by some processors by using some
 	 * time. The used times for different processors are stored in setupTimes.
 	 */
-	private Map<Processor, Double> setupTimes;
+	private Map<String, Double> setupTimes;
 
 	public Communicator(String name, CommunicatorDefinition type) {
 		super(name, type);
 	}
 
-	public void addSetupTime(Processor proc, double time) {
-		setupTimes.put(proc, time);
+	public void addSetupTime(String procName, double time) {
+		setupTimes.put(procName, time);
 	}
 
-	public Set<Processor> getProcessors() {
+	public Set<String> getProcessors() {
 		return setupTimes.keySet();
 	}
 
-	public double getSetupTime(Processor proc) {
-		return setupTimes.get(proc);
+	public double getSetupTime(String procName) {
+		return setupTimes.get(procName);
 	}
 
-	public Map<Processor, Double> getSetupTimes() {
+	public Map<String, Double> getSetupTimes() {
 		return setupTimes;
 	}
 

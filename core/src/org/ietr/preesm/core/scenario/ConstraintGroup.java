@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -55,7 +56,7 @@ public class ConstraintGroup {
 	/**
 	 * The set of processing units available for the constraint group
 	 */
-	private Set<Operator> operators;
+	private Set<IOperator> operators;
 
 	/**
 	 * The set of graphs belonging to the constraint group
@@ -63,12 +64,12 @@ public class ConstraintGroup {
 	private Set<SDFAbstractVertex> vertices;
 
 	public ConstraintGroup() {
-		operators = new HashSet<Operator>();
+		operators = new HashSet<IOperator>();
 		vertices = new HashSet<SDFAbstractVertex>();
 
 	}
 
-	public void addOperator(Operator opdef) {
+	public void addOperator(IOperator opdef) {
 		if (!hasOperator(opdef)) {
 			operators.add(opdef);
 		}
@@ -96,20 +97,20 @@ public class ConstraintGroup {
 	
 	
 
-	public Set<Operator> getOperators() {
-		return new HashSet<Operator>(operators);
+	public Set<IOperator> getOperators() {
+		return new HashSet<IOperator>(operators);
 	}
 
 	public Set<SDFAbstractVertex> getVertices() {
 		return new HashSet<SDFAbstractVertex>(vertices);
 	}
 
-	public boolean hasOperator(Operator operator) {
+	public boolean hasOperator(IOperator operator) {
 		boolean b = false;
 
-		Iterator<Operator> it = operators.iterator();
+		Iterator<IOperator> it = operators.iterator();
 		while (it.hasNext() && !b) {
-			Operator currentop = it.next();
+			IOperator currentop = it.next();
 			b = currentop.equals(operator);
 		}
 
@@ -128,10 +129,10 @@ public class ConstraintGroup {
 		return b;
 	}
 
-	public void removeOperator(OperatorDefinition operator) {
-		Iterator<Operator> it = operators.iterator();
+	public void removeOperator(IOperator operator) {
+		Iterator<IOperator> it = operators.iterator();
 		while (it.hasNext()) {
-			Operator currentop = it.next();
+			IOperator currentop = it.next();
 			if (currentop.equals(operator)) {
 				it.remove();
 			}

@@ -43,6 +43,7 @@ import java.util.Set;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
@@ -159,7 +160,7 @@ public class SdfToDagConverter {
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
 		addInitialConstraintsProperties(dag, architecture, scenario);
-		
+
 		return null;
 	}
 
@@ -233,21 +234,23 @@ public class SdfToDagConverter {
 
 			// Old version using directly the weights set by the SDF4J sdf2dag
 			/*
-				int weight = currentEdge.getWeight().intValue();
-			*/ 
+			 * int weight = currentEdge.getWeight().intValue();
+			 */
 			int weight = 0;
 
 			// Calculating the edge weight for simulation:
 			// edge production * number of source repetitions * type size
 			for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : currentEdge
-					.getAggregate()){
+					.getAggregate()) {
 				SDFEdge sdfAggMember = (SDFEdge) aggMember;
 				int prod = sdfAggMember.getProd().intValue();
 				int nbRepeat = currentEdge.getSource().getNbRepeat().intValue();
-				int typeSize = scenario.getSimulationManager().getDataTypeSizeOrDefault(sdfAggMember.getDataType().toString());
+				int typeSize = scenario.getSimulationManager()
+						.getDataTypeSizeOrDefault(
+								sdfAggMember.getDataType().toString());
 				weight += prod * nbRepeat * typeSize;
 			}
-			
+
 			currentEdgeInit.setDataSize(weight);
 		}
 	}
@@ -286,22 +289,28 @@ public class SdfToDagConverter {
 					MapperDAGVertex currentvertex = vertexit.next();
 
 					// Iterating over operators in constraint group
-					Iterator<Operator> opit = cg.getOperators().iterator();
+					Iterator<IOperator> opit = cg.getOperators().iterator();
 
 					while (opit.hasNext()) {
-						Operator currentop = opit.next();
+						IOperator currentIOp = opit.next();
+						if (((ArchitectureComponent) currentIOp).getType() == ArchitectureComponentType.operator) {
+							Operator currentop = (Operator) currentIOp;
 
-						if (!currentvertex.getInitialVertexProperty()
-								.isImplantable(currentop)) {
+							if (!currentvertex.getInitialVertexProperty()
+									.isImplantable(currentop)) {
 
-							currentvertex.getInitialVertexProperty()
-									.addOperator(currentop);
-							// If no timing is set, we add a unavailable timing
-							Timing newTiming = new Timing(
-									(OperatorDefinition) currentop
-											.getDefinition(), currentsdfvertex);
-							currentvertex.getInitialVertexProperty().addTiming(
-									newTiming);
+								currentvertex.getInitialVertexProperty()
+										.addOperator(currentop);
+								// If no timing is set, we add a unavailable
+								// timing
+								Timing newTiming = new Timing(
+										(OperatorDefinition) currentop
+												.getDefinition(),
+										currentsdfvertex);
+								currentvertex.getInitialVertexProperty()
+										.addTiming(newTiming);
+							}
+						
 						}
 					}
 				}

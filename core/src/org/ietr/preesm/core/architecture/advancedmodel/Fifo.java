@@ -63,12 +63,6 @@ public class Fifo extends ArchitectureComponent implements ILink {
 
 	private ArchitectureInterface outputInterface;
 
-	/**
-	 * The average data rate of this link is the number of bytes transferred in
-	 * a time unit.
-	 */
-	private double dataRate;
-
 	// public Fifo(ArchitectureComponent srcCmp, ArchitectureInterface srcIf,
 	// ArchitectureComponent dstCmp, ArchitectureInterface dstIf) {
 	// super("fifo", new FifoDefinition("fifo"));
@@ -83,7 +77,6 @@ public class Fifo extends ArchitectureComponent implements ILink {
 
 	public Fifo(String name, FifoDefinition type) {
 		super(name, type);
-		dataRate = 0;
 	}
 
 	// public Fifo(String name, FifoDefinition type, ArchitectureComponent
@@ -99,7 +92,7 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	// }
 
 	public double getDataRate() {
-		return dataRate;
+		return ((FifoDefinition) this.getDefinition()).getDataRate();
 	}
 
 	// @Override
@@ -171,7 +164,7 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	}
 
 	public void setDataRate(double dataRate) {
-		this.dataRate = dataRate;
+		((FifoDefinition) this.getDefinition()).setDataRate(dataRate);
 	}
 
 	public void setInputInterface(ArchitectureInterface inputInterface) {

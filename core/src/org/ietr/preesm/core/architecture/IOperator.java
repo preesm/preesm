@@ -33,39 +33,14 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-package org.ietr.preesm.core.architecture.advancedmodel;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+package org.ietr.preesm.core.architecture;
 
 /**
- * A bus is a hyperedge used to connect different nodes and transfer data
- * between them.
+ * This interface should be implemented by Processor and IpCoprocessor.
  * 
  * @author pmu
+ * 
  */
-public class Bus extends ArchitectureComponent implements ILink {
+public interface IOperator {
 
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "bus";
-
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
-
-	}
-
-	public double getDataRate() {
-		return ((BusDefinition) this.getDefinition()).getDataRate();
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.bus;
-	}
-
-	public void setDataRate(double dataRate) {
-		((BusDefinition) this.getDefinition()).setDataRate(dataRate);
-	}
 }

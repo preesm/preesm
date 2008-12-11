@@ -41,12 +41,19 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * Parameters for a Bus
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class BusDefinition extends ArchitectureComponentDefinition {
 
+	/**
+	 * The average data rate of this link is the number of bytes transferred in
+	 * a time unit.
+	 */
+	private double dataRate;
+
 	public BusDefinition(String id) {
 		super(id, "bus");
+		dataRate = 0;
 	}
 
 	public BusDefinition clone() {
@@ -68,5 +75,13 @@ public class BusDefinition extends ArchitectureComponentDefinition {
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.bus;
+	}
+
+	public double getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(double dataRate) {
+		this.dataRate = dataRate;
 	}
 }
