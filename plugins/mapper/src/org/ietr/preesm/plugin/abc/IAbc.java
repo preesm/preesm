@@ -36,9 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.Map;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -99,7 +103,17 @@ public interface IAbc {
 	/**
 	 * Gets the total rank of the given vertex. -1 if the vertex has no rank
 	 */
-	public int getSchedulingTotalOrder(MapperDAGVertex vertex);
+	public int getSchedTotalOrder(MapperDAGVertex vertex);
+	
+	/**
+	 * Gets the current total schedule of the ABC
+	 */
+	public Schedule getTotalOrder();
+
+	/**
+	 * Reorders the implementation using the given total order
+	 */
+	public void reorder(Map<String,Integer> totalOrder);
 
 	/**
 	 * Internal time keeper. Should be used for tests only
@@ -184,4 +198,5 @@ public interface IAbc {
 	 * Gets the type of the current ABC
 	 */
 	public AbcType getType();
+	public EdgeSchedType getEdgeSchedType();
 }

@@ -57,9 +57,9 @@ Comparator<DAGVertex> {
 
 		int difference = 0;
 
-		difference = (Integer) ((MapperDAGVertex)v1).getImplementationVertexProperty().getSchedulingTotalOrder();
+		difference = (Integer) ((MapperDAGVertex)v1).getImplementationVertexProperty().getSchedTotalOrder();
 
-		difference -= (Integer) ((MapperDAGVertex)v2).getImplementationVertexProperty().getSchedulingTotalOrder();
+		difference -= (Integer) ((MapperDAGVertex)v2).getImplementationVertexProperty().getSchedTotalOrder();
 
 		return difference;
 	}

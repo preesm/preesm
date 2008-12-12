@@ -67,7 +67,6 @@ public class SchedOrderManager {
 	 * total order of the vertices in the implementation
 	 */
 	Schedule totalOrder = null;
-
 	public SchedOrderManager() {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
@@ -122,7 +121,7 @@ public class SchedOrderManager {
 	/**
 	 * Appends the vertex at the end of a schedule and at the end of total order
 	 */
-	public void addVertex(MapperDAGVertex vertex) {
+	public void addLast(MapperDAGVertex vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -174,7 +173,7 @@ public class SchedOrderManager {
 			MapperDAGVertex vertex) {
 
 		if (previous == null) {
-			addVertex(vertex);
+			addLast(vertex);
 		} else {
 			AddScheduleIfNotPresent(vertex);
 
@@ -228,6 +227,20 @@ public class SchedOrderManager {
 	}
 
 	/**
+	 * Inserts vertex after previous
+	 */
+	public void insertVertexAtIndex(int index, MapperDAGVertex vertex) {
+
+		MapperDAGVertex ref = totalOrder.get(index);
+		if (ref != null) {
+			insertVertexBefore(ref, vertex);
+		} else {
+			addLast(vertex);
+		}
+
+	}
+
+	/**
 	 * Gets the local scheduling order
 	 */
 	public int getSchedulingOrder(MapperDAGVertex vertex) {
@@ -249,6 +262,13 @@ public class SchedOrderManager {
 	 */
 	public int totalIndexOf(MapperDAGVertex vertex) {
 		return totalOrder.indexOf(vertex);
+	}
+
+	/**
+	 * Gets the vertex with the given total scheduling order
+	 */
+	public MapperDAGVertex getVertex(int totalOrderIndex) {
+		return totalOrder.get(totalOrderIndex);
 	}
 
 	/**
@@ -347,7 +367,7 @@ public class SchedOrderManager {
 		newTotalOrder.addAll(dag.vertexSet());
 
 		for (DAGVertex vertex : newTotalOrder) {
-			addVertex((MapperDAGVertex) vertex);
+			addLast((MapperDAGVertex) vertex);
 		}
 
 	}
@@ -374,7 +394,7 @@ public class SchedOrderManager {
 	 */
 	private void tagVertex(MapperDAGVertex vertex) {
 
-		vertex.getImplementationVertexProperty().setSchedulingTotalOrder(
+		vertex.getImplementationVertexProperty().setSchedTotalOrder(
 				totalOrder.indexOf(vertex));
 	}
 
@@ -408,4 +428,9 @@ public class SchedOrderManager {
 
 		return nextVertex;
 	}
+
+	public Schedule getTotalOrder() {
+		return totalOrder;
+	}
+
 }

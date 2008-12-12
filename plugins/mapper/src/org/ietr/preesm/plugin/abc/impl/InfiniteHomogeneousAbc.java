@@ -183,4 +183,8 @@ public class InfiniteHomogeneousAbc extends
 	public AbcType getType(){
 		return AbcType.InfiniteHomogeneous;
 	}
+	
+	public EdgeSchedType getEdgeSchedType() {
+		return null;
+	}
 }

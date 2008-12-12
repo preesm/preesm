@@ -170,7 +170,7 @@ public class MapperDAGVertex extends DAGVertex {
 					+ "("
 					+ implementationVertexProperty.getEffectiveComponent()
 							.toString() + ","
-					+ implementationVertexProperty.getSchedulingTotalOrder()
+					+ implementationVertexProperty.getSchedTotalOrder()
 					+ ")";
 		} else {
 			// If the vertex is not implanted, displays its weight

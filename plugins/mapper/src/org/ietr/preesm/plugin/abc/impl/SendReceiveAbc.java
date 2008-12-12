@@ -160,4 +160,8 @@ public class SendReceiveAbc extends
 	public AbcType getType(){
 		return AbcType.SendReceive;
 	}
+
+	public EdgeSchedType getEdgeSchedType() {
+		return null;
+	}
 }

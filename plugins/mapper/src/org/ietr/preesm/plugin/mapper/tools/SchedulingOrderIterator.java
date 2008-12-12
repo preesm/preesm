@@ -63,8 +63,8 @@ public class SchedulingOrderIterator extends ImplantationIterator {
 	 */
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
-		return (simulator.getSchedulingTotalOrder(arg0) - simulator
-				.getSchedulingTotalOrder(arg1));
+		return (simulator.getSchedTotalOrder(arg0) - simulator
+				.getSchedTotalOrder(arg1));
 	}
 
 }

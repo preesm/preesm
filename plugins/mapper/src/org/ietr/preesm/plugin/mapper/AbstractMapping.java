@@ -57,7 +57,7 @@ public abstract class AbstractMapping implements IMapping {
 	@Override
 	public abstract TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenatio);
+			IScenario scenario);
 
 
 

@@ -70,7 +70,7 @@ public class ImplementationVertexProperty {
 
 		ImplementationVertexProperty property = new ImplementationVertexProperty();
 		property.setEffectiveComponent(this.getEffectiveComponent());
-		property.setSchedulingTotalOrder(this.schedulingTotalOrder);
+		property.setSchedTotalOrder(this.schedulingTotalOrder);
 		return property;
 	}
 
@@ -125,11 +125,11 @@ public class ImplementationVertexProperty {
 		this.effectiveComponent = component;
 	}
 
-	public int getSchedulingTotalOrder() {
+	public int getSchedTotalOrder() {
 		return schedulingTotalOrder;
 	}
 
-	public void setSchedulingTotalOrder(int schedulingTotalOrder) {
+	public void setSchedTotalOrder(int schedulingTotalOrder) {
 		this.schedulingTotalOrder = schedulingTotalOrder;
 	}
 

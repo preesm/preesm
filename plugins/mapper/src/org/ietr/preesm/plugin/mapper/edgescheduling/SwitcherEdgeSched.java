@@ -65,25 +65,18 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 
 	@Override
 	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
-		/*
-		intervalFinder.displayCurrentSchedule(vertex, source);
-		
-		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
-		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
-		TimingVertexProperty props = vertex.getTimingVertexProperty();
-		int availability = sourceProps.getTlevel() + sourceProps.getCost();
-		int transferSize = props.getCost();
-		
-		if(availability >= 0 && transferSize >= 0){
-			MapperDAGVertex followingV = intervalFinder.find(component, availability, transferSize);
-			//orderManager.insertVertexBefore(followingV, vertex);
-		}*/
 
-		MapperDAGVertex tutu = orderManager.getNextVertex(source);
-		if(tutu != null && orderManager.totalIndexOf(target)>orderManager.totalIndexOf(tutu))
-			orderManager.insertVertexAfter(tutu, vertex);
+		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
+		//intervalFinder.displayCurrentSchedule(vertex, source);
+		Interval largestInterval = intervalFinder.findLargestFreeInterval(component, source, target);
+		
+		if(largestInterval.getDuration()>0)
+			orderManager.insertVertexAtIndex(largestInterval.getTotalOrderIndex(), vertex);
 		else
 			orderManager.insertVertexAfter(source, vertex);
 	}
 
+	public EdgeSchedType getEdgeSchedType(){
+		return EdgeSchedType.Switcher;
+	}
 }

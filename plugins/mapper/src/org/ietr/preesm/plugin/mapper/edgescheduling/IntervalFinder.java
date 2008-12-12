@@ -22,22 +22,6 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
  * @author mpelcat
  */
 public class IntervalFinder {
-
-	/**
-	 * Time interval for the transfer scheduling
-	 */
-	public class Interval {
-		private int startTime;
-		private int duration;
-		private TransferVertex vertex;
-
-		public Interval(int duration, int startTime, TransferVertex vertex) {
-			super();
-			this.duration = duration;
-			this.startTime = startTime;
-			this.vertex = vertex;
-		}
-	}
 	
 	/**
 	 * Contains the rank list of all the vertices in an implementation
@@ -50,36 +34,49 @@ public class IntervalFinder {
 	}
 
 	/**
-	 * Returns the earliest transfer vertex following an empty interval of minimal size "size" 
+	 * Finds the largest free interval in a medium schedule
 	 */
-	public TransferVertex find(ArchitectureComponent component, int after, int size){
+	public Interval findLargestFreeInterval(ArchitectureComponent component, MapperDAGVertex minVertex, MapperDAGVertex maxVertex){
 
+		int minIndex = orderManager.totalIndexOf(minVertex);
+		int maxIndex = orderManager.totalIndexOf(maxVertex);;
 		Schedule schedule = orderManager.getSchedule(component);
 
-		Interval oldInt = new Interval(0,0,null);
+		MapperDAGVertex minIndexVertex = orderManager.getVertex(minIndex);
+		int minIndexVertexEndTime = -1;
+		
+		if(minIndexVertex != null){
+			TimingVertexProperty props = minIndexVertex.getTimingVertexProperty();
+			if(props.getTlevel() >= 0){
+				minIndexVertexEndTime = props.getTlevel() + props.getCost();
+			}
+		}
+		
+		Interval oldInt = new Interval(0,0,-1);
 		Interval newInt = null;
+		Interval biggestFreeInterval = new Interval(-1,-1,0);
 		
 		if(schedule != null){
 			for(MapperDAGVertex v : schedule){
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if(props.getTlevel() >= 0){
-					newInt = new Interval(props.getCost(),props.getTlevel(),(TransferVertex)v);
+					newInt = new Interval(props.getCost(),props.getTlevel(),orderManager.totalIndexOf(v));
 	
-					int oldEnd = oldInt.startTime + oldInt.duration;
-					int availableInterval = newInt.startTime - oldEnd;
-					if(oldEnd < after)availableInterval = newInt.startTime - after;
+					if(newInt.getTotalOrderIndex() > minIndex && newInt.getTotalOrderIndex() <= maxIndex){
+						int oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+						int available = Math.max(minIndexVertexEndTime, oldEnd);
+						int freeIntervalSize = newInt.getStartTime() - available;
 						
-					if(size <= availableInterval){
-						return newInt.vertex;
+						if(freeIntervalSize > biggestFreeInterval.getDuration()){
+							biggestFreeInterval = new Interval(freeIntervalSize,available,newInt.getTotalOrderIndex());
+						}
 					}
-					
-					oldInt = newInt;
+					oldInt = newInt;	
 				}
-					
 			}
 		}
 		
-		return null;
+		return biggestFreeInterval;
 		
 	}
 	

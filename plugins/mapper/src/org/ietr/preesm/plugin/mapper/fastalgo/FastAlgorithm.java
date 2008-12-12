@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.fastalgo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
 import java.util.logging.Level;
@@ -59,6 +60,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -74,9 +76,14 @@ import org.sdf4j.model.sdf.SDFGraph;
  * Fast Algorithm
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class FastAlgorithm extends Observable {
 
+	/**
+	 * The scheduling (total order of tasks) for the best found solution.
+	 */
+	private Map<String,Integer> bestTotalOrder = null;
 	/**
 	 * Main for tests
 	 */
@@ -192,7 +199,7 @@ public class FastAlgorithm extends Observable {
 			List<MapperDAGVertex> FinalcriticalpathList, int MAXCOUNT,
 			int MAXSTEP, int MARGIN, boolean alreadyimplanted, boolean pfastused, 
 			BenchmarkWriter writer) {
-
+		
 		final BestLatencyPlotter demo = new BestLatencyPlotter("FastAlgorithm");
 
 		// initialing the data window if this is necessary
@@ -239,6 +246,7 @@ public class FastAlgorithm extends Observable {
 		}
 		// display initial time after the list scheduling
 		int initial = simulator.getFinalTime();
+		simulator.plotImplementation(false);
 		logger.log(Level.FINE, "InitialSP " + initial);
 		
 		// The writer allows textual logs
@@ -252,8 +260,9 @@ public class FastAlgorithm extends Observable {
 			return simulator.getDAG().clone();
 		bestSL = initial;
 		Integer iBest;
-		MapperDAG dagfinal2 = simulator.getDAG().clone();
-		dagfinal2.setScheduleLatency(bestSL);
+		MapperDAG dagfinal = simulator.getDAG().clone();
+		bestTotalOrder = simulator.getTotalOrder().toMap();
+		dagfinal.setScheduleLatency(bestSL);
 
 		// step 4/17
 		while (searchcount++ <= MAXCOUNT) {
@@ -279,7 +288,7 @@ public class FastAlgorithm extends Observable {
 									"Gain "
 											+ ((((double) initial - (double) bestSL) / (double) initial) * 100)
 											+ " %");
-					return dagfinal2.clone();
+					return dagfinal.clone();
 				}
 			}
 
@@ -301,7 +310,7 @@ public class FastAlgorithm extends Observable {
 				prociter = new RandomIterator<Operator>(operatorlist,
 						new Random());
 				operatortest = prociter.next();
-				if (operatortest.equals(dagfinal2.getMapperDAGVertex(
+				if (operatortest.equals(dagfinal.getMapperDAGVertex(
 						currentvertex.getName()).getImplementationVertexProperty()
 						.getEffectiveOperator())) {
 					operatortest = prociter.next();
@@ -334,13 +343,14 @@ public class FastAlgorithm extends Observable {
 			if (bestSL > simulator.getFinalTime()) {
 
 				// step 13
-				dagfinal2 = simulator.getDAG().clone();
+				dagfinal = simulator.getDAG().clone();
+				bestTotalOrder = simulator.getTotalOrder().toMap();
 				// step 14
 
 				bestSL = simulator.getFinalTime();
-				simulator.plotImplementation(false);
+				simulator.plotImplementation(true);
 				
-				dagfinal2.setScheduleLatency(bestSL);
+				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
 
 			}
@@ -357,7 +367,7 @@ public class FastAlgorithm extends Observable {
 			prociter = new RandomIterator<Operator>(operatorlist, new Random());
 
 			operatorfcp = prociter.next();
-			if (operatorfcp.equals(dagfinal2.getMapperDAGVertex(fcpvertex.getName())
+			if (operatorfcp.equals(dagfinal.getMapperDAGVertex(fcpvertex.getName())
 					.getImplementationVertexProperty().getEffectiveOperator())) {
 
 				operatorfcp = prociter.next();
@@ -375,6 +385,11 @@ public class FastAlgorithm extends Observable {
 								+ ((((double) initial - (double) bestSL) / (double) initial) * 100)
 								+ " %");
 
-		return dagfinal2;
+		return dagfinal;
 	}
+	
+	public Map<String,Integer> getBestTotalOrder() {
+		return bestTotalOrder;
+	}
+
 }

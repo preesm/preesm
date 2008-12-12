@@ -57,4 +57,9 @@ public interface IEdgeSched {
 	 * Gets the internal order manager
 	 */
 	public SchedOrderManager getOrderManager();
+	
+	/**
+	 * Gets the current edge scheduling type
+	 */
+	public EdgeSchedType getEdgeSchedType();
 }

@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -51,6 +52,7 @@ import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -58,6 +60,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
@@ -158,6 +161,10 @@ public abstract class AbstractAbc implements IAbc {
 		return dag;
 	}
 
+	public MapperDAG getImpl() {
+		return implementation;
+	}
+
 	/**
 	 * Sets the DAG as current DAG and retrieves all implementation to calculate
 	 * timings
@@ -177,8 +184,9 @@ public abstract class AbstractAbc implements IAbc {
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex vertex = iterator.next();
-			implant(vertex, vertex.getImplementationVertexProperty()
-					.getEffectiveOperator(), false);
+			Operator operator = vertex.getImplementationVertexProperty()
+			.getEffectiveOperator();
+			implant(vertex, operator, false);
 		}
 	}
 
@@ -300,10 +308,46 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the total rank of the given vertex. -1 if the vertex has no rank
 	 */
 	@Override
-	public final int getSchedulingTotalOrder(MapperDAGVertex vertex) {
+	public final int getSchedTotalOrder(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
 		return orderManager.totalIndexOf(vertex);
+	}
+	
+	/**
+	 * Gets the current total schedule of the ABC
+	 */
+	@Override
+	public Schedule getTotalOrder(){
+		return orderManager.getTotalOrder();
+	}
+
+	/**
+	 * Reorders the implementation using the given total order
+	 */
+	public void reorder(Map<String,Integer> totalOrder){
+
+		if(implementation != null && dag != null){
+			
+			for(String vName : totalOrder.keySet()){
+				MapperDAGVertex ImplVertex = (MapperDAGVertex)implementation.getVertex(vName);
+				if(ImplVertex!= null)
+					ImplVertex.getImplementationVertexProperty().setSchedTotalOrder(totalOrder.get(vName));
+				
+				MapperDAGVertex dagVertex = (MapperDAGVertex)dag.getVertex(vName);
+				if(dagVertex!= null)
+					dagVertex.getImplementationVertexProperty().setSchedTotalOrder(totalOrder.get(vName));
+
+			}
+			
+			orderManager.reconstructTotalOrderFromDAG(implementation);
+			
+			TransactionManager localTransactionManager = new TransactionManager();
+			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+			precEdgeAdder.removePrecedenceEdges(implementation, localTransactionManager);
+			precEdgeAdder.addPrecedenceEdges(implementation, localTransactionManager);
+			
+		}
 	}
 
 	/**
@@ -366,7 +410,7 @@ public abstract class AbstractAbc implements IAbc {
 				impprop.setEffectiveOperator(operator);
 
 				if (updateRank) {
-					orderManager.addVertex(impvertex);
+					orderManager.addLast(impvertex);
 				} else {
 					orderManager.insertVertexInTotalOrder(impvertex);
 				}

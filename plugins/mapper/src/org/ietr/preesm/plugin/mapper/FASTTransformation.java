@@ -159,7 +159,10 @@ public class FASTTransformation extends AbstractMapping {
 						.getFinalcriticalpathList(), parameters.getMaxCount(),
 				parameters.getMaxStep(), parameters.getMargIn(), false, false, null);
 
+		// Transfer vertices are automatically regenerated
 		simu2.setDAG(dag);
+		// The transfers are reordered using the best found order during scheduling
+		simu2.reorder(fastAlgorithm.getBestTotalOrder());
 
 		TagDAG tagSDF = new TagDAG();
 

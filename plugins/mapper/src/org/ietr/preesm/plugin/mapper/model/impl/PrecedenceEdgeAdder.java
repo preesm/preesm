@@ -44,10 +44,13 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
+import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
+import org.ietr.preesm.plugin.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.sdf4j.model.dag.DAGEdge;
 
@@ -81,6 +84,19 @@ public class PrecedenceEdgeAdder {
 				orderManager, implementation, scheduledVertex);
 		
 		transactionManager.add(transaction, transactionRefVertex);
+	}
+
+	/**
+	 * Removes all schedule edges
+	 */
+	public void removePrecedenceEdges(MapperDAG implementation, TransactionManager transactionManager) {
+
+		for(DAGEdge e : implementation.edgeSet()){
+			if(e instanceof PrecedenceEdge){
+				transactionManager.add(new RemoveEdgeTransaction((MapperDAGEdge)e, implementation), null);
+			}
+		}
+		transactionManager.execute();
 	}
 	
 	/**

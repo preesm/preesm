@@ -87,4 +87,8 @@ public class CommContenAbc extends AbstractAbc {
 	public AbcType getType() {
 		return AbcType.CommConten;
 	}
+
+	public EdgeSchedType getEdgeSchedType() {
+		return null;
+	}
 }

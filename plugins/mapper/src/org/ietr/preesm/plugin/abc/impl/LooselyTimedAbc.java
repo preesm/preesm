@@ -170,4 +170,8 @@ public class LooselyTimedAbc extends
 	public AbcType getType(){
 		return AbcType.LooselyTimed;
 	}
+	
+	public EdgeSchedType getEdgeSchedType() {
+		return null;
+	}
 }

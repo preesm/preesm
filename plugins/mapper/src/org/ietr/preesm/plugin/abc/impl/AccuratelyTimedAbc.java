@@ -240,4 +240,8 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	public AbcType getType() {
 		return AbcType.AccuratelyTimed;
 	}
+	
+	public EdgeSchedType getEdgeSchedType() {
+		return edgeScheduler.getEdgeSchedType();
+	}
 }

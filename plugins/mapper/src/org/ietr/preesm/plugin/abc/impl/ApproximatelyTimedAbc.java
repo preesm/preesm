@@ -213,4 +213,8 @@ public class ApproximatelyTimedAbc extends
 	public AbcType getType(){
 		return AbcType.ApproximatelyTimed;
 	}
+	
+	public EdgeSchedType getEdgeSchedType() {
+		return edgeScheduler.getEdgeSchedType();
+	}
 }
