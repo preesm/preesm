@@ -111,7 +111,7 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	 * Called when a new vertex operator is set
 	 */
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -120,6 +120,13 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
+
+			if (updateRank) {
+				orderManager.addLast(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+			
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
@@ -136,9 +143,10 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			
 			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
 			scheduleT(implementation,transactionManager,vertex);
+
 			
-			overtexAdder.addOverheadVertices(implementation,
-					transactionManager, vertex);
+			//overtexAdder.addOverheadVertices(implementation,
+			//		transactionManager, vertex);
 			//scheduleO(implementation,transactionManager,vertex);
 		}
 	}

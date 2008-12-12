@@ -109,6 +109,7 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 	public void execute() {
 		super.execute();
 
+		transferVertexAdder.removeAllTransfers(newVertex, implementation, localTransactionManager);
 
 		Set<DAGEdge> edges = new HashSet<DAGEdge>();
 		if(newVertex.incomingEdges()!= null)

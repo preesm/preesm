@@ -110,7 +110,7 @@ public class ApproximatelyTimedAbc extends
 	 * Called when a new vertex operator is set
 	 */
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 /*
 		PreesmLogger.getLogger().log(Level.INFO,
 				"mapping " + vertex.getName());
@@ -122,6 +122,13 @@ public class ApproximatelyTimedAbc extends
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
+
+			if (updateRank) {
+				orderManager.addLast(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+			
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 

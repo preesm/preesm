@@ -42,7 +42,8 @@ import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.core.architecture.*;
 /**
- * An advanced edge scheduler
+ * An advanced edge scheduler. It looks for the largest free interval in scheduling
+ * and schedules the new communication in this slot.
  * 
  * @author mpelcat
  */

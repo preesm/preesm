@@ -92,7 +92,7 @@ public class SendReceiveAbc extends
 	 * Called when a new vertex operator is set
 	 */
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -101,6 +101,13 @@ public class SendReceiveAbc extends
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
+
+			if (updateRank) {
+				orderManager.addLast(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+			
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 

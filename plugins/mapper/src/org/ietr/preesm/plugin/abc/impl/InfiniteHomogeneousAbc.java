@@ -76,7 +76,7 @@ public class InfiniteHomogeneousAbc extends
 	}
 
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -94,6 +94,13 @@ public class InfiniteHomogeneousAbc extends
 			vertex.getTimingVertexProperty().setCost(0);
 			
 		} else {
+
+			if (updateRank) {
+				orderManager.addLast(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+			
 			// Setting vertex time
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);

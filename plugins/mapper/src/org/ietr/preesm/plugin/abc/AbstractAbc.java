@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -193,7 +194,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Called whenever the implementation of a vertex occurs
 	 */
-	protected abstract void fireNewMappedVertex(MapperDAGVertex vertex);
+	protected abstract void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank);
 
 	/**
 	 * Called whenever the unimplementation of a vertex occurs
@@ -326,7 +327,20 @@ public abstract class AbstractAbc implements IAbc {
 	 * Reorders the implementation using the given total order
 	 */
 	public void reorder(Map<String,Integer> totalOrder){
-
+/*
+		int test = totalOrder.get("IDFT_7");
+		int test2 = totalOrder.get("FFT_a1_3");
+		
+		// Just for test. Checks for doublets
+		Set<String> sSet = new HashSet<String>();
+		for(DAGVertex v : implementation.vertexSet()){
+			MapperDAGVertex implVertex = (MapperDAGVertex)v;
+			if(sSet.contains(implVertex.getName())){
+				PreesmLogger.getLogger().log(Level.SEVERE,"duplicated vertex: " + implVertex.getName());
+			}
+			sSet.add(implVertex.getName());
+		}*/
+		
 		if(implementation != null && dag != null){
 			
 			for(String vName : totalOrder.keySet()){
@@ -409,13 +423,7 @@ public abstract class AbstractAbc implements IAbc {
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
-				if (updateRank) {
-					orderManager.addLast(impvertex);
-				} else {
-					orderManager.insertVertexInTotalOrder(impvertex);
-				}
-
-				fireNewMappedVertex(impvertex);
+				fireNewMappedVertex(impvertex, updateRank);
 
 			} else {
 				PreesmLogger.getLogger().log(

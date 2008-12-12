@@ -57,7 +57,7 @@ public class CommContenAbc extends AbstractAbc {
 	}
 
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 		// TODO Called whenever a vertex is implanteds
 		// Call here your edge scheduling and specific vertices adder (via
 		// transactions)

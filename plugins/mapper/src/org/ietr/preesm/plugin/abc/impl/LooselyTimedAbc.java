@@ -84,7 +84,7 @@ public class LooselyTimedAbc extends
 	}
 
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -93,6 +93,13 @@ public class LooselyTimedAbc extends
 			PreesmLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
+
+			if (updateRank) {
+				orderManager.addLast(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+			
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 

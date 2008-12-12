@@ -163,7 +163,6 @@ public class FASTTransformation extends AbstractMapping {
 		simu2.setDAG(dag);
 		// The transfers are reordered using the best found order during scheduling
 		simu2.reorder(fastAlgorithm.getBestTotalOrder());
-
 		TagDAG tagSDF = new TagDAG();
 
 		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());

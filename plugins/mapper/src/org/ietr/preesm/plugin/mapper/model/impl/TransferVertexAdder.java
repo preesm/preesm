@@ -108,41 +108,6 @@ public class TransferVertexAdder {
 	public void addTransferVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
 		
 		transactionManager.add(new AddNewVertexTransfersTransaction(edgeScheduler, router, orderManager, implementation, refVertex), refVertex);
-		/*
-		// We iterate the edges and process the ones with different allocations
-		Iterator<DAGEdge> iterator = null;
-		
-		if(refVertex != null){
-			// Adding transfer vertices only for the inputs of a given vertex
-			iterator = refVertex.incomingEdges().iterator();
-		}
-		else{
-			// Adding transfer vertices for every eligible edges
-			iterator = implementation.edgeSet().iterator();
-		}
-
-		while (iterator.hasNext()) {
-			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
-
-			if (!(currentEdge instanceof PrecedenceEdge)) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex)currentEdge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex)currentEdge
-						.getTarget()).getImplementationVertexProperty();
-
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
-						// Adds several transfers for one edge depending on the route steps
-						addTransferVertices(currentEdge, implementation,
-								 transactionManager,refVertex);
-					}
-				}
-			}
-		}
-
-		*/
 		transactionManager.execute();
 	}
 

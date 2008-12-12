@@ -247,6 +247,7 @@ public class FastAlgorithm extends Observable {
 		// display initial time after the list scheduling
 		int initial = simulator.getFinalTime();
 		simulator.plotImplementation(false);
+		bestTotalOrder = simulator.getTotalOrder().toMap();
 		logger.log(Level.FINE, "InitialSP " + initial);
 		
 		// The writer allows textual logs
@@ -261,7 +262,6 @@ public class FastAlgorithm extends Observable {
 		bestSL = initial;
 		Integer iBest;
 		MapperDAG dagfinal = simulator.getDAG().clone();
-		bestTotalOrder = simulator.getTotalOrder().toMap();
 		dagfinal.setScheduleLatency(bestSL);
 
 		// step 4/17
@@ -344,11 +344,11 @@ public class FastAlgorithm extends Observable {
 
 				// step 13
 				dagfinal = simulator.getDAG().clone();
-				bestTotalOrder = simulator.getTotalOrder().toMap();
 				// step 14
 
 				bestSL = simulator.getFinalTime();
-				simulator.plotImplementation(true);
+				simulator.plotImplementation(false);
+				bestTotalOrder = simulator.getTotalOrder().toMap();
 				
 				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
