@@ -17,10 +17,10 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">
       <data key="variables">
+         <variable name="maxStep" value="10"/>
          <variable name="margIn" value="10"/>
-         <variable name="maxCount" value="400"/>
-         <variable name="maxStep" value="400"/>
          <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="maxCount" value="10"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
