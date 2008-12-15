@@ -9,7 +9,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/djep-full-latest.jar" sourcepath="Preesm coresrc.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/jgrapht-jdk1.5.jar" sourcepath="Preesm coresrc.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmatharray.jar" sourcepath="Preesm coresrc.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/sdf4j.jar" sourcepath="/SDF4J"/>
+	<classpathentry exported="true" kind="lib" path="lib/sdf4j.jar" sourcepath="/SDF4J/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/jgraph.jar" sourcepath="Preesm coresrc.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

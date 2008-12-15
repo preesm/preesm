@@ -4,10 +4,10 @@
       <vertex id="__algorithm" x="30" y="184"/>
       <vertex id="__architecture" x="109" y="256"/>
       <vertex id="__scenario" x="103" y="319"/>
-      <vertex id="HSDF" x="136" y="167"/>
-      <vertex id="HierarchyFlattening" x="227" y="165"/>
-      <vertex id="CodeGen" x="495" y="179"/>
-      <vertex id="Mapper" x="369" y="166"/>
-      <vertex id="DAG Plotter" x="496" y="242"/>
+      <vertex id="HierarchyFlattening" x="222" y="148"/>
+      <vertex id="CodeGen" x="370" y="373"/>
+      <vertex id="DAG Plotter" x="449" y="385"/>
+      <vertex id="Exporter" x="427" y="145"/>
+      <vertex id="Mapper" x="427" y="322"/>
    </vertices>
 </layout>

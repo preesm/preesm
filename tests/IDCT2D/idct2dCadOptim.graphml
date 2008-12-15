@@ -31,7 +31,7 @@
          <data key="arguments">=</data>
       </node>
       <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
-         <data key="edge_prod">512</data>
+         <data key="edge_prod">128</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type"/>
@@ -43,7 +43,7 @@
          <data key="data_type">char</data>
       </edge>
       <edge source="broadcast_signed" sourceport="out" target="IDCT2D" targetport="signed">
-         <data key="edge_prod">8</data>
+         <data key="edge_prod">2</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
          <data key="data_type">char</data>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/IDCT2D/idct2dCadOptim.graphml"/>
+        <architecture url=""/>
+        <timingfile url=""/>
+    </files>
+    <constraints/>
+    <timings/>
+    <simuParams>
+        <mainCore/>
+        <mainMedium/>
+        <dataTypes/>
+    </simuParams>
+</scenario>

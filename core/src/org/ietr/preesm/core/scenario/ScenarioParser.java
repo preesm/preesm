@@ -230,13 +230,13 @@ public class ScenarioParser {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
 				String url = elt.getAttribute("url");
-				if (type.equals("algorithm")) {
+				if (type.equals("algorithm") && url.length()>0) {
 					scenario.setAlgorithmURL(url);
 					algo = getAlgorithm(url);
-				} else if (type.equals("architecture")) {
+				} else if (type.equals("architecture")&& url.length()>0) {
 					scenario.setArchitectureURL(url);
 					archi = getArchitecture(url);
-				} else if (type.equals("timingfile")) {
+				} else if (type.equals("timingfile")&& url.length()>0) {
 					scenario.getTimingManager().setTimingFileURL(url, null);
 				}
 			}
