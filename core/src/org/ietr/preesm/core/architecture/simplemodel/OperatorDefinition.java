@@ -38,17 +38,20 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 
 /**
  * The operator definition specifies the operator characteristics
- *         
+ * 
  * @author mpelcat
  */
-public class OperatorDefinition extends ArchitectureComponentDefinition {
+public class OperatorDefinition extends ArchitectureComponentDefinition
+		implements IOperatorDefinition {
 
 	public OperatorDefinition(String id) {
 		super(id, "operator");
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof OperatorDefinition) {
@@ -59,7 +62,7 @@ public class OperatorDefinition extends ArchitectureComponentDefinition {
 		return false;
 	}
 
-	public ArchitectureComponentType getType(){
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.operator;
 	}
 
@@ -71,7 +74,6 @@ public class OperatorDefinition extends ArchitectureComponentDefinition {
 		return newdef;
 	}
 
-
-	public void fill(ArchitectureComponentDefinition origin){
+	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }

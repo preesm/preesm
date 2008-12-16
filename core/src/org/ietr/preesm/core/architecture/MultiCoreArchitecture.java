@@ -208,7 +208,7 @@ public class MultiCoreArchitecture {
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
 			boolean isDirected) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
-			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
+			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2, isDirected));
 			if (isDirected) {
 				if (cmp1.getType() == ArchitectureComponentType.fifo) {
 					if (((Fifo) cmp1).getOutputInterface() == null) {

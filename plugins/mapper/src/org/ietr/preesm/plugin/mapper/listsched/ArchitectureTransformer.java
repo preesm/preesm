@@ -41,9 +41,13 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.Bus;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.BusDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ComponentDescriptor;
+import org.ietr.preesm.plugin.mapper.listsched.descriptor.FifoDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ProcessorDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.TGVertexDescriptor;
@@ -71,10 +75,32 @@ public class ArchitectureTransformer {
 			new ProcessorDescriptor(indexOperator.getName(), indexOperator
 					.getDefinition().getId(), ComponentDescriptorBuffer);
 		}
+		for (ArchitectureComponent indexOperator : archi
+				.getComponents(ArchitectureComponentType.processor)) {
+			new ProcessorDescriptor(indexOperator.getName(), indexOperator
+					.getDefinition().getId(), ComponentDescriptorBuffer);
+		}
+		for (ArchitectureComponent indexOperator : archi
+				.getComponents(ArchitectureComponentType.ipCoprocessor)) {
+			new ProcessorDescriptor(indexOperator.getName(), indexOperator
+					.getDefinition().getId(), ComponentDescriptorBuffer);
+		}
 		for (ArchitectureComponent indexMedium : archi
 				.getComponents(ArchitectureComponentType.medium)) {
-			new BusDescriptor(indexMedium.getName(), indexMedium
-					.getDefinition().getId(), ComponentDescriptorBuffer);
+			BusDescriptor bus = new BusDescriptor(indexMedium.getName(),
+					indexMedium.getDefinition().getId(),
+					ComponentDescriptorBuffer);
+			bus
+					.setAverageClockCyclesPerTransfer(((MediumDefinition) ((Medium) indexMedium)
+							.getDefinition()).getInvSpeed());
+		}
+		for (ArchitectureComponent indexMedium : archi
+				.getComponents(ArchitectureComponentType.bus)) {
+			BusDescriptor bus = new BusDescriptor(indexMedium.getName(),
+					indexMedium.getDefinition().getId(),
+					ComponentDescriptorBuffer);
+			bus.setAverageClockCyclesPerTransfer(1 / ((Bus) indexMedium)
+					.getDataRate());
 		}
 		for (ArchitectureComponent indexSwitch : archi
 				.getComponents(ArchitectureComponentType.communicationNode)) {
@@ -82,32 +108,92 @@ public class ArchitectureTransformer {
 					.getDefinition().getId(), ComponentDescriptorBuffer);
 		}
 		for (Interconnection indexInterconnection : archi.getInterconnections()) {
-			if (indexInterconnection
-					.getInterface(ArchitectureComponentType.operator) != null) {
-				((TGVertexDescriptor) ComponentDescriptorBuffer
-						.get(indexInterconnection.getInterface(
-								ArchitectureComponentType.operator).getOwner()
-								.getName()))
-						.addInputLink((BusDescriptor) ComponentDescriptorBuffer
-								.get(indexInterconnection.getInterface(
-										ArchitectureComponentType.medium)
-										.getOwner().getName()));
-				((TGVertexDescriptor) ComponentDescriptorBuffer
-						.get(indexInterconnection.getInterface(
-								ArchitectureComponentType.operator).getOwner()
-								.getName()))
-						.addOutputLink((BusDescriptor) ComponentDescriptorBuffer
-								.get(indexInterconnection.getInterface(
-										ArchitectureComponentType.medium)
-										.getOwner().getName()));
-				((BusDescriptor) ComponentDescriptorBuffer
-						.get(indexInterconnection.getInterface(
-								ArchitectureComponentType.medium).getOwner()
-								.getName()))
-						.addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
-								.get(indexInterconnection.getInterface(
-										ArchitectureComponentType.operator)
-										.getOwner().getName()));
+			// if (indexInterconnection
+			// .getInterface(ArchitectureComponentType.operator) != null) {
+			// ((TGVertexDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.operator).getOwner()
+			// .getName()))
+			// .addInputLink((BusDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.medium)
+			// .getOwner().getName()));
+			// ((TGVertexDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.operator).getOwner()
+			// .getName()))
+			// .addOutputLink((BusDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.medium)
+			// .getOwner().getName()));
+			// ((BusDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.medium).getOwner()
+			// .getName()))
+			// .addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
+			// .get(indexInterconnection.getInterface(
+			// ArchitectureComponentType.operator)
+			// .getOwner().getName()));
+			// }
+			// transform two types of interconnections
+			ArchitectureComponent srcComponent = indexInterconnection.getCp1();
+			ArchitectureComponent dstComponent = indexInterconnection.getCp2();
+			if (indexInterconnection.isDirected()) {
+				if ((srcComponent.getType() == ArchitectureComponentType.operator)
+						|| (srcComponent.getType() == ArchitectureComponentType.processor)
+						|| (srcComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(srcComponent.getName()))
+							.addOutputLink((FifoDescriptor) ComponentDescriptorBuffer
+									.get(dstComponent.getName()));
+					((FifoDescriptor) ComponentDescriptorBuffer
+							.get(dstComponent.getName()))
+							.setOrigin((TGVertexDescriptor) ComponentDescriptorBuffer
+									.get(srcComponent.getName()));
+				} else if ((dstComponent.getType() == ArchitectureComponentType.operator)
+						|| (dstComponent.getType() == ArchitectureComponentType.processor)
+						|| (dstComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(dstComponent.getName()))
+							.addInputLink((FifoDescriptor) ComponentDescriptorBuffer
+									.get(srcComponent.getName()));
+					((FifoDescriptor) ComponentDescriptorBuffer
+							.get(srcComponent.getName()))
+							.setDestination((TGVertexDescriptor) ComponentDescriptorBuffer
+									.get(dstComponent.getName()));
+				}
+			} else {
+				if ((srcComponent.getType() == ArchitectureComponentType.operator)
+						|| (srcComponent.getType() == ArchitectureComponentType.processor)
+						|| (srcComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(srcComponent.getName()))
+							.addInputLink((BusDescriptor) ComponentDescriptorBuffer
+									.get(dstComponent.getName()));
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(srcComponent.getName()))
+							.addOutputLink((BusDescriptor) ComponentDescriptorBuffer
+									.get(dstComponent.getName()));
+					((BusDescriptor) ComponentDescriptorBuffer.get(dstComponent
+							.getName()))
+							.addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
+									.get(srcComponent.getName()));
+				} else if ((dstComponent.getType() == ArchitectureComponentType.operator)
+						|| (dstComponent.getType() == ArchitectureComponentType.processor)
+						|| (dstComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(dstComponent.getName()))
+							.addInputLink((BusDescriptor) ComponentDescriptorBuffer
+									.get(srcComponent.getName()));
+					((TGVertexDescriptor) ComponentDescriptorBuffer
+							.get(dstComponent.getName()))
+							.addOutputLink((BusDescriptor) ComponentDescriptorBuffer
+									.get(srcComponent.getName()));
+					((BusDescriptor) ComponentDescriptorBuffer.get(srcComponent
+							.getName()))
+							.addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
+									.get(dstComponent.getName()));
+				}
 			}
 		}
 		return archiDescriptor;

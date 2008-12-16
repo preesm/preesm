@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,6 +74,7 @@ public class Processor extends ArchitectureComponent implements IOperator,
 	public Processor(String name, ProcessorDefinition definition) {
 		super(name, definition);
 		setupTimes = new HashMap<String, Double>();
+		commPerformers = new HashSet<ICommunicationPerformer>();
 	}
 
 	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
@@ -91,8 +93,8 @@ public class Processor extends ArchitectureComponent implements IOperator,
 		return setupTimes.keySet();
 	}
 
-	public double getSetupTime(Communicator comm) {
-		return setupTimes.get(comm);
+	public double getSetupTime(String commName) {
+		return setupTimes.get(commName);
 	}
 
 	public Map<String, Double> getSetupTimes() {

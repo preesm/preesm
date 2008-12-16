@@ -41,8 +41,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -84,18 +82,16 @@ public class ConstraintGroup {
 	}
 
 	public void addVertices(Set<SDFAbstractVertex> vertexSet) {
-		for(SDFAbstractVertex vertex:vertexSet){
+		for (SDFAbstractVertex vertex : vertexSet) {
 			addVertex(vertex);
 		}
 	}
 
 	public void removeVertices(Set<SDFAbstractVertex> vertexSet) {
-		for(SDFAbstractVertex vertex:vertexSet){
+		for (SDFAbstractVertex vertex : vertexSet) {
 			removeVertex(vertex);
 		}
 	}
-	
-	
 
 	public Set<IOperator> getOperators() {
 		return new HashSet<IOperator>(operators);

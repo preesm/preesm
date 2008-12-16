@@ -67,8 +67,23 @@ public class ProcessorParser {
 					// TODO : parse setupTime for different communicators
 					// setupTimes have the format of
 					// (communicator_1:setupTime_1)
-					// (communicator_2:setupTime_2)...
+					// (communicator_2:setupTime_2)
+					// ...
 					// (communicator_n:setupTime_n)
+					int leftIndex = -1;
+					int middleIndex = -1;
+					int rightIndex = -1;
+					while (rightIndex < value.length() - 1) {
+						leftIndex = value.indexOf('(', rightIndex + 1);
+						// leftIndex+=1;
+						middleIndex = value.indexOf(':', leftIndex + 1);
+						rightIndex = value.indexOf(')', middleIndex + 1);
+						String commName = value.substring(leftIndex + 1,
+								middleIndex);
+						double setupTime = Double.parseDouble(value.substring(
+								middleIndex + 1, rightIndex));
+						proc.addSetupTime(commName, setupTime);
+					}
 				}
 			}
 

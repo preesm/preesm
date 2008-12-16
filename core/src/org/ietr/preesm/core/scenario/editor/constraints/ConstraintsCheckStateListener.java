@@ -56,6 +56,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
@@ -84,7 +85,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Current operator
 	 */
-	private Operator currentOpDef = null;
+	private IOperator currentIOpDef = null;
 
 	/**
 	 * Current section (necessary to diplay busy status)
@@ -150,13 +151,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * isChecked status
 	 */
 	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
-		if (currentOpDef != null) {
+		if (currentIOpDef != null) {
 			if (isChecked)
 				scenario.getConstraintGroupManager().addConstraints(
-						currentOpDef, graph.vertexSet());
+						currentIOpDef, graph.vertexSet());
 			else
 				scenario.getConstraintGroupManager().removeConstraints(
-						currentOpDef, graph.vertexSet());
+						currentIOpDef, graph.vertexSet());
 		}
 		updateCheck();
 	}
@@ -165,13 +166,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * Adds or remove a constraint depending on the isChecked status
 	 */
 	public void fireOnCheck(SDFAbstractVertex vertex, boolean isChecked) {
-		if (currentOpDef != null) {
+		if (currentIOpDef != null) {
 			if (isChecked)
 				scenario.getConstraintGroupManager().addConstraint(
-						currentOpDef, vertex);
+						currentIOpDef, vertex);
 			else
 				scenario.getConstraintGroupManager().removeConstraint(
-						currentOpDef, vertex);
+						currentIOpDef, vertex);
 		}
 		updateCheck();
 	}
@@ -193,8 +194,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo
 					.getData();
-			currentOpDef = (Operator) archi.getComponent(
-					ArchitectureComponentType.operator, item);
+//			currentIOpDef = (Operator) archi.getComponent(
+//					ArchitectureComponentType.operator, item);
+			currentIOpDef = (IOperator) archi.getComponent(item);
 			updateCheck();
 		}
 
@@ -205,11 +207,11 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	public void updateCheck() {
 		SDFGraph currentGraph = contentProvider.getCurrentGraph();
-		if (scenario != null && currentOpDef != null && currentGraph != null) {
+		if (scenario != null && currentIOpDef != null && currentGraph != null) {
 			Set<SDFAbstractVertex> cgSet = new HashSet<SDFAbstractVertex>();
 
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
-					.getOpConstraintGroups(currentOpDef)) {
+					.getOpConstraintGroups(currentIOpDef)) {
 
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group
@@ -265,6 +267,14 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				.getComponents(ArchitectureComponentType.operator)) {
 			combo.add(def.getName());
 		}
+		for (ArchitectureComponent def : archi
+				.getComponents(ArchitectureComponentType.processor)) {
+			combo.add(def.getName());
+		}
+		for (ArchitectureComponent def : archi
+				.getComponents(ArchitectureComponentType.ipCoprocessor)) {
+			combo.add(def.getName());
+		}
 
 		combo.setData(archi);
 	}
@@ -272,6 +282,6 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	@Override
 	public void paintControl(PaintEvent e) {
 		updateCheck();
-		
+
 	}
 }

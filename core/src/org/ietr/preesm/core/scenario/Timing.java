@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.expression.Parameter;
 import org.nfunk.jep.Variable;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -58,7 +58,7 @@ public class Timing {
 	/**
 	 * related operator
 	 */
-	private OperatorDefinition operator;
+	private IOperatorDefinition operator;
 
 	/**
 	 * Definition of the timing
@@ -70,14 +70,14 @@ public class Timing {
 	 */
 	private SDFAbstractVertex vertex;
 
-	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex) {
+	public Timing(IOperatorDefinition operator, SDFAbstractVertex vertex) {
 
 		time = -1;
 		this.operator = operator;
 		this.vertex = vertex;
 	}
 
-	public Timing(OperatorDefinition operator, SDFAbstractVertex vertex,
+	public Timing(IOperatorDefinition operator, SDFAbstractVertex vertex,
 			int time) {
 		this(operator, vertex);
 		this.time = time;
@@ -98,7 +98,7 @@ public class Timing {
 		return equals;
 	}
 
-	public OperatorDefinition getOperatorDefinition() {
+	public IOperatorDefinition getOperatorDefinition() {
 		return operator;
 	}
 

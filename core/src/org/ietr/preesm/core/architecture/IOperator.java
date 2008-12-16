@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 /**
- * This interface should be implemented by Processor and IpCoprocessor.
+ * This interface should be implemented by Processor and IpCoprocessor in
+ * advanced model as well as Operator in simple model.
  * 
  * @author pmu
  * 

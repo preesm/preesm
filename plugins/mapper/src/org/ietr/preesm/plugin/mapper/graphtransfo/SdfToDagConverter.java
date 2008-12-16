@@ -252,6 +252,7 @@ public class SdfToDagConverter {
 			}
 
 			currentEdgeInit.setDataSize(weight);
+
 		}
 	}
 

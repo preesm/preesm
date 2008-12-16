@@ -52,7 +52,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -119,6 +122,66 @@ public class ExcelTimingParser {
 											CellType.NUMBER_FORMULA)) {
 								Timing timing = new Timing(
 										((OperatorDefinition) operatorDef),
+										vertex, Integer.valueOf(timingCell
+												.getContents()));
+								scenario.getTimingManager().addTiming(timing);
+							}
+						}
+					}
+				}
+				
+				//Processor
+				for (ArchitectureComponentDefinition operatorDef : currentArchi
+						.getComponentDefinitions(ArchitectureComponentType.processor)) {
+
+					String operatorId = ((ProcessorDefinition) operatorDef)
+							.getId();
+					String vertexName = vertex.getName();
+
+					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+						Cell vertexCell = w.getSheet(0).findCell(vertexName);
+						Cell operatorCell = w.getSheet(0).findCell(operatorId);
+
+						if (vertexCell != null && operatorCell != null) {
+							Cell timingCell = w.getSheet(0).getCell(
+									operatorCell.getColumn(),
+									vertexCell.getRow());
+
+							if (timingCell.getType().equals(CellType.NUMBER)
+									|| timingCell.getType().equals(
+											CellType.NUMBER_FORMULA)) {
+								Timing timing = new Timing(
+										((ProcessorDefinition) operatorDef),
+										vertex, Integer.valueOf(timingCell
+												.getContents()));
+								scenario.getTimingManager().addTiming(timing);
+							}
+						}
+					}
+				}
+				
+				//IpCoprocessor
+				for (ArchitectureComponentDefinition operatorDef : currentArchi
+						.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
+
+					String operatorId = ((IpCoprocessorDefinition) operatorDef)
+							.getId();
+					String vertexName = vertex.getName();
+
+					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+						Cell vertexCell = w.getSheet(0).findCell(vertexName);
+						Cell operatorCell = w.getSheet(0).findCell(operatorId);
+
+						if (vertexCell != null && operatorCell != null) {
+							Cell timingCell = w.getSheet(0).getCell(
+									operatorCell.getColumn(),
+									vertexCell.getRow());
+
+							if (timingCell.getType().equals(CellType.NUMBER)
+									|| timingCell.getType().equals(
+											CellType.NUMBER_FORMULA)) {
+								Timing timing = new Timing(
+										((IpCoprocessorDefinition) operatorDef),
 										vertex, Integer.valueOf(timingCell
 												.getContents()));
 								scenario.getTimingManager().addTiming(timing);

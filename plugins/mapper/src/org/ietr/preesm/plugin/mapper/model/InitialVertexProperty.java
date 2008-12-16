@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
@@ -157,7 +158,7 @@ public class InitialVertexProperty {
 		return time;
 	}
 
-	public Timing getTiming(OperatorDefinition operatordef) {
+	public Timing getTiming(IOperatorDefinition operatordef) {
 
 		Timing returntiming = Timing.UNAVAILABLE;
 

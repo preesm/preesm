@@ -33,57 +33,16 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-package org.ietr.preesm.core.architecture.advancedmodel;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+package org.ietr.preesm.core.architecture;
 
 /**
- * a Communicator (example: an edma)
+ * This interface should be implemented by ProcessorDefinition and
+ * IpCoprocessorDefinition in advanced model as well as OperatorDefinition in
+ * simple model.
  * 
- * @author mpelcat
+ * @author pmu
+ * 
  */
-public class Communicator extends ArchitectureComponent implements
-		ICommunicationPerformer {
-
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "communicator";
-
-	/**
-	 * This communicator can be configured by some processors by using some
-	 * time. The used times for different processors are stored in setupTimes.
-	 */
-	private Map<String, Double> setupTimes;
-
-	public Communicator(String name, CommunicatorDefinition type) {
-		super(name, type);
-		setupTimes = new HashMap<String, Double>();
-	}
-
-	public void addSetupTime(String procName, double time) {
-		setupTimes.put(procName, time);
-	}
-
-	public Set<String> getProcessors() {
-		return setupTimes.keySet();
-	}
-
-	public double getSetupTime(String procName) {
-		return setupTimes.get(procName);
-	}
-
-	public Map<String, Double> getSetupTimes() {
-		return setupTimes;
-	}
-
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.communicator;
-	}
+public interface IOperatorDefinition {
+	public String getId();
 }

@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
@@ -198,12 +197,12 @@ public class ScenarioWriter {
 				constraintGroupElt.appendChild(opdefelt);
 				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
 						.getName());
-			} else if(((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.processor){
+			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.processor) {
 				Element opdefelt = dom.createElement("processor");
 				constraintGroupElt.appendChild(opdefelt);
 				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
 						.getName());
-			} else if(((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.ipCoprocessor){
+			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.ipCoprocessor) {
 				Element opdefelt = dom.createElement("ipCoprocessor");
 				constraintGroupElt.appendChild(opdefelt);
 				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)

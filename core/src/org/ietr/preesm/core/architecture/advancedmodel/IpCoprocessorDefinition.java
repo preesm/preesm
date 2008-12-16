@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 
 /**
  * The IP coprocessor definition specifies the characteristics of an IP
@@ -44,7 +45,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author pmu
  */
-public class IpCoprocessorDefinition extends ArchitectureComponentDefinition {
+public class IpCoprocessorDefinition extends ArchitectureComponentDefinition
+		implements IOperatorDefinition {
 
 	public IpCoprocessorDefinition(String name) {
 		super(name, "ipCoprocessor");

@@ -39,6 +39,7 @@ package org.ietr.preesm.core.scenario;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -73,7 +74,7 @@ public class TimingManager {
 				new SDFVertex(), Timing.DEFAULTTASKTIME);
 	}
 
-	public Timing addTiming(SDFAbstractVertex graph, OperatorDefinition operator) {
+	public Timing addTiming(SDFAbstractVertex graph, IOperatorDefinition operator) {
 
 		Timing newt = new Timing(operator, graph);
 		for (Timing timing : timings) {
@@ -86,7 +87,7 @@ public class TimingManager {
 		return newt;
 	}
 
-	public void setTiming(SDFAbstractVertex graph, OperatorDefinition operator, int time) {
+	public void setTiming(SDFAbstractVertex graph, IOperatorDefinition operator, int time) {
 
 		addTiming(graph, operator).setTime(time);
 	}
@@ -116,7 +117,7 @@ public class TimingManager {
 	}
 
 	public int getTimingOrDefault(SDFAbstractVertex graph,
-			OperatorDefinition operator) {
+			IOperatorDefinition operator) {
 		Timing val = null;
 
 		for (Timing timing : timings) {

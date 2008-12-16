@@ -114,23 +114,23 @@ public class ScenarioTransformer {
 					.addComputationDuration(
 							indexTiming.getOperatorDefinition().getId(),
 							indexTiming.getTime());
-			// System.out
-			// .println(" Name="
-			// + algorithm.getComputation(
-			// indexTiming.getVertex().getName())
-			// .getName()
-			// + "; Operator="
-			// + indexTiming.getOperatorDefinition().getId()
-			// + "; computationDuration="
-			// + algorithm.getComputation(
-			// indexTiming.getVertex().getName())
-			// .getComputationDuration(
-			// indexTiming.getOperatorDefinition()
-			// .getId())
-			// + "; nbTotalRepeate="
-			// + algorithm.getComputation(
-			// indexTiming.getVertex().getName())
-			// .getNbTotalRepeat());
+			 System.out
+					.println(" Name="
+							+ algorithm.getComputation(
+									indexTiming.getVertex().getName())
+									.getName()
+							+ "; Operator="
+							+ indexTiming.getOperatorDefinition().getId()
+							+ "; computationDuration="
+							+ algorithm.getComputation(
+									indexTiming.getVertex().getName())
+									.getComputationDuration(
+											indexTiming.getOperatorDefinition()
+													.getId())
+							+ "; nbTotalRepeate="
+							+ algorithm.getComputation(
+									indexTiming.getVertex().getName())
+									.getNbTotalRepeat());
 		}
 		System.out.println("Computations in the algorithm:");
 		for (ComputationDescriptor indexComputation : algorithm

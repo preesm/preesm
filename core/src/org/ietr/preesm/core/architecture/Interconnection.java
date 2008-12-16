@@ -44,6 +44,7 @@ package org.ietr.preesm.core.architecture;
  */
 public class Interconnection {
 
+	private boolean directed = false;
 
 	private ArchitectureComponent cp1;
 	private ArchitectureInterface if1;
@@ -61,19 +62,32 @@ public class Interconnection {
 		this.if2 = if2;
 	}
 
+	public Interconnection(ArchitectureComponent cp1,
+			ArchitectureInterface if1, ArchitectureComponent cp2,
+			ArchitectureInterface if2, boolean directed) {
+		this.cp1 = cp1;
+		this.cp2 = cp2;
+
+		this.if1 = if1;
+		this.if2 = if2;
+
+		this.directed = directed;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof Interconnection) {
 			Interconnection intc = (Interconnection) obj;
 			return (intc.cp1.equals(this.cp1) && intc.cp2.equals(this.cp2)
-					&& intc.if1.equals(this.if1) && intc.if2.equals(this.if2)) ||
-					(intc.cp2.equals(this.cp1) && intc.cp1.equals(this.cp2)
-							&& intc.if2.equals(this.if1) && intc.if1.equals(this.if2));
+					&& intc.if1.equals(this.if1) && intc.if2.equals(this.if2))
+					|| (intc.cp2.equals(this.cp1) && intc.cp1.equals(this.cp2)
+							&& intc.if2.equals(this.if1) && intc.if1
+							.equals(this.if2));
 		}
 		return false;
 	}
-	
+
 	public ArchitectureComponent getCp1() {
 		return cp1;
 	}
@@ -89,11 +103,22 @@ public class Interconnection {
 	public ArchitectureInterface getIf2() {
 		return if2;
 	}
-	
+
 	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
 
-		if(cp1.getType() == type) return if1;
-		else if(cp2.getType() == type) return if2;
-		else return null;
+		if (cp1.getType() == type)
+			return if1;
+		else if (cp2.getType() == type)
+			return if2;
+		else
+			return null;
+	}
+
+	public boolean isDirected() {
+		return directed;
+	}
+
+	public void setDirected(boolean directed) {
+		this.directed = directed;
 	}
 }

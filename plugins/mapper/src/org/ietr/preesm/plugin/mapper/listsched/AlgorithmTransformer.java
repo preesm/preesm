@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.CommunicationDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ComputationDescriptor;
@@ -72,7 +73,7 @@ public class AlgorithmTransformer {
 	/**
 	 * Converts a DAG-like SDF to an AlgorithmDescriptor
 	 */
-	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf) {
+	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) {
 
 		// Construct AlgorithmDescriptor
 		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(
@@ -121,6 +122,7 @@ public class AlgorithmTransformer {
 			algorithm.addCommunication(dagedge);
 			dagedge.setWeight(sdfedge.getProd().intValue());
 		}
+
 		return algorithm;
 	}
 
@@ -188,7 +190,9 @@ public class AlgorithmTransformer {
 									.get(dagedge.getName()));
 			dagedge.setAlgorithm(algorithm);
 			algorithm.addCommunication(dagedge);
-			dagedge.setWeight(currentEdge.getWeight().intValue());
+			// dagedge.setWeight(currentEdge.getWeight().intValue());
+			dagedge.setWeight(currentEdge.getInitialEdgeProperty()
+					.getDataSize());
 		}
 
 		return algorithm;
@@ -270,5 +274,4 @@ public class AlgorithmTransformer {
 		}
 		return computationWeights;
 	}
-
 }

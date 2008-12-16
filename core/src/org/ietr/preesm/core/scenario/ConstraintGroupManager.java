@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -71,33 +70,32 @@ public class ConstraintGroupManager {
 	public void addConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
-		
-		if(cgSet.isEmpty()){
+
+		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
 			cg.addOperator(currentOp);
 			cg.addVertex(vertex);
 			constraintgroups.add(cg);
-		}
-		else{
-			((ConstraintGroup)cgSet.toArray()[0]).addVertex(vertex);
+		} else {
+			((ConstraintGroup) cgSet.toArray()[0]).addVertex(vertex);
 		}
 	}
 
 	/**
 	 * Adding a constraint group on several vertices and one core
 	 */
-	public void addConstraints(IOperator currentOp, Set<SDFAbstractVertex> vertexSet) {
+	public void addConstraints(IOperator currentOp,
+			Set<SDFAbstractVertex> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
-		
-		if(cgSet.isEmpty()){
+
+		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
 			cg.addOperator(currentOp);
 			cg.addVertices(vertexSet);
 			constraintgroups.add(cg);
-		}
-		else{
-			((ConstraintGroup)cgSet.toArray()[0]).addVertices(vertexSet);
+		} else {
+			((ConstraintGroup) cgSet.toArray()[0]).addVertices(vertexSet);
 		}
 	}
 
@@ -107,9 +105,9 @@ public class ConstraintGroupManager {
 	public void removeConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
-		
-		if(!cgSet.isEmpty()){
-			for(ConstraintGroup cg:cgSet){
+
+		if (!cgSet.isEmpty()) {
+			for (ConstraintGroup cg : cgSet) {
 				cg.removeVertex(vertex);
 			}
 		}
@@ -118,12 +116,13 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a constraint group on several vertices and one core
 	 */
-	public void removeConstraints(IOperator currentOp, Set<SDFAbstractVertex> vertexSet) {
+	public void removeConstraints(IOperator currentOp,
+			Set<SDFAbstractVertex> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
-		
-		if(!cgSet.isEmpty()){
-			for(ConstraintGroup cg:cgSet){
+
+		if (!cgSet.isEmpty()) {
+			for (ConstraintGroup cg : cgSet) {
 				cg.removeVertices(vertexSet);
 			}
 		}
@@ -146,8 +145,7 @@ public class ConstraintGroupManager {
 		return graphConstraintGroups;
 	}
 
-	public Set<ConstraintGroup> getOpConstraintGroups(
-			IOperator currentOp) {
+	public Set<ConstraintGroup> getOpConstraintGroups(IOperator currentOp) {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {

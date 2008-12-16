@@ -106,7 +106,7 @@ public class CombListSched {
 			algo = algoTransformer.dag2Algorithm(dag);
 		} else {
 			System.out.println("Transform SDF to algorithm...");
-			algo = algoTransformer.sdf2Algorithm(sdf);
+			algo = algoTransformer.sdf2Algorithm(sdf, scenario);
 		}
 
 		if (architecture != null) {
@@ -268,8 +268,9 @@ public class CombListSched {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
-				+ scheduler1.getSchedulerBlcomp().getScheduleLength() + "\n\tBl:"
-				+ scheduler1.getSchedulerBl().getScheduleLength() + "\n\tBlin:"
+				+ scheduler1.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + scheduler1.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
 				+ scheduler1.getSchedulerBlin().getScheduleLength()
 				+ "\n\tBlout:"
 				+ scheduler1.getSchedulerBlout().getScheduleLength()
@@ -285,8 +286,9 @@ public class CombListSched {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
-				+ scheduler2.getSchedulerBlcomp().getScheduleLength() + "\n\tBl:"
-				+ scheduler2.getSchedulerBl().getScheduleLength() + "\n\tBlin:"
+				+ scheduler2.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + scheduler2.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
 				+ scheduler2.getSchedulerBlin().getScheduleLength()
 				+ "\n\tBlout:"
 				+ scheduler2.getSchedulerBlout().getScheduleLength()
@@ -302,8 +304,9 @@ public class CombListSched {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
-				+ scheduler3.getSchedulerBlcomp().getScheduleLength() + "\n\tBl:"
-				+ scheduler3.getSchedulerBl().getScheduleLength() + "\n\tBlin:"
+				+ scheduler3.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + scheduler3.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
 				+ scheduler3.getSchedulerBlin().getScheduleLength()
 				+ "\n\tBlout:"
 				+ scheduler3.getSchedulerBlout().getScheduleLength()
@@ -319,8 +322,9 @@ public class CombListSched {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
-				+ scheduler4.getSchedulerBlcomp().getScheduleLength() + "\n\tBl:"
-				+ scheduler4.getSchedulerBl().getScheduleLength() + "\n\tBlin:"
+				+ scheduler4.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + scheduler4.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
 				+ scheduler4.getSchedulerBlin().getScheduleLength()
 				+ "\n\tBlout:"
 				+ scheduler4.getSchedulerBlout().getScheduleLength()

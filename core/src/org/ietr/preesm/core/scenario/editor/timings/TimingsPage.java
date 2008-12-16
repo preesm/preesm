@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.timings;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -76,6 +76,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -108,20 +110,20 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		super.createFormContent(managedForm);
 
 		ScrolledForm form = managedForm.getForm();
-		//FormToolkit toolkit = managedForm.getToolkit();
+		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Timings.title"));
 
 		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
 
 		// Timing file chooser section
-		createFileSection(managedForm, Messages.getString("Timings.timingFile"),
-				Messages.getString("Timings.timingFileDescription"),
-				Messages.getString("Timings.timingFileEdit"),
-				scenario.getTimingManager().getTimingFileURL(),
-				Messages.getString("Timings.timingFileBrowseTitle"),
-				"xls");
-		
+		createFileSection(managedForm,
+				Messages.getString("Timings.timingFile"), Messages
+						.getString("Timings.timingFileDescription"), Messages
+						.getString("Timings.timingFileEdit"), scenario
+						.getTimingManager().getTimingFileURL(), Messages
+						.getString("Timings.timingFileBrowseTitle"), "xls");
+
 		createTimingsSection(managedForm, Messages.getString("Timings.title"),
 				Messages.getString("Timings.description"));
 
@@ -134,11 +136,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	private void createTimingsSection(IManagedForm managedForm, String title,
 			String desc) {
-		
+
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		Composite container = createSection(managedForm, title, desc, 1,
+				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
 
 		Combo coreCombo = addCoreSelector(container, toolkit);
@@ -151,7 +153,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	public Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns, GridData gridData) {
 
-		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -185,30 +186,39 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
 		comboDataInit(combo);
-		combo.addFocusListener(new FocusListener(){
+		combo.addFocusListener(new FocusListener() {
 
 			@Override
 			public void focusGained(FocusEvent e) {
-				comboDataInit((Combo)e.getSource());
-				
+				comboDataInit((Combo) e.getSource());
+
 			}
 
 			@Override
 			public void focusLost(FocusEvent e) {
 			}
-			
+
 		});
 		return combo;
 	}
-	
-	private void comboDataInit(Combo combo){
+
+	private void comboDataInit(Combo combo) {
 
 		combo.removeAll();
 		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
 				.getArchitectureURL());
 
-		for (ArchitectureComponentDefinition def : archi.getComponentDefinitions(ArchitectureComponentType.operator)) {
-			combo.add(((OperatorDefinition)def).getId());
+		for (ArchitectureComponentDefinition def : archi
+				.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			combo.add(((OperatorDefinition) def).getId());
+		}
+		for (ArchitectureComponentDefinition def : archi
+				.getComponentDefinitions(ArchitectureComponentType.processor)) {
+			combo.add(((ProcessorDefinition) def).getId());
+		}
+		for (ArchitectureComponentDefinition def : archi
+				.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
+			combo.add(((IpCoprocessorDefinition) def).getId());
 		}
 
 		combo.setData(archi);
@@ -223,34 +233,35 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
 
-		tableViewer = new TableViewer(tablecps, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+		tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		
+
 		tableViewer.setContentProvider(new SDFListContentProvider());
 
 		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
 		coreCombo.addSelectionListener(labelProvider);
-		
+
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
 		column1.setText(Messages.getString("Timings.taskColumn"));
-		
+
 		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
 		column2.setText(Messages.getString("Timings.timeColumn"));
-		
+
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
-				labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
+				labelProvider.handleDoubleClick((IStructuredSelection) e
+						.getSelection());
 			}
 		});
-		
+
 		final Table tref = table;
 		final Composite comp = tablecps;
 
@@ -283,14 +294,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				| GridData.FILL_VERTICAL));
 
 		// Tree is refreshed in case of algorithm modifications
-		parent.addPaintListener(new PaintListener(){
+		parent.addPaintListener(new PaintListener() {
 
 			@Override
 			public void paintControl(PaintEvent e) {
 				tableViewer.refresh();
-				
+
 			}
-			
+
 		});
 	}
 
@@ -299,75 +310,87 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if(source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
+		if (source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
-		
-	}
 
+	}
 
 	/**
 	 * Creates a section to edit a file
 	 * 
-	 * @param mform form containing the section
-	 * @param title section title
-	 * @param desc description of the section
-	 * @param fileEdit text to display in text label
-	 * @param initValue initial value of Text
-	 * @param browseTitle title of file browser
+	 * @param mform
+	 *            form containing the section
+	 * @param title
+	 *            section title
+	 * @param desc
+	 *            description of the section
+	 * @param fileEdit
+	 *            text to display in text label
+	 * @param initValue
+	 *            initial value of Text
+	 * @param browseTitle
+	 *            title of file browser
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,String fileExtension) {
-		
+	private void createFileSection(IManagedForm mform, String title,
+			String desc, String fileEdit, String initValue, String browseTitle,
+			String fileExtension) {
+
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 2,gridData);
+		Composite client = createSection(mform, title, desc, 2, gridData);
 
 		FormToolkit toolkit = mform.getToolkit();
 
 		GridData gd = new GridData();
 		toolkit.createLabel(client, fileEdit);
-		
+
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 
 		text.setData(title);
-		text.addModifyListener(new ModifyListener(){
+		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				Text text = (Text)e.getSource();
-				
-				scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
-				tableViewer.refresh();
-				
-				firePropertyChange(PROP_DIRTY);
-				
-			}});
+				Text text = (Text) e.getSource();
 
-		text.addKeyListener(new KeyListener(){
+				scenario.getTimingManager().setTimingFileURL(text.getText(),
+						scenario);
+				tableViewer.refresh();
+
+				firePropertyChange(PROP_DIRTY);
+
+			}
+		});
+
+		text.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode == SWT.CR){
-					Text text = (Text)e.getSource();
-					scenario.getTimingManager().setTimingFileURL(text.getText(), scenario);
+				if (e.keyCode == SWT.CR) {
+					Text text = (Text) e.getSource();
+					scenario.getTimingManager().setTimingFileURL(
+							text.getText(), scenario);
 					tableViewer.refresh();
 				}
-				
+
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+
 			}
-			
+
 		});
-		
-		gd.widthHint =400;
+
+		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtension);
+		final Button button = toolkit.createButton(client, Messages
+				.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text, client
+				.getShell(), browseTitle, fileExtension);
 		button.addSelectionListener(adapter);
-		
+
 		toolkit.paintBordersFor(client);
 	}
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.timings;
 
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -51,7 +51,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
@@ -68,7 +72,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	private Scenario scenario = null;
 
-	private OperatorDefinition currentOpDef = null;
+	private IOperatorDefinition currentOpDef = null;
 
 	private TableViewer tableViewer = null;
 
@@ -77,7 +81,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(Scenario scenario, TableViewer tableViewer, IPropertyListener propertyListener) {
+	public SDFTableLabelProvider(Scenario scenario, TableViewer tableViewer,
+			IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
@@ -149,9 +154,20 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			Combo combo = ((Combo) e.getSource());
 			String item = combo.getItem(combo.getSelectionIndex());
 
-			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo.getData();
-			currentOpDef = (OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,item);
-
+			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo
+					.getData();
+			currentOpDef = (OperatorDefinition) archi.getComponentDefinition(
+					ArchitectureComponentType.operator, item);
+			if (currentOpDef == null) {
+				currentOpDef = (ProcessorDefinition) archi
+						.getComponentDefinition(
+								ArchitectureComponentType.processor, item);
+			}
+			if (currentOpDef == null) {
+				currentOpDef = (IpCoprocessorDefinition) archi
+						.getComponentDefinition(
+								ArchitectureComponentType.ipCoprocessor, item);
+			}
 			tableViewer.refresh();
 		}
 

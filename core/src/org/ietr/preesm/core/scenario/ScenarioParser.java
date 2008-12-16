@@ -50,9 +50,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
@@ -400,9 +403,19 @@ public class ScenarioParser {
 				}
 
 				SDFAbstractVertex vertex = algo.getVertex(vertexname);
-				OperatorDefinition opdef = (OperatorDefinition) archi
+				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);
+				if (opdef == null) {
+					opdef = (ProcessorDefinition) archi.getComponentDefinition(
+							ArchitectureComponentType.processor, opdefname);
+				}
+				if (opdef == null) {
+					opdef = (IpCoprocessorDefinition) archi
+							.getComponentDefinition(
+									ArchitectureComponentType.ipCoprocessor,
+									opdefname);
+				}
 
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef, vertex, time);

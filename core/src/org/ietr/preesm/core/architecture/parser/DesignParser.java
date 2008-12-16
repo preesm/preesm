@@ -59,6 +59,8 @@ import org.ietr.preesm.core.architecture.advancedmodel.Bus;
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
 import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.ICommunicationPerformer;
+import org.ietr.preesm.core.architecture.advancedmodel.ITerminal;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
 import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
@@ -368,6 +370,9 @@ public class DesignParser {
 
 		List<String> busRefList = new ArrayList<String>();
 		List<String> componentRefList = new ArrayList<String>();
+
+		boolean isAccess = false;
+		boolean isConfigure = false;
 		boolean isDirected = false;
 
 		Node node = callElt.getFirstChild();
@@ -382,6 +387,9 @@ public class DesignParser {
 					componentRefList.add(elt
 							.getAttribute("spirit:componentRef"));
 				} else if (type.equals("spirit:displayName")) {
+					isAccess = (elt.getTextContent().equalsIgnoreCase("access"));
+					isConfigure = (elt.getTextContent()
+							.equalsIgnoreCase("configure"));
 					isDirected = (elt.getTextContent()
 							.equalsIgnoreCase("directed"));
 				}
@@ -403,8 +411,15 @@ public class DesignParser {
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
 			ArchitectureInterface if2 = cmp2
 					.addInterface(new ArchitectureInterface(busRef2, cmp2));
-
-			archi.connect(cmp1, if1, cmp2, if2, isDirected);
+			if (isAccess) {
+				((ITerminal) cmp2)
+						.addCommunicationPerformer((ICommunicationPerformer) cmp1);
+			} else if (isConfigure) {
+				((Communicator) cmp2).addSetupTime(cmp1.getName(),
+						((Processor) cmp1).getSetupTime(cmp2.getName()));
+			} else {
+				archi.connect(cmp1, if1, cmp2, if2, isDirected);
+			}
 		}
 
 	}
