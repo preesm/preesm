@@ -22,56 +22,15 @@
       <node id="blockIn" kind="port" port_direction="Input"/>
       <node id="signed" kind="port" port_direction="Input"/>
       <node id="out" kind="port" port_direction="Output"/>
-      <node id="idct1d" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="name">idct1d</data>
-         <data key="arguments">=</data>
-      </node>
-      <node id="transpose" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="name">transpose</data>
-         <data key="arguments">=</data>
-      </node>
       <node id="clip" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">clip</data>
          <data key="arguments">=</data>
       </node>
-      <node id="ReadBlock" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="name">ReadBlock</data>
-         <data key="arguments">=</data>
+      <node id="IDCT2D_basic" kind="vertex">
+         <data key="graph_desc">IDCT2D_basic.graphml</data>
+         <data key="name">IDCT2D_basic</data>
       </node>
-      <edge source="idct1d" sourceport="row_out" target="transpose" targetport="block_in">
-         <data key="edge_prod">8</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type"/>
-      </edge>
-      <edge source="transpose" sourceport="block_out" target="clip" targetport="double_block">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">128</data>
-         <data key="data_type"/>
-      </edge>
-      <edge source="blockIn" sourceport="block" target="ReadBlock" targetport="block_In">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type"/>
-      </edge>
-      <edge source="ReadBlock" sourceport="block_out" target="idct1d" targetport="row_in">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">8</data>
-         <data key="data_type"/>
-      </edge>
-      <edge source="transpose" sourceport="block_out" target="ReadBlock" targetport="block_trans">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">64</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type"/>
-      </edge>
       <edge source="signed" sourceport="signed" target="clip" targetport="signed">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
@@ -83,6 +42,18 @@
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type"/>
+      </edge>
+      <edge source="blockIn" sourceport="blockIn" target="IDCT2D_basic" targetport="blockIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_basic" sourceport="block_out" target="clip" targetport="blockIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
       </edge>
    </graph>
 </graphml>

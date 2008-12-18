@@ -17,45 +17,58 @@
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph edgedefault="directed">
-      <data key="parameters"/>
-      <data key="variables">=</data>
-      <node id="broadcast_signed" kind="Broadcast"/>
-      <node id="Trigger" kind="vertex">
+      <node id="blockIn" kind="port" port_direction="Input"/>
+      <node id="block_out" kind="port" port_direction="Output"/>
+      <node id="IDCT1D" kind="vertex">
          <data key="graph_desc"/>
-         <data key="name">Trigger</data>
-         <data key="arguments">=</data>
+         <data key="name">IDCT1D</data>
       </node>
-      <node id="IDCT2D" kind="vertex">
-         <data key="graph_desc">idct2dv2_wp.graphml</data>
-         <data key="name">IDCT2D</data>
-         <data key="arguments">=</data>
-      </node>
-      <node id="Group" kind="vertex">
+      <node id="Transpose" kind="vertex">
          <data key="graph_desc"/>
-         <data key="name">Group</data>
+         <data key="name">Transpose</data>
       </node>
-      <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
-         <data key="edge_prod">256</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type"/>
-      </edge>
-      <edge source="Trigger" sourceport="signed" target="broadcast_signed" targetport="in">
-         <data key="edge_prod">1</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="broadcast_signed" sourceport="out" target="IDCT2D" targetport="signed">
-         <data key="edge_prod">4</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="IDCT2D" sourceport="out" target="Group" targetport="in">
+      <node id="readBlock" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">readBlock</data>
+      </node>
+      <node id="trigger" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">trigger</data>
+      </node>
+      <edge source="blockIn" sourceport="block_in" target="readBlock" targetport="in_1">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">256</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="readBlock" sourceport="out" target="IDCT1D" targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT1D" sourceport="lineOut" target="Transpose" targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="Transpose" sourceport="blockOut" target="readBlock" targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="Transpose" sourceport="blockOut" target="block_out" targetport="out">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="trigger" sourceport="trig" target="readBlock" targetport="trig">
+         <data key="edge_prod">2</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
          <data key="data_type">char</data>
       </edge>
    </graph>

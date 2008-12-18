@@ -27,10 +27,16 @@
          <variable name="margIn" value="10"/>
          <variable name="maxCount" value="10"/>
          <variable name="maxStep" value="10"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="simulatorType" value="SendReceive"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Mapper"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="Mapper"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="Mapper"/>
+   <preesm:dataTransfer from="Mapper" sourceport="customData" targetport="customData" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
 </preesm:workflow>

@@ -2,14 +2,29 @@
 <scenario>
     <files>
         <algorithm url="/IDCT2D/idct2dCadOptim.graphml"/>
-        <architecture url=""/>
+        <architecture url="/IDCT2D/4C64.ipxactds"/>
         <timingfile url=""/>
     </files>
-    <constraints/>
+    <constraints>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Group"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D"/>
+            <task name="broadcast_signed"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="Group"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D"/>
+            <task name="broadcast_signed"/>
+        </constraintGroup>
+    </constraints>
     <timings/>
     <simuParams>
-        <mainCore/>
-        <mainMedium/>
+        <mainCore>C64_1</mainCore>
+        <mainMedium>EDMA3_1</mainMedium>
         <dataTypes/>
     </simuParams>
 </scenario>
