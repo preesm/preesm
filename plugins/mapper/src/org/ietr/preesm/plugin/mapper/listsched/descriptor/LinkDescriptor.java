@@ -38,14 +38,39 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * This class describes a link
+ * 
+ * @author pmu
+ * 
+ */
 public class LinkDescriptor extends ComponentDescriptor {
 
+	/**
+	 * Average clock cycles per transfer
+	 */
 	protected double averageClockCyclesPerTransfer = 1.0;
 
+	/**
+	 * Communications scheduled on this link
+	 */
 	protected Vector<CommunicationDescriptor> communications;
 
+	/**
+	 * Occupied time intervals on this link
+	 */
 	protected HashMap<String, TimeInterval> occupiedTimeIntervals;
 
+	/**
+	 * Construct the LinkDescriptor with the id, name and component buffer
+	 * 
+	 * @param id
+	 *            Id
+	 * @param name
+	 *            Name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public LinkDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer) {
 		super(id, name, ComponentDescriptorBuffer);
@@ -53,6 +78,23 @@ public class LinkDescriptor extends ComponentDescriptor {
 		occupiedTimeIntervals = new HashMap<String, TimeInterval>();
 	}
 
+	/**
+	 * Construct the LinkDescriptor with the id, name, component buffer, clock
+	 * period, data width and surface
+	 * 
+	 * @param id
+	 *            Id
+	 * @param name
+	 *            Name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period
+	 * @param dataWidth
+	 *            Data width
+	 * @param surface
+	 *            Surface
+	 */
 	public LinkDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -62,15 +104,12 @@ public class LinkDescriptor extends ComponentDescriptor {
 		occupiedTimeIntervals = new HashMap<String, TimeInterval>();
 	}
 
-	public void setAverageClockCyclesPerTransfer(
-			double averageClockCyclesPerTransfer) {
-		this.averageClockCyclesPerTransfer = averageClockCyclesPerTransfer;
-	}
-
-	public double getAverageClockCyclesPerTransfer() {
-		return averageClockCyclesPerTransfer;
-	}
-
+	/**
+	 * Add a communication on the link
+	 * 
+	 * @param communication
+	 *            Communication
+	 */
 	public void addCommunication(CommunicationDescriptor communication) {
 		if (!communications.contains(communication)) {
 			communications.add(communication);
@@ -82,11 +121,14 @@ public class LinkDescriptor extends ComponentDescriptor {
 		}
 	}
 
-	public void updateCommunication(CommunicationDescriptor communication) {
-		addOccupiedTimeInterval(communication.getName(), communication
-				.getStartTimeOnLink(), communication.getFinishTimeOnLink());
-	}
-
+	/**
+	 * Add the communication at a specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @param communication
+	 *            Communication
+	 */
 	public void addCommunication(int index,
 			CommunicationDescriptor communication) {
 		if (!communications.contains(communication)) {
@@ -99,27 +141,16 @@ public class LinkDescriptor extends ComponentDescriptor {
 		}
 	}
 
-	public void removeCommunication(CommunicationDescriptor communication) {
-		communications.remove(communication);
-		occupiedTimeIntervals.remove(communication.getName());
-	}
-
-	public Vector<CommunicationDescriptor> getCommunications() {
-		return communications;
-	}
-
-	public CommunicationDescriptor getCommunication(int index) {
-		return communications.get(index);
-	}
-
-	public HashMap<String, TimeInterval> getOccupiedTimeIntervals() {
-		return occupiedTimeIntervals;
-	}
-
-	public TimeInterval getOccupiedTimeInterval(String communicationName) {
-		return occupiedTimeIntervals.get(communicationName);
-	}
-
+	/**
+	 * Add a time interval on the link
+	 * 
+	 * @param communicationName
+	 *            Name of communication
+	 * @param startTime
+	 *            Start time of the communication
+	 * @param finishTime
+	 *            Finish time of the communication
+	 */
 	public void addOccupiedTimeInterval(String communicationName,
 			int startTime, int finishTime) {
 		if (!occupiedTimeIntervals.containsKey(communicationName)) {
@@ -131,5 +162,86 @@ public class LinkDescriptor extends ComponentDescriptor {
 			occupiedTimeIntervals.get(communicationName).setFinishTime(
 					finishTime);
 		}
+	}
+
+	/**
+	 * Get average clock cycles per transfer
+	 * 
+	 * @return Average clock cycles per transfer
+	 */
+	public double getAverageClockCyclesPerTransfer() {
+		return averageClockCyclesPerTransfer;
+	}
+
+	/**
+	 * Get the communication at a specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @return Communication
+	 */
+	public CommunicationDescriptor getCommunication(int index) {
+		return communications.get(index);
+	}
+
+	/**
+	 * Get all the communications on this link
+	 * 
+	 * @return A Vector of all the communications
+	 */
+	public Vector<CommunicationDescriptor> getCommunications() {
+		return communications;
+	}
+
+	/**
+	 * Get the time interval with a communication name
+	 * 
+	 * @param communicationName
+	 *            Name of communication
+	 * @return Time interval
+	 */
+	public TimeInterval getOccupiedTimeInterval(String communicationName) {
+		return occupiedTimeIntervals.get(communicationName);
+	}
+
+	/**
+	 * Get all the occupied time intervals
+	 * 
+	 * @return A HashMap of all the occupied time intervals
+	 */
+	public HashMap<String, TimeInterval> getOccupiedTimeIntervals() {
+		return occupiedTimeIntervals;
+	}
+
+	/**
+	 * Remove a communication from the link
+	 * 
+	 * @param communication
+	 *            Removed communication
+	 */
+	public void removeCommunication(CommunicationDescriptor communication) {
+		communications.remove(communication);
+		occupiedTimeIntervals.remove(communication.getName());
+	}
+
+	/**
+	 * Set average clock cycles per transfer
+	 * 
+	 * @param cycles
+	 *            Average clock cycles per transfer
+	 */
+	public void setAverageClockCyclesPerTransfer(double cycles) {
+		this.averageClockCyclesPerTransfer = cycles;
+	}
+
+	/**
+	 * Update the time interval with the communication
+	 * 
+	 * @param communication
+	 *            Communication
+	 */
+	public void updateCommunication(CommunicationDescriptor communication) {
+		addOccupiedTimeInterval(communication.getName(), communication
+				.getStartTimeOnLink(), communication.getFinishTimeOnLink());
 	}
 }

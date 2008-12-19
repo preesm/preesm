@@ -49,6 +49,14 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
  */
 public class CListSchedCdBlin extends CListSchedCd {
 
+	/**
+	 * Constructs the scheduler with algorithm and architecture.
+	 * 
+	 * @param algorithm
+	 *            Algorithm descriptor
+	 * @param architecture
+	 *            Architecture descriptor
+	 */
 	public CListSchedCdBlin(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm, architecture);

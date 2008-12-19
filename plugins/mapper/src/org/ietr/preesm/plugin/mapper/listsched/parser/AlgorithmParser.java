@@ -51,16 +51,39 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+/**
+ * This class parses XML document of algorithm
+ * 
+ * @author pmu
+ * 
+ */
 public class AlgorithmParser {
-
+	/**
+	 * Algorithm document
+	 */
 	private static Document algorithmDocument;
 
+	/**
+	 * Algorithm
+	 */
 	protected AlgorithmDescriptor algorithm;
 
+	/**
+	 * Computation buffer
+	 */
 	protected HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer;
 
+	/**
+	 * Communication buffer
+	 */
 	protected HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer;
 
+	/**
+	 * Construct a parser with the given file name
+	 * 
+	 * @param fileName
+	 *            The given file name
+	 */
 	public AlgorithmParser(String fileName) {
 		this.algorithm = new AlgorithmDescriptor(new DAGEdgeFactory());
 		this.ComputationDescriptorBuffer = algorithm.getComputations();
@@ -86,6 +109,14 @@ public class AlgorithmParser {
 		}
 	}
 
+	/**
+	 * Construct a parser with the given file name and algorithm
+	 * 
+	 * @param fileName
+	 *            The given file name
+	 * @param algorithm
+	 *            Algorithm descriptor
+	 */
 	public AlgorithmParser(String fileName, AlgorithmDescriptor algorithm) {
 		this.algorithm = algorithm;
 		this.ComputationDescriptorBuffer = algorithm.getComputations();
@@ -111,6 +142,11 @@ public class AlgorithmParser {
 		}
 	}
 
+	/**
+	 * Parse the document
+	 * 
+	 * @return An algorithm
+	 */
 	public AlgorithmDescriptor parse() {
 		Node n = algorithmDocument.getDocumentElement();
 		String name = n.getNodeName();

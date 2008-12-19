@@ -37,12 +37,34 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
 
+/**
+ * BusDescriptor is used to describe a bus
+ * 
+ * @author pmu
+ * 
+ */
 public class BusDescriptor extends LinkDescriptor {
 
+	/**
+	 * The number of port of this bus
+	 */
 	private int portNumber = Integer.MAX_VALUE;
 
+	/**
+	 * The TGVertices connected to this bus
+	 */
 	private HashMap<String, TGVertexDescriptor> TGVertices;
 
+	/**
+	 * Construct the BusDescriptor with the given id, name and component buffer
+	 * 
+	 * @param id
+	 *            Bus id
+	 * @param name
+	 *            Bus name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public BusDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer) {
 		super(id, name, componentDescriptorBuffer);
@@ -50,6 +72,23 @@ public class BusDescriptor extends LinkDescriptor {
 		TGVertices = new HashMap<String, TGVertexDescriptor>();
 	}
 
+	/**
+	 * Construct the BusDescriptor with the given id, name, component buffer,
+	 * clock period, data width and surface
+	 * 
+	 * @param id
+	 *            Bus id
+	 * @param name
+	 *            Bus name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period of bus
+	 * @param dataWidth
+	 *            Data width of bus
+	 * @param surface
+	 *            Surface of bus
+	 */
 	public BusDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -59,14 +98,13 @@ public class BusDescriptor extends LinkDescriptor {
 		TGVertices = new HashMap<String, TGVertexDescriptor>();
 	}
 
-	public int getPortNumber() {
-		return portNumber;
-	}
-
-	public void setPortNumber(int portNumber) {
-		this.portNumber = portNumber;
-	}
-
+	/**
+	 * Add a TGVertex to this bus
+	 * 
+	 * @param TGVertex
+	 *            A TGVertex to be added
+	 * @return A boolean to indicate success or not
+	 */
 	public boolean addTGVertex(TGVertexDescriptor TGVertex) {
 		if (TGVertices.size() < portNumber) {
 			TGVertices.put(TGVertex.getId(), TGVertex);
@@ -78,14 +116,51 @@ public class BusDescriptor extends LinkDescriptor {
 		}
 	}
 
+	/**
+	 * Get the number of port
+	 * 
+	 * @return The number of port
+	 */
+	public int getPortNumber() {
+		return portNumber;
+	}
+
+	/**
+	 * Get the TGVertex with given name
+	 * 
+	 * @param name
+	 *            The name of TGVertex
+	 * @return A TGVertex
+	 */
 	public TGVertexDescriptor getTGVertex(String name) {
 		return TGVertices.get(name);
 	}
 
+	/**
+	 * Get all the TGVertices connected to the bus
+	 * 
+	 * @return A HashMap of all the TGVertices
+	 */
 	public HashMap<String, TGVertexDescriptor> getTGVertices() {
 		return TGVertices;
 	}
 
+	/**
+	 * Set the number of port
+	 * 
+	 * @param portNumber
+	 *            The number of port
+	 */
+	public void setPortNumber(int portNumber) {
+		this.portNumber = portNumber;
+	}
+
+	/**
+	 * Set the TGVertices of the bus
+	 * 
+	 * @param TGVertices
+	 *            A HashMap of the TGVertices
+	 */
 	public void setTGVertices(HashMap<String, TGVertexDescriptor> TGVertices) {
 		this.TGVertices = TGVertices;
 	}

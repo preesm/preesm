@@ -53,6 +53,14 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
  */
 public class CListSchedCc extends AbstractScheduler {
 
+	/**
+	 * Constructs the scheduler with algorithm and architecture.
+	 * 
+	 * @param algorithm
+	 *            Algorithm descriptor
+	 * @param architecture
+	 *            Architecture descriptor
+	 */
 	public CListSchedCc(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm);
@@ -131,6 +139,13 @@ public class CListSchedCc extends AbstractScheduler {
 		return true;
 	}
 
+	/**
+	 * Selects the best operator to executes the given computation.
+	 * 
+	 * @param computation
+	 *            An computation
+	 * @return The best operator
+	 */
 	protected OperatorDescriptor selectOperator(
 			ComputationDescriptor computation) {
 		ComputationDescriptor criticalChild = null;
@@ -300,6 +315,15 @@ public class CListSchedCc extends AbstractScheduler {
 		return bestOperator;
 	}
 
+	/**
+	 * Schedules a computation on an operator.
+	 * 
+	 * @param computation
+	 *            A computation
+	 * @param operator
+	 *            An operator
+	 * @return The finish time of this computation on this operator
+	 */
 	protected int scheduleComputation(ComputationDescriptor computation,
 			OperatorDescriptor operator) {
 		int dataReadyTime = 0;
@@ -383,6 +407,14 @@ public class CListSchedCc extends AbstractScheduler {
 		return maxOperatorFinishTime;
 	}
 
+	/**
+	 * Schedules a communication with its destination operator.
+	 * 
+	 * @param communication
+	 *            An communication
+	 * @param destinationOperator
+	 *            The destination operator
+	 */
 	protected void scheduleCommunication(CommunicationDescriptor communication,
 			OperatorDescriptor destinationOperator) {
 		ComputationDescriptor sourceComputation = algorithm
@@ -904,5 +936,4 @@ public class CListSchedCc extends AbstractScheduler {
 	// route.addLink(destinationOperator.getInputLinks().get(0));
 	// return route;
 	// }
-
 }

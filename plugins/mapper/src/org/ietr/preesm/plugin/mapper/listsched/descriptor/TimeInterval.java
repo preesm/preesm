@@ -35,36 +35,77 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
+/**
+ * This class describes a time interval
+ * 
+ * @author pmu
+ * 
+ */
 public class TimeInterval implements Comparable<TimeInterval> {
-
+	/**
+	 * Start time of the interval
+	 */
 	private int startTime = 0;
 
+	/**
+	 * Finish time of the interval
+	 */
 	private int finishTime = 0;
 
+	/**
+	 * Construct a time interval with the start and finish time
+	 * 
+	 * @param startTime
+	 *            Start time
+	 * @param finishTime
+	 *            Finish time
+	 */
 	public TimeInterval(int startTime, int finishTime) {
 		this.startTime = startTime;
-		this.finishTime = finishTime;
-	}
-
-	public int getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(int startTime) {
-		this.startTime = startTime;
-	}
-
-	public int getFinishTime() {
-		return finishTime;
-	}
-
-	public void setFinishTime(int finishTime) {
 		this.finishTime = finishTime;
 	}
 
 	@Override
 	public int compareTo(TimeInterval arg0) {
 		return (startTime - arg0.getStartTime());
+	}
+
+	/**
+	 * Get the finish time
+	 * 
+	 * @return The finish time
+	 */
+	public int getFinishTime() {
+		return finishTime;
+	}
+
+	/**
+	 * Get the start time
+	 * 
+	 * @return The start time
+	 */
+	public int getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * Set the finish time
+	 * 
+	 * @param finishTime
+	 *            The finish time
+	 */
+	public void setFinishTime(int finishTime) {
+		this.finishTime = finishTime;
+	}
+
+	/**
+	 * Set the start time
+	 * 
+	 * @param startTime
+	 *            The start time
+	 */
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
 	}
 
 }

@@ -59,21 +59,49 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+/**
+ * This class describes a parser of the parameters
+ * 
+ * @author pmu
+ * 
+ */
 public class ParameterParser {
-
+	/**
+	 * Document of design parameters
+	 */
 	private static Document designParametersDocument;
 
+	/**
+	 * Component buffer
+	 */
 	private HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer;
 
+	/**
+	 * Computation buffer
+	 */
 	private HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer;
 
+	/**
+	 * Communication buffer
+	 */
 	private HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer;
 
+	/**
+	 * Construct the parser with the given file name, architecture, and
+	 * algorithm
+	 * 
+	 * @param fileName
+	 *            The file name
+	 * @param architecture
+	 *            Architecture
+	 * @param algorithm
+	 *            Algorithm
+	 */
 	public ParameterParser(String fileName,
-			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
-			HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer) {
-		this.ComponentDescriptorBuffer = ComponentDescriptorBuffer;
-		this.ComputationDescriptorBuffer = ComputationDescriptorBuffer;
+			ArchitectureDescriptor architecture, AlgorithmDescriptor algorithm) {
+		ComponentDescriptorBuffer = architecture.getComponents();
+		ComputationDescriptorBuffer = algorithm.getComputations();
+		CommunicationDescriptorBuffer = algorithm.getCommunications();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		// factory.setValidating(true);
 		// factory.setNamespaceAware(true);
@@ -95,6 +123,19 @@ public class ParameterParser {
 		}
 	}
 
+	/**
+	 * Construct the parser with the given file name, component buffer,
+	 * computation buffer and communication buffer
+	 * 
+	 * @param fileName
+	 *            The file name
+	 * @param ComponentDescriptorBuffer
+	 *            The component buffer
+	 * @param ComputationDescriptorBuffer
+	 *            The computation buffer
+	 * @param CommunicationDescriptorBuffer
+	 *            The communication buffer
+	 */
 	public ParameterParser(
 			String fileName,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
@@ -124,32 +165,11 @@ public class ParameterParser {
 		}
 	}
 
-	public ParameterParser(String fileName,
-			ArchitectureDescriptor architecture, AlgorithmDescriptor algorithm) {
-		ComponentDescriptorBuffer = architecture.getComponents();
-		ComputationDescriptorBuffer = algorithm.getComputations();
-		CommunicationDescriptorBuffer = algorithm.getCommunications();
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		// factory.setValidating(true);
-		// factory.setNamespaceAware(true);
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			designParametersDocument = builder.parse(new File(fileName));
-		} catch (SAXException sxe) {
-			// Error generated during parsing)
-			Exception x = sxe;
-			if (sxe.getException() != null)
-				x = sxe.getException();
-			x.printStackTrace();
-		} catch (ParserConfigurationException pce) {
-			// Parser with specified options can't be built
-			pce.printStackTrace();
-		} catch (IOException ioe) {
-			// I/O error
-			ioe.printStackTrace();
-		}
-	}
-
+	/**
+	 * Parse the document
+	 * 
+	 * @return Time constraint
+	 */
 	public int parse() {
 		// Parse the design parameter document
 		Node n = designParametersDocument.getDocumentElement();
@@ -178,6 +198,173 @@ public class ParameterParser {
 		return timeConstraint;
 	}
 
+	/**
+	 * Parse communications
+	 * 
+	 * @param n1
+	 *            An XML node
+	 */
+	private void parseCommunications(Node n1) {
+		String name;
+		Node n2, n3, n4, n5;
+		String communicationName = null;
+		String networkName = null;
+		String duration = null;
+		String operatorName = null;
+		String sendOverhead = null;
+		String receiveOverhead = null;
+		String linkName = null;
+		String sendInvolvement = null;
+		String receiveInvolvement = null;
+
+		n2 = n1.getFirstChild();
+		System.out.println(" 3. parse parameter of communications...");
+		while (n2 != null) {
+			name = n2.getNodeName();
+			if (name.equalsIgnoreCase("communication")) {
+				n3 = n2.getFirstChild();
+				while (n3 != null) {
+					name = n3.getNodeName();
+					if (name.equalsIgnoreCase("name")) {
+						communicationName = n3.getFirstChild().getNodeValue();
+					} else if (name.equalsIgnoreCase("communicationDurations")) {
+						n4 = n3.getFirstChild();
+						while (n4 != null) {
+							name = n4.getNodeName();
+							if (name.equalsIgnoreCase("communicationDuration")) {
+								n5 = n4.getFirstChild();
+								while (n5 != null) {
+									name = n5.getNodeName();
+									if (name.equalsIgnoreCase("networkName")) {
+										networkName = n5.getFirstChild()
+												.getNodeValue();
+									} else if (name
+											.equalsIgnoreCase("duration")) {
+										duration = n5.getFirstChild()
+												.getNodeValue();
+									}
+									n5 = n5.getNextSibling();
+								}
+								if (networkName != null && duration != null) {
+									CommunicationDescriptorBuffer
+											.get(communicationName)
+											.addCommunicationDuration(
+													(SwitchDescriptor) ComponentDescriptorBuffer
+															.get(networkName),
+													Integer.parseInt(duration));
+									duration = null;
+									networkName = null;
+								}
+							}
+							n4 = n4.getNextSibling();
+						}
+					} else if (name.equalsIgnoreCase("overheads")) {
+						n4 = n3.getFirstChild();
+						while (n4 != null) {
+							name = n4.getNodeName();
+							if (name.equalsIgnoreCase("overhead")) {
+								n5 = n4.getFirstChild();
+								while (n5 != null) {
+									name = n5.getNodeName();
+									if (name.equalsIgnoreCase("operatorName")) {
+										operatorName = n5.getFirstChild()
+												.getNodeValue();
+									} else if (name
+											.equalsIgnoreCase("sendOverhead")) {
+										sendOverhead = n5.getFirstChild()
+												.getNodeValue();
+									} else if (name
+											.equalsIgnoreCase("receiveOverhead")) {
+										receiveOverhead = n5.getFirstChild()
+												.getNodeValue();
+									}
+									n5 = n5.getNextSibling();
+								}
+								if (operatorName != null) {
+									if (sendOverhead != null) {
+										CommunicationDescriptorBuffer
+												.get(communicationName)
+												.addSendOverhead(
+														operatorName,
+														Integer
+																.parseInt(sendOverhead));
+										sendOverhead = null;
+									}
+									if (receiveOverhead != null) {
+										CommunicationDescriptorBuffer
+												.get(communicationName)
+												.addReceiveOverhead(
+														operatorName,
+														Integer
+																.parseInt(receiveOverhead));
+										receiveOverhead = null;
+									}
+								}
+								operatorName = null;
+							}
+							n4 = n4.getNextSibling();
+						}
+					} else if (name.equalsIgnoreCase("involvements")) {
+						n4 = n3.getFirstChild();
+						while (n4 != null) {
+							name = n4.getNodeName();
+							if (name.equalsIgnoreCase("involvement")) {
+								n5 = n4.getFirstChild();
+								while (n5 != null) {
+									name = n5.getNodeName();
+									if (name.equalsIgnoreCase("linkName")) {
+										linkName = n5.getFirstChild()
+												.getNodeValue();
+									} else if (name
+											.equalsIgnoreCase("sendInvolvement")) {
+										sendInvolvement = n5.getFirstChild()
+												.getNodeValue();
+									} else if (name
+											.equalsIgnoreCase("receiveInvolvement")) {
+										receiveInvolvement = n5.getFirstChild()
+												.getNodeValue();
+									}
+									n5 = n5.getNextSibling();
+								}
+								if (linkName != null) {
+									if (sendInvolvement != null) {
+										CommunicationDescriptorBuffer
+												.get(communicationName)
+												.addSendInvolvement(
+														linkName,
+														Integer
+																.parseInt(sendInvolvement));
+										sendInvolvement = null;
+									}
+									if (receiveInvolvement != null) {
+										CommunicationDescriptorBuffer
+												.get(communicationName)
+												.addReceiveInvolvement(
+														linkName,
+														Integer
+																.parseInt(receiveInvolvement));
+										receiveInvolvement = null;
+									}
+								}
+								linkName = null;
+							}
+							n4 = n4.getNextSibling();
+						}
+					}
+					n3 = n3.getNextSibling();
+				}
+				communicationName = null;
+			}
+			n2 = n2.getNextSibling();
+		}
+	}
+
+	/**
+	 * Parse components
+	 * 
+	 * @param n1
+	 *            An XML node
+	 */
 	private void parseComponents(Node n1) {
 		String name;
 		Node n2, n3;
@@ -383,8 +570,13 @@ public class ParameterParser {
 		}
 	}
 
+	/**
+	 * Parse computations
+	 * 
+	 * @param n1
+	 *            An XML node
+	 */
 	private void parseComputations(Node n1) {
-
 		String name;
 		Node n2, n3, n4, n5;
 		String componentName = "component";
@@ -442,160 +634,4 @@ public class ParameterParser {
 			n2 = n2.getNextSibling();
 		}
 	}
-
-	private void parseCommunications(Node n1) {
-		String name;
-		Node n2, n3, n4, n5;
-		String communicationName = null;
-		String networkName = null;
-		String duration = null;
-		String operatorName = null;
-		String sendOverhead = null;
-		String receiveOverhead = null;
-		String linkName = null;
-		String sendInvolvement = null;
-		String receiveInvolvement = null;
-
-		n2 = n1.getFirstChild();
-		System.out.println(" 3. parse parameter of communications...");
-		while (n2 != null) {
-			name = n2.getNodeName();
-			if (name.equalsIgnoreCase("communication")) {
-				n3 = n2.getFirstChild();
-				while (n3 != null) {
-					name = n3.getNodeName();
-					if (name.equalsIgnoreCase("name")) {
-						communicationName = n3.getFirstChild().getNodeValue();
-					} else if (name.equalsIgnoreCase("communicationDurations")) {
-						n4 = n3.getFirstChild();
-						while (n4 != null) {
-							name = n4.getNodeName();
-							if (name.equalsIgnoreCase("communicationDuration")) {
-								n5 = n4.getFirstChild();
-								while (n5 != null) {
-									name = n5.getNodeName();
-									if (name.equalsIgnoreCase("networkName")) {
-										networkName = n5.getFirstChild()
-												.getNodeValue();
-									} else if (name
-											.equalsIgnoreCase("duration")) {
-										duration = n5.getFirstChild()
-												.getNodeValue();
-									}
-									n5 = n5.getNextSibling();
-								}
-								if (networkName != null && duration != null) {
-									CommunicationDescriptorBuffer
-											.get(communicationName)
-											.addCommunicationDuration(
-													(SwitchDescriptor) ComponentDescriptorBuffer
-															.get(networkName),
-													Integer.parseInt(duration));
-									duration = null;
-									networkName = null;
-								}
-							}
-							n4 = n4.getNextSibling();
-						}
-					} else if (name.equalsIgnoreCase("overheads")) {
-						n4 = n3.getFirstChild();
-						while (n4 != null) {
-							name = n4.getNodeName();
-							if (name.equalsIgnoreCase("overhead")) {
-								n5 = n4.getFirstChild();
-								while (n5 != null) {
-									name = n5.getNodeName();
-									if (name.equalsIgnoreCase("operatorName")) {
-										operatorName = n5.getFirstChild()
-												.getNodeValue();
-									} else if (name
-											.equalsIgnoreCase("sendOverhead")) {
-										sendOverhead = n5.getFirstChild()
-												.getNodeValue();
-									} else if (name
-											.equalsIgnoreCase("receiveOverhead")) {
-										receiveOverhead = n5.getFirstChild()
-												.getNodeValue();
-									}
-									n5 = n5.getNextSibling();
-								}
-								if (operatorName != null) {
-									if (sendOverhead != null) {
-										CommunicationDescriptorBuffer
-												.get(communicationName)
-												.addSendOverhead(
-														operatorName,
-														Integer
-																.parseInt(sendOverhead));
-										sendOverhead = null;
-									}
-									if (receiveOverhead != null) {
-										CommunicationDescriptorBuffer
-												.get(communicationName)
-												.addReceiveOverhead(
-														operatorName,
-														Integer
-																.parseInt(receiveOverhead));
-										receiveOverhead = null;
-									}
-								}
-								operatorName = null;
-							}
-							n4 = n4.getNextSibling();
-						}
-					} else if (name.equalsIgnoreCase("involvements")) {
-						n4 = n3.getFirstChild();
-						while (n4 != null) {
-							name = n4.getNodeName();
-							if (name.equalsIgnoreCase("involvement")) {
-								n5 = n4.getFirstChild();
-								while (n5 != null) {
-									name = n5.getNodeName();
-									if (name.equalsIgnoreCase("linkName")) {
-										linkName = n5.getFirstChild()
-												.getNodeValue();
-									} else if (name
-											.equalsIgnoreCase("sendInvolvement")) {
-										sendInvolvement = n5.getFirstChild()
-												.getNodeValue();
-									} else if (name
-											.equalsIgnoreCase("receiveInvolvement")) {
-										receiveInvolvement = n5.getFirstChild()
-												.getNodeValue();
-									}
-									n5 = n5.getNextSibling();
-								}
-								if (linkName != null) {
-									if (sendInvolvement != null) {
-										CommunicationDescriptorBuffer
-												.get(communicationName)
-												.addSendInvolvement(
-														linkName,
-														Integer
-																.parseInt(sendInvolvement));
-										sendInvolvement = null;
-									}
-									if (receiveInvolvement != null) {
-										CommunicationDescriptorBuffer
-												.get(communicationName)
-												.addReceiveInvolvement(
-														linkName,
-														Integer
-																.parseInt(receiveInvolvement));
-										receiveInvolvement = null;
-									}
-								}
-								linkName = null;
-							}
-							n4 = n4.getNextSibling();
-						}
-					}
-					n3 = n3.getNextSibling();
-				}
-				communicationName = null;
-			}
-			n2 = n2.getNextSibling();
-		}
-	}
-
 }

@@ -53,15 +53,29 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.SwitchDescriptor;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * @author pmu
  * 
- *         The ScenarioTransformer parses scenario
+ * The ScenarioTransformer parses scenario
+ * 
+ * @author pmu
  */
 public class ScenarioTransformer {
 
+	/**
+	 * Construct the ScenarioTransformer
+	 */
 	public ScenarioTransformer() {
 	}
 
+	/**
+	 * Parse the scenario
+	 * 
+	 * @param scenario
+	 *            A scenario to be parsed
+	 * @param algorithm
+	 *            An algorithm associated with the scenario
+	 * @param architecture
+	 *            An architecture associated with the scenario
+	 */
 	public void parseScenario(IScenario scenario,
 			AlgorithmDescriptor algorithm, ArchitectureDescriptor architecture) {
 		// Parse ConstraintGroup
@@ -81,9 +95,10 @@ public class ScenarioTransformer {
 						System.out
 								.println("\tVertex: " + indexVertex.getName());
 					}
-				}else if (((ArchitectureComponent) indexIOperator).getType() == ArchitectureComponentType.processor) {
+				} else if (((ArchitectureComponent) indexIOperator).getType() == ArchitectureComponentType.processor) {
 					Processor indexOperator = (Processor) indexIOperator;
-					System.out.println(" Processor: " + indexOperator.getName());
+					System.out
+							.println(" Processor: " + indexOperator.getName());
 					for (SDFAbstractVertex indexVertex : indexConstraint
 							.getVertices()) {
 						algorithm.getComputation(indexVertex.getName())
@@ -93,9 +108,10 @@ public class ScenarioTransformer {
 						System.out
 								.println("\tVertex: " + indexVertex.getName());
 					}
-				}else if (((ArchitectureComponent) indexIOperator).getType() == ArchitectureComponentType.ipCoprocessor) {
+				} else if (((ArchitectureComponent) indexIOperator).getType() == ArchitectureComponentType.ipCoprocessor) {
 					IpCoprocessor indexOperator = (IpCoprocessor) indexIOperator;
-					System.out.println(" IpCoprocessor: " + indexOperator.getName());
+					System.out.println(" IpCoprocessor: "
+							+ indexOperator.getName());
 					for (SDFAbstractVertex indexVertex : indexConstraint
 							.getVertices()) {
 						algorithm.getComputation(indexVertex.getName())
@@ -114,7 +130,7 @@ public class ScenarioTransformer {
 					.addComputationDuration(
 							indexTiming.getOperatorDefinition().getId(),
 							indexTiming.getTime());
-			 System.out
+			System.out
 					.println(" Name="
 							+ algorithm.getComputation(
 									indexTiming.getVertex().getName())

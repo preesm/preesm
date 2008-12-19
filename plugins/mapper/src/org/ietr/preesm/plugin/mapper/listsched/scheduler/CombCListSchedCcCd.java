@@ -39,35 +39,77 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method
- * with nodes sorted by bottom level.
+ * This class gives a combination of all the communication contentious list
+ * scheduling methods with critical child and communication delay technique and
+ * five kinds of node order.
  * 
  * @author pmu
  */
 public class CombCListSchedCcCd {
 
+	/**
+	 * Scheduler name
+	 */
 	private String name = null;
 
+	/**
+	 * Algorithm to be scheduled
+	 */
 	private AlgorithmDescriptor algorithm = null;
 
+	/**
+	 * Architecture
+	 */
 	private ArchitectureDescriptor architecture = null;
 
+	/**
+	 * The best scheduler among the five
+	 */
 	private CListSchedCcCd bestScheduler = null;
 
+	/**
+	 * Scheduler with bl-comp
+	 */
 	private CListSchedCcCdBlcomp scheduler1 = null;
 
+	/**
+	 * Scheduler with bl
+	 */
 	private CListSchedCcCdBl scheduler2 = null;
 
+	/**
+	 * Scheduler with bl-in
+	 */
 	private CListSchedCcCdBlin scheduler3 = null;
 
+	/**
+	 * Scheduler with bl-out
+	 */
 	private CListSchedCcCdBlout scheduler4 = null;
 
+	/**
+	 * Scheduler with bl-inout
+	 */
 	private CListSchedCcCdBlinout scheduler5 = null;
 
+	/**
+	 * The best schedule length
+	 */
 	private int scheduleLength = Integer.MAX_VALUE;
 
+	/**
+	 * Number of used operators
+	 */
 	private int nbUsedOperators = Integer.MAX_VALUE;
 
+	/**
+	 * Constructs the combined scheduler with algorithm and architecture.
+	 * 
+	 * @param algorithm
+	 *            Algorithm descriptor
+	 * @param architecture
+	 *            Architecture descriptor
+	 */
 	public CombCListSchedCcCd(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		// TODO Auto-generated constructor stub
@@ -76,6 +118,11 @@ public class CombCListSchedCcCd {
 		this.architecture = architecture;
 	}
 
+	/**
+	 * Does the scheduling.
+	 * 
+	 * @return true
+	 */
 	public boolean schedule() {
 		System.out.println("\n***** " + name + " *****");
 		scheduleLength = Integer.MAX_VALUE;
@@ -174,38 +221,83 @@ public class CombCListSchedCcCd {
 		return true;
 	}
 
+	/**
+	 * Gets the name.
+	 * 
+	 * @return The name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets the best scheduler.
+	 * 
+	 * @return The best scheduler
+	 */
 	public AbstractScheduler getBestScheduler() {
 		return bestScheduler;
 	}
 
+	/**
+	 * Gets scheduler with bl-comp.
+	 * 
+	 * @return Scheduler with bl-comp
+	 */
 	public AbstractScheduler getSchedulerBlcomp() {
 		return scheduler1;
 	}
 
+	/**
+	 * Gets scheduler with bl.
+	 * 
+	 * @return Scheduler with bl
+	 */
 	public AbstractScheduler getSchedulerBl() {
 		return scheduler2;
 	}
 
+	/**
+	 * Gets scheduler with bl-in.
+	 * 
+	 * @return Scheduler with bl-in
+	 */
 	public AbstractScheduler getSchedulerBlin() {
 		return scheduler3;
 	}
 
+	/**
+	 * Gets scheduler with bl-out.
+	 * 
+	 * @return Scheduler with bl-out
+	 */
 	public AbstractScheduler getSchedulerBlout() {
 		return scheduler4;
 	}
 
+	/**
+	 * Gets scheduler with bl-inout.
+	 * 
+	 * @return Scheduler with bl-inout
+	 */
 	public AbstractScheduler getSchedulerBlinout() {
 		return scheduler5;
 	}
 
+	/**
+	 * Gets the best schedule length.
+	 * 
+	 * @return The best schedule length
+	 */
 	public int getScheduleLength() {
 		return scheduleLength;
 	}
 
+	/**
+	 * Gets the used operators.
+	 * 
+	 * @return The used operators
+	 */
 	public int getNbUsedOperators() {
 		return nbUsedOperators;
 	}

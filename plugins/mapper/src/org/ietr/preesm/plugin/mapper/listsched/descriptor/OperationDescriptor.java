@@ -37,114 +37,193 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
 
+/**
+ * This class gives a description of an operation, which could be a computation
+ * or a communication
+ * 
+ * @author pmu
+ * 
+ */
 public class OperationDescriptor {
-
+	/**
+	 * The algorithm associated with the operation
+	 */
 	protected AlgorithmDescriptor algorithm;
 
+	/**
+	 * The operation buffer
+	 */
 	protected HashMap<String, OperationDescriptor> OperationDescriptorBuffer = null;
 
+	/**
+	 * Name of the operation
+	 */
 	protected String name;
 
+	/**
+	 * Operation type, could be computation or communication
+	 */
 	protected OperationType type;
 
+	/**
+	 * As Soon As Possible start time of the operation
+	 */
 	protected int ASAP = 0;
 
+	/**
+	 * As Late As Possible start time of the operation
+	 */
 	protected int ALAP = 0;
 
+	/**
+	 * Indicates whether the operation is scheduled
+	 */
 	protected boolean scheduled = false;
 
+	/**
+	 * Construct an OperationDescriptor with the given name
+	 * 
+	 * @param name
+	 *            Operation name
+	 */
 	public OperationDescriptor(String name) {
 		this.name = name;
 	}
 
-	public OperationDescriptor(String name,
-			HashMap<String, OperationDescriptor> OperationDescriptorBuffer) {
-		this.name = name;
-		this.OperationDescriptorBuffer = OperationDescriptorBuffer;
-	}
-
+	/**
+	 * Construct an OperationDescriptor with the given name and associated
+	 * algorithm
+	 * 
+	 * @param name
+	 *            Operation name
+	 * @param algorithm
+	 *            Associated algorithm
+	 */
 	public OperationDescriptor(String name, AlgorithmDescriptor algorithm) {
 		this.name = name;
 		this.algorithm = algorithm;
 		this.OperationDescriptorBuffer = algorithm.getOperations();
 	}
 
-	public AlgorithmDescriptor getAlgorithm() {
-		return algorithm;
-	}
-
-	public void setAlgorithm(AlgorithmDescriptor algorithm) {
-		this.algorithm = algorithm;
-	}
-
-	public void setName(String name) {
+	/**
+	 * Construct an OperationDescriptor with the given name and operation buffer
+	 * 
+	 * @param name
+	 *            Operation name
+	 * @param OperationDescriptorBuffer
+	 *            Operation buffer
+	 */
+	public OperationDescriptor(String name,
+			HashMap<String, OperationDescriptor> OperationDescriptorBuffer) {
 		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public OperationType getType() {
-		return type;
+		this.OperationDescriptorBuffer = OperationDescriptorBuffer;
 	}
 
 	/**
-	 * 
+	 * Clear the mark of scheduled
 	 */
-	public int getAEST() {
-		return ASAP;
+	public void clearScheduled() {
+		scheduled = false;
 	}
 
 	/**
+	 * Get ALAP
 	 * 
-	 */
-	public int getALST() {
-		return ALAP;
-	}
-
-	/**
-	 * 
-	 */
-	public int getASAP() {
-		return ASAP;
-	}
-
-	public void setASAP(int asap) {
-		ASAP = asap;
-	}
-
-	/**
-	 * 
+	 * @return ALAP
 	 */
 	public int getALAP() {
 		return ALAP;
 	}
 
-	public void setALAP(int alap) {
-		ALAP = alap;
+	/**
+	 * Get associated algorithm
+	 * 
+	 * @return Associated algorithm
+	 */
+	public AlgorithmDescriptor getAlgorithm() {
+		return algorithm;
 	}
 
 	/**
+	 * Get ASAP
 	 * 
-	 * @return
+	 * @return ASAP
+	 */
+	public int getASAP() {
+		return ASAP;
+	}
+
+	/**
+	 * Get operation name
+	 * 
+	 * @return Operation name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Get operation type
+	 * 
+	 * @return Operation type
+	 */
+	public OperationType getType() {
+		return type;
+	}
+
+	/**
+	 * Is the operation scheduled?
+	 * 
+	 * @return true=yes, false=no
 	 */
 	public boolean isScheduled() {
 		return scheduled;
 	}
 
 	/**
+	 * Set ALAP
 	 * 
+	 * @param alap
+	 *            ALAP
+	 */
+	public void setALAP(int alap) {
+		ALAP = alap;
+	}
+
+	/**
+	 * Set associated algorithm
+	 * 
+	 * @param algorithm
+	 *            Associated algorithm
+	 */
+	public void setAlgorithm(AlgorithmDescriptor algorithm) {
+		this.algorithm = algorithm;
+	}
+
+	/**
+	 * Set ASAP
+	 * 
+	 * @param asap
+	 *            ASAP
+	 */
+	public void setASAP(int asap) {
+		ASAP = asap;
+	}
+
+	/**
+	 * Set operation name
+	 * 
+	 * @param name
+	 *            Operation name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Mark the operation as scheduled
 	 */
 	public void setScheduled() {
 		scheduled = true;
 	}
-
-	/**
-	 * 
-	 */
-	public void clearScheduled() {
-		scheduled = false;
-	}
-
 }

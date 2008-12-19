@@ -38,12 +38,34 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * This class describes a TGVertex, which could be processor, Ip or switch
+ * 
+ * @author pmu
+ * 
+ */
 public class TGVertexDescriptor extends ComponentDescriptor {
-
+	/**
+	 * All the output links
+	 */
 	protected Vector<LinkDescriptor> outputLinks;
 
+	/**
+	 * All the input links
+	 */
 	protected Vector<LinkDescriptor> inputLinks;
 
+	/**
+	 * Construct a TGVertexDescriptor with the given id, name, and component
+	 * buffer
+	 * 
+	 * @param id
+	 *            TGVertexDescriptor Id
+	 * @param name
+	 *            TGVertexDescriptor name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public TGVertexDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer) {
 		super(id, name, ComponentDescriptorBuffer);
@@ -51,6 +73,23 @@ public class TGVertexDescriptor extends ComponentDescriptor {
 		inputLinks = new Vector<LinkDescriptor>();
 	}
 
+	/**
+	 * Construct a TGVertexDescriptor with the given id, name, and component
+	 * buffer
+	 * 
+	 * @param id
+	 *            TGVertexDescriptor Id
+	 * @param name
+	 *            TGVertexDescriptor name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period
+	 * @param dataWidth
+	 *            Data width
+	 * @param surface
+	 *            Surface
+	 */
 	public TGVertexDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -60,36 +99,84 @@ public class TGVertexDescriptor extends ComponentDescriptor {
 		inputLinks = new Vector<LinkDescriptor>();
 	}
 
-	public void addOutputLink(LinkDescriptor link) {
-		outputLinks.add(link);
-	}
-
-	public LinkDescriptor getOutputLink(int index) {
-		return outputLinks.get(index);
-	}
-
-	public Vector<LinkDescriptor> getOutputLinks() {
-		return outputLinks;
-	}
-
-	public void setOutputLinks(Vector<LinkDescriptor> outputLinks) {
-		this.outputLinks = outputLinks;
-	}
-
+	/**
+	 * Add an input link
+	 * 
+	 * @param link
+	 *            An input link
+	 */
 	public void addInputLink(LinkDescriptor link) {
 		inputLinks.add(link);
 	}
 
+	/**
+	 * Add an output link
+	 * 
+	 * @param link
+	 *            An output link
+	 */
+	public void addOutputLink(LinkDescriptor link) {
+		outputLinks.add(link);
+	}
+
+	/**
+	 * Get the input link at the specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @return The input link
+	 */
 	public LinkDescriptor getInputLink(int index) {
 		return inputLinks.get(index);
 	}
 
+	/**
+	 * Get all the input links
+	 * 
+	 * @return All the input links
+	 */
 	public Vector<LinkDescriptor> getInputLinks() {
 		return inputLinks;
 	}
 
+	/**
+	 * Get the output link at the specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @return The output link
+	 */
+	public LinkDescriptor getOutputLink(int index) {
+		return outputLinks.get(index);
+	}
+
+	/**
+	 * Get all the output links
+	 * 
+	 * @return All the output links
+	 */
+	public Vector<LinkDescriptor> getOutputLinks() {
+		return outputLinks;
+	}
+
+	/**
+	 * Set all the input links
+	 * 
+	 * @param inputLinks
+	 *            All the input links
+	 */
 	public void setInputLinks(Vector<LinkDescriptor> inputLinks) {
 		this.inputLinks = inputLinks;
+	}
+
+	/**
+	 * Set all the output links
+	 * 
+	 * @param outputLinks
+	 *            All the output links
+	 */
+	public void setOutputLinks(Vector<LinkDescriptor> outputLinks) {
+		this.outputLinks = outputLinks;
 	}
 
 }

@@ -53,18 +53,33 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.SwitchDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.TGVertexDescriptor;
 
 /**
+ * The ArchitectureTransformer converts different architectures between
+ * MultiCoreArchitecture and AlgorithmDescriptor
+ * 
  * @author pmu
  * 
- *         The ArchitectureTransformer converts different architectures between
- *         MultiCoreArchitecture and AlgorithmDescriptor
  */
 public class ArchitectureTransformer {
 
+	/**
+	 * A buffer to contain all the ComponentDescriptors
+	 */
 	private HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer;
 
+	/**
+	 * Construct a new ArchitectureTransformer
+	 * 
+	 */
 	public ArchitectureTransformer() {
 	}
 
+	/**
+	 * Convert a MultiCoreArchitecture to an ArchitectureDescriptor
+	 * 
+	 * @param architecture
+	 *            A MultiCoreArchitecture to be converted
+	 * @return An ArchitectureDescriptor
+	 */
 	public ArchitectureDescriptor architecture2Descriptor(
 			MultiCoreArchitecture architecture) {
 		MultiCoreArchitecture archi = (MultiCoreArchitecture) architecture;
@@ -199,6 +214,13 @@ public class ArchitectureTransformer {
 		return archiDescriptor;
 	}
 
+	/**
+	 * Convert an ArchitectureDescriptor to a MultiCoreArchitecture
+	 * 
+	 * @param archiDescriptor
+	 *            An architecture to be converted
+	 * @return A MultiCoreArchitecture
+	 */
 	public MultiCoreArchitecture descriptor2Architecture(
 			ArchitectureDescriptor archiDescriptor) {
 		MultiCoreArchitecture architecture = new MultiCoreArchitecture(

@@ -52,40 +52,168 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
  */
 public abstract class AbstractScheduler {
 
+	/**
+	 * Scheduler name
+	 */
 	protected String name = "Abstract Scheduler";
 
+	/**
+	 * Sorted computations
+	 */
 	protected Vector<ComputationDescriptor> schedulingOrder = new Vector<ComputationDescriptor>();
 
+	/**
+	 * Computation buffer
+	 */
 	protected HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer;
 
+	/**
+	 * Communication buffer
+	 */
 	protected HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer;
 
+	/**
+	 * Algorithm descriptor
+	 */
 	protected AlgorithmDescriptor algorithm;
 
+	/**
+	 * Architecture descriptor
+	 */
 	protected ArchitectureDescriptor architecture;
 
+	/**
+	 * The virtual top communication
+	 */
 	protected CommunicationDescriptor topCommunication;
 
+	/**
+	 * The virtual bottom communication
+	 */
 	protected CommunicationDescriptor bottomCommunication;
 
+	/**
+	 * The virtual top computation
+	 */
 	protected ComputationDescriptor topComputation;
 
+	/**
+	 * The virtual bottom computation
+	 */
 	protected ComputationDescriptor bottomComputation;
 
+	/**
+	 * Schedule length
+	 */
 	protected int scheduleLength = 0;
 
+	/**
+	 * All the used operators
+	 */
 	protected Vector<OperatorDescriptor> usedOperators = null;
 
+	/**
+	 * The name for additional communications
+	 */
 	protected String communicationName = null;
 
+	/**
+	 * Number of added communications out of top computation
+	 */
 	protected int nbCommunicationIn = 0;
 
+	/**
+	 * Number of added communications into bottom computation
+	 */
 	protected int nbCommunicationOut = 0;
 
-	protected int nbCommunicationMiddle = 0;
-
+	/**
+	 * All the unscheduled computations
+	 */
 	protected Vector<ComputationDescriptor> unscheduledComputations = null;
 
+	/**
+	 * Constructs a scheduler with an algorithm descriptor.
+	 * 
+	 * @param algorithm
+	 *            An algorithm descriptor
+	 */
+	public AbstractScheduler(AlgorithmDescriptor algorithm) {
+		this.algorithm = algorithm;
+		topCommunication = new CommunicationDescriptor("topCommunication",
+				algorithm);
+		bottomCommunication = new CommunicationDescriptor(
+				"bottomCommunication", algorithm);
+		topCommunication.setStartTimeOnSendOperator(0);
+		topCommunication.setStartTimeOnLink(0);
+		topCommunication.setStartTimeOnReceiveOperator(0);
+		topCommunication.setASAP(0);
+		topCommunication.setALAP(0);
+		topCommunication.setScheduled();
+		bottomCommunication.setStartTimeOnSendOperator(Integer.MAX_VALUE);
+		bottomCommunication.setStartTimeOnLink(Integer.MAX_VALUE);
+		bottomCommunication.setStartTimeOnReceiveOperator(Integer.MAX_VALUE);
+		bottomCommunication.setASAP(Integer.MAX_VALUE);
+		bottomCommunication.setALAP(Integer.MAX_VALUE);
+		bottomCommunication.setScheduled();
+		usedOperators = new Vector<OperatorDescriptor>();
+		System.out
+				.println("Add topComputation, bottomComputation and additional in/out communications:");
+		this.topComputation = algorithm.getTopComputation();
+		this.bottomComputation = algorithm.getBottomComputation();
+		topComputation.setStartTime(0);
+		bottomComputation.setStartTime(Integer.MAX_VALUE);
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			if (indexComputation.getInputCommunications().isEmpty()
+					&& indexComputation != topComputation
+					&& indexComputation != bottomComputation) {
+				communicationName = new String("communication_in")
+						.concat(Integer.toString(nbCommunicationIn));
+				new CommunicationDescriptor(communicationName, topComputation
+						.getName(), indexComputation.getName(), 0, algorithm);
+				algorithm.addCommunication(algorithm
+						.getCommunication(communicationName));
+				algorithm.getCommunication(communicationName).clearExist();
+				topComputation.addOutputCommunication(algorithm
+						.getCommunication(communicationName));
+				indexComputation.addInputCommunication(algorithm
+						.getCommunication(communicationName));
+				nbCommunicationIn++;
+				System.out.println(communicationName + " : "
+						+ topComputation.getName() + " -> "
+						+ indexComputation.getName());
+			}
+			if (indexComputation.getOutputCommunications().isEmpty()
+					&& indexComputation != topComputation
+					&& indexComputation != bottomComputation) {
+				communicationName = (new String("communication_out"))
+						.concat(Integer.toString(nbCommunicationOut));
+				new CommunicationDescriptor(communicationName, indexComputation
+						.getName(), bottomComputation.getName(), 0, algorithm);
+				algorithm.getCommunication(communicationName).clearExist();
+				algorithm.addCommunication(algorithm
+						.getCommunication(communicationName));
+				bottomComputation.addInputCommunication(algorithm
+						.getCommunication(communicationName));
+				indexComputation.addOutputCommunication(algorithm
+						.getCommunication(communicationName));
+				nbCommunicationOut++;
+				System.out.println(communicationName + " : "
+						+ indexComputation.getName() + " -> "
+						+ bottomComputation.getName());
+			}
+		}
+	}
+
+	/**
+	 * Constructs a scheduler with computation and communication buffer.
+	 * 
+	 * @param ComputationDescriptorBuffer
+	 *            Computation buffer
+	 * @param CommunicationDescriptorBuffer
+	 *            Communication buffer
+	 */
 	public AbstractScheduler(
 			HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer,
 			HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer) {
@@ -162,338 +290,19 @@ public abstract class AbstractScheduler {
 		}
 	}
 
-	public AbstractScheduler(AlgorithmDescriptor algorithm) {
-		this.algorithm = algorithm;
-		topCommunication = new CommunicationDescriptor("topCommunication",
-				algorithm);
-		bottomCommunication = new CommunicationDescriptor(
-				"bottomCommunication", algorithm);
-		topCommunication.setStartTimeOnSendOperator(0);
-		topCommunication.setStartTimeOnLink(0);
-		topCommunication.setStartTimeOnReceiveOperator(0);
-		topCommunication.setASAP(0);
-		topCommunication.setALAP(0);
-		topCommunication.setScheduled();
-		bottomCommunication.setStartTimeOnSendOperator(Integer.MAX_VALUE);
-		bottomCommunication.setStartTimeOnLink(Integer.MAX_VALUE);
-		bottomCommunication.setStartTimeOnReceiveOperator(Integer.MAX_VALUE);
-		bottomCommunication.setASAP(Integer.MAX_VALUE);
-		bottomCommunication.setALAP(Integer.MAX_VALUE);
-		bottomCommunication.setScheduled();
-		usedOperators = new Vector<OperatorDescriptor>();
-		System.out
-				.println("Add topComputation, bottomComputation and additional in/out communications:");
-		this.topComputation = algorithm.getTopComputation();
-		this.bottomComputation = algorithm.getBottomComputation();
-		topComputation.setStartTime(0);
-		bottomComputation.setStartTime(Integer.MAX_VALUE);
-		for (ComputationDescriptor indexComputation : algorithm
-				.getComputations().values()) {
-			if (indexComputation.getInputCommunications().isEmpty()
-					&& indexComputation != topComputation
-					&& indexComputation != bottomComputation) {
-				communicationName = new String("communication_in")
-						.concat(Integer.toString(nbCommunicationIn));
-				new CommunicationDescriptor(communicationName, topComputation
-						.getName(), indexComputation.getName(), 0, algorithm);
-				algorithm.addCommunication(algorithm
-						.getCommunication(communicationName));
-				algorithm.getCommunication(communicationName).clearExist();
-				topComputation.addOutputCommunication(algorithm
-						.getCommunication(communicationName));
-				indexComputation.addInputCommunication(algorithm
-						.getCommunication(communicationName));
-				nbCommunicationIn++;
-				System.out.println(communicationName + " : "
-						+ topComputation.getName() + " -> "
-						+ indexComputation.getName());
-			}
-			if (indexComputation.getOutputCommunications().isEmpty()
-					&& indexComputation != topComputation
-					&& indexComputation != bottomComputation) {
-				communicationName = (new String("communication_out"))
-						.concat(Integer.toString(nbCommunicationOut));
-				new CommunicationDescriptor(communicationName, indexComputation
-						.getName(), bottomComputation.getName(), 0, algorithm);
-				algorithm.getCommunication(communicationName).clearExist();
-				algorithm.addCommunication(algorithm
-						.getCommunication(communicationName));
-				bottomComputation.addInputCommunication(algorithm
-						.getCommunication(communicationName));
-				indexComputation.addOutputCommunication(algorithm
-						.getCommunication(communicationName));
-				nbCommunicationOut++;
-				System.out.println(communicationName + " : "
-						+ indexComputation.getName() + " -> "
-						+ bottomComputation.getName());
-			}
-		}
-	}
-
-	public AlgorithmDescriptor getAlgorithm() {
-		return algorithm;
-	}
-
-	public void setAlgorithm(AlgorithmDescriptor algorithm) {
-		this.algorithm = algorithm;
-	}
-
-	public ArchitectureDescriptor getArchitecture() {
-		return architecture;
-	}
-
-	public void setArchitecture(ArchitectureDescriptor architecture) {
-		this.architecture = architecture;
-	}
-
-	public ComputationDescriptor getTopComputation() {
-		return topComputation;
-	}
-
-	public ComputationDescriptor getBottomComputation() {
-		return bottomComputation;
-	}
-
-	public int getScheduleLength() {
-		return scheduleLength;
-	}
-
-	public CommunicationDescriptor getTopCommunication() {
-		return topCommunication;
-	}
-
-	public CommunicationDescriptor getBottomCommunication() {
-		return bottomCommunication;
-	}
-
-	public Vector<OperatorDescriptor> getUsedOperators() {
-		return usedOperators;
-	}
-
+	/**
+	 * Adds an operator to the used operators.
+	 * 
+	 * @param operator
+	 *            An operator
+	 */
 	public void addUsedOperators(OperatorDescriptor operator) {
 		usedOperators.add(operator);
 	}
 
 	/**
-	 * 
+	 * Backup all the times before the scheduling of the critical child.
 	 */
-	public void computeTopLevel() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		topComputation.setTopLevel(0);
-		topComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they may be treated multiple times.
-		Vector<ComputationDescriptor> computations = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			computations.add(ComputationDescriptorBuffer.get(indexCommunication
-					.getDestination()));
-		}
-
-		for (int i = 0; i < computations.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computations.get(
-					i).getInputCommunications()) {
-				if (!ComputationDescriptorBuffer.get(
-						indexCommunication.getOrigin()).isReady()) {
-					skipComputation = true;
-					break;
-				} else if (time < ComputationDescriptorBuffer.get(
-						indexCommunication.getOrigin()).getTopLevel()
-						+ ComputationDescriptorBuffer.get(
-								indexCommunication.getOrigin())
-								.getComputationDuration()
-						+ indexCommunication.getCommunicationDuration()) {
-					time = ComputationDescriptorBuffer.get(
-							indexCommunication.getOrigin()).getTopLevel()
-							+ ComputationDescriptorBuffer.get(
-									indexCommunication.getOrigin())
-									.getComputationDuration()
-							+ indexCommunication.getCommunicationDuration();
-				}
-			}
-			if (!skipComputation) {
-				computations.get(i).setTopLevel(time);
-				computations.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computations.get(i).getId() + " --> t-level="
-				// + computations.get(i).getTopLevel());
-				for (CommunicationDescriptor indexCommunication : computations
-						.get(i).getOutputCommunications()) {
-					if (ComputationDescriptorBuffer.get(indexCommunication
-							.getDestination()) != bottomComputation) {
-						computations.add(ComputationDescriptorBuffer
-								.get(indexCommunication.getDestination()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			if (time < ComputationDescriptorBuffer.get(
-					indexCommunication.getOrigin()).getTopLevel()
-					+ ComputationDescriptorBuffer.get(
-							indexCommunication.getOrigin())
-							.getComputationDuration()) {
-				time = ComputationDescriptorBuffer.get(
-						indexCommunication.getOrigin()).getTopLevel()
-						+ ComputationDescriptorBuffer.get(
-								indexCommunication.getOrigin())
-								.getComputationDuration();
-			}
-		}
-		bottomComputation.setTopLevel(time);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.setASAP(indexComputation.getTopLevel());
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public void computeBottomLevel() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		bottomComputation.setBottomLevel(0);
-		bottomComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
-		Vector<ComputationDescriptor> computations = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			computations.add(ComputationDescriptorBuffer.get(indexCommunication
-					.getOrigin()));
-		}
-
-		for (int i = 0; i < computations.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computations.get(
-					i).getOutputCommunications()) {
-				if (!ComputationDescriptorBuffer.get(
-						indexCommunication.getDestination()).isReady()) {
-					skipComputation = true;
-					break;
-				} else if (time < ComputationDescriptorBuffer.get(
-						indexCommunication.getDestination()).getBottomLevel()
-						+ indexCommunication.getCommunicationDuration()) {
-					time = ComputationDescriptorBuffer.get(
-							indexCommunication.getDestination())
-							.getBottomLevel()
-							+ indexCommunication.getCommunicationDuration();
-				}
-			}
-			if (!skipComputation) {
-				computations.get(i).setBottomLevel(
-						time + computations.get(i).getComputationDuration());
-				computations.get(i).setReady();
-				// System.out.println("step " + i + ": computationName="
-				// + computations.get(i).getName() + " --> b-level="
-				// + computations.get(i).getBottomLevel());
-				for (CommunicationDescriptor indexCommunication : computations
-						.get(i).getInputCommunications()) {
-					if (ComputationDescriptorBuffer.get(indexCommunication
-							.getOrigin()) != topComputation) {
-						computations.add(ComputationDescriptorBuffer
-								.get(indexCommunication.getOrigin()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < ComputationDescriptorBuffer.get(
-					indexCommunication.getDestination()).getBottomLevel()) {
-				time = ComputationDescriptorBuffer.get(
-						indexCommunication.getDestination()).getBottomLevel();
-			}
-		}
-		topComputation.setBottomLevel(time);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.setALAP(topComputation.getBottomLevel()
-					- indexComputation.getBottomLevel());
-		}
-	}
-
-	public void sortComputationsByBottomLevel(
-			Vector<ComputationDescriptor> computationList) {
-		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
-		sortedComputations.add(topComputation);
-		for (ComputationDescriptor indexComputation : computationList) {
-			if ((indexComputation != topComputation)
-					&& (indexComputation != bottomComputation)) {
-				for (int i = 0; i < sortedComputations.size(); i++) {
-					if (indexComputation.getBottomLevel() > sortedComputations
-							.get(i).getBottomLevel()) {
-						sortedComputations.add(i, indexComputation);
-						break;
-					} else {
-						if (indexComputation.getBottomLevel() == sortedComputations
-								.get(i).getBottomLevel()) {
-							if (indexComputation.getTopLevel() > sortedComputations
-									.get(i).getTopLevel()) {
-								sortedComputations.add(i, indexComputation);
-								break;
-							}
-						}
-						if (i == (sortedComputations.size() - 1)) {
-							sortedComputations.add(indexComputation);
-							break;
-						}
-					}
-				}
-			}
-		}
-		sortedComputations.remove(0);
-		computationList = sortedComputations;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Vector<ComputationDescriptor> getSchedulingOrder() {
-		return schedulingOrder;
-	}
-
-	protected void updateTimes() {
-		for (ComputationDescriptor indexComputation : algorithm
-				.getComputations().values()) {
-			if (indexComputation.isScheduled()) {
-				indexComputation.updateTimes();
-				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getInputCommunications()) {
-					indexCommunication.updateTimes();
-				}
-			}
-		}
-	}
-
-	protected void restoreTimes() {
-		for (ComputationDescriptor indexComputation : algorithm
-				.getComputations().values()) {
-			if (indexComputation.isScheduled()) {
-				indexComputation.restoreTimes();
-				for (CommunicationDescriptor indexCommunication : indexComputation
-						.getInputCommunications()) {
-					indexCommunication.restoreTimes();
-				}
-			}
-		}
-	}
-
 	protected void backupTimes() {
 		for (ComputationDescriptor indexComputation : algorithm
 				.getComputations().values()) {
@@ -507,6 +316,155 @@ public abstract class AbstractScheduler {
 		}
 	}
 
+	/**
+	 * Gets the algorithm.
+	 * 
+	 * @return The algorithm
+	 */
+	public AlgorithmDescriptor getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * Gets the architecture.
+	 * 
+	 * @return The architecture
+	 */
+	public ArchitectureDescriptor getArchitecture() {
+		return architecture;
+	}
+
+	/**
+	 * Gets the virtual bottom communication.
+	 * 
+	 * @return The virtual bottom communication
+	 */
+	public CommunicationDescriptor getBottomCommunication() {
+		return bottomCommunication;
+	}
+
+	/**
+	 * Gets the virtual bottom computation.
+	 * 
+	 * @return The virtual bottom computation
+	 */
+	public ComputationDescriptor getBottomComputation() {
+		return bottomComputation;
+	}
+
+	/**
+	 * Gets the name of the scheduler.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Gets the schedule length.
+	 * 
+	 * @return The schedule length
+	 */
+	public int getScheduleLength() {
+		return scheduleLength;
+	}
+
+	/**
+	 * Gets the sorted computation list.
+	 * 
+	 * @return The sorted computation list
+	 */
+	public Vector<ComputationDescriptor> getSchedulingOrder() {
+		return schedulingOrder;
+	}
+
+	/**
+	 * Gets the virtual top communication.
+	 * 
+	 * @return The virtual top communication
+	 */
+	public CommunicationDescriptor getTopCommunication() {
+		return topCommunication;
+	}
+
+	/**
+	 * Gets the virtual top computation.
+	 * 
+	 * @return The virtual top computation
+	 */
+	public ComputationDescriptor getTopComputation() {
+		return topComputation;
+	}
+
+	/**
+	 * Gets all the used operators.
+	 * 
+	 * @return All the used operators
+	 */
+	public Vector<OperatorDescriptor> getUsedOperators() {
+		return usedOperators;
+	}
+
+	/**
+	 * Calculate the max of two integers.
+	 * 
+	 * @param a
+	 *            First integer
+	 * @param b
+	 *            Second integer
+	 * @return The max of two integers
+	 */
+	protected int max(int a, int b) {
+		return a < b ? b : a;
+	}
+
+	/**
+	 * Calculate the max of three integers.
+	 * 
+	 * @param a
+	 *            First integer
+	 * @param b
+	 *            Second integer
+	 * @param c
+	 *            Third integer
+	 * @return The max of three integers
+	 */
+	protected int max(int a, int b, int c) {
+		int tmp = a < b ? b : a;
+		return c < tmp ? tmp : c;
+	}
+
+	/**
+	 * Calculate the min of two integers.
+	 * 
+	 * @param a
+	 *            First integer
+	 * @param b
+	 *            Second integer
+	 * @return The min of two integers
+	 */
+	protected int min(int a, int b) {
+		return a > b ? b : a;
+	}
+
+	/**
+	 * Calculate the min of three integers.
+	 * 
+	 * @param a
+	 *            First integer
+	 * @param b
+	 *            Second integer
+	 * @param c
+	 *            Third integer
+	 * @return The min of three integers
+	 */
+	protected int min(int a, int b, int c) {
+		int tmp = a > b ? b : a;
+		return c > tmp ? tmp : c;
+	}
+
+	/**
+	 * Recover all the times after the scheduling of the critical child.
+	 */
 	protected void recoverTimes() {
 		for (ComputationDescriptor indexComputation : algorithm
 				.getComputations().values()) {
@@ -520,24 +478,63 @@ public abstract class AbstractScheduler {
 		}
 	}
 
+	/**
+	 * Restore all the times when finishing the selecting processor.
+	 */
+	protected void restoreTimes() {
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			if (indexComputation.isScheduled()) {
+				indexComputation.restoreTimes();
+				for (CommunicationDescriptor indexCommunication : indexComputation
+						.getInputCommunications()) {
+					indexCommunication.restoreTimes();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Does the scheduling.
+	 * 
+	 * @return true
+	 */
 	public abstract boolean schedule();
 
-	protected int max(int a, int b) {
-		return a < b ? b : a;
+	/**
+	 * Sets the algorithm.
+	 * 
+	 * @param algorithm
+	 *            The algorithm
+	 */
+	public void setAlgorithm(AlgorithmDescriptor algorithm) {
+		this.algorithm = algorithm;
 	}
 
-	protected int max(int a, int b, int c) {
-		int tmp = a < b ? b : a;
-		return c < tmp ? tmp : c;
+	/**
+	 * Sets the architecture.
+	 * 
+	 * @param architecture
+	 *            The architecture
+	 */
+	public void setArchitecture(ArchitectureDescriptor architecture) {
+		this.architecture = architecture;
 	}
 
-	protected int min(int a, int b) {
-		return a > b ? b : a;
-	}
-
-	protected int min(int a, int b, int c) {
-		int tmp = a > b ? b : a;
-		return c > tmp ? tmp : c;
+	/**
+	 * Update all the times when finishing the real scheduling of a node.
+	 */
+	protected void updateTimes() {
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			if (indexComputation.isScheduled()) {
+				indexComputation.updateTimes();
+				for (CommunicationDescriptor indexCommunication : indexComputation
+						.getInputCommunications()) {
+					indexCommunication.updateTimes();
+				}
+			}
+		}
 	}
 
 }

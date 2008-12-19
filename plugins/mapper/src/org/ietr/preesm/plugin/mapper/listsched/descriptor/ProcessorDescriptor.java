@@ -37,22 +37,67 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
 
+/**
+ * This class gives the description of a processor
+ * 
+ * @author pmu
+ * 
+ */
 public class ProcessorDescriptor extends OperatorDescriptor {
-
+	/**
+	 * Send overhead for a communication
+	 */
 	private int sendOverhead = 0;
 
+	/**
+	 * Receive overhead for a communication
+	 */
 	private int receiveOverhead = 0;
 
+	/**
+	 * Send involvement factor for a communication
+	 */
 	private int sendInvolvementFactor = 0;
 
+	/**
+	 * Receive involvement factor for a communicaiton
+	 */
 	private int receiveInvolvementFactor = 0;
 
+	/**
+	 * Construct a ProcessorDescriptor with the given id, name and component
+	 * buffer
+	 * 
+	 * @param id
+	 *            Processor id
+	 * @param name
+	 *            Processor name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public ProcessorDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer) {
 		super(id, name, ComponentDescriptorBuffer);
 		this.type = ComponentType.Processor;
 	}
 
+	/**
+	 * Construct a ProcessorDescriptor with the given id, name, component
+	 * buffer, clock period, data width and surface
+	 * 
+	 * @param id
+	 *            Processor id
+	 * @param name
+	 *            Processor name
+	 * @param ComponentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period
+	 * @param dataWidth
+	 *            Data width
+	 * @param surface
+	 *            Surface
+	 */
 	public ProcessorDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -61,36 +106,79 @@ public class ProcessorDescriptor extends OperatorDescriptor {
 		this.type = ComponentType.Processor;
 	}
 
-	public int getSendOverhead() {
-		return sendOverhead;
-	}
-
-	public void setSendOverhead(int sendOverhead) {
-		this.sendOverhead = sendOverhead;
-	}
-
-	public int getReceiveOverhead() {
-		return receiveOverhead;
-	}
-
-	public void setReceiveOverhead(int receiveOverhead) {
-		this.receiveOverhead = receiveOverhead;
-	}
-
-	public int getSendInvolvementFactor() {
-		return sendInvolvementFactor;
-	}
-
-	public void setSendInvolvementFactor(int sendInvolvementFactor) {
-		this.sendInvolvementFactor = sendInvolvementFactor;
-	}
-
+	/**
+	 * Get the receive involvement factor
+	 * 
+	 * @return The receive involvement factor
+	 */
 	public int getReceiveInvolvementFactor() {
 		return receiveInvolvementFactor;
 	}
 
+	/**
+	 * Get the receive overhead
+	 * 
+	 * @return The receive overhead
+	 */
+	public int getReceiveOverhead() {
+		return receiveOverhead;
+	}
+
+	/**
+	 * Get the send involvement factor
+	 * 
+	 * @return The send involvement factor
+	 */
+	public int getSendInvolvementFactor() {
+		return sendInvolvementFactor;
+	}
+
+	/**
+	 * Get the send overhead
+	 * 
+	 * @return The send overhead
+	 */
+	public int getSendOverhead() {
+		return sendOverhead;
+	}
+
+	/**
+	 * Set the receive involvement factor
+	 * 
+	 * @param receiveInvolvementFactor
+	 *            The receive involvement factor
+	 */
 	public void setReceiveInvolvementFactor(int receiveInvolvementFactor) {
 		this.receiveInvolvementFactor = receiveInvolvementFactor;
 	}
 
+	/**
+	 * Set the receive overhead
+	 * 
+	 * @param receiveOverhead
+	 *            The receive overhead
+	 */
+	public void setReceiveOverhead(int receiveOverhead) {
+		this.receiveOverhead = receiveOverhead;
+	}
+
+	/**
+	 * Set the send involvement factor
+	 * 
+	 * @param sendInvolvementFactor
+	 *            The send involvement factor
+	 */
+	public void setSendInvolvementFactor(int sendInvolvementFactor) {
+		this.sendInvolvementFactor = sendInvolvementFactor;
+	}
+
+	/**
+	 * Set the send overhead
+	 * 
+	 * @param sendOverhead
+	 *            The send overhead
+	 */
+	public void setSendOverhead(int sendOverhead) {
+		this.sendOverhead = sendOverhead;
+	}
 }

@@ -37,18 +37,56 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
 
+/**
+ * This class describes a switch
+ * 
+ * @author pmu
+ * 
+ */
 public class SwitchDescriptor extends TGVertexDescriptor {
+	/**
+	 * Average clock cycles per transfer (unit: clock cycle)
+	 */
+	private double averageClockCyclesPerTransfer;
 
-	private double averageClockCyclesPerTransfer; // unit: clock cycle
-
+	/**
+	 * Number of ports
+	 */
 	private int portNumber;
 
+	/**
+	 * Construct a SwitchDescriptor with the given id, name and component buffer
+	 * 
+	 * @param id
+	 *            Switch Id
+	 * @param name
+	 *            Switch name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public SwitchDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer) {
 		super(id, name, componentDescriptorBuffer);
 		this.type = ComponentType.Switch;
 	}
 
+	/**
+	 * Construct a SwitchDescriptor with the given id, name, component buffer,
+	 * clock period, data width and surface
+	 * 
+	 * @param id
+	 *            Switch Id
+	 * @param name
+	 *            Switch name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period
+	 * @param dataWidth
+	 *            Data width
+	 * @param surface
+	 *            Surface
+	 */
 	public SwitchDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -57,21 +95,41 @@ public class SwitchDescriptor extends TGVertexDescriptor {
 		this.type = ComponentType.Switch;
 	}
 
-	public void setAverageClockCyclesPerTransfer(
-			double averageClockCyclesPerTransfer) {
-		this.averageClockCyclesPerTransfer = averageClockCyclesPerTransfer;
-	}
-
+	/**
+	 * Get the average clock cycles per transfer
+	 * 
+	 * @return The average clock cycles per transfer
+	 */
 	public double getAverageClockCyclesPerTransfer() {
 		return averageClockCyclesPerTransfer;
 	}
 
+	/**
+	 * Get the number of ports
+	 * 
+	 * @return The number of ports
+	 */
 	public int getPortNumber() {
 		return portNumber;
 	}
 
+	/**
+	 * Set the average clock cycles per transfer
+	 * 
+	 * @param cycles
+	 *            The average clock cycles per transfer
+	 */
+	public void setAverageClockCyclesPerTransfer(double cycles) {
+		this.averageClockCyclesPerTransfer = cycles;
+	}
+
+	/**
+	 * Set the number of ports
+	 * 
+	 * @param portNumber
+	 *            The number of ports
+	 */
 	public void setPortNumber(int portNumber) {
 		this.portNumber = portNumber;
 	}
-
 }

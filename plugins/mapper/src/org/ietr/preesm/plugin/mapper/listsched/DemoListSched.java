@@ -33,7 +33,6 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
 package org.ietr.preesm.plugin.mapper.listsched;
 
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
@@ -58,12 +57,48 @@ import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCListSchedCd;
 import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.factories.DAGEdgeFactory;
 
+/**
+ * A demo of using different list scheduling methods
+ * 
+ * @author pmu
+ * 
+ */
 public class DemoListSched {
 
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String algorithmFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\algorithm.xml";
+		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
+		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
+
+		new DemoListSched(algorithmFileName, parameterFileName,
+				architectureFileName);
+	}
+
+	/**
+	 * The AlgorithmDescriptor
+	 */
 	private AlgorithmDescriptor algorithm = null;
 
+	/**
+	 * The ArchitectureDescriptor
+	 */
 	private ArchitectureDescriptor architecture = null;
 
+	/**
+	 * Construct the DemoListSched using three files of algorithm, parameters
+	 * and architecture
+	 * 
+	 * @param algorithmFileName
+	 *            File name of algorithm
+	 * @param parameterFileName
+	 *            File name of parameters
+	 * @param architectureFileName
+	 *            File name of architecture
+	 */
 	public DemoListSched(String algorithmFileName, String parameterFileName,
 			String architectureFileName) {
 		System.out.println("\n***** DemoListScheduling begins! *****");
@@ -279,8 +314,7 @@ public class DemoListSched {
 		System.out
 				.print("No.\tScheduling Method\t\t\t\t\t\t\t\tSchedule Length\t\tUsed Operators\t\tScheduling Order");
 
-		System.out.print("\n1\t" + scheduler1.getName()
-				+ "\t\t\t\t\t\t"
+		System.out.print("\n1\t" + scheduler1.getName() + "\t\t\t\t\t\t"
 				+ scheduler1.getBestScheduler().getScheduleLength() + "\t\t\t"
 				+ scheduler1.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
@@ -297,8 +331,7 @@ public class DemoListSched {
 		RefineryUtilities.centerFrameOnScreen(plot1);
 		plot1.setVisible(true);
 
-		System.out.print("\n2\t" + scheduler2.getName()
-				+ "\t\t\t\t"
+		System.out.print("\n2\t" + scheduler2.getName() + "\t\t\t\t"
 				+ scheduler2.getBestScheduler().getScheduleLength() + "\t\t\t"
 				+ scheduler2.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
@@ -315,8 +348,7 @@ public class DemoListSched {
 		RefineryUtilities.centerFrameOnScreen(plot2);
 		plot2.setVisible(true);
 
-		System.out.print("\n3\t" + scheduler3.getName()
-				+ "\t\t\t"
+		System.out.print("\n3\t" + scheduler3.getName() + "\t\t\t"
 				+ scheduler3.getBestScheduler().getScheduleLength() + "\t\t\t"
 				+ scheduler3.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
@@ -333,9 +365,8 @@ public class DemoListSched {
 		RefineryUtilities.centerFrameOnScreen(plot3);
 		plot3.setVisible(true);
 
-		System.out.print("\n4\t" + scheduler4.getName()
-				+ "\t" + scheduler4.getBestScheduler().getScheduleLength()
-				+ "\t\t\t"
+		System.out.print("\n4\t" + scheduler4.getName() + "\t"
+				+ scheduler4.getBestScheduler().getScheduleLength() + "\t\t\t"
 				+ scheduler4.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler4
@@ -355,18 +386,15 @@ public class DemoListSched {
 	}
 
 	/**
-	 * @param args
+	 * Parse algorithm, architecture and parameters
+	 * 
+	 * @param algorithmFileName
+	 *            File name of algorithm
+	 * @param architectureFileName
+	 *            File name of architecture
+	 * @param parameterFileName
+	 *            File name of parameters
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String algorithmFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\algorithm.xml";
-		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
-		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
-
-		new DemoListSched(algorithmFileName, parameterFileName,
-				architectureFileName);
-	}
-
 	private void parse(String algorithmFileName, String architectureFileName,
 			String parameterFileName) {
 		algorithm = new AlgorithmDescriptor(new DAGEdgeFactory());
@@ -442,6 +470,16 @@ public class DemoListSched {
 		}
 	}
 
+	/**
+	 * Test the performance of a scheduler
+	 * 
+	 * @param scheduler
+	 *            The scheduler
+	 * @param algorithm
+	 *            The algorithm
+	 * @param architecture
+	 *            The architecture
+	 */
 	private void testScheduler(AbstractScheduler scheduler,
 			AlgorithmDescriptor algorithm, ArchitectureDescriptor architecture) {
 

@@ -44,7 +44,6 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.CommunicationDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ComputationDescriptor;
-import org.ietr.preesm.plugin.mapper.listsched.scheduler.AbstractScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -60,74 +59,26 @@ import org.sdf4j.visitors.ToHSDFVisitor;
 import org.sdf4j.visitors.TopologyVisitor;
 
 /**
- * @author pmu
+ * The AlgorithmTransformer converts different algorithms among SDF, DAG and
+ * AlgorithmDescriptor
  * 
- *         The AlgorithmTransformer converts different algorithms among SDF, DAG
- *         and AlgorithmDescriptor
+ * @author pmu
  */
 public class AlgorithmTransformer {
 
+	/**
+	 * Construct a new AlgorithmTransformer
+	 * 
+	 */
 	public AlgorithmTransformer() {
 	}
 
 	/**
-	 * Converts a DAG-like SDF to an AlgorithmDescriptor
-	 */
-	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) {
-
-		// Construct AlgorithmDescriptor
-		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(
-				new DAGEdgeFactory());
-		HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer = algorithm
-				.getComputations();
-		HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer = algorithm
-				.getCommunications();
-		// Adding Vertices
-		Set<SDFAbstractVertex> vertexSet = sdf.vertexSet();
-		Iterator<SDFAbstractVertex> vertexiterator = vertexSet.iterator();
-
-		while (vertexiterator.hasNext()) {
-			SDFAbstractVertex sdfvertex = vertexiterator.next();
-
-			ComputationDescriptor dagvertex = new ComputationDescriptor(
-					sdfvertex.getName(), ComputationDescriptorBuffer);
-			dagvertex.setAlgorithm(algorithm);
-			algorithm.addComputation(dagvertex);
-		}
-
-		// Adding Edges
-		Set<SDFEdge> edgeSet = sdf.edgeSet();
-		Iterator<SDFEdge> edgeiterator = edgeSet.iterator();
-
-		while (edgeiterator.hasNext()) {
-			SDFEdge sdfedge = edgeiterator.next();
-
-			CommunicationDescriptor dagedge = new CommunicationDescriptor(
-					sdfedge.getSource().getName() + ":"
-							+ sdfedge.getSourceInterface().getName() + "->"
-							+ sdfedge.getTarget().getName() + ":"
-							+ sdfedge.getTargetInterface().getName(),
-					CommunicationDescriptorBuffer);
-			dagedge.setOrigin(sdfedge.getSource().getName());
-			ComputationDescriptorBuffer.get(sdfedge.getSource().getName())
-					.addOutputCommunication(
-							CommunicationDescriptorBuffer
-									.get(dagedge.getName()));
-			dagedge.setDestination(sdfedge.getTarget().getName());
-			ComputationDescriptorBuffer.get(sdfedge.getTarget().getName())
-					.addInputCommunication(
-							CommunicationDescriptorBuffer
-									.get(dagedge.getName()));
-			dagedge.setAlgorithm(algorithm);
-			algorithm.addCommunication(dagedge);
-			dagedge.setWeight(sdfedge.getProd().intValue());
-		}
-
-		return algorithm;
-	}
-
-	/**
-	 * Converts an AlgorithmDescriptor to a MapperDAG
+	 * Convert an AlgorithmDescriptor to a MapperDAG
+	 * 
+	 * @param algorithm
+	 *            An AlgorithmDescriptor to be converted
+	 * @return A MapperDAG
 	 */
 	public MapperDAG algorithm2DAG(AlgorithmDescriptor algorithm) {
 		MapperDAG dag = new MapperDAG(null, null);
@@ -135,15 +86,11 @@ public class AlgorithmTransformer {
 	}
 
 	/**
-	 * Converts an AlgorithmDescriptor to a MapperDAG
-	 */
-	public MapperDAG algorithm2DAG(AbstractScheduler scheduler) {
-		MapperDAG dag = new MapperDAG(null, null);
-		return dag;
-	}
-
-	/**
-	 * Converts MapperDAG to an AlgorithmDescriptor
+	 * Convert MapperDAG to an AlgorithmDescriptor
+	 * 
+	 * @param dag
+	 *            A MapperDAG to be converted
+	 * @return An AlgorithmDescriptor
 	 */
 	public AlgorithmDescriptor dag2Algorithm(MapperDAG dag) {
 		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(
@@ -199,16 +146,48 @@ public class AlgorithmTransformer {
 	}
 
 	/**
-	 * Generate DAG-like random SDF
+	 * Generate random weights for vertices
+	 * 
+	 * @param sdf
+	 *            A SDFGraph
+	 * @param minWeight
+	 *            Minimum weight of a vertex
+	 * @param maxWeight
+	 *            Maximum weight of a vertex
+	 * @return A HashMap of vertices' name and their weights
 	 */
-	public SDFGraph randomSDF(int nbVertex, int minInDegree, int maxInDegree,
-			int minOutDegree, int maxOutDegree, int dataSize) {
-		return randomSDF(nbVertex, minInDegree, maxInDegree, minOutDegree,
-				maxOutDegree, dataSize, dataSize, maxOutDegree);
+	public HashMap<String, Integer> generateRandomNodeWeight(SDFGraph sdf,
+			double minWeight, double maxWeight) {
+		HashMap<String, Integer> computationWeights = new HashMap<String, Integer>();
+
+		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
+			Double taskSize = Math.random() * (maxWeight - minWeight)
+					+ minWeight;
+			computationWeights.put(indexVertex.getName(), taskSize.intValue());
+			// System.out.println("name: " + indexVertex.getName() + "; weight:"
+			// + taskSize.intValue());
+		}
+		return computationWeights;
 	}
 
 	/**
 	 * Generate DAG-like random SDF
+	 * 
+	 * @param nbVertex
+	 *            Number of vertices
+	 * @param minInDegree
+	 *            Minimum in-degree of a vertex
+	 * @param maxInDegree
+	 *            Maximum in-degree of a vertex
+	 * @param minOutDegree
+	 *            Minimum out-degree of a vertex
+	 * @param maxInDegree
+	 *            Maximum out-degree of a vertex
+	 * @param minDataSize
+	 *            Minimum size of data for an edge
+	 * @param maxDataSize
+	 *            Maximum size of data for an edge
+	 * @return A SDFGraph
 	 */
 	public SDFGraph randomSDF(int nbVertex, int minInDegree, int maxInDegree,
 			int minOutDegree, int maxOutDegree, int minDataSize, int maxDataSize) {
@@ -218,6 +197,24 @@ public class AlgorithmTransformer {
 
 	/**
 	 * Generate DAG-like random SDF
+	 * 
+	 * @param nbVertex
+	 *            Number of vertices
+	 * @param minInDegree
+	 *            Minimum in-degree of a vertex
+	 * @param maxInDegree
+	 *            Maximum in-degree of a vertex
+	 * @param minOutDegree
+	 *            Minimum out-degree of a vertex
+	 * @param maxInDegree
+	 *            Maximum out-degree of a vertex
+	 * @param minDataSize
+	 *            Minimum size of data for an edge
+	 * @param maxDataSize
+	 *            Maximum size of data for an edge
+	 * @param maxSensor
+	 *            Maximum number of sensors
+	 * @return A SDFGraph
 	 */
 	public SDFGraph randomSDF(int nbVertex, int minInDegree, int maxInDegree,
 			int minOutDegree, int maxOutDegree, int minDataSize,
@@ -261,17 +258,65 @@ public class AlgorithmTransformer {
 		return demoGraph;
 	}
 
-	public HashMap<String, Integer> generateRandomNodeWeight(SDFGraph sdf,
-			double minWeight, double maxWeight) {
-		HashMap<String, Integer> computationWeights = new HashMap<String, Integer>();
+	/**
+	 * Convert a DAG-like SDF to an AlgorithmDescriptor
+	 * 
+	 * @param sdf
+	 *            An SDFGraph to be converted
+	 * @param scenario
+	 *            A scenario associated to the SDFGraph
+	 * @return An AlgorithmDescriptor
+	 */
+	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) {
 
-		for (SDFAbstractVertex indexVertex : sdf.vertexSet()) {
-			Double taskSize = Math.random() * (maxWeight - minWeight)
-					+ minWeight;
-			computationWeights.put(indexVertex.getName(), taskSize.intValue());
-			// System.out.println("name: " + indexVertex.getName() + "; weight:"
-			// + taskSize.intValue());
+		// Construct AlgorithmDescriptor
+		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(
+				new DAGEdgeFactory());
+		HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer = algorithm
+				.getComputations();
+		HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer = algorithm
+				.getCommunications();
+		// Adding Vertices
+		Set<SDFAbstractVertex> vertexSet = sdf.vertexSet();
+		Iterator<SDFAbstractVertex> vertexiterator = vertexSet.iterator();
+
+		while (vertexiterator.hasNext()) {
+			SDFAbstractVertex sdfvertex = vertexiterator.next();
+
+			ComputationDescriptor dagvertex = new ComputationDescriptor(
+					sdfvertex.getName(), ComputationDescriptorBuffer);
+			dagvertex.setAlgorithm(algorithm);
+			algorithm.addComputation(dagvertex);
 		}
-		return computationWeights;
+
+		// Adding Edges
+		Set<SDFEdge> edgeSet = sdf.edgeSet();
+		Iterator<SDFEdge> edgeiterator = edgeSet.iterator();
+
+		while (edgeiterator.hasNext()) {
+			SDFEdge sdfedge = edgeiterator.next();
+
+			CommunicationDescriptor dagedge = new CommunicationDescriptor(
+					sdfedge.getSource().getName() + ":"
+							+ sdfedge.getSourceInterface().getName() + "->"
+							+ sdfedge.getTarget().getName() + ":"
+							+ sdfedge.getTargetInterface().getName(),
+					CommunicationDescriptorBuffer);
+			dagedge.setOrigin(sdfedge.getSource().getName());
+			ComputationDescriptorBuffer.get(sdfedge.getSource().getName())
+					.addOutputCommunication(
+							CommunicationDescriptorBuffer
+									.get(dagedge.getName()));
+			dagedge.setDestination(sdfedge.getTarget().getName());
+			ComputationDescriptorBuffer.get(sdfedge.getTarget().getName())
+					.addInputCommunication(
+							CommunicationDescriptorBuffer
+									.get(dagedge.getName()));
+			dagedge.setAlgorithm(algorithm);
+			algorithm.addCommunication(dagedge);
+			dagedge.setWeight(sdfedge.getProd().intValue());
+		}
+
+		return algorithm;
 	}
 }

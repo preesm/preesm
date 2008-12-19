@@ -56,14 +56,34 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+/**
+ * This class parses XML document of architecture
+ * 
+ * @author pmu
+ * 
+ */
 public class ArchitectureParser {
-
+	/**
+	 * Architecture document
+	 */
 	private static Document architectureDocument;
 
+	/**
+	 * Architecture
+	 */
 	private ArchitectureDescriptor architecture;
 
+	/**
+	 * Component buffer
+	 */
 	private HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer;
 
+	/**
+	 * Construct the parser with the given file name
+	 * 
+	 * @param fileName
+	 *            The given file name
+	 */
 	public ArchitectureParser(String fileName) {
 		this.architecture = new ArchitectureDescriptor();
 		this.ComponentDescriptorBuffer = architecture.getComponents();
@@ -88,6 +108,14 @@ public class ArchitectureParser {
 		}
 	}
 
+	/**
+	 * Construct the parser with the given file name and architecture
+	 * 
+	 * @param fileName
+	 *            The given file name
+	 * @param architecture
+	 *            Architecture descriptor
+	 */
 	public ArchitectureParser(String fileName,
 			ArchitectureDescriptor architecture) {
 		this.architecture = architecture;
@@ -113,6 +141,11 @@ public class ArchitectureParser {
 		}
 	}
 
+	/**
+	 * Parse the document
+	 * 
+	 * @return Architecture
+	 */
 	public ArchitectureDescriptor parse() {
 		Node n = architectureDocument.getDocumentElement();
 		String name = n.getNodeName();

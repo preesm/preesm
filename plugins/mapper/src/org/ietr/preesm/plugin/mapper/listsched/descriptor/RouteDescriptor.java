@@ -37,36 +37,83 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.Vector;
 
+/**
+ * This class gives the description of a route
+ * 
+ * @author pmu
+ * 
+ */
 public class RouteDescriptor {
-
+	/**
+	 * A list of links composing the route
+	 */
 	private Vector<LinkDescriptor> linkList;
 
+	/**
+	 * Construct a RouteDescriptor
+	 */
 	public RouteDescriptor() {
 		linkList = new Vector<LinkDescriptor>();
 	}
 
-	public void addLink(LinkDescriptor link) {
-		linkList.add(link);
-	}
-
+	/**
+	 * Add a link to the route at the specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @param link
+	 *            A link
+	 */
 	public void addLink(int index, LinkDescriptor link) {
 		linkList.add(index, link);
 	}
 
-	public LinkDescriptor getLink(int index) {
-		return linkList.get(index);
+	/**
+	 * Add a link to the route at the end of the list
+	 * 
+	 * @param link
+	 *            A link
+	 */
+	public void addLink(LinkDescriptor link) {
+		linkList.add(link);
 	}
 
-	public Vector<LinkDescriptor> getLinkList() {
-		return linkList;
-	}
-
+	/**
+	 * Get the first link of the route
+	 * 
+	 * @return The first link of the route
+	 */
 	public LinkDescriptor getFirstLink() {
 		return linkList.firstElement();
 	}
 
+	/**
+	 * Get the last link of the route
+	 * 
+	 * @return The last link of the route
+	 */
 	public LinkDescriptor getLastLink() {
 		return linkList.lastElement();
+	}
+
+	/**
+	 * Get the link at the specified location
+	 * 
+	 * @param index
+	 *            The specified location
+	 * @return The link
+	 */
+	public LinkDescriptor getLink(int index) {
+		return linkList.get(index);
+	}
+
+	/**
+	 * Get the list of link
+	 * 
+	 * @return The list of link
+	 */
+	public Vector<LinkDescriptor> getLinkList() {
+		return linkList;
 	}
 
 }

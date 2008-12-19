@@ -35,27 +35,36 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
+/**
+ * ComponentType gives five types of component
+ * 
+ * @author pmu
+ * 
+ */
 public enum ComponentType {
 
 	/**
-	 * 
+	 * Processor
 	 */
 	Processor,
+
 	/**
-	 * 
+	 * IpCoprocessor
 	 */
 	Ip,
+
 	/**
-	 * 
+	 * Bus
 	 */
 	Bus,
+
 	/**
-	 * 
+	 * Fifo
 	 */
 	Fifo,
+
 	/**
-	 * 
+	 * Switch
 	 */
 	Switch;
-
 }

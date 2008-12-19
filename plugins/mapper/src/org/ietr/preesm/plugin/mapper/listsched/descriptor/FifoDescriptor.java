@@ -37,18 +37,57 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
 
+/**
+ * FifoDescriptor describes a Fifo
+ * 
+ * @author pmu
+ * 
+ */
 public class FifoDescriptor extends LinkDescriptor {
 
+	/**
+	 * The origin TGVertex
+	 */
 	private TGVertexDescriptor origin;
 
+	/**
+	 * The destination TGVertex
+	 */
 	private TGVertexDescriptor destination;
 
+	/**
+	 * Construct a FifoDescriptor with id, name and component buffer
+	 * 
+	 * @param id
+	 *            Fifo id
+	 * @param name
+	 *            Fifo name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 */
 	public FifoDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer) {
 		super(id, name, componentDescriptorBuffer);
 		this.type = ComponentType.Fifo;
 	}
 
+	/**
+	 * Construct a FifoDescriptor with id, name, component buffer, clock period,
+	 * data width and surface
+	 * 
+	 * @param id
+	 *            Fifo Id
+	 * @param name
+	 *            Fifo name
+	 * @param componentDescriptorBuffer
+	 *            Component buffer
+	 * @param clockPeriod
+	 *            Clock period
+	 * @param dataWidth
+	 *            Data width
+	 * @param surface
+	 *            Surface
+	 */
 	public FifoDescriptor(String id, String name,
 			HashMap<String, ComponentDescriptor> componentDescriptorBuffer,
 			int clockPeriod, int dataWidth, int surface) {
@@ -57,19 +96,41 @@ public class FifoDescriptor extends LinkDescriptor {
 		this.type = ComponentType.Fifo;
 	}
 
-	public TGVertexDescriptor getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(TGVertexDescriptor origin) {
-		this.origin = origin;
-	}
-
+	/**
+	 * Get destination TGVertex
+	 * 
+	 * @return Destination TGVertex
+	 */
 	public TGVertexDescriptor getDestination() {
 		return destination;
 	}
 
+	/**
+	 * Get origin TGVertex
+	 * 
+	 * @return Origin TGVertex
+	 */
+	public TGVertexDescriptor getOrigin() {
+		return origin;
+	}
+
+	/**
+	 * Set destination TGVertex
+	 * 
+	 * @param destination
+	 *            Destination TGVertex
+	 */
 	public void setDestination(TGVertexDescriptor destination) {
 		this.destination = destination;
+	}
+
+	/**
+	 * Set origin TGVertex
+	 * 
+	 * @param origin
+	 *            Origin TGVertex
+	 */
+	public void setOrigin(TGVertexDescriptor origin) {
+		this.origin = origin;
 	}
 }

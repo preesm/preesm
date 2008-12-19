@@ -36,28 +36,23 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.listsched;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.AbstractParameters;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
+ * ListSchedParameters contains parameters to use ListSched
+ * 
+ * @author pmu
+ * 
  */
-
 public class ListSchedParameters extends AbstractParameters {
 
+	/**
+	 * Construct the ListSchedParameters with given text parameters
+	 * 
+	 * @param textParameters
+	 *            TextParameters to be used
+	 */
 	public ListSchedParameters(TextParameters textParameters) {
 		super(textParameters);
-	}
-
-	/**
-	 * 
-	 * Constructors
-	 * 
-	 */
-
-	public ListSchedParameters(int maxCount, int maxStep, int margIn,
-			AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		super(simulatorType,edgeSchedType);
-
 	}
 }

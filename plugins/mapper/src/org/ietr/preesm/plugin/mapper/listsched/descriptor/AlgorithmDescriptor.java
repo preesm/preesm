@@ -41,25 +41,56 @@ import java.util.Vector;
 import org.sdf4j.factories.DAGEdgeFactory;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
+/**
+ * AlgorithmDescriptor is used to describe an algorithm
+ * 
+ * @author pmu
+ * 
+ */
 public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 
 	/**
-	 * 
+	 * serialVersionUID
 	 */
 	private static final long serialVersionUID = 2359903713845636462L;
 
+	/**
+	 * Name of the algorithm
+	 */
 	private String name = "algorithm";
 
+	/**
+	 * The buffer containing all the computations
+	 */
 	private HashMap<String, ComputationDescriptor> ComputationDescriptorBuffer;
 
+	/**
+	 * The buffer containing all the communications
+	 */
 	private HashMap<String, CommunicationDescriptor> CommunicationDescriptorBuffer;
 
+	/**
+	 * The buffer containing all the operations
+	 */
 	private HashMap<String, OperationDescriptor> OperationDescriptorBuffer;
 
+	/**
+	 * The top computation is added to be the predecessor of all the source
+	 * nodes
+	 */
 	private ComputationDescriptor topComputation;
 
+	/**
+	 * The bottom computation is added to be the successor of all the sink nodes
+	 */
 	private ComputationDescriptor bottomComputation;
 
+	/**
+	 * Construct the AlgorithmDescriptor with the given DAGEdgeFactory
+	 * 
+	 * @param arg0
+	 *            A DAGEdgeFactory
+	 */
 	public AlgorithmDescriptor(DAGEdgeFactory arg0) {
 		super(arg0);
 		ComputationDescriptorBuffer = new HashMap<String, ComputationDescriptor>();
@@ -75,42 +106,12 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		this.addComputation(bottomComputation);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ComputationDescriptor getTopComputation() {
-		return topComputation;
-	}
-
-	public ComputationDescriptor getBottomComputation() {
-		return bottomComputation;
-	}
-
-	// Computation
-	public void addComputation(ComputationDescriptor computation) {
-		if (!ComputationDescriptorBuffer.containsValue(computation)) {
-			ComputationDescriptorBuffer.put(computation.getVertex().getName(),
-					computation);
-			OperationDescriptorBuffer.put(computation.getVertex().getName(),
-					computation);
-			this.addVertex(computation.getVertex());
-		}
-	}
-
-	public ComputationDescriptor getComputation(String name) {
-		return ComputationDescriptorBuffer.get(name);
-	}
-
-	public HashMap<String, ComputationDescriptor> getComputations() {
-		return ComputationDescriptorBuffer;
-	}
-
-	// Communication
+	/**
+	 * Add a communication to this algorithm
+	 * 
+	 * @param communication
+	 *            The communication to be added
+	 */
 	public void addCommunication(CommunicationDescriptor communication) {
 		if (!CommunicationDescriptorBuffer.containsValue(communication)) {
 			CommunicationDescriptorBuffer.put(communication.getName(),
@@ -128,32 +129,438 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		}
 	}
 
-	public CommunicationDescriptor getCommunication(String name) {
-		return CommunicationDescriptorBuffer.get(name);
+	/**
+	 * Add a computation to this algorithm
+	 * 
+	 * @param computation
+	 *            The computation to be added
+	 */
+	public void addComputation(ComputationDescriptor computation) {
+		if (!ComputationDescriptorBuffer.containsValue(computation)) {
+			ComputationDescriptorBuffer.put(computation.getVertex().getName(),
+					computation);
+			OperationDescriptorBuffer.put(computation.getVertex().getName(),
+					computation);
+			this.addVertex(computation.getVertex());
+		}
 	}
 
-	// public CommunicationDescriptor getCommunication(ComputationDescriptor
-	// src,
-	// ComputationDescriptor dst) {
-	// return CommunicationDescriptorBuffer.get(this.getEdge(src.getVertex(),
-	// dst.getVertex()).getName());
-	// }
+	public AlgorithmDescriptor clone() {
+		AlgorithmDescriptor algo = new AlgorithmDescriptor(new DAGEdgeFactory());
+		for (ComputationDescriptor indexComputation : this.getComputations()
+				.values()) {
+			if (!indexComputation.getName().equalsIgnoreCase(
+					algo.getTopComputation().getName())
+					&& !indexComputation.getName().equalsIgnoreCase(
+							algo.getBottomComputation().getName())) {
+				ComputationDescriptor newComputation = new ComputationDescriptor(
+						indexComputation.getName(), algo.getComputations());
+				newComputation.setTime(indexComputation.getTime());
+				newComputation.setNbTotalRepeat(indexComputation
+						.getNbTotalRepeat());
+				newComputation.setAlgorithm(algo);
+				algo.addComputation(newComputation);
 
-	public HashMap<String, CommunicationDescriptor> getCommunications() {
-		return CommunicationDescriptorBuffer;
-	}
-
-	// Operation
-	public OperationDescriptor getOperation(String name) {
-		return OperationDescriptorBuffer.get(name);
-	}
-
-	public HashMap<String, OperationDescriptor> getOperations() {
-		return OperationDescriptorBuffer;
+				for (String indexOperatorName : indexComputation
+						.getComputationDurations().keySet()) {
+					newComputation.addComputationDuration(indexOperatorName,
+							indexComputation
+									.getComputationDuration(indexOperatorName));
+				}
+				for (String indexOperatorId : indexComputation.getOperatorSet()) {
+					newComputation.addOperator(indexOperatorId);
+				}
+			}
+		}
+		for (CommunicationDescriptor indexCommunication : this
+				.getCommunications().values()) {
+			CommunicationDescriptor newCommunication = new CommunicationDescriptor(
+					indexCommunication.getName(), algo.getCommunications());
+			newCommunication.setOrigin(indexCommunication.getOrigin());
+			algo.getComputation(newCommunication.getOrigin())
+					.addOutputCommunication(newCommunication);
+			newCommunication
+					.setDestination(indexCommunication.getDestination());
+			algo.getComputation(newCommunication.getDestination())
+					.addInputCommunication(newCommunication);
+			newCommunication.setWeight(indexCommunication.getWeight());
+			newCommunication.setAlgorithm(algo);
+			algo.addCommunication(newCommunication);
+			for (String indexName : indexCommunication
+					.getCommunicationDurations().keySet()) {
+				newCommunication.addCommunicationDuration(indexName,
+						indexCommunication.getCommunicationDuration(indexName));
+			}
+		}
+		return algo;
 	}
 
 	/**
-	 * 
+	 * Compute the bottom level
+	 */
+	public void computeBottomLevel() {
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.clearReady();
+		}
+		bottomComputation.setBottomLevel(0);
+		bottomComputation.setReady();
+
+		// Vector is very important to contain some computations multiple
+		// times in it because they should be treated multiple times.
+		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			computationList.add(this.getComputation(indexCommunication
+					.getOrigin()));
+		}
+
+		for (int i = 0; i < computationList.size(); i++) {
+			int time = 0;
+			boolean skipComputation = false;
+			for (CommunicationDescriptor indexCommunication : computationList
+					.get(i).getOutputCommunications()) {
+				if (!this.getComputation(indexCommunication.getDestination())
+						.isReady()) {
+					skipComputation = true;
+					break;
+				} else {
+					if (time < this.getComputation(
+							indexCommunication.getDestination())
+							.getBottomLevel()
+							+ indexCommunication.getCommunicationDuration()) {
+						time = this.getComputation(
+								indexCommunication.getDestination())
+								.getBottomLevel()
+								+ indexCommunication.getCommunicationDuration();
+					}
+				}
+			}
+			if (!skipComputation) {
+				computationList.get(i).setBottomLevel(
+						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setReady();
+				// System.out.println("step " + i + ": computationId="
+				// + computationList.get(i).getId() + " --> b-level="
+				// + computationList.get(i).getBottomLevel());
+				for (CommunicationDescriptor indexCommunication : computationList
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
+						computationList
+								.add(this.getComputation(indexCommunication
+										.getOrigin()));
+					}
+				}
+			}
+		}
+		int time = 0;
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getDestination())
+					.getBottomLevel()) {
+				time = this.getComputation(indexCommunication.getDestination())
+						.getBottomLevel();
+			}
+		}
+		topComputation.setBottomLevel(time);
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.setALAP(topComputation.getBottomLevel()
+					- indexComputation.getBottomLevel());
+		}
+	}
+
+	/**
+	 * Compute the computation bottom level
+	 */
+	public void computeBottomLevelComputation() {
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.clearReady();
+		}
+		bottomComputation.setBottomLevelComputation(0);
+		bottomComputation.setReady();
+
+		// Vector is very important to contain some computations multiple
+		// times in it because they should be treated multiple times.
+		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			computationList.add(this.getComputation(indexCommunication
+					.getOrigin()));
+		}
+
+		for (int i = 0; i < computationList.size(); i++) {
+			int time = 0;
+			boolean skipComputation = false;
+			for (CommunicationDescriptor indexCommunication : computationList
+					.get(i).getOutputCommunications()) {
+				if (!this.getComputation(indexCommunication.getDestination())
+						.isReady()) {
+					skipComputation = true;
+					break;
+				} else {
+					if (time < this.getComputation(
+							indexCommunication.getDestination())
+							.getBottomLevelComputation()) {
+						time = this.getComputation(
+								indexCommunication.getDestination())
+								.getBottomLevelComputation();
+					}
+				}
+			}
+			if (!skipComputation) {
+				computationList.get(i).setBottomLevelComputation(
+						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setReady();
+				// System.out.println("step " + i + ": computationId="
+				// + computationList.get(i).getId() + " --> b-level-c="
+				// + computationList.get(i).getBottomLevelComputation());
+				for (CommunicationDescriptor indexCommunication : computationList
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
+						computationList
+								.add(this.getComputation(indexCommunication
+										.getOrigin()));
+					}
+				}
+			}
+		}
+		int time = 0;
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getDestination())
+					.getBottomLevelComputation()) {
+				time = this.getComputation(indexCommunication.getDestination())
+						.getBottomLevelComputation();
+			}
+		}
+		topComputation.setBottomLevelComputation(time);
+	}
+
+	/**
+	 * Compute the input bottom level
+	 */
+	public void computeBottomLevelIn() {
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.clearReady();
+		}
+		bottomComputation.setBottomLevelIn(0);
+		bottomComputation.setReady();
+
+		// Vector is very important to contain some computations multiple
+		// times in it because they should be treated multiple times.
+		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			computationList.add(this.getComputation(indexCommunication
+					.getOrigin()));
+		}
+
+		for (int i = 0; i < computationList.size(); i++) {
+			int time = 0;
+			boolean skipComputation = false;
+			for (CommunicationDescriptor indexCommunication : computationList
+					.get(i).getOutputCommunications()) {
+				if (!this.getComputation(indexCommunication.getDestination())
+						.isReady()) {
+					skipComputation = true;
+					break;
+				} else {
+					int sumIn = this.getComputation(
+							indexCommunication.getDestination())
+							.getBottomLevelIn();
+					for (CommunicationDescriptor inputCommunication : this
+							.getComputation(indexCommunication.getDestination())
+							.getInputCommunications()) {
+						sumIn += inputCommunication.getCommunicationDuration();
+					}
+					if (time < sumIn) {
+						time = sumIn;
+					}
+				}
+			}
+			if (!skipComputation) {
+				computationList.get(i).setBottomLevelIn(
+						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setReady();
+				// System.out.println("step " + i + ": computationId="
+				// + computationList.get(i).getId() + " --> b-level-in="
+				// + computationList.get(i).getBottomLevelIn());
+				for (CommunicationDescriptor indexCommunication : computationList
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
+						computationList
+								.add(this.getComputation(indexCommunication
+										.getOrigin()));
+					}
+				}
+			}
+		}
+		int time = 0;
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getDestination())
+					.getBottomLevelIn()) {
+				time = this.getComputation(indexCommunication.getDestination())
+						.getBottomLevelIn();
+			}
+		}
+		topComputation.setBottomLevelIn(time);
+	}
+
+	/**
+	 * Compute the input/output bottom level
+	 */
+	public void computeBottomLevelInOut() {
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.clearReady();
+		}
+		bottomComputation.setBottomLevelInOut(0);
+		bottomComputation.setReady();
+
+		// Vector is very important to contain some computations multiple
+		// times in it because they should be treated multiple times.
+		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			computationList.add(this.getComputation(indexCommunication
+					.getOrigin()));
+		}
+
+		for (int i = 0; i < computationList.size(); i++) {
+			int time = 0;
+			boolean skipComputation = false;
+			for (CommunicationDescriptor indexCommunication : computationList
+					.get(i).getOutputCommunications()) {
+				if (!this.getComputation(indexCommunication.getDestination())
+						.isReady()) {
+					skipComputation = true;
+					break;
+				} else {
+					int sumIn = this.getComputation(
+							indexCommunication.getDestination())
+							.getBottomLevelInOut();
+					for (CommunicationDescriptor inputCommunication : this
+							.getComputation(indexCommunication.getDestination())
+							.getInputCommunications()) {
+						sumIn += inputCommunication.getCommunicationDuration();
+					}
+					sumIn -= indexCommunication.getCommunicationDuration();
+					if (time < sumIn) {
+						time = sumIn;
+					}
+				}
+			}
+			if (!skipComputation) {
+				for (CommunicationDescriptor outputCommunication : computationList
+						.get(i).getOutputCommunications()) {
+					time += outputCommunication.getCommunicationDuration();
+				}
+				computationList.get(i).setBottomLevelInOut(
+						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setReady();
+				// System.out.println("step " + i + ": computationId="
+				// + computationList.get(i).getId() + " --> b-level-inout="
+				// + computationList.get(i).getBottomLevelInOut());
+				for (CommunicationDescriptor indexCommunication : computationList
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
+						computationList
+								.add(this.getComputation(indexCommunication
+										.getOrigin()));
+					}
+				}
+			}
+		}
+		int time = 0;
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getDestination())
+					.getBottomLevelInOut()) {
+				time = this.getComputation(indexCommunication.getDestination())
+						.getBottomLevelInOut();
+			}
+		}
+		topComputation.setBottomLevelInOut(time);
+	}
+
+	/**
+	 * Compute the output bottom level
+	 */
+	public void computeBottomLevelOut() {
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			indexComputation.clearReady();
+		}
+		bottomComputation.setBottomLevelOut(0);
+		bottomComputation.setReady();
+
+		// Vector is very important to contain some computations multiple
+		// times in it because they should be treated multiple times.
+		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			computationList.add(this.getComputation(indexCommunication
+					.getOrigin()));
+		}
+
+		for (int i = 0; i < computationList.size(); i++) {
+			int time = 0;
+			boolean skipComputation = false;
+			for (CommunicationDescriptor indexCommunication : computationList
+					.get(i).getOutputCommunications()) {
+				if (!this.getComputation(indexCommunication.getDestination())
+						.isReady()) {
+					skipComputation = true;
+					break;
+				} else {
+					if (time < this.getComputation(
+							indexCommunication.getDestination())
+							.getBottomLevelOut()) {
+						time = this.getComputation(
+								indexCommunication.getDestination())
+								.getBottomLevelOut();
+					}
+				}
+			}
+			if (!skipComputation) {
+				for (CommunicationDescriptor outputCommunication : computationList
+						.get(i).getOutputCommunications()) {
+					time += outputCommunication.getCommunicationDuration();
+				}
+				computationList.get(i).setBottomLevelOut(
+						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setReady();
+				// System.out.println("step " + i + ": computationId="
+				// + computationList.get(i).getId() + " --> b-level-out="
+				// + computationList.get(i).getBottomLevelOut());
+				for (CommunicationDescriptor indexCommunication : computationList
+						.get(i).getInputCommunications()) {
+					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
+						computationList
+								.add(this.getComputation(indexCommunication
+										.getOrigin()));
+					}
+				}
+			}
+		}
+		int time = 0;
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getDestination())
+					.getBottomLevelOut()) {
+				time = this.getComputation(indexCommunication.getDestination())
+						.getBottomLevelOut();
+			}
+		}
+		topComputation.setBottomLevelOut(time);
+	}
+
+	/**
+	 * Compute the top level
 	 */
 	public void computeTopLevel() {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
@@ -235,117 +642,7 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 	}
 
 	/**
-	 * 
-	 */
-	public void computeBottomLevel() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		bottomComputation.setBottomLevel(0);
-		bottomComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
-		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			computationList.add(this.getComputation(indexCommunication
-					.getOrigin()));
-		}
-
-		for (int i = 0; i < computationList.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getOutputCommunications()) {
-				if (!this.getComputation(indexCommunication.getDestination())
-						.isReady()) {
-					skipComputation = true;
-					break;
-				} else {
-					if (time < this.getComputation(
-							indexCommunication.getDestination())
-							.getBottomLevel()
-							+ indexCommunication.getCommunicationDuration()) {
-						time = this.getComputation(
-								indexCommunication.getDestination())
-								.getBottomLevel()
-								+ indexCommunication.getCommunicationDuration();
-					}
-				}
-			}
-			if (!skipComputation) {
-				computationList.get(i).setBottomLevel(
-						time + computationList.get(i).getComputationDuration());
-				computationList.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getId() + " --> b-level="
-				// + computationList.get(i).getBottomLevel());
-				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getInputCommunications()) {
-					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
-						computationList
-								.add(this.getComputation(indexCommunication
-										.getOrigin()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getDestination())
-					.getBottomLevel()) {
-				time = this.getComputation(indexCommunication.getDestination())
-						.getBottomLevel();
-			}
-		}
-		topComputation.setBottomLevel(time);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.setALAP(topComputation.getBottomLevel()
-					- indexComputation.getBottomLevel());
-		}
-	}
-
-	public Vector<ComputationDescriptor> sortComputationsByBottomLevel() {
-		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
-		computeTopLevel();
-		computeBottomLevel();
-		sortedComputations.add(topComputation);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			if ((indexComputation != topComputation)
-					&& (indexComputation != bottomComputation)) {
-				for (int i = 0; i < sortedComputations.size(); i++) {
-					if (indexComputation.getBottomLevel() > sortedComputations
-							.get(i).getBottomLevel()) {
-						sortedComputations.add(i, indexComputation);
-						break;
-					} else {
-						if (indexComputation.getBottomLevel() == sortedComputations
-								.get(i).getBottomLevel()) {
-							if (indexComputation.getTopLevel() > sortedComputations
-									.get(i).getTopLevel()) {
-								sortedComputations.add(i, indexComputation);
-								break;
-							}
-						}
-						if (i == (sortedComputations.size() - 1)) {
-							sortedComputations.add(indexComputation);
-							break;
-						}
-					}
-				}
-			}
-		}
-		sortedComputations.remove(0);
-		return sortedComputations;
-	}
-
-	/**
-	 * 
+	 * Compute the computation top level
 	 */
 	public void computeTopLevelComputation() {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
@@ -423,108 +720,8 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 	}
 
 	/**
-	 * 
+	 * Compute the input top level
 	 */
-	public void computeBottomLevelComputation() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		bottomComputation.setBottomLevelComputation(0);
-		bottomComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
-		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			computationList.add(this.getComputation(indexCommunication
-					.getOrigin()));
-		}
-
-		for (int i = 0; i < computationList.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getOutputCommunications()) {
-				if (!this.getComputation(indexCommunication.getDestination())
-						.isReady()) {
-					skipComputation = true;
-					break;
-				} else {
-					if (time < this.getComputation(
-							indexCommunication.getDestination())
-							.getBottomLevelComputation()) {
-						time = this.getComputation(
-								indexCommunication.getDestination())
-								.getBottomLevelComputation();
-					}
-				}
-			}
-			if (!skipComputation) {
-				computationList.get(i).setBottomLevelComputation(
-						time + computationList.get(i).getComputationDuration());
-				computationList.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getId() + " --> b-level-c="
-				// + computationList.get(i).getBottomLevelComputation());
-				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getInputCommunications()) {
-					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
-						computationList
-								.add(this.getComputation(indexCommunication
-										.getOrigin()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getDestination())
-					.getBottomLevelComputation()) {
-				time = this.getComputation(indexCommunication.getDestination())
-						.getBottomLevelComputation();
-			}
-		}
-		topComputation.setBottomLevelComputation(time);
-	}
-
-	public Vector<ComputationDescriptor> sortComputationsByBottomLevelComputation() {
-		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
-		computeTopLevelComputation();
-		computeBottomLevelComputation();
-		sortedComputations.add(topComputation);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			if ((indexComputation != topComputation)
-					&& (indexComputation != bottomComputation)) {
-				for (int i = 0; i < sortedComputations.size(); i++) {
-					if (indexComputation.getBottomLevelComputation() > sortedComputations
-							.get(i).getBottomLevelComputation()) {
-						sortedComputations.add(i, indexComputation);
-						break;
-					} else {
-						if (indexComputation.getBottomLevelComputation() == sortedComputations
-								.get(i).getBottomLevelComputation()) {
-							if (indexComputation.getTopLevelComputation() > sortedComputations
-									.get(i).getTopLevelComputation()) {
-								sortedComputations.add(i, indexComputation);
-								break;
-							}
-						}
-						if (i == (sortedComputations.size() - 1)) {
-							sortedComputations.add(indexComputation);
-							break;
-						}
-					}
-				}
-			}
-		}
-		sortedComputations.remove(0);
-		return sortedComputations;
-	}
-
 	public void computeTopLevelIn() {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
 				.values()) {
@@ -601,290 +798,9 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		bottomComputation.setTopLevelIn(time);
 	}
 
-	public void computeBottomLevelIn() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		bottomComputation.setBottomLevelIn(0);
-		bottomComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
-		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			computationList.add(this.getComputation(indexCommunication
-					.getOrigin()));
-		}
-
-		for (int i = 0; i < computationList.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getOutputCommunications()) {
-				if (!this.getComputation(indexCommunication.getDestination())
-						.isReady()) {
-					skipComputation = true;
-					break;
-				} else {
-					int sumIn = this.getComputation(
-							indexCommunication.getDestination())
-							.getBottomLevelIn();
-					for (CommunicationDescriptor inputCommunication : this
-							.getComputation(indexCommunication.getDestination())
-							.getInputCommunications()) {
-						sumIn += inputCommunication.getCommunicationDuration();
-					}
-					if (time < sumIn) {
-						time = sumIn;
-					}
-				}
-			}
-			if (!skipComputation) {
-				computationList.get(i).setBottomLevelIn(
-						time + computationList.get(i).getComputationDuration());
-				computationList.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getId() + " --> b-level-in="
-				// + computationList.get(i).getBottomLevelIn());
-				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getInputCommunications()) {
-					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
-						computationList
-								.add(this.getComputation(indexCommunication
-										.getOrigin()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getDestination())
-					.getBottomLevelIn()) {
-				time = this.getComputation(indexCommunication.getDestination())
-						.getBottomLevelIn();
-			}
-		}
-		topComputation.setBottomLevelIn(time);
-	}
-
-	public Vector<ComputationDescriptor> sortComputationsByBottomLevelIn() {
-		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
-		computeTopLevelIn();
-		computeBottomLevelIn();
-		sortedComputations.add(topComputation);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			if ((indexComputation != topComputation)
-					&& (indexComputation != bottomComputation)) {
-				for (int i = 0; i < sortedComputations.size(); i++) {
-					if (indexComputation.getBottomLevelIn() > sortedComputations
-							.get(i).getBottomLevelIn()) {
-						sortedComputations.add(i, indexComputation);
-						break;
-					} else {
-						if (indexComputation.getBottomLevelIn() == sortedComputations
-								.get(i).getBottomLevelIn()) {
-							if (indexComputation.getTopLevelIn() > sortedComputations
-									.get(i).getTopLevelIn()) {
-								sortedComputations.add(i, indexComputation);
-								break;
-							}
-						}
-						if (i == (sortedComputations.size() - 1)) {
-							sortedComputations.add(indexComputation);
-							break;
-						}
-					}
-				}
-			}
-		}
-		sortedComputations.remove(0);
-		return sortedComputations;
-	}
-
-	public void computeTopLevelOut() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		topComputation.setTopLevelOut(0);
-		topComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they may be treated multiple times.
-		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			computationList.add(this.getComputation(indexCommunication
-					.getDestination()));
-		}
-		for (int i = 0; i < computationList.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getInputCommunications()) {
-				if (!this.getComputation(indexCommunication.getOrigin())
-						.isReady()) {
-					skipComputation = true;
-					break;
-				} else {
-					int sumOut = this.getComputation(
-							indexCommunication.getOrigin()).getTopLevelOut()
-							+ this.getComputation(
-									indexCommunication.getOrigin())
-									.getComputationDuration();
-					for (CommunicationDescriptor outputCommunication : this
-							.getComputation(indexCommunication.getOrigin())
-							.getOutputCommunications()) {
-						sumOut += outputCommunication
-								.getCommunicationDuration();
-					}
-					if (time < sumOut) {
-						time = sumOut;
-					}
-				}
-			}
-			if (!skipComputation) {
-				computationList.get(i).setTopLevelOut(time);
-				computationList.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getName() + " --> t-level-out="
-				// + computationList.get(i).getTopLevelOut());
-				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getOutputCommunications()) {
-					if (this
-							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
-						computationList.add(this
-								.getComputation(indexCommunication
-										.getDestination()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getOrigin())
-					.getTopLevelOut()
-					+ this.getComputation(indexCommunication.getOrigin())
-							.getComputationDuration()) {
-				time = this.getComputation(indexCommunication.getOrigin())
-						.getTopLevelOut()
-						+ this.getComputation(indexCommunication.getOrigin())
-								.getComputationDuration();
-			}
-		}
-		bottomComputation.setTopLevelOut(time);
-	}
-
-	public void computeBottomLevelOut() {
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			indexComputation.clearReady();
-		}
-		bottomComputation.setBottomLevelOut(0);
-		bottomComputation.setReady();
-
-		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
-		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
-			computationList.add(this.getComputation(indexCommunication
-					.getOrigin()));
-		}
-
-		for (int i = 0; i < computationList.size(); i++) {
-			int time = 0;
-			boolean skipComputation = false;
-			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getOutputCommunications()) {
-				if (!this.getComputation(indexCommunication.getDestination())
-						.isReady()) {
-					skipComputation = true;
-					break;
-				} else {
-					if (time < this.getComputation(
-							indexCommunication.getDestination())
-							.getBottomLevelOut()) {
-						time = this.getComputation(
-								indexCommunication.getDestination())
-								.getBottomLevelOut();
-					}
-				}
-			}
-			if (!skipComputation) {
-				for (CommunicationDescriptor outputCommunication : computationList
-						.get(i).getOutputCommunications()) {
-					time += outputCommunication.getCommunicationDuration();
-				}
-				computationList.get(i).setBottomLevelOut(
-						time + computationList.get(i).getComputationDuration());
-				computationList.get(i).setReady();
-				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getId() + " --> b-level-out="
-				// + computationList.get(i).getBottomLevelOut());
-				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getInputCommunications()) {
-					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
-						computationList
-								.add(this.getComputation(indexCommunication
-										.getOrigin()));
-					}
-				}
-			}
-		}
-		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getDestination())
-					.getBottomLevelOut()) {
-				time = this.getComputation(indexCommunication.getDestination())
-						.getBottomLevelOut();
-			}
-		}
-		topComputation.setBottomLevelOut(time);
-	}
-
-	public Vector<ComputationDescriptor> sortComputationsByBottomLevelOut() {
-		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
-		computeTopLevelOut();
-		computeBottomLevelOut();
-		sortedComputations.add(topComputation);
-		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
-				.values()) {
-			if ((indexComputation != topComputation)
-					&& (indexComputation != bottomComputation)) {
-				for (int i = 0; i < sortedComputations.size(); i++) {
-					if (indexComputation.getBottomLevelOut() > sortedComputations
-							.get(i).getBottomLevelOut()) {
-						sortedComputations.add(i, indexComputation);
-						break;
-					} else {
-						if (indexComputation.getBottomLevelOut() == sortedComputations
-								.get(i).getBottomLevelOut()) {
-							if (indexComputation.getTopLevelOut() > sortedComputations
-									.get(i).getTopLevelOut()) {
-								sortedComputations.add(i, indexComputation);
-								break;
-							}
-						}
-						if (i == (sortedComputations.size() - 1)) {
-							sortedComputations.add(indexComputation);
-							break;
-						}
-					}
-				}
-			}
-		}
-		sortedComputations.remove(0);
-		return sortedComputations;
-
-	}
-
+	/**
+	 * Compute the input/output top level
+	 */
 	public void computeTopLevelInOut() {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
 				.values()) {
@@ -966,80 +882,295 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 		bottomComputation.setTopLevelInOut(time);
 	}
 
-	public void computeBottomLevelInOut() {
+	/**
+	 * Compute the output top level
+	 */
+	public void computeTopLevelOut() {
 		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
 				.values()) {
 			indexComputation.clearReady();
 		}
-		bottomComputation.setBottomLevelInOut(0);
-		bottomComputation.setReady();
+		topComputation.setTopLevelOut(0);
+		topComputation.setReady();
 
 		// Vector is very important to contain some computations multiple
-		// times in it because they should be treated multiple times.
+		// times in it because they may be treated multiple times.
 		Vector<ComputationDescriptor> computationList = new Vector<ComputationDescriptor>();
-		for (CommunicationDescriptor indexCommunication : bottomComputation
-				.getInputCommunications()) {
+		for (CommunicationDescriptor indexCommunication : topComputation
+				.getOutputCommunications()) {
 			computationList.add(this.getComputation(indexCommunication
-					.getOrigin()));
+					.getDestination()));
 		}
-
 		for (int i = 0; i < computationList.size(); i++) {
 			int time = 0;
 			boolean skipComputation = false;
 			for (CommunicationDescriptor indexCommunication : computationList
-					.get(i).getOutputCommunications()) {
-				if (!this.getComputation(indexCommunication.getDestination())
+					.get(i).getInputCommunications()) {
+				if (!this.getComputation(indexCommunication.getOrigin())
 						.isReady()) {
 					skipComputation = true;
 					break;
 				} else {
-					int sumIn = this.getComputation(
-							indexCommunication.getDestination())
-							.getBottomLevelInOut();
-					for (CommunicationDescriptor inputCommunication : this
-							.getComputation(indexCommunication.getDestination())
-							.getInputCommunications()) {
-						sumIn += inputCommunication.getCommunicationDuration();
+					int sumOut = this.getComputation(
+							indexCommunication.getOrigin()).getTopLevelOut()
+							+ this.getComputation(
+									indexCommunication.getOrigin())
+									.getComputationDuration();
+					for (CommunicationDescriptor outputCommunication : this
+							.getComputation(indexCommunication.getOrigin())
+							.getOutputCommunications()) {
+						sumOut += outputCommunication
+								.getCommunicationDuration();
 					}
-					sumIn -= indexCommunication.getCommunicationDuration();
-					if (time < sumIn) {
-						time = sumIn;
+					if (time < sumOut) {
+						time = sumOut;
 					}
 				}
 			}
 			if (!skipComputation) {
-				for (CommunicationDescriptor outputCommunication : computationList
-						.get(i).getOutputCommunications()) {
-					time += outputCommunication.getCommunicationDuration();
-				}
-				computationList.get(i).setBottomLevelInOut(
-						time + computationList.get(i).getComputationDuration());
+				computationList.get(i).setTopLevelOut(time);
 				computationList.get(i).setReady();
 				// System.out.println("step " + i + ": computationId="
-				// + computationList.get(i).getId() + " --> b-level-inout="
-				// + computationList.get(i).getBottomLevelInOut());
+				// + computationList.get(i).getName() + " --> t-level-out="
+				// + computationList.get(i).getTopLevelOut());
 				for (CommunicationDescriptor indexCommunication : computationList
-						.get(i).getInputCommunications()) {
-					if (this.getComputation(indexCommunication.getOrigin()) != topComputation) {
-						computationList
-								.add(this.getComputation(indexCommunication
-										.getOrigin()));
+						.get(i).getOutputCommunications()) {
+					if (this
+							.getComputation(indexCommunication.getDestination()) != bottomComputation) {
+						computationList.add(this
+								.getComputation(indexCommunication
+										.getDestination()));
 					}
 				}
 			}
 		}
 		int time = 0;
-		for (CommunicationDescriptor indexCommunication : topComputation
-				.getOutputCommunications()) {
-			if (time < this.getComputation(indexCommunication.getDestination())
-					.getBottomLevelInOut()) {
-				time = this.getComputation(indexCommunication.getDestination())
-						.getBottomLevelInOut();
+		for (CommunicationDescriptor indexCommunication : bottomComputation
+				.getInputCommunications()) {
+			if (time < this.getComputation(indexCommunication.getOrigin())
+					.getTopLevelOut()
+					+ this.getComputation(indexCommunication.getOrigin())
+							.getComputationDuration()) {
+				time = this.getComputation(indexCommunication.getOrigin())
+						.getTopLevelOut()
+						+ this.getComputation(indexCommunication.getOrigin())
+								.getComputationDuration();
 			}
 		}
-		topComputation.setBottomLevelInOut(time);
+		bottomComputation.setTopLevelOut(time);
 	}
 
+	/**
+	 * Get the bottom computation
+	 * 
+	 * @return The bottom computation
+	 */
+	public ComputationDescriptor getBottomComputation() {
+		return bottomComputation;
+	}
+
+	/**
+	 * Get the communication with the given name
+	 * 
+	 * @param name
+	 *            The name of communication
+	 * @return A communication edge
+	 */
+	public CommunicationDescriptor getCommunication(String name) {
+		return CommunicationDescriptorBuffer.get(name);
+	}
+
+	/**
+	 * Get all the communications
+	 * 
+	 * @return The HashMap of all the communications
+	 */
+	public HashMap<String, CommunicationDescriptor> getCommunications() {
+		return CommunicationDescriptorBuffer;
+	}
+
+	/**
+	 * Get the computation with the given name
+	 * 
+	 * @param name
+	 *            The name of computation
+	 * @return A computation node
+	 */
+	public ComputationDescriptor getComputation(String name) {
+		return ComputationDescriptorBuffer.get(name);
+	}
+
+	/**
+	 * Get all the computations
+	 * 
+	 * @return The HashMap containing all the computations
+	 */
+	public HashMap<String, ComputationDescriptor> getComputations() {
+		return ComputationDescriptorBuffer;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Get the operation with the given name
+	 * 
+	 * @param name
+	 *            The name of operation
+	 * @return An Operation
+	 */
+	public OperationDescriptor getOperation(String name) {
+		return OperationDescriptorBuffer.get(name);
+	}
+
+	/**
+	 * Get all the operations
+	 * 
+	 * @return The HashMap of all the operations
+	 */
+	public HashMap<String, OperationDescriptor> getOperations() {
+		return OperationDescriptorBuffer;
+	}
+
+	/**
+	 * Get the top computation
+	 * 
+	 * @return The top computation
+	 */
+	public ComputationDescriptor getTopComputation() {
+		return topComputation;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Sort computation nodes by their bottom level
+	 * 
+	 * @return A vector of sorted computations
+	 */
+	public Vector<ComputationDescriptor> sortComputationsByBottomLevel() {
+		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
+		computeTopLevel();
+		computeBottomLevel();
+		sortedComputations.add(topComputation);
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				for (int i = 0; i < sortedComputations.size(); i++) {
+					if (indexComputation.getBottomLevel() > sortedComputations
+							.get(i).getBottomLevel()) {
+						sortedComputations.add(i, indexComputation);
+						break;
+					} else {
+						if (indexComputation.getBottomLevel() == sortedComputations
+								.get(i).getBottomLevel()) {
+							if (indexComputation.getTopLevel() > sortedComputations
+									.get(i).getTopLevel()) {
+								sortedComputations.add(i, indexComputation);
+								break;
+							}
+						}
+						if (i == (sortedComputations.size() - 1)) {
+							sortedComputations.add(indexComputation);
+							break;
+						}
+					}
+				}
+			}
+		}
+		sortedComputations.remove(0);
+		return sortedComputations;
+	}
+
+	/**
+	 * Sort computation nodes by their computation bottom level
+	 * 
+	 * @return A vector of sorted computations
+	 */
+	public Vector<ComputationDescriptor> sortComputationsByBottomLevelComputation() {
+		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
+		computeTopLevelComputation();
+		computeBottomLevelComputation();
+		sortedComputations.add(topComputation);
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				for (int i = 0; i < sortedComputations.size(); i++) {
+					if (indexComputation.getBottomLevelComputation() > sortedComputations
+							.get(i).getBottomLevelComputation()) {
+						sortedComputations.add(i, indexComputation);
+						break;
+					} else {
+						if (indexComputation.getBottomLevelComputation() == sortedComputations
+								.get(i).getBottomLevelComputation()) {
+							if (indexComputation.getTopLevelComputation() > sortedComputations
+									.get(i).getTopLevelComputation()) {
+								sortedComputations.add(i, indexComputation);
+								break;
+							}
+						}
+						if (i == (sortedComputations.size() - 1)) {
+							sortedComputations.add(indexComputation);
+							break;
+						}
+					}
+				}
+			}
+		}
+		sortedComputations.remove(0);
+		return sortedComputations;
+	}
+
+	/**
+	 * Sort computation nodes by their input bottom level
+	 * 
+	 * @return A vector of sorted computations
+	 */
+	public Vector<ComputationDescriptor> sortComputationsByBottomLevelIn() {
+		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
+		computeTopLevelIn();
+		computeBottomLevelIn();
+		sortedComputations.add(topComputation);
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
+				.values()) {
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				for (int i = 0; i < sortedComputations.size(); i++) {
+					if (indexComputation.getBottomLevelIn() > sortedComputations
+							.get(i).getBottomLevelIn()) {
+						sortedComputations.add(i, indexComputation);
+						break;
+					} else {
+						if (indexComputation.getBottomLevelIn() == sortedComputations
+								.get(i).getBottomLevelIn()) {
+							if (indexComputation.getTopLevelIn() > sortedComputations
+									.get(i).getTopLevelIn()) {
+								sortedComputations.add(i, indexComputation);
+								break;
+							}
+						}
+						if (i == (sortedComputations.size() - 1)) {
+							sortedComputations.add(indexComputation);
+							break;
+						}
+					}
+				}
+			}
+		}
+		sortedComputations.remove(0);
+		return sortedComputations;
+	}
+
+	/**
+	 * Sort computation nodes by their input/output bottom level
+	 * 
+	 * @return A vector of sorted computations
+	 */
 	public Vector<ComputationDescriptor> sortComputationsByBottomLevelInOut() {
 		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
 		computeTopLevelInOut();
@@ -1076,53 +1207,44 @@ public class AlgorithmDescriptor extends DirectedAcyclicGraph {
 
 	}
 
-	public AlgorithmDescriptor clone() {
-		AlgorithmDescriptor algo = new AlgorithmDescriptor(new DAGEdgeFactory());
-		for (ComputationDescriptor indexComputation : this.getComputations()
+	/**
+	 * Sort computation nodes by their output bottom level
+	 * 
+	 * @return A vector of sorted computations
+	 */
+	public Vector<ComputationDescriptor> sortComputationsByBottomLevelOut() {
+		Vector<ComputationDescriptor> sortedComputations = new Vector<ComputationDescriptor>();
+		computeTopLevelOut();
+		computeBottomLevelOut();
+		sortedComputations.add(topComputation);
+		for (ComputationDescriptor indexComputation : ComputationDescriptorBuffer
 				.values()) {
-			if (!indexComputation.getName().equalsIgnoreCase(
-					algo.getTopComputation().getName())
-					&& !indexComputation.getName().equalsIgnoreCase(
-							algo.getBottomComputation().getName())) {
-				ComputationDescriptor newComputation = new ComputationDescriptor(
-						indexComputation.getName(), algo.getComputations());
-				newComputation.setTime(indexComputation.getTime());
-				newComputation.setNbTotalRepeat(indexComputation
-						.getNbTotalRepeat());
-				newComputation.setAlgorithm(algo);
-				algo.addComputation(newComputation);
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				for (int i = 0; i < sortedComputations.size(); i++) {
+					if (indexComputation.getBottomLevelOut() > sortedComputations
+							.get(i).getBottomLevelOut()) {
+						sortedComputations.add(i, indexComputation);
+						break;
+					} else {
+						if (indexComputation.getBottomLevelOut() == sortedComputations
+								.get(i).getBottomLevelOut()) {
+							if (indexComputation.getTopLevelOut() > sortedComputations
+									.get(i).getTopLevelOut()) {
+								sortedComputations.add(i, indexComputation);
+								break;
+							}
+						}
+						if (i == (sortedComputations.size() - 1)) {
+							sortedComputations.add(indexComputation);
+							break;
+						}
+					}
+				}
+			}
+		}
+		sortedComputations.remove(0);
+		return sortedComputations;
 
-				for (String indexOperatorName : indexComputation
-						.getComputationDurations().keySet()) {
-					newComputation.addComputationDuration(indexOperatorName,
-							indexComputation
-									.getComputationDuration(indexOperatorName));
-				}
-				for (String indexOperatorId : indexComputation.getOperatorSet()) {
-					newComputation.addOperator(indexOperatorId);
-				}
-			}
-		}
-		for (CommunicationDescriptor indexCommunication : this
-				.getCommunications().values()) {
-			CommunicationDescriptor newCommunication = new CommunicationDescriptor(
-					indexCommunication.getName(), algo.getCommunications());
-			newCommunication.setOrigin(indexCommunication.getOrigin());
-			algo.getComputation(newCommunication.getOrigin())
-					.addOutputCommunication(newCommunication);
-			newCommunication
-					.setDestination(indexCommunication.getDestination());
-			algo.getComputation(newCommunication.getDestination())
-					.addInputCommunication(newCommunication);
-			newCommunication.setWeight(indexCommunication.getWeight());
-			newCommunication.setAlgorithm(algo);
-			algo.addCommunication(newCommunication);
-			for (String indexName : indexCommunication
-					.getCommunicationDurations().keySet()) {
-				newCommunication.addCommunicationDuration(indexName,
-						indexCommunication.getCommunicationDuration(indexName));
-			}
-		}
-		return algo;
 	}
 }

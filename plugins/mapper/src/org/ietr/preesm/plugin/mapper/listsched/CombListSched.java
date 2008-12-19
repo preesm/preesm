@@ -49,32 +49,109 @@ import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
+/**
+ * The CombListSched combines different list scheduling methods to obtain the
+ * best schedule result
+ * 
+ * @author pmu
+ * 
+ */
 public class CombListSched {
 
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
+		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
+
+		CombListSched test = new CombListSched(parameterFileName,
+				architectureFileName);
+		test.schedule();
+	}
+
+	/**
+	 * The file name of an architecture
+	 */
 	private String architectureFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
 
+	/**
+	 * The file name of parameters
+	 */
 	private String parameterFileName = "D:\\Projets\\PreesmSourceForge\\trunk\\plugins\\mapper\\src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
 
+	/**
+	 * The AlgorithmTransformer
+	 */
 	private AlgorithmTransformer algoTransformer = null;
 
+	/**
+	 * The ArchitectureTransformer
+	 */
 	private ArchitectureTransformer archiTransformer = null;
 
+	/**
+	 * The ScenarioTransformer
+	 */
 	private ScenarioTransformer scenaTransformer = null;
 
+	/**
+	 * The SDFGraph
+	 */
 	private SDFGraph sdf = null;
+
+	/**
+	 * The MultiCoreArchitecture
+	 */
 	private MultiCoreArchitecture architecture = null;
+
+	/**
+	 * The Scenario
+	 */
 	private IScenario scenario = null;
 
+	/**
+	 * The MapperDAG
+	 */
 	private MapperDAG dag = null;
 
+	/**
+	 * The AlgorithmDescriptor
+	 */
 	private AlgorithmDescriptor algo = null;
+
+	/**
+	 * The ArchitectureDescriptor
+	 */
 	private ArchitectureDescriptor archi = null;
+
+	/**
+	 * The vertices' weights of random SDFGraph
+	 */
 	private HashMap<String, Integer> computationWeights = null;
 
+	/**
+	 * The scheduler that gives the best result
+	 */
 	private AbstractScheduler bestScheduler = null;
 
+	/**
+	 * The best schedule length
+	 */
 	private int bestScheduleLength = Integer.MAX_VALUE;
 
+	/**
+	 * Construct the CombListSched using the given SDFGraph,
+	 * MultiCoreArchitecture and Scenario
+	 * 
+	 * @param sdf
+	 *            An SDFGraph
+	 * @param architecture
+	 *            A MultiCoreArchitecture
+	 * @param scenario
+	 *            A Scenario
+	 */
 	public CombListSched(SDFGraph sdf, MultiCoreArchitecture architecture,
 			IScenario scenario) {
 		algoTransformer = new AlgorithmTransformer();
@@ -87,6 +164,15 @@ public class CombListSched {
 				1000);
 	}
 
+	/**
+	 * Construct the CombListSched using the given parameter file and
+	 * architecture file, the algorithm is a random SDFGraph
+	 * 
+	 * @param parameterFileName
+	 *            File name of parameters
+	 * @param architectureFileName
+	 *            File name of architecture
+	 */
 	public CombListSched(String parameterFileName, String architectureFileName) {
 		this.architectureFileName = architectureFileName;
 		this.parameterFileName = parameterFileName;
@@ -100,6 +186,47 @@ public class CombListSched {
 				1000);
 	}
 
+	/**
+	 * Compare a scheduler to the best one, the best scheduler is replaced if
+	 * the new one is better
+	 * 
+	 * @param scheduler
+	 *            A scheduler to be compared with the best one
+	 */
+	private void compareScheduler(AbstractScheduler scheduler) {
+		if (bestScheduleLength > scheduler.getScheduleLength()) {
+			bestScheduler = scheduler;
+			bestScheduleLength = scheduler.getScheduleLength();
+		} else if (bestScheduleLength == scheduler.getScheduleLength()) {
+			if (bestScheduler.getUsedOperators().size() > scheduler
+					.getUsedOperators().size()) {
+				bestScheduler = scheduler;
+				bestScheduleLength = scheduler.getScheduleLength();
+			}
+		}
+	}
+
+	/**
+	 * Get the best schedule length
+	 * 
+	 * @return The best schedule length
+	 */
+	public int getBestScheduleLength() {
+		return bestScheduleLength;
+	}
+
+	/**
+	 * Get the best scheduler
+	 * 
+	 * @return The best scheduler
+	 */
+	public AbstractScheduler getBestScheduler() {
+		return bestScheduler;
+	}
+
+	/**
+	 * Parse the algorithm, architecture and scenario
+	 */
 	private void parse() {
 		if (dag != null) {
 			System.out.println("Transform DAG to algorithm...");
@@ -225,6 +352,24 @@ public class CombListSched {
 		}
 	}
 
+	/**
+	 * Plot the Gantt Chart for the given scheduler
+	 * 
+	 * @param scheduler
+	 *            A scheduler to be used for the Gantt Chart
+	 */
+	private void plot(AbstractScheduler scheduler) {
+		GanttPlotter plot = new GanttPlotter(scheduler.getName()
+				+ " -> Schedule Length=" + scheduler.getScheduleLength(),
+				scheduler);
+		plot.pack();
+		RefineryUtilities.centerFrameOnScreen(plot);
+		plot.setVisible(true);
+	}
+
+	/**
+	 * Use different list scheduling methods to schedule
+	 */
 	public void schedule() {
 		System.out
 				.println("\n***** Combined List Scheduling With Static Order Begins! *****");
@@ -249,10 +394,10 @@ public class CombListSched {
 				archi.clone());
 		scheduler4.schedule();
 
-		chooseBestScheduler(scheduler1.getBestScheduler());
-		chooseBestScheduler(scheduler2.getBestScheduler());
-		chooseBestScheduler(scheduler3.getBestScheduler());
-		chooseBestScheduler(scheduler4.getBestScheduler());
+		compareScheduler(scheduler1.getBestScheduler());
+		compareScheduler(scheduler2.getBestScheduler());
+		compareScheduler(scheduler3.getBestScheduler());
+		compareScheduler(scheduler4.getBestScheduler());
 
 		System.out.println("***Compared Results***");
 
@@ -339,48 +484,5 @@ public class CombListSched {
 		plot(bestScheduler);
 		System.out
 				.println("\n\n***** Combined List Scheduling With Static Order Finishes!*****");
-	}
-
-	private void chooseBestScheduler(AbstractScheduler scheduler) {
-		if (bestScheduleLength > scheduler.getScheduleLength()) {
-			bestScheduler = scheduler;
-			bestScheduleLength = scheduler.getScheduleLength();
-		} else if (bestScheduleLength == scheduler.getScheduleLength()) {
-			if (bestScheduler.getUsedOperators().size() > scheduler
-					.getUsedOperators().size()) {
-				bestScheduler = scheduler;
-				bestScheduleLength = scheduler.getScheduleLength();
-			}
-		}
-	}
-
-	public AbstractScheduler getBestScheduler() {
-		return bestScheduler;
-	}
-
-	public int getBestScheduleLength() {
-		return bestScheduleLength;
-	}
-
-	private void plot(AbstractScheduler scheduler) {
-		GanttPlotter plot = new GanttPlotter(scheduler.getName()
-				+ " -> Schedule Length=" + scheduler.getScheduleLength(),
-				scheduler);
-		plot.pack();
-		RefineryUtilities.centerFrameOnScreen(plot);
-		plot.setVisible(true);
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
-		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
-
-		CombListSched test = new CombListSched(parameterFileName,
-				architectureFileName);
-		test.schedule();
 	}
 }

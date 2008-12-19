@@ -35,16 +35,20 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
+/**
+ * This class gives two types of operation
+ * 
+ * @author pmu
+ * 
+ */
 public enum OperationType {
-
 	/**
-	 * 
+	 * Computation
 	 */
 	Computation,
 
 	/**
-	 * 
+	 * Communication
 	 */
 	Communication;
-
 }

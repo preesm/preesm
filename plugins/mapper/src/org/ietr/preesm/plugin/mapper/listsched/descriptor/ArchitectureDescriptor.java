@@ -38,26 +38,62 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 import java.util.HashMap;
 import java.util.Vector;
 
+/**
+ * ArchitectureDescriptor describes an architecture
+ * 
+ * @author pmu
+ * 
+ */
 public class ArchitectureDescriptor {
 
+	/**
+	 * Name of the architecture
+	 */
 	private String name = "architecture";
 
+	/**
+	 * Buffer containing all the components
+	 */
 	private HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer;
 
+	/**
+	 * Buffer containing all the operators
+	 */
 	private HashMap<String, OperatorDescriptor> allOperators;
 
+	/**
+	 * Buffer containing all the switches
+	 */
 	private HashMap<String, SwitchDescriptor> allSwitches;
 
+	/**
+	 * Buffer containing all the links
+	 */
 	private HashMap<String, LinkDescriptor> allLinks;
 
+	/**
+	 * All the processors in use
+	 */
 	private Vector<ProcessorDescriptor> processorsInUse = null;
 
+	/**
+	 * A new processor
+	 */
 	private ProcessorDescriptor newProcessor = null;
 
+	/**
+	 * Number of processors in use
+	 */
 	private int nbProcessorInUse = 0;
 
+	/**
+	 * Used surface of the architecture
+	 */
 	private int surfaceUsed = 0;
 
+	/**
+	 * Construct an ArchitectureDescriptor
+	 */
 	public ArchitectureDescriptor() {
 		ComponentDescriptorBuffer = new HashMap<String, ComponentDescriptor>();
 		allOperators = new HashMap<String, OperatorDescriptor>();
@@ -66,6 +102,12 @@ public class ArchitectureDescriptor {
 		processorsInUse = new Vector<ProcessorDescriptor>();
 	}
 
+	/**
+	 * Construct an ArchitectureDescriptor with the given buffer of components
+	 * 
+	 * @param ComponentDescriptorBuffer
+	 *            A buffer containing components
+	 */
 	public ArchitectureDescriptor(
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer) {
 		this.ComponentDescriptorBuffer = ComponentDescriptorBuffer;
@@ -75,6 +117,15 @@ public class ArchitectureDescriptor {
 		processorsInUse = new Vector<ProcessorDescriptor>();
 	}
 
+	/**
+	 * Construct an ArchitectureDescriptor with the given buffer of components
+	 * and a new processor
+	 * 
+	 * @param ComponentDescriptorBuffer
+	 *            A buffer containing components
+	 * @param newProcessor
+	 *            A new processor
+	 */
 	public ArchitectureDescriptor(
 			HashMap<String, ComponentDescriptor> ComponentDescriptorBuffer,
 			ProcessorDescriptor newProcessor) {
@@ -84,117 +135,6 @@ public class ArchitectureDescriptor {
 		allLinks = new HashMap<String, LinkDescriptor>();
 		processorsInUse = new Vector<ProcessorDescriptor>();
 		this.newProcessor = newProcessor;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public HashMap<String, ComponentDescriptor> getComponents() {
-		return ComponentDescriptorBuffer;
-	}
-
-	public ComponentDescriptor getComponent(String id) {
-		return ComponentDescriptorBuffer.get(id);
-	}
-
-	public OperatorDescriptor getOperator(String id) {
-		return (OperatorDescriptor) ComponentDescriptorBuffer.get(id);
-	}
-
-	public SwitchDescriptor getSwitch(String id) {
-		return (SwitchDescriptor) ComponentDescriptorBuffer.get(id);
-	}
-
-	public LinkDescriptor getLink(String id) {
-		return (LinkDescriptor) ComponentDescriptorBuffer.get(id);
-	}
-
-	public HashMap<String, OperatorDescriptor> getAllOperators() {
-		if (allOperators.size() == 0) {
-			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
-					.values()) {
-				if ((indexComponent.getType() == ComponentType.Ip || indexComponent
-						.getType() == ComponentType.Processor)
-						&& !indexComponent.getId().equalsIgnoreCase(
-								indexComponent.getName())) {
-					allOperators.put(indexComponent.getId(),
-							(OperatorDescriptor) indexComponent);
-				}
-			}
-		}
-		return allOperators;
-	}
-
-	public HashMap<String, SwitchDescriptor> getAllSwitches() {
-		if (allSwitches.size() == 0) {
-			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
-					.values()) {
-				if ((indexComponent.getType() == ComponentType.Switch)
-						&& !indexComponent.getId().equalsIgnoreCase(
-								indexComponent.getName())) {
-					allSwitches.put(indexComponent.getId(),
-							(SwitchDescriptor) indexComponent);
-				}
-			}
-		}
-		return allSwitches;
-	}
-
-	public HashMap<String, LinkDescriptor> getAllLinks() {
-		if (allLinks.size() == 0) {
-			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
-					.values()) {
-				if ((indexComponent.getType() == ComponentType.Bus || indexComponent
-						.getType() == ComponentType.Fifo)
-						&& !indexComponent.getId().equalsIgnoreCase(
-								indexComponent.getName())) {
-					allLinks.put(indexComponent.getId(),
-							(LinkDescriptor) indexComponent);
-				}
-			}
-		}
-		return allLinks;
-	}
-
-	public Vector<ProcessorDescriptor> getProcessorsInUse() {
-		return processorsInUse;
-	}
-
-	public void setProcessorsInUse(Vector<ProcessorDescriptor> processorsInUse) {
-		this.processorsInUse = processorsInUse;
-	}
-
-	public ProcessorDescriptor getNewProcessor() {
-		return newProcessor;
-	}
-
-	public void setNewProcessor(ProcessorDescriptor newProcessor) {
-		this.newProcessor = newProcessor;
-	}
-
-	public int getNbProcessorInUse() {
-		return nbProcessorInUse;
-	}
-
-	public void setNbProcessorInUse(int nbProcessorInUse) {
-		this.nbProcessorInUse = nbProcessorInUse;
-	}
-
-	public void increaseNbProcessorInUse() {
-		nbProcessorInUse++;
-	}
-
-	public int getSurfaceUsed() {
-		return surfaceUsed;
-	}
-
-	public void setSurfaceUsed(int surfaceUsed) {
-		this.surfaceUsed = surfaceUsed;
 	}
 
 	public ArchitectureDescriptor clone() {
@@ -312,5 +252,223 @@ public class ArchitectureDescriptor {
 			}
 		}
 		return archi;
+	}
+
+	/**
+	 * Get all the links
+	 * 
+	 * @return A HashMap of all the links
+	 */
+	public HashMap<String, LinkDescriptor> getAllLinks() {
+		if (allLinks.size() == 0) {
+			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Bus || indexComponent
+						.getType() == ComponentType.Fifo)
+						&& !indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					allLinks.put(indexComponent.getId(),
+							(LinkDescriptor) indexComponent);
+				}
+			}
+		}
+		return allLinks;
+	}
+
+	/**
+	 * Get all the operators
+	 * 
+	 * @return A HashMap of all the operators
+	 */
+	public HashMap<String, OperatorDescriptor> getAllOperators() {
+		if (allOperators.size() == 0) {
+			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Ip || indexComponent
+						.getType() == ComponentType.Processor)
+						&& !indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					allOperators.put(indexComponent.getId(),
+							(OperatorDescriptor) indexComponent);
+				}
+			}
+		}
+		return allOperators;
+	}
+
+	/**
+	 * Get all the switches
+	 * 
+	 * @return A HashMap of all the switches
+	 */
+	public HashMap<String, SwitchDescriptor> getAllSwitches() {
+		if (allSwitches.size() == 0) {
+			for (ComponentDescriptor indexComponent : ComponentDescriptorBuffer
+					.values()) {
+				if ((indexComponent.getType() == ComponentType.Switch)
+						&& !indexComponent.getId().equalsIgnoreCase(
+								indexComponent.getName())) {
+					allSwitches.put(indexComponent.getId(),
+							(SwitchDescriptor) indexComponent);
+				}
+			}
+		}
+		return allSwitches;
+	}
+
+	/**
+	 * Get the component with the given id
+	 * 
+	 * @param id
+	 *            Id of component
+	 * @return A component
+	 */
+	public ComponentDescriptor getComponent(String id) {
+		return ComponentDescriptorBuffer.get(id);
+	}
+
+	/**
+	 * Get all the components
+	 * 
+	 * @return A HashMap of all the components in this architecture
+	 */
+	public HashMap<String, ComponentDescriptor> getComponents() {
+		return ComponentDescriptorBuffer;
+	}
+
+	/**
+	 * Get the link with given id
+	 * 
+	 * @param id
+	 *            Id of link
+	 * @return A link
+	 */
+	public LinkDescriptor getLink(String id) {
+		return (LinkDescriptor) ComponentDescriptorBuffer.get(id);
+	}
+
+	/**
+	 * Get the name of the architecture
+	 * 
+	 * @return The name of the architecture
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Get the number of processors in use
+	 * 
+	 * @return The number of processors in use
+	 */
+	public int getNbProcessorInUse() {
+		return nbProcessorInUse;
+	}
+
+	/**
+	 * Get the new processor
+	 * 
+	 * @return The new processor
+	 */
+	public ProcessorDescriptor getNewProcessor() {
+		return newProcessor;
+	}
+
+	/**
+	 * Get the operator with the given id
+	 * 
+	 * @param id
+	 *            Id of operator
+	 * @return An operator
+	 */
+	public OperatorDescriptor getOperator(String id) {
+		return (OperatorDescriptor) ComponentDescriptorBuffer.get(id);
+	}
+
+	/**
+	 * Get the processors in use
+	 * 
+	 * @return A Vector of processors in use
+	 */
+	public Vector<ProcessorDescriptor> getProcessorsInUse() {
+		return processorsInUse;
+	}
+
+	/**
+	 * Get the used surface
+	 * 
+	 * @return Used surface
+	 */
+	public int getSurfaceUsed() {
+		return surfaceUsed;
+	}
+
+	/**
+	 * Get the switch with given id
+	 * 
+	 * @param id
+	 *            Id of switch
+	 * @return A switch
+	 */
+	public SwitchDescriptor getSwitch(String id) {
+		return (SwitchDescriptor) ComponentDescriptorBuffer.get(id);
+	}
+
+	/**
+	 * Increase the number of processors in use by 1
+	 * 
+	 */
+	public void increaseNbProcessorInUse() {
+		nbProcessorInUse++;
+	}
+
+	/**
+	 * Set the name of the architecture
+	 * 
+	 * @param name
+	 *            The name of the architecture
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Set the number of processors in use
+	 * 
+	 * @param nbProcessorInUse
+	 *            The number of processors in use
+	 */
+	public void setNbProcessorInUse(int nbProcessorInUse) {
+		this.nbProcessorInUse = nbProcessorInUse;
+	}
+
+	/**
+	 * Set the new processor
+	 * 
+	 * @param newProcessor
+	 *            The new processor
+	 */
+	public void setNewProcessor(ProcessorDescriptor newProcessor) {
+		this.newProcessor = newProcessor;
+	}
+
+	/**
+	 * Set the processors in use
+	 * 
+	 * @param processorsInUse
+	 *            A vector of processors
+	 */
+	public void setProcessorsInUse(Vector<ProcessorDescriptor> processorsInUse) {
+		this.processorsInUse = processorsInUse;
+	}
+
+	/**
+	 * Set the used surface
+	 * 
+	 * @param surfaceUsed
+	 *            Used surface
+	 */
+	public void setSurfaceUsed(int surfaceUsed) {
+		this.surfaceUsed = surfaceUsed;
 	}
 }
