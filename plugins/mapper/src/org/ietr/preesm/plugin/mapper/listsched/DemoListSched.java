@@ -70,7 +70,7 @@ public class DemoListSched {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String algorithmFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\algorithm.xml";
+		String algorithmFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\algorithm_test.xml";
 		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
 		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
 
@@ -103,173 +103,6 @@ public class DemoListSched {
 			String architectureFileName) {
 		System.out.println("\n***** DemoListScheduling begins! *****");
 
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSched scheduler1 = new CListSched(algorithm, architecture);
-		// scheduler1.schedule();
-		// testScheduler(scheduler1, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCc scheduler2 = new CListSchedCc(algorithm, architecture);
-		// scheduler2.schedule();
-		// testScheduler(scheduler2, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCd scheduler3 = new CListSchedCd(algorithm, architecture);
-		// scheduler3.schedule();
-		// testScheduler(scheduler3, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCcCdBlcomp scheduler4 = new CListSchedCcCdBlcomp(algorithm,
-		// architecture);
-		// scheduler4.schedule();
-		// testScheduler(scheduler4, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCcCdBl scheduler5 = new CListSchedCcCdBl(algorithm,
-		// architecture);
-		// scheduler5.schedule();
-		// testScheduler(scheduler5, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCcCdBlin scheduler6 = new CListSchedCcCdBlin(algorithm,
-		// architecture);
-		// scheduler6.schedule();
-		// testScheduler(scheduler6, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCcCdBlout scheduler7 = new CListSchedCcCdBlout(algorithm,
-		// architecture);
-		// scheduler7.schedule();
-		// testScheduler(scheduler7, algorithm, architecture);
-		//
-		// parse(algorithmFileName, architectureFileName, parameterFileName);
-		// CListSchedCcCdBlinout scheduler8 = new
-		// CListSchedCcCdBlinout(algorithm,
-		// architecture);
-		// scheduler8.schedule();
-		// testScheduler(scheduler8, algorithm, architecture);
-		//
-		// System.out.println("***Compared Results***");
-		//
-		// System.out
-		// .print(
-		// "No.\tScheduling Method\t\t\t\t\t\t\t\t\t\t\t\tSchedule Length\t\tUsed Operators\t\tScheduling Order"
-		// );
-		//
-		// System.out.print("\n1\t" + scheduler1.getName()
-		// + "\t\t\t\t\t\t\t\t\t\t\t\t" + scheduler1.getScheduleLength()
-		// + "\t\t\t" + scheduler1.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler1
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot1 = new GanttPlotter(scheduler1.getName()
-		// + " -> Schedule Length=" + scheduler1.getScheduleLength(),
-		// scheduler1);
-		// plot1.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot1);
-		// plot1.setVisible(true);
-		//
-		// System.out.print("\n2\t" + scheduler2.getName() +
-		// "\t\t\t\t\t\t\t\t\t"
-		// + scheduler2.getScheduleLength() + "\t\t\t"
-		// + scheduler2.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler2
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot2 = new GanttPlotter(scheduler2.getName()
-		// + " -> Schedule Length=" + scheduler2.getScheduleLength(),
-		// scheduler2);
-		// plot2.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot2);
-		// plot2.setVisible(true);
-		//
-		// System.out.print("\n3\t" + scheduler3.getName() + "\t\t\t\t\t\t\t\t"
-		// + scheduler3.getScheduleLength() + "\t\t\t"
-		// + scheduler3.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler3
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot3 = new GanttPlotter(scheduler3.getName()
-		// + " -> Schedule Length=" + scheduler3.getScheduleLength(),
-		// scheduler3);
-		// plot3.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot3);
-		// plot3.setVisible(true);
-		//
-		// System.out.print("\n4\t" + scheduler4.getName() + "\t"
-		// + scheduler4.getScheduleLength() + "\t\t\t"
-		// + scheduler4.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler4
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot4 = new GanttPlotter(scheduler4.getName()
-		// + " -> Schedule Length=" + scheduler4.getScheduleLength(),
-		// scheduler4);
-		// plot4.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot4);
-		// plot4.setVisible(true);
-		//
-		// System.out.print("\n5\t" + scheduler5.getName() + "\t\t"
-		// + scheduler5.getScheduleLength() + "\t\t\t"
-		// + scheduler5.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler5
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		//
-		// GanttPlotter plot5 = new GanttPlotter(scheduler5.getName()
-		// + " -> Schedule Length=" + scheduler5.getScheduleLength(),
-		// scheduler5);
-		// plot5.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot5);
-		// plot5.setVisible(true);
-		//
-		// System.out.print("\n6\t" + scheduler6.getName() + "\t\t"
-		// + scheduler6.getScheduleLength() + "\t\t\t"
-		// + scheduler6.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler6
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot6 = new GanttPlotter(scheduler6.getName()
-		// + " -> Schedule Length=" + scheduler6.getScheduleLength(),
-		// scheduler6);
-		// plot6.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot6);
-		// plot6.setVisible(true);
-		//
-		// System.out.print("\n7\t" + scheduler7.getName() + "\t"
-		// + scheduler7.getScheduleLength() + "\t\t\t"
-		// + scheduler7.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler7
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot7 = new GanttPlotter(scheduler7.getName()
-		// + " -> Schedule Length=" + scheduler7.getScheduleLength(),
-		// scheduler7);
-		// plot7.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot7);
-		// plot7.setVisible(true);
-		//
-		// System.out.print("\n8\t" + scheduler8.getName() + "\t"
-		// + scheduler8.getScheduleLength() + "\t\t\t"
-		// + scheduler8.getUsedOperators().size() + "\t\t\t");
-		// for (ComputationDescriptor indexComputation : scheduler8
-		// .getSchedulingOrder()) {
-		// System.out.print(indexComputation.getName() + " ");
-		// }
-		// GanttPlotter plot8 = new GanttPlotter(scheduler8.getName()
-		// + " -> Schedule Length=" + scheduler8.getScheduleLength(),
-		// scheduler8);
-		// plot8.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot8);
-		// plot8.setVisible(true);
-		//		
 		parse(algorithmFileName, architectureFileName, parameterFileName);
 		AlgorithmDescriptor algo = algorithm.clone();
 		ArchitectureDescriptor archi = architecture.clone();
@@ -295,20 +128,6 @@ public class DemoListSched {
 		scheduler4.schedule();
 		testScheduler(scheduler4.getBestScheduler(), algo, archi);
 
-		// // ///////////////////////
-		// algo = algorithm.clone();
-		// archi = architecture.clone();
-		// CombCListSchedCd scheduler = new CombCListSchedCd(algo, archi);
-		// scheduler.schedule();
-		// GanttPlotter plot = new
-		// GanttPlotter(scheduler.getBestScheduler().getName()
-		// + " -> Schedule Length=" + scheduler.getScheduleLength(),
-		// scheduler.getBestScheduler());
-		// plot.pack();
-		// RefineryUtilities.centerFrameOnScreen(plot);
-		// plot.setVisible(true);
-		// // //////////////////////////
-
 		System.out.println("***Compared Results***");
 
 		System.out
@@ -319,7 +138,7 @@ public class DemoListSched {
 				+ scheduler1.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler1
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		GanttPlotter plot1 = new GanttPlotter(scheduler1.getBestScheduler()
@@ -336,7 +155,7 @@ public class DemoListSched {
 				+ scheduler2.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler2
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		GanttPlotter plot2 = new GanttPlotter(scheduler2.getBestScheduler()
@@ -353,7 +172,7 @@ public class DemoListSched {
 				+ scheduler3.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler3
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		GanttPlotter plot3 = new GanttPlotter(scheduler3.getBestScheduler()
@@ -370,7 +189,7 @@ public class DemoListSched {
 				+ scheduler4.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler4
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		GanttPlotter plot4 = new GanttPlotter(scheduler4.getBestScheduler()

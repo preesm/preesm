@@ -68,14 +68,14 @@ public class CListSchedCcBlcomp extends CListSchedCc {
 		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevelComputation();
 		algorithm.computeBottomLevelComputation();
-		schedulingOrder = algorithm.sortComputationsByBottomLevelComputation();
+		staOrder = algorithm.sortComputationsByBottomLevelComputation();
 		System.out.println("static scheduling order:");
-		for (int i = 0; i < schedulingOrder.size(); i++) {
+		for (int i = 0; i < staOrder.size(); i++) {
 			System.out.println(" " + i + " -> "
-					+ schedulingOrder.get(i).getName() + " (b-level-c="
-					+ schedulingOrder.get(i).getBottomLevelComputation()
+					+ staOrder.get(i).getName() + " (b-level-c="
+					+ staOrder.get(i).getBottomLevelComputation()
 					+ "; t-level-c="
-					+ schedulingOrder.get(i).getTopLevelComputation() + ")");
+					+ staOrder.get(i).getTopLevelComputation() + ")");
 		}
 		OperatorDescriptor bestOperator = null;
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
@@ -96,19 +96,19 @@ public class CListSchedCcBlcomp extends CListSchedCc {
 			}
 		}
 
-		for (int i = 0; i < schedulingOrder.size(); i++) {
+		for (int i = 0; i < staOrder.size(); i++) {
 			System.out.println(i + ": schedule "
-					+ schedulingOrder.get(i).getName());
-			bestOperator = selectOperator(schedulingOrder.get(i));
+					+ staOrder.get(i).getName());
+			bestOperator = selectOperator(staOrder.get(i));
 
-			scheduleComputation(schedulingOrder.get(i), bestOperator);
+			scheduleComputation(staOrder.get(i), bestOperator);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
 			System.out.println(" startTime" + "="
-					+ schedulingOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + schedulingOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : schedulingOrder
+					+ staOrder.get(i).getStartTime() + "; finishTime"
+					+ "=" + staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder
 					.get(i).getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
@@ -118,8 +118,8 @@ public class CListSchedCcBlcomp extends CListSchedCc {
 						+ indexCommunication.getALAP());
 			}
 		}
-		for (int i = 0; i < schedulingOrder.size(); i++) {
-			scheduleLength = max(scheduleLength, schedulingOrder.get(i)
+		for (int i = 0; i < staOrder.size(); i++) {
+			scheduleLength = max(scheduleLength, staOrder.get(i)
 					.getFinishTime());
 		}
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()

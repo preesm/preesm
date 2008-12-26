@@ -378,6 +378,7 @@ public class CombListSched {
 		}
 		parse();
 
+		/* Static */
 		CombCListSched scheduler1 = new CombCListSched(algo.clone(), archi
 				.clone());
 		scheduler1.schedule();
@@ -399,17 +400,40 @@ public class CombListSched {
 		compareScheduler(scheduler3.getBestScheduler());
 		compareScheduler(scheduler4.getBestScheduler());
 
+		/* Dynamic */
+		CombCDListSched schedulerD1 = new CombCDListSched(algo.clone(), archi
+				.clone());
+		schedulerD1.schedule();
+
+		CombCDListSchedCc schedulerD2 = new CombCDListSchedCc(algo.clone(),
+				archi.clone());
+		schedulerD2.schedule();
+
+		CombCDListSchedCd schedulerD3 = new CombCDListSchedCd(algo.clone(),
+				archi.clone());
+		schedulerD3.schedule();
+
+		CombCDListSchedCcCd schedulerD4 = new CombCDListSchedCcCd(algo.clone(),
+				archi.clone());
+		schedulerD4.schedule();
+
+		compareScheduler(schedulerD1.getBestScheduler());
+		compareScheduler(schedulerD2.getBestScheduler());
+		compareScheduler(schedulerD3.getBestScheduler());
+		compareScheduler(schedulerD4.getBestScheduler());
+
 		System.out.println("***Compared Results***");
 
 		System.out
 				.print("No.\tScheduling Method\t\t\t\t\t\t\t\tSchedule Length\t\tUsed Operators\t\tScheduling Order");
 
+		/* Static */
 		System.out.print("\n1\t" + scheduler1.getName() + "\t\t\t\t\t\t"
 				+ scheduler1.getBestScheduler().getScheduleLength() + "\t\t\t"
 				+ scheduler1.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler1
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
@@ -427,7 +451,7 @@ public class CombListSched {
 				+ scheduler2.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler2
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
@@ -445,7 +469,7 @@ public class CombListSched {
 				+ scheduler3.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler3
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
@@ -463,7 +487,7 @@ public class CombListSched {
 				+ scheduler4.getBestScheduler().getUsedOperators().size()
 				+ "\t\t\t");
 		for (ComputationDescriptor indexComputation : scheduler4
-				.getBestScheduler().getSchedulingOrder()) {
+				.getBestScheduler().getStaticOrder()) {
 			System.out.print(indexComputation.getName() + " ");
 		}
 		System.out.println("\n\tBlcomp:"
@@ -476,6 +500,80 @@ public class CombListSched {
 				+ "\n\tBlinout:"
 				+ scheduler4.getSchedulerBlinout().getScheduleLength());
 
+		/* Dynamic */
+		System.out.print("\nD1\t" + schedulerD1.getName() + "\t\t\t\t\t\t"
+				+ schedulerD1.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ schedulerD1.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
+		for (ComputationDescriptor indexComputation : schedulerD1
+				.getBestScheduler().getDynamicOrder()) {
+			System.out.print(indexComputation.getName() + " ");
+		}
+		System.out.println("\n\tBlcomp:"
+				+ schedulerD1.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + schedulerD1.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
+				+ schedulerD1.getSchedulerBlin().getScheduleLength()
+				+ "\n\tBlout:"
+				+ schedulerD1.getSchedulerBlout().getScheduleLength()
+				+ "\n\tBlinout:"
+				+ schedulerD1.getSchedulerBlinout().getScheduleLength());
+
+		System.out.print("\nD2\t" + schedulerD2.getName() + "\t\t\t\t"
+				+ schedulerD2.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ schedulerD2.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
+		for (ComputationDescriptor indexComputation : schedulerD2
+				.getBestScheduler().getDynamicOrder()) {
+			System.out.print(indexComputation.getName() + " ");
+		}
+		System.out.println("\n\tBlcomp:"
+				+ schedulerD2.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + schedulerD2.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
+				+ schedulerD2.getSchedulerBlin().getScheduleLength()
+				+ "\n\tBlout:"
+				+ schedulerD2.getSchedulerBlout().getScheduleLength()
+				+ "\n\tBlinout:"
+				+ schedulerD2.getSchedulerBlinout().getScheduleLength());
+
+		System.out.print("\nD3\t" + schedulerD3.getName() + "\t\t\t"
+				+ schedulerD3.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ schedulerD3.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
+		for (ComputationDescriptor indexComputation : schedulerD3
+				.getBestScheduler().getDynamicOrder()) {
+			System.out.print(indexComputation.getName() + " ");
+		}
+		System.out.println("\n\tBlcomp:"
+				+ schedulerD3.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + schedulerD3.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
+				+ schedulerD3.getSchedulerBlin().getScheduleLength()
+				+ "\n\tBlout:"
+				+ schedulerD3.getSchedulerBlout().getScheduleLength()
+				+ "\n\tBlinout:"
+				+ schedulerD3.getSchedulerBlinout().getScheduleLength());
+
+		System.out.print("\nD4\t" + schedulerD4.getName() + "\t"
+				+ schedulerD4.getBestScheduler().getScheduleLength() + "\t\t\t"
+				+ schedulerD4.getBestScheduler().getUsedOperators().size()
+				+ "\t\t\t");
+		for (ComputationDescriptor indexComputation : schedulerD4
+				.getBestScheduler().getDynamicOrder()) {
+			System.out.print(indexComputation.getName() + " ");
+		}
+		System.out.println("\n\tBlcomp:"
+				+ schedulerD4.getSchedulerBlcomp().getScheduleLength()
+				+ "\n\tBl:" + schedulerD4.getSchedulerBl().getScheduleLength()
+				+ "\n\tBlin:"
+				+ schedulerD4.getSchedulerBlin().getScheduleLength()
+				+ "\n\tBlout:"
+				+ schedulerD4.getSchedulerBlout().getScheduleLength()
+				+ "\n\tBlinout:"
+				+ schedulerD4.getSchedulerBlinout().getScheduleLength());
+
+		/* Best */
 		System.out.print("\n\nBest Scheduler:\t\t" + bestScheduler.getName()
 				+ "\nSchedule Length:\t" + bestScheduler.getScheduleLength()
 				+ "\nUsed Operators:\t\t"

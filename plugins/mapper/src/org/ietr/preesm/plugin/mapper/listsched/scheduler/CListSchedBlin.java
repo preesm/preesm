@@ -68,13 +68,13 @@ public class CListSchedBlin extends CListSched {
 		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevelIn();
 		algorithm.computeBottomLevelIn();
-		schedulingOrder = algorithm.sortComputationsByBottomLevelIn();
+		staOrder = algorithm.sortComputationsByBottomLevelIn();
 		System.out.println("static scheduling order:");
-		for (int i = 0; i < schedulingOrder.size(); i++) {
+		for (int i = 0; i < staOrder.size(); i++) {
 			System.out.println(" " + i + " -> "
-					+ schedulingOrder.get(i).getName() + " (b-level-in="
-					+ schedulingOrder.get(i).getBottomLevelIn()
-					+ "; t-level-in=" + schedulingOrder.get(i).getTopLevelIn()
+					+ staOrder.get(i).getName() + " (b-level-in="
+					+ staOrder.get(i).getBottomLevelIn()
+					+ "; t-level-in=" + staOrder.get(i).getTopLevelIn()
 					+ ")");
 		}
 		OperatorDescriptor bestOperator = null;
@@ -96,19 +96,19 @@ public class CListSchedBlin extends CListSched {
 			}
 		}
 
-		for (int i = 0; i < schedulingOrder.size(); i++) {
+		for (int i = 0; i < staOrder.size(); i++) {
 			System.out.println(i + ": schedule "
-					+ schedulingOrder.get(i).getName());
-			bestOperator = selectOperator(schedulingOrder.get(i));
+					+ staOrder.get(i).getName());
+			bestOperator = selectOperator(staOrder.get(i));
 
-			scheduleComputation(schedulingOrder.get(i), bestOperator);
+			scheduleComputation(staOrder.get(i), bestOperator);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
 			System.out.println(" startTime" + "="
-					+ schedulingOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + schedulingOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : schedulingOrder
+					+ staOrder.get(i).getStartTime() + "; finishTime"
+					+ "=" + staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder
 					.get(i).getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
@@ -118,8 +118,8 @@ public class CListSchedBlin extends CListSched {
 						+ indexCommunication.getALAP());
 			}
 		}
-		for (int i = 0; i < schedulingOrder.size(); i++) {
-			scheduleLength = max(scheduleLength, schedulingOrder.get(i)
+		for (int i = 0; i < staOrder.size(); i++) {
+			scheduleLength = max(scheduleLength, staOrder.get(i)
 					.getFinishTime());
 		}
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()

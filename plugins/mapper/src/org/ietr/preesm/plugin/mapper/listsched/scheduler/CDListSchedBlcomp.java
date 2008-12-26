@@ -35,20 +35,23 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.plugin.mapper.listsched.scheduler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.CommunicationDescriptor;
+import org.ietr.preesm.plugin.mapper.listsched.descriptor.ComputationDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.LinkDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method
- * with Critical Child, Communication Delay and nodes sorted by computation
- * bottom level.
+ * This class gives a classic dynamic list scheduling method with nodes sorted
+ * by computation bottom level in the case of communication contention.
  * 
  * @author pmu
  */
-public class CListSchedCcCdBlcomp extends CListSchedCcCd {
+public class CDListSchedBlcomp extends CListSched {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.
@@ -58,11 +61,11 @@ public class CListSchedCcCdBlcomp extends CListSchedCcCd {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CListSchedCcCdBlcomp(AlgorithmDescriptor algorithm,
+	public CDListSchedBlcomp(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm, architecture);
 		// TODO Auto-generated constructor stub
-		this.name = "Classic List Scheduling With Critical Child, Communication Delay And Nodes Sorted By Computation Bottom Level";
+		this.name = "Classic Dynamic List Scheduling With Nodes Sorted By Computation Bottom Level";
 	}
 
 	public boolean schedule() {
@@ -72,13 +75,13 @@ public class CListSchedCcCdBlcomp extends CListSchedCcCd {
 		staOrder = algorithm.sortComputationsByBottomLevelComputation();
 		System.out.println("static scheduling order:");
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(" " + i + " -> "
-					+ staOrder.get(i).getName() + " (b-level-c="
+			System.out.println(" " + i + " -> " + staOrder.get(i).getName()
+					+ " (b-level-c="
 					+ staOrder.get(i).getBottomLevelComputation()
-					+ "; t-level-c="
-					+ staOrder.get(i).getTopLevelComputation() + ")");
+					+ "; t-level-c=" + staOrder.get(i).getTopLevelComputation()
+					+ ")");
 		}
-		OperatorDescriptor bestOperator = null;
+
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
 				.values()) {
 			indexOperator.addReceiveCommunication(topCommunication);
@@ -97,20 +100,36 @@ public class CListSchedCcCdBlcomp extends CListSchedCcCd {
 			}
 		}
 
-		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(i + ": schedule "
-					+ staOrder.get(i).getName());
-			bestOperator = selectOperator(staOrder.get(i));
+		/*
+		 * Create the set of unscheduledComputation and add all the computations
+		 * to it.
+		 */
+		unscheduledComputations = new HashSet<ComputationDescriptor>();
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				unscheduledComputations.add(indexComputation);
+			}
+		}
 
-			scheduleComputation(staOrder.get(i), bestOperator, false);
+		int step = 0;
+		while (!unscheduledComputations.isEmpty()) {
+			ComputationDescriptor criticalNode = chooseNode(unscheduledComputations);
+			System.out.println("step " + step + ": schedule "
+					+ criticalNode.getName());
+
+			dynOrder.add(criticalNode);
+			OperatorDescriptor bestOperator = selectOperator(criticalNode);
+			scheduleComputation(criticalNode, bestOperator);
+
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
-			System.out.println(" startTime" + "="
-					+ staOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + staOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : staOrder
-					.get(i).getInputCommunications()) {
+			System.out.println(" startTime" + "=" + criticalNode.getStartTime()
+					+ "; finishTime" + "=" + criticalNode.getFinishTime());
+			for (CommunicationDescriptor indexCommunication : criticalNode
+					.getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
 						+ indexCommunication.getStartTimeOnLink()
@@ -118,10 +137,18 @@ public class CListSchedCcCdBlcomp extends CListSchedCcCd {
 						+ indexCommunication.getFinishTimeOnLink() + "; ALAP="
 						+ indexCommunication.getALAP());
 			}
+			unscheduledComputations.remove(criticalNode);
+			step++;
 		}
-		for (int i = 0; i < staOrder.size(); i++) {
-			scheduleLength = max(scheduleLength, staOrder.get(i)
-					.getFinishTime());
+
+		/* Calculate schedule length and finish times of each operator */
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			if ((indexComputation != topComputation)
+					&& (indexComputation != bottomComputation)) {
+				scheduleLength = max(scheduleLength, indexComputation
+						.getFinishTime());
+			}
 		}
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
 				.values()) {
@@ -137,5 +164,77 @@ public class CListSchedCcCdBlcomp extends CListSchedCcCd {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Choose the critical node to be scheduled.
+	 * 
+	 * @param nodeSet
+	 *            The set of unscheduled nodes
+	 * @return The critical node to be scheduled
+	 */
+	private ComputationDescriptor chooseNode(Set<ComputationDescriptor> nodeSet) {
+		ComputationDescriptor bestNode = null;
+		HashSet<ComputationDescriptor> readyNodes = new HashSet<ComputationDescriptor>();
+
+		/* Clear the mark of ready */
+		for (ComputationDescriptor indexComputation : algorithm
+				.getComputations().values()) {
+			indexComputation.clearReady();
+		}
+
+		/*
+		 * topComputation should always marked as scheduled.
+		 */
+		topComputation.setScheduled();
+		for (ComputationDescriptor indexComputation : nodeSet) {
+			if (!indexComputation.isScheduled()) {
+				indexComputation.setReady();
+				for (CommunicationDescriptor indexCommunication : indexComputation
+						.getInputCommunications()) {
+					if (!algorithm.getComputation(
+							indexCommunication.getOrigin()).isScheduled()) {
+						indexComputation.clearReady();
+						break;
+					}
+				}
+				if (indexComputation.isReady()) {
+					readyNodes.add(indexComputation);
+				}
+			}
+		}
+
+		for (ComputationDescriptor indexComputation : readyNodes) {
+			int time = 0;
+			for (CommunicationDescriptor indexCommunication : indexComputation
+					.getInputCommunications()) {
+				int drt = algorithm.getComputation(
+						indexCommunication.getOrigin()).getFinishTime()
+						+ indexCommunication.getCommunicationDuration();
+				if (time < drt) {
+					time = drt;
+				}
+			}
+			indexComputation.setDataReadyTime(time);
+			if (bestNode == null) {
+				bestNode = indexComputation;
+			} else {
+				if ((bestNode.getDataReadyTime() + bestNode
+						.getBottomLevelComputation()) < (indexComputation
+						.getDataReadyTime() + indexComputation
+						.getBottomLevelComputation())) {
+					bestNode = indexComputation;
+				} else if ((bestNode.getDataReadyTime() + bestNode
+						.getBottomLevelComputation()) == (indexComputation
+						.getDataReadyTime() + indexComputation
+						.getBottomLevelComputation())) {
+					if (bestNode.getBottomLevelComputation() < indexComputation
+							.getBottomLevelComputation()) {
+						bestNode = indexComputation;
+					}
+				}
+			}
+		}
+		return bestNode;
 	}
 }

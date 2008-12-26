@@ -74,7 +74,7 @@ public class CListSchedCd extends AbstractScheduler {
 		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevel();
 		algorithm.computeBottomLevel();
-		schedulingOrder = algorithm.sortComputationsByBottomLevel();
+		staOrder = algorithm.sortComputationsByBottomLevel();
 		OperatorDescriptor bestOperator = null;
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
 				.values()) {
@@ -94,20 +94,20 @@ public class CListSchedCd extends AbstractScheduler {
 			}
 		}
 
-		for (int i = 0; i < schedulingOrder.size(); i++) {
+		for (int i = 0; i < staOrder.size(); i++) {
 			System.out.println(i + ": schedule "
-					+ schedulingOrder.get(i).getName() + " (bottom level="
-					+ schedulingOrder.get(i).getBottomLevel() + ")");
-			bestOperator = selectOperator(schedulingOrder.get(i));
+					+ staOrder.get(i).getName() + " (bottom level="
+					+ staOrder.get(i).getBottomLevel() + ")");
+			bestOperator = selectOperator(staOrder.get(i));
 
-			scheduleComputation(schedulingOrder.get(i), bestOperator, false);
+			scheduleComputation(staOrder.get(i), bestOperator, false);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
 			System.out.println(" startTime" + "="
-					+ schedulingOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + schedulingOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : schedulingOrder
+					+ staOrder.get(i).getStartTime() + "; finishTime"
+					+ "=" + staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder
 					.get(i).getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
@@ -117,8 +117,8 @@ public class CListSchedCd extends AbstractScheduler {
 						+ indexCommunication.getALAP());
 			}
 		}
-		for (int i = 0; i < schedulingOrder.size(); i++) {
-			scheduleLength = max(scheduleLength, schedulingOrder.get(i)
+		for (int i = 0; i < staOrder.size(); i++) {
+			scheduleLength = max(scheduleLength, staOrder.get(i)
 					.getFinishTime());
 		}
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()

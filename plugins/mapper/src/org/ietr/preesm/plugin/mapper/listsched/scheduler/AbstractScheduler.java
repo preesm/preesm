@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.listsched.scheduler;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
@@ -58,9 +59,14 @@ public abstract class AbstractScheduler {
 	protected String name = "Abstract Scheduler";
 
 	/**
-	 * Sorted computations
+	 * Static order of computations
 	 */
-	protected Vector<ComputationDescriptor> schedulingOrder = new Vector<ComputationDescriptor>();
+	protected Vector<ComputationDescriptor> staOrder = new Vector<ComputationDescriptor>();
+
+	/**
+	 * Dynamic order of computations
+	 */
+	protected Vector<ComputationDescriptor> dynOrder = new Vector<ComputationDescriptor>();
 
 	/**
 	 * Computation buffer
@@ -130,7 +136,7 @@ public abstract class AbstractScheduler {
 	/**
 	 * All the unscheduled computations
 	 */
-	protected Vector<ComputationDescriptor> unscheduledComputations = null;
+	protected Set<ComputationDescriptor> unscheduledComputations = null;
 
 	/**
 	 * Constructs a scheduler with an algorithm descriptor.
@@ -369,12 +375,21 @@ public abstract class AbstractScheduler {
 	}
 
 	/**
-	 * Gets the sorted computation list.
+	 * Gets the static order of computations.
 	 * 
-	 * @return The sorted computation list
+	 * @return The static order of computations
 	 */
-	public Vector<ComputationDescriptor> getSchedulingOrder() {
-		return schedulingOrder;
+	public Vector<ComputationDescriptor> getStaticOrder() {
+		return staOrder;
+	}
+
+	/**
+	 * Gets the dynamic order of computations.
+	 * 
+	 * @return The dynamic order of computations
+	 */
+	public Vector<ComputationDescriptor> getDynamicOrder() {
+		return dynOrder;
 	}
 
 	/**
