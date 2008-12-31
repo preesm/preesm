@@ -46,12 +46,12 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperationType;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method
- * with Communication Delay.
+ * This class gives a classic static list scheduling method with Critical Child
+ * and Communication Delay.
  * 
  * @author pmu
  */
-public class CListSchedCd extends AbstractScheduler {
+public class CSListSchedCcCd extends AbstractScheduler {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.
@@ -61,12 +61,11 @@ public class CListSchedCd extends AbstractScheduler {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CListSchedCd(AlgorithmDescriptor algorithm,
+	public CSListSchedCcCd(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm);
-		// TODO Auto-generated constructor stub
 		this.architecture = architecture;
-		this.name = "Classic List Scheduling With Communication Delay";
+		this.name = "Classic Static List Scheduling With Critical Child And Communication Delay";
 	}
 
 	@Override
@@ -95,9 +94,9 @@ public class CListSchedCd extends AbstractScheduler {
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(i + ": schedule "
-					+ staOrder.get(i).getName() + " (bottom level="
-					+ staOrder.get(i).getBottomLevel() + ")");
+			System.out.println(i + ": schedule " + staOrder.get(i).getName()
+					+ " (bottom level=" + staOrder.get(i).getBottomLevel()
+					+ ")");
 			bestOperator = selectOperator(staOrder.get(i));
 
 			scheduleComputation(staOrder.get(i), bestOperator, false);
@@ -105,10 +104,10 @@ public class CListSchedCd extends AbstractScheduler {
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
 			System.out.println(" startTime" + "="
-					+ staOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + staOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : staOrder
-					.get(i).getInputCommunications()) {
+					+ staOrder.get(i).getStartTime() + "; finishTime" + "="
+					+ staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder.get(i)
+					.getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
 						+ indexCommunication.getStartTimeOnLink()
@@ -146,21 +145,132 @@ public class CListSchedCd extends AbstractScheduler {
 	 */
 	protected OperatorDescriptor selectOperator(
 			ComputationDescriptor computation) {
-		int bestOperatorFinishTime = Integer.MAX_VALUE;
+		ComputationDescriptor criticalChild = null;
+		int bestFinishTime = Integer.MAX_VALUE;
+		int bestChildFinishTime = Integer.MAX_VALUE;
 		OperatorDescriptor bestOperator = null;
 		System.out.println(" * select operator for " + computation.getName());
 		if (computation.getOperator() == null) {
+			boolean findChild = false;
+			for (int i = staOrder.indexOf(computation); i < staOrder.size(); i++) {
+				for (CommunicationDescriptor indexCommunication : computation
+						.getOutputCommunications()) {
+					if (algorithm.getComputation(indexCommunication
+							.getDestination()) == staOrder.get(i)) {
+						findChild = true;
+						criticalChild = staOrder.get(i);
+						break;
+					}
+				}
+				if (findChild) {
+					break;
+				}
+			}
 			// for (OperatorDescriptor indexOperator : architecture
 			// .getAllOperators().values()) {
 			for (String indexOperatorId : computation.getOperatorSet()) {
-				int minOperatorFinishTime = scheduleComputation(computation,
-						architecture.getOperator(indexOperatorId), false);
-				if (bestOperatorFinishTime > minOperatorFinishTime) {
-					bestOperatorFinishTime = minOperatorFinishTime;
-					bestOperator = architecture.getOperator(indexOperatorId);
+				int finishTime = scheduleComputation(computation, architecture
+						.getOperator(indexOperatorId), true);
+				// TODO: need to back up times after schedule of computation
+				backupTimes();
+				int minChildFinishTime = Integer.MAX_VALUE;
+				if (findChild) {
+					// System.out.println(" critical child is "
+					// + criticalChild.getName());
+					Vector<OperatorDescriptor> childOperatorList = new Vector<OperatorDescriptor>();
+					// schedule critical child
+					// for (CommunicationDescriptor incomingCommunication :
+					// criticalChild
+					// .getPrecedingCommunications()) {
+					for (String childOperatorId : criticalChild
+							.getOperatorSet()) {
+						{
+							// if (algorithm.getComputation(
+							// incomingCommunication.getSource())
+							// .isScheduled()) {
+							// OperatorDescriptor childOperator = algorithm
+							// .getComputation(
+							// incomingCommunication.getSource())
+							// .getOperator();
+							if (!childOperatorList.contains(architecture
+									.getOperator(childOperatorId))) {
+								childOperatorList.add(architecture
+										.getOperator(childOperatorId));
+								int childFinishTime = scheduleComputation(
+										criticalChild, architecture
+												.getOperator(childOperatorId),
+										true);
+								// System.out.println(" finishTime=" +
+								// finishTime);
+								if (childFinishTime < minChildFinishTime) {
+									minChildFinishTime = childFinishTime;
+								}
+								for (OperatorDescriptor indexOperator2 : architecture
+										.getAllOperators().values()) {
+									for (CommunicationDescriptor indexCommunication : criticalChild
+											.getInputCommunications()) {
+										indexOperator2
+												.removeSendCommunication(indexCommunication);
+										indexOperator2
+												.removeReceiveCommunication(indexCommunication);
+										indexOperator2
+												.removeOperation(indexCommunication);
+										if (indexCommunication.getSendLink() != null) {
+											indexCommunication.getSendLink()
+													.removeCommunication(
+															indexCommunication);
+											indexCommunication
+													.setSendLink(null);
+										}
+										if (indexCommunication.getReceiveLink() != null) {
+											indexCommunication.getReceiveLink()
+													.removeCommunication(
+															indexCommunication);
+											indexCommunication
+													.setReceiveLink(null);
+										}
+										indexCommunication.setExist();
+										indexCommunication.clearScheduled();
+									}
+								}
+								architecture.getOperator(childOperatorId)
+										.removeComputation(criticalChild);
+								architecture.getOperator(childOperatorId)
+										.removeOperation(criticalChild);
+								// TODO: need to recover times after schedule of
+								// criticalChild
+								recoverTimes();
+								criticalChild.clearScheduled();
+								criticalChild.setOperator(null);
+							}
+						}
+					}
+					if (bestChildFinishTime > minChildFinishTime) {
+						bestChildFinishTime = minChildFinishTime;
+						bestFinishTime = finishTime;
+						bestOperator = architecture
+								.getOperator(indexOperatorId);
+					} else if (bestChildFinishTime == minChildFinishTime) {
+						if (bestFinishTime > finishTime) {
+							bestFinishTime = finishTime;
+							bestOperator = architecture
+									.getOperator(indexOperatorId);
+						}
+					}
+				} else {
+					// System.out.println(" no child");
+					if (bestFinishTime > finishTime) {
+						bestFinishTime = finishTime;
+						bestOperator = architecture
+								.getOperator(indexOperatorId);
+					}
 				}
-				// System.out.println(" minOperatorFinishTime="
-				// + minOperatorFinishTime);
+				// if (bestChildFinishTime > minChildFinishTime) {
+				// bestChildFinishTime = minChildFinishTime;
+				// bestOperator = indexOperator;
+				// }
+				// System.out.println(" minChildFinishTime="
+				// + minChildFinishTime);
 				// remove inserted communications(source!=destination) and
 				// computations;
 				for (OperatorDescriptor indexOperator2 : architecture
@@ -215,8 +325,9 @@ public class CListSchedCd extends AbstractScheduler {
 			OperatorDescriptor operator, boolean isTemporary) {
 		int dataReadyTime = 0;
 		int maxOperatorFinishTime = 0;
-		System.out.println(" ** schedule computation: " + computation.getName()
-				+ " on: " + operator.getId());
+		// System.out.println(" ** schedule computation: " +
+		// computation.getName()
+		// + " on: " + operator.getId());
 		if (computation.getComputationDurations().containsKey(
 				operator.getName())
 				&& computation.getOperatorSet().contains(operator.getId())) {
@@ -263,7 +374,8 @@ public class CListSchedCd extends AbstractScheduler {
 					break;
 				}
 			}
-			// set ALAP for preceding communications
+			// set ALAP for preceding communications if it is not a temporary
+			// try
 			if (!isTemporary) {
 				Vector<CommunicationDescriptor> communicationList = new Vector<CommunicationDescriptor>();
 				for (CommunicationDescriptor indexCommunication : computation
@@ -279,7 +391,6 @@ public class CListSchedCd extends AbstractScheduler {
 					}
 				}
 				// Collections.sort(communicationList);
-				// for (int i = communicationList.size() - 1; i >= 0; i--) {
 				for (int i = 0; i < communicationList.size(); i++) {
 					if (communicationList.get(i).isScheduled()) {
 						int indexOnSendLink = communicationList.get(i)
@@ -329,7 +440,7 @@ public class CListSchedCd extends AbstractScheduler {
 					}
 				}
 			}
-			// // Examine the latest finish time of all operators
+			// Examine the latest finish time of all operators
 			// for (OperatorDescriptor indexOperator : architecture
 			// .getAllOperators().values()) {
 			// if (maxOperatorFinishTime < indexOperator
@@ -347,6 +458,7 @@ public class CListSchedCd extends AbstractScheduler {
 			// .getFinishTime();
 			// }
 			// }
+			//
 			// give the finish time of the computation on this operator
 			maxOperatorFinishTime = computation.getFinishTime();
 			computation.setScheduled();
@@ -387,7 +499,7 @@ public class CListSchedCd extends AbstractScheduler {
 				communication.setStartTimeOnReceiveOperator(sourceComputation
 						.getFinishTime());
 				communication.setFinishTimeOnReceiveOperator();
-				communication.setALAP(sourceComputation.getFinishTime());
+				// communication.setALAP(sourceComputation.getFinishTime());
 			} else {
 				// System.out
 				// .println(" sourceOperator != destinationOperator");
@@ -417,6 +529,7 @@ public class CListSchedCd extends AbstractScheduler {
 					if (sourceOperator.getSendCommunications().contains(
 							sendCommunicationList
 									.get(indexCommunicationOnSendLink))) {
+						// a send of sourceOperator
 						infSendCommunicationTime = max(algorithm
 								.getComputation(communication.getOrigin())
 								.getFinishTime()
@@ -454,8 +567,6 @@ public class CListSchedCd extends AbstractScheduler {
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());
 					}
-					// supSendCommunicationTime = sendCommunicationList.get(
-					// indexCommunicationOnSendLink + 1).getALAP();
 					supSendCommunicationTime = max(sendCommunicationList.get(
 							indexCommunicationOnSendLink + 1).getALAP(),
 							sendCommunicationList.get(
@@ -467,9 +578,6 @@ public class CListSchedCd extends AbstractScheduler {
 							receiveCommunicationList.get(
 									indexCommunicationOnReceiveLink)
 									.getFinishTimeOnLink());
-					// supReceiveCommunicationTime =
-					// receiveCommunicationList.get(
-					// indexCommunicationOnReceiveLink + 1).getALAP();
 					supReceiveCommunicationTime = max(
 							receiveCommunicationList.get(
 									indexCommunicationOnReceiveLink + 1)
@@ -503,7 +611,7 @@ public class CListSchedCd extends AbstractScheduler {
 					}
 				}
 
-				// set new start times in source operator and links
+				// set new start times on source operator and links
 				int indexOperationOnSourceOperator = max(sourceOperator
 						.getOperations().indexOf(
 								sendCommunicationList
@@ -585,6 +693,7 @@ public class CListSchedCd extends AbstractScheduler {
 														.get(
 																indexCommunicationOnReceiveLink)
 														.getCommunicationDuration()));
+
 				// // Check delay
 				// int delayStartTime = 0;
 				// int delayDuration = 0;
@@ -735,7 +844,6 @@ public class CListSchedCd extends AbstractScheduler {
 					}
 				}
 
-				// insert communication
 				sourceOperator.addSendCommunication(communication);
 				sourceOperator.addOperation(indexOperationOnSourceOperator + 1,
 						communication);
@@ -750,41 +858,7 @@ public class CListSchedCd extends AbstractScheduler {
 						.getName(), communication
 						.getStartTimeOnReceiveOperator(), communication
 						.getFinishTimeOnReceiveOperator());
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink)
-				// .setALAP(
-				// min(
-				// sendCommunicationList.get(
-				// indexCommunicationOnSendLink)
-				// .getALAP(),
-				// communication.getStartTimeOnLink()
-				// - sendCommunicationList
-				// .get(
-				// indexCommunicationOnSendLink)
-				// .getCommunicationDuration()));
-				// receiveCommunicationList
-				// .get(indexCommunicationOnReceiveLink)
-				// .setALAP(
-				// min(
-				// receiveCommunicationList
-				// .get(
-				// indexCommunicationOnReceiveLink)
-				// .getALAP(),
-				// communication.getStartTimeOnLink()
-				// - receiveCommunicationList
-				// .get(
-				// indexCommunicationOnReceiveLink)
-				// .getCommunicationDuration()));
-				// if (indexCommunicationOnSendLink == sendCommunicationList
-				// .size() - 2
-				// && indexCommunicationOnReceiveLink ==
-				// receiveCommunicationList
-				// .size() - 2) {
-				// communication.setALAP(communication.getStartTimeOnLink());
-				// } else {
-				// communication.setALAP(supCommunicationTime
-				// - communication.getCommunicationDuration());
-				// }
+
 				sendLink.addCommunication(indexCommunicationOnSendLink + 1,
 						communication);
 				if (sendLink != receiveLink) {
@@ -801,5 +875,14 @@ public class CListSchedCd extends AbstractScheduler {
 			System.out.println(" source computation has not been scheduled");
 		}
 	}
+
+	// protected RouteDescriptor findRoute(OperatorDescriptor sourceOperator,
+	// OperatorDescriptor destinationOperator) {
+	// RouteDescriptor route = new RouteDescriptor();
+	// route.addLink(sourceOperator.getOutputLinks().get(0));
+	// route.addLink(destinationOperator.getInputLinks().get(0));
+	// return route;
+	//
+	// }
 
 }

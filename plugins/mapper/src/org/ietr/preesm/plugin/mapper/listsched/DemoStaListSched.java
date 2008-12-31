@@ -101,122 +101,122 @@ public class DemoStaListSched {
 
 		/* classic */
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedBlcomp scheduler1 = new CListSchedBlcomp(algorithm,
+		CSListSchedBlcomp scheduler1 = new CSListSchedBlcomp(algorithm,
 				architecture);
 		scheduler1.schedule();
 		testScheduler(scheduler1, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedBl scheduler2 = new CListSchedBl(algorithm, architecture);
+		CSListSchedBl scheduler2 = new CSListSchedBl(algorithm, architecture);
 		scheduler2.schedule();
 		testScheduler(scheduler2, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedBlin scheduler3 = new CListSchedBlin(algorithm, architecture);
+		CSListSchedBlin scheduler3 = new CSListSchedBlin(algorithm, architecture);
 		scheduler3.schedule();
 		testScheduler(scheduler3, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedBlout scheduler4 = new CListSchedBlout(algorithm,
+		CSListSchedBlout scheduler4 = new CSListSchedBlout(algorithm,
 				architecture);
 		scheduler4.schedule();
 		testScheduler(scheduler4, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedBlinout scheduler5 = new CListSchedBlinout(algorithm,
+		CSListSchedBlinout scheduler5 = new CSListSchedBlinout(algorithm,
 				architecture);
 		scheduler5.schedule();
 		testScheduler(scheduler5, algorithm, architecture);
 
 		/* critical child */
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcBlcomp schedulerCc1 = new CListSchedCcBlcomp(algorithm,
+		CSListSchedCcBlcomp schedulerCc1 = new CSListSchedCcBlcomp(algorithm,
 				architecture);
 		schedulerCc1.schedule();
 		testScheduler(schedulerCc1, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcBl schedulerCc2 = new CListSchedCcBl(algorithm,
+		CSListSchedCcBl schedulerCc2 = new CSListSchedCcBl(algorithm,
 				architecture);
 		schedulerCc2.schedule();
 		testScheduler(schedulerCc2, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcBlin schedulerCc3 = new CListSchedCcBlin(algorithm,
+		CSListSchedCcBlin schedulerCc3 = new CSListSchedCcBlin(algorithm,
 				architecture);
 		schedulerCc3.schedule();
 		testScheduler(schedulerCc3, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcBlout schedulerCc4 = new CListSchedCcBlout(algorithm,
+		CSListSchedCcBlout schedulerCc4 = new CSListSchedCcBlout(algorithm,
 				architecture);
 		schedulerCc4.schedule();
 		testScheduler(schedulerCc4, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcBlinout schedulerCc5 = new CListSchedCcBlinout(algorithm,
+		CSListSchedCcBlinout schedulerCc5 = new CSListSchedCcBlinout(algorithm,
 				architecture);
 		schedulerCc5.schedule();
 		testScheduler(schedulerCc5, algorithm, architecture);
 
 		/* communication delay */
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCdBlcomp schedulerCd1 = new CListSchedCdBlcomp(algorithm,
+		CSListSchedCdBlcomp schedulerCd1 = new CSListSchedCdBlcomp(algorithm,
 				architecture);
 		schedulerCd1.schedule();
 		testScheduler(schedulerCd1, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCdBl schedulerCd2 = new CListSchedCdBl(algorithm,
+		CSListSchedCdBl schedulerCd2 = new CSListSchedCdBl(algorithm,
 				architecture);
 		schedulerCd2.schedule();
 		testScheduler(schedulerCd2, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCdBlin schedulerCd3 = new CListSchedCdBlin(algorithm,
+		CSListSchedCdBlin schedulerCd3 = new CSListSchedCdBlin(algorithm,
 				architecture);
 		schedulerCd3.schedule();
 		testScheduler(schedulerCd3, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCdBlout schedulerCd4 = new CListSchedCdBlout(algorithm,
+		CSListSchedCdBlout schedulerCd4 = new CSListSchedCdBlout(algorithm,
 				architecture);
 		schedulerCd4.schedule();
 		testScheduler(schedulerCd4, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCdBlinout schedulerCd5 = new CListSchedCdBlinout(algorithm,
+		CSListSchedCdBlinout schedulerCd5 = new CSListSchedCdBlinout(algorithm,
 				architecture);
 		schedulerCd5.schedule();
 		testScheduler(schedulerCd5, algorithm, architecture);
 
 		/* critical child and communication delay */
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcCdBlcomp schedulerCcCd1 = new CListSchedCcCdBlcomp(
+		CSListSchedCcCdBlcomp schedulerCcCd1 = new CSListSchedCcCdBlcomp(
 				algorithm, architecture);
 		schedulerCcCd1.schedule();
 		testScheduler(schedulerCcCd1, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcCdBl schedulerCcCd2 = new CListSchedCcCdBl(algorithm,
+		CSListSchedCcCdBl schedulerCcCd2 = new CSListSchedCcCdBl(algorithm,
 				architecture);
 		schedulerCcCd2.schedule();
 		testScheduler(schedulerCcCd2, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcCdBlin schedulerCcCd3 = new CListSchedCcCdBlin(algorithm,
+		CSListSchedCcCdBlin schedulerCcCd3 = new CSListSchedCcCdBlin(algorithm,
 				architecture);
 		schedulerCcCd3.schedule();
 		testScheduler(schedulerCcCd3, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcCdBlout schedulerCcCd4 = new CListSchedCcCdBlout(algorithm,
+		CSListSchedCcCdBlout schedulerCcCd4 = new CSListSchedCcCdBlout(algorithm,
 				architecture);
 		schedulerCcCd4.schedule();
 		testScheduler(schedulerCcCd4, algorithm, architecture);
 
 		parse(algorithmFileName, architectureFileName, parameterFileName);
-		CListSchedCcCdBlinout schedulerCcCd5 = new CListSchedCcCdBlinout(
+		CSListSchedCcCdBlinout schedulerCcCd5 = new CSListSchedCcCdBlinout(
 				algorithm, architecture);
 		schedulerCcCd5.schedule();
 		testScheduler(schedulerCcCd5, algorithm, architecture);

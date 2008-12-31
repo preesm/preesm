@@ -46,11 +46,11 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperationType;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method.
+ * This class gives a classic static list scheduling method.
  * 
  * @author pmu
  */
-public class CListSched extends AbstractScheduler {
+public class CSListSched extends AbstractScheduler {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.
@@ -60,12 +60,12 @@ public class CListSched extends AbstractScheduler {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CListSched(AlgorithmDescriptor algorithm,
+	public CSListSched(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm);
 		// TODO Auto-generated constructor stub
 		this.architecture = architecture;
-		this.name = "Classic List Scheduling";
+		this.name = "Classic Static List Scheduling";
 	}
 
 	@Override
@@ -95,9 +95,9 @@ public class CListSched extends AbstractScheduler {
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(i + ": schedule "
-					+ staOrder.get(i).getName() + " (bottom level="
-					+ staOrder.get(i).getBottomLevel() + ")");
+			System.out.println(i + ": schedule " + staOrder.get(i).getName()
+					+ " (bottom level=" + staOrder.get(i).getBottomLevel()
+					+ ")");
 			bestOperator = selectOperator(staOrder.get(i));
 
 			scheduleComputation(staOrder.get(i), bestOperator);

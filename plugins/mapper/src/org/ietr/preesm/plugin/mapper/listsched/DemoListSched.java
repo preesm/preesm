@@ -50,10 +50,10 @@ import org.ietr.preesm.plugin.mapper.listsched.parser.ArchitectureParser;
 import org.ietr.preesm.plugin.mapper.listsched.parser.ParameterParser;
 import org.ietr.preesm.plugin.mapper.listsched.plotter.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.listsched.scheduler.AbstractScheduler;
-import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCListSched;
-import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCListSchedCc;
-import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCListSchedCcCd;
-import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCListSchedCd;
+import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSched;
+import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSchedCc;
+import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSchedCcCd;
+import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSchedCd;
 import org.jfree.ui.RefineryUtilities;
 import org.sdf4j.factories.DAGEdgeFactory;
 
@@ -106,25 +106,25 @@ public class DemoListSched {
 		parse(algorithmFileName, architectureFileName, parameterFileName);
 		AlgorithmDescriptor algo = algorithm.clone();
 		ArchitectureDescriptor archi = architecture.clone();
-		CombCListSched scheduler1 = new CombCListSched(algo, archi);
+		CombCSListSched scheduler1 = new CombCSListSched(algo, archi);
 		scheduler1.schedule();
 		testScheduler(scheduler1.getBestScheduler(), algo, archi);
 
 		algo = algorithm.clone();
 		archi = architecture.clone();
-		CombCListSchedCc scheduler2 = new CombCListSchedCc(algo, archi);
+		CombCSListSchedCc scheduler2 = new CombCSListSchedCc(algo, archi);
 		scheduler2.schedule();
 		testScheduler(scheduler2.getBestScheduler(), algo, archi);
 
 		algo = algorithm.clone();
 		archi = architecture.clone();
-		CombCListSchedCd scheduler3 = new CombCListSchedCd(algo, archi);
+		CombCSListSchedCd scheduler3 = new CombCSListSchedCd(algo, archi);
 		scheduler3.schedule();
 		testScheduler(scheduler3.getBestScheduler(), algo, archi);
 
 		algo = algorithm.clone();
 		archi = architecture.clone();
-		CombCListSchedCcCd scheduler4 = new CombCListSchedCcCd(algo, archi);
+		CombCSListSchedCcCd scheduler4 = new CombCSListSchedCcCd(algo, archi);
 		scheduler4.schedule();
 		testScheduler(scheduler4.getBestScheduler(), algo, archi);
 

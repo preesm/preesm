@@ -39,9 +39,9 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 
 /**
- * This class gives a combination of all the dynamic list scheduling methods
- * with Critical child, Communication delay and five kinds of node order in the
- * case of communication contention.
+ * This class gives the dynamic list scheduling methods with Critical child and
+ * Communication delay and combined with five kinds of node order in the case of
+ * communication contention.
  * 
  * @author pmu
  */

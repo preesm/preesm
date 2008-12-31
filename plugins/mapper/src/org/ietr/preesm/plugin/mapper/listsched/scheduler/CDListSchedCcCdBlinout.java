@@ -53,7 +53,7 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
  * 
  * @author pmu
  */
-public class CDListSchedCcCdBlinout extends CListSchedCcCd {
+public class CDListSchedCcCdBlinout extends CSListSchedCcCd {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.

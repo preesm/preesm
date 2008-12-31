@@ -39,9 +39,8 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 
 /**
- * This class gives a combination of all the classic dynamic list scheduling
- * methods with five kinds of node order in the case of communication
- * contention.
+ * This class gives the classic dynamic list scheduling methods and combined
+ * with five kinds of node order in the case of communication contention.
  * 
  * @author pmu
  */

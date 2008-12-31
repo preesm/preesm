@@ -42,12 +42,12 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.LinkDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method
- * with Critical Child and nodes sorted by bottom level.
+ * This class gives a classic static list scheduling method with Communication
+ * Delay and nodes sorted by input/output bottom level.
  * 
  * @author pmu
  */
-public class CListSchedCcBl extends CListSchedCc {
+public class CSListSchedCdBlinout extends CSListSchedCd {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.
@@ -57,24 +57,25 @@ public class CListSchedCcBl extends CListSchedCc {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CListSchedCcBl(AlgorithmDescriptor algorithm,
+	public CSListSchedCdBlinout(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm, architecture);
 		// TODO Auto-generated constructor stub
-		this.name = "Classic List Scheduling With Critical Child And Nodes Sorted By Bottom Level";
+		this.name = "Classic Static List Scheduling With Communication Delay And Nodes Sorted By Input/Output Bottom Level";
 	}
 
 	public boolean schedule() {
 		System.out.println("\n***** " + name + " *****");
-		algorithm.computeTopLevel();
-		algorithm.computeBottomLevel();
-		staOrder = algorithm.sortComputationsByBottomLevel();
+		algorithm.computeTopLevelInOut();
+		algorithm.computeBottomLevelInOut();
+		staOrder = algorithm.sortComputationsByBottomLevelInOut();
 		System.out.println("static scheduling order:");
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(" " + i + " -> "
-					+ staOrder.get(i).getName() + " (b-level="
-					+ staOrder.get(i).getBottomLevel() + "; t-level="
-					+ staOrder.get(i).getTopLevel() + ")");
+			System.out.println(" " + i + " -> " + staOrder.get(i).getName()
+					+ " (b-level-inout="
+					+ staOrder.get(i).getBottomLevelInOut()
+					+ "; t-level-inout=" + staOrder.get(i).getTopLevelInOut()
+					+ ")");
 		}
 		OperatorDescriptor bestOperator = null;
 		for (OperatorDescriptor indexOperator : architecture.getAllOperators()
@@ -96,19 +97,18 @@ public class CListSchedCcBl extends CListSchedCc {
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(i + ": schedule "
-					+ staOrder.get(i).getName());
+			System.out.println(i + ": schedule " + staOrder.get(i).getName());
 			bestOperator = selectOperator(staOrder.get(i));
 
-			scheduleComputation(staOrder.get(i), bestOperator);
+			scheduleComputation(staOrder.get(i), bestOperator, false);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
 			System.out.println(" bestOperator" + "->" + bestOperator.getId());
 			System.out.println(" startTime" + "="
-					+ staOrder.get(i).getStartTime() + "; finishTime"
-					+ "=" + staOrder.get(i).getFinishTime());
-			for (CommunicationDescriptor indexCommunication : staOrder
-					.get(i).getInputCommunications()) {
+					+ staOrder.get(i).getStartTime() + "; finishTime" + "="
+					+ staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder.get(i)
+					.getInputCommunications()) {
 				System.out.println(" preceding communication:"
 						+ indexCommunication.getName() + " startTimeOnLink="
 						+ indexCommunication.getStartTimeOnLink()

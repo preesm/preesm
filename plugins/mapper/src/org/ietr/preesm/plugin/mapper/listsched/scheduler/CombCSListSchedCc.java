@@ -39,13 +39,13 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 
 /**
- * This class gives a combination of all the communication contentious list
- * scheduling methods with critical child and communication delay technique and
- * five kinds of node order.
+ * This class gives the classic static list scheduling methods with critical
+ * child and combined with five kinds of node order in the case of communication
+ * contention.
  * 
  * @author pmu
  */
-public class CombCListSchedCcCd {
+public class CombCSListSchedCc {
 
 	/**
 	 * Scheduler name
@@ -65,32 +65,32 @@ public class CombCListSchedCcCd {
 	/**
 	 * The best scheduler among the five
 	 */
-	private CListSchedCcCd bestScheduler = null;
+	private CSListSchedCc bestScheduler = null;
 
 	/**
 	 * Scheduler with bl-comp
 	 */
-	private CListSchedCcCdBlcomp scheduler1 = null;
+	private CSListSchedCcBlcomp scheduler1 = null;
 
 	/**
 	 * Scheduler with bl
 	 */
-	private CListSchedCcCdBl scheduler2 = null;
+	private CSListSchedCcBl scheduler2 = null;
 
 	/**
 	 * Scheduler with bl-in
 	 */
-	private CListSchedCcCdBlin scheduler3 = null;
+	private CSListSchedCcBlin scheduler3 = null;
 
 	/**
 	 * Scheduler with bl-out
 	 */
-	private CListSchedCcCdBlout scheduler4 = null;
+	private CSListSchedCcBlout scheduler4 = null;
 
 	/**
 	 * Scheduler with bl-inout
 	 */
-	private CListSchedCcCdBlinout scheduler5 = null;
+	private CSListSchedCcBlinout scheduler5 = null;
 
 	/**
 	 * The best schedule length
@@ -110,10 +110,10 @@ public class CombCListSchedCcCd {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CombCListSchedCcCd(AlgorithmDescriptor algorithm,
+	public CombCSListSchedCc(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		// TODO Auto-generated constructor stub
-		this.name = "Combined Classic List Scheduling With Critical Child And Communication Delay";
+		this.name = "Combined Classic Static List Scheduling With Critical Child";
 		this.algorithm = algorithm;
 		this.architecture = architecture;
 	}
@@ -132,7 +132,7 @@ public class CombCListSchedCcCd {
 				.clone();
 		ArchitectureDescriptor architecture1 = (ArchitectureDescriptor) architecture
 				.clone();
-		scheduler1 = new CListSchedCcCdBlcomp(algorithm1, architecture1);
+		scheduler1 = new CSListSchedCcBlcomp(algorithm1, architecture1);
 		scheduler1.schedule();
 		if (scheduler1.getScheduleLength() < scheduleLength) {
 			scheduleLength = scheduler1.getScheduleLength();
@@ -150,7 +150,7 @@ public class CombCListSchedCcCd {
 				.clone();
 		ArchitectureDescriptor architecture2 = (ArchitectureDescriptor) architecture
 				.clone();
-		scheduler2 = new CListSchedCcCdBl(algorithm2, architecture2);
+		scheduler2 = new CSListSchedCcBl(algorithm2, architecture2);
 		scheduler2.schedule();
 		if (scheduler2.getScheduleLength() < scheduleLength) {
 			scheduleLength = scheduler2.getScheduleLength();
@@ -168,7 +168,7 @@ public class CombCListSchedCcCd {
 				.clone();
 		ArchitectureDescriptor architecture3 = (ArchitectureDescriptor) architecture
 				.clone();
-		scheduler3 = new CListSchedCcCdBlin(algorithm3, architecture3);
+		scheduler3 = new CSListSchedCcBlin(algorithm3, architecture3);
 		scheduler3.schedule();
 		if (scheduler3.getScheduleLength() < scheduleLength) {
 			scheduleLength = scheduler3.getScheduleLength();
@@ -186,7 +186,7 @@ public class CombCListSchedCcCd {
 				.clone();
 		ArchitectureDescriptor architecture4 = (ArchitectureDescriptor) architecture
 				.clone();
-		scheduler4 = new CListSchedCcCdBlout(algorithm4, architecture4);
+		scheduler4 = new CSListSchedCcBlout(algorithm4, architecture4);
 		scheduler4.schedule();
 		if (scheduler4.getScheduleLength() < scheduleLength) {
 			scheduleLength = scheduler4.getScheduleLength();
@@ -204,7 +204,7 @@ public class CombCListSchedCcCd {
 				.clone();
 		ArchitectureDescriptor architecture5 = (ArchitectureDescriptor) architecture
 				.clone();
-		scheduler5 = new CListSchedCcCdBlinout(algorithm5, architecture5);
+		scheduler5 = new CSListSchedCcBlinout(algorithm5, architecture5);
 		scheduler5.schedule();
 		if (scheduler5.getScheduleLength() < scheduleLength) {
 			scheduleLength = scheduler5.getScheduleLength();

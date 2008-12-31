@@ -46,12 +46,12 @@ import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperationType;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.OperatorDescriptor;
 
 /**
- * This class gives a classic communication contentious list scheduling method
- * with Critical Child.
+ * This class gives a classic static list scheduling method with Communication
+ * Delay.
  * 
  * @author pmu
  */
-public class CListSchedCc extends AbstractScheduler {
+public class CSListSchedCd extends AbstractScheduler {
 
 	/**
 	 * Constructs the scheduler with algorithm and architecture.
@@ -61,17 +61,16 @@ public class CListSchedCc extends AbstractScheduler {
 	 * @param architecture
 	 *            Architecture descriptor
 	 */
-	public CListSchedCc(AlgorithmDescriptor algorithm,
+	public CSListSchedCd(AlgorithmDescriptor algorithm,
 			ArchitectureDescriptor architecture) {
 		super(algorithm);
 		// TODO Auto-generated constructor stub
 		this.architecture = architecture;
-		this.name = "Classic List Scheduling With Critical Child";
+		this.name = "Classic Static List Scheduling With Communication Delay";
 	}
 
 	@Override
 	public boolean schedule() {
-		// TODO Auto-generated method stub
 		System.out.println("\n***** " + name + " *****");
 		algorithm.computeTopLevel();
 		algorithm.computeBottomLevel();
@@ -96,28 +95,27 @@ public class CListSchedCc extends AbstractScheduler {
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {
-			System.out.println(i + ": schedule "
-					+ staOrder.get(i).getName() + " (bottom level="
-					+ staOrder.get(i).getBottomLevel() + ")");
+			System.out.println(i + ": schedule " + staOrder.get(i).getName()
+					+ " (bottom level=" + staOrder.get(i).getBottomLevel()
+					+ ")");
 			bestOperator = selectOperator(staOrder.get(i));
 
-			scheduleComputation(staOrder.get(i), bestOperator);
+			scheduleComputation(staOrder.get(i), bestOperator, false);
 			// schedulingOrder.get(i).setOperator(bestOperator);
 			updateTimes();
-			// System.out.println(" bestOperator" + "->" +
-			// bestOperator.getId());
-			// System.out.println(" startTime" + "="
-			// + schedulingOrder.get(i).getStartTime() + "; finishTime"
-			// + "=" + schedulingOrder.get(i).getFinishTime());
-			// for (CommunicationDescriptor indexCommunication : schedulingOrder
-			// .get(i).getPrecedingCommunications()) {
-			// System.out.println(" preceding communication:"
-			// + indexCommunication.getName() + " startTimeOnLink="
-			// + indexCommunication.getStartTimeOnLink()
-			// + "; finishTimeOnLink="
-			// + indexCommunication.getFinishTimeOnLink() + "; ALAP="
-			// + indexCommunication.getALAP());
-			// }
+			System.out.println(" bestOperator" + "->" + bestOperator.getId());
+			System.out.println(" startTime" + "="
+					+ staOrder.get(i).getStartTime() + "; finishTime" + "="
+					+ staOrder.get(i).getFinishTime());
+			for (CommunicationDescriptor indexCommunication : staOrder.get(i)
+					.getInputCommunications()) {
+				System.out.println(" preceding communication:"
+						+ indexCommunication.getName() + " startTimeOnLink="
+						+ indexCommunication.getStartTimeOnLink()
+						+ "; finishTimeOnLink="
+						+ indexCommunication.getFinishTimeOnLink() + "; ALAP="
+						+ indexCommunication.getALAP());
+			}
 		}
 		for (int i = 0; i < staOrder.size(); i++) {
 			scheduleLength = max(scheduleLength, staOrder.get(i)
@@ -148,132 +146,21 @@ public class CListSchedCc extends AbstractScheduler {
 	 */
 	protected OperatorDescriptor selectOperator(
 			ComputationDescriptor computation) {
-		ComputationDescriptor criticalChild = null;
-		int bestFinishTime = Integer.MAX_VALUE;
-		int bestChildFinishTime = Integer.MAX_VALUE;
+		int bestOperatorFinishTime = Integer.MAX_VALUE;
 		OperatorDescriptor bestOperator = null;
 		System.out.println(" * select operator for " + computation.getName());
 		if (computation.getOperator() == null) {
-			boolean findChild = false;
-			for (int i = staOrder.indexOf(computation); i < staOrder
-					.size(); i++) {
-				for (CommunicationDescriptor indexCommunication : computation
-						.getOutputCommunications()) {
-					if (algorithm.getComputation(indexCommunication
-							.getDestination()) == staOrder.get(i)) {
-						findChild = true;
-						criticalChild = staOrder.get(i);
-						break;
-					}
-				}
-				if (findChild) {
-					break;
-				}
-			}
 			// for (OperatorDescriptor indexOperator : architecture
 			// .getAllOperators().values()) {
 			for (String indexOperatorId : computation.getOperatorSet()) {
-				int finishTime = scheduleComputation(computation, architecture
-						.getOperator(indexOperatorId));
-				// TODO: need to back up times after schedule of computation
-				backupTimes();
-				int minChildFinishTime = Integer.MAX_VALUE;
-				if (findChild) {
-					// System.out.println(" critical child is "
-					// + criticalChild.getName());
-					Vector<OperatorDescriptor> childOperatorList = new Vector<OperatorDescriptor>();
-					// schedule critical child
-					// for (CommunicationDescriptor incomingCommunication :
-					// criticalChild
-					// .getPrecedingCommunications()) {
-					for (String childOperatorId : criticalChild
-							.getOperatorSet()) {
-						{
-							// if (algorithm.getComputation(
-							// incomingCommunication.getSource())
-							// .isScheduled()) {
-							// OperatorDescriptor childOperator = algorithm
-							// .getComputation(
-							// incomingCommunication.getSource())
-							// .getOperator();
-							if (!childOperatorList.contains(architecture
-									.getOperator(childOperatorId))) {
-								childOperatorList.add(architecture
-										.getOperator(childOperatorId));
-								int childFinishTime = scheduleComputation(
-										criticalChild, architecture
-												.getOperator(childOperatorId));
-								// System.out.println(" finishTime=" +
-								// finishTime);
-								if (childFinishTime < minChildFinishTime) {
-									minChildFinishTime = childFinishTime;
-								}
-								for (OperatorDescriptor indexOperator2 : architecture
-										.getAllOperators().values()) {
-									for (CommunicationDescriptor indexCommunication : criticalChild
-											.getInputCommunications()) {
-										indexOperator2
-												.removeSendCommunication(indexCommunication);
-										indexOperator2
-												.removeReceiveCommunication(indexCommunication);
-										indexOperator2
-												.removeOperation(indexCommunication);
-										if (indexCommunication.getSendLink() != null) {
-											indexCommunication.getSendLink()
-													.removeCommunication(
-															indexCommunication);
-											indexCommunication
-													.setSendLink(null);
-										}
-										if (indexCommunication.getReceiveLink() != null) {
-											indexCommunication.getReceiveLink()
-													.removeCommunication(
-															indexCommunication);
-											indexCommunication
-													.setReceiveLink(null);
-										}
-										indexCommunication.setExist();
-										indexCommunication.clearScheduled();
-									}
-								}
-								architecture.getOperator(childOperatorId)
-										.removeComputation(criticalChild);
-								architecture.getOperator(childOperatorId)
-										.removeOperation(criticalChild);
-								// TODO: need to recover times after schedule of
-								// criticalChild
-								recoverTimes();
-								criticalChild.clearScheduled();
-								criticalChild.setOperator(null);
-							}
-						}
-					}
-					if (bestChildFinishTime > minChildFinishTime) {
-						bestChildFinishTime = minChildFinishTime;
-						bestFinishTime = finishTime;
-						bestOperator = architecture
-								.getOperator(indexOperatorId);
-					} else if (bestChildFinishTime == minChildFinishTime) {
-						if (bestFinishTime > finishTime) {
-							bestFinishTime = finishTime;
-							bestOperator = architecture
-									.getOperator(indexOperatorId);
-						}
-					}
-				} else {
-					// System.out.println(" no child");
-					if (bestFinishTime > finishTime) {
-						bestFinishTime = finishTime;
-						bestOperator = architecture
-								.getOperator(indexOperatorId);
-					}
+				int minOperatorFinishTime = scheduleComputation(computation,
+						architecture.getOperator(indexOperatorId), false);
+				if (bestOperatorFinishTime > minOperatorFinishTime) {
+					bestOperatorFinishTime = minOperatorFinishTime;
+					bestOperator = architecture.getOperator(indexOperatorId);
 				}
-				// if (bestChildFinishTime > minChildFinishTime) {
-				// bestChildFinishTime = minChildFinishTime;
-				// bestOperator = indexOperator;
-				// }
-				// System.out.println(" minChildFinishTime="
-				// + minChildFinishTime);
+				// System.out.println(" minOperatorFinishTime="
+				// + minOperatorFinishTime);
 				// remove inserted communications(source!=destination) and
 				// computations;
 				for (OperatorDescriptor indexOperator2 : architecture
@@ -307,8 +194,8 @@ public class CListSchedCc extends AbstractScheduler {
 				computation.clearScheduled();
 				computation.setOperator(null);
 			}
-			// System.out.println(" bestChildFinishTime="
-			// + bestChildFinishTime);
+			// System.out.println(" bestOperatorFinishTime="
+			// + bestOperatorFinishTime);
 		} else {
 			bestOperator = computation.getOperator();
 		}
@@ -325,12 +212,11 @@ public class CListSchedCc extends AbstractScheduler {
 	 * @return The finish time of this computation on this operator
 	 */
 	protected int scheduleComputation(ComputationDescriptor computation,
-			OperatorDescriptor operator) {
+			OperatorDescriptor operator, boolean isTemporary) {
 		int dataReadyTime = 0;
 		int maxOperatorFinishTime = 0;
-		// System.out.println(" ** schedule computation: " +
-		// computation.getName()
-		// + " on: " + operator.getId());
+		System.out.println(" ** schedule computation: " + computation.getName()
+				+ " on: " + operator.getId());
 		if (computation.getComputationDurations().containsKey(
 				operator.getName())
 				&& computation.getOperatorSet().contains(operator.getId())) {
@@ -377,8 +263,73 @@ public class CListSchedCc extends AbstractScheduler {
 					break;
 				}
 			}
-
-			// Examine the latest finish time of all operators
+			// set ALAP for preceding communications
+			if (!isTemporary) {
+				Vector<CommunicationDescriptor> communicationList = new Vector<CommunicationDescriptor>();
+				for (CommunicationDescriptor indexCommunication : computation
+						.getInputCommunications()) {
+					if (indexCommunication.isExist()) {
+						communicationList.add(indexCommunication);
+					} else {
+						// set ALAP to source computation finish time
+						indexCommunication
+								.setALAP(algorithm.getComputation(
+										indexCommunication.getOrigin())
+										.getFinishTime());
+					}
+				}
+				// Collections.sort(communicationList);
+				// for (int i = communicationList.size() - 1; i >= 0; i--) {
+				for (int i = 0; i < communicationList.size(); i++) {
+					if (communicationList.get(i).isScheduled()) {
+						int indexOnSendLink = communicationList.get(i)
+								.getSendLink().getCommunications().indexOf(
+										communicationList.get(i));
+						int indexOnReceiveLink = communicationList.get(i)
+								.getReceiveLink().getCommunications().indexOf(
+										communicationList.get(i));
+						communicationList
+								.get(i)
+								.setALAP(
+										min(
+												communicationList
+														.get(i)
+														.getStartTimeOnReceiveOperator()
+														+ communicationList
+																.get(i)
+																.getReceiveInvolvement()
+														- communicationList
+																.get(i)
+																.getCommunicationDuration(),
+												communicationList
+														.get(i)
+														.getReceiveLink()
+														.getCommunications()
+														.get(
+																indexOnReceiveLink + 1)
+														.getStartTimeOnLink()
+														- communicationList
+																.get(i)
+																.getCommunicationDuration(),
+												communicationList
+														.get(i)
+														.getSendLink()
+														.getCommunications()
+														.get(
+																indexOnSendLink + 1)
+														.getStartTimeOnLink()
+														- communicationList
+																.get(i)
+																.getCommunicationDuration()));
+					} else {
+						System.out.println("communication name: "
+								+ communicationList.get(i).getName());
+						System.out
+								.println("Error: comunication is not scheduled for ALAP!");
+					}
+				}
+			}
+			// // Examine the latest finish time of all operators
 			// for (OperatorDescriptor indexOperator : architecture
 			// .getAllOperators().values()) {
 			// if (maxOperatorFinishTime < indexOperator
@@ -396,7 +347,6 @@ public class CListSchedCc extends AbstractScheduler {
 			// .getFinishTime();
 			// }
 			// }
-			//
 			// give the finish time of the computation on this operator
 			maxOperatorFinishTime = computation.getFinishTime();
 			computation.setScheduled();
@@ -437,6 +387,7 @@ public class CListSchedCc extends AbstractScheduler {
 				communication.setStartTimeOnReceiveOperator(sourceComputation
 						.getFinishTime());
 				communication.setFinishTimeOnReceiveOperator();
+				communication.setALAP(sourceComputation.getFinishTime());
 			} else {
 				// System.out
 				// .println(" sourceOperator != destinationOperator");
@@ -449,7 +400,7 @@ public class CListSchedCc extends AbstractScheduler {
 						.getCommunications();
 				Vector<CommunicationDescriptor> receiveCommunicationList = receiveLink
 						.getCommunications();
-				// if (sendLink != receiveLink) {
+
 				// find slot in links
 				int indexCommunicationOnSendLink = 0;
 				int indexCommunicationOnReceiveLink = 0;
@@ -466,7 +417,6 @@ public class CListSchedCc extends AbstractScheduler {
 					if (sourceOperator.getSendCommunications().contains(
 							sendCommunicationList
 									.get(indexCommunicationOnSendLink))) {
-						// a send of sourceOperator
 						infSendCommunicationTime = max(algorithm
 								.getComputation(communication.getOrigin())
 								.getFinishTime()
@@ -504,18 +454,29 @@ public class CListSchedCc extends AbstractScheduler {
 										indexCommunicationOnSendLink)
 										.getFinishTimeOnLink());
 					}
-					supSendCommunicationTime = sendCommunicationList.get(
-							indexCommunicationOnSendLink + 1)
-							.getStartTimeOnLink();
+					// supSendCommunicationTime = sendCommunicationList.get(
+					// indexCommunicationOnSendLink + 1).getALAP();
+					supSendCommunicationTime = max(sendCommunicationList.get(
+							indexCommunicationOnSendLink + 1).getALAP(),
+							sendCommunicationList.get(
+									indexCommunicationOnSendLink + 1)
+									.getStartTimeOnLink());
 					infReceiveCommunicationTime = max(algorithm.getComputation(
 							communication.getOrigin()).getFinishTime()
 							+ communication.getSendOverhead(),
 							receiveCommunicationList.get(
 									indexCommunicationOnReceiveLink)
 									.getFinishTimeOnLink());
-					supReceiveCommunicationTime = receiveCommunicationList.get(
-							indexCommunicationOnReceiveLink + 1)
-							.getStartTimeOnLink();
+					// supReceiveCommunicationTime =
+					// receiveCommunicationList.get(
+					// indexCommunicationOnReceiveLink + 1).getALAP();
+					supReceiveCommunicationTime = max(
+							receiveCommunicationList.get(
+									indexCommunicationOnReceiveLink + 1)
+									.getALAP(), receiveCommunicationList.get(
+									indexCommunicationOnReceiveLink + 1)
+									.getStartTimeOnLink());
+
 					infCommunicationTime = max(infSendCommunicationTime,
 							infReceiveCommunicationTime);
 					supCommunicationTime = min(supSendCommunicationTime,
@@ -583,6 +544,8 @@ public class CListSchedCc extends AbstractScheduler {
 												.get(
 														indexCommunicationOnSendLink + 1)
 												.getStartTimeOnLink()));
+				sendLink.updateCommunication(sendCommunicationList
+						.get(indexCommunicationOnSendLink + 1));
 				receiveCommunicationList
 						.get(indexCommunicationOnReceiveLink + 1)
 						.setStartTimeOnLink(
@@ -592,7 +555,36 @@ public class CListSchedCc extends AbstractScheduler {
 												.get(
 														indexCommunicationOnReceiveLink + 1)
 												.getStartTimeOnLink()));
+				receiveLink.updateCommunication(receiveCommunicationList
+						.get(indexCommunicationOnReceiveLink + 1));
 
+				// change ALAP for communications
+				sendCommunicationList
+						.get(indexCommunicationOnSendLink)
+						.setALAP(
+								min(
+										sendCommunicationList.get(
+												indexCommunicationOnSendLink)
+												.getALAP(),
+										communication.getStartTimeOnLink()
+												- sendCommunicationList
+														.get(
+																indexCommunicationOnSendLink)
+														.getCommunicationDuration()));
+				communication.setALAP(communication.getStartTimeOnLink());
+				receiveCommunicationList
+						.get(indexCommunicationOnReceiveLink)
+						.setALAP(
+								min(
+										receiveCommunicationList
+												.get(
+														indexCommunicationOnReceiveLink)
+												.getALAP(),
+										communication.getStartTimeOnLink()
+												- receiveCommunicationList
+														.get(
+																indexCommunicationOnReceiveLink)
+														.getCommunicationDuration()));
 				// // Check delay
 				// int delayStartTime = 0;
 				// int delayDuration = 0;
@@ -625,8 +617,7 @@ public class CListSchedCc extends AbstractScheduler {
 				// .getFinishTimeOnSendOperator()) {
 				// needDelay = false;
 				// } else {
-				// delayStartTime = ((CommunicationDescriptor)
-				// sourceOperator
+				// delayStartTime = ((CommunicationDescriptor) sourceOperator
 				// .getOperation(indexOperationOnSourceOperator + 1))
 				// .getStartTimeOnSendOperator();
 				// delayDuration = communication
@@ -640,8 +631,7 @@ public class CListSchedCc extends AbstractScheduler {
 				// .getFinishTimeOnSendOperator()) {
 				// needDelay = false;
 				// } else {
-				// delayStartTime = ((CommunicationDescriptor)
-				// sourceOperator
+				// delayStartTime = ((CommunicationDescriptor) sourceOperator
 				// .getOperation(indexOperationOnSourceOperator + 1))
 				// .getStartTimeOnReceiveOperator();
 				// delayDuration = communication
@@ -693,8 +683,7 @@ public class CListSchedCc extends AbstractScheduler {
 				// .getStartTimeOnLink() >= delayStartTime) {
 				// ((CommunicationDescriptor) indexOperator
 				// .getOperation(i))
-				// .setStartTimeOnLink(((CommunicationDescriptor)
-				// indexOperator
+				// .setStartTimeOnLink(((CommunicationDescriptor) indexOperator
 				// .getOperation(i))
 				// .getStartTimeOnLink()
 				// + delayDuration);
@@ -747,15 +736,13 @@ public class CListSchedCc extends AbstractScheduler {
 				}
 
 				// insert communication
-				// if (!sourceOperator.getSendCommunications().contains(
-				// communication)) {
 				sourceOperator.addSendCommunication(communication);
 				sourceOperator.addOperation(indexOperationOnSourceOperator + 1,
 						communication);
 				sourceOperator.addOccupiedTimeInterval(communication.getName(),
 						communication.getStartTimeOnSendOperator(),
 						communication.getFinishTimeOnSendOperator());
-				// }
+
 				destinationOperator.addReceiveCommunication(communication);
 				destinationOperator.addOperation(
 						indexOperationOnDestinationOperator + 1, communication);
@@ -763,6 +750,41 @@ public class CListSchedCc extends AbstractScheduler {
 						.getName(), communication
 						.getStartTimeOnReceiveOperator(), communication
 						.getFinishTimeOnReceiveOperator());
+				// sendCommunicationList
+				// .get(indexCommunicationOnSendLink)
+				// .setALAP(
+				// min(
+				// sendCommunicationList.get(
+				// indexCommunicationOnSendLink)
+				// .getALAP(),
+				// communication.getStartTimeOnLink()
+				// - sendCommunicationList
+				// .get(
+				// indexCommunicationOnSendLink)
+				// .getCommunicationDuration()));
+				// receiveCommunicationList
+				// .get(indexCommunicationOnReceiveLink)
+				// .setALAP(
+				// min(
+				// receiveCommunicationList
+				// .get(
+				// indexCommunicationOnReceiveLink)
+				// .getALAP(),
+				// communication.getStartTimeOnLink()
+				// - receiveCommunicationList
+				// .get(
+				// indexCommunicationOnReceiveLink)
+				// .getCommunicationDuration()));
+				// if (indexCommunicationOnSendLink == sendCommunicationList
+				// .size() - 2
+				// && indexCommunicationOnReceiveLink ==
+				// receiveCommunicationList
+				// .size() - 2) {
+				// communication.setALAP(communication.getStartTimeOnLink());
+				// } else {
+				// communication.setALAP(supCommunicationTime
+				// - communication.getCommunicationDuration());
+				// }
 				sendLink.addCommunication(indexCommunicationOnSendLink + 1,
 						communication);
 				if (sendLink != receiveLink) {
@@ -771,155 +793,6 @@ public class CListSchedCc extends AbstractScheduler {
 				}
 				communication.setSendLink(sendLink);
 				communication.setReceiveLink(receiveLink);
-				// } else{
-				// // find slot on send link
-				// int indexCommunicationOnSendLink = 0;
-				// int infSendCommunicationTime = 0;
-				// int supSendCommunicationTime = 0;
-				// int infCommunicationTime = 0;
-				// int supCommunicationTime = 0;
-				// while (indexCommunicationOnSendLink < sendCommunicationList
-				// .size()) {
-				// if (sourceOperator.getSendCommunications().contains(
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink))) {
-				// infSendCommunicationTime = max(algorithm
-				// .getComputation(communication.getOrigin())
-				// .getFinishTime()
-				// + communication.getSendOverhead(),
-				// sendCommunicationList.get(
-				// indexCommunicationOnSendLink)
-				// .getFinishTimeOnSendOperator()
-				// + communication.getSendOverhead(),
-				// sendCommunicationList.get(
-				// indexCommunicationOnSendLink)
-				// .getFinishTimeOnLink());
-				// } else {
-				// infSendCommunicationTime = max(algorithm
-				// .getComputation(communication.getOrigin())
-				// .getFinishTime()
-				// + communication.getSendOverhead(),
-				//									
-				// sendCommunicationList.get(
-				// indexCommunicationOnSendLink)
-				// .getFinishTimeOnLink());
-				// }
-				// supSendCommunicationTime = sendCommunicationList.get(
-				// indexCommunicationOnSendLink + 1)
-				// .getStartTimeOnLink();
-				// infCommunicationTime = infSendCommunicationTime;
-				// supCommunicationTime = supSendCommunicationTime;
-				// if (infCommunicationTime
-				// + communication.getCommunicationDuration() <=
-				// supCommunicationTime) {
-				// break;
-				// } else {
-				// indexCommunicationOnSendLink++;
-				// }
-				// }
-				//
-				// // set new start times on source operator and send link
-				// int indexOperationOnSourceOperator = max(
-				// sourceOperator.getOperations().indexOf(
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink)),
-				// sourceOperator.getOperations().indexOf(
-				// algorithm.getComputation(communication
-				// .getOrigin())));
-				// if (sourceOperator.getOperation(
-				// indexOperationOnSourceOperator).getType() ==
-				// OperationType.Computation) {
-				// communication
-				// .setStartTimeOnSendOperator(((ComputationDescriptor)
-				// sourceOperator
-				// .getOperation(indexOperationOnSourceOperator))
-				// .getFinishTime());
-				// } else {
-				// if (sourceOperator
-				// .getSendCommunications()
-				// .contains(
-				// (CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator))) {
-				// communication
-				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
-				// sourceOperator
-				// .getOperation(indexOperationOnSourceOperator))
-				// .getFinishTimeOnSendOperator());
-				// } else {
-				// communication
-				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
-				// sourceOperator
-				// .getOperation(indexOperationOnSourceOperator))
-				// .getFinishTimeOnReceiveOperator());
-				// }
-				// }
-				// communication.setStartTimeOnLink(infCommunicationTime);
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink + 1)
-				// .setStartTimeOnLink(
-				// max(
-				// communication.getFinishTimeOnLink(),
-				// sendCommunicationList
-				// .get(
-				// indexCommunicationOnSendLink + 1)
-				// .getStartTimeOnLink()));
-				//
-				// // find slot in destination operator
-				// int indexOperationOnDestinationOperator = 0;
-				// if (destinationOperator.getOperations().contains(
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink))) {
-				// indexOperationOnDestinationOperator = destinationOperator
-				// .getOperations()
-				// .indexOf(
-				// sendCommunicationList
-				// .get(indexCommunicationOnSendLink));
-				// }
-				// int maxTime = 0;
-				// for (int i = indexOperationOnDestinationOperator; i <
-				// destinationOperator
-				// .getOperations().size() - 1; i++) {
-				// maxTime = max(destinationOperator
-				// .getOccupiedTimeInterval(
-				// destinationOperator.getOperation(i)
-				// .getName()).getFinishTime()
-				// + communication.getReceiveInvolvement(),
-				// communication.getFinishTimeOnLink());
-				// if (destinationOperator.getOccupiedTimeInterval(
-				// destinationOperator.getOperation(i + 1)
-				// .getName()).getStartTime()
-				// - maxTime >= communication.getReceiveOverhead()) {
-				// communication.setStartTimeOnReceiveOperator(maxTime
-				// - communication.getReceiveInvolvement());
-				// indexOperationOnDestinationOperator = i;
-				// break;
-				// }
-				// }
-				//
-				// // insert communication
-				// // if (!sourceOperator.getSendCommunications().contains(
-				// // communication)) {
-				// sourceOperator.addSendCommunication(communication);
-				// sourceOperator.addOperation(
-				// indexOperationOnSourceOperator + 1, communication);
-				// sourceOperator.addOccupiedTimeInterval(communication
-				// .getName(), communication
-				// .getStartTimeOnSendOperator(), communication
-				// .getFinishTimeOnSendOperator());
-				// // }
-				// destinationOperator.addReceiveCommunication(communication);
-				// destinationOperator.addOperation(
-				// indexOperationOnDestinationOperator + 1,
-				// communication);
-				// destinationOperator.addOccupiedTimeInterval(communication
-				// .getName(), communication
-				// .getStartTimeOnReceiveOperator(), communication
-				// .getFinishTimeOnReceiveOperator());
-				// sendLink.addCommunication(indexCommunicationOnSendLink + 1,
-				// communication);
-				// communication.setSendLink(sendLink);
-				// // communication.setReceiveLink(receiveLink);
-				// }
 			}
 			communication.setScheduled();
 		} else {
@@ -929,11 +802,4 @@ public class CListSchedCc extends AbstractScheduler {
 		}
 	}
 
-	// protected RouteDescriptor findRoute(OperatorDescriptor sourceOperator,
-	// OperatorDescriptor destinationOperator) {
-	// RouteDescriptor route = new RouteDescriptor();
-	// route.addLink(sourceOperator.getOutputLinks().get(0));
-	// route.addLink(destinationOperator.getInputLinks().get(0));
-	// return route;
-	// }
 }

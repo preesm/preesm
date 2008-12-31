@@ -379,19 +379,19 @@ public class CombListSched {
 		parse();
 
 		/* Static */
-		CombCListSched scheduler1 = new CombCListSched(algo.clone(), archi
+		CombCSListSched scheduler1 = new CombCSListSched(algo.clone(), archi
 				.clone());
 		scheduler1.schedule();
 
-		CombCListSchedCc scheduler2 = new CombCListSchedCc(algo.clone(), archi
+		CombCSListSchedCc scheduler2 = new CombCSListSchedCc(algo.clone(), archi
 				.clone());
 		scheduler2.schedule();
 
-		CombCListSchedCd scheduler3 = new CombCListSchedCd(algo.clone(), archi
+		CombCSListSchedCd scheduler3 = new CombCSListSchedCd(algo.clone(), archi
 				.clone());
 		scheduler3.schedule();
 
-		CombCListSchedCcCd scheduler4 = new CombCListSchedCcCd(algo.clone(),
+		CombCSListSchedCcCd scheduler4 = new CombCSListSchedCcCd(algo.clone(),
 				archi.clone());
 		scheduler4.schedule();
 
