@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -100,7 +101,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		while(it.hasNext()){
 			SDFAbstractVertex vertex = it.next();
 			
-			Timing t = new Timing((OperatorDefinition)architecture.getMainOperator().getDefinition(),vertex);
+			Timing t = new Timing((IOperatorDefinition)architecture.getMainOperator().getDefinition(),vertex);
 			t.setTime(100);
 			tmanager.addTiming(t);
 		}
