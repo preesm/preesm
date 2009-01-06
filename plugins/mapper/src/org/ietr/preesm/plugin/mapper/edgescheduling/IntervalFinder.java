@@ -34,23 +34,27 @@ public class IntervalFinder {
 	}
 
 	/**
-	 * Finds the largest free interval in a medium schedule
+	 * Finds the largest free interval in a schedule
 	 */
 	public Interval findLargestFreeInterval(ArchitectureComponent component, MapperDAGVertex minVertex, MapperDAGVertex maxVertex){
 
-		int minIndex = orderManager.totalIndexOf(minVertex);
-		int maxIndex = orderManager.totalIndexOf(maxVertex);;
+		
 		Schedule schedule = orderManager.getSchedule(component);
 
-		MapperDAGVertex minIndexVertex = orderManager.getVertex(minIndex);
 		int minIndexVertexEndTime = -1;
+		int minIndex = -1;
 		
-		if(minIndexVertex != null){
-			TimingVertexProperty props = minIndexVertex.getTimingVertexProperty();
+		if(minVertex != null){
+			minIndex = orderManager.totalIndexOf(minVertex);
+			
+			TimingVertexProperty props = minVertex.getTimingVertexProperty();
 			if(props.getTlevel() >= 0){
 				minIndexVertexEndTime = props.getTlevel() + props.getCost();
 			}
 		}
+
+		int maxIndex = Integer.MAX_VALUE;
+		if(maxVertex != null) maxIndex = orderManager.totalIndexOf(maxVertex);
 		
 		Interval oldInt = new Interval(0,0,-1);
 		Interval newInt = null;

@@ -41,41 +41,40 @@ package org.ietr.preesm.plugin.abc;
  * 
  * @author mpelcat
  */
-public enum AbcType {
+public class AbcType {
 
-	InfiniteHomogeneous,
+	/**
+	 * Available Abc types
+	 */
+	public static final AbcType InfiniteHomogeneous = new AbcType("InfiniteHomogeneous", false);
+	public static final AbcType LooselyTimed = new AbcType("LooselyTimed", false);
+	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed", false);
+	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed", false);
+	public static final AbcType CommConten = new AbcType("CommConten", false);
+	public static final AbcType SendReceive = new AbcType("SendReceive", false);
 
-	LooselyTimed,
+	/**
+	 * Name of the current type
+	 */
+	private String name = null;
 
-	ApproximatelyTimed,
+	/**
+	 * True if the tasks are switched while mapping using algorithms that do further tests
+	 * than the mapping/scheduling chosen algorithm
+	 */
+	private boolean switchTask = false;
+	
 
-	AccuratelyTimed,
-
-	CommConten,
-
-	SendReceive;
+	public AbcType(String name, boolean switchTask) {
+		super();
+		this.name = name;
+		this.switchTask = switchTask;
+	}
 
 	@Override
 	public String toString() {
 
-		if (this == InfiniteHomogeneous) {
-			return "InfiniteHomogeneous";
-		} else if (this == LooselyTimed) {
-			return "LooselyTimed";
-		} else if (this == ApproximatelyTimed) {
-			return "ApproximatelyTimed";
-		} else if (this == AccuratelyTimed) {
-			return "AccuratelyTimed";
-
-		} else if (this == CommConten) {
-			return "CommConten";
-
-		} else if (this == SendReceive) {
-			return "SendReceive";
-
-		}
-
-		return null;
+		return name;
 	}
 
 	public static AbcType fromString(String type) {
@@ -95,5 +94,15 @@ public enum AbcType {
 		}
 
 		return null;
+	}
+	
+	public boolean isSwitchTask() {
+		return switchTask;
+	}
+
+	public AbcType setSwitchTask(boolean switchTask) {
+		this.switchTask = switchTask;
+		
+		return this;
 	}
 }

@@ -44,6 +44,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
+import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -66,8 +67,8 @@ public class InfiniteHomogeneousAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi) {
-		super(dag, archi);
+			MultiCoreArchitecture archi, boolean switchTask) {
+		super(dag, archi, AbcType.InfiniteHomogeneous.setSwitchTask(switchTask));
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
 		// to implant all vertices on the main operator definition but consider
@@ -96,7 +97,13 @@ public class InfiniteHomogeneousAbc extends
 		} else {
 
 			if (updateRank) {
-				orderManager.addLast(vertex);
+				if (this.abcType.isSwitchTask()) {
+					TaskSwitcher taskSwitcher = new TaskSwitcher(
+							implementation, orderManager, vertex);
+					taskSwitcher.insertVertex();
+				} else {
+					orderManager.addLast(vertex);
+				}
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
@@ -185,10 +192,6 @@ public class InfiniteHomogeneousAbc extends
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-	}
-
-	public AbcType getType(){
-		return AbcType.InfiniteHomogeneous;
 	}
 	
 	public EdgeSchedType getEdgeSchedType() {

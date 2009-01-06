@@ -148,7 +148,7 @@ class PFastCallable implements Callable<MapperDAG> {
 
 		// Create the CPN Dominant Sequence
 		IAbc IHsimu = new InfiniteHomogeneousAbc(edgeSchedType, 
-				callableDAG.clone(), callableArchi);
+				callableDAG.clone(), callableArchi, false);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
 		IHsimu.resetDAG();

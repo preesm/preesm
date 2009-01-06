@@ -72,7 +72,7 @@ public class StatGenerator {
 		mainMediumDef.setInvSpeed(0);
 		mainMediumDef.setOverhead(0);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag, localArchi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag, localArchi, false);
 		int span = simu.getFinalTime();
 		
 		PreesmLogger.getLogger().log(Level.INFO, "infinite homogeneous timing: " + span);

@@ -51,8 +51,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class CommContenAbc extends AbstractAbc {
 
-	public CommContenAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi) {
-		super(dag, archi);
+	public CommContenAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
+		super(dag, archi, abcType);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -82,10 +82,6 @@ public class CommContenAbc extends AbstractAbc {
 	protected void updateTimings() {
 		// TODO Auto-generated method stub
 
-	}
-
-	public AbcType getType() {
-		return AbcType.CommConten;
 	}
 
 	public EdgeSchedType getEdgeSchedType() {

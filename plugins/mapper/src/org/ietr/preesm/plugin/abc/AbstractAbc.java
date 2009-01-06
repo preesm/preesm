@@ -117,33 +117,41 @@ public abstract class AbstractAbc implements IAbc {
 	protected TransactionManager transactionManager = new TransactionManager();
 
 	/**
+	 * Current Abc type
+	 */
+	protected AbcType abcType = null;
+
+	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcType simulatorType, EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi) {
 
+		AbstractAbc abc = null;
+		
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			return new InfiniteHomogeneousAbc(edgeSchedType, dag, archi);
+			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi, simulatorType.isSwitchTask());
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			return new LooselyTimedAbc(edgeSchedType, dag, archi);
+			abc =  new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
-			return new ApproximatelyTimedAbc(edgeSchedType, dag, archi);
+			abc =  new ApproximatelyTimedAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
-			return new AccuratelyTimedAbc(edgeSchedType, dag, archi);
+			abc =  new AccuratelyTimedAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.CommConten) {
-			return new CommContenAbc(edgeSchedType, dag, archi);
+			abc =  new CommContenAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.SendReceive) {
-			return new SendReceiveAbc(edgeSchedType, dag, archi);
+			abc =  new SendReceiveAbc(edgeSchedType, dag, archi, simulatorType);
 		}
 
-		return null;
+		return abc;
 	}
 
 	/**
 	 * Architecture simulator constructor
 	 */
-	public AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi) {
+	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
 
+		this.abcType = abcType;
 		orderManager = new SchedOrderManager();
 
 		this.dag = dag;
@@ -154,6 +162,7 @@ public abstract class AbstractAbc implements IAbc {
 		timeKeeper.resetTimings();
 
 		this.archi = archi;
+		
 
 		// currentRank = 0;
 	}
@@ -302,7 +311,7 @@ public abstract class AbstractAbc implements IAbc {
 	public final int getSchedulingOrder(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
-		return orderManager.getSchedulingOrder(vertex);
+		return orderManager.localIndexOf(vertex);
 	}
 
 	/**
@@ -405,14 +414,14 @@ public abstract class AbstractAbc implements IAbc {
 
 			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
 
-				// Vertex schedule order is reset but not total order
-				orderManager.remove(impvertex, false);
-
+				fireNewUnmappedVertex(impvertex);
+				
 				// Implantation property is set in both DAG and implementation
 				dagprop.setEffectiveOperator((Operator) Operator.NO_COMPONENT);
 				impprop.setEffectiveOperator((Operator) Operator.NO_COMPONENT);
-
-				fireNewUnmappedVertex(impvertex);
+				
+				// Vertex schedule order is reset but not total order
+				orderManager.remove(impvertex, false);
 
 			}
 
@@ -697,6 +706,10 @@ public abstract class AbstractAbc implements IAbc {
 			if (!(edge instanceof PrecedenceEdge))
 				setEdgeCost(edge);
 		}
+	}
+
+	public AbcType getType(){
+		return abcType;
 	}
 
 }

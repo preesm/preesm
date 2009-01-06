@@ -100,7 +100,7 @@ public class FastAlgoTest extends TestCase {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 		simu.getFinalTime();
 		InitialLists initial = new InitialLists();
 
@@ -115,9 +115,9 @@ public class FastAlgoTest extends TestCase {
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
 						.getFinalcriticalpathList(), 50, 50, 16, false, false, null);
-
+		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
 		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, abcType);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
 

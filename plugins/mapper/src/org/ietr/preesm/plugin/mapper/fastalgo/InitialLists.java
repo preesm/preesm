@@ -495,7 +495,7 @@ public class InitialLists {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dagtest = new DAGCreator().dagexample1(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dagtest, archi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dagtest, archi, false);
 		simu.getFinalTime();
 
 		InitialLists scheduler = new InitialLists();

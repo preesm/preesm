@@ -55,6 +55,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
@@ -313,7 +314,7 @@ public class ListScheduler {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 
@@ -333,8 +334,9 @@ public class ListScheduler {
 
 		ListScheduler scheduler = new ListScheduler();
 		simu.resetImplementation();
+		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
 		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, abcType);
 
 		logger.log(Level.FINEST, "Evaluating first scheduling ");
 		scheduler.schedule(dag, initial.getCpnDominantList(), initial

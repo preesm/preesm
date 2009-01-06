@@ -464,7 +464,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 
 		InitialLists initial = new InitialLists();
 

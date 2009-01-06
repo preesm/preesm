@@ -145,7 +145,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 		
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture);
+				dag, architecture, parameters.getSimulatorType().isSwitchTask());
 
 		InitialLists initial = new InitialLists();
 

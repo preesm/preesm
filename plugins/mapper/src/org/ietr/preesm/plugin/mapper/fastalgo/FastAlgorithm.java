@@ -120,7 +120,7 @@ public class FastAlgorithm extends Observable {
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 
@@ -263,7 +263,7 @@ public class FastAlgorithm extends Observable {
 		Integer iBest;
 		MapperDAG dagfinal = simulator.getDAG().clone();
 		dagfinal.setScheduleLatency(bestSL);
-
+	
 		// step 4/17
 		while (searchcount++ <= MAXCOUNT) {
 

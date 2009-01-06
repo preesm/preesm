@@ -169,7 +169,7 @@ public class FastPopulation {
 
 			// perform the initialization
 			IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-					tempdag, this.getArchi());
+					tempdag, this.getArchi(), false);
 			InitialLists initial = new InitialLists();
 			initial.constructInitialLists(tempdag, simu);
 			simu.resetDAG();

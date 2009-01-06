@@ -263,12 +263,13 @@ public class Chromosome {
 
 		ListScheduler scheduler = new ListScheduler();
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
+		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
 		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, abcType);
 		scheduler.schedule(dag, initialLists.getCpnDominantList(), initialLists
 				.getBlockingNodesList(), initialLists
 				.getFinalcriticalpathList(), archisimu, null, null);

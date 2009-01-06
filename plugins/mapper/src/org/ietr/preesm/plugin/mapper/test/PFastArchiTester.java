@@ -142,7 +142,7 @@ public class PFastArchiTester {
 		logger.log(Level.FINEST, "Initialization list scheduling");
 		InitialLists initial = new InitialLists();
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, false);
 
 		logger.log(Level.FINEST, "Evaluating constructInitialList ");
 		initial.constructInitialLists(dag, simu);

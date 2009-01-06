@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -75,8 +76,8 @@ public class LooselyTimedAbc extends
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi) {
-		super(dag, archi);
+	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
+		super(dag, archi, abcType);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
@@ -95,22 +96,28 @@ public class LooselyTimedAbc extends
 		} else {
 
 			if (updateRank) {
-				orderManager.addLast(vertex);
+				if (this.abcType.isSwitchTask()) {
+					TaskSwitcher taskSwitcher = new TaskSwitcher(
+							implementation, orderManager, vertex);
+					taskSwitcher.insertVertex();
+				} else {
+					orderManager.addLast(vertex);
+				}
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
 			
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
+			
+			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+			transactionManager.execute();
 
 			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
-			
-			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
-			transactionManager.execute();
 		}
 	}
 
@@ -123,17 +130,12 @@ public class LooselyTimedAbc extends
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
 		// It also removes incoming and outgoing schedule edges
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			vertex.getTimingVertexProperty().resetCost();
+		vertex.getTimingVertexProperty().resetCost();
 
-			resetCost(vertex.incomingEdges());
-			resetCost(vertex.outgoingEdges());
+		resetCost(vertex.incomingEdges());
+		resetCost(vertex.outgoingEdges());
 
-			transactionManager.undoTransactions(vertex);
-		} else {
-			PreesmLogger.getLogger().severe(
-					"unimplementation of " + vertex.getName() + " failed");
-		}
+		transactionManager.undoTransactions(vertex);
 	}
 
 	/**
@@ -172,10 +174,6 @@ public class LooselyTimedAbc extends
 			}
 		}
 
-	}
-
-	public AbcType getType(){
-		return AbcType.LooselyTimed;
 	}
 	
 	public EdgeSchedType getEdgeSchedType() {

@@ -243,7 +243,7 @@ public class SchedOrderManager {
 	/**
 	 * Gets the local scheduling order
 	 */
-	public int getSchedulingOrder(MapperDAGVertex vertex) {
+	public int localIndexOf(MapperDAGVertex vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 

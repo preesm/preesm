@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Set;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -46,7 +48,8 @@ import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Transaction generating the appropriate Precedence Edges to add a new vertex
- * in the middle of a schedule.
+ * in the middle of a schedule. Undoing this transaction creates (if necessary)
+ * an edge between preceding and following vertex
  * 
  * @author mpelcat
  */
@@ -68,12 +71,6 @@ public class SchedNewVertexTransaction extends Transaction {
 	 */
 	private MapperDAG implementation = null;
 
-	/**
-	 * Added edges
-	 */
-	private PrecedenceEdge precEdge1 = null;
-	private PrecedenceEdge precEdge2 = null;
-
 	public SchedNewVertexTransaction(SchedOrderManager orderManager,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
@@ -94,6 +91,9 @@ public class SchedNewVertexTransaction extends Transaction {
 		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
 
 		if (edges != null) {
+			if(edges.size() >=2)
+				PreesmLogger.getLogger().log(Level.SEVERE,"too many precedence edges");
+			
 			for (DAGEdge edge : edges) {
 				if (edge instanceof PrecedenceEdge){
 					implementation.removeEdge(edge);
@@ -104,7 +104,7 @@ public class SchedNewVertexTransaction extends Transaction {
 
 	@Override
 	public void execute() {
-		super.execute();
+ 		super.execute();
 
 		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
 		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
@@ -116,17 +116,18 @@ public class SchedNewVertexTransaction extends Transaction {
 		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
 		
 		if ((prev != null && newVertex != null) && !prevAndNewLinked){
-			precEdge1 = addPrecedenceEdge(prev, newVertex);
+			addPrecedenceEdge(prev, newVertex);
 			prevAndNewLinked = true;
 		}
 
 		if ((newVertex != null && next != null) && !newAndNextLinked){
-			precEdge2 = addPrecedenceEdge(newVertex, next);
+			addPrecedenceEdge(newVertex, next);
 			newAndNextLinked = true;
 		}
 		
 		if(prevAndNewLinked && newAndNextLinked){
-			//removePrecedenceEdge(prev, next);
+			//TODO: Understand why this does not work
+			removePrecedenceEdge(prev, next);
 		}
 	}
 
@@ -137,13 +138,20 @@ public class SchedNewVertexTransaction extends Transaction {
 		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
 		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
 
-		implementation.removeEdge(precEdge1);
-		implementation.removeEdge(precEdge2);
+
+		if(prev != null){
+			removePrecedenceEdge(prev, newVertex);
+		}
+		
+		if(next != null){
+			removePrecedenceEdge(newVertex, next);
+		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
-		if ((prev != null && next != null) && (edges == null || edges.isEmpty()))
+		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
 			addPrecedenceEdge(prev, next);
+		}
 
 	}
 

@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -79,8 +80,8 @@ public class SendReceiveAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public SendReceiveAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi) {
-		super(dag, archi);
+			MultiCoreArchitecture archi, AbcType abcType) {
+		super(dag, archi, abcType);
 
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
@@ -103,7 +104,13 @@ public class SendReceiveAbc extends
 		} else {
 
 			if (updateRank) {
-				orderManager.addLast(vertex);
+				if (this.abcType.isSwitchTask()) {
+					TaskSwitcher taskSwitcher = new TaskSwitcher(
+							implementation, orderManager, vertex);
+					taskSwitcher.insertVertex();
+				} else {
+					orderManager.addLast(vertex);
+				}
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
@@ -162,10 +169,6 @@ public class SendReceiveAbc extends
 
 		edge.getTimingEdgeProperty().setCost(0);
 
-	}
-
-	public AbcType getType(){
-		return AbcType.SendReceive;
 	}
 
 	public EdgeSchedType getEdgeSchedType() {

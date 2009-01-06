@@ -44,6 +44,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
@@ -59,16 +60,15 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * An approximately timed architecture simulator associates a complex
- * cost to each inter-core communication. This cost is composed of an
- * overhead on the sender, a transfer time on the medium and a reception
- * time on the receiver. Scheduling transfer vertices are added and
- * mapped to the media architecture components
- *         
- * @author mpelcat   
+ * An approximately timed architecture simulator associates a complex cost to
+ * each inter-core communication. This cost is composed of an overhead on the
+ * sender, a transfer time on the medium and a reception time on the receiver.
+ * Scheduling transfer vertices are added and mapped to the media architecture
+ * components
+ * 
+ * @author mpelcat
  */
-public class ApproximatelyTimedAbc extends
-		AbstractAbc {
+public class ApproximatelyTimedAbc extends AbstractAbc {
 
 	/**
 	 * simulator of the transfers
@@ -81,8 +81,8 @@ public class ApproximatelyTimedAbc extends
 	protected TransferVertexAdder tvertexAdder;
 
 	/**
-	 * Current precedence edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
+	 * Current precedence edge adder: called exclusively by simulator to
+	 * schedule vertices on the different operators
 	 */
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
@@ -96,13 +96,15 @@ public class ApproximatelyTimedAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public ApproximatelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi) {
-		super(dag, archi);
+			MultiCoreArchitecture archi, AbcType abcType) {
+		super(dag, archi, abcType);
 
 		// The media simulator calculates the edges costs
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,orderManager);
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
+				orderManager);
 		router = new CommunicationRouter(archi);
-		tvertexAdder = new TransferVertexAdder(edgeScheduler, router, orderManager, false, false);
+		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
+				orderManager, false, false);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
@@ -110,12 +112,13 @@ public class ApproximatelyTimedAbc extends
 	 * Called when a new vertex operator is set
 	 */
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
-/*
-		PreesmLogger.getLogger().log(Level.INFO,
-				"mapping " + vertex.getName());
-		*/
- 		Operator effectiveOp = vertex.getImplementationVertexProperty()
+	protected void fireNewMappedVertex(MapperDAGVertex vertex,
+			boolean updateRank) {
+		/*
+		 * PreesmLogger.getLogger().log(Level.INFO, "mapping " +
+		 * vertex.getName());
+		 */
+		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
 		if (effectiveOp == Operator.NO_COMPONENT) {
@@ -124,11 +127,17 @@ public class ApproximatelyTimedAbc extends
 		} else {
 
 			if (updateRank) {
-				orderManager.addLast(vertex);
+				if (this.abcType.isSwitchTask()) {
+					TaskSwitcher taskSwitcher = new TaskSwitcher(
+							implementation, orderManager, vertex);
+					taskSwitcher.insertVertex();
+				} else {
+					orderManager.addLast(vertex);
+				}
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
-			
+
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
@@ -139,19 +148,24 @@ public class ApproximatelyTimedAbc extends
 			setEdgesCosts(vertex.outgoingEdges());
 
 			transactionManager.undoTransactions(vertex);
-			
-			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
+
+			precedenceEdgeAdder.scheduleNewVertex(implementation,
+					transactionManager, vertex, vertex);
 			transactionManager.execute();
-			
-			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
-			scheduleT(implementation,transactionManager,vertex);
+
+			tvertexAdder.addTransferVertices(implementation,
+					transactionManager, vertex);
+			scheduleT(implementation, transactionManager, vertex);
 
 			/*
-			// Exhaustive recalculation
-			transactionManager.undoTransactionList();
-			
-			tvertexAdder.addTransferVertices(implementation,transactionManager,null);
-			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);*/
+			 * // Exhaustive recalculation
+			 * transactionManager.undoTransactionList();
+			 * 
+			 * 
+			 * tvertexAdder.addTransferVertices(implementation,transactionManager
+			 * ,null);precedenceEdgeAdder.addPrecedenceEdges(implementation,
+			 * transactionManager);
+			 */
 
 		}
 	}
@@ -162,7 +176,8 @@ public class ApproximatelyTimedAbc extends
 		for (DAGEdge edge : refVertex.incomingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,
+						transactionManager, vertex, refVertex);
 
 			}
 		}
@@ -170,7 +185,8 @@ public class ApproximatelyTimedAbc extends
 		for (DAGEdge edge : refVertex.outgoingEdges()) {
 			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,
+						transactionManager, vertex, refVertex);
 			}
 		}
 
@@ -217,10 +233,6 @@ public class ApproximatelyTimedAbc extends
 
 	}
 
-	public AbcType getType(){
-		return AbcType.ApproximatelyTimed;
-	}
-	
 	public EdgeSchedType getEdgeSchedType() {
 		return edgeScheduler.getEdgeSchedType();
 	}
