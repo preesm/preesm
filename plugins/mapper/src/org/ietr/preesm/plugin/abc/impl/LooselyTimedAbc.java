@@ -129,7 +129,7 @@ public class LooselyTimedAbc extends
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		// It also removes incoming and outgoing schedule edges
+		
 		vertex.getTimingVertexProperty().resetCost();
 
 		resetCost(vertex.incomingEdges());

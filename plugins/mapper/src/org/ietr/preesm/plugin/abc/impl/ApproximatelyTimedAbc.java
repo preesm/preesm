@@ -141,13 +141,7 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
-			// Set costs
-			vertex.getTimingVertexProperty().setCost(vertextime);
-
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
-
-			transactionManager.undoTransactions(vertex);
+			//transactionManager.undoTransactions(vertex);
 
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
@@ -157,15 +151,11 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 					transactionManager, vertex);
 			scheduleT(implementation, transactionManager, vertex);
 
-			/*
-			 * // Exhaustive recalculation
-			 * transactionManager.undoTransactionList();
-			 * 
-			 * 
-			 * tvertexAdder.addTransferVertices(implementation,transactionManager
-			 * ,null);precedenceEdgeAdder.addPrecedenceEdges(implementation,
-			 * transactionManager);
-			 */
+			// Set costs
+			vertex.getTimingVertexProperty().setCost(vertextime);
+
+			setEdgesCosts(vertex.incomingEdges());
+			setEdgesCosts(vertex.outgoingEdges());
 
 		}
 	}
@@ -201,17 +191,13 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		// It also removes incoming and outgoing schedule edges
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			vertex.getTimingVertexProperty().resetCost();
+		
+		vertex.getTimingVertexProperty().resetCost();
 
-			resetCost(vertex.incomingEdges());
-			resetCost(vertex.outgoingEdges());
-
-		} else {
-			PreesmLogger.getLogger().severe(
-					"unimplementation of " + vertex.getName() + " failed");
-		}
+		resetCost(vertex.incomingEdges());
+		resetCost(vertex.outgoingEdges());
+		
+		transactionManager.undoTransactions(vertex);
 	}
 
 	/**

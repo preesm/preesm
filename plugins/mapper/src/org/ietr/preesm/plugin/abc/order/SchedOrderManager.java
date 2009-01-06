@@ -230,7 +230,7 @@ public class SchedOrderManager {
 	 * Inserts vertex after previous
 	 */
 	public void insertVertexAtIndex(int index, MapperDAGVertex vertex) {
-
+		
 		MapperDAGVertex ref = totalOrder.get(index);
 		if (ref != null) {
 			insertVertexBefore(ref, vertex);

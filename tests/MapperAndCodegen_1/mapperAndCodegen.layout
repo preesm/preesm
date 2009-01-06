@@ -4,7 +4,7 @@
       <vertex id="__algorithm" x="219" y="135"/>
       <vertex id="__architecture" x="196" y="311"/>
       <vertex id="__scenario" x="99" y="224"/>
-      <vertex id="FAST scheduler" x="469" y="219"/>
+      <vertex id="FAST scheduler" x="438" y="246"/>
       <vertex id="DAG Plotter" x="680" y="286"/>
    </vertices>
 </layout>

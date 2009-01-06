@@ -53,8 +53,13 @@ public class TaskSwitcher {
 		int index = -1;
 		
 		for(DAGEdge edge : testVertex.incomingEdges()){
-			if(!(edge instanceof PrecedenceEdge))
+			if(!(edge instanceof PrecedenceEdge)){
 				index = Math.max(index, orderManager.totalIndexOf((MapperDAGVertex)edge.getSource()));
+			}
+			else{
+				int i = 0;
+				i++;
+			}
 		}
 		
 		return index;
@@ -67,8 +72,13 @@ public class TaskSwitcher {
 		int index = Integer.MAX_VALUE;
 		
 		for(DAGEdge edge : testVertex.outgoingEdges()){
-			if(!(edge instanceof PrecedenceEdge))
+			if(!(edge instanceof PrecedenceEdge)){
 				index = Math.min(index, orderManager.totalIndexOf((MapperDAGVertex)edge.getTarget()));
+			}
+			else{
+				int i = 0;
+				i++;
+			}
 		}
 		
 		if(index == Integer.MAX_VALUE) index = -1;
@@ -109,6 +119,9 @@ public class TaskSwitcher {
 	}
 
 	public void insertVertex(){
+		
+		orderManager.remove(vertex,true);
+		
 		int newIndex = getBestIndex(); 
 		if(newIndex >= 0){
 			orderManager.insertVertexAtIndex(newIndex, vertex);

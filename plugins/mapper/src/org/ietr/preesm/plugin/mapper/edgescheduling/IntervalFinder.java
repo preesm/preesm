@@ -64,6 +64,7 @@ public class IntervalFinder {
 			for(MapperDAGVertex v : schedule){
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if(props.getTlevel() >= 0){
+					// newInt is the interval corresponding to the execution of the vertex v
 					newInt = new Interval(props.getCost(),props.getTlevel(),orderManager.totalIndexOf(v));
 	
 					if(newInt.getTotalOrderIndex() > minIndex && newInt.getTotalOrderIndex() <= maxIndex){
@@ -72,6 +73,8 @@ public class IntervalFinder {
 						int freeIntervalSize = newInt.getStartTime() - available;
 						
 						if(freeIntervalSize > biggestFreeInterval.getDuration()){
+							// The free interval takes the index of its following task v.
+							// Inserting a vertex in this interval means inserting it before v.
 							biggestFreeInterval = new Interval(freeIntervalSize,available,newInt.getTotalOrderIndex());
 						}
 					}

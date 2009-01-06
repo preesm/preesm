@@ -169,15 +169,12 @@ public class InfiniteHomogeneousAbc extends
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			vertex.getTimingVertexProperty().resetCost();
+		
+		vertex.getTimingVertexProperty().resetCost();
 
-			resetCost(vertex.incomingEdges());
-			resetCost(vertex.outgoingEdges());
-		} else {
-			PreesmLogger.getLogger().severe(
-					"unimplementation of " + vertex.getName() + " failed");
-		}
+		resetCost(vertex.incomingEdges());
+		resetCost(vertex.outgoingEdges());
+
 	}
 
 	/**

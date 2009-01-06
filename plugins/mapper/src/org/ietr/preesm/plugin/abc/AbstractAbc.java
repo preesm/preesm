@@ -413,16 +413,8 @@ public abstract class AbstractAbc implements IAbc {
 					.getImplementationVertexProperty();
 
 			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
-
-				fireNewUnmappedVertex(impvertex);
-				
-				// Implantation property is set in both DAG and implementation
-				dagprop.setEffectiveOperator((Operator) Operator.NO_COMPONENT);
-				impprop.setEffectiveOperator((Operator) Operator.NO_COMPONENT);
-				
-				// Vertex schedule order is reset but not total order
-				orderManager.remove(impvertex, false);
-
+				// Unimplanting if necessary before implanting
+				unimplant(dagvertex);
 			}
 
 			if (isImplantable(impvertex, operator)
@@ -636,15 +628,13 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	public void resetDAG() {
 
-		orderManager.resetTotalOrder();
-
-		resetImplementation();
-
 		Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
 
 		while (iterator.hasNext()) {
 			unimplant((MapperDAGVertex) iterator.next());
 		}
+		
+		orderManager.resetTotalOrder();
 	}
 
 	/**
@@ -655,15 +645,20 @@ public abstract class AbstractAbc implements IAbc {
 
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
+		fireNewUnmappedVertex(impvertex);
+		
 		dagvertex.getImplementationVertexProperty().setEffectiveOperator(
 				(Operator) Operator.NO_COMPONENT);
 
 		impvertex.getImplementationVertexProperty().setEffectiveOperator(
 				(Operator) Operator.NO_COMPONENT);
 
+		// Keeps the total order
 		orderManager.remove(impvertex, false);
 
 		timeKeeper.setAsDirty(impvertex);
+		
+		//PreesmLogger.getLogger().log(Level.SEVERE,"unimplanting " + impvertex.getName() + "\n");
 	}
 
 	/**

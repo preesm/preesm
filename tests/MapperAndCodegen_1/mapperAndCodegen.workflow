@@ -4,12 +4,12 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="edgeSchedType" value="Simple"/>
+         <variable name="edgeSchedType" value="Switcher"/>
          <variable name="margIn" value="30"/>
          <variable name="maxCount" value="800"/>
          <variable name="maxStep" value="800"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
-         <variable name="switchTask" value="false"/>
+         <variable name="simulatorType" value="ApproximatelyTimed"/>
+         <variable name="switchTask" value="true"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
