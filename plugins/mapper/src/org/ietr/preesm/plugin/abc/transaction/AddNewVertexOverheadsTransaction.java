@@ -36,24 +36,35 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.architecture.Route;
+import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * Transaction generating the appropriate Precedence Edges to add a new vertex
- * in the middle of a schedule. Undoing this transaction creates (if necessary)
- * an edge between preceding and following vertex
+ * Transaction generating the appropriate overheads created by the implantation
+ * of a new vertex. Undoing this transaction deletes all overheads coming from
+ * or going to this vertex, even if they were not created by the transaction itself.
+ * This is necessary to handle the complicated cases of undo/redo in random order.
  * 
  * @author mpelcat
  */
-public class SchedNewVertexTransaction extends Transaction {
+public class AddNewVertexOverheadsTransaction extends Transaction {
 
 	// Inputs
 	/**
@@ -70,89 +81,50 @@ public class SchedNewVertexTransaction extends Transaction {
 	 * Implementation DAG to which the edge is added
 	 */
 	private MapperDAG implementation = null;
+	
+	private TransactionManager localTransactionManager = null;
+	private OverheadVertexAdder overheadVertexAdder = null;
 
-	public SchedNewVertexTransaction(SchedOrderManager orderManager,
+	public AddNewVertexOverheadsTransaction(SchedOrderManager orderManager,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
 		this.orderManager = orderManager;
 		this.newVertex = newVertex;
 		this.implementation = implementation;
-	}
 
-	private PrecedenceEdge addPrecedenceEdge(MapperDAGVertex v1,
-			MapperDAGVertex v2) {
-		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
-		implementation.addEdge(v1, v2, precedenceEdge);
-		return precedenceEdge;
-	}
-
-	private void removePrecedenceEdge(MapperDAGVertex v1, MapperDAGVertex v2) {
-		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
-
-		if (edges != null) {
-			if(edges.size() >=2)
-				PreesmLogger.getLogger().log(Level.SEVERE,"too many precedence edges");
-			
-			for (DAGEdge edge : edges) {
-				if (edge instanceof PrecedenceEdge){
-					implementation.removeEdge(edge);
-				}
-			}
-		}
+		localTransactionManager = new TransactionManager();
+		overheadVertexAdder = new OverheadVertexAdder(orderManager);
 	}
 
 	@Override
 	public void execute() {
- 		super.execute();
+		super.execute();
 
-		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
-		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
- 		
-		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
-		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
-
-		boolean prevAndNewLinked = (prevEdges != null && !prevEdges.isEmpty());
-		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
+		 Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
 		
-		if ((prev != null && newVertex != null) && !prevAndNewLinked){
-			addPrecedenceEdge(prev, newVertex);
-			prevAndNewLinked = true;
+		overheadVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
+
+		for (DAGVertex tvertex : transfers) {
+			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
+				if(!(incomingEdge instanceof PrecedenceEdge)){
+					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), orderManager),null);
+				}
+			}
 		}
 
-		if ((newVertex != null && next != null) && !newAndNextLinked){
-			addPrecedenceEdge(newVertex, next);
-			newAndNextLinked = true;
-		}
 		
-		if(prevAndNewLinked && newAndNextLinked){
-			//TODO: Understand why this does not work
-			removePrecedenceEdge(prev, next);
-		}
+		localTransactionManager.execute();
+		localTransactionManager.clear();
+
 	}
 
 	@Override
 	public void undo() {
 		super.undo();
-
-		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
-		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
-
-
-		if(prev != null){
-			removePrecedenceEdge(prev, newVertex);
-		}
 		
-		if(next != null){
-			removePrecedenceEdge(newVertex, next);
-		}
-
-		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
-
-		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
-			addPrecedenceEdge(prev, next);
-		}
-
+		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
+		
+		overheadVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 	}
 
 }

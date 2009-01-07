@@ -54,8 +54,10 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Transaction generating the appropriate Precedence Edges to add a new vertex
- * in the middle of a schedule.
+ * Transaction generating the appropriate transfers created by the implantation
+ * of a new vertex. Undoing this transaction deletes all transfers coming from
+ * or going to this vertex, even if they were not created by the transaction itself.
+ * This is necessary to handle the complicated cases of undo/redo in random order.
  * 
  * @author mpelcat
  */

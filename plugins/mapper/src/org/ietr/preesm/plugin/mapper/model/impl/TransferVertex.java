@@ -37,8 +37,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * A transfer vertex represents a route step
@@ -60,6 +63,21 @@ public class TransferVertex extends MapperDAGVertex {
 
 	public void setRouteStep(RouteStep step) {
 		this.step = step;
+	}
+
+	/**
+	 * A transfer vertex follows only one vertex
+	 */
+	public OverheadVertex getPrecedingOverhead() {
+		for(DAGEdge incomingEdge : getBase().incomingEdgesOf(this)){
+			if(!(incomingEdge instanceof PrecedenceEdge)){
+				MapperDAGVertex precV = (MapperDAGVertex)incomingEdge.getSource();
+				if(precV instanceof OverheadVertex)
+				return (OverheadVertex)precV;
+			}
+		}
+		
+		return null;
 	}
 
 }

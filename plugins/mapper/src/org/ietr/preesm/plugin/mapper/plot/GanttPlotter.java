@@ -438,10 +438,7 @@ public class GanttPlotter extends ApplicationFrame {
 	}
 
 	/**
-	 * Starting point for the demonstration application.
-	 * 
-	 * @param args
-	 *            ignored.
+	 * Gantt chart plotting function in a given composite
 	 */
 	public static void plotInComposite(IAbc simulator, Composite parent) {
 

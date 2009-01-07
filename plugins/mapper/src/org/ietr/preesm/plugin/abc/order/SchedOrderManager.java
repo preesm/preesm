@@ -241,7 +241,7 @@ public class SchedOrderManager {
 	}
 
 	/**
-	 * Gets the local scheduling order
+	 * Gets the local scheduling order, -1 if not present
 	 */
 	public int localIndexOf(MapperDAGVertex vertex) {
 
@@ -431,6 +431,11 @@ public class SchedOrderManager {
 
 	public Schedule getTotalOrder() {
 		return totalOrder;
+	}
+
+	@Override
+	public String toString() {
+		return totalOrder.toString();
 	}
 
 }

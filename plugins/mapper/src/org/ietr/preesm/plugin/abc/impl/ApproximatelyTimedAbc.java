@@ -141,8 +141,6 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
-			//transactionManager.undoTransactions(vertex);
-
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
 			transactionManager.execute();
@@ -185,9 +183,6 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 
 	@Override
 	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
-
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges

@@ -8,20 +8,13 @@
          <variable name="margIn" value="30"/>
          <variable name="maxCount" value="800"/>
          <variable name="maxStep" value="800"/>
-         <variable name="simulatorType" value="ApproximatelyTimed"/>
-         <variable name="switchTask" value="true"/>
-      </data>
-   </preesm:task>
-   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
-      <data key="variables">
-         <variable name="path" value="D:/IDCT2D/dag.gantt"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
+         <variable name="switchTask" value="false"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="FAST scheduler"/>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="customData" targetport="customData" to="DAG Plotter"/>
-   <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="DAG Plotter"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="__architecture"/>
 </preesm:workflow>

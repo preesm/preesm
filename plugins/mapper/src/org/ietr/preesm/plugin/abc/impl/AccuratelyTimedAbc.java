@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
+import java.util.Set;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -56,6 +58,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * The accurately timed ABC schedules edges and set-up times
@@ -137,24 +140,24 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			int vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
+			precedenceEdgeAdder.scheduleNewVertex(implementation,
+					transactionManager, vertex, vertex);
+			transactionManager.execute();
+
+			tvertexAdder.addTransferVertices(implementation,
+					transactionManager, vertex);
+			
+			scheduleT(implementation, transactionManager, vertex);
+
+			overtexAdder.addOverheadVertices(implementation, transactionManager, vertex);
+			scheduleO(implementation, transactionManager, vertex);
+			
 			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
-
-			transactionManager.undoTransactions(vertex);
 			
-			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
-			transactionManager.execute();
-			
-			tvertexAdder.addTransferVertices(implementation,transactionManager, vertex);
-			scheduleT(implementation,transactionManager,vertex);
-
-			
-			//overtexAdder.addOverheadVertices(implementation,
-			//		transactionManager, vertex);
-			//scheduleO(implementation,transactionManager,vertex);
 		}
 	}
 
@@ -165,25 +168,10 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	public void scheduleO(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
-		for (DAGEdge edge : refVertex.incomingEdges()) {
-			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
-			if (vertex instanceof TransferVertex) {
-				for(DAGEdge edge2 : vertex.incomingEdges()){
-					vertex = (MapperDAGVertex) edge2.getSource();
-					if (vertex instanceof OverheadVertex) {
-						OverheadVertex oV = (OverheadVertex)vertex;
-						precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,oV,refVertex);
-					}
-				}
+		Set<OverheadVertex> overheads = OverheadVertexAdder.getAllOverheads(refVertex, implementation,transactionManager);
 
-			}
-		}
-
-		for (DAGEdge edge : refVertex.outgoingEdges()) {
-			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
-			if (vertex instanceof OverheadVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
-			}
+		for (OverheadVertex overhead : overheads) {
+			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,overhead,refVertex);
 		}
 
 		transactionManager.execute();
@@ -192,18 +180,13 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	public void scheduleT(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
-		for (DAGEdge edge : refVertex.incomingEdges()) {
-			MapperDAGVertex vertex = (MapperDAGVertex) edge.getSource();
+		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(refVertex, implementation,transactionManager);
+		
+		for (DAGVertex vertex : transfers) {
 			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
+				precedenceEdgeAdder.scheduleNewVertex(implementation,
+						transactionManager, (MapperDAGVertex)vertex, refVertex);
 
-			}
-		}
-
-		for (DAGEdge edge : refVertex.outgoingEdges()) {
-			MapperDAGVertex vertex = (MapperDAGVertex) edge.getTarget();
-			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,refVertex);
 			}
 		}
 
@@ -213,22 +196,15 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	@Override
 	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
-
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		// It also removes incoming and outgoing schedule edges
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			vertex.getTimingVertexProperty().resetCost();
+		
+		vertex.getTimingVertexProperty().resetCost();
 
-			resetCost(vertex.incomingEdges());
-			resetCost(vertex.outgoingEdges());
-
-		} else {
-			PreesmLogger.getLogger().severe(
-					"unimplementation of " + vertex.getName() + " failed");
-		}
+		resetCost(vertex.incomingEdges());
+		resetCost(vertex.outgoingEdges());
+		
+		transactionManager.undoTransactions(vertex);
 
 	}
 

@@ -164,9 +164,6 @@ public class InfiniteHomogeneousAbc extends
 	@Override
 	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
-
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
 		

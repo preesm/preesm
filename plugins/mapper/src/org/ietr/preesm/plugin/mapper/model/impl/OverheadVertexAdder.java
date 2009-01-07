@@ -41,12 +41,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.transaction.AddNewVertexOverheadsTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Adds overheads and schedules them on cores
@@ -93,34 +97,46 @@ public class OverheadVertexAdder {
 	 */
 	public void addOverheadVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
-		Set<DAGEdge> edgeSet = new HashSet<DAGEdge>();
-		
-		for(DAGEdge edge:refVertex.incomingEdges()){
-			if(edge != null && edge.getSource() != null && edge.getSource().incomingEdges() != null){
-				edgeSet.addAll(edge.getSource().incomingEdges());
-			}
-		}
-		
-		edgeSet.addAll(refVertex.outgoingEdges());
-		
-		// We iterate the edges and process the ones with a transfer vertex as
-		// destination
-		Iterator<DAGEdge> iterator = edgeSet.iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGEdge currentEdge = (MapperDAGEdge)iterator.next();
-
-			if (!(currentEdge instanceof PrecedenceEdge)
-					&& currentEdge.getTarget() instanceof TransferVertex) {
-
-				TransferVertex tvertex = (TransferVertex) currentEdge
-						.getTarget();
-
-				transactionManager.add(new AddOverheadVertexTransaction(currentEdge,implementation, tvertex.getRouteStep(), orderManager),refVertex);
-				
-			}
-		}
-
+		transactionManager.add(new AddNewVertexOverheadsTransaction(orderManager, implementation, refVertex), refVertex);
 		transactionManager.execute();
+	}
+
+	/**
+	 * Removes all overheads from routes coming from or going to vertex
+	 */
+	public void removeAllOverheads(Set<DAGVertex> transfers, MapperDAG implementation,
+			TransactionManager transactionManager){
+
+		for (DAGVertex v : transfers) {
+			if (v instanceof TransferVertex) {
+				MapperDAGVertex o = ((TransferVertex)v).getPrecedingOverhead();
+				if (o != null && o instanceof OverheadVertex){
+					transactionManager.add(new RemoveVertexTransaction(o,implementation,orderManager), null);
+				}
+			}
+		}
+	
+		transactionManager.execute();
+	}
+
+	/**
+	 * Gets all overheads from routes coming from or going to vertex.
+	 */
+	public static Set<OverheadVertex> getAllOverheads(MapperDAGVertex vertex, MapperDAG implementation,
+			TransactionManager transactionManager){
+
+		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(vertex, implementation,transactionManager);
+		Set<OverheadVertex> overheads = new HashSet<OverheadVertex>();
+		
+		for (DAGVertex v : transfers) {
+			if (v instanceof TransferVertex) {
+				MapperDAGVertex o = ((TransferVertex)v).getPrecedingOverhead();
+				if (o != null && o instanceof OverheadVertex){
+					overheads.add((OverheadVertex)o);
+				}
+			}
+		}
+		
+		return overheads;
 	}
 }

@@ -47,6 +47,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
@@ -127,7 +128,11 @@ public class AddOverheadVertexTransaction extends Transaction {
 			oVertex.getImplementationVertexProperty().setEffectiveOperator(
 					step.getSender());
 
-			orderManager.insertVertexAfter(currentSource, oVertex);
+			if(!(currentTarget instanceof TransferVertex)){
+				PreesmLogger.getLogger().log(Level.SEVERE,"An overhead must be followed by a transfer");
+			}
+			
+			orderManager.insertVertexBefore(currentTarget, oVertex);
 
 			implementation.addVertex(oVertex);
 			
