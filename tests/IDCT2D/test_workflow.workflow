@@ -4,7 +4,7 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
       <data key="variables">
-         <variable name="depth" value="-1"/>
+         <variable name="depth" value="2"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
@@ -19,7 +19,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="D:/Preesm/trunk/tests/IDCT2D/flatten.graphml"/>
+         <variable name="path" value="D:/Preesm/trunk/tests/IDCT2D/flatten2.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">
@@ -30,13 +30,11 @@
          <variable name="simulatorType" value="SendReceive"/>
       </data>
    </preesm:task>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
+   <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
+      <data key="variables"/>
+   </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Mapper"/>
-   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="Mapper"/>
-   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="Mapper"/>
-   <preesm:dataTransfer from="Mapper" sourceport="customData" targetport="customData" to="DAG Plotter"/>
-   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="DAG Plotter"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
 </preesm:workflow>

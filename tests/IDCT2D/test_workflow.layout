@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
    <vertices>
-      <vertex id="__algorithm" x="135" y="176"/>
+      <vertex id="__algorithm" x="145" y="139"/>
       <vertex id="__architecture" x="186" y="336"/>
       <vertex id="__scenario" x="28" y="241"/>
-      <vertex id="HierarchyFlattening" x="207" y="125"/>
+      <vertex id="HierarchyFlattening" x="301" y="35"/>
       <vertex id="CodeGen" x="370" y="373"/>
       <vertex id="DAG Plotter" x="542" y="239"/>
-      <vertex id="Exporter" x="478" y="136"/>
+      <vertex id="Exporter" x="523" y="27"/>
       <vertex id="Mapper" x="375" y="218"/>
+      <vertex id="HSDF" x="296" y="122"/>
    </vertices>
 </layout>
