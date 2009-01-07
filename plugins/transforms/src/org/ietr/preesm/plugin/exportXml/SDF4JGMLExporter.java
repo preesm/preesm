@@ -44,6 +44,7 @@ import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
+
 public class SDF4JGMLExporter implements IExporter {
 
 	@Override
@@ -61,6 +62,12 @@ public class SDF4JGMLExporter implements IExporter {
 		GMLSDFExporter exporter = new GMLSDFExporter();
 		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
 		exporter.export(clone, params.getVariable("path"));
+	}
+	
+	public static void main(String [] args){
+		SDFGraph algorithm = GMLSDFExporter.createTestComGraph();
+		GMLSDFExporter exporter = new GMLSDFExporter();
+		exporter.export(algorithm, "D:\\test.graphml");
 	}
 
 	@Override
