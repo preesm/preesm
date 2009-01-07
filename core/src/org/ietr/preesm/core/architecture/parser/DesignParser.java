@@ -116,14 +116,13 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());
 		} catch (SAXException se) {
-			se.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,se.getMessage());
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,ioe.getMessage());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
 		}
 	}
 

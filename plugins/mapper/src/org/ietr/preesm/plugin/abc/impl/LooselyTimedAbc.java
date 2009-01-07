@@ -98,7 +98,7 @@ public class LooselyTimedAbc extends
 			if (updateRank) {
 				if (this.abcType.isSwitchTask()) {
 					TaskSwitcher taskSwitcher = new TaskSwitcher(
-							implementation, orderManager, vertex);
+							orderManager, vertex);
 					taskSwitcher.insertVertex();
 				} else {
 					orderManager.addLast(vertex);

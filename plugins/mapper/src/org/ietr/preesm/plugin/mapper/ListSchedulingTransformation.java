@@ -43,7 +43,6 @@ import java.util.logging.Logger;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.Timing;

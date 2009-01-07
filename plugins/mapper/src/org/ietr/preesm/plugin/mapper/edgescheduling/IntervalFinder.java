@@ -3,8 +3,6 @@
  */
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;

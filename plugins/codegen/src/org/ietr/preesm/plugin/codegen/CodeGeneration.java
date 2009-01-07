@@ -43,18 +43,13 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
-import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFIntEdgePropertyType;
 
 /**
  * Code generation.
@@ -88,30 +83,6 @@ public class CodeGeneration implements ICodeGeneration {
 		gen.transform(algorithm, architecture, params);
 
 		logger.log(Level.FINER, "Code generated");
-	}
-
-	/**
-	 * Adding a new edge to graph from a few properties
-	 */
-	public DAGEdge addExampleEdge(DirectedAcyclicGraph graph, String source,
-			String dest, String type, int prodCons) {
-		DAGEdge edge;
-
-		edge = graph.addEdge(graph.getVertex(source), graph.getVertex(dest));
-		edge.getPropertyBean().setValue("dataType", type);
-
-		// DAG => prod = cons
-		edge.setWeight(new SDFIntEdgePropertyType(prodCons));
-
-		// DAG => no delay
-
-		// Example buffer aggregate with one single buffer
-		BufferAggregate agg = new BufferAggregate();
-		agg.add(new BufferProperties(new DataType(type), "out", "in", prodCons));
-
-		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
-
-		return edge;
 	}
 
 	/**

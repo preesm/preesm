@@ -46,13 +46,12 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}.
- * Each element is a vertex.
+ * Each element is a vertex. This tree is used in scenario editor to
+ * edit the constraints
  * 
  * @author mpelcat
  */
 public class SDFTreeContentProvider implements ITreeContentProvider {
-	
-	private Scenario scenario = null;
 	
 	private SDFGraph currentGraph = null;
 
@@ -107,11 +106,8 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			Scenario inputScenario = (Scenario)inputElement;
 			
 			// Opening algorithm from file
-			//if(inputScenario != scenario){
-				scenario = inputScenario;
-				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
-				table[0] = currentGraph;
-			//}
+			currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
+			table[0] = currentGraph;
 		}
 		return table;
 	}

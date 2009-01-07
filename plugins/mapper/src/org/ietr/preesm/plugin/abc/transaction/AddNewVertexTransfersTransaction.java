@@ -37,11 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Route;
-import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
@@ -64,10 +61,6 @@ import org.sdf4j.model.dag.DAGEdge;
 public class AddNewVertexTransfersTransaction extends Transaction {
 
 	// Inputs
-	/**
-	 * The object handling the schedulings as well as the total order.
-	 */
-	private SchedOrderManager orderManager;
 
 	/**
 	 * Vertex to add in the schedule
@@ -78,16 +71,6 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 	 * Implementation DAG to which the edge is added
 	 */
 	private MapperDAG implementation = null;
-
-	/**
-	 * Edge scheduler
-	 */
-	private IEdgeSched edgeSched = null;
-
-	/**
-	 * Router
-	 */
-	private CommunicationRouter router = null;
 	
 	private TransactionManager localTransactionManager = null;
 	private TransferVertexAdder transferVertexAdder = null;
@@ -96,11 +79,8 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 			CommunicationRouter router, SchedOrderManager orderManager,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
-		this.orderManager = orderManager;
 		this.newVertex = newVertex;
 		this.implementation = implementation;
-		this.edgeSched = edgeSched;
-		this.router = router;
 
 		localTransactionManager = new TransactionManager();
 		transferVertexAdder = new TransferVertexAdder(

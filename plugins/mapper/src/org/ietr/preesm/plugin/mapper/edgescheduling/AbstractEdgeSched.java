@@ -36,26 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
-import java.util.logging.Level;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
-import org.ietr.preesm.plugin.abc.impl.ApproximatelyTimedAbc;
-import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
-import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.core.architecture.*;
-import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Methods common to every edge schedulers

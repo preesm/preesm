@@ -38,14 +38,10 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Transform class that can be called in workflow. The transform method displays the gantt
@@ -60,7 +56,6 @@ public class StatEditorTransform implements IPlotter {
 
 		if(simulator instanceof IAbc){
 			IAbc abc = (IAbc) simulator;
-			MapperDAG mapperDag = (MapperDAG) abc.getDAG();
 			
 			IEditorInput input = new StatEditorInput(abc, scenario, params);
 	

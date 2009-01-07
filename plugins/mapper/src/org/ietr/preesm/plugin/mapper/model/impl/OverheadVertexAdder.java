@@ -42,7 +42,6 @@ import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexOverheadsTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;

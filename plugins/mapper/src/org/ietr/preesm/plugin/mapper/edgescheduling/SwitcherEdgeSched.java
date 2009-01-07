@@ -36,11 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.edgescheduling;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.core.architecture.*;
 /**
  * An advanced edge scheduler. It looks for the largest free interval in scheduling
  * and schedules the new communication in this slot.

@@ -57,7 +57,6 @@ import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
-import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -128,7 +127,7 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			if (updateRank) {
 				if (this.abcType.isSwitchTask()) {
 					TaskSwitcher taskSwitcher = new TaskSwitcher(
-							implementation, orderManager, vertex);
+							orderManager, vertex);
 					taskSwitcher.insertVertex();
 				} else {
 					orderManager.addLast(vertex);

@@ -42,12 +42,7 @@ import java.util.logging.Logger;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.codegen.DataType;
-import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.Timing;
@@ -67,11 +62,7 @@ import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFIntEdgePropertyType;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * FAST Kwok algorithm
@@ -171,92 +162,6 @@ public class FASTTransformation extends AbstractMapping {
 		result.setCustomData(simu2);
 
 		return result;
-	}
-
-	/**
-	 * Adding a new edge to graph from a few properties
-	 */
-	public SDFEdge addExampleEdge(SDFGraph graph, String source, String dest,
-			String type, int prodCons) {
-
-		SDFEdge edge;
-
-		edge = graph.addEdge(graph.getVertex(source), graph.getVertex(dest));
-		edge.getPropertyBean().setValue("dataType", type);
-
-		// DAG => prod = cons
-		edge.setProd(new SDFIntEdgePropertyType(prodCons));
-		edge.setCons(new SDFIntEdgePropertyType(prodCons));
-
-		// DAG => no delay
-		edge.setDelay(new SDFIntEdgePropertyType(0));
-
-		// Example buffer aggregate with one single buffer
-		BufferAggregate agg = new BufferAggregate();
-		agg.add(new BufferProperties(new DataType(type), "out", "in", prodCons));
-
-		edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
-
-		return edge;
-	}
-
-	/**
-	 * Kwok example 2 -> implanted DAG on one processor
-	 */
-	public SDFGraph implanteddagexample2_single(MultiCoreArchitecture architecture) {
-
-		/* Construct DAG */
-		SDFGraph graph = new SDFGraph();
-
-		for (int index = 1; index < 10; index++) {
-			SDFVertex vertex = new SDFVertex();
-			vertex.setId(String.format("n%d", index));
-			vertex.setName(String.format("n%d", index));
-			graph.addVertex(vertex);
-
-			PropertyBean bean = vertex.getPropertyBean();
-			bean.setValue(Operator.propertyBeanName, architecture
-					.getMainOperator());
-			bean.setValue(VertexType.propertyBeanName, VertexType.task);
-		}
-
-		graph.getVertex("n1").getPropertyBean().setValue("schedulingOrder", 1);
-		graph.getVertex("n3").getPropertyBean().setValue("schedulingOrder", 2);
-		graph.getVertex("n2").getPropertyBean().setValue("schedulingOrder", 3);
-		graph.getVertex("n7").getPropertyBean().setValue("schedulingOrder", 4);
-		graph.getVertex("n6").getPropertyBean().setValue("schedulingOrder", 5);
-		graph.getVertex("n5").getPropertyBean().setValue("schedulingOrder", 6);
-		graph.getVertex("n4").getPropertyBean().setValue("schedulingOrder", 7);
-		graph.getVertex("n8").getPropertyBean().setValue("schedulingOrder", 8);
-		graph.getVertex("n9").getPropertyBean().setValue("schedulingOrder", 9);
-
-		// Route route = new Route();
-		// edge.getPropertyBean().setValue("route", route);
-
-		addExampleEdge(graph, "n1", "n2", "char", 4);
-		addExampleEdge(graph, "n1", "n3", "char", 1);
-		addExampleEdge(graph, "n1", "n7", "char", 20);
-		addExampleEdge(graph, "n1", "n4", "char", 1);
-		addExampleEdge(graph, "n1", "n5", "char", 1);
-
-		addExampleEdge(graph, "n2", "n6", "char", 1);
-		addExampleEdge(graph, "n2", "n7", "char", 5);
-		addExampleEdge(graph, "n2", "n8", "char", 5);
-
-		addExampleEdge(graph, "n3", "n7", "char", 5);
-		addExampleEdge(graph, "n3", "n8", "char", 1);
-
-		addExampleEdge(graph, "n4", "n8", "char", 1);
-
-		addExampleEdge(graph, "n5", "n8", "char", 10);
-
-		addExampleEdge(graph, "n6", "n9", "char", 10);
-
-		addExampleEdge(graph, "n7", "n9", "char", 10);
-
-		addExampleEdge(graph, "n8", "n9", "char", 10);
-
-		return graph;
 	}
 
 	@Override

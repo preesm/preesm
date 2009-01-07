@@ -38,14 +38,11 @@ package org.ietr.preesm.plugin.mapper.model.impl;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
-import org.ietr.preesm.plugin.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;

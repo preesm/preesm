@@ -27,7 +27,6 @@ import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Generating the statistics to be displayed in stat editor

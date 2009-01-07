@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
-import java.util.logging.Level;
-
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -52,12 +50,10 @@ import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * An approximately timed architecture simulator associates a complex cost to
@@ -129,7 +125,7 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 			if (updateRank) {
 				if (this.abcType.isSwitchTask()) {
 					TaskSwitcher taskSwitcher = new TaskSwitcher(
-							implementation, orderManager, vertex);
+							orderManager, vertex);
 					taskSwitcher.insertVertex();
 				} else {
 					orderManager.addLast(vertex);

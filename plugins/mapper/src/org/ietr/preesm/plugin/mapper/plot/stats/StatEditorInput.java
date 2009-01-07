@@ -39,13 +39,10 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.Activator;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Input of the editor of implementation statistics

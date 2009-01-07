@@ -42,10 +42,6 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
-import org.ietr.preesm.core.codegen.DataType;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
-import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
@@ -60,12 +56,8 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * The TransferVertexAdder creates the vertices allowing edge scheduling
