@@ -150,17 +150,9 @@ public class MapperDAG extends DirectedAcyclicGraph {
 					.clone());
 			newEdge.setTimingEdgeProperty(origEdge.getTimingEdgeProperty()
 					.clone());
-			
-			for(String propertyKey : origEdge.getPropertyBean().keys()){
-				Object property = origEdge.getPropertyBean().getValue(propertyKey);
-				newEdge.getPropertyBean().setValue(propertyKey, property);
-			}
+			newEdge.copyProperties(origEdge);
 		}
-
-		for(String propertyKey : this.getPropertyBean().keys()){
-			Object property = this.getPropertyBean().getValue(propertyKey);
-			newDAG.getPropertyBean().setValue(propertyKey, property);
-		}
+		newDAG.copyProperties(this);
 		return newDAG;
 	}
 
