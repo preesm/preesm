@@ -48,7 +48,7 @@ import org.eclipse.core.runtime.Path;
 import org.sdf4j.generator.DirectedAcyclicGraphGenerator;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
-import org.sdf4j.model.dag.DAGDefaultEdgePropertyType;
+import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.ToHSDFVisitor;
