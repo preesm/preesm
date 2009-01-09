@@ -330,7 +330,7 @@ public class ScenarioParser {
 					String type = elt.getTagName();
 					String name = elt.getAttribute("name");
 					if (type.equals("task")) {
-						SDFAbstractVertex vertex = algo.getVertex(name);
+						SDFAbstractVertex vertex = algo.getHierarchicalVertex(name);
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {

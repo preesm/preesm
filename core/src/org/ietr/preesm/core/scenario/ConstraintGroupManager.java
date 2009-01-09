@@ -156,8 +156,28 @@ public class ConstraintGroupManager {
 		return graphConstraintGroups;
 	}
 
+	public boolean isCompatibleToConstraints(SDFAbstractVertex vertex, IOperator currentOp) {
+		Set<ConstraintGroup> opGroups = getOpConstraintGroups(currentOp);
+		Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
+		
+		opGroups.retainAll(graphGroups);
+		
+		return !opGroups.isEmpty();
+	}
+
 	public void removeAll() {
 
 		constraintgroups.clear();
+	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		
+		for(ConstraintGroup cg : constraintgroups){
+			s += cg.toString();
+		}
+		
+		return s;
 	}
 }

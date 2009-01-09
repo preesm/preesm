@@ -188,8 +188,11 @@ public class SdfToDagConverter {
 			int nbRepeat = currentVertex.getNbRepeat().intValue();
 			currentVertexInit.setNbRepeat(nbRepeat);
 
+			// The SDF vertex id is used to reference the timings
+			String timingId = currentVertex.getCorrespondingSDFVertex().getId();
+			
 			List<Timing> timelist = scenario.getTimingManager()
-					.getGraphTimings(currentVertex.getName());
+					.getGraphTimings(timingId);
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();

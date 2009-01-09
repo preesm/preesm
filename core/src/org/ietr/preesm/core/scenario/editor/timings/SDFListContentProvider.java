@@ -36,10 +36,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor.timings;
 
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -49,6 +57,15 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class SDFListContentProvider implements IStructuredContentProvider{
 
+	private class NameComparator implements Comparator<SDFAbstractVertex>{
+
+		@Override
+		public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
+
+			return o1.getName().compareTo(o2.getName());
+		}
+		
+	}
 	
 	//private Scenario scenario = null;
 	
@@ -64,13 +81,52 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 			Scenario inputScenario = (Scenario)inputElement;
 			
 			// Opening algorithm from file
-			//if(inputScenario != scenario){
-				//scenario = inputScenario;
-				currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
-				elementTable = currentGraph.vertexSet().toArray();
-			//}
+			currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
+			
+			// Displays the task names in alphabetical order
+			if(currentGraph != null){
+				ConcurrentSkipListSet<SDFAbstractVertex> vertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
+				
+				// Looks for the vertices in hierarchy
+				findHierarchicalVertices(vertices, currentGraph);
+				
+				// Filters the results
+				filterVertices(vertices);
+				
+				elementTable = vertices.toArray();
+			}
 		}
 		return elementTable;
+	}
+
+	public void findHierarchicalVertices(Set<SDFAbstractVertex> vertices, SDFGraph graph) {
+
+		for(SDFAbstractVertex vertex: graph.vertexSet()){
+			vertices.add(vertex);
+			
+			if(vertex.getGraphDescription() != null){
+				findHierarchicalVertices(vertices, (SDFGraph)vertex.getGraphDescription());
+			}
+		}
+	}
+
+	/**
+	 * Depending on the kind of vertex, timings are edited or not
+	 */
+	public void filterVertices(Set<SDFAbstractVertex> vertices) {
+
+		Iterator<SDFAbstractVertex> iterator = vertices.iterator();
+		
+		while(iterator.hasNext()){
+			SDFAbstractVertex vertex = iterator.next();
+			
+			if(vertex.getKind() == "Broadcast"){
+				iterator.remove();
+			}
+			else if(vertex.getKind() == "port"){
+				iterator.remove();
+			}
+		}
 	}
 
 	@Override

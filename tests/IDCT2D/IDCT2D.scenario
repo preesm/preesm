@@ -2,24 +2,80 @@
 <scenario>
     <files>
         <algorithm url="/IDCT2D/idct2dCadOptim.graphml"/>
-        <architecture url="/IDCT2D/4C64.ipxactds"/>
+        <architecture url="/MapperAndCodegen_1/4C64.ipxactds"/>
         <timingfile url=""/>
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="C64_1"/>
-            <task name="Group"/>
+            <operator name="C64_4"/>
+            <task name="Transpose"/>
+            <task name="readBlock"/>
+            <task name="out"/>
+            <task name="block_out"/>
+            <task name="blockIn"/>
             <task name="Trigger"/>
+            <task name="clip"/>
+            <task name="IDCT1D"/>
             <task name="IDCT2D"/>
+            <task name="Group"/>
+            <task name="signed"/>
+            <task name="IDCT2D_basic"/>
             <task name="broadcast_signed"/>
+            <task name="trigger"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="C64_2"/>
-            <task name="Group"/>
+            <operator name="C64_3"/>
+            <task name="Transpose"/>
+            <task name="readBlock"/>
+            <task name="out"/>
+            <task name="block_out"/>
+            <task name="blockIn"/>
             <task name="Trigger"/>
+            <task name="clip"/>
+            <task name="IDCT1D"/>
             <task name="IDCT2D"/>
+            <task name="Group"/>
+            <task name="signed"/>
+            <task name="IDCT2D_basic"/>
             <task name="broadcast_signed"/>
+            <task name="trigger"/>
         </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="blockIn"/>
+            <task name="block_out"/>
+            <task name="clip"/>
+            <task name="IDCT2D"/>
+            <task name="IDCT2D_basic"/>
+            <task name="Trigger"/>
+            <task name="readBlock"/>
+            <task name="IDCT1D"/>
+            <task name="Group"/>
+            <task name="signed"/>
+            <task name="trigger"/>
+            <task name="Transpose"/>
+            <task name="broadcast_signed"/>
+            <task name="out"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Transpose"/>
+            <task name="readBlock"/>
+            <task name="out"/>
+            <task name="block_out"/>
+            <task name="blockIn"/>
+            <task name="Trigger"/>
+            <task name="clip"/>
+            <task name="IDCT1D"/>
+            <task name="IDCT2D"/>
+            <task name="Group"/>
+            <task name="signed"/>
+            <task name="IDCT2D_basic"/>
+            <task name="broadcast_signed"/>
+            <task name="trigger"/>
+        </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <timings/>
     <simuParams>

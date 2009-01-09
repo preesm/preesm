@@ -448,7 +448,9 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * implants all the vertices on the given operator
+	 * implants all the vertices on the given operator if possible. If a vertex can not be executed
+	 * on the given operator, looks for another operator with same type. If again none is found, looks
+	 * for any other operator able to execute the vertex.
 	 */
 	public boolean implantAllVerticesOnOperator(Operator operator) {
 
@@ -463,63 +465,78 @@ public abstract class AbstractAbc implements IAbc {
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
 
-			if (isImplantable(currentvertex, operator)) {
-				implant(currentvertex, operator, true);
-			} else {
-
-				boolean foundAlternative = false;
-
-				for (Operator op : currentvertex.getInitialVertexProperty()
-						.getOperatorSet()) {
-					if (op.getDefinition().equals(operator.getDefinition())) {
-						if (isImplantable(currentvertex, op)) {
-							implant(currentvertex, op, true);
-							foundAlternative = true;
-
-							PreesmLogger
-									.getLogger()
-									.info(
-											"The vertex: "
-													+ currentvertex.getName()
-													+ " could not be mapped on main operator "
-													+ operator.getName()
-													+ ". An alternative with same definition was found.");
-						}
-					}
-				}
-
-				if (!foundAlternative) {
-
-					for (Operator op : currentvertex.getInitialVertexProperty()
-							.getOperatorSet()) {
-						if (isImplantable(currentvertex, op)) {
-							implant(currentvertex, op, true);
-							foundAlternative = true;
-
-							PreesmLogger
-									.getLogger()
-									.info(
-											"The vertex: "
-													+ currentvertex.getName()
-													+ " could not be mapped on main operator "
-													+ operator.getName()
-													+ ". An alternative with another definition was found.");
-						}
-					}
-				}
-
-				if (!foundAlternative) {
-					PreesmLogger
-							.getLogger()
-							.severe(
-									"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
-					PreesmLogger.getLogger().severe(
-							"Problem with: " + currentvertex.getName());
-				}
+			// Looks for an operator able to execute currentvertex (preferably the given operator)
+			Operator adequateOp = findOperator(currentvertex, operator);
+			
+			if(adequateOp != null){
+				implant(currentvertex, adequateOp, true);
+			}
+			else
+			{
+				PreesmLogger
+						.getLogger()
+						.severe(
+								"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
+				PreesmLogger.getLogger().severe(
+						"Problem with: " + currentvertex.getName());
 			}
 		}
 
 		return possible;
+	}
+
+	/**
+	 * Looks for an operator able to execute currentvertex (preferably the given operator)
+	 */
+	public Operator findOperator(MapperDAGVertex currentvertex, Operator preferedOperator) {
+
+		Operator adequateOp = null;
+		
+		if (isImplantable(currentvertex, preferedOperator)) {
+			adequateOp = preferedOperator;
+		} else {
+
+			// Search among the operators with same type than the prefered one
+			for (Operator op : currentvertex.getInitialVertexProperty()
+					.getOperatorSet()) {
+				if (op.getDefinition().equals(preferedOperator.getDefinition())) {
+					if (isImplantable(currentvertex, op)) {
+						adequateOp = op;
+
+						PreesmLogger
+								.getLogger()
+								.info(
+										"The vertex: "
+												+ currentvertex.getName()
+												+ " could not be mapped on main operator "
+												+ preferedOperator.getName()
+												+ ". An alternative with same definition was found.");
+					}
+				}
+			}
+
+			// Search among the operators with other type than the prefered one
+			if (adequateOp == null) {
+
+				for (Operator op : currentvertex.getInitialVertexProperty()
+						.getOperatorSet()) {
+					if (isImplantable(currentvertex, op)) {
+						adequateOp = op;
+
+						PreesmLogger
+								.getLogger()
+								.info(
+										"The vertex: "
+												+ currentvertex.getName()
+												+ " could not be mapped on main operator "
+												+ preferedOperator.getName()
+												+ ". An alternative with another definition was found.");
+					}
+				}
+			}
+		}
+		
+		return adequateOp;
 	}
 
 	/**

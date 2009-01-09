@@ -38,6 +38,7 @@ package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -64,8 +65,11 @@ import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeContentProvider;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection
@@ -136,9 +140,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				if (element instanceof SDFGraph) {
 					SDFGraph graph = (SDFGraph) element;
 					fireOnCheck(graph, isChecked);
+					//updateConstraints(null, contentProvider.getCurrentGraph());
+					updateCheck();
 				} else if (element instanceof SDFAbstractVertex) {
 					SDFAbstractVertex vertex = (SDFAbstractVertex) element;
 					fireOnCheck(vertex, isChecked);
+					//updateConstraints(null, contentProvider.getCurrentGraph());
+					updateCheck();
 
 				}
 			}
@@ -151,14 +159,12 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
 		if (currentIOpDef != null) {
-			if (isChecked)
-				scenario.getConstraintGroupManager().addConstraints(
-						currentIOpDef, graph.vertexSet());
-			else
-				scenario.getConstraintGroupManager().removeConstraints(
-						currentIOpDef, graph.vertexSet());
+
+			// Checks the children of the current graph
+			for (SDFAbstractVertex v : graph.vertexSet()) {
+				fireOnCheck(v, isChecked);
+			}
 		}
-		updateCheck();
 	}
 
 	/**
@@ -166,14 +172,67 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	public void fireOnCheck(SDFAbstractVertex vertex, boolean isChecked) {
 		if (currentIOpDef != null) {
-			if (isChecked)
+			if (isChecked) {
 				scenario.getConstraintGroupManager().addConstraint(
 						currentIOpDef, vertex);
-			else
+			} else {
 				scenario.getConstraintGroupManager().removeConstraint(
 						currentIOpDef, vertex);
+			}
 		}
-		updateCheck();
+
+		// Checks the children of the current vertex
+		IRefinement refinement = vertex.getRefinement();
+		if (refinement != null && refinement instanceof SDFGraph) {
+			SDFGraph graph = (SDFGraph) refinement;
+
+			for (SDFAbstractVertex v : graph.vertexSet()) {
+				fireOnCheck(v, isChecked);
+			}
+		}
+	}
+
+	/**
+	 * Adds or remove a constraint depending on the isChecked status
+	 */
+	public void updateConstraints(SDFAbstractVertex currentVertex,
+			SDFGraph currentGraph) {
+
+		if (currentIOpDef != null) {
+			
+			Set<SDFAbstractVertex> appropriateChildrenSet = SDFTreeContentProvider
+			.keepAppropriateChildren(currentGraph.vertexSet());
+
+			boolean allChildrenChecked = !appropriateChildrenSet.isEmpty();
+
+			for (SDFAbstractVertex vertex : appropriateChildrenSet) {
+
+				IRefinement refinement = vertex.getRefinement();
+				if (refinement != null && refinement instanceof SDFGraph) {
+					SDFGraph graph = (SDFGraph) refinement;
+					updateConstraints(vertex, graph);
+				}
+
+				allChildrenChecked &= scenario.getConstraintGroupManager()
+						.isCompatibleToConstraints(vertex, currentIOpDef);
+			}
+
+			if (currentVertex != null) {
+				if (!allChildrenChecked
+						&& scenario.getConstraintGroupManager()
+								.isCompatibleToConstraints(currentVertex,
+										currentIOpDef)) {
+					scenario.getConstraintGroupManager().removeConstraint(
+							currentIOpDef, currentVertex);
+				} else if (allChildrenChecked
+						&& !scenario.getConstraintGroupManager()
+								.isCompatibleToConstraints(currentVertex,
+										currentIOpDef)) {
+					scenario.getConstraintGroupManager().addConstraint(
+							currentIOpDef, currentVertex);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -193,8 +252,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo
 					.getData();
-//			currentIOpDef = (Operator) archi.getComponent(
-//					ArchitectureComponentType.operator, item);
+			// currentIOpDef = (Operator) archi.getComponent(
+			// ArchitectureComponentType.operator, item);
 			currentIOpDef = (IOperator) archi.getComponent(item);
 			updateCheck();
 		}
@@ -215,13 +274,22 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group
 				for (SDFAbstractVertex vertex : cg.getVertices()) {
-					cgSet.add(currentGraph.getVertex(vertex.getName()));
+					SDFAbstractVertex v = findVertexInHierarchy(currentGraph, vertex.getName());
+					
+					if(v != null) cgSet.add(v);
 				}
 			}
-
+			
 			treeViewer.setCheckedElements(cgSet.toArray());
 
-			if (cgSet.size() == currentGraph.vertexSet().size())
+			// If all the children of a graph are checked, it is checked itself
+			boolean allChildrenChecked = true;
+			for (SDFAbstractVertex v : SDFTreeContentProvider
+					.keepAppropriateChildren(currentGraph.vertexSet())) {
+				allChildrenChecked &= treeViewer.getChecked(v);
+			}
+
+			if (allChildrenChecked)
 				treeViewer.setChecked(currentGraph, true);
 
 			propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -276,6 +344,31 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		}
 
 		combo.setData(archi);
+	}
+
+	/**
+	 * finds the vertex with the given name in a hierarchy
+	 */
+	public SDFAbstractVertex findVertexInHierarchy(SDFGraph currentGraph, String name) {
+		
+		for (SDFAbstractVertex v : currentGraph.vertexSet()) {
+			
+			if(v.getName().equals(name))
+				return v;
+			
+			// Checks the children of the current vertex
+			IRefinement refinement = v.getRefinement();
+			if (refinement != null && refinement instanceof SDFGraph) {
+				SDFGraph graph = (SDFGraph) refinement;
+
+				SDFAbstractVertex foundVertex = findVertexInHierarchy(graph, name);
+				
+				if(foundVertex != null)
+					return foundVertex;
+			}
+		}
+		
+		return null;
 	}
 
 	@Override

@@ -36,13 +36,19 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.sdf.SDFVertex;
+import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}.
@@ -65,11 +71,18 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 		
 		if(parentElement instanceof SDFGraph){
 			SDFGraph graph = (SDFGraph)parentElement;
-			table = graph.vertexSet().toArray();
+			
+			// Some types of vertices are ignored in the constraints view
+			table = keepAppropriateChildren(graph.vertexSet()).toArray();
 		}
-		else if(parentElement instanceof SDFAbstractVertex){
-			//SDFAbstractVertex vertex = (SDFAbstractVertex)parentElement;
-			table = null;
+		else if(parentElement instanceof SDFVertex){
+			SDFVertex vertex = (SDFVertex)parentElement;
+			IRefinement refinement = vertex.getRefinement();
+			
+			if(refinement != null && refinement instanceof SDFGraph){
+				SDFGraph graph = (SDFGraph)refinement;
+				table = keepAppropriateChildren(graph.vertexSet()).toArray();
+			}
 		}
 		
 		return table;
@@ -90,9 +103,15 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			SDFGraph graph = (SDFGraph)element;
 			hasChildren = !graph.vertexSet().isEmpty();
 		}
-		else if(element instanceof SDFAbstractVertex){
+		else if(element instanceof SDFBroadcastVertex){
 			//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
 			hasChildren = false;
+		}
+		else if(element instanceof SDFVertex){
+			SDFVertex vertex = (SDFVertex)element;
+			IRefinement refinement = vertex.getRefinement();
+			
+			hasChildren = (refinement != null);
 		}
 		
 		return hasChildren;
@@ -125,6 +144,21 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
+	}
+
+	/**
+	 * Filters the children to display in the tree
+	 */
+	static public Set<SDFAbstractVertex> keepAppropriateChildren(Set<SDFAbstractVertex> children) {
+		
+		Set<SDFAbstractVertex> appropriateChildren = new HashSet<SDFAbstractVertex>();
+		
+		for(SDFAbstractVertex v : children){
+			if(v instanceof SDFVertex)
+				appropriateChildren.add(v);
+		}
+		
+		return appropriateChildren;
 	}
 
 }

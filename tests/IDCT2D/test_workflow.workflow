@@ -19,7 +19,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="D:/Preesm/trunk/tests/IDCT2D/flatten2.graphml"/>
+         <variable name="path" value="D:\Projets\Preesm\trunk\tests\IDCT2D/flatten2.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">

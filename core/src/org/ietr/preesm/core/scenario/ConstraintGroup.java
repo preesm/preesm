@@ -147,4 +147,14 @@ public class ConstraintGroup {
 		}
 
 	}
+
+	@Override
+	public String toString() {
+		String s = "<";
+		s += operators.toString();
+		s += vertices.toString();
+		s += ">";
+		
+		return s;
+	}
 }
