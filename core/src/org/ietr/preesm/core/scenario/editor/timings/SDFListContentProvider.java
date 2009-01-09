@@ -47,6 +47,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.tools.NameComparator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -56,16 +57,6 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  */
 public class SDFListContentProvider implements IStructuredContentProvider{
-
-	private class NameComparator implements Comparator<SDFAbstractVertex>{
-
-		@Override
-		public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
-
-			return o1.getName().compareTo(o2.getName());
-		}
-		
-	}
 	
 	//private Scenario scenario = null;
 	

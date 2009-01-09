@@ -140,12 +140,12 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				if (element instanceof SDFGraph) {
 					SDFGraph graph = (SDFGraph) element;
 					fireOnCheck(graph, isChecked);
-					//updateConstraints(null, contentProvider.getCurrentGraph());
+					updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
 				} else if (element instanceof SDFAbstractVertex) {
 					SDFAbstractVertex vertex = (SDFAbstractVertex) element;
 					fireOnCheck(vertex, isChecked);
-					//updateConstraints(null, contentProvider.getCurrentGraph());
+					updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
 
 				}
@@ -161,7 +161,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		if (currentIOpDef != null) {
 
 			// Checks the children of the current graph
-			for (SDFAbstractVertex v : graph.vertexSet()) {
+			for (SDFAbstractVertex v : SDFTreeContentProvider
+					.keepAppropriateChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
 			}
 		}
@@ -186,7 +187,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		if (refinement != null && refinement instanceof SDFGraph) {
 			SDFGraph graph = (SDFGraph) refinement;
 
-			for (SDFAbstractVertex v : graph.vertexSet()) {
+			for (SDFAbstractVertex v : SDFTreeContentProvider
+					.keepAppropriateChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
 			}
 		}

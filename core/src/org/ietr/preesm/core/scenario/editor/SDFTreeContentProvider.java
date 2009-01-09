@@ -38,12 +38,14 @@ package org.ietr.preesm.core.scenario.editor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.tools.NameComparator;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -151,10 +153,10 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	 */
 	static public Set<SDFAbstractVertex> keepAppropriateChildren(Set<SDFAbstractVertex> children) {
 		
-		Set<SDFAbstractVertex> appropriateChildren = new HashSet<SDFAbstractVertex>();
+		ConcurrentSkipListSet<SDFAbstractVertex> appropriateChildren = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
 		
 		for(SDFAbstractVertex v : children){
-			if(v instanceof SDFVertex)
+			if(v.getKind() == "vertex")
 				appropriateChildren.add(v);
 		}
 		
