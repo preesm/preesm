@@ -46,9 +46,9 @@ import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jgrapht.Graph;
 import org.sdf4j.exporter.GMLExporter;
-import org.sdf4j.model.dag.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.w3c.dom.Element;
 
 /**

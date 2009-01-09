@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 import java.util.HashMap;
 
 import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGEdgePropertyType;
+import org.sdf4j.model.dag.types.DAGEdgePropertyType;
 
 /**
  * CommunicationDescriptor describes a communication edge

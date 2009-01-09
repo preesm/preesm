@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.DAGVertexPropertyType;
+import org.sdf4j.model.dag.types.DAGVertexPropertyType;
 
 /**
  * This class is a descriptor of computation that provides necessary parameters.
