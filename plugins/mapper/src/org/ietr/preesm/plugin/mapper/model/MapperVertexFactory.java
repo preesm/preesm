@@ -47,8 +47,10 @@ import org.sdf4j.model.dag.DAGVertex;
 public class MapperVertexFactory extends DAGVertexFactory {
 
 	@Override
-	public DAGVertex createVertex() {
-		return new MapperDAGVertex();
+	public DAGVertex createVertex(String kind) {
+		DAGVertex result = new MapperDAGVertex();
+		result.setKind(kind);
+		return result;
 	}
 
 
