@@ -148,10 +148,18 @@ public class InitialVertexProperty {
 			
 			if(returntiming != Timing.UNAVAILABLE){
 				
-				if(returntiming.getTime() != 0)
+				if(parentVertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
+					time = Timing.DEFAULT_BROADCAST_TIME;
+				} else if(parentVertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
+					time = Timing.DEFAULT_FORK_TIME;
+				} else if(parentVertex.getKind().equalsIgnoreCase("dag_join_vertex")){
+					time = Timing.DEFAULT_JOIN_TIME;
+				} else if(returntiming.getTime() != 0){
+					// The basic timing is multiplied by the number of repetitions
 					time = returntiming.getTime() * this.nbRepeat;
-				else
-					time = Timing.DEFAULTTASKTIME;
+				}else{
+					time = Timing.DEFAULT_TASK_TIME;
+				}
 			}
 		}
 
@@ -185,14 +193,26 @@ public class InitialVertexProperty {
 	 * given operator
 	 */
 	public boolean isImplantable(Operator operator) {
-		boolean isImplantable=false;
 		
-		for(Operator op:operators){
-			if(op.equals(operator))
-				return true;
+		if(parentVertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
+			return true;
 		}
-		
-		return isImplantable;
+		else if(parentVertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
+			return true;
+		}
+		else if(parentVertex.getKind().equalsIgnoreCase("dag_join_vertex")){
+			return true;
+		}
+		else{
+			boolean isImplantable=false;
+			
+			for(Operator op:operators){
+				if(op.equals(operator))
+					return true;
+			}
+			
+			return isImplantable;
+		}
 		
 	}
 

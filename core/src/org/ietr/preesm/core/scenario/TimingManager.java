@@ -71,7 +71,7 @@ public class TimingManager {
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
 		defaultTiming = new Timing(new OperatorDefinition("default"),
-				new SDFVertex(), Timing.DEFAULTTASKTIME);
+				new SDFVertex(), Timing.DEFAULT_TASK_TIME);
 	}
 
 	public Timing addTiming(SDFAbstractVertex graph, IOperatorDefinition operator) {

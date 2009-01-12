@@ -182,7 +182,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		MapperDAGVertex currentvertex = null;
 		while (iter.hasNext()) {
 			currentvertex = (MapperDAGVertex)iter.next();
-			if (currentvertex.getName().equals(sdfvertex.getName())) {
+			if (currentvertex.getCorrespondingSDFVertex().getId().equals(sdfvertex.getId())) {
 				currentset.add(currentvertex);
 			}
 		}

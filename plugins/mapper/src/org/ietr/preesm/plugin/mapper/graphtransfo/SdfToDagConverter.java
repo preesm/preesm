@@ -65,6 +65,7 @@ import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -190,7 +191,7 @@ public class SdfToDagConverter {
 
 			// The SDF vertex id is used to reference the timings
 			String timingId = currentVertex.getCorrespondingSDFVertex().getId();
-			
+
 			List<Timing> timelist = scenario.getTimingManager()
 					.getGraphTimings(timingId);
 
@@ -208,7 +209,7 @@ public class SdfToDagConverter {
 					Timing time = new Timing((OperatorDefinition) op
 							.getDefinition(), currentVertex
 							.getCorrespondingSDFVertex(), 1);
-					time.setTime(Timing.DEFAULTTASKTIME);
+					time.setTime(Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
 			}
@@ -282,6 +283,9 @@ public class SdfToDagConverter {
 			while (graphit.hasNext()) {
 				SDFAbstractVertex currentsdfvertex = graphit.next();
 
+				// Getting all DAG vertices which corresponding SDF graph has
+				// the same id
+				// as the current sdf vertex.
 				Set<MapperDAGVertex> vertexset = dag
 						.getVertices(currentsdfvertex);
 
@@ -314,13 +318,29 @@ public class SdfToDagConverter {
 								currentvertex.getInitialVertexProperty()
 										.addTiming(newTiming);
 							}
-						
+
 						}
 					}
 				}
 
 			}
 
+		}
+
+		Set<ArchitectureComponent> operators = architecture
+				.getComponents(ArchitectureComponentType.operator);
+
+		// Special type vertices can be executed on any core
+		for (DAGVertex v : dag.vertexSet()) {
+			String kind = v.getKind();
+			if (kind.equalsIgnoreCase("dag_broadcast_vertex")
+					|| kind.equalsIgnoreCase("dag_fork_vertex")
+					|| kind.equalsIgnoreCase("dag_join_vertex")) {
+				for (ArchitectureComponent o : operators) {
+					((MapperDAGVertex) v).getInitialVertexProperty()
+							.addOperator((Operator) o);
+				}
+			}
 		}
 	}
 }

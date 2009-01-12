@@ -47,7 +47,10 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class Timing {
 
 	public static final Timing UNAVAILABLE = null;
-	public static final int DEFAULTTASKTIME = 100;
+	public static final int DEFAULT_TASK_TIME = 100;
+	public static final int DEFAULT_BROADCAST_TIME = 10;
+	public static final int DEFAULT_FORK_TIME = 10;
+	public static final int DEFAULT_JOIN_TIME = 10;
 
 	public static void main(String[] args) {
 		Variable test = new Parameter("test");

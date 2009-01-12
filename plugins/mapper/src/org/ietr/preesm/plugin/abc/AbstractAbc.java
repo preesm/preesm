@@ -479,6 +479,8 @@ public abstract class AbstractAbc implements IAbc {
 								"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
 				PreesmLogger.getLogger().severe(
 						"Problem with: " + currentvertex.getName());
+				
+				possible = false;
 			}
 		}
 
@@ -545,8 +547,9 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	@Override
 	public boolean isImplantable(MapperDAGVertex vertex, Operator operator) {
-		vertex = translateInImplementationVertex(vertex);
-		return vertex.getInitialVertexProperty().isImplantable(operator);
+		
+			vertex = translateInImplementationVertex(vertex);
+			return vertex.getInitialVertexProperty().isImplantable(operator);
 	}
 
 	/**
