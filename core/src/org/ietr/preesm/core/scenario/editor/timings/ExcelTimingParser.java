@@ -33,10 +33,12 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.timings;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -63,8 +65,8 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Importing timings in a scenario from an excel file.
- * task names are rows while operator types are columns
+ * Importing timings in a scenario from an excel file. task names are rows while
+ * operator types are columns
  * 
  * @author mpelcat
  */
@@ -99,96 +101,19 @@ public class ExcelTimingParser {
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
-			for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
-				for (ArchitectureComponentDefinition operatorDef : currentArchi
-						.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			Set<ArchitectureComponentDefinition> opDefs = new HashSet<ArchitectureComponentDefinition>();
 
-					String operatorId = ((OperatorDefinition) operatorDef)
-							.getId();
-					String vertexName = vertex.getName();
+			opDefs
+					.addAll(currentArchi
+							.getComponentDefinitions(ArchitectureComponentType.operator));
+			opDefs
+					.addAll(currentArchi
+							.getComponentDefinitions(ArchitectureComponentType.processor));
+			opDefs
+					.addAll(currentArchi
+							.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor));
 
-					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
-						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorId);
-
-						if (vertexCell != null && operatorCell != null) {
-							Cell timingCell = w.getSheet(0).getCell(
-									operatorCell.getColumn(),
-									vertexCell.getRow());
-
-							if (timingCell.getType().equals(CellType.NUMBER)
-									|| timingCell.getType().equals(
-											CellType.NUMBER_FORMULA)) {
-								Timing timing = new Timing(
-										((OperatorDefinition) operatorDef),
-										vertex, Integer.valueOf(timingCell
-												.getContents()));
-								scenario.getTimingManager().addTiming(timing);
-							}
-						}
-					}
-				}
-				
-				//Processor
-				for (ArchitectureComponentDefinition operatorDef : currentArchi
-						.getComponentDefinitions(ArchitectureComponentType.processor)) {
-
-					String operatorId = ((ProcessorDefinition) operatorDef)
-							.getId();
-					String vertexName = vertex.getName();
-
-					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
-						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorId);
-
-						if (vertexCell != null && operatorCell != null) {
-							Cell timingCell = w.getSheet(0).getCell(
-									operatorCell.getColumn(),
-									vertexCell.getRow());
-
-							if (timingCell.getType().equals(CellType.NUMBER)
-									|| timingCell.getType().equals(
-											CellType.NUMBER_FORMULA)) {
-								Timing timing = new Timing(
-										((ProcessorDefinition) operatorDef),
-										vertex, Integer.valueOf(timingCell
-												.getContents()));
-								scenario.getTimingManager().addTiming(timing);
-							}
-						}
-					}
-				}
-				
-				//IpCoprocessor
-				for (ArchitectureComponentDefinition operatorDef : currentArchi
-						.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
-
-					String operatorId = ((IpCoprocessorDefinition) operatorDef)
-							.getId();
-					String vertexName = vertex.getName();
-
-					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
-						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorId);
-
-						if (vertexCell != null && operatorCell != null) {
-							Cell timingCell = w.getSheet(0).getCell(
-									operatorCell.getColumn(),
-									vertexCell.getRow());
-
-							if (timingCell.getType().equals(CellType.NUMBER)
-									|| timingCell.getType().equals(
-											CellType.NUMBER_FORMULA)) {
-								Timing timing = new Timing(
-										((IpCoprocessorDefinition) operatorDef),
-										vertex, Integer.valueOf(timingCell
-												.getContents()));
-								scenario.getTimingManager().addTiming(timing);
-							}
-						}
-					}
-				}
-			}
+			parseTimings(w, currentGraph, opDefs);
 
 		} catch (BiffException e) {
 			// TODO Auto-generated catch block
@@ -199,6 +124,43 @@ public class ExcelTimingParser {
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+
+	private void parseTimings(Workbook w, SDFGraph currentGraph, Set<ArchitectureComponentDefinition> opDefs) {
+		for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
+			for (ArchitectureComponentDefinition operatorDef : opDefs) {
+
+				String operatorId = ((OperatorDefinition) operatorDef)
+						.getId();
+				String vertexName = vertex.getName();
+
+				if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+					Cell vertexCell = w.getSheet(0).findCell(vertexName);
+					Cell operatorCell = w.getSheet(0).findCell(operatorId);
+
+					if (vertexCell != null && operatorCell != null) {
+						Cell timingCell = w.getSheet(0).getCell(
+								operatorCell.getColumn(),
+								vertexCell.getRow());
+
+						if (timingCell.getType().equals(CellType.NUMBER)
+								|| timingCell.getType().equals(
+										CellType.NUMBER_FORMULA)) {
+							Timing timing = new Timing(
+									((OperatorDefinition) operatorDef),
+									vertex, Integer.valueOf(timingCell
+											.getContents()));
+							scenario.getTimingManager().addTiming(timing);
+						}
+					}
+				}
+			}
+			
+			if(vertex.getGraphDescription() != null){
+				parseTimings(w, (SDFGraph)vertex.getGraphDescription(), opDefs);
+			}
 		}
 	}
 }
