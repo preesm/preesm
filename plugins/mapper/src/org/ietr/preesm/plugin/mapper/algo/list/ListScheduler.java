@@ -156,17 +156,9 @@ public class ListScheduler {
 		Logger logger = PreesmLogger.getLogger();
 
 		logger.log(Level.FINEST, " entering operator/vertex start time ");
-
-		// Just for test
-		//if(vertex.getKind().equalsIgnoreCase("dag_broadcast_vertex"))
-		//	PreesmLogger.getLogger().log(Level.INFO,"broadcast");
 		
 		// implant the vertex with the operator
 		simu.implant(vertex, operator, true);
-
-		// Just for test
-		//if(vertex.getKind().equalsIgnoreCase("dag_broadcast_vertex"))
-		//	simu.plotImplementation(false);
 		
 		logger
 				.log(Level.FINEST, " implant the vertex on "

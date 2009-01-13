@@ -450,9 +450,6 @@ public class GanttPlotter extends ApplicationFrame {
 	public static void plotInComposite(IAbc simulator, Composite parent) {
 
 		GanttPlotter plot = simulator.plotImplementation(true);
-		
-		//GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
-		//		+ simulator.getFinalTime(), dag, simulator);
 
 	    Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
 	    parent.setLayout(new FillLayout());

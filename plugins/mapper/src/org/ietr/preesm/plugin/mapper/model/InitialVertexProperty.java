@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 
 /**
  * Properties of an implanted vertex set when converting dag to mapper dag
@@ -148,11 +149,11 @@ public class InitialVertexProperty {
 			
 			if(returntiming != Timing.UNAVAILABLE){
 				
-				if(parentVertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
+				if(SpecialVertexManager.isBroadCast(parentVertex)){
 					time = Timing.DEFAULT_BROADCAST_TIME;
-				} else if(parentVertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
+				} else if(SpecialVertexManager.isFork(parentVertex)){
 					time = Timing.DEFAULT_FORK_TIME;
-				} else if(parentVertex.getKind().equalsIgnoreCase("dag_join_vertex")){
+				} else if(SpecialVertexManager.isJoin(parentVertex)){
 					time = Timing.DEFAULT_JOIN_TIME;
 				} else if(returntiming.getTime() != 0){
 					// The basic timing is multiplied by the number of repetitions
@@ -194,13 +195,13 @@ public class InitialVertexProperty {
 	 */
 	public boolean isImplantable(Operator operator) {
 		
-		if(parentVertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
+		if(SpecialVertexManager.isBroadCast(parentVertex)){
 			return true;
 		}
-		else if(parentVertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
+		else if(SpecialVertexManager.isFork(parentVertex)){
 			return true;
 		}
-		else if(parentVertex.getKind().equalsIgnoreCase("dag_join_vertex")){
+		else if(SpecialVertexManager.isJoin(parentVertex)){
 			return true;
 		}
 		else{

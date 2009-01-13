@@ -52,6 +52,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -332,10 +333,9 @@ public class SdfToDagConverter {
 
 		// Special type vertices can be executed on any core
 		for (DAGVertex v : dag.vertexSet()) {
-			String kind = v.getKind();
-			if (kind.equalsIgnoreCase("dag_broadcast_vertex")
-					|| kind.equalsIgnoreCase("dag_fork_vertex")
-					|| kind.equalsIgnoreCase("dag_join_vertex")) {
+			if (SpecialVertexManager.isBroadCast(v)
+					|| SpecialVertexManager.isFork(v)
+					|| SpecialVertexManager.isJoin(v)) {
 				for (ArchitectureComponent o : operators) {
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator((Operator) o);

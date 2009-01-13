@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -123,23 +124,27 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(AbcType simulatorType, EdgeSchedType edgeSchedType, MapperDAG dag,
+	public static IAbc getInstance(AbcType simulatorType,
+			EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi) {
 
 		AbstractAbc abc = null;
-		
+
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi, simulatorType.isSwitchTask());
+			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi,
+					simulatorType.isSwitchTask());
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			abc =  new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
-			abc =  new ApproximatelyTimedAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new ApproximatelyTimedAbc(edgeSchedType, dag, archi,
+					simulatorType);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
-			abc =  new AccuratelyTimedAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new AccuratelyTimedAbc(edgeSchedType, dag, archi,
+					simulatorType);
 		} else if (simulatorType == AbcType.CommConten) {
-			abc =  new CommContenAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.SendReceive) {
-			abc =  new SendReceiveAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new SendReceiveAbc(edgeSchedType, dag, archi, simulatorType);
 		}
 
 		return abc;
@@ -148,7 +153,8 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Architecture simulator constructor
 	 */
-	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
+	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
+			AbcType abcType) {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager();
@@ -161,7 +167,6 @@ public abstract class AbstractAbc implements IAbc {
 		timeKeeper.resetTimings();
 
 		this.archi = archi;
-		
 
 		// currentRank = 0;
 	}
@@ -183,18 +188,35 @@ public abstract class AbstractAbc implements IAbc {
 		this.dag = dag;
 		this.implementation = dag.clone();
 
+		this.transactionManager.clear();
+
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
 
 		orderManager.reconstructTotalOrderFromDAG(implementation);
+
+		// Forces the unmapping process before the new mapping process
+		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
+
+		for (DAGVertex v : dag.vertexSet()) {
+			MapperDAGVertex mdv = (MapperDAGVertex) v;
+			operators.put(mdv, mdv.getImplementationVertexProperty()
+					.getEffectiveOperator());
+			mdv.getImplementationVertexProperty().setEffectiveComponent(
+					Operator.NO_COMPONENT);
+			implementation.getMapperDAGVertex(mdv.getName())
+					.getImplementationVertexProperty().setEffectiveComponent(
+							Operator.NO_COMPONENT);
+			;
+		}
 
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
 				this.dag, this, true);
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex vertex = iterator.next();
-			Operator operator = vertex.getImplementationVertexProperty()
-			.getEffectiveOperator();
+			Operator operator = operators.get(vertex);
+
 			implant(vertex, operator, false);
 		}
 	}
@@ -202,7 +224,8 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Called whenever the implementation of a vertex occurs
 	 */
-	protected abstract void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank);
+	protected abstract void fireNewMappedVertex(MapperDAGVertex vertex,
+			boolean updateRank);
 
 	/**
 	 * Called whenever the unimplementation of a vertex occurs
@@ -279,22 +302,23 @@ public abstract class AbstractAbc implements IAbc {
 
 		return finalTime;
 	}
-	
+
 	@Override
 	public final int getLoad(ArchitectureComponent component) {
 
 		Integer load = 0;
-		
-		if(implementation != null){
-			
-			for(DAGVertex v : implementation.vertexSet()){
-				MapperDAGVertex mv = (MapperDAGVertex)v;
-				if(mv.getImplementationVertexProperty().getEffectiveComponent().equals(component)){
+
+		if (implementation != null) {
+
+			for (DAGVertex v : implementation.vertexSet()) {
+				MapperDAGVertex mv = (MapperDAGVertex) v;
+				if (mv.getImplementationVertexProperty()
+						.getEffectiveComponent().equals(component)) {
 					load += getCost(mv);
 				}
 			}
 		}
-				
+
 		return load;
 	}
 
@@ -322,53 +346,58 @@ public abstract class AbstractAbc implements IAbc {
 
 		return orderManager.totalIndexOf(vertex);
 	}
-	
+
 	/**
 	 * Gets the current total schedule of the ABC
 	 */
 	@Override
-	public Schedule getTotalOrder(){
+	public Schedule getTotalOrder() {
 		return orderManager.getTotalOrder();
 	}
 
 	/**
 	 * Reorders the implementation using the given total order
 	 */
-	public void reorder(Map<String,Integer> totalOrder){
-/*
-		int test = totalOrder.get("IDFT_7");
-		int test2 = totalOrder.get("FFT_a1_3");
-		
-		// Just for test. Checks for doublets
-		Set<String> sSet = new HashSet<String>();
-		for(DAGVertex v : implementation.vertexSet()){
-			MapperDAGVertex implVertex = (MapperDAGVertex)v;
-			if(sSet.contains(implVertex.getName())){
-				PreesmLogger.getLogger().log(Level.SEVERE,"duplicated vertex: " + implVertex.getName());
-			}
-			sSet.add(implVertex.getName());
-		}*/
-		
-		if(implementation != null && dag != null){
-			
-			for(String vName : totalOrder.keySet()){
-				MapperDAGVertex ImplVertex = (MapperDAGVertex)implementation.getVertex(vName);
-				if(ImplVertex!= null)
-					ImplVertex.getImplementationVertexProperty().setSchedTotalOrder(totalOrder.get(vName));
-				
-				MapperDAGVertex dagVertex = (MapperDAGVertex)dag.getVertex(vName);
-				if(dagVertex!= null)
-					dagVertex.getImplementationVertexProperty().setSchedTotalOrder(totalOrder.get(vName));
+	public void reorder(Map<String, Integer> totalOrder) {
+		/*
+		 * int test = totalOrder.get("IDFT_7"); int test2 =
+		 * totalOrder.get("FFT_a1_3");
+		 * 
+		 * // Just for test. Checks for doublets Set<String> sSet = new
+		 * HashSet<String>(); for(DAGVertex v : implementation.vertexSet()){
+		 * MapperDAGVertex implVertex = (MapperDAGVertex)v;
+		 * if(sSet.contains(implVertex.getName())){
+		 * PreesmLogger.getLogger().log(Level.SEVERE,"duplicated vertex: " +
+		 * implVertex.getName()); } sSet.add(implVertex.getName()); }
+		 */
+
+		if (implementation != null && dag != null) {
+
+			for (String vName : totalOrder.keySet()) {
+				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
+						.getVertex(vName);
+				if (ImplVertex != null)
+					ImplVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(totalOrder.get(vName));
+
+				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
+						.getVertex(vName);
+				if (dagVertex != null)
+					dagVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(totalOrder.get(vName));
 
 			}
-			
+
 			orderManager.reconstructTotalOrderFromDAG(implementation);
-			
+
 			TransactionManager localTransactionManager = new TransactionManager();
-			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
-			precEdgeAdder.removePrecedenceEdges(implementation, localTransactionManager);
-			precEdgeAdder.addPrecedenceEdges(implementation, localTransactionManager);
-			
+			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
+					orderManager);
+			precEdgeAdder.removePrecedenceEdges(implementation,
+					localTransactionManager);
+			precEdgeAdder.addPrecedenceEdges(implementation,
+					localTransactionManager);
+
 		}
 	}
 
@@ -397,7 +426,9 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Implants the vertex on the operator
+	 * Implants the vertex on the operator. If updaterank is true, finds a new
+	 * place for the vertex in the schedule. Otherwise, use the vertex rank to
+	 * know where to schedule it.
 	 */
 	@Override
 	public void implant(MapperDAGVertex dagvertex, Operator operator,
@@ -448,9 +479,10 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * implants all the vertices on the given operator if possible. If a vertex can not be executed
-	 * on the given operator, looks for another operator with same type. If again none is found, looks
-	 * for any other operator able to execute the vertex.
+	 * implants all the vertices on the given operator if possible. If a vertex
+	 * can not be executed on the given operator, looks for another operator
+	 * with same type. If again none is found, looks for any other operator able
+	 * to execute the vertex.
 	 */
 	public boolean implantAllVerticesOnOperator(Operator operator) {
 
@@ -465,21 +497,20 @@ public abstract class AbstractAbc implements IAbc {
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
 
-			// Looks for an operator able to execute currentvertex (preferably the given operator)
+			// Looks for an operator able to execute currentvertex (preferably
+			// the given operator)
 			Operator adequateOp = findOperator(currentvertex, operator);
-			
-			if(adequateOp != null){
+
+			if (adequateOp != null) {
 				implant(currentvertex, adequateOp, true);
-			}
-			else
-			{
+			} else {
 				PreesmLogger
 						.getLogger()
 						.severe(
 								"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
 				PreesmLogger.getLogger().severe(
 						"Problem with: " + currentvertex.getName());
-				
+
 				possible = false;
 			}
 		}
@@ -488,12 +519,14 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Looks for an operator able to execute currentvertex (preferably the given operator)
+	 * Looks for an operator able to execute currentvertex (preferably the given
+	 * operator)
 	 */
-	public Operator findOperator(MapperDAGVertex currentvertex, Operator preferedOperator) {
+	public Operator findOperator(MapperDAGVertex currentvertex,
+			Operator preferedOperator) {
 
 		Operator adequateOp = null;
-		
+
 		if (isImplantable(currentvertex, preferedOperator)) {
 			adequateOp = preferedOperator;
 		} else {
@@ -537,7 +570,7 @@ public abstract class AbstractAbc implements IAbc {
 				}
 			}
 		}
-		
+
 		return adequateOp;
 	}
 
@@ -547,9 +580,9 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	@Override
 	public boolean isImplantable(MapperDAGVertex vertex, Operator operator) {
-		
-			vertex = translateInImplementationVertex(vertex);
-			return vertex.getInitialVertexProperty().isImplantable(operator);
+
+		vertex = translateInImplementationVertex(vertex);
+		return vertex.getInitialVertexProperty().isImplantable(operator);
 	}
 
 	/**
@@ -652,7 +685,7 @@ public abstract class AbstractAbc implements IAbc {
 		while (iterator.hasNext()) {
 			unimplant((MapperDAGVertex) iterator.next());
 		}
-		
+
 		orderManager.resetTotalOrder();
 	}
 
@@ -665,7 +698,7 @@ public abstract class AbstractAbc implements IAbc {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		fireNewUnmappedVertex(impvertex);
-		
+
 		dagvertex.getImplementationVertexProperty().setEffectiveOperator(
 				(Operator) Operator.NO_COMPONENT);
 
@@ -676,8 +709,9 @@ public abstract class AbstractAbc implements IAbc {
 		orderManager.remove(impvertex, false);
 
 		timeKeeper.setAsDirty(impvertex);
-		
-		//PreesmLogger.getLogger().log(Level.SEVERE,"unimplanting " + impvertex.getName() + "\n");
+
+		// PreesmLogger.getLogger().log(Level.SEVERE,"unimplanting " +
+		// impvertex.getName() + "\n");
 	}
 
 	/**
@@ -722,7 +756,7 @@ public abstract class AbstractAbc implements IAbc {
 		}
 	}
 
-	public AbcType getType(){
+	public AbcType getType() {
 		return abcType;
 	}
 

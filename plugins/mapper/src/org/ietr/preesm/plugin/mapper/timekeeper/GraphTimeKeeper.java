@@ -476,6 +476,9 @@ public class GraphTimeKeeper {
 	}
 
 	public void updateTLevels() {
+		
+		if(!implementation.isDAG())
+			PreesmLogger.getLogger().log(Level.SEVERE,"The mapper implementation breaks the dag rules");
 
 		dirtyVertices.addAll(implementation.vertexSet());
 		if (areTimingsDirty()) {
@@ -490,6 +493,10 @@ public class GraphTimeKeeper {
 	}
 
 	public void updateTandBLevels() {
+		
+		if(!implementation.isDAG())
+			PreesmLogger.getLogger().log(Level.SEVERE,"The mapper implementation breaks the dag rules");
+		
 		if (areTimingsDirty()) {
 			calculateTLevel();
 			calculateBLevel();

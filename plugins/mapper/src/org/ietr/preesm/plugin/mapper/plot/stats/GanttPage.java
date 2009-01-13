@@ -81,24 +81,6 @@ public class GanttPage extends FormPage {
 		IAbc abc = statGen.getAbc();
 
 		GanttPlotter.plotInComposite(abc, form.getBody());
-		/*
-		if(dag != null && archi != null){
-
-			// Gets the appropriate abc to generate the gantt.
-			PropertyBean bean = dag.getPropertyBean();
-			AbcType abctype = (AbcType)bean.getValue(AbstractAbc.propertyBeanName);
-			EdgeSchedType edgeSchedType = (EdgeSchedType)bean.getValue(AbstractEdgeSched.propertyBeanName);
-			
-			IAbc simu = AbstractAbc
-			.getInstance(abctype, edgeSchedType, dag, archi);
-
-			StatGenerator.removeSendReceive(dag);
-			
-			simu.setDAG(dag);
-
-			simu.getFinalTime();
-			GanttPlotter.plotInComposite(simu, form.getBody());
-		}*/
 		
 	}
 

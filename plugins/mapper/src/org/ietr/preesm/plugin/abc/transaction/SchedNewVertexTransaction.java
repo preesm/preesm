@@ -92,7 +92,7 @@ public class SchedNewVertexTransaction extends Transaction {
 
 		if (edges != null) {
 			if(edges.size() >=2)
-				PreesmLogger.getLogger().log(Level.SEVERE,"too many precedence edges");
+				PreesmLogger.getLogger().log(Level.SEVERE,"too many edges between " + v1.toString() + " and " + v2.toString());
 			
 			for (DAGEdge edge : edges) {
 				if (edge instanceof PrecedenceEdge){
