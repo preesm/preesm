@@ -69,6 +69,7 @@ import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -214,10 +215,12 @@ public class FastAlgorithm extends Observable {
 		// Variables
 		IAbc simulator = AbstractAbc
 				.getInstance(simulatorType, edgeSchedType, dag, archi);
-		ListScheduler scheduler = new ListScheduler();
+		ListScheduler listscheduler = new ListScheduler();
 		Iterator<Operator> prociter;
+		
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
 				BlockingNodesList, new Random());
+		
 		RandomIterator<MapperDAGVertex> iter = new RandomIterator<MapperDAGVertex>(
 				FinalcriticalpathList, new Random());
 		MapperDAGVertex currentvertex = null;
@@ -238,7 +241,7 @@ public class FastAlgorithm extends Observable {
 		// step 1
 		if (!alreadyimplanted) {
 
-			scheduler.schedule(dag, CpnDominantList, BlockingNodesList,
+			listscheduler.schedule(dag, CpnDominantList, BlockingNodesList,
 					FinalcriticalpathList, simulator, null, null);
 		} else {
 			simulator.setDAG(dag);
@@ -318,8 +321,19 @@ public class FastAlgorithm extends Observable {
 						.getEffectiveComponent(currentvertex);
 
 				// step 9
-				simulator.implant(currentvertex, operatortest, false);
+				// Just for test
+				/*simulator.implant(currentvertex, operatortest, false);
 
+				if(currentvertex.getKind().equalsIgnoreCase("dag_fork_vertex") && operatortest.getName().equalsIgnoreCase("C64_1")){
+					simulator.implant(currentvertex, operatortest, false);
+					simulator.plotImplementation(false);
+				}
+				else{
+					simulator.implant(currentvertex, operatortest, false);
+				}*/
+				
+				simulator.implant(currentvertex, operatortest, false);
+				
 				// step 10
 				int newSL = simulator.getFinalTime();
 				if (newSL >= SL) {
@@ -371,7 +385,7 @@ public class FastAlgorithm extends Observable {
 
 				operatorfcp = prociter.next();
 			}
-			scheduler.schedule(dag, CpnDominantList, BlockingNodesList,
+			listscheduler.schedule(dag, CpnDominantList, BlockingNodesList,
 					FinalcriticalpathList, simulator, operatorfcp, fcpvertex);
 
 		}

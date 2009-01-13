@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -294,7 +295,13 @@ public class SchedOrderManager {
 	 */
 	public Schedule getSchedule(ArchitectureComponent cmp) {
 
-		return schedules.get(cmp);
+		// Preventing from creating several schedules with same name
+		for(ArchitectureComponent o : schedules.keySet()){
+			if(o.equals(cmp)){
+				return schedules.get(o);
+			}
+		}
+		return null;
 	}
 
 	/**

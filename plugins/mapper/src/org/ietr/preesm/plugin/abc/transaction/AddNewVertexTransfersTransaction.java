@@ -109,8 +109,8 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 
 				if (currentSourceProp.hasEffectiveOperator()
 						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
+					if (!currentSourceProp.getEffectiveOperator().equals(currentDestProp
+							.getEffectiveOperator())) {
 						// Adds several transfers for one edge depending on the
 						// route steps
 						transferVertexAdder.addTransferVertices(

@@ -212,6 +212,13 @@ public class GanttPlotter extends ApplicationFrame {
 					.getImplementationVertexProperty().getEffectiveComponent();
 
 			if (currentComponent != ArchitectureComponent.NO_COMPONENT) {
+				
+				// Looks inside the set for components with same name
+				for(ArchitectureComponent c : components){
+					if(c.equals(currentComponent))
+						currentComponent = c;
+				}
+				
 				if (!components.contains(currentComponent)) {
 					components.add(currentComponent);
 					currenttask = new Task(currentComponent.getName(),
