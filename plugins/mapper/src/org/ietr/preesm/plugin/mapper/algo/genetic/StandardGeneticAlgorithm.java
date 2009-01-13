@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.geneticalgo;
+package org.ietr.preesm.plugin.mapper.algo.genetic;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -57,11 +57,11 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
+import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;

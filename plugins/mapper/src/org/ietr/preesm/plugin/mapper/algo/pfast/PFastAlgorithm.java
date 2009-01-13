@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.pfastalgo;
+package org.ietr.preesm.plugin.mapper.algo.pfast;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,10 +59,10 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
+import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
+import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgorithm;
-import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
-import org.ietr.preesm.plugin.mapper.fastalgo.ListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;

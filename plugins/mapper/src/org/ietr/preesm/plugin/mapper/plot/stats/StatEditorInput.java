@@ -42,7 +42,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.Activator;
+import org.ietr.preesm.plugin.mapper.activator.Activator;
 
 /**
  * Input of the editor of implementation statistics

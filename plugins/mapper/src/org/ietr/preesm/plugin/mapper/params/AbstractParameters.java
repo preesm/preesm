@@ -34,26 +34,70 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.fastalgo;
+package org.ietr.preesm.plugin.mapper.params;
 
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.mapper.AbstractParameters;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**
- * Parameters for list scheduling
+ * Common behavior of all the mapping algorithm parameters
  * 
- * @author pmenuet
+ * @author mpelcat
  */
-public class ListSchedulingParameters extends AbstractParameters {
+public abstract class AbstractParameters {
 
-	public ListSchedulingParameters(TextParameters textParameters) {
-		super(textParameters);
+	protected TextParameters textParameters = null;
+
+	/**
+	 * Simulator type
+	 */
+	private AbcType simulatorType = null;
+	
+	/**
+	 * Edge scheduling type
+	 */
+	private EdgeSchedType edgeSchedType = null;
+
+	/**
+	 * Constructor creating a new text parameter
+	 */
+	public AbstractParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		textParameters = new TextParameters();
+		this.simulatorType = simulatorType;
+		this.edgeSchedType = edgeSchedType;
+		textParameters.addVariable("simulatorType", simulatorType.toString());
+		textParameters.addVariable("switchTask", ((Boolean)simulatorType.isSwitchTask()).toString());
+		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
+	}
+	
+	/**
+	 * Constructor from textual parameters
+	 */
+	public AbstractParameters(TextParameters textParameters) {
+		this.textParameters = textParameters;
+		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
+		this.simulatorType.setSwitchTask(Boolean.parseBoolean(textParameters.getVariable("switchTask")));
+		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));
+	}
+	
+	
+	/**
+	 * Generates textual parameters from its internal parameters
+	 */
+	public TextParameters textParameters(){
+		return textParameters;
+	}
+	
+	public AbcType getSimulatorType() {
+		return simulatorType;
 	}
 
-	public ListSchedulingParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		super(simulatorType,edgeSchedType);
+	public void setSimulatorType(AbcType simulatorType) {
+		this.simulatorType = simulatorType;
 	}
 
+	public EdgeSchedType getEdgeSchedType() {
+		return edgeSchedType;
+	}
 }

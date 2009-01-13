@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.pgeneticalgo;
+package org.ietr.preesm.plugin.mapper.algo.pgenetic;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,9 +43,9 @@ import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
+import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
-import org.ietr.preesm.plugin.mapper.geneticalgo.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
 /**

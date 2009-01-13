@@ -34,72 +34,95 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.geneticalgo;
+package org.ietr.preesm.plugin.mapper.params;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
 /**
- * Operator able to mutate a chromosome
+ * Class which purpose is setting the parameters for the fast algorithm
  * 
  * @author pmenuet
  */
-public class MutationOperator {
+
+public class FastAlgoParameters extends AbstractParameters {
 
 	/**
-	 * Constructor
+	 * This is the number of probabilistic local jump which the user want. The
+	 * PFast, as the Fast, does probabilistic jump on the critical path which
+	 * modify totally the mapping. The margIn parameter is the number you want
+	 * to try probabilistic jump PER vertex to refine the solution locally.
 	 */
-	public MutationOperator() {
-		super();
+	private int margIn;
+
+	/**
+	 * MaxCount is the number of iteration (big probabilistic jump) the
+	 * algorithm does. An iteration is a probabilistic jump on the critical path
+	 * to find a better solution.
+	 */
+	private int maxCount;
+
+	/**
+	 * MaxStep determines the number of vertices chosen to do the local
+	 * refinement.
+	 */
+	private int maxStep;
+
+	public FastAlgoParameters(TextParameters textParameters) {
+		super(textParameters);
+		
+		this.maxCount = textParameters.getIntVariable("maxCount");
+		this.maxStep = textParameters.getIntVariable("maxStep");
+		this.margIn = textParameters.getIntVariable("margIn");
 	}
 
 	/**
-	 * transform : Mute the chromosome = change the implementation of one vertex
 	 * 
-	 * @param chromosome1
-	 * @param simulatorType
+	 * Constructors
 	 * 
-	 * @return Chromosome
 	 */
-	public Chromosome transform(Chromosome chromosome1,
+
+	public FastAlgoParameters(int maxCount, int maxStep, int margIn,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+		super(simulatorType,edgeSchedType);
+		textParameters.addVariable("maxCount",maxCount);
+		textParameters.addVariable("maxStep",maxStep);
+		textParameters.addVariable("margIn",margIn);
+		
+		this.maxCount = maxCount;
+		this.maxStep = maxStep;
+		this.margIn = margIn;
+	}
 
-		// Construct the son
-		Chromosome chromosome = chromosome1.clone();
-		chromosome.setDirty(true);
+	/**
+	 * 
+	 * Getters and setters
+	 * 
+	 */
 
-		// chose the gene randomly
-		Iterator<Gene> iter = new RandomIterator<Gene>(chromosome
-				.getChromoList(), new Random());
-		Gene currentGene = iter.next();
+	public int getMargIn() {
+		return margIn;
+	}
 
-		// retrieve the operators which can execute the vertex
-		List<ArchitectureComponent> list = new ArrayList<ArchitectureComponent>();
-		list.addAll(chromosome.getArchi().getComponents(ArchitectureComponentType.operator));
+	public int getMaxCount() {
+		return maxCount;
+	}
 
-		// chose one operator randomly
-		Iterator<ArchitectureComponent> iterator = new RandomIterator<ArchitectureComponent>(list,
-				new Random());
-		Operator operator = (Operator)iterator.next();
-		while (operator.getName().equals(currentGene.getOperatorId())) {
-			operator = (Operator)iterator.next();
-		}
+	public int getMaxStep() {
+		return maxStep;
+	}
 
-		// set the change in the gene
-		currentGene.setOperatorId(operator.getName());
-		chromosome.evaluate(simulatorType,edgeSchedType);
+	public void setMargIn(int margIn) {
+		this.margIn = margIn;
+	}
 
-		return chromosome;
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
 
+	public void setMaxStep(int maxStep) {
+		this.maxStep = maxStep;
 	}
 
 }

@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.fastalgo;
+package org.ietr.preesm.plugin.mapper.algo.fast;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,6 +60,8 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
+import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -321,17 +323,6 @@ public class FastAlgorithm extends Observable {
 						.getEffectiveComponent(currentvertex);
 
 				// step 9
-				// Just for test
-				/*simulator.implant(currentvertex, operatortest, false);
-
-				if(currentvertex.getKind().equalsIgnoreCase("dag_fork_vertex") && operatortest.getName().equalsIgnoreCase("C64_1")){
-					simulator.implant(currentvertex, operatortest, false);
-					simulator.plotImplementation(false);
-				}
-				else{
-					simulator.implant(currentvertex, operatortest, false);
-				}*/
-				
 				simulator.implant(currentvertex, operatortest, false);
 				
 				// step 10

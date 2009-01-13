@@ -34,11 +34,10 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.geneticalgo;
+package org.ietr.preesm.plugin.mapper.params;
 
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.mapper.AbstractParameters;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 
 /**

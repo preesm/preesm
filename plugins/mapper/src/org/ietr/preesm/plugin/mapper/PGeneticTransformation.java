@@ -57,18 +57,18 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.mapper.algo.fast.FastPopulation;
+import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
+import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
+import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
+import org.ietr.preesm.plugin.mapper.algo.pgenetic.PGeneticAlgo;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgoParameters;
-import org.ietr.preesm.plugin.mapper.fastalgo.FastPopulation;
-import org.ietr.preesm.plugin.mapper.fastalgo.InitialLists;
-import org.ietr.preesm.plugin.mapper.geneticalgo.Chromosome;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgoParameters;
-import org.ietr.preesm.plugin.mapper.pfastalgo.PFastAlgorithm;
-import org.ietr.preesm.plugin.mapper.pgeneticalgo.PGeneticAlgo;
-import org.ietr.preesm.plugin.mapper.pgeneticalgo.PGeneticAlgoParameters;
+import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
+import org.ietr.preesm.plugin.mapper.params.PFastAlgoParameters;
+import org.ietr.preesm.plugin.mapper.params.PGeneticAlgoParameters;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**

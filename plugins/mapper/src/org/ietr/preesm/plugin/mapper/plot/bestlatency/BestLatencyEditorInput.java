@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.plot.bestlatency;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.plugin.mapper.Activator;
+import org.ietr.preesm.plugin.mapper.activator.Activator;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 
 /**
