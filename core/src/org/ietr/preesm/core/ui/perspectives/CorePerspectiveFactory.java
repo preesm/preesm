@@ -52,18 +52,22 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 
 	@Override
 	 public void createInitialLayout(IPageLayout layout) {
+		
 			// Get the editor area.
 			String editorArea = layout.getEditorArea();
+			
 			// Top left: Resource Navigator view and Bookmarks view placeholder
 			IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.20f,
 				editorArea);
+			
+			// Adds the files navigator
 			topLeft.addView(IPageLayout.ID_RES_NAV);
-			topLeft.addView(IPageLayout.ID_BOOKMARKS);
 
 			// Bottom left: Outline view and Property Sheet view
 			IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.BOTTOM, 0.75f,
 					editorArea);
-			
+
+			// Adds the progress bar and console
 			bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
 			
 			bottomRight.addView("org.eclipse.ui.console.ConsoleView");

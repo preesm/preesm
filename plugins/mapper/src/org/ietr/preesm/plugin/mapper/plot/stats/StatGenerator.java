@@ -48,6 +48,8 @@ public class StatGenerator {
 		this.scenario = scenario;
 		this.abc = abc;
 		
+		this.finalTime = abc.getFinalTime();
+		
 		//getDAGComplexSpanLength();
 		//getDAGComplexWorkLength();
 		//getLoad(archi.getMainOperator());

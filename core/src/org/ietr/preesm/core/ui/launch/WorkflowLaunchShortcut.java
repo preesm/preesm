@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -57,6 +58,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.scenario.editor.EditorTools;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.ui.Activator;
@@ -91,7 +93,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), Messages
 				.getString("Shortcut.browseScenarioTitle"), "scenario");
-		
+
 		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,
 				scenarioPath);
 
@@ -154,11 +156,14 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 				if (configs != null && configs.length > 0) {
 					for (int i = 0; i < configs.length; i++) {
 						ILaunchConfiguration configuration = configs[i];
-						if (configuration
+
+						String candidateFile = configuration
 								.getAttribute(
 										WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME,
-										"").equals(
-										file.getLocation().toOSString())) {
+										"");
+
+						String newFile = file.getFullPath().toString();
+						if (candidateFile.equals(newFile)) {
 							candidateConfigs.add(configuration);
 						}
 					}
@@ -176,6 +181,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 			// user to choose one.
 			int candidateCount = candidateConfigs.size();
 			if (candidateCount < 1) {
+				
 				return createLaunchConfiguration(file);
 			} else if (candidateCount == 1) {
 				return (ILaunchConfiguration) candidateConfigs.get(0);
@@ -201,12 +207,25 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 	}
 
 	/**
-	 * This is normally used to launch the contents of the current editor. We
-	 * don't currently enable this feature.
+	 * From a workflow editor, tries to reexecute the preceding scenario
 	 */
+	@Override
 	public void launch(IEditorPart editor, String mode) {
+		if (editor.getEditorInput() != null && editor.getEditorInput() instanceof FileEditorInput){
+			FileEditorInput fileEditorInput = (FileEditorInput) editor.getEditorInput();
+			
+			IFile file = (IFile) fileEditorInput.getFile();
+
+			ILaunchConfiguration configuration = findExistingLaunchConfiguration(file);
+			if (configuration != null) {
+				DebugUITools.launch(configuration, mode);
+			}
+		}
 	}
 
+	/**
+	 * From a selection, asks for the scenario
+	 */
 	@Override
 	public void launch(ISelection selection, String mode) {
 		if (selection instanceof IStructuredSelection) {
@@ -216,7 +235,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 			if (first != null && first instanceof IFile) {
 				IFile file = (IFile) first;
 
-				ILaunchConfiguration configuration = findExistingLaunchConfiguration(file);
+				ILaunchConfiguration configuration = createLaunchConfiguration(file);
 				if (configuration != null) {
 					DebugUITools.launch(configuration, mode);
 				}

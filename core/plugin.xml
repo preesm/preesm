@@ -86,7 +86,7 @@
       <launchConfigurationType
             delegate="org.ietr.preesm.core.ui.launch.WorkflowLaunchConfigurationDelegate"
             id="org.ietr.preesm.core.workflowLaunchConfigurationType"
-            modes="run,debug"
+            modes="run"
             name="Preesm Workflow"
             public="true">
       </launchConfigurationType>
@@ -114,7 +114,7 @@
             icon="icons/preesmProjectNature.png"
             id="org.ietr.preesm.core.workflowLaunchShortcut"
             label="Preesm Workflow"
-            modes="run,debug">
+            modes="run">
         
                         <description
                               description="Create a Preesm workflow"
@@ -160,6 +160,36 @@
             icon="icons/preesm2mini.PNG"
             label="Preesm Core Console">
       </consoleFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.ietr.preesm.core.ui.perspective">
+         <actionSet
+               id="org.ietr.preesm.core.ui.actionSet">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            description="Core action set"
+            id="org.ietr.preesm.core.ui.actionSet"
+            label="Core action set"
+            visible="true">
+         <action
+               class="org.eclipse.debug.internal.ui.actions.RunToolbarAction"
+               disabledIcon="icons/preesm3mini.PNG"
+               helpContextId="run_action_context"
+               hoverIcon="icons/preesm3mini.PNG"
+               icon="icons/preesm3mini.PNG"
+               id="org.ietr.preesm.core.ui.action.run"
+               label="Map with PREESM"
+               mode="FORCE_TEXT"
+               style="pulldown"
+               toolbarPath="debug">
+         </action>
+      </actionSet>
    </extension>
 
 

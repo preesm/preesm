@@ -4,7 +4,7 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
       <data key="variables">
-         <variable name="depth" value="1"/>
+         <variable name="depth" value="2"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">

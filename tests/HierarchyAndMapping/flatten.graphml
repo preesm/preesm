@@ -24,21 +24,33 @@
       <node id="explode" kind="fork"/>
       <node id="implode" kind="join"/>
       <node id="IDCT2D_0_clip" kind="vertex"/>
-      <node id="IDCT2D_0_IDCT2D_basic" kind="vertex">
-         <data key="graph_desc"/>
-      </node>
+      <node id="IDCT2D_0_IDCT2D_basic_IDCT1D" kind="vertex"/>
+      <node id="IDCT2D_0_IDCT2D_basic_Transpose" kind="vertex"/>
+      <node id="IDCT2D_0_IDCT2D_basic_readBlock" kind="vertex"/>
+      <node id="IDCT2D_0_IDCT2D_basic_trigger" kind="vertex"/>
+      <node id="IDCT2D_0_IDCT2D_basic_broadcast_blockIn" kind="Broadcast"/>
+      <node id="IDCT2D_0_IDCT2D_basic_roundBuffer_block_out" kind="Broadcast"/>
       <node id="IDCT2D_1_clip" kind="vertex"/>
-      <node id="IDCT2D_1_IDCT2D_basic" kind="vertex">
-         <data key="graph_desc"/>
-      </node>
+      <node id="IDCT2D_1_IDCT2D_basic_IDCT1D" kind="vertex"/>
+      <node id="IDCT2D_1_IDCT2D_basic_Transpose" kind="vertex"/>
+      <node id="IDCT2D_1_IDCT2D_basic_readBlock" kind="vertex"/>
+      <node id="IDCT2D_1_IDCT2D_basic_trigger" kind="vertex"/>
+      <node id="IDCT2D_1_IDCT2D_basic_broadcast_blockIn" kind="Broadcast"/>
+      <node id="IDCT2D_1_IDCT2D_basic_roundBuffer_block_out" kind="Broadcast"/>
       <node id="IDCT2D_2_clip" kind="vertex"/>
-      <node id="IDCT2D_2_IDCT2D_basic" kind="vertex">
-         <data key="graph_desc"/>
-      </node>
+      <node id="IDCT2D_2_IDCT2D_basic_IDCT1D" kind="vertex"/>
+      <node id="IDCT2D_2_IDCT2D_basic_Transpose" kind="vertex"/>
+      <node id="IDCT2D_2_IDCT2D_basic_readBlock" kind="vertex"/>
+      <node id="IDCT2D_2_IDCT2D_basic_trigger" kind="vertex"/>
+      <node id="IDCT2D_2_IDCT2D_basic_broadcast_blockIn" kind="Broadcast"/>
+      <node id="IDCT2D_2_IDCT2D_basic_roundBuffer_block_out" kind="Broadcast"/>
       <node id="IDCT2D_3_clip" kind="vertex"/>
-      <node id="IDCT2D_3_IDCT2D_basic" kind="vertex">
-         <data key="graph_desc"/>
-      </node>
+      <node id="IDCT2D_3_IDCT2D_basic_IDCT1D" kind="vertex"/>
+      <node id="IDCT2D_3_IDCT2D_basic_Transpose" kind="vertex"/>
+      <node id="IDCT2D_3_IDCT2D_basic_readBlock" kind="vertex"/>
+      <node id="IDCT2D_3_IDCT2D_basic_trigger" kind="vertex"/>
+      <node id="IDCT2D_3_IDCT2D_basic_broadcast_blockIn" kind="Broadcast"/>
+      <node id="IDCT2D_3_IDCT2D_basic_roundBuffer_block_out" kind="Broadcast"/>
       <edge source="Trigger" sourceport="MB" target="explode" targetport="blockIn">
          <data key="edge_prod">256</data>
          <data key="edge_delay">0</data>
@@ -70,18 +82,68 @@
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="explode" sourceport="MB" target="IDCT2D_0_IDCT2D_basic"
+      <edge source="IDCT2D_0_IDCT2D_basic_readBlock" sourceport="out"
+            target="IDCT2D_0_IDCT2D_basic_IDCT1D"
+            targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_0_IDCT2D_basic_IDCT1D" sourceport="lineOut"
+            target="IDCT2D_0_IDCT2D_basic_Transpose"
+            targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_0_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_0_IDCT2D_basic_readBlock"
+            targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_0_IDCT2D_basic_trigger" sourceport="trig"
+            target="IDCT2D_0_IDCT2D_basic_readBlock"
+            targetport="trig">
+         <data key="edge_prod">2</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="explode" sourceport="MB"
+            target="IDCT2D_0_IDCT2D_basic_broadcast_blockIn"
+            targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_0_IDCT2D_basic_broadcast_blockIn" sourceport="out"
+            target="IDCT2D_0_IDCT2D_basic_readBlock"
+            targetport="in_1">
+         <data key="edge_prod">128</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_0_IDCT2D_basic_roundBuffer_block_out" sourceport="out"
+            target="IDCT2D_0_clip"
             targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="IDCT2D_0_IDCT2D_basic" sourceport="block_out" target="IDCT2D_0_clip"
-            targetport="blockIn">
+      <edge source="IDCT2D_0_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_0_IDCT2D_basic_roundBuffer_block_out"
+            targetport="in">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
+         <data key="edge_cons">128</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="broadcast_signed" sourceport="out" target="IDCT2D_1_clip"
@@ -97,18 +159,68 @@
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="explode" sourceport="MB" target="IDCT2D_1_IDCT2D_basic"
+      <edge source="IDCT2D_1_IDCT2D_basic_readBlock" sourceport="out"
+            target="IDCT2D_1_IDCT2D_basic_IDCT1D"
+            targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_1_IDCT2D_basic_IDCT1D" sourceport="lineOut"
+            target="IDCT2D_1_IDCT2D_basic_Transpose"
+            targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_1_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_1_IDCT2D_basic_readBlock"
+            targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_1_IDCT2D_basic_trigger" sourceport="trig"
+            target="IDCT2D_1_IDCT2D_basic_readBlock"
+            targetport="trig">
+         <data key="edge_prod">2</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="explode" sourceport="MB"
+            target="IDCT2D_1_IDCT2D_basic_broadcast_blockIn"
+            targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_1_IDCT2D_basic_broadcast_blockIn" sourceport="out"
+            target="IDCT2D_1_IDCT2D_basic_readBlock"
+            targetport="in_1">
+         <data key="edge_prod">128</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_1_IDCT2D_basic_roundBuffer_block_out" sourceport="out"
+            target="IDCT2D_1_clip"
             targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="IDCT2D_1_IDCT2D_basic" sourceport="block_out" target="IDCT2D_1_clip"
-            targetport="blockIn">
+      <edge source="IDCT2D_1_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_1_IDCT2D_basic_roundBuffer_block_out"
+            targetport="in">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
+         <data key="edge_cons">128</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="broadcast_signed" sourceport="out" target="IDCT2D_2_clip"
@@ -124,18 +236,68 @@
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="explode" sourceport="MB" target="IDCT2D_2_IDCT2D_basic"
+      <edge source="IDCT2D_2_IDCT2D_basic_readBlock" sourceport="out"
+            target="IDCT2D_2_IDCT2D_basic_IDCT1D"
+            targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_2_IDCT2D_basic_IDCT1D" sourceport="lineOut"
+            target="IDCT2D_2_IDCT2D_basic_Transpose"
+            targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_2_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_2_IDCT2D_basic_readBlock"
+            targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_2_IDCT2D_basic_trigger" sourceport="trig"
+            target="IDCT2D_2_IDCT2D_basic_readBlock"
+            targetport="trig">
+         <data key="edge_prod">2</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="explode" sourceport="MB"
+            target="IDCT2D_2_IDCT2D_basic_broadcast_blockIn"
+            targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_2_IDCT2D_basic_broadcast_blockIn" sourceport="out"
+            target="IDCT2D_2_IDCT2D_basic_readBlock"
+            targetport="in_1">
+         <data key="edge_prod">128</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_2_IDCT2D_basic_roundBuffer_block_out" sourceport="out"
+            target="IDCT2D_2_clip"
             targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="IDCT2D_2_IDCT2D_basic" sourceport="block_out" target="IDCT2D_2_clip"
-            targetport="blockIn">
+      <edge source="IDCT2D_2_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_2_IDCT2D_basic_roundBuffer_block_out"
+            targetport="in">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
+         <data key="edge_cons">128</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="broadcast_signed" sourceport="out" target="IDCT2D_3_clip"
@@ -151,18 +313,68 @@
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="explode" sourceport="MB" target="IDCT2D_3_IDCT2D_basic"
+      <edge source="IDCT2D_3_IDCT2D_basic_readBlock" sourceport="out"
+            target="IDCT2D_3_IDCT2D_basic_IDCT1D"
+            targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_3_IDCT2D_basic_IDCT1D" sourceport="lineOut"
+            target="IDCT2D_3_IDCT2D_basic_Transpose"
+            targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_3_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_3_IDCT2D_basic_readBlock"
+            targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_3_IDCT2D_basic_trigger" sourceport="trig"
+            target="IDCT2D_3_IDCT2D_basic_readBlock"
+            targetport="trig">
+         <data key="edge_prod">2</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="explode" sourceport="MB"
+            target="IDCT2D_3_IDCT2D_basic_broadcast_blockIn"
+            targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_3_IDCT2D_basic_broadcast_blockIn" sourceport="out"
+            target="IDCT2D_3_IDCT2D_basic_readBlock"
+            targetport="in_1">
+         <data key="edge_prod">128</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D_3_IDCT2D_basic_roundBuffer_block_out" sourceport="out"
+            target="IDCT2D_3_clip"
             targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="IDCT2D_3_IDCT2D_basic" sourceport="block_out" target="IDCT2D_3_clip"
-            targetport="blockIn">
+      <edge source="IDCT2D_3_IDCT2D_basic_Transpose" sourceport="blockOut"
+            target="IDCT2D_3_IDCT2D_basic_roundBuffer_block_out"
+            targetport="in">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
+         <data key="edge_cons">128</data>
          <data key="data_type">char</data>
       </edge>
    </graph>
