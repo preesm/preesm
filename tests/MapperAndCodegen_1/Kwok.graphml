@@ -17,52 +17,41 @@
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph edgedefault="directed">
-      <data key="parameters"/>
-      <data key="variables">=</data>
       <node id="n1" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n1</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n2" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n2</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n3" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n3</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n4" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n4</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n5" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n5</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n6" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n6</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n7" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n7</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n8" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n8</data>
-         <data key="arguments">=</data>
       </node>
       <node id="n9" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">n9</data>
-         <data key="arguments">=</data>
       </node>
       <edge source="n1" sourceport="o1" target="n2" targetport="i1">
          <data key="edge_prod">4</data>

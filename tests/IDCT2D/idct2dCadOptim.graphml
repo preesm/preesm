@@ -4,13 +4,13 @@
    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
-   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
-   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
@@ -18,21 +18,25 @@
    </key>
    <graph edgedefault="directed">
       <data key="parameters"/>
-      <data key="variables">=</data>
+      <data key="variables"/>
       <node id="broadcast_signed" kind="Broadcast"/>
       <node id="Trigger" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Trigger</data>
-         <data key="arguments">=</data>
+         <data key="arguments"/>
       </node>
       <node id="IDCT2D" kind="vertex">
          <data key="graph_desc">idct2dv2_wp.graphml</data>
          <data key="name">IDCT2D</data>
-         <data key="arguments">=</data>
+         <data key="arguments">
+            <argument name="xsize" value="8"/>
+            <argument name="ysize" value="8"/>
+         </data>
       </node>
       <node id="Group" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Group</data>
+         <data key="arguments"/>
       </node>
       <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
          <data key="edge_prod">256</data>

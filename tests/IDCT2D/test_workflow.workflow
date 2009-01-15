@@ -33,8 +33,21 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
       <data key="variables"/>
    </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
+      <data key="variables">
+         <variable name="edgeSchedType" value="Switcher"/>
+         <variable name="margIn" value="30"/>
+         <variable name="maxCount" value="800"/>
+         <variable name="maxStep" value="800"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
+         <variable name="switchTask" value="false"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
    <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="FAST scheduler"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="FAST scheduler"/>
 </preesm:workflow>

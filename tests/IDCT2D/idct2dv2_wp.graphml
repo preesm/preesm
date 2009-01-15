@@ -4,32 +4,39 @@
    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
-   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
-   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
       <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
    </key>
    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph edgedefault="directed">
-      <data key="parameters"/>
-      <data key="variables">=</data>
+      <data key="parameters">
+         <parameter name="xsize"/>
+         <parameter name="ysize"/>
+      </data>
+      <data key="variables"/>
       <node id="blockIn" kind="port" port_direction="Input"/>
       <node id="signed" kind="port" port_direction="Input"/>
       <node id="out" kind="port" port_direction="Output"/>
       <node id="clip" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">clip</data>
-         <data key="arguments">=</data>
+         <data key="arguments"/>
       </node>
       <node id="IDCT2D_basic" kind="vertex">
          <data key="graph_desc">IDCT2D_basic.graphml</data>
          <data key="name">IDCT2D_basic</data>
+         <data key="arguments">
+            <argument name="xsize" value="xsize"/>
+            <argument name="ysize" value="ysize"/>
+         </data>
       </node>
       <edge source="signed" sourceport="signed" target="clip" targetport="signed">
          <data key="edge_prod">1</data>
@@ -44,7 +51,7 @@
          <data key="data_type"/>
       </edge>
       <edge source="blockIn" sourceport="blockIn" target="IDCT2D_basic" targetport="blockIn">
-         <data key="edge_prod">64</data>
+         <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>

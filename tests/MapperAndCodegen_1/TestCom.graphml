@@ -21,37 +21,29 @@
       <desc>org.sdf4j.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
    <graph edgedefault="directed">
-      <data key="parameters"/>
-      <data key="variables">=</data>
       <node id="Sensor" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Sensor</data>
-         <data key="arguments">=</data>
       </node>
       <node id="Gen_int" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Gen_int</data>
-         <data key="arguments">=</data>
       </node>
       <node id="Copy" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Copy</data>
-         <data key="arguments">=</data>
       </node>
       <node id="Actuator" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">Actuator</data>
-         <data key="arguments">=</data>
       </node>
       <node id="ParallelTest" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">ParallelTest</data>
-         <data key="arguments">=</data>
       </node>
       <node id="ParallelTest2" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">ParallelTest2</data>
-         <data key="arguments">=</data>
       </node>
       <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
          <data key="edge_prod">1</data>
