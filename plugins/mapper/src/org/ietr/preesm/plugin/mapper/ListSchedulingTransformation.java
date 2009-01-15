@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -111,7 +112,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		applet1.init(graph);
 		
-		transformation.transform(graph, architecture, parameters.textParameters(), scenario);
+		transformation.transform(graph, architecture, parameters.textParameters(), scenario, null);
 
 		logger.log(Level.FINER, "Test list scheduling finished");
 	}
@@ -134,7 +135,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario) {
+			IScenario scenario, IProgressMonitor monitor) {
 
 		
 		TaskResult result = new TaskResult();

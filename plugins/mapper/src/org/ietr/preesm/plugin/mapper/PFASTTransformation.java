@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -105,7 +106,7 @@ public class PFASTTransformation extends AbstractMapping {
 		PFASTTransformation transformation = new PFASTTransformation();
 		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, 5, 3,
 				AbcType.LooselyTimed, EdgeSchedType.Simple);
-		transformation.transform(graph, archi, parameters.textParameters(), scenario);
+		transformation.transform(graph, archi, parameters.textParameters(), scenario, null);
 
 		logger.log(Level.FINER, "Test fast finished");
 	}
@@ -122,7 +123,7 @@ public class PFASTTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario) {
+			IScenario scenario, IProgressMonitor monitor) {
 
 		
 		TaskResult result = new TaskResult();

@@ -213,7 +213,7 @@ public class Workflow {
 						IMapping mapping = (IMapping) transformation;
 
 						nodeResult = mapping.transform(sdf, architecture,
-								parameters, scenario);
+								parameters, scenario, monitor);
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");

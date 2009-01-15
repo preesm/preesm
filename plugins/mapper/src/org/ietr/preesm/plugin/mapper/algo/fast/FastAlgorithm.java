@@ -45,6 +45,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -150,7 +151,7 @@ public class FastAlgorithm extends Observable {
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), 50, 50, 5, false, true, null, false);
+						.getFinalcriticalpathList(), 50, 50, 5, false, true, null, false, null);
 
 		IAbc simu2 = AbstractAbc
 				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, dag, archi);
@@ -184,7 +185,7 @@ public class FastAlgorithm extends Observable {
 			List<MapperDAGVertex> BlockingNodesList,
 			List<MapperDAGVertex> FinalcriticalpathList, int maxcount,
 			int maxstep, int margin, boolean alreadyimplanted, boolean pfastused, 
-			BenchmarkWriter writer, boolean displaySolutions) {
+			BenchmarkWriter writer, boolean displaySolutions, IProgressMonitor monitor) {
 		
 		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter("FastAlgorithm");
 
@@ -269,11 +270,17 @@ public class FastAlgorithm extends Observable {
 			
 			if (!pfastused) {
 				// Mode Pause
-				while (bestLatencyPlotter.getActionType() == 2)
-					;
+				while (bestLatencyPlotter.getActionType() == 2){
+					try {
+						wait(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 
 				// Mode stop
-				if (bestLatencyPlotter.getActionType() == 1) {
+				if (bestLatencyPlotter.getActionType() == 1 || monitor.isCanceled()) {
 					logger
 							.log(
 									Level.FINE,

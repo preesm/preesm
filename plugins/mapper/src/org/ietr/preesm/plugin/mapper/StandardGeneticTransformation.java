@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -113,7 +114,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		GeneticAlgoParameters parameters = new GeneticAlgoParameters(100, 25,
 				AbcType.ApproximatelyTimed, EdgeSchedType.Simple, false);
 
-		transformation.transform(graph, archi, parameters.textParameters(), scenario);
+		transformation.transform(graph, archi, parameters.textParameters(), scenario, null);
 
 		logger.log(Level.FINER, "Test fast finished");
 	}
@@ -130,7 +131,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario) {
+			IScenario scenario, IProgressMonitor monitor) {
 
 		
 		TaskResult transfoResult = new TaskResult();

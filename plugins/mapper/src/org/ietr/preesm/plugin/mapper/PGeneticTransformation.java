@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -114,7 +115,7 @@ public class PGeneticTransformation extends AbstractMapping {
 		PGeneticAlgoParameters parameters = new PGeneticAlgoParameters(
 				100, 10, 3, AbcType.LooselyTimed, EdgeSchedType.Simple, true);
 
-		transformation.transform(graph, archi, parameters.textParameters(), scenario);
+		transformation.transform(graph, archi, parameters.textParameters(), scenario, null);
 
 		logger.log(Level.FINER, "Test fast finished");
 
@@ -133,7 +134,7 @@ public class PGeneticTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario) {
+			IScenario scenario, IProgressMonitor monitor) {
 
 		
 		TaskResult transfoResult = new TaskResult();

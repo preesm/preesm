@@ -315,7 +315,7 @@ public class PFastAlgorithm extends Observable {
 
 			dag = algorithm.map("Fast", simulatorType, edgeSchedType, dag, archi,
 					cpnDominantVector, blockingnodeVector, fcpVector, maxCount,
-					maxStep, margIn, false, false, null, false);
+					maxStep, margIn, false, false, null, false, null);
 			return dag;
 		}
 

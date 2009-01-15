@@ -182,7 +182,7 @@ public class FastPopulation {
 					this.archi, initial.getCpnDominantList(),
 					initial.getBlockingNodesList(),
 					initial.getFinalcriticalpathList(), MAXCOUNT, MAXSTEP,
-					MARGIN, false, true, null, false).clone();
+					MARGIN, false, true, null, false, null).clone();
 			temp.add(tempdag.clone());
 
 		}

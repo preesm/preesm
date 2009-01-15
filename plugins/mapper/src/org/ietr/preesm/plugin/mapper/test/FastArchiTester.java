@@ -175,7 +175,7 @@ public class FastArchiTester {
 		
 		dag = algorithm.map("test", simulatorType, edgeSchedType, dag, archi, initial
 				.getCpnDominantList(), initial.getBlockingNodesList(), initial
-				.getFinalcriticalpathList(), 40, 40, 6, false, false, null, false);
+				.getFinalcriticalpathList(), 40, 40, 6, false, false, null, false, null);
 
 		// display
 		IAbc simu2 = AbstractAbc
