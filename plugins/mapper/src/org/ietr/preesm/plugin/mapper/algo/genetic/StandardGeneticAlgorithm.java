@@ -171,7 +171,7 @@ public class StandardGeneticAlgorithm extends Observable {
 			AbcType type, EdgeSchedType edgeSchedType, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
-		final BestLatencyPlotter demo = new BestLatencyPlotter("Genetic Algorithm");
+		final BestLatencyPlotter demo = new BestLatencyPlotter("Genetic Algorithm", null);
 
 		// Set data window if necessary
 		if (!pgeneticalgo) {

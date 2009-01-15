@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,7 +87,8 @@ public class FastAlgorithm extends Observable {
 	/**
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
-	private Map<String,Integer> bestTotalOrder = null;
+	private Map<String, Integer> bestTotalOrder = null;
+
 	/**
 	 * Main for tests
 	 */
@@ -104,7 +106,7 @@ public class FastAlgorithm extends Observable {
 		// Generating random sdf dag
 		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 100,true);
+				maxInDegree, minOutDegree, maxOutDegree, 100, true);
 
 		// Generating constraints
 		IScenario scenario = new Scenario();
@@ -113,8 +115,9 @@ public class FastAlgorithm extends Observable {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
-					.getVertex(name), 50);
+			Timing newt = new Timing((OperatorDefinition) archi
+					.getComponentDefinition(ArchitectureComponentType.operator,
+							"c64x"), graph.getVertex(name), 50);
 			tmgr.addTiming(newt);
 		}
 
@@ -122,8 +125,8 @@ public class FastAlgorithm extends Observable {
 		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, false);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag,
+				archi, false);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 
@@ -151,10 +154,11 @@ public class FastAlgorithm extends Observable {
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), 50, 50, 5, false, true, null, false, null);
+						.getFinalcriticalpathList(), 50, 50, 5, false, true,
+				null, false, null);
 
-		IAbc simu2 = AbstractAbc
-				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, dag, archi);
+		IAbc simu2 = AbstractAbc.getInstance(AbcType.LooselyTimed,
+				EdgeSchedType.Simple, dag, archi);
 
 		simu2.setDAG(dag);
 		logger.log(Level.FINER, "Displaying dag implanted 2");
@@ -179,35 +183,38 @@ public class FastAlgorithm extends Observable {
 	 * list which must be done before this algorithm
 	 */
 
-	public MapperDAG map(String threadName,
-			AbcType simulatorType,EdgeSchedType edgeSchedType, MapperDAG dag,
+	public MapperDAG map(String threadName, AbcType simulatorType,
+			EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, List<MapperDAGVertex> CpnDominantList,
 			List<MapperDAGVertex> BlockingNodesList,
 			List<MapperDAGVertex> FinalcriticalpathList, int maxcount,
-			int maxstep, int margin, boolean alreadyimplanted, boolean pfastused, 
-			BenchmarkWriter writer, boolean displaySolutions, IProgressMonitor monitor) {
-		
-		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter("FastAlgorithm");
+			int maxstep, int margin, boolean alreadyimplanted,
+			boolean pfastused, BenchmarkWriter writer,
+			boolean displaySolutions, IProgressMonitor monitor) {
+
+		Semaphore pauseSemaphore = new Semaphore(1);
+		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter(
+				"FastAlgorithm", pauseSemaphore);
 
 		// initialing the data window if this is necessary
 		if (!pfastused) {
 
 			bestLatencyPlotter.setSUBPLOT_COUNT(1);
-			//demo.display();
+			// demo.display();
 			BestLatencyEditor.createEditor(bestLatencyPlotter);
 
 			this.addObserver(bestLatencyPlotter);
 		}
 
 		// Variables
-		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, edgeSchedType, dag, archi);
+		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
+				dag, archi);
 		ListScheduler listscheduler = new ListScheduler();
 		Iterator<Operator> prociter;
-		
+
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
 				BlockingNodesList, new Random());
-		
+
 		RandomIterator<MapperDAGVertex> iter = new RandomIterator<MapperDAGVertex>(
 				FinalcriticalpathList, new Random());
 		MapperDAGVertex currentvertex = null;
@@ -235,19 +242,19 @@ public class FastAlgorithm extends Observable {
 		}
 		// display initial time after the list scheduling
 		int initial = simulator.getFinalTime();
-		
-		if(displaySolutions){
-			GanttEditor.createEditor(simulator,"List Solution: " + initial);
+
+		bestTotalOrder = simulator.getTotalOrder().toMap();
+		if (displaySolutions) {
+			GanttEditor.createEditor(simulator, getBestTotalOrder(), "List Solution: " + initial);
 		}
 		
-		bestTotalOrder = simulator.getTotalOrder().toMap();
 		logger.log(Level.FINE, "InitialSP " + initial);
-		
+
 		// The writer allows textual logs
-		if(writer != null){
+		if (writer != null) {
 			writer.printLatency(initial);
 		}
-		
+
 		int SL = initial;
 		dag.setScheduleLatency(initial);
 		if (BlockingNodesList.size() < 2)
@@ -256,7 +263,7 @@ public class FastAlgorithm extends Observable {
 		Integer iBest;
 		MapperDAG dagfinal = simulator.getDAG().clone();
 		dagfinal.setScheduleLatency(bestSL);
-	
+
 		// step 4/17
 		while (searchcount++ <= maxcount) {
 
@@ -264,15 +271,16 @@ public class FastAlgorithm extends Observable {
 			setChanged();
 			notifyObservers(iBest);
 
-			if(writer != null){
+			if (writer != null) {
 				writer.printLatency(iBest);
 			}
-			
+
 			if (!pfastused) {
 				// Mode Pause
-				while (bestLatencyPlotter.getActionType() == 2){
+				if (bestLatencyPlotter.getActionType() == 2) {
 					try {
-						wait(1000);
+						pauseSemaphore.acquire();
+						pauseSemaphore.release();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -280,7 +288,8 @@ public class FastAlgorithm extends Observable {
 				}
 
 				// Mode stop
-				if (bestLatencyPlotter.getActionType() == 1 || monitor.isCanceled()) {
+				if (bestLatencyPlotter.getActionType() == 1
+						|| (monitor != null && monitor.isCanceled())) {
 					logger
 							.log(
 									Level.FINE,
@@ -310,7 +319,8 @@ public class FastAlgorithm extends Observable {
 						new Random());
 				operatortest = prociter.next();
 				if (operatortest.equals(dagfinal.getMapperDAGVertex(
-						currentvertex.getName()).getImplementationVertexProperty()
+						currentvertex.getName())
+						.getImplementationVertexProperty()
 						.getEffectiveOperator())) {
 					operatortest = prociter.next();
 				}
@@ -319,7 +329,7 @@ public class FastAlgorithm extends Observable {
 
 				// step 9
 				simulator.implant(currentvertex, operatortest, false);
-				
+
 				// step 10
 				int newSL = simulator.getFinalTime();
 				if (newSL >= SL) {
@@ -329,7 +339,7 @@ public class FastAlgorithm extends Observable {
 				} else {
 					logger.log(Level.FINEST, threadName + ", SL " + SL
 							+ "FinalTime " + newSL);
-					
+
 					counter = 0;
 					SL = newSL;
 
@@ -347,12 +357,13 @@ public class FastAlgorithm extends Observable {
 
 				bestSL = simulator.getFinalTime();
 
-				if(displaySolutions){
-					GanttEditor.createEditor(simulator,"FAST solution: " + bestSL);
-				}
-				
 				bestTotalOrder = simulator.getTotalOrder().toMap();
-				
+				if (displaySolutions) {
+					GanttEditor.createEditor(simulator, getBestTotalOrder(), "FAST solution: "
+							+ bestSL);
+				}
+
+
 				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
 
@@ -370,8 +381,9 @@ public class FastAlgorithm extends Observable {
 			prociter = new RandomIterator<Operator>(operatorlist, new Random());
 
 			operatorfcp = prociter.next();
-			if (operatorfcp.equals(dagfinal.getMapperDAGVertex(fcpvertex.getName())
-					.getImplementationVertexProperty().getEffectiveOperator())) {
+			if (operatorfcp.equals(dagfinal.getMapperDAGVertex(
+					fcpvertex.getName()).getImplementationVertexProperty()
+					.getEffectiveOperator())) {
 
 				operatorfcp = prociter.next();
 			}
@@ -390,8 +402,8 @@ public class FastAlgorithm extends Observable {
 
 		return dagfinal;
 	}
-	
-	public Map<String,Integer> getBestTotalOrder() {
+
+	public Map<String, Integer> getBestTotalOrder() {
 		return bestTotalOrder;
 	}
 

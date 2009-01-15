@@ -179,7 +179,7 @@ public class PGeneticAlgo extends Observable {
 
 		// Set Data window
 		final BestLatencyPlotter demo = new BestLatencyPlotter(
-				"Parallel genetic Algorithm");
+				"Parallel genetic Algorithm", null);
 		demo.setSUBPLOT_COUNT(1);
 		//demo.display();
 		BestLatencyEditor.createEditor(demo);

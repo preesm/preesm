@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -45,6 +47,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 
@@ -123,10 +126,12 @@ public class GanttEditor extends EditorPart {
 		
 	}
 
-	public static void createEditor(IAbc abc, String name) {
+	public static void createEditor(IAbc abc, Map<String, Integer> bestTotalOrder, String name) {
 		
-		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), abc.getDAG(), abc.getArchitecture());
-		newAbc.setDAG(abc.getDAG());
+		MapperDAG dag = abc.getDAG().clone();
+		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), dag, abc.getArchitecture());
+		newAbc.setDAG(dag);
+		newAbc.reorder(bestTotalOrder);
 		
 		IEditorInput input = new GanttEditorInput(newAbc, name);
 

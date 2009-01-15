@@ -141,12 +141,12 @@ public class SdfToDagConverter {
 		addInitialProperties(dag, architecture, scenario);
 
 		// Displays the DAG
-		//if (display) {
+		/*if (display) {
 			SDFAdapterDemo applet1 = new SDFAdapterDemo();
 			applet1.init(sdf);
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(dag);
-		//}
+		}*/
 
 		return dag;
 	}

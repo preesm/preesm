@@ -46,6 +46,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -83,12 +84,12 @@ import org.jfree.ui.RefineryUtilities;
 public class BestLatencyPlotter extends ApplicationFrame implements
 		ActionListener, Observer {
 
-	public class SizeListener implements ControlListener{
+	public class SizeListener implements ControlListener {
 
 		Composite composite;
 
 		Container frame;
-		
+
 		public SizeListener(Composite composite, Container frame) {
 			super();
 			this.composite = composite;
@@ -105,11 +106,11 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 		public void controlResized(ControlEvent e) {
 			// TODO Auto-generated method stub
 
-			frame.setSize(composite.getSize().x,composite.getSize().y);
+			frame.setSize(composite.getSize().x, composite.getSize().y);
 		}
-		
+
 	}
-	
+
 	private static final long serialVersionUID = -6939533490316310961L;
 
 	/** The number of subplots. */
@@ -123,12 +124,17 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 	private double[] lastValue = new double[subplotCount];
 
 	/**
+	 * Semaphore de pause
+	 */
+	private Semaphore pauseSemaphore = null;
+
+	/**
 	 * Constructs a new demonstration application.
 	 * 
 	 * @param title
 	 *            the frame title.
 	 */
-	public BestLatencyPlotter(final String title) {
+	public BestLatencyPlotter(final String title, Semaphore pauseSemaphore) {
 
 		super(title);
 
@@ -160,6 +166,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 		chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		setContentPane(content);
 
+		this.pauseSemaphore = pauseSemaphore;
 	}
 
 	/**
@@ -168,7 +175,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 	 * @return A chart.
 	 */
 	private JFreeChart createChart(String title) {
-		
+
 		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
 				new DateAxis("Time"));
 		this.datasets = new TimeSeriesCollection[subplotCount];
@@ -187,7 +194,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 			subplot.setRangeGridlinePaint(Color.lightGray);
 			plot.add(subplot);
 		}
-		
+
 		final JFreeChart chart = new JFreeChart(title, plot);
 
 		// chart.getLegend().setAnchor(Legend.EAST);
@@ -201,11 +208,11 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 
 		final ValueAxis axis = plot.getDomainAxis();
 		axis.setAutoRange(true);
-		
+
 		return chart;
-		
+
 	}
-	
+
 	/**
 	 * Handles a click on the button and perform the wanted action.
 	 * 
@@ -330,30 +337,45 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 
 	public void setActionType(int actionType) {
 		this.actionType = actionType;
+
+		if (pauseSemaphore != null) {
+			if (actionType == 2) {
+				try {
+					pauseSemaphore.acquire();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				pauseSemaphore.release();
+			}
+		}
 	}
 
 	public void setSUBPLOT_COUNT(int subplot_count) {
 		subplotCount = subplot_count;
 	}
-	
-	public void windowClosing(WindowEvent event){
-		if(event.equals(WindowEvent.WINDOW_CLOSING)){
-			
+
+	public void windowClosing(WindowEvent event) {
+		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
+
 		}
 	}
 
-	public void display(Composite parentComposite){
-	
-	    Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
-	    parentComposite.setLayout(new FillLayout());
-	    Frame frame = SWT_AWT.new_Frame(composite);
-	    frame.add(this.getContentPane());
+	public void display(Composite parentComposite) {
 
-	    parentComposite.addControlListener(this.new SizeListener(composite,frame));
+		Composite composite = new Composite(parentComposite, SWT.EMBEDDED
+				| SWT.FILL);
+		parentComposite.setLayout(new FillLayout());
+		Frame frame = SWT_AWT.new_Frame(composite);
+		frame.add(this.getContentPane());
+
+		parentComposite.addControlListener(this.new SizeListener(composite,
+				frame));
 	}
 
-	public void display(){
-		
+	public void display() {
+
 		this.pack();
 		RefineryUtilities.centerFrameOnScreen(this);
 		this.setVisible(true);

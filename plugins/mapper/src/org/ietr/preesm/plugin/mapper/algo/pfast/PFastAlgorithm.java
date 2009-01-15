@@ -49,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -320,7 +321,8 @@ public class PFastAlgorithm extends Observable {
 		}
 
 		// Data window set
-		final BestLatencyPlotter demo = new BestLatencyPlotter("PFast Algorithm");
+		Semaphore pauseSemaphore = new Semaphore(1);
+		final BestLatencyPlotter demo = new BestLatencyPlotter("PFast Algorithm", pauseSemaphore);
 
 		if (!population) {
 			demo.setSUBPLOT_COUNT(1);
