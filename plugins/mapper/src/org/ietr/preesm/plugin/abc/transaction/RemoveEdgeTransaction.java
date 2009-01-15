@@ -82,4 +82,9 @@ public class RemoveEdgeTransaction extends Transaction {
 		newEdge.setWeight(edge.getWeight());
 	}
 
+	@Override
+	public String toString() {
+		return("RemoveEdge(" + edge.toString() +")");
+	}
+
 }

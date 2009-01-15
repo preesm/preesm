@@ -68,7 +68,7 @@ public class BestLatencyEditorRunnable implements Runnable {
 			
 			try {
 				page.openEditor(input,
-								"org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor");
+								"org.ietr.preesm.plugin.mapper.plot.TimeEditor");
 
 			} catch (PartInitException e) {
 				// TODO Auto-generated catch block

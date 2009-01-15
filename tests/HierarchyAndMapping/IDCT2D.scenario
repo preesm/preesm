@@ -6,65 +6,12 @@
         <timingfile url="/HierarchyAndMapping/timings.xls"/>
     </files>
     <constraints>
-        <constraintGroup>
-            <operator name="C64_3"/>
-            <task name="Transpose"/>
-            <task name="IDCT1D"/>
-            <task name="Trigger"/>
-            <task name="readBlock"/>
-            <task name="IDCT2D"/>
-            <task name="Group"/>
-            <task name="IDCT2D_basic"/>
-            <task name="clip"/>
-            <task name="trigger"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_4"/>
-            <task name="Transpose"/>
-            <task name="IDCT1D"/>
-            <task name="Trigger"/>
-            <task name="readBlock"/>
-            <task name="IDCT2D"/>
-            <task name="Group"/>
-            <task name="IDCT2D_basic"/>
-            <task name="clip"/>
-            <task name="trigger"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_2"/>
-            <task name="Transpose"/>
-            <task name="IDCT1D"/>
-            <task name="Trigger"/>
-            <task name="readBlock"/>
-            <task name="IDCT2D"/>
-            <task name="Group"/>
-            <task name="IDCT2D_basic"/>
-            <task name="clip"/>
-            <task name="trigger"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_1"/>
-            <task name="Transpose"/>
-            <task name="IDCT1D"/>
-            <task name="Trigger"/>
-            <task name="readBlock"/>
-            <task name="IDCT2D"/>
-            <task name="Group"/>
-            <task name="IDCT2D_basic"/>
-            <task name="clip"/>
-            <task name="trigger"/>
-        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
     </constraints>
-    <timings>
-        <timing opname="C64x" time="0" vertexname="Trigger"/>
-        <timing opname="C64x" time="0" vertexname="IDCT2D"/>
-        <timing opname="C64x" time="0" vertexname="Group"/>
-        <timing opname="C64x" time="438" vertexname="clip"/>
-        <timing opname="C64x" time="0" vertexname="IDCT2D_basic"/>
-        <timing opname="C64x" time="244" vertexname="IDCT1D"/>
-        <timing opname="C64x" time="126" vertexname="Transpose"/>
-        <timing opname="C64x" time="179" vertexname="readBlock"/>
-    </timings>
+    <timings/>
     <simuParams>
         <mainCore/>
         <mainMedium/>

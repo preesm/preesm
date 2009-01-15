@@ -68,6 +68,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
 import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
@@ -149,7 +150,7 @@ public class FastAlgorithm extends Observable {
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominantList(), initial
 						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), 50, 50, 5, false, true, null);
+						.getFinalcriticalpathList(), 50, 50, 5, false, true, null, false);
 
 		IAbc simu2 = AbstractAbc
 				.getInstance(AbcType.LooselyTimed, EdgeSchedType.Simple, dag, archi);
@@ -175,42 +176,26 @@ public class FastAlgorithm extends Observable {
 	/**
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
-	 * 
-	 * @param threadName
-	 * @param simulatorType
-	 * @param dag
-	 * @param archi
-	 * @param CpnDominantList
-	 * @param BlockingNodesList
-	 * @param FinalcriticalpathList
-	 * @param MAXCOUNT
-	 * @param MAXSTEP
-	 * @param MARGIN
-	 * @param alreadyimplanted
-	 *            (implementation already set)
-	 * @param pfastused
-	 * 
-	 * @return : MapperDAG
 	 */
 
 	public MapperDAG map(String threadName,
 			AbcType simulatorType,EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, List<MapperDAGVertex> CpnDominantList,
 			List<MapperDAGVertex> BlockingNodesList,
-			List<MapperDAGVertex> FinalcriticalpathList, int MAXCOUNT,
-			int MAXSTEP, int MARGIN, boolean alreadyimplanted, boolean pfastused, 
-			BenchmarkWriter writer) {
+			List<MapperDAGVertex> FinalcriticalpathList, int maxcount,
+			int maxstep, int margin, boolean alreadyimplanted, boolean pfastused, 
+			BenchmarkWriter writer, boolean displaySolutions) {
 		
-		final BestLatencyPlotter demo = new BestLatencyPlotter("FastAlgorithm");
+		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter("FastAlgorithm");
 
 		// initialing the data window if this is necessary
 		if (!pfastused) {
 
-			demo.setSUBPLOT_COUNT(1);
+			bestLatencyPlotter.setSUBPLOT_COUNT(1);
 			//demo.display();
-			BestLatencyEditor.createEditor(demo);
+			BestLatencyEditor.createEditor(bestLatencyPlotter);
 
-			this.addObserver(demo);
+			this.addObserver(bestLatencyPlotter);
 		}
 
 		// Variables
@@ -249,7 +234,11 @@ public class FastAlgorithm extends Observable {
 		}
 		// display initial time after the list scheduling
 		int initial = simulator.getFinalTime();
-		simulator.plotImplementation(false);
+		
+		if(displaySolutions){
+			GanttEditor.createEditor(simulator,"List Solution: " + initial);
+		}
+		
 		bestTotalOrder = simulator.getTotalOrder().toMap();
 		logger.log(Level.FINE, "InitialSP " + initial);
 		
@@ -268,7 +257,7 @@ public class FastAlgorithm extends Observable {
 		dagfinal.setScheduleLatency(bestSL);
 	
 		// step 4/17
-		while (searchcount++ <= MAXCOUNT) {
+		while (searchcount++ <= maxcount) {
 
 			iBest = (Integer) bestSL;
 			setChanged();
@@ -280,11 +269,11 @@ public class FastAlgorithm extends Observable {
 			
 			if (!pfastused) {
 				// Mode Pause
-				while (demo.getActionType() == 2)
+				while (bestLatencyPlotter.getActionType() == 2)
 					;
 
 				// Mode stop
-				if (demo.getActionType() == 1) {
+				if (bestLatencyPlotter.getActionType() == 1) {
 					logger
 							.log(
 									Level.FINE,
@@ -340,7 +329,7 @@ public class FastAlgorithm extends Observable {
 				}
 
 				// step 11
-			} while (searchstep++ < MAXSTEP && counter < MARGIN);
+			} while (searchstep++ < maxstep && counter < margin);
 
 			// step 12
 			if (bestSL > simulator.getFinalTime()) {
@@ -350,7 +339,11 @@ public class FastAlgorithm extends Observable {
 				// step 14
 
 				bestSL = simulator.getFinalTime();
-				simulator.plotImplementation(false);
+
+				if(displaySolutions){
+					GanttEditor.createEditor(simulator,"FAST solution: " + bestSL);
+				}
+				
 				bestTotalOrder = simulator.getTotalOrder().toMap();
 				
 				dagfinal.setScheduleLatency(bestSL);

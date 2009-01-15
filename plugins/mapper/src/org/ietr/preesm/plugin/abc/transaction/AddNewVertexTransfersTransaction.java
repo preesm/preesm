@@ -133,4 +133,9 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 		transferVertexAdder.removeAllTransfers(newVertex, implementation, localTransactionManager);
 	}
 
+	@Override
+	public String toString() {
+		return("AddNewVertexTransfers(" + newVertex.toString() +") -> " + TransferVertexAdder.getAllTransfers(newVertex, implementation, new TransactionManager()).toString());
+	}
+
 }

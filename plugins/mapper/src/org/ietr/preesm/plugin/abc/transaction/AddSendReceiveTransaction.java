@@ -102,7 +102,12 @@ public class AddSendReceiveTransaction extends Transaction {
 	private MapperDAGEdge newEdge1 = null;
 	private MapperDAGEdge newEdge2 = null;
 	private MapperDAGEdge newEdge3 = null;
-	
+
+	/**
+	 * Transaction to schedule and unschedule the vertices
+	 */
+	private SchedNewVertexTransaction sendSchedulingTransaction = null;
+	private SchedNewVertexTransaction receiveSchedulingTransaction = null;
 	
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
@@ -177,6 +182,14 @@ public class AddSendReceiveTransaction extends Transaction {
 				newEdge1.setAggregate(edge.getAggregate());
 				newEdge2.setAggregate(edge.getAggregate());
 				newEdge3.setAggregate(edge.getAggregate());
+				
+				// Scheduling transfer vertex
+				sendSchedulingTransaction = new SchedNewVertexTransaction(orderManager,
+						implementation, sendVertex);
+				sendSchedulingTransaction.execute();
+				receiveSchedulingTransaction = new SchedNewVertexTransaction(orderManager,
+						implementation, receiveVertex);
+				receiveSchedulingTransaction.execute();
 			}
 		}
 	}
@@ -185,6 +198,13 @@ public class AddSendReceiveTransaction extends Transaction {
 	public void undo() {
 		super.undo();
 
+
+		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
+		
+		// Unscheduling transfer vertex
+		receiveSchedulingTransaction.undo();
+		sendSchedulingTransaction.undo();
+		
 		implementation.removeEdge(newEdge1);
 		implementation.removeEdge(newEdge2);
 		implementation.removeEdge(newEdge3);
@@ -194,5 +214,10 @@ public class AddSendReceiveTransaction extends Transaction {
 		orderManager.remove(receiveVertex, true);
 	}
 
+
+	@Override
+	public String toString() {
+		return("AddSendReceive");
+	}
 
 }

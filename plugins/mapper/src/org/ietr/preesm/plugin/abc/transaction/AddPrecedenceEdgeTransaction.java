@@ -129,4 +129,9 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 
 	}
 
+	@Override
+	public String toString() {
+		return("AddPrecedence(" + precedenceEdge.toString() +")");
+	}
+
 }

@@ -33,56 +33,65 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.plugin.mapper.plot.gantt;
 
-package org.ietr.preesm.plugin.abc.transaction;
-
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPersistableElement;
+import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.mapper.activator.Activator;
 
 /**
- * Transactions are used to modify a graph with the possibility to withdraw
- * actions at any time. They may be complex because the undo process must 
- * work in any order. Local transactions are sometimes used, not for their
- * undoing capabilities but because these actions can be created and stored
- * while going through a graph and then executed altogether afterwards in the
- * right order.
+ * Input of the simple editor of implementation gantt chart
  * 
  * @author mpelcat
  */
-public abstract class Transaction {
+public class GanttEditorInput implements IEditorInput {
 
-	// true if this transaction has already been executed
-	private boolean isExecuted;
+	private IAbc abc = null;
+	private String name = null;
 	
-	// Vertex that fired the current transaction
-	private MapperDAGVertex ref;
-
-	public Transaction() {
+	public GanttEditorInput(IAbc abc, String name) {
 		super();
-		isExecuted = false;
-	}
-	
-	public boolean isExecuted() {
-		return isExecuted;
-	}
-	
-	public void execute(){
-		isExecuted = true;
+		this.abc = abc;
+		this.name = name;
 	}
 
-	public void undo(){
-		isExecuted = false;
+	public IAbc getAbc() {
+		return abc;
 	}
 
-	public MapperDAGVertex getRef() {
-		return ref;
+	public void setAbc(IAbc abc) {
+		this.abc = abc;
 	}
-
-	public void setRef(MapperDAGVertex ref) {
-		this.ref = ref;
-	}
-
 	@Override
-	public abstract String toString();
-	
-	
+	public boolean exists() {
+		return false;
+	}
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm3mini.PNG");
+		return img;
+	}
+	@Override
+	public String getName() {
+		return name;
+	}
+	@Override
+	public IPersistableElement getPersistable() {
+		return null;
+	}
+	@Override
+	public String getToolTipText() {
+		return "Gantt";
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+
 }

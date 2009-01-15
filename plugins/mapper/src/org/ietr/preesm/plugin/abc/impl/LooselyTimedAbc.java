@@ -111,8 +111,8 @@ public class LooselyTimedAbc extends
 					effectiveOp);
 			
 			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
-			transactionManager.execute();
-
+			//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
+			
 			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
@@ -132,7 +132,11 @@ public class LooselyTimedAbc extends
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 
+		//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
+
 		transactionManager.undoTransactions(vertex);
+
+		//precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
 	}
 
 	/**

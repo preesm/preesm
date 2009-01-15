@@ -175,7 +175,7 @@ public class PGeneticTransformation extends AbstractMapping {
 					.getPopulationSize(), populationDAG, parameters
 					.getSimulatorType(),parameters.getEdgeSchedType(), architecture);
 
-			FastAlgoParameters parameter = new FastAlgoParameters(50, 50, 8,
+			FastAlgoParameters parameter = new FastAlgoParameters(50, 50, 8, false,
 					parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 			population.constructPopulation(dag, parameter.getMaxCount(),

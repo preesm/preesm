@@ -184,7 +184,7 @@
                hoverIcon="icons/preesm3mini.PNG"
                icon="icons/preesm3mini.PNG"
                id="org.ietr.preesm.core.ui.action.run"
-               label="Map with PREESM"
+               label="Execute PREESM Workflow"
                mode="FORCE_TEXT"
                style="pulldown"
                toolbarPath="debug">

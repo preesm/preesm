@@ -44,6 +44,7 @@ import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
@@ -79,29 +80,6 @@ public class SchedNewVertexTransaction extends Transaction {
 		this.implementation = implementation;
 	}
 
-	private PrecedenceEdge addPrecedenceEdge(MapperDAGVertex v1,
-			MapperDAGVertex v2) {
-		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
-		implementation.addEdge(v1, v2, precedenceEdge);
-		return precedenceEdge;
-	}
-
-	private void removePrecedenceEdge(MapperDAGVertex v1, MapperDAGVertex v2) {
-		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
-
-		if (edges != null) {
-			if(edges.size() >=2)
-				PreesmLogger.getLogger().log(Level.SEVERE,"too many edges between " + v1.toString() + " and " + v2.toString());
-			
-			for (DAGEdge edge : edges) {
-				if (edge instanceof PrecedenceEdge){
-					implementation.removeEdge(edge);
-				}
-			}
-		}
-	}
-
 	@Override
 	public void execute() {
  		super.execute();
@@ -116,18 +94,18 @@ public class SchedNewVertexTransaction extends Transaction {
 		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
 		
 		if ((prev != null && newVertex != null) && !prevAndNewLinked){
-			addPrecedenceEdge(prev, newVertex);
+			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, newVertex);
 			prevAndNewLinked = true;
 		}
 
 		if ((newVertex != null && next != null) && !newAndNextLinked){
-			addPrecedenceEdge(newVertex, next);
+			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, newVertex, next);
 			newAndNextLinked = true;
 		}
 		
 		if(prevAndNewLinked && newAndNextLinked){
 			//TODO: Understand why this does not work
-			removePrecedenceEdge(prev, next);
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, next);
 		}
 	}
 
@@ -140,19 +118,24 @@ public class SchedNewVertexTransaction extends Transaction {
 
 
 		if(prev != null){
-			removePrecedenceEdge(prev, newVertex);
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, newVertex);
 		}
 		
 		if(next != null){
-			removePrecedenceEdge(newVertex, next);
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, newVertex, next);
 		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
 		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
-			addPrecedenceEdge(prev, next);
+			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		return("SchedNewVertex(" + newVertex.toString() +")");
 	}
 
 }

@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -88,6 +89,11 @@ public class AddOverheadVertexTransaction extends Transaction {
 	 */
 	private MapperDAGEdge newInEdge = null;
 	private MapperDAGEdge newOutEdge = null;
+
+	/**
+	 * Transaction to schedule and unschedule the vertex
+	 */
+	private SchedNewVertexTransaction schedulingTransaction = null;
 	
 	
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
@@ -132,8 +138,6 @@ public class AddOverheadVertexTransaction extends Transaction {
 				PreesmLogger.getLogger().log(Level.SEVERE,"An overhead must be followed by a transfer");
 			}
 			
-			orderManager.insertVertexBefore(currentTarget, oVertex);
-
 			implementation.addVertex(oVertex);
 			
 			newInEdge = (MapperDAGEdge)implementation.addEdge(currentSource, oVertex);
@@ -144,6 +148,20 @@ public class AddOverheadVertexTransaction extends Transaction {
 			
 			newInEdge.getTimingEdgeProperty().setCost(0);
 			newOutEdge.getTimingEdgeProperty().setCost(0);
+
+
+			if (true) {
+				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager,
+						oVertex);
+				taskSwitcher.insertVertexBefore(currentTarget);
+			} else {
+				orderManager.insertVertexBefore(currentTarget, oVertex);
+			}
+			
+			// Scheduling overhead vertex
+			schedulingTransaction = new SchedNewVertexTransaction(orderManager,
+					implementation, oVertex);
+			schedulingTransaction.execute();
 		}
 		
 	}
@@ -151,11 +169,21 @@ public class AddOverheadVertexTransaction extends Transaction {
 	@Override
 	public void undo() {
 		super.undo();
+
+		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
+		
+		// Unscheduling transfer vertex
+		schedulingTransaction.undo();
 		
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(oVertex);
 		orderManager.remove(oVertex, true);
+	}
+
+	@Override
+	public String toString() {
+		return("AddOverhead(" + oVertex.toString() +")");
 	}
 
 }

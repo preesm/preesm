@@ -55,7 +55,7 @@
             class="org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor"
             default="true"
             icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.plugin.mapper.plot.timeswtdisplay.TimeEditor"
+            id="org.ietr.preesm.plugin.mapper.plot.TimeEditor"
             name="TimeEditor">
       </editor>
       <editor
@@ -64,6 +64,13 @@
             icon="icons/preesm2mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
             name="StatEditor">
+      </editor>
+      <editor
+            class="org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor"
+            default="true"
+            icon="icons/preesm3mini.PNG"
+            id="org.ietr.preesm.plugin.mapper.plot.GanttEditor"
+            name="GanttEditor">
       </editor>
    </extension>
 

@@ -69,12 +69,18 @@ public class FastAlgoParameters extends AbstractParameters {
 	 */
 	private int maxStep;
 
+	/**
+	 * true if we need to display the intermediate solutions
+	 */
+	private boolean displaySolutions;
+
 	public FastAlgoParameters(TextParameters textParameters) {
 		super(textParameters);
 		
 		this.maxCount = textParameters.getIntVariable("maxCount");
 		this.maxStep = textParameters.getIntVariable("maxStep");
 		this.margIn = textParameters.getIntVariable("margIn");
+		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
 	}
 
 	/**
@@ -83,7 +89,7 @@ public class FastAlgoParameters extends AbstractParameters {
 	 * 
 	 */
 
-	public FastAlgoParameters(int maxCount, int maxStep, int margIn,
+	public FastAlgoParameters(int maxCount, int maxStep, int margIn, boolean displaySolutions,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		super(simulatorType,edgeSchedType);
 		textParameters.addVariable("maxCount",maxCount);
@@ -93,6 +99,7 @@ public class FastAlgoParameters extends AbstractParameters {
 		this.maxCount = maxCount;
 		this.maxStep = maxStep;
 		this.margIn = margIn;
+		this.displaySolutions = displaySolutions;
 	}
 
 	/**
@@ -113,6 +120,14 @@ public class FastAlgoParameters extends AbstractParameters {
 		return maxStep;
 	}
 
+	public boolean isDisplaySolutions() {
+		return displaySolutions;
+	}
+
+	public void setDisplaySolutions(boolean displaySolutions) {
+		this.displaySolutions = displaySolutions;
+	}
+	
 	public void setMargIn(int margIn) {
 		this.margIn = margIn;
 	}

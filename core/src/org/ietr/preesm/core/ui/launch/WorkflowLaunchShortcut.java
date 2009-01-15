@@ -224,7 +224,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 	}
 
 	/**
-	 * From a selection, asks for the scenario
+	 * From a workflow selection, asks for the scenario.
 	 */
 	@Override
 	public void launch(ISelection selection, String mode) {

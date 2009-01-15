@@ -114,6 +114,10 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 			else if(vertex.getKind() == "port"){
 				iterator.remove();
 			}
+			else if(vertex.getGraphDescription() != null){
+				// Timings of vertices with graph description are deduced and not entered in scenario
+				iterator.remove();
+			}
 		}
 	}
 

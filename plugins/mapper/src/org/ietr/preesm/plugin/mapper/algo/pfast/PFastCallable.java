@@ -158,7 +158,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		outputDAG = algo.map(threadName, simulatorType, edgeSchedType, callableDAG,
 				callableArchi, initialLists.getCpnDominantList(),
 				callableBlockingNodes, initialLists.getFinalcriticalpathList(),
-				maxCount, maxStep, margIn, alreadyImplanted, true, null);
+				maxCount, maxStep, margIn, alreadyImplanted, true, null, false);
 
 		return outputDAG;
 

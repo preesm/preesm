@@ -33,56 +33,49 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.plugin.mapper.plot.gantt;
 
-package org.ietr.preesm.plugin.abc.transaction;
-
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 /**
- * Transactions are used to modify a graph with the possibility to withdraw
- * actions at any time. They may be complex because the undo process must 
- * work in any order. Local transactions are sometimes used, not for their
- * undoing capabilities but because these actions can be created and stored
- * while going through a graph and then executed altogether afterwards in the
- * right order.
+ * Class used by the editor displaying the gantt chart.
+ * Useful to run editor in display thread.
  * 
  * @author mpelcat
  */
-public abstract class Transaction {
+public class GanttEditorRunnable implements Runnable {
 
-	// true if this transaction has already been executed
-	private boolean isExecuted;
+	private IEditorInput input;
 	
-	// Vertex that fired the current transaction
-	private MapperDAGVertex ref;
-
-	public Transaction() {
+	public GanttEditorRunnable(IEditorInput input) {
 		super();
-		isExecuted = false;
-	}
-	
-	public boolean isExecuted() {
-		return isExecuted;
-	}
-	
-	public void execute(){
-		isExecuted = true;
-	}
-
-	public void undo(){
-		isExecuted = false;
-	}
-
-	public MapperDAGVertex getRef() {
-		return ref;
-	}
-
-	public void setRef(MapperDAGVertex ref) {
-		this.ref = ref;
+		this.input = input;
 	}
 
 	@Override
-	public abstract String toString();
-	
+	public void run() {
+
+		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
+				.getWorkbenchWindows()[0];
+
+		if (dwindow != null && input instanceof GanttEditorInput) {
+			IWorkbenchPage page = dwindow.getActivePage();
+			
+			try {
+				page.openEditor(input,
+								"org.ietr.preesm.plugin.mapper.plot.GanttEditor");
+
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	
 }

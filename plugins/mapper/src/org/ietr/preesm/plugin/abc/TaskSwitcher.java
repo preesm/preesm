@@ -127,4 +127,18 @@ public class TaskSwitcher {
 			orderManager.addLast(vertex);
 		}
 	}
+
+	public void insertVertexBefore(MapperDAGVertex successor) {
+
+		// Removing the vertex if necessary before inserting it
+		if (orderManager.totalIndexOf(vertex) != -1)
+			orderManager.remove(vertex, true);
+
+		int newIndex = getBestIndex();
+		if (newIndex >= 0) {
+			orderManager.insertVertexAtIndex(newIndex, vertex);
+		} else {
+			orderManager.insertVertexBefore(successor, vertex);
+		}
+	}
 }

@@ -75,7 +75,7 @@ public class FASTTransformation extends AbstractMapping {
 	 * Main for test
 	 */
 	public static void main(String[] args) {
-		
+
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 
@@ -87,7 +87,7 @@ public class FASTTransformation extends AbstractMapping {
 		// Generating random sdf dag
 		int nbVertex = 20, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 50,true);
+				maxInDegree, minOutDegree, maxOutDegree, 50, true);
 
 		// Generating constraints
 		IScenario scenario = new Scenario();
@@ -96,15 +96,17 @@ public class FASTTransformation extends AbstractMapping {
 
 		for (int i = 1; i <= nbVertex; i++) {
 			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
-					.getVertex(name), 100);
+			Timing newt = new Timing((OperatorDefinition) archi
+					.getComponentDefinition(ArchitectureComponentType.operator,
+							"c64x"), graph.getVertex(name), 100);
 			tmgr.addTiming(newt);
 		}
 
 		FASTTransformation transformation = new FASTTransformation();
 		FastAlgoParameters parameters = new FastAlgoParameters(500, 500, 16,
-				AbcType.LooselyTimed, EdgeSchedType.Simple);
-		transformation.transform(graph, archi, parameters.textParameters(), scenario);
+				true, AbcType.LooselyTimed, EdgeSchedType.Simple);
+		transformation.transform(graph, archi, parameters.textParameters(),
+				scenario);
 
 		logger.log(Level.FINER, "Test fast finished");
 	}
@@ -119,45 +121,50 @@ public class FASTTransformation extends AbstractMapping {
 	 * Function called while running the plugin
 	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters, IScenario scenario) {
+	public TaskResult transform(SDFGraph algorithm,
+			MultiCoreArchitecture architecture, TextParameters textParameters,
+			IScenario scenario) {
 
 		FastAlgoParameters parameters;
 		TaskResult result = new TaskResult();
-		
+
 		parameters = new FastAlgoParameters(textParameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
+		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
+				scenario, false);
 
-		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
+		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
 				dag, architecture, parameters.getSimulatorType().isSwitchTask());
 
 		InitialLists initial = new InitialLists();
-		
-		if(!initial.constructInitialLists(dag, simu))
-				return result;
+
+		if (!initial.constructInitialLists(dag, simu))
+			return result;
 
 		simu.resetDAG();
 
-		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
+		IAbc simu2 = AbstractAbc.getInstance(parameters.getSimulatorType(),
+				parameters.getEdgeSchedType(), dag, architecture);
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm();
 
-		dag = fastAlgorithm.map("test", parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag,
-				architecture, initial.getCpnDominantList(), initial
-						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), parameters.getMaxCount(),
-				parameters.getMaxStep(), parameters.getMargIn(), false, false, null);
+		dag = fastAlgorithm.map("test", parameters.getSimulatorType(),
+				parameters.getEdgeSchedType(), dag, architecture, initial
+						.getCpnDominantList(), initial.getBlockingNodesList(),
+				initial.getFinalcriticalpathList(), parameters.getMaxCount(),
+				parameters.getMaxStep(), parameters.getMargIn(), false, false,
+				null, parameters.isDisplaySolutions());
 
 		// Transfer vertices are automatically regenerated
 		simu2.setDAG(dag);
 
-		// The transfers are reordered using the best found order during scheduling
+		// The transfers are reordered using the best found order during
+		// scheduling
 		simu2.reorder(fastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
-		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
+		tagSDF.tag(dag, architecture, scenario, simu2, parameters
+				.getEdgeSchedType());
 
 		result.setDAG(dag);
 		result.setCustomData(simu2);

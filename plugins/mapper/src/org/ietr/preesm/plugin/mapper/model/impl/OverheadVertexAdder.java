@@ -94,7 +94,7 @@ public class OverheadVertexAdder {
 	/**
 	 * Adds all necessary overhead vertices
 	 */
-	public void addOverheadVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
+	public void addAndScheduleOverheadVertices(MapperDAG implementation, TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
 		transactionManager.add(new AddNewVertexOverheadsTransaction(orderManager, implementation, refVertex), refVertex);
 		transactionManager.execute();

@@ -36,8 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -141,15 +145,13 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
-			transactionManager.execute();
 
-			tvertexAdder.addTransferVertices(implementation,
+			tvertexAdder.addAndScheduleTransferVertices(implementation,
 					transactionManager, vertex);
-			
-			scheduleT(implementation, transactionManager, vertex);
 
-			overtexAdder.addOverheadVertices(implementation, transactionManager, vertex);
-			scheduleO(implementation, transactionManager, vertex);
+			overtexAdder.addAndScheduleOverheadVertices(implementation, transactionManager, vertex);
+
+			//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
 			
 			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
@@ -158,38 +160,6 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			setEdgesCosts(vertex.outgoingEdges());
 			
 		}
-	}
-
-	/**
-	 * Adds all necessary schedule edges for the transfers and overheads of a
-	 * given vertex
-	 */
-	public void scheduleO(MapperDAG implementation,
-			TransactionManager transactionManager, MapperDAGVertex refVertex) {
-
-		Set<OverheadVertex> overheads = OverheadVertexAdder.getAllOverheads(refVertex, implementation,transactionManager);
-
-		for (OverheadVertex overhead : overheads) {
-			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,overhead,refVertex);
-		}
-
-		transactionManager.execute();
-	}
-
-	public void scheduleT(MapperDAG implementation,
-			TransactionManager transactionManager, MapperDAGVertex refVertex) {
-
-		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(refVertex, implementation,transactionManager);
-		
-		for (DAGVertex vertex : transfers) {
-			if (vertex instanceof TransferVertex) {
-				precedenceEdgeAdder.scheduleNewVertex(implementation,
-						transactionManager, (MapperDAGVertex)vertex, refVertex);
-
-			}
-		}
-
-		transactionManager.execute();
 	}
 
 	@Override
@@ -202,8 +172,12 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
+
+		//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
 		
 		transactionManager.undoTransactions(vertex);
+		
+		//precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
 
 	}
 

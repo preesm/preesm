@@ -36,9 +36,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.Set;
+import java.util.logging.Level;
+
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * A transaction that removes one vertex in an implementation
@@ -75,13 +81,38 @@ public class RemoveVertexTransaction extends Transaction {
 	public void execute() {
 		super.execute();
 
+		//Unscheduling first
+		MapperDAGVertex prev = orderManager.getPreviousVertex(vertex);
+		MapperDAGVertex next = orderManager.getNextVertex(vertex);
+
+
+		if(prev != null){
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
+		}
+		
+		if(next != null){
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
+		}
+
+		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
+
+		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
+			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
+		}
+		
 		implementation.removeVertex(vertex);
 		orderManager.remove(vertex, true);
 	}
 
 	@Override
 	public void undo() {
+		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: No possible undo");
 		super.undo();
+	}
+
+	@Override
+	public String toString() {
+		return("RemoveVertex(" + vertex.toString() +")");
 	}
 
 }

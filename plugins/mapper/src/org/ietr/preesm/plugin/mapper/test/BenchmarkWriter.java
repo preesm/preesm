@@ -42,7 +42,8 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
 /**
- * Writing latencies in a file to compare scheduling algorithms
+ * Writing latencies in a file to compare scheduling algorithms.
+ * TODO: should be improved
  * 
  * @author mpelcat
  * 

@@ -38,7 +38,9 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
@@ -82,12 +84,15 @@ public class TransactionManager {
 		boolean alreadyUndoneFew=false;
 		
 		Iterator<Transaction> it = transactionList.descendingIterator();
+		//PreesmLogger.getLogger().log(Level.INFO,"undoing!");
 		
 		while(it.hasNext()){
 			Transaction currentT = it.next();
 			if(currentT.getRef() != null && currentT.getRef().equals(refVertex)){
-				if(currentT.isExecuted())
+				if(currentT.isExecuted()){
+					//PreesmLogger.getLogger().log(Level.INFO,"undoing " + currentT.toString());
 					currentT.undo();
+				}
 				it.remove(); // Removing the transation from the list
 				alreadyUndoneFew = true;
 			}

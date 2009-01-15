@@ -42,6 +42,7 @@ import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -61,6 +62,11 @@ public class AddTransferVertexTransaction extends Transaction {
 	 * Scheduling the transfer vertices on the media
 	 */
 	protected IEdgeSched edgeScheduler = null;
+	
+	/**
+	 * Vertices order manager
+	 */
+	protected SchedOrderManager orderManager;
 	
 	/**
 	 * Implementation DAG to which the vertex is added
@@ -92,6 +98,11 @@ public class AddTransferVertexTransaction extends Transaction {
 	 * overhead vertex added
 	 */
 	private TransferVertex tVertex = null;
+
+	/**
+	 * Transaction to schedule and unschedule the vertex
+	 */
+	private SchedNewVertexTransaction schedulingTransaction = null;
 	
 	/**
 	 * edges added
@@ -101,7 +112,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	
 	
 	public AddTransferVertexTransaction(IEdgeSched edgeScheduler, MapperDAGEdge edge,
-			MapperDAG implementation,
+			MapperDAG implementation, SchedOrderManager orderManager,
 			int routeIndex, RouteStep step, int transferCost) {
 		super();
 		this.edgeScheduler = edgeScheduler;
@@ -110,6 +121,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
+		this.orderManager = orderManager;
 	}
 
 	@Override
@@ -160,6 +172,11 @@ public class AddTransferVertexTransaction extends Transaction {
 
 				newInEdge.setAggregate(edge.getAggregate());
 				newOutEdge.setAggregate(edge.getAggregate());
+				
+				// Scheduling transfer vertex
+				schedulingTransaction = new SchedNewVertexTransaction(orderManager,
+						implementation, tVertex);
+				schedulingTransaction.execute();
 			}
 		}
 	}
@@ -167,11 +184,21 @@ public class AddTransferVertexTransaction extends Transaction {
 	@Override
 	public void undo() {
 		super.undo();
-
+		
+		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
+		
+		// Unscheduling transfer vertex
+		schedulingTransaction.undo();
+		
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(tVertex);
 		edgeScheduler.getOrderManager().remove(tVertex, true);
+	}
+
+	@Override
+	public String toString() {
+		return("AddTransfer(" + tVertex.toString() +")");
 	}
 
 }

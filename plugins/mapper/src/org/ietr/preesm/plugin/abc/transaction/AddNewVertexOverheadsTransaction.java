@@ -120,4 +120,9 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 		overheadVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 	}
 
+	@Override
+	public String toString() {
+		return("AddNewVertexOverheads(" + newVertex.toString() +")");
+	}
+
 }
