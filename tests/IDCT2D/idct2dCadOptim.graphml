@@ -18,7 +18,9 @@
    </key>
    <graph edgedefault="directed">
       <data key="parameters"/>
-      <data key="variables"/>
+      <data key="variables">
+         <variable name="nbBlocks" value="2"/>
+      </data>
       <node id="broadcast_signed" kind="Broadcast"/>
       <node id="Trigger" kind="vertex">
          <data key="graph_desc"/>
@@ -29,8 +31,7 @@
          <data key="graph_desc">idct2dv2_wp.graphml</data>
          <data key="name">IDCT2D</data>
          <data key="arguments">
-            <argument name="xsize" value="8"/>
-            <argument name="ysize" value="8"/>
+            <argument name="size" value="8"/>
          </data>
       </node>
       <node id="Group" kind="vertex">
@@ -39,7 +40,7 @@
          <data key="arguments"/>
       </node>
       <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
-         <data key="edge_prod">256</data>
+         <data key="edge_prod">nbBlocks*64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type"/>
@@ -51,7 +52,7 @@
          <data key="data_type">char</data>
       </edge>
       <edge source="broadcast_signed" sourceport="out" target="IDCT2D" targetport="signed">
-         <data key="edge_prod">4</data>
+         <data key="edge_prod">nbBlocks</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
          <data key="data_type">char</data>
@@ -59,7 +60,7 @@
       <edge source="IDCT2D" sourceport="out" target="Group" targetport="in">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">256</data>
+         <data key="edge_cons">nbBlocks*64</data>
          <data key="data_type">char</data>
       </edge>
    </graph>

@@ -17,10 +17,7 @@
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph edgedefault="directed">
-      <data key="parameters">
-         <parameter name="xsize"/>
-         <parameter name="ysize"/>
-      </data>
+      <data key="parameters"/>
       <data key="variables"/>
       <node id="blockIn" kind="port" port_direction="Input"/>
       <node id="signed" kind="port" port_direction="Input"/>
@@ -51,7 +48,7 @@
          <data key="data_type"/>
       </edge>
       <edge source="blockIn" sourceport="blockIn" target="IDCT2D_basic" targetport="blockIn">
-         <data key="edge_prod">xsize*ysize</data>
+         <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>

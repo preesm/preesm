@@ -45,7 +45,7 @@
          <data key="arguments"/>
       </node>
       <edge source="blockIn" sourceport="block_in" target="readBlock" targetport="in_1">
-         <data key="edge_prod">xsize*ysize</data>
+         <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">char</data>
