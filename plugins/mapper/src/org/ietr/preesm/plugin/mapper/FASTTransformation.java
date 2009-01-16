@@ -167,14 +167,9 @@ public class FASTTransformation extends AbstractMapping {
 		simu2.reorder(fastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
+		// The mapper dag properties are put in the property bean to be transfered to code generation
 		tagSDF.tag(dag, architecture, scenario, simu2, parameters
 				.getEdgeSchedType());
-
-		for(DAGVertex v:dag.vertexSet())
-			PreesmLogger.getLogger().log(Level.INFO,v.toString());
-		for(DAGEdge e:dag.edgeSet())
-			PreesmLogger.getLogger().log(Level.INFO,e.toString());
-		
 		
 		result.setDAG(dag);
 		result.setCustomData(simu2);

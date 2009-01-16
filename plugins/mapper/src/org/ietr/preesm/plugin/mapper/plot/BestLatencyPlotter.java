@@ -340,12 +340,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 
 		if (pauseSemaphore != null) {
 			if (actionType == 2) {
-				try {
-					pauseSemaphore.acquire();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				pauseSemaphore.tryAcquire();
 			} else {
 				pauseSemaphore.release();
 			}

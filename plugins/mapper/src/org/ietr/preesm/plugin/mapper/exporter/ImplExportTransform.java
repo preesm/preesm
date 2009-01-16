@@ -49,13 +49,12 @@ import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 /**
- * Block in workflow exporting a DAG as a graphml graph and possibly as an additional LUA file
- * for Nerios compatibility
+ * Block in workflow exporting a DAG that contains all informations of an implementation
  * 
  * @author mpelcat
  * 
  */
-public class DAGExporterTransform implements IExporter{
+public class ImplExportTransform implements IExporter{
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, IScenario scenario, TextParameters params) {
