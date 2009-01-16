@@ -62,7 +62,10 @@ import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -167,6 +170,12 @@ public class FASTTransformation extends AbstractMapping {
 		tagSDF.tag(dag, architecture, scenario, simu2, parameters
 				.getEdgeSchedType());
 
+		for(DAGVertex v:dag.vertexSet())
+			PreesmLogger.getLogger().log(Level.INFO,v.toString());
+		for(DAGEdge e:dag.edgeSet())
+			PreesmLogger.getLogger().log(Level.INFO,e.toString());
+		
+		
 		result.setDAG(dag);
 		result.setCustomData(simu2);
 

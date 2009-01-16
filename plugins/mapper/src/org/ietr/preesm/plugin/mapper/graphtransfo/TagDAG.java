@@ -107,6 +107,9 @@ public class TagDAG {
 		addAllAggregates(dag,scenario);
 	}
 
+	/**
+	 * Adds send and receive without scheduling them
+	 */
 	public void addTransfers(MapperDAG dag, MultiCoreArchitecture architecture) {
 
 		// Temporary
@@ -115,7 +118,7 @@ public class TagDAG {
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(EdgeSchedType.Simple,orderMgr),
 				new CommunicationRouter(architecture), orderMgr, true, false);
-		tvAdder.addTransferVertices(dag, new TransactionManager());
+		tvAdder.addTransferVertices(dag, new TransactionManager(), false);
 		orderMgr.tagDAG(dag);
 	}
 

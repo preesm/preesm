@@ -115,7 +115,7 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 						// route steps
 						transferVertexAdder.addTransferVertices(
 								(MapperDAGEdge) edge, implementation,
-								localTransactionManager, null);
+								localTransactionManager, null, true);
 					}
 				}
 			}

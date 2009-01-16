@@ -262,8 +262,9 @@ public class SourceFileCodeGenerator {
 			if (!edge.getSource().getPropertyBean().getValue(
 					Operator.propertyBeanName).equals(
 					edge.getTarget().getPropertyBean().getValue(
-							Operator.propertyBeanName)))
+							Operator.propertyBeanName))){
 				eIterator.remove();
+			}
 		}
 	}
 

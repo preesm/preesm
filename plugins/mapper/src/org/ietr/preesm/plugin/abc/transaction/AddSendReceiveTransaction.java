@@ -88,14 +88,14 @@ public class AddSendReceiveTransaction extends Transaction {
 	 * Index of the route step within its route
 	 */
 	private int routeIndex = 0;
-	
+
 	// Generated objects
 	/**
 	 * overhead vertex added
 	 */
 	private TransferVertex sendVertex = null;
 	private TransferVertex receiveVertex = null;
-	
+
 	/**
 	 * edges added
 	 */
@@ -104,14 +104,20 @@ public class AddSendReceiveTransaction extends Transaction {
 	private MapperDAGEdge newEdge3 = null;
 
 	/**
+	 * true if the added vertex needs to be scheduled
+	 */
+	private boolean scheduleVertex = false;
+
+	/**
 	 * Transaction to schedule and unschedule the vertices
 	 */
 	private SchedNewVertexTransaction sendSchedulingTransaction = null;
 	private SchedNewVertexTransaction receiveSchedulingTransaction = null;
-	
+
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, RouteStep step, int transferCost) {
+			int routeIndex, RouteStep step, int transferCost,
+			boolean scheduleVertex) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;
@@ -119,22 +125,23 @@ public class AddSendReceiveTransaction extends Transaction {
 		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
+		this.scheduleVertex = scheduleVertex;
 	}
 
 	@Override
 	public void execute() {
 		super.execute();
 
-		MapperDAGVertex currentSource = (MapperDAGVertex)edge.getSource();
-		MapperDAGVertex currentTarget = (MapperDAGVertex)edge.getTarget();
+		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
 		// Careful!!! Those names are used in code generation
 		String sendVertexID = "s_" + currentSource.getName()
 				+ currentTarget.getName() + "_" + routeIndex;
 
 		String receiveVertexID = "r_" + currentSource.getName()
-		+ currentTarget.getName() + "_" + routeIndex;
-		
+				+ currentTarget.getName() + "_" + routeIndex;
+
 		Medium currentMedium = step.getMedium();
 
 		if (edge instanceof PrecedenceEdge) {
@@ -142,39 +149,48 @@ public class AddSendReceiveTransaction extends Transaction {
 					"no transfer vertex corresponding to a schedule edge");
 			return;
 		}
-		
+
 		if (currentMedium != null) {
 
 			MediumDefinition def = (MediumDefinition) currentMedium
 					.getDefinition();
 
 			if (def.getInvSpeed() != 0) {
-				
+
 				Operator senderOperator = step.getSender();
 				Operator receiverOperator = step.getReceiver();
-				
+
 				sendVertex = new SendVertex(sendVertexID, implementation);
 				sendVertex.setRouteStep(step);
 				sendVertex.getTimingVertexProperty().setCost(transferCost);
-				sendVertex.getImplementationVertexProperty().setEffectiveOperator(senderOperator);
+				sendVertex.getImplementationVertexProperty()
+						.setEffectiveOperator(senderOperator);
 				orderManager.insertVertexAfter(currentSource, sendVertex);
 				implementation.addVertex(sendVertex);
-				
-				receiveVertex = new ReceiveVertex(receiveVertexID, implementation);
+
+				receiveVertex = new ReceiveVertex(receiveVertexID,
+						implementation);
 				receiveVertex.setRouteStep(step);
 				receiveVertex.getTimingVertexProperty().setCost(transferCost);
-				receiveVertex.getImplementationVertexProperty().setEffectiveOperator(receiverOperator);
+				receiveVertex.getImplementationVertexProperty()
+						.setEffectiveOperator(receiverOperator);
 				orderManager.insertVertexAfter(sendVertex, receiveVertex);
 				implementation.addVertex(receiveVertex);
 
-				newEdge1 = (MapperDAGEdge)implementation.addEdge(currentSource, sendVertex);
-				newEdge2 = (MapperDAGEdge)implementation.addEdge(sendVertex, receiveVertex);
-				newEdge3 = (MapperDAGEdge)implementation.addEdge(receiveVertex, currentTarget);
+				newEdge1 = (MapperDAGEdge) implementation.addEdge(
+						currentSource, sendVertex);
+				newEdge2 = (MapperDAGEdge) implementation.addEdge(sendVertex,
+						receiveVertex);
+				newEdge3 = (MapperDAGEdge) implementation.addEdge(
+						receiveVertex, currentTarget);
 
-				newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-				newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-				newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-				
+				newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+
 				newEdge1.getTimingEdgeProperty().setCost(0);
 				newEdge2.getTimingEdgeProperty().setCost(0);
 				newEdge3.getTimingEdgeProperty().setCost(0);
@@ -182,14 +198,16 @@ public class AddSendReceiveTransaction extends Transaction {
 				newEdge1.setAggregate(edge.getAggregate());
 				newEdge2.setAggregate(edge.getAggregate());
 				newEdge3.setAggregate(edge.getAggregate());
-				
-				// Scheduling transfer vertex
-				sendSchedulingTransaction = new SchedNewVertexTransaction(orderManager,
-						implementation, sendVertex);
-				sendSchedulingTransaction.execute();
-				receiveSchedulingTransaction = new SchedNewVertexTransaction(orderManager,
-						implementation, receiveVertex);
-				receiveSchedulingTransaction.execute();
+
+				if (scheduleVertex) {
+					// Scheduling transfer vertex
+					sendSchedulingTransaction = new SchedNewVertexTransaction(
+							orderManager, implementation, sendVertex);
+					sendSchedulingTransaction.execute();
+					receiveSchedulingTransaction = new SchedNewVertexTransaction(
+							orderManager, implementation, receiveVertex);
+					receiveSchedulingTransaction.execute();
+				}
 			}
 		}
 	}
@@ -198,13 +216,16 @@ public class AddSendReceiveTransaction extends Transaction {
 	public void undo() {
 		super.undo();
 
+		PreesmLogger.getLogger().log(Level.SEVERE,
+				"DEBUG: Careful not to undo the wrong transfers");
 
-		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
-		
 		// Unscheduling transfer vertex
-		receiveSchedulingTransaction.undo();
-		sendSchedulingTransaction.undo();
-		
+
+		if (scheduleVertex) {
+			receiveSchedulingTransaction.undo();
+			sendSchedulingTransaction.undo();
+		}
+
 		implementation.removeEdge(newEdge1);
 		implementation.removeEdge(newEdge2);
 		implementation.removeEdge(newEdge3);
@@ -214,10 +235,9 @@ public class AddSendReceiveTransaction extends Transaction {
 		orderManager.remove(receiveVertex, true);
 	}
 
-
 	@Override
 	public String toString() {
-		return("AddSendReceive");
+		return ("AddSendReceive");
 	}
 
 }

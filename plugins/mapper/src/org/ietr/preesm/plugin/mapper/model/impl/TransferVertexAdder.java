@@ -114,7 +114,7 @@ public class TransferVertexAdder {
 	 * Adds all necessary transfer vertices
 	 */
 	public void addTransferVertices(MapperDAG implementation,
-			TransactionManager transactionManager) {
+			TransactionManager transactionManager, boolean scheduleThem) {
 
 		// We iterate the edges and process the ones with different allocations
 		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
@@ -135,7 +135,7 @@ public class TransferVertexAdder {
 						// Adds several transfers for one edge depending on the
 						// route steps
 						addTransferVertices(currentEdge, implementation,
-								transactionManager, null);
+								transactionManager, null, scheduleThem);
 					}
 				}
 			}
@@ -150,7 +150,7 @@ public class TransferVertexAdder {
 	 */
 	public void addTransferVertices(MapperDAGEdge edge,
 			MapperDAG implementation, TransactionManager transactionManager,
-			MapperDAGVertex refVertex) {
+			MapperDAGVertex refVertex, boolean scheduleVertex) {
 
 		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex currentDest = (MapperDAGVertex) edge.getTarget();
@@ -171,14 +171,14 @@ public class TransferVertexAdder {
 			if (sendReceive) {
 				// TODO: set a size to send and receive. From medium definition?
 				transaction = new AddSendReceiveTransaction(edge,
-						implementation, orderManager, i, step, 100);
+						implementation, orderManager, i, step, TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 			} else {
 
 				int transferCost = router.evaluateTransfer(edge, step
 						.getSender(), step.getReceiver());
 
 				transaction = new AddTransferVertexTransaction(edgeScheduler,
-						edge, implementation, orderManager, i, step, transferCost);
+						edge, implementation, orderManager, i, step, transferCost, scheduleVertex);
 			}
 
 			transactionManager.add(transaction, refVertex);

@@ -51,8 +51,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * A transaction that adds one transfer vertex in an implementation and schedules it
- * given the right edge scheduler
+ * A transaction that adds one transfer vertex in an implementation and
+ * schedules it given the right edge scheduler
  * 
  * @author mpelcat
  */
@@ -62,12 +62,12 @@ public class AddTransferVertexTransaction extends Transaction {
 	 * Scheduling the transfer vertices on the media
 	 */
 	protected IEdgeSched edgeScheduler = null;
-	
+
 	/**
 	 * Vertices order manager
 	 */
 	protected SchedOrderManager orderManager;
-	
+
 	/**
 	 * Implementation DAG to which the vertex is added
 	 */
@@ -92,7 +92,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	 * Index of the route step within its route
 	 */
 	private int routeIndex = 0;
-	
+
 	// Generated objects
 	/**
 	 * overhead vertex added
@@ -100,20 +100,25 @@ public class AddTransferVertexTransaction extends Transaction {
 	private TransferVertex tVertex = null;
 
 	/**
+	 * true if the added vertex needs to be scheduled
+	 */
+	private boolean scheduleVertex = false;
+
+	/**
 	 * Transaction to schedule and unschedule the vertex
 	 */
 	private SchedNewVertexTransaction schedulingTransaction = null;
-	
+
 	/**
 	 * edges added
 	 */
 	private MapperDAGEdge newInEdge = null;
 	private MapperDAGEdge newOutEdge = null;
-	
-	
-	public AddTransferVertexTransaction(IEdgeSched edgeScheduler, MapperDAGEdge edge,
-			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, RouteStep step, int transferCost) {
+
+	public AddTransferVertexTransaction(IEdgeSched edgeScheduler,
+			MapperDAGEdge edge, MapperDAG implementation,
+			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			int transferCost, boolean scheduleVertex) {
 		super();
 		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;
@@ -122,18 +127,19 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.step = step;
 		this.transferCost = transferCost;
 		this.orderManager = orderManager;
+		this.scheduleVertex = scheduleVertex;
 	}
 
 	@Override
 	public void execute() {
 		super.execute();
 
-		MapperDAGVertex currentSource = (MapperDAGVertex)edge.getSource();
-		MapperDAGVertex currentTarget = (MapperDAGVertex)edge.getTarget();
+		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
-		String tvertexID = "__transfer" + routeIndex + " (" + currentSource.getName()
-				+ "," + currentTarget.getName() + ")";
-		
+		String tvertexID = "__transfer" + routeIndex + " ("
+				+ currentSource.getName() + "," + currentTarget.getName() + ")";
+
 		Medium currentMedium = step.getMedium();
 
 		if (edge instanceof PrecedenceEdge) {
@@ -141,7 +147,7 @@ public class AddTransferVertexTransaction extends Transaction {
 					"no transfer vertex corresponding to a schedule edge");
 			return;
 		}
-		
+
 		if (currentMedium != null) {
 
 			MediumDefinition def = (MediumDefinition) currentMedium
@@ -158,25 +164,31 @@ public class AddTransferVertexTransaction extends Transaction {
 						currentMedium);
 
 				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
-				
+
 				implementation.addVertex(tVertex);
 
-				newInEdge = (MapperDAGEdge)implementation.addEdge(currentSource, tVertex);
-				newOutEdge = (MapperDAGEdge)implementation.addEdge(tVertex, currentTarget);
+				newInEdge = (MapperDAGEdge) implementation.addEdge(
+						currentSource, tVertex);
+				newOutEdge = (MapperDAGEdge) implementation.addEdge(tVertex,
+						currentTarget);
 
-				newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-				newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-				
+				newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+
 				newInEdge.getTimingEdgeProperty().setCost(0);
 				newOutEdge.getTimingEdgeProperty().setCost(0);
 
 				newInEdge.setAggregate(edge.getAggregate());
 				newOutEdge.setAggregate(edge.getAggregate());
-				
-				// Scheduling transfer vertex
-				schedulingTransaction = new SchedNewVertexTransaction(orderManager,
-						implementation, tVertex);
-				schedulingTransaction.execute();
+
+				if (scheduleVertex) {
+					// Scheduling transfer vertex
+					schedulingTransaction = new SchedNewVertexTransaction(
+							orderManager, implementation, tVertex);
+					schedulingTransaction.execute();
+				}
 			}
 		}
 	}
@@ -184,12 +196,15 @@ public class AddTransferVertexTransaction extends Transaction {
 	@Override
 	public void undo() {
 		super.undo();
-		
-		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
-		
+
+		PreesmLogger.getLogger().log(Level.SEVERE,
+				"DEBUG: Careful not to undo the wrong transfers");
+
 		// Unscheduling transfer vertex
-		schedulingTransaction.undo();
-		
+		if (scheduleVertex) {
+			schedulingTransaction.undo();
+		}
+
 		implementation.removeEdge(newInEdge);
 		implementation.removeEdge(newOutEdge);
 		implementation.removeVertex(tVertex);
@@ -198,7 +213,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 	@Override
 	public String toString() {
-		return("AddTransfer(" + tVertex.toString() +")");
+		return ("AddTransfer(" + tVertex.toString() + ")");
 	}
 
 }

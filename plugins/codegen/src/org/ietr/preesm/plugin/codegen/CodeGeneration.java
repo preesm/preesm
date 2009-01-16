@@ -49,6 +49,8 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
@@ -105,7 +107,7 @@ public class CodeGeneration implements ICodeGeneration {
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
-
+		
 		// Generate source file class
 		generateSourceFiles(algorithm, architecture, list);
 

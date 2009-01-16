@@ -48,6 +48,8 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class TransferVertex extends MapperDAGVertex {
 
+	public static final int SEND_RECEIVE_COST = 100;
+	
 	private RouteStep step;
 
 	public TransferVertex(String id, MapperDAG base) {
