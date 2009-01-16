@@ -37,13 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.sdf4j.model.dag.DAGEdge;
 

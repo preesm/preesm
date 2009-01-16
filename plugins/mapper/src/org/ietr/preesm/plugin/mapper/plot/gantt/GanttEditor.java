@@ -48,7 +48,6 @@ import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 
 /**

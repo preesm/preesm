@@ -62,10 +62,7 @@ import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**

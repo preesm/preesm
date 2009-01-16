@@ -38,9 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**

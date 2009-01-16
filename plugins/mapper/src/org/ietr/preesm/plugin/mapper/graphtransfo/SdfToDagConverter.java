@@ -61,8 +61,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.plugin.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.sdf4j.demo.SDFAdapterDemo;
-import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;

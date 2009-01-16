@@ -36,12 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -49,8 +43,6 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.TaskSwitcher;
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
@@ -58,10 +50,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * An approximately timed architecture simulator associates a complex cost to

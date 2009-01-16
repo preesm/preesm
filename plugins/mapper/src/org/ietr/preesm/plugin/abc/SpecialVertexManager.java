@@ -3,10 +3,6 @@
  */
 package org.ietr.preesm.plugin.abc;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
