@@ -17,7 +17,6 @@
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph xmlns="" edgedefault="directed">
-      <data key="variables">=</data>
       <node id="broadcast_signed" kind="Broadcast"/>
       <node id="Trigger" kind="vertex"/>
       <node id="Group" kind="vertex"/>
