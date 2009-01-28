@@ -7,66 +7,94 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="C64_1"/>
-            <task name="SLOT_process"/>
-            <task name="PRINT"/>
-            <task name="DPCCH_ind"/>
-            <task name="PSH"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_2"/>
-            <task name="SLOT_process"/>
-            <task name="DPDCH_ind"/>
-            <task name="PRINT"/>
-            <task name="SPR_dpcch"/>
-            <task name="Filter_Coeff"/>
-            <task name="DPCCH_ind"/>
-            <task name="SCR"/>
-            <task name="CTRL_dpcch"/>
-            <task name="sum"/>
-            <task name="CST_SCR"/>
-            <task name="PSH"/>
-            <task name="SPR_dpdch"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="C64_3"/>
-            <task name="SLOT_process"/>
-            <task name="DPDCH_ind"/>
-            <task name="PRINT"/>
-            <task name="SPR_dpcch"/>
-            <task name="Filter_Coeff"/>
-            <task name="DPCCH_ind"/>
-            <task name="SCR"/>
-            <task name="CTRL_dpcch"/>
-            <task name="sum"/>
             <task name="CST_SCR"/>
-            <task name="PSH"/>
+            <task name="PSH1"/>
+            <task name="sum"/>
+            <task name="PSH2"/>
+            <task name="MUX"/>
+            <task name="SPR_dpcch"/>
+            <task name="DPCCH_ind"/>
             <task name="SPR_dpdch"/>
+            <task name="Buffer"/>
+            <task name="SCR"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPDCH_ind"/>
+            <task name="PSH"/>
+            <task name="SLOT_process"/>
+            <task name="CTRL_dpcch"/>
+            <task name="PRINT"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_4"/>
+            <task name="CST_SCR"/>
+            <task name="PSH1"/>
+            <task name="sum"/>
+            <task name="PSH2"/>
+            <task name="MUX"/>
+            <task name="SPR_dpcch"/>
+            <task name="DPCCH_ind"/>
+            <task name="SPR_dpdch"/>
+            <task name="Buffer"/>
+            <task name="SCR"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPDCH_ind"/>
+            <task name="PSH"/>
             <task name="SLOT_process"/>
+            <task name="CTRL_dpcch"/>
+            <task name="PRINT"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="CST_SCR"/>
+            <task name="PSH1"/>
+            <task name="sum"/>
+            <task name="PSH2"/>
+            <task name="MUX"/>
+            <task name="SPR_dpcch"/>
+            <task name="DPCCH_ind"/>
+            <task name="SPR_dpdch"/>
+            <task name="Buffer"/>
+            <task name="SCR"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPDCH_ind"/>
+            <task name="PSH"/>
+            <task name="SLOT_process"/>
+            <task name="CTRL_dpcch"/>
+            <task name="PRINT"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Filter_Coeff"/>
+            <task name="PSH1"/>
+            <task name="sum"/>
             <task name="DPDCH_ind"/>
             <task name="PRINT"/>
-            <task name="SPR_dpcch"/>
-            <task name="Filter_Coeff"/>
+            <task name="MUX"/>
             <task name="DPCCH_ind"/>
-            <task name="SCR"/>
-            <task name="CTRL_dpcch"/>
-            <task name="sum"/>
-            <task name="CST_SCR"/>
-            <task name="PSH"/>
+            <task name="SLOT_process"/>
             <task name="SPR_dpdch"/>
+            <task name="CST_SCR"/>
+            <task name="PSH2"/>
+            <task name="SCR"/>
+            <task name="Buffer"/>
+            <task name="SPR_dpcch"/>
+            <task name="PSH"/>
+            <task name="CTRL_dpcch"/>
         </constraintGroup>
     </constraints>
     <timings>
-        <timing opname="C64x" time="100" vertexname="DPCCH_ind"/>
-        <timing opname="C64x" time="100" vertexname="PRINT"/>
-        <timing opname="C64x" time="100" vertexname="PSH"/>
+        <timing opname="C64x" time="10" vertexname="DPCCH_ind"/>
+        <timing opname="C64x" time="10" vertexname="PRINT"/>
+        <timing opname="C64x" time="10" vertexname="Filter_Coeff"/>
+        <timing opname="C64x" time="10" vertexname="DPDCH_ind"/>
+        <timing opname="C64x" time="10" vertexname="CST_SCR"/>
     </timings>
     <simuParams>
         <mainCore>C64_1</mainCore>
-        <mainMedium/>
-        <dataTypes/>
+        <mainMedium>EDMA3_1</mainMedium>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
     </simuParams>
 </scenario>

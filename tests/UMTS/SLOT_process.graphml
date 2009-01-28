@@ -25,11 +25,6 @@
       <data key="variables"/>
       <node id="in" kind="port" port_direction="Input"/>
       <node id="out" kind="port" port_direction="Output"/>
-      <node id="PSH" kind="vertex">
-         <data key="graph_desc"/>
-         <data key="name">PSH</data>
-         <data key="arguments"/>
-      </node>
       <node id="SCR" kind="vertex">
          <data key="graph_desc"/>
          <data key="name">SCR</data>
@@ -58,18 +53,12 @@
       <node id="coeff" kind="port" port_direction="Input"/>
       <node id="ctrl" kind="port" port_direction="Input"/>
       <node id="code" kind="port" port_direction="Input"/>
-      <edge source="PSH" sourceport="trans_o" target="PSH" targetport="trans_i">
-         <data key="edge_prod">1</data>
-         <data key="edge_delay">1</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="coeff" sourceport="" target="PSH" targetport="coeff">
-         <data key="edge_prod">1</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
+      <node id="PSH" kind="vertex">
+         <data key="graph_desc">PSH.graphml</data>
+         <data key="name">PSH</data>
+         <data key="arguments"/>
+      </node>
+      <node id="prec" kind="Broadcast"/>
       <edge source="in" sourceport="" target="SPR_dpdch" targetport="in">
          <data key="edge_prod">nb_slot</data>
          <data key="edge_delay">0</data>
@@ -106,7 +95,13 @@
          <data key="edge_cons">1</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="SCR" sourceport="out" target="PSH" targetport="in">
+      <edge source="code" sourceport="" target="SCR" targetport="code">
+         <data key="edge_prod">nb_slot</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="coeff" sourceport="" target="PSH" targetport="coeff">
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
@@ -118,21 +113,27 @@
          <data key="edge_cons">nb_slot</data>
          <data key="data_type">char</data>
       </edge>
-      <edge source="PSH" sourceport="indo" target="SPR_dpdch" targetport="indi">
+      <edge source="SCR" sourceport="out" target="PSH" targetport="in">
          <data key="edge_prod">1</data>
-         <data key="edge_delay">1</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="PSH" sourceport="indo" target="CTRL_dpcch" targetport="indi">
-         <data key="edge_prod">1</data>
-         <data key="edge_delay">1</data>
-         <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="code" sourceport="" target="SCR" targetport="code">
-         <data key="edge_prod">nb_slot</data>
          <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="prec" sourceport="o1" target="CTRL_dpcch" targetport="cons">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="prec" sourceport="o2" target="SPR_dpdch" targetport="cons">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="PSH" sourceport="prec" target="prec" targetport="i">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">1</data>
          <data key="edge_cons">1</data>
          <data key="data_type">char</data>
       </edge>

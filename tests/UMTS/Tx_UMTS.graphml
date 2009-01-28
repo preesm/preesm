@@ -21,7 +21,7 @@
       <data key="name"/>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="nb_slot" value="1"/>
+         <variable name="nb_slot" value="2"/>
       </data>
       <node id="SLOT_process" kind="vertex">
          <data key="graph_desc">SLOT_process.graphml</data>
