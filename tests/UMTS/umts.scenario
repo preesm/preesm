@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/UMTS/Tx_UMTS.graphml"/>
+        <architecture url="/UMTS/4C64.ipxactds"/>
+        <timingfile url="/UMTS/timings.xls"/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="SLOT_process"/>
+            <task name="PRINT"/>
+            <task name="DPCCH_ind"/>
+            <task name="PSH"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="SLOT_process"/>
+            <task name="DPDCH_ind"/>
+            <task name="PRINT"/>
+            <task name="SPR_dpcch"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPCCH_ind"/>
+            <task name="SCR"/>
+            <task name="CTRL_dpcch"/>
+            <task name="sum"/>
+            <task name="CST_SCR"/>
+            <task name="PSH"/>
+            <task name="SPR_dpdch"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_3"/>
+            <task name="SLOT_process"/>
+            <task name="DPDCH_ind"/>
+            <task name="PRINT"/>
+            <task name="SPR_dpcch"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPCCH_ind"/>
+            <task name="SCR"/>
+            <task name="CTRL_dpcch"/>
+            <task name="sum"/>
+            <task name="CST_SCR"/>
+            <task name="PSH"/>
+            <task name="SPR_dpdch"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_4"/>
+            <task name="SLOT_process"/>
+            <task name="DPDCH_ind"/>
+            <task name="PRINT"/>
+            <task name="SPR_dpcch"/>
+            <task name="Filter_Coeff"/>
+            <task name="DPCCH_ind"/>
+            <task name="SCR"/>
+            <task name="CTRL_dpcch"/>
+            <task name="sum"/>
+            <task name="CST_SCR"/>
+            <task name="PSH"/>
+            <task name="SPR_dpdch"/>
+        </constraintGroup>
+    </constraints>
+    <timings>
+        <timing opname="C64x" time="100" vertexname="DPCCH_ind"/>
+        <timing opname="C64x" time="100" vertexname="PRINT"/>
+        <timing opname="C64x" time="100" vertexname="PSH"/>
+    </timings>
+    <simuParams>
+        <mainCore>C64_1</mainCore>
+        <mainMedium/>
+        <dataTypes/>
+    </simuParams>
+</scenario>

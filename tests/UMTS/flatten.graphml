@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="variables">
+            <variable name="nb_slot" value="1"/>
+        </data>
+        <node id="DPCCH_ind" kind="vertex"/>
+        <node id="PRINT" kind="vertex"/>
+        <node id="Filter_Coeff" kind="vertex"/>
+        <node id="DPDCH_ind" kind="vertex"/>
+        <node id="CST_SCR" kind="vertex"/>
+        <node id="SLOT_process_0_PSH" kind="vertex"/>
+        <node id="SLOT_process_0_SCR" kind="vertex"/>
+        <node id="SLOT_process_0_SPR_dpdch" kind="vertex"/>
+        <node id="SLOT_process_0_SPR_dpcch" kind="vertex"/>
+        <node id="SLOT_process_0_CTRL_dpcch" kind="vertex"/>
+        <node id="SLOT_process_0_sum" kind="vertex"/>
+        <edge source="SLOT_process_0_PSH" sourceport="trans_o"
+            target="SLOT_process_0_PSH" targetport="trans_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Filter_Coeff" sourceport="o"
+            target="SLOT_process_0_PSH" targetport="coeff">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="DPCCH_ind" sourceport="out"
+            target="SLOT_process_0_SPR_dpdch" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_SPR_dpdch" sourceport="out"
+            target="SLOT_process_0_sum" targetport="data">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_CTRL_dpcch" sourceport="out"
+            target="SLOT_process_0_SPR_dpcch" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_SPR_dpcch" sourceport="out"
+            target="SLOT_process_0_sum" targetport="ctrl">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="DPDCH_ind" sourceport="o"
+            target="SLOT_process_0_CTRL_dpcch" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_sum" sourceport="out"
+            target="SLOT_process_0_SCR" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_SCR" sourceport="out"
+            target="SLOT_process_0_PSH" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_PSH" sourceport="out"
+            target="PRINT" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_PSH" sourceport="indo"
+            target="SLOT_process_0_SPR_dpdch" targetport="indi">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="SLOT_process_0_PSH" sourceport="indo"
+            target="SLOT_process_0_CTRL_dpcch" targetport="indi">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="CST_SCR" sourceport="out"
+            target="SLOT_process_0_SCR" targetport="code">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>

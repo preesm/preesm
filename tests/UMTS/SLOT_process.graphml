@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="name"/>
+      <data key="parameters">
+         <parameter name="nb_slot"/>
+      </data>
+      <data key="variables"/>
+      <node id="in" kind="port" port_direction="Input"/>
+      <node id="out" kind="port" port_direction="Output"/>
+      <node id="PSH" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">PSH</data>
+         <data key="arguments"/>
+      </node>
+      <node id="SCR" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">SCR</data>
+         <data key="arguments"/>
+      </node>
+      <node id="SPR_dpdch" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">SPR_dpdch</data>
+         <data key="arguments"/>
+      </node>
+      <node id="SPR_dpcch" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">SPR_dpcch</data>
+         <data key="arguments"/>
+      </node>
+      <node id="CTRL_dpcch" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">CTRL_dpcch</data>
+         <data key="arguments"/>
+      </node>
+      <node id="sum" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">sum</data>
+         <data key="arguments"/>
+      </node>
+      <node id="coeff" kind="port" port_direction="Input"/>
+      <node id="ctrl" kind="port" port_direction="Input"/>
+      <node id="code" kind="port" port_direction="Input"/>
+      <edge source="PSH" sourceport="trans_o" target="PSH" targetport="trans_i">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">1</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="coeff" sourceport="" target="PSH" targetport="coeff">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="in" sourceport="" target="SPR_dpdch" targetport="in">
+         <data key="edge_prod">nb_slot</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="SPR_dpdch" sourceport="out" target="sum" targetport="data">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="CTRL_dpcch" sourceport="out" target="SPR_dpcch" targetport="in">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="SPR_dpcch" sourceport="out" target="sum" targetport="ctrl">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="ctrl" sourceport="" target="CTRL_dpcch" targetport="in">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="sum" sourceport="out" target="SCR" targetport="in">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="SCR" sourceport="out" target="PSH" targetport="in">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="PSH" sourceport="out" target="out" targetport="">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">nb_slot</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="PSH" sourceport="indo" target="SPR_dpdch" targetport="indi">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">1</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="PSH" sourceport="indo" target="CTRL_dpcch" targetport="indi">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">1</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="code" sourceport="" target="SCR" targetport="code">
+         <data key="edge_prod">nb_slot</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+   </graph>
+</graphml>

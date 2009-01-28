@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="SLOT_process" x="194" y="210"/>
+      <vertex id="DPCCH_ind" x="57" y="70"/>
+      <vertex id="PRINT" x="342" y="237"/>
+      <vertex id="Filter_Coeff" x="57" y="181"/>
+      <vertex id="DPDCH_ind" x="57" y="292"/>
+      <vertex id="CST_SCR" x="57" y="403"/>
+   </vertices>
+</layout>

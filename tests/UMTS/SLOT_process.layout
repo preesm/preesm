@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="in" x="162" y="331"/>
+      <vertex id="out" x="889" y="185"/>
+      <vertex id="PSH" x="685" y="116"/>
+      <vertex id="SCR" x="261" y="42"/>
+      <vertex id="SPR_dpdch" x="305" y="292"/>
+      <vertex id="SPR_dpcch" x="445" y="195"/>
+      <vertex id="CTRL_dpcch" x="306" y="184"/>
+      <vertex id="sum" x="578" y="190"/>
+      <vertex id="coeff" x="57" y="106"/>
+      <vertex id="ctrl" x="162" y="235"/>
+      <vertex id="code" x="128" y="34"/>
+   </vertices>
+</layout>
