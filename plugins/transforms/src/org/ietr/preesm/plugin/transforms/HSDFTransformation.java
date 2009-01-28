@@ -36,11 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.transforms;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.ToHSDFVisitor;
+import org.sdf4j.visitors.VisitorOutput;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph
@@ -52,8 +57,13 @@ public class HSDFTransformation implements IGraphTransformation {
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
+		Logger logger = PreesmLogger.getLogger();
+		logger.setLevel(Level.FINEST);
+		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
+		VisitorOutput.setLogger(logger);
 		ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 		algorithm.accept(toHsdf);
+		logger.log(Level.FINER,"HSDF transformation complete");
 		TaskResult result = new TaskResult();
 		result.setSDF((SDFGraph) toHsdf.getOutput());
 		return result;

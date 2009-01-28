@@ -36,10 +36,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.transforms;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.visitors.VisitorOutput;
 
 /**
  * Class used to flatten the hierarchy of a given graph
@@ -58,8 +63,13 @@ public class HierarchyFlattening implements IGraphTransformation {
 		} else {
 			depth = -1;
 		}
+		Logger logger = PreesmLogger.getLogger();
+		logger.setLevel(Level.FINEST);
+		logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
 		org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
+		VisitorOutput.setLogger(logger);
 		flatHier.flattenGraph(algorithm, depth);
+		logger.log(Level.FINER, "flattening complete");
 		TaskResult result = new TaskResult();
 		result.setSDF((SDFGraph) flatHier.getOutput());
 		return result;
