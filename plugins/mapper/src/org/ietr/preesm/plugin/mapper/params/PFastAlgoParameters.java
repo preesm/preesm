@@ -53,7 +53,7 @@ public class PFastAlgoParameters extends AbstractParameters {
 	 * number of vertices present in the DAG is determinant for this parameter.
 	 * More, if this number is too low the PFastAlgo become no efficient.
 	 */
-	private int nodesmin;
+	private int nodesMin;
 
 	/**
 	 * This is the number of probabilistic local jump which the user want. The
@@ -90,7 +90,7 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.maxCount = textParameters.getIntVariable("maxCount");
 		this.maxStep = textParameters.getIntVariable("maxStep");
 		this.margIn = textParameters.getIntVariable("margIn");
-		this.nodesmin = textParameters.getIntVariable("nodesmin");
+		this.nodesMin = textParameters.getIntVariable("nodesMin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
 	}
 
@@ -101,13 +101,13 @@ public class PFastAlgoParameters extends AbstractParameters {
 		textParameters.addVariable("margIn", margIn);
 		textParameters.addVariable("maxCount", maxCount);
 		textParameters.addVariable("maxStep", maxStep);
-		textParameters.addVariable("nodesmin", nodesmin);
+		textParameters.addVariable("nodesMin", nodesmin);
 		textParameters.addVariable("procNumber", procNumber);
 		
 		this.margIn = margIn;
 		this.maxCount = maxCount;
 		this.maxStep = maxStep;
-		this.nodesmin = nodesmin;
+		this.nodesMin = nodesmin;
 		this.procNumber = procNumber;
 	}
 
@@ -148,11 +148,11 @@ public class PFastAlgoParameters extends AbstractParameters {
 	}
 
 	public int getNodesmin() {
-		return nodesmin;
+		return nodesMin;
 	}
 
 	public void setNodesmin(int nodesmin) {
-		this.nodesmin = nodesmin;
+		this.nodesMin = nodesmin;
 	}
 
 }

@@ -38,11 +38,21 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
 
 /**
@@ -74,7 +84,8 @@ public class TimingManager {
 				new SDFVertex(), Timing.DEFAULT_TASK_TIME);
 	}
 
-	public Timing addTiming(SDFAbstractVertex graph, IOperatorDefinition operator) {
+	public Timing addTiming(SDFAbstractVertex graph,
+			IOperatorDefinition operator) {
 
 		Timing newt = new Timing(operator, graph);
 		for (Timing timing : timings) {
@@ -87,7 +98,8 @@ public class TimingManager {
 		return newt;
 	}
 
-	public void setTiming(SDFAbstractVertex graph, IOperatorDefinition operator, int time) {
+	public void setTiming(SDFAbstractVertex graph,
+			IOperatorDefinition operator, int time) {
 
 		addTiming(graph, operator).setTime(time);
 	}
@@ -105,23 +117,68 @@ public class TimingManager {
 		return newt;
 	}
 
-	public List<Timing> getGraphTimings(String graphName) {
+	public List<Timing> getGraphTimings(DAGVertex dagVertex,
+			MultiCoreArchitecture architecture) {
+		SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
 		List<Timing> vals = new ArrayList<Timing>();
 
-		for (Timing timing : timings) {
-			if (timing.getVertex().getName().equals(graphName)) {
-				vals.add(timing);
+		if (sdfVertex.getGraphDescription() == null) {
+			for (Timing timing : timings) {
+				if (timing.getVertex().getName().equals(sdfVertex.getId())) {
+					vals.add(timing);
+				}
+			}
+		} else if(sdfVertex.getGraphDescription() instanceof SDFGraph){
+			// Adds timings for all operators in hierarchy if they can be calculated
+			// from underlying vertices
+			for (ArchitectureComponentDefinition opDef : architecture
+					.getComponentDefinitions(ArchitectureComponentType.operator)) {
+				Timing t = generateVertexTimingFromHierarchy(dagVertex, (IOperatorDefinition) opDef);
+				if(t!=null)
+					vals.add(t);
 			}
 		}
+
 		return vals;
 	}
 
-	public int getTimingOrDefault(SDFAbstractVertex graph,
+	/**
+	 * Calculates a vertex timing from its underlying vertices
+	 */
+	public Timing generateVertexTimingFromHierarchy(DAGVertex dagVertex, IOperatorDefinition opDef) {
+
+		SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
+		
+		//TODO: time calculation for underlying tasks not ready
+		return(new Timing(opDef,sdfVertex,100));
+		
+		
+		/*
+		SDFGraph graph = (SDFGraph)sdfVertex.getGraphDescription();
+
+		int time = 0;
+		for(SDFAbstractVertex v : graph.vertexSet()){
+			if(sdfVertex.getGraphDescription() == null){
+				time += sdfVertex.
+			}
+		}
+
+		if(time>=0)
+			return(new Timing(opDef,sdfVertex,time));
+		else
+			return null;*/
+	}
+
+	/**
+	 * Looks for a timing entered in scenario editor. If there is none, returns
+	 * a default value
+	 */
+	public int getTimingOrDefault(SDFAbstractVertex vertex,
 			IOperatorDefinition operator) {
 		Timing val = null;
 
 		for (Timing timing : timings) {
-			if (timing.getVertex().getName().equals(graph.getName())
+			if (timing.getVertex().getName().equals(vertex.getName())
 					&& timing.getOperatorDefinition().equals(operator)) {
 				val = timing;
 			}
@@ -150,8 +207,8 @@ public class TimingManager {
 
 	public void setTimingFileURL(String timingFileURL, Scenario currentScenario) {
 		this.timingFileURL = timingFileURL;
-		
-		if(!timingFileURL.isEmpty() && currentScenario != null){
+
+		if (!timingFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
 			parser.parse(timingFileURL);
 		}

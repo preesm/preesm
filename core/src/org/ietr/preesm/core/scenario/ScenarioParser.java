@@ -402,7 +402,7 @@ public class ScenarioParser {
 					time = -1;
 				}
 
-				SDFAbstractVertex vertex = algo.getVertex(vertexname);
+				SDFAbstractVertex vertex = algo.getHierarchicalVertex(vertexname);
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);
