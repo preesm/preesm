@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.io.IOException;
@@ -63,9 +63,9 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Importing constraints in a scenario from an excel file.
- * The existing timings mean that the task can be mapped on the given operator.
- * Task names are rows while operator types are columns.
+ * Importing constraints in a scenario from an excel file. The existing timings
+ * mean that the task can be mapped on the given operator. Task names are rows
+ * while operator types are columns.
  * 
  * @author mpelcat
  */
@@ -97,15 +97,15 @@ public class ExcelConstraintsParser {
 
 		Path path = new Path(url);
 		IFile file = workspace.getRoot().getFile(path);
-		
+
 		scenario.getConstraintGroupManager().removeAll();
-		
+
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
-			for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
-				for (ArchitectureComponentDefinition operatorDef : currentArchi
-						.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			for (ArchitectureComponentDefinition operatorDef : currentArchi
+					.getComponentDefinitions(ArchitectureComponentType.operator)) {
+				for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
 
 					String operatorDefId = ((OperatorDefinition) operatorDef)
 							.getId();
@@ -113,7 +113,8 @@ public class ExcelConstraintsParser {
 
 					if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
 						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorDefId);
+						Cell operatorCell = w.getSheet(0).findCell(
+								operatorDefId);
 
 						if (vertexCell != null && operatorCell != null) {
 							Cell timingCell = w.getSheet(0).getCell(
@@ -123,11 +124,16 @@ public class ExcelConstraintsParser {
 							if (timingCell.getType().equals(CellType.NUMBER)
 									|| timingCell.getType().equals(
 											CellType.NUMBER_FORMULA)) {
-								Set<ArchitectureComponent> operators = currentArchi.getComponents(ArchitectureComponentType.operator);
-								
-								for(ArchitectureComponent operator:operators){
-									if(operator.getDefinition().getId().equalsIgnoreCase(operatorDefId))
-										scenario.getConstraintGroupManager().addConstraint((Operator)operator, vertex);
+								Set<ArchitectureComponent> operators = currentArchi
+										.getComponents(ArchitectureComponentType.operator);
+
+								for (ArchitectureComponent operator : operators) {
+									if (operator.getDefinition().getId()
+											.equalsIgnoreCase(operatorDefId))
+										scenario.getConstraintGroupManager()
+												.addConstraint(
+														(Operator) operator,
+														vertex);
 								}
 							}
 						}

@@ -20,11 +20,11 @@ Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jgrapht-jdk1.5.jar,
  lib/jmatharray.jar,
- lib/sdf4j.jar,
  lib/jgraph.jar,
  lib/jxl.jar,
  lib/saxon/saxon9-dom.jar,
- lib/saxon/saxon9.jar
+ lib/saxon/saxon9.jar,
+ lib/sdf4j.jar
 Export-Package: net.sf.saxon,
  org.ietr.preesm.core.architecture,
  org.ietr.preesm.core.architecture.advancedmodel,

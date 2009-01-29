@@ -509,7 +509,7 @@ public abstract class AbstractAbc implements IAbc {
 						.severe(
 								"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
 				PreesmLogger.getLogger().severe(
-						"Problem with: " + currentvertex.getName());
+						"Problem with: " + currentvertex.getName() + ". Consider changing the scenario.");
 
 				possible = false;
 			}
