@@ -124,7 +124,7 @@ public class ConstraintGroup {
 		Iterator<SDFAbstractVertex> it = vertices.iterator();
 		while (it.hasNext() && !b) {
 			SDFAbstractVertex v = it.next();
-			b = (v.getName().equals(vertex.getName()));
+			b = (v.getInfo().equals(vertex.getInfo()));
 		}
 
 		return b;
@@ -145,7 +145,7 @@ public class ConstraintGroup {
 		Iterator<SDFAbstractVertex> it = vertices.iterator();
 		while (it.hasNext()) {
 			SDFAbstractVertex v = it.next();
-			if ((v.getName().equals(vertex.getName()))) {
+			if ((v.getInfo().equals(vertex.getInfo()))) {
 				it.remove();
 
 			}

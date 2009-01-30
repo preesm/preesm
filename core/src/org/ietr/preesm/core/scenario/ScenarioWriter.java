@@ -213,7 +213,7 @@ public class ScenarioWriter {
 		for (SDFAbstractVertex vtx : cst.getVertices()) {
 			Element vtxelt = dom.createElement("task");
 			constraintGroupElt.appendChild(vtxelt);
-			vtxelt.setAttribute("name", vtx.getName());
+			vtxelt.setAttribute("name", vtx.getInfo());
 		}
 	}
 

@@ -49,6 +49,7 @@ import org.sdf4j.generator.DirectedAcyclicGraphGenerator;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.ToHSDFVisitor;
@@ -111,9 +112,8 @@ public class AlgorithmRetriever {
 		return demoGraph;
 	}
 
-	
 	/**
-	 * 
+	 * Loading an algorithm from a file path
 	 * 
 	 * @param algorithmRelativePath
 	 */
@@ -127,6 +127,8 @@ public class AlgorithmRetriever {
 		
 		try {
 			algorithm = (SDFGraph) importer.parse(file.getContents(), file.getLocation().toOSString());
+			
+			addVertexPathProperties(algorithm,"");
 		} catch (InvalidFileException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
@@ -139,6 +141,19 @@ public class AlgorithmRetriever {
 	public SDFGraph getAlgorithm() {
 		return algorithm;
 	}
-	
-	
+
+	/**
+	 * Adding an information that keeps the path of each vertex relative to the 
+	 */
+	private void addVertexPathProperties(SDFGraph algorithm, String currentPath){
+		
+		for(SDFAbstractVertex vertex : algorithm.vertexSet()){
+			String newPath = currentPath + vertex.getName();
+			vertex.setInfo(newPath);
+			newPath += "/";
+			if(vertex.getGraphDescription() != null){
+				addVertexPathProperties((SDFGraph)vertex.getGraphDescription(), newPath);
+			}
+		}
+	}
 }

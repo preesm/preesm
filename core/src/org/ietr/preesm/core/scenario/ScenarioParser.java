@@ -60,6 +60,7 @@ import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.sdf4j.importer.GMLSDFImporter;
 import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -253,24 +254,9 @@ public class ScenarioParser {
 	 */
 	static public SDFGraph getAlgorithm(String url) {
 
-		SDFGraph graph = null;
-		if (ResourcesPlugin.getWorkspace() != null) {
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		AlgorithmRetriever retriever = new AlgorithmRetriever(url);
 
-			IFile file = root.getFile(new Path(url));
-
-			GMLSDFImporter importer = new GMLSDFImporter();
-			try {
-				graph = (SDFGraph) importer.parse(new File(file.getLocation()
-						.toOSString()));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (InvalidFileException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return graph;
+		return retriever.getAlgorithm();
 
 	}
 
@@ -330,7 +316,7 @@ public class ScenarioParser {
 					String type = elt.getTagName();
 					String name = elt.getAttribute("name");
 					if (type.equals("task")) {
-						SDFAbstractVertex vertex = algo.getHierarchicalVertex(name);
+						SDFAbstractVertex vertex = algo.getHierarchicalVertexFromPath(name);
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {
