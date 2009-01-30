@@ -18,18 +18,18 @@ public class CodeGenSDFGraphFactory {
 	@SuppressWarnings("unchecked")
 	public CodeGenSDFGraph create(DirectedAcyclicGraph dag){
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
-		HashMap<DAGVertex, CodeGenSDFVertex> aliases = new  HashMap<DAGVertex, CodeGenSDFVertex>() ;
+		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
 		for(DAGVertex vertex : dag.vertexSet()){
-			CodeGenSDFVertex codeGenVertex = vertexFactory.create(vertex);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
 		}
 		for(DAGEdge edge : dag.edgeSet()){
 			DAGVertex source = edge.getSource();
 			DAGVertex target = edge.getTarget();
-			CodeGenSDFVertex newSource = aliases.get(source);
-			CodeGenSDFVertex newTarget = aliases.get(target);
+			SDFAbstractVertex newSource = aliases.get(source);
+			SDFAbstractVertex newTarget = aliases.get(target);
 			for(AbstractEdge subEdge : edge.getAggregate()){
 				if(subEdge instanceof SDFEdge){
 					SDFEdge sdfSubEdge = (SDFEdge) subEdge ;
@@ -58,18 +58,18 @@ public class CodeGenSDFGraphFactory {
 	
 	public CodeGenSDFGraph create(SDFGraph sdf){
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
-		HashMap<SDFAbstractVertex, CodeGenSDFVertex> aliases = new  HashMap<SDFAbstractVertex, CodeGenSDFVertex>() ;
+		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(sdf.getName()) ;
 		for(SDFAbstractVertex vertex : sdf.vertexSet()){
-			CodeGenSDFVertex codeGenVertex = vertexFactory.create(vertex);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
 		}
 		for(SDFEdge edge : sdf.edgeSet()){
 			SDFAbstractVertex source = edge.getSource();
 			SDFAbstractVertex target = edge.getTarget();
-			CodeGenSDFVertex newSource = aliases.get(source);
-			CodeGenSDFVertex newTarget = aliases.get(target);
+			SDFAbstractVertex newSource = aliases.get(source);
+			SDFAbstractVertex newTarget = aliases.get(target);
 			CodeGenSDFEdge newEdge = (CodeGenSDFEdge) output.addEdge(newSource, newTarget);
 			SDFInterfaceVertex sourceInterface = null;
 			SDFInterfaceVertex targetInterface = null;

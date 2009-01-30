@@ -1,9 +1,9 @@
 package org.ietr.preesm.plugin.codegen.model;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFVertex;
 
-public class CodeGenSDFVertex extends SDFAbstractVertex{
+public class CodeGenSDFVertex extends SDFVertex{
 
 	public static final String OPERATOR ="operator"; 
 	public static final String NB_REPEAT ="nb_repeat";
@@ -32,11 +32,5 @@ public class CodeGenSDFVertex extends SDFAbstractVertex{
 	
 	public void setNbRepeat(int nb){
 		this.getPropertyBean().setValue(NB_REPEAT, getNbRepeat(), nb);
-	}
-
-	@Override
-	public SDFAbstractVertex clone() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

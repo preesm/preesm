@@ -1,5 +1,8 @@
 package org.ietr.preesm.plugin.codegen.model;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.VertexType;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -10,7 +13,16 @@ public class CodeGenSDFVertexFactory {
 
 	public SDFAbstractVertex create(DAGVertex dagVertex){
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory() ;
-		CodeGenSDFVertex newVertex = new CodeGenSDFVertex();
+		CodeGenSDFVertex newVertex ; ;
+		if(dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.task)){
+			newVertex  = new CodeGenSDFVertex();
+		}else if(dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.send)){
+			newVertex  = new CodeGenSDFSendVertex();
+		}else if(dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.receive)){
+			newVertex  = new CodeGenSDFReceiveVertex();
+		}else{
+			newVertex  = new CodeGenSDFVertex();
+		}
 		newVertex.setName(dagVertex.getName());
 		if(dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null){
 			newVertex.setGraphDescription(graphFactory.create((SDFGraph) dagVertex.getCorrespondingSDFVertex().getGraphDescription()) );
@@ -24,6 +36,8 @@ public class CodeGenSDFVertexFactory {
 				}
 			}
 		}
+		newVertex.setOperator((ArchitectureComponent) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator));
+		newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder));
 		return newVertex ;
 	}
 	
