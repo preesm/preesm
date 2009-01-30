@@ -8,20 +8,12 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.ICodeGeneration;
-import org.ietr.preesm.core.task.IFileConversion;
-import org.ietr.preesm.core.task.IGraphTransformation;
-import org.ietr.preesm.core.task.IMapping;
-import org.ietr.preesm.core.task.ITask;
 import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Defining the steps called during workflow execution

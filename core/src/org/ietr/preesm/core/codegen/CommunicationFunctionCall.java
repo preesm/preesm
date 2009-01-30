@@ -63,10 +63,10 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 		// retrieving the vertex type
 		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
-				VertexType.propertyBeanName);
+				ImplementationPropertyNames.Vertex_vertexType);
 
 		Medium medium = (Medium) vertex.getPropertyBean().getValue(
-				Medium.propertyBeanName);
+				ImplementationPropertyNames.SendReceive_medium);
 
 		// Send and receive only have one input and one output edges
 		DAGEdge inEdge = (DAGEdge) (vertex.getBase().incomingEdgesOf(vertex)
@@ -83,7 +83,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				// operation is mapped
 				DAGVertex receive = outEdge.getTarget();
 				Operator target = (Operator) receive.getPropertyBean()
-						.getValue(Operator.propertyBeanName);
+						.getValue(ImplementationPropertyNames.Vertex_Operator);
 				call = new Send(parentContainer, vertex, bufferSet, medium,
 						target);
 			} else if (type.isReceive()) {
@@ -93,7 +93,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				// operation is allocated
 				DAGVertex send = inEdge.getSource();
 				Operator source = (Operator) send.getPropertyBean().getValue(
-						Operator.propertyBeanName);
+						ImplementationPropertyNames.Vertex_Operator);
 				call = new Receive(parentContainer, vertex, bufferSet, medium,
 						source);
 			}

@@ -79,12 +79,6 @@ import org.sdf4j.model.dag.DAGVertex;
 public abstract class AbstractAbc implements IAbc {
 
 	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "AbcReferenceType";
-
-	/**
 	 * Architecture related to the current simulator
 	 */
 	protected MultiCoreArchitecture archi;

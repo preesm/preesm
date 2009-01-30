@@ -55,10 +55,10 @@ public class SchedulingOrderComparator implements Comparator<DAGVertex> {
 
 		int difference = 0;
 
-		difference = (Integer) v1.getPropertyBean().getValue("schedulingOrder");
+		difference = (Integer) v1.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
 
 		difference -= (Integer) v2.getPropertyBean()
-				.getValue("schedulingOrder");
+				.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
 
 		return difference;
 	}

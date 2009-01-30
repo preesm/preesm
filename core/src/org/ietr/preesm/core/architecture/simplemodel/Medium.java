@@ -47,11 +47,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * @author mpelcat
  */
 public class Medium extends ArchitectureComponent {
-
-	/**
-	 * ID used to reference the element in a property bean
-	 */
-	public static final String propertyBeanName = "medium";
 	
 	public Medium(String name, MediumDefinition type) {
 		super(name, type);

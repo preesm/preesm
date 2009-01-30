@@ -44,12 +44,6 @@ import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
  * @author mpelcat
  */
 public abstract class AbstractEdgeSched implements IEdgeSched {
-
-	/**
-	 * ID used to reference the element in a property bean in case of a
-	 * computation vertex
-	 */
-	public static final String propertyBeanName = "EdgeSchedReferenceType";
 	
 	/**
 	 * Contains the rank list of all the vertices in an implementation

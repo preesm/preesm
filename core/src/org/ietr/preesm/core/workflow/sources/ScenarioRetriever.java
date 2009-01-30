@@ -52,8 +52,9 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * @author mpelcat
+ * Class used while retrieving the scenario at the beginning of the workflow execution
  * 
+ * @author mpelcat
  */
 public class ScenarioRetriever {
 

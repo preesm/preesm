@@ -50,6 +50,7 @@ import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
@@ -236,11 +237,11 @@ public class SourceFileCodeGenerator {
 
 			// retrieving the operator where the vertex is allocated
 			Operator vertexOperator = (Operator) vertex.getPropertyBean()
-					.getValue(Operator.propertyBeanName);
+					.getValue(ImplementationPropertyNames.Vertex_Operator);
 
 			// retrieving the type of the vertex
 			VertexType vertexType = (VertexType) vertex.getPropertyBean()
-					.getValue(VertexType.propertyBeanName);
+					.getValue(ImplementationPropertyNames.Vertex_vertexType);
 
 			// If the vertex is allocated on the current operator, we add it to
 			// the set in scheduling order
@@ -260,9 +261,9 @@ public class SourceFileCodeGenerator {
 		while (eIterator.hasNext()) {
 			DAGEdge edge = eIterator.next();
 			if (!edge.getSource().getPropertyBean().getValue(
-					Operator.propertyBeanName).equals(
+					ImplementationPropertyNames.Vertex_Operator).equals(
 					edge.getTarget().getPropertyBean().getValue(
-							Operator.propertyBeanName))){
+							ImplementationPropertyNames.Vertex_Operator))){
 				eIterator.remove();
 			}
 		}

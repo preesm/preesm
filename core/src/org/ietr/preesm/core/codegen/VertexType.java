@@ -47,11 +47,6 @@ import org.sdf4j.model.dag.DAGVertex;
 public class VertexType {
 
 	/**
-	 * ID used to reference the element in a property bean
-	 */
-	public static final String propertyBeanName = "vertexType";
-
-	/**
 	 * VertexType representing a receive operation
 	 */
 	public static final VertexType receive = new VertexType("receive");
@@ -72,14 +67,14 @@ public class VertexType {
 	static public boolean isIntermediateReceive(DAGVertex vertex) {
 
 		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-				VertexType.propertyBeanName);
+				ImplementationPropertyNames.Vertex_vertexType);
 
 		// If the communication operation is an intermediate step of a route
 		if (vType.isReceive()) {
 			DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(
 					vertex).toArray()[0]);
 			VertexType nextVType = (VertexType) outEdge.getTarget()
-					.getPropertyBean().getValue(VertexType.propertyBeanName);
+					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
 			if (nextVType.isSend())
 				return true;
@@ -94,14 +89,14 @@ public class VertexType {
 	static public boolean isIntermediateSend(DAGVertex vertex) {
 
 		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-				VertexType.propertyBeanName);
+				ImplementationPropertyNames.Vertex_vertexType);
 
 		// If the communication operation is an intermediate step of a route
 		if (vType.isSend()) {
 			DAGEdge inEdge = (DAGEdge) (vertex.getBase()
 					.incomingEdgesOf(vertex).toArray()[0]);
 			VertexType prevVType = (VertexType) inEdge.getSource()
-					.getPropertyBean().getValue(VertexType.propertyBeanName);
+					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
 			if (prevVType.isReceive())
 				return true;

@@ -40,9 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.VertexType;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jgrapht.Graph;
 import org.sdf4j.exporter.GMLExporter;
@@ -66,22 +64,22 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		super();
 		addKey(DAGVertex.NAME, DAGVertex.NAME, "vertex", "string", String.class);
 		
-		addKey(VertexType.propertyBeanName, VertexType.propertyBeanName, "vertex", "string", String.class);
-		addKey(Operator.propertyBeanName, Operator.propertyBeanName, "vertex", "string",
+		addKey(ImplementationPropertyNames.Vertex_vertexType, ImplementationPropertyNames.Vertex_vertexType, "vertex", "string", String.class);
+		addKey(ImplementationPropertyNames.Vertex_Operator, ImplementationPropertyNames.Vertex_Operator, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey(Medium.propertyBeanName, Medium.propertyBeanName, "vertex", "string",
+		addKey(ImplementationPropertyNames.SendReceive_medium, ImplementationPropertyNames.SendReceive_medium, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey("schedulingOrder", "schedulingOrder", "vertex", "int",
+		addKey(ImplementationPropertyNames.Vertex_schedulingOrder, ImplementationPropertyNames.Vertex_schedulingOrder, "vertex", "int",
 				DAGDefaultEdgePropertyType.class);
-		addKey("dataSize", "dataSize", "vertex", "int",
+		addKey(ImplementationPropertyNames.SendReceive_dataSize, ImplementationPropertyNames.SendReceive_dataSize, "vertex", "int",
 				DAGDefaultEdgePropertyType.class);
-		addKey("duration", "duration", "vertex", "int",
+		addKey(ImplementationPropertyNames.Task_duration, ImplementationPropertyNames.Task_duration, "vertex", "int",
 				DAGDefaultEdgePropertyType.class);
-		addKey("senderGraphName", "senderGraphName", "vertex", "string",
+		addKey(ImplementationPropertyNames.Send_senderGraphName, ImplementationPropertyNames.Send_senderGraphName, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey("receiverGraphName", "receiverGraphName", "vertex", "string",
+		addKey(ImplementationPropertyNames.Receive_receiverGraphName, ImplementationPropertyNames.Receive_receiverGraphName, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey(Operator.propertyBeanName + "_address", Operator.propertyBeanName + "_address", "vertex", "string",
+		addKey(ImplementationPropertyNames.SendReceive_Operator_address, ImplementationPropertyNames.SendReceive_Operator_address, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
 	}
 

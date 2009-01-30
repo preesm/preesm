@@ -44,8 +44,9 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 
 /**
+ * Class used while retrieving the architecture at the beginning of the workflow execution
+ * 
  * @author mpelcat
- *
  */
 public class ArchitectureRetriever {
 

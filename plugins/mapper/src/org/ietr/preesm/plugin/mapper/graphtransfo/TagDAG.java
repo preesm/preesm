@@ -39,14 +39,13 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -69,8 +68,8 @@ import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Tags an SDF with the implementation information necessary for code generation,
- * and DAG exporting
+ * Tags an SDF with the implementation information necessary for code
+ * generation, and DAG exporting
  * 
  * @author pmenuet
  * @author mpelcat
@@ -95,16 +94,17 @@ public class TagDAG {
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
 	 */
-	public void tag(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) {
+	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
+			IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) {
 
 		PropertyBean bean = dag.getPropertyBean();
-		bean.setValue(AbstractAbc.propertyBeanName, simu.getType());
-		bean.setValue(AbstractEdgeSched.propertyBeanName, edgeSchedType);
-		bean.setValue("SdfReferenceGraph", dag.getReferenceSdfGraph());
+		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
+		bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType, edgeSchedType);
+		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag.getReferenceSdfGraph());
 
 		addTransfers(dag, architecture);
 		addProperties(dag);
-		addAllAggregates(dag,scenario);
+		addAllAggregates(dag, scenario);
 	}
 
 	/**
@@ -116,7 +116,8 @@ public class TagDAG {
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(EdgeSchedType.Simple,orderMgr),
+		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched
+				.getInstance(EdgeSchedType.Simple, orderMgr),
 				new CommunicationRouter(architecture), orderMgr, true, false);
 		tvAdder.addTransferVertices(dag, new TransactionManager(), false);
 		orderMgr.tagDAG(dag);
@@ -137,49 +138,78 @@ public class TagDAG {
 
 				MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex)
 						.incomingEdges().toArray()[0];
-				bean.setValue(VertexType.propertyBeanName, VertexType.send);
+
+				// Setting the vertex type
+				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
+						VertexType.send);
+
+				// Setting the operator on which vertex is executed
 				bean
-						.setValue(Operator.propertyBeanName,
+						.setValue(ImplementationPropertyNames.Vertex_Operator,
 								((SendVertex) currentVertex).getRouteStep()
 										.getSender());
+
+				// Setting the medium transmitting the current data
 				bean
-						.setValue(Medium.propertyBeanName,
+						.setValue(ImplementationPropertyNames.SendReceive_medium,
 								((SendVertex) currentVertex).getRouteStep()
 										.getMedium());
-				bean.setValue("dataSize", incomingEdge.getInitialEdgeProperty()
+
+				// Setting the size of the transmitted data
+				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInitialEdgeProperty()
 						.getDataSize());
-				bean.setValue("senderGraphName", incomingEdge.getSource()
+
+				// Setting the name of the data sending vertex
+				bean.setValue(ImplementationPropertyNames.Send_senderGraphName, incomingEdge.getSource()
 						.getName());
-				bean.setValue(Operator.propertyBeanName + "_address",
+
+				// Setting the address of the operator on which vertex is executed
+				bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address,
 						((SendVertex) currentVertex).getRouteStep().getSender()
 								.getBaseAddress());
 			} else if (currentVertex instanceof ReceiveVertex) {
 
 				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
 						.outgoingEdges().toArray()[0];
-				bean.setValue(VertexType.propertyBeanName, VertexType.receive);
-				bean.setValue(Operator.propertyBeanName,
+
+				// Setting the vertex type
+				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
+						VertexType.receive);
+
+				// Setting the operator on which vertex is executed
+				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
 						((ReceiveVertex) currentVertex).getRouteStep()
 								.getReceiver());
-				bean.setValue(Medium.propertyBeanName,
+
+				// Setting the medium transmitting the current data
+				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
 						((ReceiveVertex) currentVertex).getRouteStep()
 								.getMedium());
-				bean.setValue("dataSize", outgoingEdge.getInitialEdgeProperty()
+
+				// Setting the size of the transmitted data
+				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInitialEdgeProperty()
 						.getDataSize());
-				bean.setValue("receiverGraphName", outgoingEdge.getTarget()
+
+				// Setting the name of the data receiving vertex
+				bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName, outgoingEdge.getTarget()
 						.getName());
-				bean
-						.setValue(Operator.propertyBeanName + "_address",
-								((ReceiveVertex) currentVertex).getRouteStep()
-										.getReceiver()
-										.getBaseAddress());
+
+				// Setting the address of the operator on which vertex is executed
+				bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address,
+						((ReceiveVertex) currentVertex).getRouteStep()
+								.getReceiver().getBaseAddress());
 			} else {
 
-				bean.setValue(Operator.propertyBeanName, currentVertex
-						.getImplementationVertexProperty()
-						.getEffectiveOperator());
-				bean.setValue(VertexType.propertyBeanName, VertexType.task);
+				// Setting the operator on which vertex is executed
+				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
+						currentVertex.getImplementationVertexProperty()
+								.getEffectiveOperator());
 
+				// Setting the vertex type
+				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
+						VertexType.task);
+
+				// Setting the task duration
 				Operator effectiveOperator = currentVertex
 						.getImplementationVertexProperty()
 						.getEffectiveOperator();
@@ -188,12 +218,14 @@ public class TagDAG {
 				int nbRepeat = currentVertex.getInitialVertexProperty()
 						.getNbRepeat();
 				int totalTime = nbRepeat * singleRepeatTime;
-				bean.setValue("duration", totalTime);
+				bean.setValue(ImplementationPropertyNames.Task_duration,
+						totalTime);
 			}
 
-			bean.setValue("schedulingOrder", currentVertex
-					.getImplementationVertexProperty()
-					.getSchedTotalOrder());
+			// Setting the scheduling total order
+			bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder,
+					currentVertex.getImplementationVertexProperty()
+							.getSchedTotalOrder());
 		}
 	}
 
@@ -212,9 +244,9 @@ public class TagDAG {
 
 			if (edge.getSource() instanceof TransferVertex
 					|| edge.getTarget() instanceof TransferVertex) {
-				addAggregateFromSDF(edge,scenario);
+				addAggregateFromSDF(edge, scenario);
 			} else {
-				addAggregateFromSDF(edge,scenario);
+				addAggregateFromSDF(edge, scenario);
 			}
 		}
 	}
@@ -232,11 +264,12 @@ public class TagDAG {
 				.getAggregate()) {
 			SDFEdge sdfAggMember = (SDFEdge) aggMember;
 
-			DataType dataType = scenario.getSimulationManager().getDataType(sdfAggMember.getDataType().toString());
-			BufferProperties props = new BufferProperties(dataType, sdfAggMember
-					.getSourceInterface().getName(), sdfAggMember
-					.getTargetInterface().getName(), sdfAggMember.getProd()
-					.intValue());
+			DataType dataType = scenario.getSimulationManager().getDataType(
+					sdfAggMember.getDataType().toString());
+			BufferProperties props = new BufferProperties(dataType,
+					sdfAggMember.getSourceInterface().getName(), sdfAggMember
+							.getTargetInterface().getName(), sdfAggMember
+							.getProd().intValue());
 
 			agg.add(props);
 		}

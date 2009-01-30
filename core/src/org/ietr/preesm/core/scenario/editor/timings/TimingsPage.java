@@ -345,23 +345,21 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		toolkit.createLabel(client, fileEdit);
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
-
 		text.setData(title);
+		
+		// If the text is modified or Enter key pressed, timings are imported
 		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text) e.getSource();
-
 				scenario.getTimingManager().setTimingFileURL(text.getText(),
 						scenario);
 				tableViewer.refresh();
-
 				firePropertyChange(PROP_DIRTY);
 
 			}
 		});
-
 		text.addKeyListener(new KeyListener() {
 
 			@Override
@@ -374,23 +372,25 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				}
 
 			}
-
 			@Override
 			public void keyReleased(KeyEvent e) {
 
 			}
-
 		});
 
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button button = toolkit.createButton(client, Messages
+		final Button browseButton = toolkit.createButton(client, Messages
 				.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text, client
+		SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client
 				.getShell(), browseTitle, fileExtension);
-		button.addSelectionListener(adapter);
+		browseButton.addSelectionListener(browseAdapter);
 
+		final Button exportButton = toolkit.createButton(client, Messages
+				.getString("Timings.timingExportExcel"), SWT.PUSH);
+		exportButton.addSelectionListener(new ExcelTimingWriter(scenario));
+		
 		toolkit.paintBordersFor(client);
 	}
 }

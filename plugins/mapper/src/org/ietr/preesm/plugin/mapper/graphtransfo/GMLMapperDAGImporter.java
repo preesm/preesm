@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -82,7 +83,7 @@ public class GMLMapperDAGImporter extends
 	public MapperDAG parseGraph(Element graphElt) {
 		MapperDAG graph = new MapperDAG(localFactory,null);
 		parseKeys(graphElt, graph.getPropertyBean(), "graph");
-		graph.setReferenceSdfGraph((SDFGraph)graph.getPropertyBean().getValue("SdfReferenceGraph"));
+		graph.setReferenceSdfGraph((SDFGraph)graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
 		NodeList childList = graphElt.getChildNodes();
 		for (int i = 0; i < childList.getLength(); i++) {
 			if (childList.item(i).getNodeName().equals("node")) {

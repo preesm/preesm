@@ -48,11 +48,6 @@ import org.ietr.preesm.core.architecture.IOperator;
  * @author mpelcat
  */
 public class Operator extends ArchitectureComponent implements IOperator {
-
-	/**
-	 * ID used to reference the element in a property bean in case of a computation vertex
-	 */
-	public static final String propertyBeanName = "Operator";
 	
 	public Operator(String name, OperatorDefinition type) {
 		super(name, type);

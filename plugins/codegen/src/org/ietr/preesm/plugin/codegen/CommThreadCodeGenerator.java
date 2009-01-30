@@ -44,6 +44,7 @@ import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
@@ -81,7 +82,7 @@ public class CommThreadCodeGenerator {
 			// First test on the type of vertex that will be protected by a
 			// semaphore
 			VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-					VertexType.propertyBeanName);
+					ImplementationPropertyNames.Vertex_vertexType);
 
 			SemaphoreType sType = null;
 

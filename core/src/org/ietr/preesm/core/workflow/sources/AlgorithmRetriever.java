@@ -55,11 +55,17 @@ import org.sdf4j.visitors.ToHSDFVisitor;
 import org.sdf4j.visitors.TopologyVisitor;
 
 /**
+ * Class used while retrieving the algorithm at the beginning of the workflow execution
+ * 
  * @author mpelcat
- *
  */
 public class AlgorithmRetriever {
 
+	/**
+	 * SDF Graph algorithm retrieved at the beginning of a workflow
+	 */
+	SDFGraph algorithm = null;
+	
 	/**
 	 * Generates a random SDF with DAG properties
 	 */
@@ -104,30 +110,13 @@ public class AlgorithmRetriever {
 
 		return demoGraph;
 	}
+
 	
-	SDFGraph algorithm = null;
-
-	public AlgorithmRetriever(AlgorithmConfiguration algorithmConfiguration) {
-		super();
-		String filename = algorithmConfiguration.getAlgorithmFileName();
-		GMLSDFImporter importer = new GMLSDFImporter() ;
-		
-		Path relativePath = new Path(filename);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
-		try {
-			algorithm = (SDFGraph) importer.parse(file.getContents(), file.getFullPath().toOSString());
-		} catch (InvalidFileException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * 
+	 * 
+	 * @param algorithmRelativePath
+	 */
 	public AlgorithmRetriever(String algorithmRelativePath) {
 		super();
 		
@@ -141,10 +130,8 @@ public class AlgorithmRetriever {
 		} catch (InvalidFileException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

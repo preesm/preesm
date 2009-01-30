@@ -38,18 +38,13 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;

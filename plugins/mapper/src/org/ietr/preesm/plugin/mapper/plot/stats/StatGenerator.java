@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -17,7 +18,6 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -99,9 +99,9 @@ public class StatGenerator {
 			// Gets the appropriate abc to generate the gantt.
 			PropertyBean bean = localDag.getPropertyBean();
 			AbcType abctype = (AbcType) bean
-					.getValue(AbstractAbc.propertyBeanName);
+					.getValue(ImplementationPropertyNames.Graph_AbcReferenceType);
 			EdgeSchedType edgeSchedType = (EdgeSchedType) bean
-					.getValue(AbstractEdgeSched.propertyBeanName);
+					.getValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType);
 
 			IAbc simu = AbstractAbc.getInstance(abctype, edgeSchedType,
 					localDag, archi);

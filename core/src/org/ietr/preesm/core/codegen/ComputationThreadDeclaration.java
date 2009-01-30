@@ -87,7 +87,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 			// retrieving the type of the vertex
 			VertexType vertexType = (VertexType) currentVertex
-					.getPropertyBean().getValue(VertexType.propertyBeanName);
+					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
 			if (vertexType != null
 					&& (vertexType.equals(VertexType.send) || vertexType
