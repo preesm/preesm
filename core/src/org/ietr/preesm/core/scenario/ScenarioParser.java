@@ -392,7 +392,7 @@ public class ScenarioParser {
 
 			String type = timingElt.getTagName();
 			if (type.equals("timing")) {
-				String vertexname = timingElt.getAttribute("vertexname");
+				String vertexpath = timingElt.getAttribute("vertexname");
 				String opdefname = timingElt.getAttribute("opname");
 				int time;
 
@@ -402,7 +402,7 @@ public class ScenarioParser {
 					time = -1;
 				}
 
-				SDFAbstractVertex vertex = algo.getHierarchicalVertex(vertexname);
+				SDFAbstractVertex vertex = algo.getHierarchicalVertex(vertexpath);
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);

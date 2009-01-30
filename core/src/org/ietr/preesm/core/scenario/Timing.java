@@ -94,7 +94,7 @@ public class Timing {
 		if (obj instanceof Timing) {
 			Timing otherT = (Timing) obj;
 			equals = operator.equals(otherT.getOperatorDefinition());
-			equals &= vertex.getName().equalsIgnoreCase(
+			equals &= vertex.getName().equals(
 					(otherT.getVertex().getName()));
 		}
 

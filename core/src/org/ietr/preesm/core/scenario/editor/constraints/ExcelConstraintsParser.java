@@ -105,7 +105,7 @@ public class ExcelConstraintsParser {
 
 			for (ArchitectureComponentDefinition operatorDef : currentArchi
 					.getComponentDefinitions(ArchitectureComponentType.operator)) {
-				for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
+				for (SDFAbstractVertex vertex : currentGraph.getHierarchicalVertexSet()) {
 
 					String operatorDefId = ((OperatorDefinition) operatorDef)
 							.getId();
