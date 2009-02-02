@@ -10,14 +10,17 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 /**
  * @author mpelcat
  *
- * Vertex comparator that helps to order vertices in name alphabetical order
+ * Vertex comparator that helps to order vertices in path alphabetical order
  */
-public class NameComparator implements Comparator<SDFAbstractVertex>{
+public class SDFPathComparator implements Comparator<SDFAbstractVertex>{
 
 	@Override
 	public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
 
-		return o1.getName().compareToIgnoreCase(o2.getName());
+		int diff = o1.getInfo().compareTo(o2.getInfo());
+		if(diff == 0) diff = 1;
+		
+		return diff;
 	}
 	
 }

@@ -155,6 +155,8 @@ public class InitialVertexProperty {
 					time = Timing.DEFAULT_FORK_TIME;
 				} else if(SpecialVertexManager.isJoin(parentVertex)){
 					time = Timing.DEFAULT_JOIN_TIME;
+				} else if(SpecialVertexManager.isInit(parentVertex)){
+					time = Timing.DEFAULT_INIT_TIME;
 				} else if(returntiming.getTime() != 0){
 					// The basic timing is multiplied by the number of repetitions
 					time = returntiming.getTime() * this.nbRepeat;
@@ -202,6 +204,9 @@ public class InitialVertexProperty {
 			return true;
 		}
 		else if(SpecialVertexManager.isJoin(parentVertex)){
+			return true;
+		}
+		else if(SpecialVertexManager.isInit(parentVertex)){
 			return true;
 		}
 		else{

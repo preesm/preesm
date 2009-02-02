@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -44,7 +46,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.tools.NameComparator;
+import org.ietr.preesm.core.tools.SDFPathComparator;
+import org.ietr.preesm.core.tools.PathComparator;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -62,8 +65,14 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	
 	private SDFGraph currentGraph = null;
 
+	/**
+	 * This map keeps the VertexWithPath used as a tree content for each vertex.
+	 */
+	private Map<SDFAbstractVertex,VertexWithPath> correspondingVertexWithMap = null;
+
 	public SDFTreeContentProvider(CheckboxTreeViewer treeViewer) {
 		super();
+		correspondingVertexWithMap = new HashMap<SDFAbstractVertex, VertexWithPath>();
 	}
 	
 	@Override
@@ -74,15 +83,15 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			SDFGraph graph = (SDFGraph)parentElement;
 			
 			// Some types of vertices are ignored in the constraints view
-			table = keepAppropriateChildren(graph.vertexSet()).toArray();
+			table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
 		}
-		else if(parentElement instanceof SDFVertex){
-			SDFVertex vertex = (SDFVertex)parentElement;
-			IRefinement refinement = vertex.getRefinement();
+		else if(parentElement instanceof VertexWithPath){
+			VertexWithPath vertex = (VertexWithPath)parentElement;
+			IRefinement refinement = vertex.getStoredVertex().getRefinement();
 			
 			if(refinement != null && refinement instanceof SDFGraph){
 				SDFGraph graph = (SDFGraph)refinement;
-				table = keepAppropriateChildren(graph.vertexSet()).toArray();
+				table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
 			}
 		}
 		
@@ -104,15 +113,18 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			SDFGraph graph = (SDFGraph)element;
 			hasChildren = !graph.vertexSet().isEmpty();
 		}
-		else if(element instanceof SDFBroadcastVertex){
-			//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
-			hasChildren = false;
-		}
-		else if(element instanceof SDFVertex){
-			SDFVertex vertex = (SDFVertex)element;
-			IRefinement refinement = vertex.getRefinement();
-			
-			hasChildren = (refinement != null);
+		else if(element instanceof VertexWithPath){
+			SDFAbstractVertex sdfVertex = ((VertexWithPath) element).getStoredVertex();
+			if(sdfVertex instanceof SDFBroadcastVertex){
+				//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
+				hasChildren = false;
+			}
+			else if(sdfVertex instanceof SDFVertex){
+				SDFVertex vertex = (SDFVertex)sdfVertex;
+				IRefinement refinement = vertex.getRefinement();
+				
+				hasChildren = (refinement != null);
+			}
 		}
 		
 		return hasChildren;
@@ -150,16 +162,24 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	/**
 	 * Filters the children to display in the tree
 	 */
-	static public Set<SDFAbstractVertex> keepAppropriateChildren(Set<SDFAbstractVertex> children) {
+	public Set<VertexWithPath> keepAndConvertAppropriateChildren(Set<SDFAbstractVertex> children) {
 		
-		ConcurrentSkipListSet<SDFAbstractVertex> appropriateChildren = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
+		ConcurrentSkipListSet<VertexWithPath> appropriateChildren = new ConcurrentSkipListSet<VertexWithPath>(new PathComparator());
 		
 		for(SDFAbstractVertex v : children){
-			if(v.getKind() == "vertex")
-				appropriateChildren.add(v);
+			if(v.getKind() == "vertex"){
+				appropriateChildren.add(convertChild(v));
+			}
 		}
 		
 		return appropriateChildren;
 	}
 
+	public VertexWithPath convertChild(SDFAbstractVertex child){
+		if(!correspondingVertexWithMap.containsKey(child))
+			correspondingVertexWithMap.put(child, new VertexWithPath(child));
+			
+		return correspondingVertexWithMap.get(child);
+	}
+	
 }

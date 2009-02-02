@@ -74,6 +74,12 @@ public class PreesmLogger extends Logger {
 		return logger;
 	}
 
+	@Override
+	public void setLevel(Level newLevel) throws SecurityException {
+		// Enabling only info level 
+		super.setLevel(Level.INFO);
+	}
+
 	/**
 	 * 
 	 */

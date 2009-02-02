@@ -50,8 +50,8 @@ public class SDFTreeLabelProvider extends LabelProvider {
 	@Override
 	public String getText(Object element) {
 		String name = "";
-		if (element instanceof SDFAbstractVertex) {
-			name = ((SDFAbstractVertex) element).getName();
+		if (element instanceof VertexWithPath) {
+			name = ((VertexWithPath) element).getName();
 		} else if (element instanceof SDFGraph) {
 			name = "graph";
 		}

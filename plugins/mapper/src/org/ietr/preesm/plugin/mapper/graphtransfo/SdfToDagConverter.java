@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
@@ -52,6 +53,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
@@ -61,6 +63,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.plugin.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+import org.sdf4j.demo.SDFAdapterDemo;
+import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
@@ -139,12 +143,19 @@ public class SdfToDagConverter {
 		addInitialProperties(dag, architecture, scenario);
 
 		// Displays the DAG
-		/*if (display) {
+		if (display) {
 			SDFAdapterDemo applet1 = new SDFAdapterDemo();
 			applet1.init(sdf);
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(dag);
-		}*/
+		}
+		
+		if(dag.vertexSet().size() == 0){
+			PreesmLogger.getLogger().log(Level.SEVERE,"Can not map a DAG with no vertex.");
+		}
+		else{
+			PreesmLogger.getLogger().log(Level.INFO,"mappin a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
+		}
 
 		return dag;
 	}
@@ -331,7 +342,8 @@ public class SdfToDagConverter {
 		for (DAGVertex v : dag.vertexSet()) {
 			if (SpecialVertexManager.isBroadCast(v)
 					|| SpecialVertexManager.isFork(v)
-					|| SpecialVertexManager.isJoin(v)) {
+					|| SpecialVertexManager.isJoin(v)
+					|| SpecialVertexManager.isInit(v)) {
 				for (ArchitectureComponent o : operators) {
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator((Operator) o);

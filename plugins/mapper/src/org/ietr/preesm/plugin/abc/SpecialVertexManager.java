@@ -49,5 +49,17 @@ public class SpecialVertexManager {
 		
 		return false;
 	}
+
+	/**
+	 * Tests if a vertex is of type init
+	 */
+	static public boolean isInit(DAGVertex vertex) {
+
+		if(vertex.getKind().equalsIgnoreCase("dag_init_vertex")){
+			return true;
+		}
+		
+		return false;
+	}
 	
 }

@@ -44,7 +44,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.tools.NameComparator;
+import org.ietr.preesm.core.tools.SDFPathComparator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -73,31 +73,21 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 			
 			// Displays the task names in alphabetical order
 			if(currentGraph != null){
-				ConcurrentSkipListSet<SDFAbstractVertex> vertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
 				
-				// Looks for the vertices in hierarchy
-				findHierarchicalVertices(vertices, currentGraph);
+				// lists the vertices in hierarchy
+				Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
 				
 				// Filters the results
 				filterVertices(vertices);
-				
-				elementTable = vertices.toArray();
+
+				Set<SDFAbstractVertex> sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new SDFPathComparator());
+				sortedVertices.addAll(vertices);
+				elementTable = sortedVertices.toArray();
 			}
 		}
 		return elementTable;
 	}
-
-	public void findHierarchicalVertices(Set<SDFAbstractVertex> vertices, SDFGraph graph) {
-
-		for(SDFAbstractVertex vertex: graph.vertexSet()){
-			vertices.add(vertex);
-			
-			if(vertex.getGraphDescription() != null){
-				findHierarchicalVertices(vertices, (SDFGraph)vertex.getGraphDescription());
-			}
-		}
-	}
-
+	
 	/**
 	 * Depending on the kind of vertex, timings are edited or not
 	 */
