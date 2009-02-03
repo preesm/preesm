@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.Vector;
@@ -77,6 +78,11 @@ import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
  */
 public class PFastAlgorithm extends Observable {
 
+	/**
+	 * The scheduling (total order of tasks) for the best found solution.
+	 */
+	private Map<String, Integer> bestTotalOrder = null;
+	
 	/**
 	 * FinalTimeComparator : comparator between two different implementation
 	 * 
@@ -159,7 +165,7 @@ public class PFastAlgorithm extends Observable {
 		Set<String> tempSet;
 
 		// find number of thread possible
-		nbsubsets = setnumber(BNlist, nboperator, nodesmin);
+		nbsubsets = setNumberOfThreads(BNlist, nboperator, nodesmin);
 
 		// find number of nodes per thread
 		nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
@@ -201,7 +207,7 @@ public class PFastAlgorithm extends Observable {
 	 * @return integer
 	 */
 
-	public int setnumber(List<MapperDAGVertex> BLlist, int nboperator,
+	public int setNumberOfThreads(List<MapperDAGVertex> BLlist, int nboperator,
 			int nodesmin) {
 
 		int nbnodes = BLlist.size();
@@ -288,7 +294,7 @@ public class PFastAlgorithm extends Observable {
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
 			int margIn, AbcType simulatorType, EdgeSchedType edgeSchedType,
-			boolean population, int populationsize,
+			boolean population, int populationsize, boolean isDisplaySolutions, 
 			List<MapperDAG> populationList) {
 
 		// Variables
@@ -337,7 +343,9 @@ public class PFastAlgorithm extends Observable {
 		dagfinal = scheduler.schedule(dag, cpnDominantVector,
 				blockingnodeVector, fcpVector, archisimu, null, null).clone();
 
+		bestTotalOrder = archisimu.getTotalOrder().toMap();
 		int iBest = (Integer) archisimu.getFinalTime();
+		
 		int initiale = iBest;
 		setChanged();
 		notifyObservers(iBest);
@@ -377,7 +385,7 @@ public class PFastAlgorithm extends Observable {
 
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
-						subiter.next(), maxcounttemp, maxStep, margIn, true,
+						subiter.next(), maxcounttemp, maxStep, margIn, isDisplaySolutions, true,
 						simulatorType, edgeSchedType);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
@@ -434,21 +442,24 @@ public class PFastAlgorithm extends Observable {
 				populationList.add(currentdag);
 			}
 
-		} else {
-
-			dagfinal = mappedDAGSet.first().clone();
-
 		}
+		
+		bestTotalOrder = (Map<String,Integer>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
+		
 		int finale = dagfinal.getScheduleLatency();
 		logger
 				.log(
-						Level.FINE,
-						"Gain total PFast Algo : "
+						Level.INFO,
+						"Total PFast Algo Gain : "
 								+ ((((double) initiale - (double) finale) / (double) initiale) * 100)
 								+ " %");
 
 		return dagfinal;
+	}
+
+	public Map<String, Integer> getBestTotalOrder() {
+		return bestTotalOrder;
 	}
 
 	/**
@@ -482,7 +493,7 @@ public class PFastAlgorithm extends Observable {
 
 		logger.log(Level.FINER, "Evaluating pfast algorithm ");
 		pfastAlgorithm.map(dag, archi, 1, 3, initial, 30, 30, 6,
-				AbcType.LooselyTimed, EdgeSchedType.Simple, true, 10, null);
+				AbcType.LooselyTimed, EdgeSchedType.Simple, true, 10, true, null);
 
 		logger.log(Level.FINER, "Test finished");
 

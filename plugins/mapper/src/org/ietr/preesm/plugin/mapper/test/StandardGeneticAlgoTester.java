@@ -173,7 +173,7 @@ public class StandardGeneticAlgoTester {
 		
 		List<MapperDAG> populist = new ArrayList<MapperDAG>();
 		algorithm.map(dag, archi, 2, 5, initial, 20, 10, 4, simulatorType, edgeSchedType,
-				true, 5, populist);
+				true, 5, true, populist);
 
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 

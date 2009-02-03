@@ -7,80 +7,50 @@
     </files>
     <constraints>
         <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="SLOT_process/CTRL_dpcch"/>
+            <task name="SLOT_process/sum"/>
+            <task name="SLOT_process/SCR"/>
+            <task name="SLOT_process/SPR_dpdch"/>
+            <task name="SLOT_process/PSH/Buffer"/>
+            <task name="DPCCH_ind"/>
+            <task name="SLOT_process/PSH/MUX"/>
+            <task name="SLOT_process/PSH/PSH1"/>
+            <task name="SLOT_process"/>
+            <task name="SLOT_process/SPR_dpcch"/>
+            <task name="CST_SCR"/>
+            <task name="Filter_Coeff"/>
+            <task name="PRINT"/>
+            <task name="SLOT_process/PSH/PSH2"/>
+            <task name="DPDCH_ind"/>
+            <task name="SLOT_process/PSH"/>
+        </constraintGroup>
+        <constraintGroup>
             <operator name="C64_3"/>
             <task name="CST_SCR"/>
-            <task name="PSH1"/>
-            <task name="sum"/>
-            <task name="PSH2"/>
-            <task name="MUX"/>
-            <task name="SPR_dpcch"/>
-            <task name="DPCCH_ind"/>
-            <task name="SPR_dpdch"/>
-            <task name="Buffer"/>
-            <task name="SCR"/>
             <task name="Filter_Coeff"/>
-            <task name="DPDCH_ind"/>
-            <task name="PSH"/>
+            <task name="DPCCH_ind"/>
             <task name="SLOT_process"/>
-            <task name="CTRL_dpcch"/>
+            <task name="DPDCH_ind"/>
             <task name="PRINT"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_4"/>
             <task name="CST_SCR"/>
-            <task name="PSH1"/>
-            <task name="sum"/>
-            <task name="PSH2"/>
-            <task name="MUX"/>
-            <task name="SPR_dpcch"/>
-            <task name="DPCCH_ind"/>
-            <task name="SPR_dpdch"/>
-            <task name="Buffer"/>
-            <task name="SCR"/>
             <task name="Filter_Coeff"/>
-            <task name="DPDCH_ind"/>
-            <task name="PSH"/>
+            <task name="DPCCH_ind"/>
             <task name="SLOT_process"/>
-            <task name="CTRL_dpcch"/>
+            <task name="DPDCH_ind"/>
             <task name="PRINT"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_2"/>
             <task name="CST_SCR"/>
-            <task name="PSH1"/>
-            <task name="sum"/>
-            <task name="PSH2"/>
-            <task name="MUX"/>
-            <task name="SPR_dpcch"/>
-            <task name="DPCCH_ind"/>
-            <task name="SPR_dpdch"/>
-            <task name="Buffer"/>
-            <task name="SCR"/>
             <task name="Filter_Coeff"/>
-            <task name="DPDCH_ind"/>
-            <task name="PSH"/>
-            <task name="SLOT_process"/>
-            <task name="CTRL_dpcch"/>
-            <task name="PRINT"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_1"/>
-            <task name="Filter_Coeff"/>
-            <task name="PSH1"/>
-            <task name="sum"/>
-            <task name="DPDCH_ind"/>
-            <task name="PRINT"/>
-            <task name="MUX"/>
             <task name="DPCCH_ind"/>
             <task name="SLOT_process"/>
-            <task name="SPR_dpdch"/>
-            <task name="CST_SCR"/>
-            <task name="PSH2"/>
-            <task name="SCR"/>
-            <task name="Buffer"/>
-            <task name="SPR_dpcch"/>
-            <task name="PSH"/>
-            <task name="CTRL_dpcch"/>
+            <task name="DPDCH_ind"/>
+            <task name="PRINT"/>
         </constraintGroup>
     </constraints>
     <timings>

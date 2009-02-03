@@ -57,6 +57,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.ietr.preesm.plugin.mapper.tools.SubsetFinder;
 import org.ietr.preesm.plugin.mapper.tools.ToolBox;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -171,7 +172,7 @@ public class InitialLists {
 		// Run backward in the DAG to find the node with its parents in the
 		// CPNdominantlist and with the b-level maximum
 		while (!(orderlist.containsAll(predset))) {
-			cpnvertex = choixIBN(dag, predset, orderlist, abc);
+			cpnvertex = ibnChoice(dag, predset, orderlist, abc);
 			predset.clear();
 
 			if (cpnvertex != null) {
@@ -179,7 +180,7 @@ public class InitialLists {
 						.predecessorListOf((MapperDAGVertex) cpnvertex));
 			} else {
 				PreesmLogger.getLogger().log(Level.SEVERE,
-						"No operator was found for a vertex");
+						"No operator was found for the vertex: " + cpnvertex);
 				return false;
 			}
 
@@ -197,7 +198,7 @@ public class InitialLists {
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
 	 * @return : MapperDAGVertex
 	 */
-	private MapperDAGVertex choixIBN(MapperDAG dag, Set<DAGVertex> predset,
+	private MapperDAGVertex ibnChoice(MapperDAG dag, Set<DAGVertex> predset,
 			List<MapperDAGVertex> orderlist, IAbc archi) {
 
 		// Variables
@@ -208,8 +209,7 @@ public class InitialLists {
 		int tlevelmax = Integer.MAX_VALUE;
 
 		// Check into the predecessor list the one with the biggest b-level or
-		// if
-		// they have the same with the smallest t-level
+		// if they have the same with the smallest t-level
 		while (iter.hasNext()) {
 			currentvertex = (MapperDAGVertex) iter.next();
 
@@ -319,6 +319,20 @@ public class InitialLists {
 			}
 
 		}
+		
+		// Careful! Reordering the CPN dominant list in topological order.
+		// Improves a lot some schedulings but could damage others. To test in the long run
+		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
+		List<MapperDAGVertex> newOrderlist = new ArrayList<MapperDAGVertex>();
+		
+		while(topoDAGIterator.hasNext()){
+			MapperDAGVertex v = (MapperDAGVertex)topoDAGIterator.next();
+			if(orderlist.contains(v))
+				newOrderlist.add(v);
+		}
+		
+		orderlist.clear();
+		orderlist.addAll(newOrderlist);
 		
 		return true;
 

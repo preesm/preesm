@@ -82,6 +82,11 @@ public class PFastAlgoParameters extends AbstractParameters {
 	private int procNumber;
 
 	/**
+	 * true if we need to display the intermediate solutions
+	 */
+	private boolean displaySolutions;
+
+	/**
 	 * Constructors
 	 */
 
@@ -92,9 +97,10 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.margIn = textParameters.getIntVariable("margIn");
 		this.nodesMin = textParameters.getIntVariable("nodesMin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
+		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
 	}
 
-	public PFastAlgoParameters(int margIn, int maxCount, int maxStep,
+	public PFastAlgoParameters(int margIn, int maxCount, int maxStep, boolean displaySolutions,
 			int nodesmin, int procNumber,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		super(simulatorType,edgeSchedType);
@@ -109,6 +115,7 @@ public class PFastAlgoParameters extends AbstractParameters {
 		this.maxStep = maxStep;
 		this.nodesMin = nodesmin;
 		this.procNumber = procNumber;
+		this.displaySolutions = displaySolutions;
 	}
 
 	/**
@@ -133,6 +140,14 @@ public class PFastAlgoParameters extends AbstractParameters {
 
 	public int getMaxStep() {
 		return maxStep;
+	}
+
+	public boolean isDisplaySolutions() {
+		return displaySolutions;
+	}
+
+	public void setDisplaySolutions(boolean displaySolutions) {
+		this.displaySolutions = displaySolutions;
 	}
 
 	public void setMargIn(int margIn) {

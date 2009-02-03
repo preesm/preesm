@@ -345,7 +345,7 @@ public class PGeneticAlgo extends Observable {
 
 		List<MapperDAG> popuList = new ArrayList<MapperDAG>();
 		fastAlgorithm.map(dag, archi, 2, 5, initialLists, 10, 6, 3,
-				simulatorType,edgeSchedType, true, 4, popuList);
+				simulatorType,edgeSchedType, true, 4, true, popuList);
 
 		PGeneticAlgo geneticAlgo = new PGeneticAlgo();
 

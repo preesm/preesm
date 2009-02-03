@@ -177,7 +177,7 @@ public class PGeneticAlgoTester {
 		
 		List<MapperDAG> populist = new ArrayList<MapperDAG>();
 		algorithm.map(dag, archi, nboperator, 10, initial, 20, 10, 4,
-				simulatorType,edgeSchedType, true, 10, populist);
+				simulatorType,edgeSchedType, true, 10, true, populist);
 
 		PGeneticAlgo geneticAlgorithm = new PGeneticAlgo();
 

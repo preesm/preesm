@@ -293,7 +293,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		// create population using Pfast
 		PFastAlgorithm algorithm = new PFastAlgorithm();
 		List<MapperDAG> population = new ArrayList<MapperDAG>();
-		algorithm.map(dag, archi, 2, 2, initialLists, 10, 6, 3, type, edgeSchedType, true, 4,
+		algorithm.map(dag, archi, 2, 2, initialLists, 10, 6, 3, type, edgeSchedType, true, 4, true,
 				population);
 
 		// Perform the StandardGeneticAlgo

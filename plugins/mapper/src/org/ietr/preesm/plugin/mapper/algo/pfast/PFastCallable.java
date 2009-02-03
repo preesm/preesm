@@ -84,6 +84,9 @@ class PFastCallable implements Callable<MapperDAG> {
 
 	// number of search steps in an iteration
 	private int maxStep;
+	
+	// True if we want to display the best found solutions
+	private boolean isDisplaySolutions;
 
 	// Variables to know if we have to do the initial scheduling or not
 	private boolean alreadyImplanted;
@@ -103,7 +106,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	 */
 	public PFastCallable(String name, MapperDAG inputDAG,
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
-			int maxCount, int maxStep, int margIn, boolean alreadyImplanted,
+			int maxCount, int maxStep, int margIn, boolean isDisplaySolutions, boolean alreadyImplanted,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		threadName = name;
 		this.inputDAG = inputDAG;
@@ -115,6 +118,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		this.alreadyImplanted = alreadyImplanted;
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
+		this.isDisplaySolutions = isDisplaySolutions;
 	}
 
 	/**
@@ -132,7 +136,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		MultiCoreArchitecture callableArchi;
 		List<MapperDAGVertex> callableBlockingNodes = new ArrayList<MapperDAGVertex>();
 
-		// Critic section where the data from the main are copied for the thread
+		// Critical sections where the data from the main thread are copied for this thread
 		synchronized (inputDAG) {
 			callableDAG = inputDAG.clone();
 		}
@@ -158,8 +162,11 @@ class PFastCallable implements Callable<MapperDAG> {
 		outputDAG = algo.map(threadName, simulatorType, edgeSchedType, callableDAG,
 				callableArchi, initialLists.getCpnDominantList(),
 				callableBlockingNodes, initialLists.getFinalcriticalpathList(),
-				maxCount, maxStep, margIn, alreadyImplanted, true, null, false, null);
+				maxCount, maxStep, margIn, alreadyImplanted, true, null, isDisplaySolutions, null);
 
+		// Saving best total order for future display
+		outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());
+		
 		return outputDAG;
 
 	}

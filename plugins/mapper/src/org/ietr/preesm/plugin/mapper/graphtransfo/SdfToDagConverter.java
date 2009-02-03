@@ -154,7 +154,7 @@ public class SdfToDagConverter {
 			PreesmLogger.getLogger().log(Level.SEVERE,"Can not map a DAG with no vertex.");
 		}
 		else{
-			PreesmLogger.getLogger().log(Level.INFO,"mappin a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
+			PreesmLogger.getLogger().log(Level.INFO,"mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
 		}
 
 		return dag;

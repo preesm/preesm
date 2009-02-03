@@ -39,6 +39,7 @@ package org.ietr.preesm.core.scenario.editor.timings;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.Set;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -56,8 +57,15 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Exporting timings in an excel sheet
@@ -82,7 +90,7 @@ public class ExcelTimingWriter implements SelectionListener {
 
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		SaveAsWizard wizard = new SaveAsWizard(scenario);
+		SaveAsWizard wizard = new SaveAsWizard(this);
 		WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
 		dialog.open();
 	}
@@ -95,15 +103,15 @@ public class ExcelTimingWriter implements SelectionListener {
 	public void write(OutputStream os) {
 
 		try {
-		    WorkbookSettings ws = new WorkbookSettings();
-		    ws.setLocale(new Locale("en", "EN"));
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setLocale(new Locale("en", "EN"));
 			WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
 			WritableSheet sheet = workbook.createSheet("Timings", 0);
 
 			addTimingCells(sheet);
-		    workbook.write();
+			workbook.write();
 			workbook.close();
-		    
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {
@@ -119,36 +127,48 @@ public class ExcelTimingWriter implements SelectionListener {
 		if (sheet != null) {
 
 			int maxOpAbscissa = 1, maxVOrdinate = 1;
-			
-			for (Timing timing : scenario.getTimingManager().getTimings()) {
-				String opDef = timing.getOperatorDefinition().getId();
-				String vertex = timing.getVertex().getName();
-				int time = timing.getTime();
 
-				WritableCell opCell = (WritableCell)sheet.findCell(opDef), vCell = (WritableCell)sheet
-						.findCell(vertex);
+			Set<SDFAbstractVertex> vSet = SDFListContentProvider
+					.getSortedVertices(scenario);
+			MultiCoreArchitecture archi = ScenarioParser
+					.getArchitecture(scenario.getArchitectureURL());
 
-				try {
-					if (opCell == null) {
-						opCell = new Label(maxOpAbscissa, 0, opDef);
-						sheet.addCell(opCell);
-						maxOpAbscissa++;
+			for (ArchitectureComponentDefinition opDef : archi
+					.getComponentDefinitions(ArchitectureComponentType.operator)) {
+				for (SDFAbstractVertex vertex : vSet) {
+					String opDefName = opDef.getId();
+					String vertexName = vertex.getName();
+
+					int time = scenario.getTimingManager().getTimingOrDefault(
+							vertex, (IOperatorDefinition) opDef);
+
+					WritableCell opCell = (WritableCell) sheet
+							.findCell(opDefName), vCell = (WritableCell) sheet
+							.findCell(vertexName);
+
+					try {
+						if (opCell == null) {
+							opCell = new Label(maxOpAbscissa, 0, opDefName);
+							sheet.addCell(opCell);
+							maxOpAbscissa++;
+						}
+
+						if (vCell == null) {
+							vCell = new Label(0, maxVOrdinate, vertexName);
+							sheet.addCell(vCell);
+							maxVOrdinate++;
+						}
+
+						WritableCell timeCell = new Number(opCell.getColumn(),
+								vCell.getRow(), time);
+						sheet.addCell(timeCell);
+					} catch (RowsExceededException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (WriteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-					if (vCell == null) {
-						vCell = new Label(0, maxVOrdinate, vertex);
-						sheet.addCell(vCell);
-						maxVOrdinate++;
-					}
-					
-					WritableCell timeCell = new Number(opCell.getColumn(), vCell.getRow(), time);
-					sheet.addCell(timeCell);
-				} catch (RowsExceededException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (WriteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 		}

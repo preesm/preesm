@@ -44,7 +44,7 @@ import org.ietr.preesm.core.scenario.editor.Messages;
  */
 public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 
-	private Scenario scenario;
+	private ExcelTimingWriter writer;
 
 	/**
 	 * Constructor for {@link WizardSaveExcelPage}.
@@ -59,7 +59,6 @@ public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 	public InputStream getInitialContents() {
 		// writes graph
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ExcelTimingWriter writer = new ExcelTimingWriter(scenario);
 
 		writer.write(out);
 		return new ByteArrayInputStream(out.toByteArray());
@@ -71,8 +70,8 @@ public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 	 * @param graph
 	 *            A {@link Graph}.
 	 */
-	public void setScenario(Scenario scenario) {
-		this.scenario = scenario;
+	public void setWriter(ExcelTimingWriter writer) {
+		this.writer = writer;
 	}
 
 }

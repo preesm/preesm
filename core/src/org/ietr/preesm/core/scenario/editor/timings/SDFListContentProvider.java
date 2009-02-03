@@ -44,7 +44,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.tools.SDFPathComparator;
+import org.ietr.preesm.core.tools.NameComparator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -55,43 +55,44 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class SDFListContentProvider implements IStructuredContentProvider{
 	
-	//private Scenario scenario = null;
-	
-	private SDFGraph currentGraph = null;
-
-	Object[] elementTable = null;
-	
 	@Override
 	public Object[] getElements(Object inputElement) {
 
+		Object[] elementTable = null;
 
 		if(inputElement instanceof Scenario){
 			Scenario inputScenario = (Scenario)inputElement;
 			
-			// Opening algorithm from file
-			currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
-			
-			// Displays the task names in alphabetical order
-			if(currentGraph != null){
-				
-				// lists the vertices in hierarchy
-				Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
-				
-				// Filters the results
-				filterVertices(vertices);
-
-				Set<SDFAbstractVertex> sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new SDFPathComparator());
-				sortedVertices.addAll(vertices);
-				elementTable = sortedVertices.toArray();
-			}
+			elementTable = getSortedVertices(inputScenario).toArray();
 		}
 		return elementTable;
+	}	
+	
+	static public Set<SDFAbstractVertex> getSortedVertices(Scenario inputScenario) {
+		Set<SDFAbstractVertex> sortedVertices = null;	
+		// Opening algorithm from file
+		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
+		
+		// Displays the task names in alphabetical order
+		if(currentGraph != null){
+			
+			// lists the vertices in hierarchy
+			Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
+			
+			// Filters the results
+			filterVertices(vertices);
+
+			sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
+			sortedVertices.addAll(vertices);
+		}
+		
+		return sortedVertices;
 	}
 	
 	/**
 	 * Depending on the kind of vertex, timings are edited or not
 	 */
-	public void filterVertices(Set<SDFAbstractVertex> vertices) {
+	static public void filterVertices(Set<SDFAbstractVertex> vertices) {
 
 		Iterator<SDFAbstractVertex> iterator = vertices.iterator();
 		

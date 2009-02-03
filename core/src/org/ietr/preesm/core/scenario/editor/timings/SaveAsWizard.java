@@ -52,15 +52,15 @@ import org.ietr.preesm.core.ui.Activator;
 public class SaveAsWizard extends Wizard implements INewWizard {
 
 	private IWorkbench workbench;
-	private Scenario scenario;
+	private ExcelTimingWriter writer;
 
 
 	/**
 	 * Constructor for {@link SaveAsWizard}.
 	 */
-	public SaveAsWizard(Scenario scenario) {
+	public SaveAsWizard(ExcelTimingWriter writer) {
 		super();
-		this.scenario = scenario;
+		this.writer = writer;
 		setNeedsProgressMonitor(true);
 		setWindowTitle("Save timings As...");
 	}
@@ -68,7 +68,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
 	@Override
 	public void addPages() {
 		WizardSaveExcelPage page = new WizardSaveExcelPage();
-		page.setScenario(scenario);
+		page.setWriter(writer);
 		page.setDescription("Save timings as.");
 		addPage(page);
 	}

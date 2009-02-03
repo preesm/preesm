@@ -173,7 +173,7 @@ public class PFastArchiTester {
 		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
 		
 		dag = pfastAlgorithm.map(dag, archi, nboperator, 3, initial, 20, 20, 6,
-				simulatorType, edgeSchedType, false, 10, null);
+				simulatorType, edgeSchedType, false, 10, true, null);
 
 		// display the found solution
 		IAbc simu2 = AbstractAbc

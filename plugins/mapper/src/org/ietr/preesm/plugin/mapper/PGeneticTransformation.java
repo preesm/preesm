@@ -160,7 +160,7 @@ public class PGeneticTransformation extends AbstractMapping {
 		if (parameters.isPfastused2makepopulation()) {
 			PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, 5,
+			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, true, 5,
 					parameters.getProcessorNumber(), parameters
 							.getSimulatorType(), parameters.getEdgeSchedType());
 
@@ -168,7 +168,7 @@ public class PGeneticTransformation extends AbstractMapping {
 					.getProcNumber(), parameter.getNodesmin(), initial,
 					parameter.getMaxCount(), parameter.getMaxStep(), parameter
 							.getMargIn(), parameters.getSimulatorType(),parameters.getEdgeSchedType(), true,
-					parameters.getPopulationSize(), populationDAG);
+					parameters.getPopulationSize(), true, populationDAG);
 
 		} else {
 

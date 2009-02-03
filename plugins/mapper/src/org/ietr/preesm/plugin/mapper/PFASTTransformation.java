@@ -104,7 +104,7 @@ public class PFASTTransformation extends AbstractMapping {
 		}
 
 		PFASTTransformation transformation = new PFASTTransformation();
-		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, 5, 3,
+		PFastAlgoParameters parameters = new PFastAlgoParameters(8, 20, 16, true, 5, 3,
 				AbcType.LooselyTimed, EdgeSchedType.Simple);
 		transformation.transform(graph, archi, parameters.textParameters(), scenario, null);
 
@@ -151,12 +151,15 @@ public class PFASTTransformation extends AbstractMapping {
 		dag = pfastAlgorithm.map(dag, architecture, parameters.getProcNumber(),
 				parameters.getNodesmin(), initial, parameters.getMaxCount(),
 				parameters.getMaxStep(), parameters.getMargIn(), parameters
-						.getSimulatorType(),parameters.getEdgeSchedType(), false, 0, null);
+						.getSimulatorType(),parameters.getEdgeSchedType(), false, 0, parameters.isDisplaySolutions(), null);
 
 		simu2.setDAG(dag);
 
 		//simu2.plotImplementation();
 
+		// The transfers are reordered using the best found order during
+		// scheduling
+		simu2.reorder(pfastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
 		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
