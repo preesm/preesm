@@ -1,7 +1,14 @@
 package org.ietr.preesm.plugin.codegen.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
+import org.sdf4j.demo.SDFAdapterDemo;
+import org.sdf4j.demo.SDFtoDAGDemo;
+import org.sdf4j.factories.DAGVertexFactory;
+import org.sdf4j.importer.GMLSDFImporter;
+import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
@@ -12,8 +19,46 @@ import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.sdf4j.visitors.DAGTransformation;
+import org.sdf4j.visitors.HierarchyFlattening;
+import org.sdf4j.visitors.ToHSDFVisitor;
 
 public class CodeGenSDFGraphFactory {
+	
+	public static void main(String [] args){
+		SDFAdapterDemo applet1 = new SDFAdapterDemo();
+		SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
+		GMLSDFImporter importer = new GMLSDFImporter();
+		// SDFGraph demoGraph = createTestComGraph();
+		SDFGraph demoGraph;
+		try {
+			
+			 demoGraph = importer.parse(new File(
+			  "D:\\Preesm\\trunk\\tests\\IDCT2D\\idct2dCadOptim.graphml"));
+			 
+			/*demoGraph = importer.parse(new File(
+					"D:\\Preesm\\trunk\\tests\\UMTS\\Tx_UMTS.graphml"));*/
+			HierarchyFlattening visitor = new HierarchyFlattening();
+			DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<DirectedAcyclicGraph>(
+					new DirectedAcyclicGraph(), new DAGVertexFactory());
+			visitor.flattenGraph(demoGraph, 1);
+			ToHSDFVisitor hsdf = new ToHSDFVisitor();
+			visitor.getOutput().accept(hsdf);
+			applet1.init(hsdf.getOutput());
+			SDFGraph dag = visitor.getOutput().clone();
+			dag.accept(dageur);
+			applet2.init(dageur.getOutput());
+			CodeGenSDFGraphFactory codeGenGraphFactory = new CodeGenSDFGraphFactory();
+			CodeGenSDFGraph codeGenGraph = codeGenGraphFactory.create(dageur.getOutput());
+			System.out.println("transformation done");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	public CodeGenSDFGraph create(DirectedAcyclicGraph dag){
@@ -53,7 +98,7 @@ public class CodeGenSDFGraphFactory {
 				}
 			}
 		}
-		return null ;
+		return output ;
 	}
 	
 	public CodeGenSDFGraph create(SDFGraph sdf){
@@ -89,7 +134,7 @@ public class CodeGenSDFGraphFactory {
 			newEdge.setProd(edge.getProd().clone());
 			newEdge.setDelay(edge.getDelay().clone());
 		}
-		return null ;
+		return output ;
 	}
 
 }
