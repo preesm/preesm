@@ -64,6 +64,7 @@ import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.ITask;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -136,7 +137,7 @@ public class Workflow {
 			AlgorithmConfiguration algorithmConfiguration,
 			ArchitectureConfiguration architectureConfiguration,
 			ScenarioConfiguration scenarioConfiguration,
-			Map<String, String> envVars) {
+			Map<String, String> envVars) throws PreesmException{
 
 		// Activates the Preesm perspective
 		activatePerspective();
