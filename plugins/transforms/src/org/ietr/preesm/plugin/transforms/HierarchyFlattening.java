@@ -61,7 +61,7 @@ public class HierarchyFlattening implements IGraphTransformation {
 		if (depthS != null) {
 			depth = Integer.decode(depthS);
 		} else {
-			depth = -1;
+			depth = 1;
 		}
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);

@@ -36,6 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.exportXml;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
@@ -61,7 +68,23 @@ public class SDF4JGMLExporter implements IExporter {
 	public void transform(AbstractGraph algorithm, TextParameters params) {
 		GMLSDFExporter exporter = new GMLSDFExporter();
 		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		exporter.export(clone, params.getVariable("path"));
+		IPath xmlPath = new Path(params.getVariable("path"));
+		if(!xmlPath.getFileExtension().equals(".graphml")){
+			xmlPath.addFileExtension(".graphml");
+		}
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+
+		IFile iFile = workspace.getRoot().getFile(xmlPath);
+		try {
+			if (!iFile.exists()) {
+				iFile.create(null, false, new NullProgressMonitor());
+			}
+			exporter.export(clone, iFile.getRawLocation().toOSString());
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	public static void main(String [] args){
