@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.transforms;
 import java.util.List;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -49,7 +50,7 @@ import org.sdf4j.optimisations.loops.detection.LoopDetector;
 public class GraphLooping implements IGraphTransformation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
+	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException{
 		SDFGraph inGraph = algorithm.clone();
 		LoopDetector detector = new LoopDetector(inGraph);
 		String nbClust = params.getVariable("loopLength");

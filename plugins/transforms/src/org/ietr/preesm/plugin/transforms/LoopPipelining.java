@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.transforms;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -45,7 +46,7 @@ import org.sdf4j.optimisations.loops.pipelining.SimplePipeline;
 public class LoopPipelining implements IGraphTransformation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
+	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException{
 		SDFGraph inGraph = algorithm.clone();
 		SimplePipeline pipeliner = new SimplePipeline();
 		String nbClust = params.getVariable("nbCluster");

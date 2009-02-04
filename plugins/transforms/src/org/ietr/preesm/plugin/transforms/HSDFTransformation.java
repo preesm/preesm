@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -56,7 +57,7 @@ import org.sdf4j.visitors.VisitorOutput;
 public class HSDFTransformation implements IGraphTransformation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
+	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");

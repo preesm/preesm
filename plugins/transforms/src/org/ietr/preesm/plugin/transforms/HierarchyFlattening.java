@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.task.IGraphTransformation;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -56,7 +57,7 @@ import org.sdf4j.visitors.VisitorOutput;
 public class HierarchyFlattening implements IGraphTransformation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) {
+	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException{
 		String depthS = params.getVariable("depth");
 		int depth;
 		if (depthS != null) {
@@ -67,16 +68,23 @@ public class HierarchyFlattening implements IGraphTransformation {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
-		ConsistencyChecker checkCOnsistent = new ConsistencyChecker();
-		checkCOnsistent.verifyGraph(algorithm);
-		logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
-		org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
-		VisitorOutput.setLogger(logger);
-		flatHier.flattenGraph(algorithm, depth);
-		logger.log(Level.FINER, "flattening complete");
-		TaskResult result = new TaskResult();
-		result.setSDF((SDFGraph) flatHier.getOutput());
-		return result;
+		ConsistencyChecker checkConsistent = new ConsistencyChecker();
+		if(checkConsistent.verifyGraph(algorithm)){
+			logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
+			org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
+			VisitorOutput.setLogger(logger);
+			flatHier.flattenGraph(algorithm, depth);
+			logger.log(Level.FINER, "flattening complete");
+			TaskResult result = new TaskResult();
+			result.setSDF((SDFGraph) flatHier.getOutput());
+			return result;
+		}else{
+			logger.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
+			TaskResult result = new TaskResult();
+			result.setSDF((SDFGraph) algorithm.clone());
+			throw(new PreesmException("Inconsistent Hierarchy, graph can't be flattened"));
+		}
+		
 
 	}
 
