@@ -45,6 +45,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.workflow.Workflow;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
@@ -98,7 +99,12 @@ public class WorkflowLaunchConfigurationDelegate implements
 			
 			ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(configuration);
 
-			workflow.execute(monitor, algorithmConfiguration, architectureConfiguration, scenarioConfiguration,configEnv);
+			try {
+				workflow.execute(monitor, algorithmConfiguration, architectureConfiguration, scenarioConfiguration,configEnv);
+			} catch (PreesmException e) {
+				e.printStackTrace();
+				monitor.setCanceled(true);
+			}
 		} else {
 			monitor.setCanceled(true);
 		}
