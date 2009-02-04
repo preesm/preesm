@@ -51,6 +51,6 @@ public interface IGraphTransformation extends ITransformation{
 	 * @param algorithm
 	 *            A {@link SDFGraph} graph to be transformed.
 	 */
-	public TaskResult transform(SDFGraph algorithm,  TextParameters params);
+	public TaskResult transform(SDFGraph algorithm,  TextParameters params) throws PreesmException;
 
 }
