@@ -44,6 +44,7 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.visitors.ConsistencyChecker;
 import org.sdf4j.visitors.VisitorOutput;
 
 /**
@@ -65,6 +66,9 @@ public class HierarchyFlattening implements IGraphTransformation {
 		}
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
+		VisitorOutput.setLogger(logger);
+		ConsistencyChecker checkCOnsistent = new ConsistencyChecker();
+		checkCOnsistent.verifyGraph(algorithm);
 		logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
 		org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
 		VisitorOutput.setLogger(logger);
