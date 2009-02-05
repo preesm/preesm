@@ -41,7 +41,7 @@ public class CodeGenSDFGraphFactory {
 			HierarchyFlattening visitor = new HierarchyFlattening();
 			DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<DirectedAcyclicGraph>(
 					new DirectedAcyclicGraph(), new DAGVertexFactory());
-			visitor.flattenGraph(demoGraph, 1);
+			visitor.flattenGraph(demoGraph, 2);
 			ToHSDFVisitor hsdf = new ToHSDFVisitor();
 			visitor.getOutput().accept(hsdf);
 			applet1.init(hsdf.getOutput());
@@ -50,7 +50,7 @@ public class CodeGenSDFGraphFactory {
 			applet2.init(dageur.getOutput());
 			CodeGenSDFGraphFactory codeGenGraphFactory = new CodeGenSDFGraphFactory();
 			CodeGenSDFGraph codeGenGraph = codeGenGraphFactory.create(dageur.getOutput());
-			System.out.println("transformation done");
+			System.out.println(codeGenGraph.toString());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,6 +67,9 @@ public class CodeGenSDFGraphFactory {
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
 		for(DAGVertex vertex : dag.vertexSet()){
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
+			if(codeGenVertex instanceof CodeGenSDFVertex){
+				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat().intValue());
+			}
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
 		}
@@ -102,11 +105,15 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public CodeGenSDFGraph create(SDFGraph sdf){
+		HashMap<SDFAbstractVertex, Integer> vrb = sdf.getVRB();
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(sdf.getName()) ;
 		for(SDFAbstractVertex vertex : sdf.vertexSet()){
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
+			if(codeGenVertex instanceof CodeGenSDFVertex){
+				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vrb.get(vertex));
+			}
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
 		}

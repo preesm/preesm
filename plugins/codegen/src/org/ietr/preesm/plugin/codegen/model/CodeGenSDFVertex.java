@@ -1,6 +1,7 @@
 package org.ietr.preesm.plugin.codegen.model;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFVertex;
 
 public class CodeGenSDFVertex extends SDFVertex{
@@ -31,6 +32,44 @@ public class CodeGenSDFVertex extends SDFVertex{
 	}
 	
 	public void setNbRepeat(int nb){
-		this.getPropertyBean().setValue(NB_REPEAT, getNbRepeat(), nb);
+		this.getPropertyBean().setValue(NB_REPEAT, nb);
+	}
+	
+	public String toString(){
+		String code = new String();
+		if(getNbRepeat() > 1){
+			code +="for(ind = 0 ; ind <"+getNbRepeat()+" ; ind ++){\n";
+			if(this.getGraphDescription() == null){
+				code += this.getName()+"(";
+				for(SDFEdge edge : this.getBase().incomingEdgesOf(this)){
+					code+=edge.getSource().getName()+"_"+edge.getSourceInterface().getName()+",";
+				}
+				for(SDFEdge edge : this.getBase().outgoingEdgesOf(this)){
+					code+=edge.getSource().getName()+"_"+edge.getSourceInterface().getName()+",";
+				}
+				code = code.substring(0,code.length()-1);
+				code +=");\n";
+			}else{
+				code +=this.getGraphDescription().toString();
+				code +=";\n";
+			}
+			code +="}\n";
+		}else{
+			if(this.getGraphDescription() == null){
+				code += this.getName()+"(";
+				for(SDFEdge edge : this.getBase().incomingEdgesOf(this)){
+					code+=edge.getSource().getName()+"_"+edge.getSourceInterface().getName()+",";
+				}
+				for(SDFEdge edge : this.getBase().outgoingEdgesOf(this)){
+					code+=edge.getSource().getName()+"_"+edge.getSourceInterface().getName()+",";
+				}
+				code = code.substring(0,code.length()-1);
+				code +=");\n";
+			}else{
+				code +=this.getGraphDescription().toString();
+			}
+		}
+		
+		return code ;
 	}
 }

@@ -4,4 +4,7 @@ import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 public class CodeGenSDFSourceInterfaceVertex extends SDFSourceInterfaceVertex{
 
+	public String toString(){
+		return "";
+	}
 }

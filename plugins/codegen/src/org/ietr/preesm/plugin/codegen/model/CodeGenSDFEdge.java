@@ -11,4 +11,8 @@ public class CodeGenSDFEdge extends SDFEdge{
 			AbstractEdgePropertyType<?> dataType){
 		super(prod, cons, delay, dataType);
 	}
+	
+	public String toString(){
+		return getDataType().toString()+" "+getSource().getName()+"_"+getSourceInterface().getName()+ " ["+getProd().intValue()+"];\n" ;
+	}
 }
