@@ -41,7 +41,7 @@ public class CodeGenSDFGraphFactory {
 			HierarchyFlattening visitor = new HierarchyFlattening();
 			DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<DirectedAcyclicGraph>(
 					new DirectedAcyclicGraph(), new DAGVertexFactory());
-			visitor.flattenGraph(demoGraph, 2);
+			visitor.flattenGraph(demoGraph, 1);
 			ToHSDFVisitor hsdf = new ToHSDFVisitor();
 			visitor.getOutput().accept(hsdf);
 			applet1.init(hsdf.getOutput());
@@ -105,14 +105,13 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public CodeGenSDFGraph create(SDFGraph sdf){
-		HashMap<SDFAbstractVertex, Integer> vrb = sdf.getVRB();
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(sdf.getName()) ;
 		for(SDFAbstractVertex vertex : sdf.vertexSet()){
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
 			if(codeGenVertex instanceof CodeGenSDFVertex){
-				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vrb.get(vertex));
+				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat());
 			}
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
