@@ -94,10 +94,10 @@ public class CodeElementFactory {
 					.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, vertex);
-			for (SDFAbstractVertex child : graph.vertexSet()) {
+			/*for (SDFAbstractVertex child : graph.vertexSet()) {
 				compound.addCall(CodeElementFactory.createElement(name,
 						parentContainer, child));
-			}
+			}*/
 			return compound;
 		}
 	}
@@ -107,10 +107,10 @@ public class CodeElementFactory {
 		if (vertex.getGraphDescription() == null) {
 			return new UserFunctionCall(name, vertex, parentContainer);
 		} else if (vertex.getGraphDescription() != null
-				&& vertex.getBase().getVRB().get(vertex) > 1) {
+				&& vertex.getNbRepeat() > 1) {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
-					(SDFVertex) vertex, vertex.getBase().getVRB().get(vertex));
+					(SDFVertex) vertex, vertex.getNbRepeat());
 			for (SDFAbstractVertex child : graph.vertexSet()) {
 				loop.addCall(CodeElementFactory
 						.createElement(name, loop, child));
