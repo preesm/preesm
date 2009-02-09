@@ -207,9 +207,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 			for (VertexWithPath vertex : appropriateChildrenSet) {
 
-				IRefinement refinement = vertex.getStoredVertex().getRefinement();
-				if (refinement != null && refinement instanceof SDFGraph) {
-					SDFGraph graph = (SDFGraph) refinement;
+				SDFGraph graph = (SDFGraph) vertex.getStoredVertex().getGraphDescription();
+				if (graph != null) {
 					updateConstraints(vertex.getStoredVertex(), graph);
 				}
 
