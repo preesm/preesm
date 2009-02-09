@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="PreesmFeature"
+      id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="1.0.0.beta1"
+      version="0.0.2"
       provider-name="IETR/INSA">
 
    <description url="http://www.example.com/description">
@@ -99,6 +99,10 @@ had
 knowledge of the CeCILL-C license and that you accept its terms.
    </license>
 
+   <url>
+      <update label="PREESM" url="http://preesm.sourceforge.net/eclipse/site.xml"/>
+   </url>
+
    <plugin
          id="org.ietr.preesm.core"
          download-size="0"
@@ -122,6 +126,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
    <plugin
          id="org.ietr.preesm.plugin.transforms"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sf.graphiti"
          download-size="0"
          install-size="0"
          version="0.0.0"

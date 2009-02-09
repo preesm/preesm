@@ -139,7 +139,7 @@ public class PFastAlgorithm extends Observable {
 	}
 
 	/**
-	 * pFastAlgoSetUp : Determine how many processors will be used among the
+	 * chooseNbCores : Determine how many processors will be used among the
 	 * available ones and return the set of nodes on which each processor will
 	 * perform the fast algorithm
 	 * 
@@ -153,7 +153,7 @@ public class PFastAlgorithm extends Observable {
 	 * 
 	 * @return integer
 	 */
-	public int pFastAlgoSetUp(InitialLists initialLists, int nboperator,
+	public int chooseNbCores(InitialLists initialLists, int nboperator,
 			int nodesmin, Set<Set<String>> subSet) {
 
 		// initialization
@@ -162,14 +162,19 @@ public class PFastAlgorithm extends Observable {
 		int nbnodes = 0;
 		List<MapperDAGVertex> BNlist = new ArrayList<MapperDAGVertex>();
 		BNlist.addAll(initialLists.getBlockingNodesList());
-		Set<String> tempSet;
-
-		// find number of thread possible
-		nbsubsets = setNumberOfThreads(BNlist, nboperator, nodesmin);
-
-		// find number of nodes per thread
+		Set<String> tempSet = null;
 		nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
 
+		// find number of thread possible
+		nbsubsets = setThreadNumber(BNlist, nboperator, nodesmin);
+
+		if(nbsubsets == 0){
+			PreesmLogger.getLogger().log(Level.SEVERE,"Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
+		}
+		
+		// find number of nodes per thread
+		nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
+		
 		Iterator<MapperDAGVertex> riter = BNlist.iterator();
 		Iterator<Set<String>> itera = subSet.iterator();
 		subSet.add(new HashSet<String>());
@@ -207,7 +212,7 @@ public class PFastAlgorithm extends Observable {
 	 * @return integer
 	 */
 
-	public int setNumberOfThreads(List<MapperDAGVertex> BLlist, int nboperator,
+	public int setThreadNumber(List<MapperDAGVertex> BLlist, int nboperator,
 			int nodesmin) {
 
 		int nbnodes = BLlist.size();
@@ -352,7 +357,7 @@ public class PFastAlgorithm extends Observable {
 		dagfinal.setScheduleLatency(iBest);
 		dag.setScheduleLatency(iBest);
 		// step 3/4
-		int q = pFastAlgoSetUp(initialLists, nboperator, nodesmin, subSet);
+		int nbCores = chooseNbCores(initialLists, nboperator, nodesmin, subSet);
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
@@ -372,15 +377,15 @@ public class PFastAlgorithm extends Observable {
 
 			// step 11
 			int maxcounttemp = Math.max(((Double) Math.ceil(((double) maxCount)
-					/ ((double) j) / ((double) q))).intValue(), 1);
+					/ ((double) j) / ((double) nbCores))).intValue(), 1);
 
 			// create ExecutorService to manage threads
 			subiter = subSet.iterator();
 			Set<FutureTask<MapperDAG>> futureTasks = new HashSet<FutureTask<MapperDAG>>();
-			ExecutorService es = Executors.newFixedThreadPool(q);
+			ExecutorService es = Executors.newFixedThreadPool(nbCores);
 
 			// step 6
-			for (i = k; i < q + k; i++) {
+			for (i = k; i < nbCores + k; i++) {
 				String name = String.format("thread%d", i);
 
 				// step 9/11

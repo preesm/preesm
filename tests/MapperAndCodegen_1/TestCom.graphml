@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
    <key attr.name="name" attr.type="string" for="node" id="name"/>
    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
@@ -17,6 +18,7 @@
       <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
    </key>
    <graph edgedefault="directed">
+      <data key="name"/>
       <data key="parameters"/>
       <data key="variables"/>
       <node id="Sensor" kind="vertex">
