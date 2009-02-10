@@ -126,6 +126,9 @@ public class SdfToDagConverter {
 	public static MapperDAG convert(SDFGraph sdfIn,
 			MultiCoreArchitecture architecture, IScenario scenario,
 			boolean display) {
+		
+		PreesmLogger.getLogger().log(Level.INFO,"Converting from SDF to DAG.");
+		
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
 		MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
@@ -154,8 +157,10 @@ public class SdfToDagConverter {
 			PreesmLogger.getLogger().log(Level.SEVERE,"Can not map a DAG with no vertex.");
 		}
 		else{
+			PreesmLogger.getLogger().log(Level.INFO,"Conversion finished.");
 			PreesmLogger.getLogger().log(Level.INFO,"mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
 		}
+		
 
 		return dag;
 	}

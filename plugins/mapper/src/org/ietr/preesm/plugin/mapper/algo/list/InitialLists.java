@@ -213,6 +213,10 @@ public class InitialLists {
 		while (iter.hasNext()) {
 			currentvertex = (MapperDAGVertex) iter.next();
 
+			if(archi.getBLevel(currentvertex) == -1){
+				PreesmLogger.getLogger().log(Level.SEVERE,"CPN list construction: b-level can not be computed for vertex " + currentvertex);
+			}
+			
 			if (archi.getBLevel(currentvertex) == blevelmax
 					&& !(orderlist.contains(currentvertex))) {
 				if (archi.getTLevel(currentvertex) < tlevelmax) {

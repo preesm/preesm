@@ -76,7 +76,7 @@ public class Timing {
 
 	public Timing(IOperatorDefinition operator, SDFAbstractVertex vertex) {
 
-		time = -1;
+		time = DEFAULT_TASK_TIME;
 		this.operator = operator;
 		this.vertex = vertex;
 	}
