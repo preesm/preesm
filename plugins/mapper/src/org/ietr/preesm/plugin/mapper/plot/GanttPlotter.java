@@ -369,7 +369,7 @@ public class GanttPlotter extends ApplicationFrame {
 
 			logger.log(Level.FINEST, "vertex " + currentvertex.getName()
 					+ ", b-level: "
-					+ currentvertex.getTimingVertexProperty().getValidBlevel());
+					+ currentvertex.getTimingVertexProperty().getBlevel());
 		}
 
 		logger.log(Level.FINEST, "Getting finishing times");

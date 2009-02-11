@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.scenario.editor;
 
-import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**

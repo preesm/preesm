@@ -160,28 +160,6 @@ public class GraphTimeKeeper {
 	}
 
 	/**
-	 * calculating bottom times of each vertex not considering the number of
-	 * processors. The parallelism is limited by the edges
-	 */
-	public void calculateBLevel() {
-
-		MapperDAGVertex currentvertex;
-		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
-
-		// We iterate the dag tree in topological order to calculate b-level
-
-		while (iterator.hasNext()) {
-			currentvertex = (MapperDAGVertex) iterator.next();
-
-			// Starting from end vertices, sets the b-levels of the preceding
-			// tasks
-			if (currentvertex.outgoingEdges().isEmpty())
-				calculateBLevel(currentvertex);
-
-		}
-	}
-
-	/**
 	 * calculating top time of modified vertex.
 	 */
 	public void calculateTLevel(MapperDAGVertex modifiedvertex) {
@@ -216,63 +194,14 @@ public class GraphTimeKeeper {
 
 		} else {
 			// If the current vertex has no effective component
+			PreesmLogger.getLogger().log(
+					Level.FINEST,
+					"tLevel unavailable for vertex " + modifiedvertex
+							+ ". No effective component.");
 			currenttimingproperty.setTlevel(TimingVertexProperty.UNAVAILABLE);
 		}
 
 		dirtyVertices.remove(modifiedvertex);
-	}
-
-	/**
-	 * calculating bottom time of modified vertex.
-	 */
-	public void calculateBLevel(MapperDAGVertex modifiedvertex) {
-
-		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
-
-		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
-				castAlgo);
-
-		TimingVertexProperty currenttimingproperty = modifiedvertex
-				.getTimingVertexProperty();
-
-		Set<DAGVertex> predset = neighborindex
-				.predecessorsOf((MapperDAGVertex) modifiedvertex);
-		Set<DAGVertex> succset = neighborindex
-				.successorsOf((MapperDAGVertex) modifiedvertex);
-
-		// If the current vertex has an effective component
-		if (modifiedvertex.getImplementationVertexProperty()
-				.hasEffectiveComponent()) {
-			// If the current vertex has no successor
-			if (succset.isEmpty()) {
-
-				if (currenttimingproperty.hasTlevel()
-						&& currenttimingproperty.hasCost()) {
-					currenttimingproperty.setBlevel(currenttimingproperty
-							.getCost());
-					currenttimingproperty.setBlevelValidity(true);
-				} else
-					currenttimingproperty
-							.setBlevel(TimingVertexProperty.UNAVAILABLE);
-
-				if (!predset.isEmpty())
-					// Sets recursively the BLevel of its predecessors
-					setPrecedingBlevel(modifiedvertex, predset, neighborindex);
-			}
-		} else {
-
-			currenttimingproperty.setBlevel(TimingVertexProperty.UNAVAILABLE);
-			// If the vertex has no successor, we can go back in the tree to
-			// set the b-level
-			succset = neighborindex
-					.successorsOf((MapperDAGVertex) modifiedvertex);
-
-			if (succset.isEmpty()) {
-
-				if (!predset.isEmpty())
-					setPrecedingBlevel(modifiedvertex, predset, neighborindex);
-			}
-		}
 	}
 
 	/**
@@ -287,8 +216,13 @@ public class GraphTimeKeeper {
 		int timing = TimingVertexProperty.UNAVAILABLE;
 
 		if (!inputvertex.getImplementationVertexProperty()
-				.hasEffectiveComponent())
+				.hasEffectiveComponent()) {
+			PreesmLogger.getLogger().log(
+					Level.FINEST,
+					"tLevel unavailable for vertex " + inputvertex
+							+ ". No effective component.");
 			return TimingVertexProperty.UNAVAILABLE;
+		}
 
 		Iterator<DAGVertex> iterator = graphset.iterator();
 
@@ -312,8 +246,14 @@ public class GraphTimeKeeper {
 
 			// If we could not calculate the T level of the predecessor,
 			// calculation fails
-			if (!vertexTProperty.hasCost() || !vertexTProperty.hasTlevel())
+			if (!vertexTProperty.hasCost() || !vertexTProperty.hasTlevel()) {
+				PreesmLogger.getLogger().log(
+						Level.FINEST,
+						"tLevel unavailable for vertex " + inputvertex
+								+ ". Lacking information on predecessor "
+								+ vertex + ".");
 				return TimingVertexProperty.UNAVAILABLE;
+			}
 
 			int newPathLength = vertexTProperty.getTlevel()
 					+ vertexTProperty.getCost() + edgeCost;
@@ -327,6 +267,79 @@ public class GraphTimeKeeper {
 	}
 
 	/**
+	 * calculating bottom times of each vertex. A b-level is the difference between the start time
+	 * of the task and the end time of the longest branch containing the vertex.
+	 */
+	public void calculateBLevel() {
+
+		MapperDAGVertex currentvertex;
+
+		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
+		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
+				castAlgo);
+
+		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
+
+		// We iterate the dag tree in topological order to calculate b-level
+
+		while (iterator.hasNext()) {
+			currentvertex = (MapperDAGVertex) iterator.next();
+			PreesmLogger.getLogger().log(Level.FINEST,
+					"calculating b-level of " + currentvertex);
+
+			// Starting from end vertices, sets the b-levels of the preceding
+			// tasks
+			if (currentvertex.outgoingEdges().isEmpty())
+				calculateBLevel(currentvertex, neighborindex);
+
+		}
+	}
+
+	/**
+	 * calculating bottom time of a vertex without successors.
+	 */
+	public void calculateBLevel(MapperDAGVertex modifiedvertex,
+			DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex) {
+
+		TimingVertexProperty currenttimingproperty = modifiedvertex
+				.getTimingVertexProperty();
+
+		Set<DAGVertex> predset = neighborindex
+				.predecessorsOf((MapperDAGVertex) modifiedvertex);
+		Set<DAGVertex> succset = neighborindex
+				.successorsOf((MapperDAGVertex) modifiedvertex);
+
+		// If the current vertex has an effective component
+		if (modifiedvertex.getImplementationVertexProperty()
+				.hasEffectiveComponent()
+				&& succset.isEmpty()) {
+
+			if (currenttimingproperty.hasTlevel()
+					&& currenttimingproperty.hasCost()) {
+				currenttimingproperty
+						.setBlevel(currenttimingproperty.getCost());
+
+				if (!predset.isEmpty()) {
+					// Sets recursively the BLevel of its predecessors
+					setPrecedingBlevel(modifiedvertex, predset, neighborindex);
+				}
+			} else {
+				currenttimingproperty
+						.setBlevel(TimingVertexProperty.UNAVAILABLE);
+			}
+
+		} else {
+
+			PreesmLogger
+					.getLogger()
+					.log(
+							Level.SEVERE,
+							"Trying to start b_level calculation from a vertex with successors or without implantation.");
+			currenttimingproperty.setBlevel(TimingVertexProperty.UNAVAILABLE);
+		}
+	}
+
+	/**
 	 * recursive method setting the b-level of the preceding tasks given the
 	 * b-level of a start task
 	 */
@@ -337,60 +350,41 @@ public class GraphTimeKeeper {
 		int currentBLevel = 0;
 		TimingVertexProperty starttimingproperty = startvertex
 				.getTimingVertexProperty();
+		boolean hasStartVertexBLevel = starttimingproperty.hasBlevel();
 
 		Iterator<DAGVertex> iterator = predset.iterator();
 
-		// Sets the b-levels of each predecessor not considering the precedence
-		// edges
+		// Sets the b-levels of each predecessor
 		while (iterator.hasNext()) {
 
 			MapperDAGVertex currentvertex = (MapperDAGVertex) iterator.next();
 
 			TimingVertexProperty currenttimingproperty = currentvertex
 					.getTimingVertexProperty();
+
 			int edgeweight = ((MapperDAGEdge) implementation.getEdge(
 					currentvertex, startvertex)).getTimingEdgeProperty()
 					.getCost();
 
-			// If we lack information on successor, b-level calculation fails
-			if (!starttimingproperty.hasBlevel()
-					|| !currentvertex.getTimingVertexProperty().hasCost()
-					|| (edgeweight < 0)) {
-
-				currentBLevel = TimingVertexProperty.UNAVAILABLE;
-			} else {
-
-				currentBLevel = starttimingproperty.getValidBlevel()
+			if (hasStartVertexBLevel && currenttimingproperty.hasCost()
+					&& edgeweight >= 0) {
+				currentBLevel = starttimingproperty.getBlevel()
 						+ currenttimingproperty.getCost() + edgeweight;
+
+				currenttimingproperty.setBlevel(Math.max(currenttimingproperty
+						.getBlevel(), currentBLevel));
+
+				Set<DAGVertex> newPredSet = neighborindex
+						.predecessorsOf(currentvertex);
+
+				if (!newPredSet.isEmpty())
+					// Recursively sets the preceding b levels
+					setPrecedingBlevel(currentvertex, newPredSet, neighborindex);
+			} else {
+				currenttimingproperty
+						.setBlevel(TimingVertexProperty.UNAVAILABLE);
 			}
 
-			currenttimingproperty.setBlevel(Math.max(currenttimingproperty
-					.getBlevel(), currentBLevel));
-
-			Iterator<DAGVertex> succIt = neighborindex.successorsOf(
-					currentvertex).iterator();
-			boolean allSuccessorsBLevel = true;
-
-			while (succIt.hasNext()) {
-				MapperDAGVertex succ = (MapperDAGVertex) succIt.next();
-				allSuccessorsBLevel = allSuccessorsBLevel
-						&& succ.getTimingVertexProperty().hasBlevel();
-
-				allSuccessorsBLevel = allSuccessorsBLevel
-						&& ((MapperDAGEdge) implementation.getEdge(
-								currentvertex, succ)).getTimingEdgeProperty()
-								.hasCost();
-
-			}
-
-			currenttimingproperty.setBlevelValidity(allSuccessorsBLevel);
-
-			Set<DAGVertex> newPredSet = neighborindex
-					.predecessorsOf(currentvertex);
-
-			if (!newPredSet.isEmpty())
-				// Recursively sets the preceding b levels
-				setPrecedingBlevel(currentvertex, newPredSet, neighborindex);
 		}
 	}
 
@@ -476,27 +470,28 @@ public class GraphTimeKeeper {
 	}
 
 	public void updateTLevels() {
-		
-		//if(!implementation.isDAG())
-		//	PreesmLogger.getLogger().log(Level.SEVERE,"The mapper implementation breaks the dag rules");
+
+		//if (!implementation.isDAG())
+		//	PreesmLogger.getLogger().log(Level.SEVERE,
+		//			"The mapper implementation breaks the dag rules");
 
 		dirtyVertices.addAll(implementation.vertexSet());
 		if (areTimingsDirty()) {
 			calculateTLevel();
 			setAsClean();
-		}
-		else{
-			int i=0;
+		} else {
+			int i = 0;
 			i++;
 		}
 
 	}
 
 	public void updateTandBLevels() {
-		
-		//if(!implementation.isDAG())
-		//	PreesmLogger.getLogger().log(Level.SEVERE,"The mapper implementation breaks the dag rules");
-		
+
+		//if (!implementation.isDAG())
+		//	PreesmLogger.getLogger().log(Level.SEVERE,
+		//			"The mapper implementation breaks the dag rules");
+
 		if (areTimingsDirty()) {
 			calculateTLevel();
 			calculateBLevel();
@@ -535,116 +530,162 @@ public class GraphTimeKeeper {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
-		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag, archi, abcType);
+		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag, archi,
+				abcType);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());
-		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_1"), true);
+		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_2"), true);
+		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_2"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_3"), true);
+		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_3"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
-		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi
-				.getComponent(ArchitectureComponentType.operator,"c64x_4"), true);
+		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
+				true);
 
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		time = simulator.getFinalTime(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
 		logger.log(Level.FINEST, "Iterating in t order");

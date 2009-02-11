@@ -149,6 +149,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm();
 
+		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
 		dag = fastAlgorithm.map("test", parameters.getSimulatorType(),
 				parameters.getEdgeSchedType(), dag, architecture, initial
 						.getCpnDominantList(), initial.getBlockingNodesList(),
@@ -156,6 +157,8 @@ public class FASTTransformation extends AbstractMapping {
 				parameters.getMaxStep(), parameters.getMargIn(), false, false,
 				null, parameters.isDisplaySolutions(), monitor);
 
+		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
+		
 		// Transfer vertices are automatically regenerated
 		simu2.setDAG(dag);
 

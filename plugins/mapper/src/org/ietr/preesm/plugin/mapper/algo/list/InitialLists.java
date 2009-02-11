@@ -56,7 +56,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.ietr.preesm.plugin.mapper.tools.SubsetFinder;
-import org.ietr.preesm.plugin.mapper.tools.ToolBox;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
@@ -144,18 +143,16 @@ public class InitialLists {
 
 	/**
 	 * checkpredecessor: Choose the vertex necessary to continue the
-	 * CPNdominantlist and implement it in the lists(CPN dominant list and the
-	 * BLocking nodes list)
+	 * CPNdominantlist and implement it in the CPN dominant list
 	 * 
 	 * @param : MapperDAG ,MapperDAGVertex, List<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
 	 * @return : true if a vertex was found
 	 */
-	private boolean checkpredecessor(MapperDAG dag, MapperDAGVertex currentvertex,
-			List<MapperDAGVertex> orderlist,
-			List<MapperDAGVertex> blockingnode, IAbc abc) {
+	private boolean checkpredecessor(MapperDAG dag,
+			MapperDAGVertex currentvertex, List<MapperDAGVertex> orderlist,
+			IAbc abc) {
 
-		// Variables
 		MapperDAGVertex cpnvertex = null;
 
 		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
@@ -166,11 +163,10 @@ public class InitialLists {
 
 		// check the parents of the current vertex
 		cpnvertex = currentvertex;
-		predset.clear();
 		predset.addAll(neighborindex.predecessorListOf(currentvertex));
 
 		// Run backward in the DAG to find the node with its parents in the
-		// CPNdominantlist and with the b-level maximum
+		// CPNdominantlist and with the maximum b-level
 		while (!(orderlist.containsAll(predset))) {
 			cpnvertex = ibnChoice(dag, predset, orderlist, abc);
 			predset.clear();
@@ -180,19 +176,20 @@ public class InitialLists {
 						.predecessorListOf((MapperDAGVertex) cpnvertex));
 			} else {
 				PreesmLogger.getLogger().log(Level.SEVERE,
-						"No operator was found for the vertex: " + cpnvertex);
+						"Predecessor not found");
 				return false;
 			}
 
 		}
+
 		orderlist.add(cpnvertex);
 		return true;
 
 	}
 
 	/**
-	 * choixIBN: Determine among the node's predecessors, the vertex necessary
-	 * to continue the algorithm
+	 * ibnChoice: Chooses among the node's predecessors, the vertex necessary to
+	 * continue the algorithm
 	 * 
 	 * @param : MapperDAG ,Set<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
@@ -201,7 +198,6 @@ public class InitialLists {
 	private MapperDAGVertex ibnChoice(MapperDAG dag, Set<DAGVertex> predset,
 			List<MapperDAGVertex> orderlist, IAbc archi) {
 
-		// Variables
 		Iterator<DAGVertex> iter = predset.iterator();
 		MapperDAGVertex currentvertex = null;
 		MapperDAGVertex vertexresult = null;
@@ -212,25 +208,24 @@ public class InitialLists {
 		// if they have the same with the smallest t-level
 		while (iter.hasNext()) {
 			currentvertex = (MapperDAGVertex) iter.next();
+			int bLevel = archi.getBLevel(currentvertex);
+			int tLevel = archi.getTLevel(currentvertex);
 
-			if(archi.getBLevel(currentvertex) == -1){
-				PreesmLogger.getLogger().log(Level.SEVERE,"CPN list construction: b-level can not be computed for vertex " + currentvertex);
-			}
-			
-			if (archi.getBLevel(currentvertex) == blevelmax
-					&& !(orderlist.contains(currentvertex))) {
-				if (archi.getTLevel(currentvertex) < tlevelmax) {
-					tlevelmax = archi.getTLevel(currentvertex);
-
+			if (bLevel == blevelmax && !(orderlist.contains(currentvertex))) {
+				if (tLevel < tlevelmax) {
+					tlevelmax = tLevel;
 					vertexresult = currentvertex;
 				}
-			}
-
-			if (archi.getBLevel(currentvertex) > blevelmax
+			} else if (bLevel > blevelmax
 					&& !(orderlist.contains(currentvertex))) {
 				vertexresult = currentvertex;
-				blevelmax = archi.getBLevel(currentvertex);
-				tlevelmax = archi.getTLevel(currentvertex);
+				blevelmax = bLevel;
+				tlevelmax = tLevel;
+			} else if (bLevel == -1) {
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"CPN list construction: b-level can not be computed for vertex "
+								+ currentvertex);
 			}
 
 		}
@@ -242,27 +237,20 @@ public class InitialLists {
 	/**
 	 * constructCPN : Critical Path implemented in the CPN-DominantList
 	 * (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP)
-	 * 
-	 * @param : MapperDAG , List<MapperDAGVertex>, List<MapperDAGVertex>,
-	 *        List<MapperDAGVertex>
-	 * @return : true if the CPN could be constructed
 	 */
-	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderlist,
-			List<MapperDAGVertex> blockingnode, List<MapperDAGVertex> fcplist,
-			IAbc abc) {
+	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderList,
+			List<MapperDAGVertex> fcplist, IAbc abc) {
+
+		PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
 		// variables
 		MapperDAGVertex currentvertex;
 		MapperDAGVertex cpnvertex = null;
 		MapperDAGVertex tempvertex = null;
 		int commax = 0;
+
+		// This step takes time because the whole graph b levels are calculated.
 		BLevelIterator iterator = new BLevelIterator(dag, abc, false);
-
-		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
-				castDag);
-
-		Set<DAGVertex> succset = new HashSet<DAGVertex>();
 
 		// The DAG is entirely read in b-level order by the iterator to find the
 		// Critical Path
@@ -270,16 +258,24 @@ public class InitialLists {
 		while (!(currentvertex.incomingEdges().isEmpty()))
 			currentvertex = iterator.next();
 
+		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
+		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
+				castDag);
+
+		Set<DAGVertex> succset = new HashSet<DAGVertex>();
+
 		// the first CPNdominant is found
 		// put it in the order list and the FCP list
-		orderlist.add(currentvertex);
+		orderList.add(currentvertex);
 		fcplist.add(currentvertex);
 		cpnvertex = currentvertex;
+		MapperDAG base = (MapperDAG) currentvertex.getBase();
 
 		// Find the successor of the first CPN (Critical Path Node)
 		succset.addAll(neighborindex
 				.successorListOf((MapperDAGVertex) cpnvertex));
 
+		PreesmLogger.getLogger().log(Level.INFO, "Building CPN list.");
 		// Do the process while the vertex is not a leaf
 		while (!(succset.isEmpty())) {
 			Iterator<DAGVertex> iter = succset.iterator();
@@ -290,19 +286,18 @@ public class InitialLists {
 			while (iter.hasNext()) {
 
 				currentvertex = (MapperDAGVertex) iter.next();
-				MapperDAG base = (MapperDAG) currentvertex.getBase();
 
-				if (abc.getCost((MapperDAGEdge) cpnvertex.getBase().getEdge(
-						cpnvertex, currentvertex)) == commax) {
+				int edgeCost = abc.getCost((MapperDAGEdge) base.getEdge(
+						cpnvertex, currentvertex));
+
+				if (edgeCost > commax) {
+					commax = edgeCost;
+					tempvertex = currentvertex;
+				} else if (edgeCost == commax) {
 					if (abc.getTLevel(currentvertex) < abc
 							.getTLevel(tempvertex)) {
 						tempvertex = currentvertex;
 					}
-				} else if (abc.getCost((MapperDAGEdge) base.getEdge(
-						cpnvertex, currentvertex)) > commax) {
-					commax = abc.getCost((MapperDAGEdge) base.getEdge(
-							cpnvertex, currentvertex));
-					tempvertex = currentvertex;
 				}
 			}
 
@@ -313,31 +308,36 @@ public class InitialLists {
 			succset.addAll(neighborindex.successorListOf(currentvertex));
 			// Search for the predecessor of the final critical path nodes
 			// because they must be implanted before their successors
-			while (!(orderlist.contains(currentvertex))) {
+			while (!(orderList.contains(currentvertex))) {
 				// If no predecessor was found
-				if(!checkpredecessor(dag, currentvertex, orderlist, blockingnode,
-						abc)){
-					PreesmLogger.getLogger().log(Level.SEVERE, "No predecessor was found for vertex: " + currentvertex.getName());
+				if (!checkpredecessor(dag, currentvertex, orderList, abc)) {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"No predecessor was found for vertex: "
+									+ currentvertex.getName());
 					return false;
 				}
 			}
 
 		}
-		
+
 		// Careful! Reordering the CPN dominant list in topological order.
-		// Improves a lot some schedulings but could damage others. To test in the long run
+		// Improves a lot some schedulings but could damage others. To test in
+		// the long run
+		PreesmLogger.getLogger().log(Level.INFO, "Reordering CPN list.");
+
 		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
 		List<MapperDAGVertex> newOrderlist = new ArrayList<MapperDAGVertex>();
-		
-		while(topoDAGIterator.hasNext()){
-			MapperDAGVertex v = (MapperDAGVertex)topoDAGIterator.next();
-			if(orderlist.contains(v))
+
+		while (topoDAGIterator.hasNext()) {
+			MapperDAGVertex v = (MapperDAGVertex) topoDAGIterator.next();
+			if (orderList.contains(v))
 				newOrderlist.add(v);
 		}
-		
-		orderlist.clear();
-		orderlist.addAll(newOrderlist);
-		
+
+		orderList.clear();
+		orderList.addAll(newOrderlist);
+
 		return true;
 
 	}
@@ -350,8 +350,7 @@ public class InitialLists {
 	 * @return : void
 	 */
 	private void constructCPNobn(MapperDAG dag,
-			List<MapperDAGVertex> orderlist,
-			List<MapperDAGVertex> blockingnode, List<MapperDAGVertex> OBNList,
+			List<MapperDAGVertex> orderlist, List<MapperDAGVertex> OBNList,
 			IAbc archi) {
 
 		// Variables
@@ -374,6 +373,10 @@ public class InitialLists {
 	 * constructCPNDominantlist: Construct the CPN dominant List and the other
 	 * lists necessary for the initial scheduler
 	 * 
+	 * A CPN is a node included in a critical path. An IBN is a node from which
+	 * there is a path reaching a CPN. An OBN is a node which is neither a CPN
+	 * nor an IBN.
+	 * 
 	 * @param : MapperDAG
 	 * @param : simu
 	 * @return : true if the initial lists were constructed
@@ -386,13 +389,15 @@ public class InitialLists {
 		OBNlist.clear();
 
 		// construction step by step of all the lists
-		if(!constructCPN(dag, cpnDominantList, blockingNodesList,
-				finalcriticalpathList, simu)){
-			PreesmLogger.getLogger().log(Level.SEVERE, "Problem with initial list construction");
+		if (!constructCPN(dag, cpnDominantList,
+				finalcriticalpathList, simu)) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Problem with initial list construction");
 			return false;
 		}
-		
-		constructCPNobn(dag, cpnDominantList, blockingNodesList, OBNlist, simu);
+
+		PreesmLogger.getLogger().log(Level.INFO, "Building OBN list");
+		constructCPNobn(dag, cpnDominantList, OBNlist, simu);
 
 		Set<DAGVertex> currentset = dag.vertexSet();
 
@@ -414,10 +419,23 @@ public class InitialLists {
 		};
 
 		blockingNodesList.clear();
-		ToolBox.addAllNodes(blockingNodesList, subsetfinder.subset());
+		addAllNodes(blockingNodesList, subsetfinder.subset());
 		simu.resetImplementation();
 
 		return true;
+	}
+
+	/**
+	 * Adds all vertices from newSet in destination
+	 */
+	static public void addAllNodes(List<MapperDAGVertex> destination,
+			Set<DAGVertex> newSet) {
+		Iterator<DAGVertex> it = newSet.iterator();
+
+		while (it.hasNext()) {
+			MapperDAGVertex vertex = (MapperDAGVertex) it.next();
+			destination.add(vertex);
+		}
 	}
 
 	/**
@@ -513,13 +531,14 @@ public class InitialLists {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dagtest = new DAGCreator().dagexample1(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dagtest, archi, false);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dagtest,
+				archi, false);
 		simu.getFinalTime();
 
 		InitialLists scheduler = new InitialLists();
 
 		logger.log(Level.FINEST, "Evaluating Cpndominant and fcp ");
-		scheduler.constructCPN(dagtest, testCPN, testBL, testfcp, simu);
+		scheduler.constructCPN(dagtest, testCPN, testfcp, simu);
 
 		logger.log(Level.FINEST, "Displaying Cpndominantlist with IBN ");
 		scheduler.orderlistdisplay(testCPN);
@@ -528,7 +547,7 @@ public class InitialLists {
 		scheduler.orderlistdisplay(testfcp);
 
 		logger.log(Level.FINEST, "Evaluating Cpndominant with IBN and OBN ");
-		scheduler.constructCPNobn(dagtest, testCPN, testBL, testOBN, simu);
+		scheduler.constructCPNobn(dagtest, testCPN, testOBN, simu);
 
 		logger
 				.log(Level.FINEST,

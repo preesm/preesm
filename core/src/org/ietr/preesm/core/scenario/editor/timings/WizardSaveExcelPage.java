@@ -34,7 +34,6 @@ import java.io.InputStream;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**

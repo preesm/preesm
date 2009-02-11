@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.tools;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -76,7 +77,7 @@ public class PreesmLogger extends Logger {
 
 	@Override
 	public void setLevel(Level newLevel) throws SecurityException {
-		// Enabling only info level 
+		// Enabling only info level
 		super.setLevel(Level.INFO);
 	}
 
@@ -118,22 +119,28 @@ public class PreesmLogger extends Logger {
 					}
 				} else {
 					// Writes a log in console
-					final MessageConsoleStream stream = console.newMessageStream();
+					final MessageConsoleStream stream = console
+							.newMessageStream();
 
-
-					Activator.getDefault().getWorkbench().getDisplay().asyncExec(
-							new Runnable() {
+					Activator.getDefault().getWorkbench().getDisplay()
+							.asyncExec(new Runnable() {
 								@Override
 								public void run() {
 									if (levelVal <= Level.INFO.intValue())
-										stream.setColor(new Color(null, 0, 0, 0));
+										stream
+												.setColor(new Color(null, 0, 0,
+														0));
 									else
-										stream.setColor(new Color(null, 255, 0, 0));
+										stream.setColor(new Color(null, 255, 0,
+												0));
 								}
 							});
 
-					
-					stream.println(record.getMessage());
+					Calendar cal = Calendar.getInstance();
+					String time = String.format("%2d:%2d:%2d ", cal
+							.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
+							.get(Calendar.SECOND));
+					stream.println(time + record.getMessage());
 				}
 			}
 		}

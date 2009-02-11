@@ -4,6 +4,7 @@
 package org.ietr.preesm.core.tools;
 
 import java.util.Comparator;
+
 import org.ietr.preesm.core.scenario.editor.VertexWithPath;
 
 /**

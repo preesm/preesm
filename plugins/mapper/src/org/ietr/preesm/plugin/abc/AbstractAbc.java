@@ -416,7 +416,7 @@ public abstract class AbstractAbc implements IAbc {
 		vertex = translateInImplementationVertex(vertex);
 
 		updateTimings();
-		return vertex.getTimingVertexProperty().getValidBlevel();
+		return vertex.getTimingVertexProperty().getBlevel();
 	}
 
 	/**

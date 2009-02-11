@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.editor.constraints;
 
-import org.ietr.preesm.core.scenario.editor.VertexWithPath;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +64,7 @@ import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeContentProvider;
+import org.ietr.preesm.core.scenario.editor.VertexWithPath;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
