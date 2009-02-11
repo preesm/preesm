@@ -35,6 +35,7 @@ public class CodeGenSDFVertex extends SDFVertex{
 		this.getPropertyBean().setValue(NB_REPEAT, nb);
 	}
 	
+	
 	public String toString(){
 		String code = new String();
 		if(getNbRepeat() > 1){

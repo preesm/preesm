@@ -1,0 +1,1745 @@
+/* Caltrop parser and grammar
+
+ Copyright (c) 2002 The Regents of the University of California.
+ All rights reserved.
+ Permission is hereby granted, without written agreement and without
+ license or royalty fees, to use, copy, modify, and distribute this
+ software and its documentation for any purpose, provided that the above
+ copyright notice and the following two paragraphs appear in all copies
+ of this software.
+
+ IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY
+ FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
+ ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
+ THE UNIVERSITY OF CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+ THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE
+ PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND THE UNIVERSITY OF
+ CALIFORNIA HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
+ ENHANCEMENTS, OR MODIFICATIONS.
+
+                                        PT_COPYRIGHT_VERSION_2
+                                        COPYRIGHTENDKEY
+
+@ProposedRating Red (Ed.Willink@uk.thalesgroup.com)
+@AcceptedRating Red
+
+Created : September 2002
+    -- as Version 1.2 following JavaCC to AST and JavaCC to DOM versions
+EDW 18-Sep-2002 Recover from syntax error within actor.
+EDW 18-Sep-2002 Eliminate ; separation for variable list.
+EDW 19-Sep-2002 Eliminate ; rather than , separation for variable list.
+EDW  3-Oct-2002 Give 'Boolean' literals a value.
+EDW  5-Oct-2002 Lose Expr.Tuple, allowing () for expression precedence.
+EDW 11-Oct-2002 Eliminate spurious @all on Import.
+
+Note that comments such as --INSERT-IMPORTS-- represent editing targets for
+a sed script to extend the grammar to a larger language.
+Note also that degenerate productions written on a single line such as
+schedule_expression ::= schedule_alt_expression
+are also intended as sed script tragets.
+
+*/
+
+package net.sf.opendf.cal.parser;
+
+import java_cup.runtime.*;
+import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+/*--INSERT-IMPORTS--*/
+
+//////////////////////////////////////////////////////////////////////////
+//// Caltrop parser
+// {Build as "java -classpath "../.." java_cup.Main -parser Parser -symbols Terminal Caltrop.cup").
+
+//
+//  Extend action class with utilities
+//
+action code {:
+    private Element appendChild(Element element, Node child1) {
+        if (child1 != null)
+            element.appendChild(child1);
+        return element;
+    }
+    private Element appendChild(Element element, Node child1, Node child2) {
+        if (child1 != null)
+            element.appendChild(child1);
+        if (child2 != null)
+            element.appendChild(child2);
+        return element;
+    }
+    private Element appendChild(Element element, Node child1, Node child2, Node child3) {
+        if (child1 != null)
+            element.appendChild(child1);
+        if (child2 != null)
+            element.appendChild(child2);
+        if (child3 != null)
+            element.appendChild(child3);
+        return element;
+    }
+    private Element appendChildren(Element element, List children) {
+        if (children != null) {
+            if (parser.getDebug())
+                System.out.println("Append to node." + (element != null ? element.getNodeName() : "-nil-"));
+            for (Iterator it = children.iterator(); it.hasNext(); ) {
+                Node aNode = (Node)it.next();
+                if (aNode != null) {
+                    if (parser.getDebug())
+                        System.out.println("   node." + aNode.getNodeName());
+                    if (aNode instanceof Attr)
+                        element.setAttributeNode((Attr)aNode);
+                    else
+                        element.appendChild(aNode);
+                }
+            }
+        }
+        return element;
+    }
+    private Attr createAttribute(String name) {
+        return parser.getDocument().createAttribute(name);
+    }
+    private Element createElement(String name) {
+        return parser.getDocument().createElement(name);
+    }
+    private Element createElement(String name, String kind) {
+        Element element = parser.getDocument().createElement(name);
+        element.setAttribute("kind", kind);
+        return element;
+    }
+    private void error(String message) {
+        parser.report_error(message);
+    }
+    private void error(String aMessage, String constructName, int lineNumber, int colNumber) {
+        parser.report_error(aMessage, null, " in \"" + constructName
+            + "\" construct starting at line " + lineNumber + "." + colNumber + ".");
+    }
+//    private Document getDocument() {
+//        return parser.getDocument();
+//    }
+    private Element getDocumentElement() {
+        return parser.getDocument().getDocumentElement();
+    }
+    private Element setAttribute(Element element, String name, String value) {
+        if ((name != null) && (value != null)) element.setAttribute(name, value);
+        return element;
+    }
+    private Element setName(Element element, String value) {
+        if (value != null) element.setAttribute("name", value);
+        return element;
+    }
+    /*--INSERT-ACTION-CODE--*/
+:}
+
+//
+//  Extend action class with main program and parser.
+//
+parser code {:
+
+    ///////////////////////////////////////////////////////////////////////
+    ////  Expression
+    ///////////////////////////////////////////////////////////////////////
+
+    //
+    //  Return a document containing the parsed lexer source, describing the source as 'fileName' in diagnostics.
+    //
+    public Document doParse() throws java.lang.Exception {
+        return doParse("<nofile>");
+    }
+
+    public Document doParse(String filename) throws java.lang.Exception {
+        return doParse(filename, false);
+    }
+
+    //
+    //  Return a document containing the parsed lexer source, describing the source as 'fileName' in diagnostics.
+    //
+    public Document doParse(String filename, boolean doDebug) throws java.lang.Exception {
+        DOMImplementation domImpl = net.sf.opendf.util.xml.Util.getDefaultImplementation().getDocumentBuilder().getDOMImplementation();
+        document = domImpl.createDocument("", "Expression", null);
+        file = filename;
+        debug = doDebug;
+        errors = 0;
+        document.insertBefore(document.createComment(" Generated by Caltrop Parser version 1.2 "), document.getDocumentElement());
+        Symbol returnSymbol = debug ? super.debug_parse() : super.parse();
+        if (errors > 0)
+            throw new Exception(errors + " errors reported.");
+        if (returnSymbol != null) {
+            document.getDocumentElement().appendChild((Element)returnSymbol.value);
+            return document;
+        } else {
+            return null;
+        }
+    }
+
+
+    //
+    //  Override the error report to prepend the sourece and line context.
+    //
+    public void report_error(String message) {
+        if (debug && (lookahead != null)) {
+            for (int i = 0; i <= lookahead_pos; i++) {
+                System.out.println("Lookahead " + lookahead[i] + ", left=" + lookahead[i].left
+                                + ", right=" + lookahead[i].right
+                                + ", parse_state=" + lookahead[i].parse_state
+                                + ", value=" + (lookahead[i].value != null ? lookahead[i].value : "-nil-"));
+             }
+        }
+        report_error(message, lookahead != null ? lookahead[0] : cur_token);
+    }
+
+    //
+    //  Override the error report to prepend the source and line context.
+    //
+    public void report_error(String message, Object info) {
+        StringBuffer s = new StringBuffer();
+        if (file != null)
+            s.append(file + ".");
+        else
+            s.append("Line ");
+        if (!(info instanceof Symbol))
+            s.append("?");
+        else if (((Symbol)info).left == -1)
+            s.append("?");
+        else {
+            s.append(((Symbol)info).left);
+            s.append(".");
+            s.append(((Symbol)info).right);
+        }
+        s.append(": " + message);
+        System.err.println(s);
+        errors++;                   // Over-range exception thrown from scan where inheritance allows.
+    }
+
+    //
+    //  Generate a syntax error report describing 'aSymbol' with 'aMessage' suffix.
+    //
+    public void report_error(String messagePrefix, Symbol aSymbol, String messageSuffix) {
+//        System.out.println("Symbol " + aSymbol + ", left=" + aSymbol.left
+//                        + ", right=" + aSymbol.right
+//                        + ", parse_state=" + aSymbol.parse_state
+//                        + ", value=" + (aSymbol.value != null ? aSymbol.value : "-nil-"));
+        Symbol theSymbol = aSymbol != null ? aSymbol : lookahead != null ? lookahead[0] : cur_token;
+        report_error(messagePrefix + " \"" + theSymbol.value  +"\"" + messageSuffix, theSymbol);
+    }
+
+    //
+    //  Override the symbol scan to report illegal characters and abort on error count exceeded..
+    //
+    public Symbol scan() throws Exception {
+        while (true) {
+            if (errors > max_errors)
+                throw new Exception("Too many errors.");
+            Symbol aSymbol = super.scan();
+            if (aSymbol == null)
+                return null;
+            if (debug)
+                System.out.println("Scan symbol " + aSymbol + ", left=" + aSymbol.left
+                            + ", right=" + aSymbol.right
+                            + ", parse_state=" + aSymbol.parse_state
+                            + ", value=" + (aSymbol.value != null ? aSymbol.value : "-nil-"));
+            if (aSymbol.sym == Terminal.IllegalCharacter)
+                report_error("Illegal character \"" + aSymbol.value  +"\".", aSymbol);
+            else
+                return aSymbol;
+        }
+    }
+
+    //
+    //  Generate a syntax error report on the current token with 'aMessage' suffix.
+    //
+    public void syntax_error(String aMessage) {
+        if (debug && (lookahead != null)) {
+            for (int i = 0; i <= lookahead_pos; i++) {
+                System.out.println("Lookahead " + lookahead[i] + ", left=" + lookahead[i].left
+                                + ", right=" + lookahead[i].right
+                                + ", parse_state=" + lookahead[i].parse_state
+                                + ", value=" + (lookahead[i].value != null ? lookahead[i].value : "-nil-"));
+             }
+        }
+        syntax_error(lookahead != null ? lookahead[0] : cur_token, aMessage);
+    }
+
+    //
+    //  Override the syntax error report to redirect to the symbol+message implementation.
+    //
+    public void syntax_error(Symbol aSymbol) {
+        syntax_error(aSymbol, ".");
+    }
+
+    //
+    //  Generate a syntax error report describing 'aSymbol' with 'messageSuffix'.
+    //
+    public void syntax_error(Symbol aSymbol, String messageSuffix) {
+//        System.out.println("Symbol " + aSymbol + ", left=" + aSymbol.left
+//                        + ", right=" + aSymbol.right
+//                        + ", parse_state=" + aSymbol.parse_state
+//                        + ", value=" + (aSymbol.value != null ? aSymbol.value : "-nil-"));
+        report_error("Syntax error at \"" + aSymbol.value  +"\"" + messageSuffix, aSymbol);
+    }
+
+    public boolean getDebug() { return debug; }
+    public Document getDocument() { return document; }
+
+    private boolean debug = false;          // True for debug messages.
+    private Document document = null;       // Current document while reading.
+    private String file = null;             // Name of source file in diagnostics
+    public int errors = 0;                  // Errors during parse.
+    public int max_errors = 20;             // Maximum errors before termination.
+    /*--INSERT-PARSER-CODE--*/
+:}
+
+
+terminal String IllegalCharacter;           // Used to propagate errors out from lexer to scan()..
+
+terminal String Character;
+terminal String Id;
+terminal String Integer;
+terminal String PartialOp;
+terminal String Real;
+terminal String String;
+terminal String UnterminatedCharacter;
+terminal String UnterminatedString;
+
+terminal String ACTION;
+terminal String ACTOR;
+terminal String ALL;
+terminal String AND;
+terminal String ANY;
+terminal String ASSIGN;
+terminal String AT;
+terminal String ATN;
+terminal String BEGIN;
+terminal String CONST;
+terminal String CHOOSE;
+terminal String DEFAULT;
+terminal String DELAY;
+terminal String DIV;
+terminal String DO;
+terminal String DOM;
+terminal String ELSE;
+terminal String END;
+terminal String END_ACTION;
+terminal String END_ACTOR;
+terminal String END_ASSIGN;
+terminal String END_BEGIN;
+terminal String END_CHOOSE;
+terminal String END_FOREACH;
+terminal String END_FUNCTION;
+terminal String END_IF;
+terminal String END_INITIALIZE;
+terminal String END_INVARIANT;
+terminal String END_LAMBDA;
+terminal String END_LET;
+terminal String END_PRIORITY;
+terminal String END_PROC;
+terminal String END_PROCEDURE;
+terminal String END_SCHEDULE;
+terminal String END_WHILE;
+terminal String ENSURE;
+terminal String FALSE;
+terminal String FOR;
+terminal String FOREACH;
+terminal String FSM;
+terminal String FUNCTION;
+terminal String GUARD;
+terminal String IF;
+terminal String IMPORT;
+terminal String IN;
+terminal String INITIALIZE;
+terminal String INVARIANT;
+terminal String LET;
+terminal String LAMBDA;
+terminal String MAP;
+terminal String MOD;
+terminal String MULTI;
+terminal String MUTABLE;
+terminal String NOT;
+terminal String NULL;
+terminal String OLD;
+terminal String OR;
+terminal String PACKAGE;
+terminal String PRIORITY;
+terminal String PROC;
+terminal String PROCEDURE;
+terminal STring REGEXP;
+terminal String REPEAT;
+terminal String REQUIRE;
+terminal String SCHEDULE;
+//terminal String TAIL;
+terminal String THEN;
+terminal String TIME;
+terminal String TO;
+terminal String TRUE;
+terminal String VAR;
+terminal String WHILE;
+//terminal String ZZZ;
+
+terminal String COLON;
+terminal String COLON_EQUALS;
+terminal String COMMA;
+terminal String DASH_DASH_GT;
+terminal String DASH_GT;
+terminal String DOT;
+terminal String DOTDOT;
+terminal String EQUALS;
+terminal String EQUALS_EQUALS_GT;
+terminal String GT;
+terminal String HASH;
+terminal String LBRACE;
+terminal String LBRACK;
+terminal String LPAR;
+terminal String LT;
+terminal String PLUS;
+terminal String QMARK;
+terminal String RBRACE;
+terminal String RBRACK;
+terminal String RPAR;
+terminal String SEMI;
+terminal String STAR;
+terminal String UNDER_SCORE;
+terminal String VBAR;
+
+/*--INSERT-TERMINALS--*/
+
+non terminal Element caltrop;
+non terminal Element caltrop_body;
+non terminal caltrop_body_end;
+non terminal Element caltrop_head;
+non terminal Element action_;
+non terminal Element body;
+non terminal Element body_opt;
+non terminal Element channel_opt;
+non terminal Element clause_default;
+non terminal Element clause_guard;
+non terminal Vector decl_generators;
+non terminal Element decl_generator;
+non terminal Element decl_input;
+non terminal Vector decl_inputs;
+non terminal Vector decl_parameters;
+non terminal Vector decl_parameters_opt;
+non terminal Element decl_parameter;
+non terminal Element decl_parameter_head;
+non terminal Vector decl_variables;
+//non terminal Vector decl_variables_opt;
+non terminal Element decl_variable;
+non terminal Element decl_variable_function;
+non terminal Element delay_opt;
+non terminal Element function_ret_type_opt;
+non terminal Element decl_variable_procedure;
+non terminal Element decl_variable_state;
+non terminal Element decl_variable_state_head;
+non terminal Element ensures_opt;
+non terminal Element entry_tagged;
+non terminal Vector entry_taggeds;
+non terminal Vector entry_taggeds_opt;
+non terminal Element entry_tagged_expr;
+non terminal Element entry_tagged_type;
+non terminal Vector entry_tagged_types;
+non terminal Vector entry_tagged_types_opt;
+non terminal Element entry_type;
+non terminal Vector entry_types;
+non terminal Vector entry_types_opt;
+non terminal Element expr_binary;
+non terminal Element expr_if;
+non terminal Element expr_lambda;
+non terminal Element expr_let;
+non terminal Element expr_list;
+non terminal Element expr_list_tail_opt;
+non terminal Element expr_literal;
+non terminal Element expr_map;
+non terminal Element expr_postfix;
+non terminal Element expr_primary;
+non terminal Element expr_proc;
+non terminal Element expr_set;
+non terminal Element expr_tuple;
+non terminal Element expr_tuple_tagged_head;
+non terminal Element expr_unary;
+non terminal Element expr_var;
+non terminal Element expression;
+non terminal Vector expressions;
+non terminal Vector expressions_opt;
+non terminal Element binary_expression_op;
+non terminal Element unary_expression_op;
+non terminal String expression_op_name;
+non terminal Vector generators;
+non terminal Element generator;
+non terminal Element generator_in_opt;
+non terminal Element guards_opt;
+non terminal Vector imports;
+non terminal Vector imports_opt;
+non terminal Element import_;
+non terminal Element initializer;
+non terminal Element input;
+non terminal Element input_body;
+non terminal Vector inputs;
+non terminal Vector inputs_opt;
+non terminal Vector invariants;
+non terminal Element mapping;
+non terminal Vector mappings;
+non terminal Element output;
+non terminal Vector outputs;
+non terminal Vector outputs_opt;
+non terminal Element package_name_opt;
+non terminal String package_name;
+non terminal Element port_input;
+non terminal Vector port_inputs;
+non terminal Vector port_inputs_opt;
+non terminal Element port_output;
+non terminal Vector port_outputs;
+non terminal Vector port_outputs_opt;
+non terminal Element qid;
+non terminal Vector qid_tail;
+non terminal Element repeat_opt;
+non terminal Element requires_opt;
+non terminal Element schedule;
+non terminal Element schedule_fsm;
+non terminal Element schedule_regexp;
+non terminal Element schedule_alt_expression;
+non terminal Element schedule_alt_expressions;
+non terminal Element schedule_expression;
+non terminal Element schedule_multiplicity_expression;
+non terminal Element schedule_opt_expression;
+non terminal Element schedule_seq_expression;
+non terminal Element schedule_seq_expressions;
+non terminal Element schedule_unary_expression;
+non terminal Element schedule_var_expression;
+non terminal Element statement;
+non terminal Vector statements;
+non terminal Vector statements_opt;
+non terminal Element stmt_assign;
+non terminal Element stmt_assign_head;
+non terminal Element stmt_block;
+non terminal Element stmt_call;
+non terminal Element stmt_choose;
+non terminal Element stmt_foreach;
+non terminal Element stmt_guarded;
+non terminal Element stmt_guarded_head;
+non terminal Element stmt_if;
+non terminal Element stmt_while;
+non terminal Element time_opt;
+non terminal Element type_expr;
+non terminal Element type_function;
+non terminal Element type_list;
+non terminal Element type_map;
+non terminal Vector type_parameters;
+non terminal Vector type_parameters_opt;
+non terminal Element type_parameter;
+non terminal Element type_parameter_id;
+non terminal Element type_tuple;
+non terminal Element type_unary;
+
+non terminal Vector colon_generators_opt;
+non terminal Vector var_decl_variables_opt;
+
+non terminal String const_opt;
+non terminal String do_opt;
+non terminal Vector do_statements_opt;
+non terminal end_action;
+non terminal end_actor;
+non terminal end_assign;
+non terminal end_begin;
+non terminal end_choose;
+non terminal end_foreach;
+non terminal end_function;
+non terminal end_if;
+non terminal end_initialize;
+non terminal end_invariant;
+non terminal end_lambda;
+non terminal end_let;
+non terminal end_proc;
+non terminal end_procedure;
+non terminal end_schedule;
+non terminal end_while;
+
+non terminal String for_each;
+
+non terminal String any_id;
+non terminal String character;
+non terminal String id;
+non terminal String string;
+
+non terminal String label_opt;
+non terminal String multi_opt;
+non terminal String semi_opt;
+
+/*--INSERT-NON-TERMINALS--*/
+
+terminal SHIFT_THERE;
+//terminal REDUCE_HERE;
+
+precedence nonassoc SHIFT_THERE;
+/*--INSERT-LOWER-PRECEDENCE--*/
+precedence nonassoc COMMA /*--INSERT-EQUAL-PRECEDENCE--*/;
+/*--INSERT-HIGHER-PRECEDENCE--*/
+//precedence nonassoc REDUCE_HERE;
+
+/*--INSERT-START-PRODUCTION--*/
+
+start with expression;
+
+
+//
+//  Caltrop reader
+//
+caltrop ::=
+        caltrop_body:actor end_actor semi_opt {: RESULT = actor; :}
+    |   package_name_opt imports_opt ACTOR:k error end_actor semi_opt {: error("Illegal actor.", k, kleft, kright); RESULT = null; :}
+    ;
+
+caltrop_body ::=
+        caltrop_head:actor {: RESULT = actor; :}
+    |   caltrop_body:actor SEMI {: RESULT = actor; :}
+    |   caltrop_body:actor decl_variable_state:d SEMI {: RESULT = appendChild(actor, d); :}
+    |   caltrop_body:actor decl_variable_function:d {: RESULT = appendChild(actor, d); :}
+    |   caltrop_body:actor decl_variable_procedure:d {: RESULT = appendChild(actor, d); :}
+    |   caltrop_body:actor initializer:i {: RESULT = appendChild(actor, i); :}
+    |   caltrop_body:actor invariants:i
+            {:  NodeList invList = actor.getElementsByTagName("Invariants");
+                if ((invList == null) || (invList.getLength() <= 0))
+                    appendChild(actor, appendChildren(createElement("Invariants"), i));
+                else
+                    appendChildren((Element)invList.item(invList.getLength()-1), i);
+                RESULT = actor; :}
+    |   caltrop_body:actor action_:a {: RESULT = appendChild(actor, a); :}
+    |   caltrop_body:actor schedule:s {: RESULT = appendChild(actor, s); :}
+    |   caltrop_body:actor error caltrop_body_end {: error("Illegal actor content."); RESULT = actor; :}
+    ;
+
+caltrop_body_end ::= SEMI | END | END_ACTION | END_FUNCTION | END_INITIALIZE | END_INVARIANT | END_PROCEDURE | END_SCHEDULE;
+
+caltrop_head ::=
+        package_name_opt:package_name
+        imports_opt:imports
+        ACTOR id:i
+        type_parameters_opt:type_parameters
+        LPAR decl_parameters_opt:decl_parameters RPAR
+        port_inputs_opt:port_inputs EQUALS_EQUALS_GT port_outputs_opt:port_outputs
+        time_opt:time
+        COLON
+            {:  Element actor = getDocumentElement();
+                setName(actor, i);
+                appendChild(actor, package_name);
+                appendChildren(actor, imports);
+                appendChildren(actor, type_parameters);
+                appendChildren(actor, decl_parameters);
+                appendChildren(actor, port_inputs);
+                appendChildren(actor, port_outputs);
+                appendChild(actor, time);
+                RESULT = actor; :}
+    ;
+
+action_ ::=
+        label_opt:l ACTION inputs_opt:i EQUALS_EQUALS_GT outputs_opt:o
+            guards_opt:g delay_opt:del requires_opt:r ensures_opt:e
+            var_decl_variables_opt:v do_statements_opt:s end_action
+            {:  Element action = createElement("Action");
+                setName(action, l);
+                appendChildren(action, i);
+                appendChildren(action, o);
+                appendChild(action, g);
+                appendChild(action, del);
+                appendChild(action, r);
+                appendChild(action, e);
+                appendChildren(action, v);
+                appendChildren(action, s);
+                RESULT = action; :}
+    |   label_opt ACTION:k error end_action {: error("Illegal action.", k, kleft, kright); RESULT = null; :}
+    ;
+
+body ::=
+        statements:s {: RESULT = appendChildren(createElement("Stmt", "Block"), s); :}
+    ;
+body_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   body:list {: RESULT = list; :}
+    ;
+
+channel_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   ATN ANY
+            {: RESULT = createElement("Channel", "Any"); :}
+    |   ATN ALL
+            {: RESULT = createElement("Channel", "All"); :}
+    |   ATN expression:e
+            {: RESULT = appendChild(createElement("Channel", "Multi"), e); :}
+    |   ANY
+            {: RESULT = createElement("Channel", "Any"); :}
+    |   ALL
+            {: RESULT = createElement("Channel", "All"); :}
+    |   AT expression:e
+            {: RESULT = appendChild(createElement("Channel", "Single"), e); :}
+    ;
+
+clause_default ::=
+        DEFAULT do_opt body_opt:b END {: RESULT = appendChild(createElement("Clause", "Default"), b); :}
+    ;
+clause_guard ::=
+        decl_parameters:p END
+            {: RESULT = appendChildren(createElement("Clause", "Guard"), p); :}
+    |   decl_parameters:p DO body_opt:b END
+            {:  Element clause = createElement("Clause", "Guard");
+                appendChildren(clause, p);
+                appendChild(clause, b);
+                RESULT = clause; :}
+    ;
+
+decl_generators ::=
+        decl_generator:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   decl_generators:list COMMA decl_generator:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+decl_generator ::=
+        id:i {: RESULT = setName(createElement("Decl", "Generator"), i); :}
+    ;
+
+decl_input ::=
+        id:i {: RESULT = setName(createElement("Decl", "Input"), i); :}
+    |   UNDER_SCORE:i {: RESULT = setName(createElement("Decl", "Input"), i); :}
+    ;
+decl_inputs ::=
+        decl_input:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   decl_inputs:list COMMA decl_input:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+
+decl_parameters ::=
+        decl_parameter:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   decl_parameters:list COMMA decl_parameter:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+decl_parameters_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   decl_parameters:list  {: RESULT = list; :}
+    ;
+decl_parameter ::=
+        decl_parameter_head:p {: RESULT = p; :}
+    |   decl_parameter_head:p EQUALS expression:e {: RESULT = appendChild(p, e); :}
+    ;
+decl_parameter_head ::=
+        id:i
+            {:  Element p = createElement("Decl", "Parameter");
+                setName(p, i);
+                RESULT = p; :}
+    |   type_expr:t id:i
+            {:  Element p = createElement("Decl", "Parameter");
+                setName(p, i);
+                appendChild(p, t);
+                RESULT = p; :}
+    ;
+
+decl_variable ::=
+        decl_variable_state:d {: RESULT = d; :}
+    |   decl_variable_function:d {: RESULT = d; :}
+    |   decl_variable_procedure:d {: RESULT = d; :}
+    ;
+
+decl_variables ::=
+        decl_variable:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   decl_variables:list COMMA decl_variable:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+
+decl_variable_function ::=
+        FUNCTION id:id LPAR decl_parameters_opt:p RPAR function_ret_type_opt:t
+            var_decl_variables_opt:v /*ZZZ*/ COLON expression:e end_function
+            {:  Element decl = createElement("Decl" , "Variable");
+                Element type = createElement("Type", "Function");
+                Element lambda = createElement("Expr", "Lambda");
+                appendChild(decl, type, lambda);
+                setName(decl, id);
+                if (p != null) {
+                    appendChildren(lambda, p);
+          /*          for (Iterator pi = p.iterator(); pi.hasNext(); ) {
+                        Element aParameter = (Element)pi.next();
+                        NodeList type_list = aParameter.getElementsByTagName("Type");
+                        int typeCount = type_list.getLength();
+                        for (int i = 0; i < typeCount; i++) {
+                            Element typeNode = (Element)type_list.item(i);
+                            Element entry = createElement("Entry", "Type");
+                            appendChild(entry, typeNode.cloneNode(true));
+                            appendChild(type, entry);
+                        }
+                    }   */
+                }
+                appendChild(lambda, t);  // may be null, then nothing happens.
+           //     appendChild(type, (t == null) ? null : t.cloneNode(true));
+                setAttribute(type, "infer", "true");
+                appendChildren(lambda, v);
+                appendChild(lambda, e);
+                RESULT = decl; :}
+    |   FUNCTION:k error end_function {: error("Illegal function declaration.", k, kleft, kright); RESULT = null; :}
+    ;
+
+function_ret_type_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   DASH_DASH_GT type_expr:t
+        {: RESULT = t; :}
+    ;
+
+decl_variable_procedure ::=
+        PROCEDURE id:id LPAR decl_parameters_opt:p RPAR
+            var_decl_variables_opt:v BEGIN statements:s end_procedure
+            {:  Element decl = createElement("Decl" , "Variable");
+                Element type = createElement("Type", "Procedure" );
+                Element proc = createElement("Expr", "Proc");
+                appendChild(decl, type, proc);
+                setName(decl, id);
+                if (p != null) {
+                    appendChildren(proc, p);
+             /*       for (Iterator pi = p.iterator(); pi.hasNext(); ) {
+                        Element aParameter = (Element)pi.next();
+                        NodeList type_list = aParameter.getElementsByTagName("Type");
+                        int typeCount = type_list.getLength();
+                        for (int i = 0; i < typeCount; i++) {
+                            Element typeNode = (Element)type_list.item(i);
+                            Element entry = createElement("Entry", "Type");
+                            appendChild(entry, typeNode.cloneNode(true));
+                            appendChild(type, entry);
+                        }
+                    } */
+                }
+                setAttribute(type, "infer", "true");
+                appendChildren(proc, v);
+                appendChildren(proc, s);
+                RESULT = decl; :}
+    |   PROCEDURE:k error end_procedure {: error("Illegal procedure declaration.", k, kleft, kright); RESULT = null; :}
+    ;
+
+decl_variable_state ::=
+        decl_variable_state_head:d
+            {: setAttribute(d, "assignable", "Yes"); RESULT = d; :}
+    |   decl_variable_state_head:d COLON_EQUALS expression:e
+            {: setAttribute(d, "assignable", "Yes"); RESULT = appendChild(d, e); :}
+    |   decl_variable_state_head:d EQUALS expression:e
+            {: RESULT = appendChild(d, e); :}
+    |   MUTABLE decl_variable_state_head:d EQUALS expression:e
+            {: setAttribute(d, "mutable", "Yes"); RESULT = appendChild(d, e); :}
+    ;
+decl_variable_state_head ::=
+        id:i
+            {:  Element decl = createElement("Decl" , "Variable");
+                setName(decl, i);
+                RESULT = decl; :}
+    |   type_expr:t id:i
+            {:  Element decl = createElement("Decl" , "Variable");
+                setName(decl, i);
+                RESULT = appendChild(decl, t); :}
+    ;
+
+delay_opt ::=
+       /* empty */ {: RESULT = null; :}
+    |  DELAY expression:e
+       {: RESULT = appendChild(createElement("Delay"), e); :}
+    ;
+
+ensures_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   ENSURE expressions:e {: RESULT = appendChildren(createElement("Ensures"), e); :}
+    ;
+
+entry_tagged ::=
+        id:id COLON type_expr:type
+            {:  Element option = createElement("Entry", "Type");
+                setName(option, id);
+                RESULT = appendChild(option, type); :}
+    |   id:id EQUALS expression:e
+            {:  Element option = createElement("Entry", "Expr");
+                setName(option, id);
+                RESULT = appendChild(option, e); :}
+    ;
+entry_taggeds ::=
+        entry_tagged:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   entry_taggeds:list COMMA entry_tagged:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+entry_taggeds_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   entry_taggeds:list  {: RESULT = list; :}
+    ;
+
+entry_tagged_expr ::=
+        id:id /*ZZZ*/ COLON expression:e
+            {:  Element option = createElement("Entry", "Expr");
+                setName(option, id);
+                RESULT = appendChild(option, e); :}
+    ;
+
+entry_tagged_type ::=
+        id:id COLON type_expr:type
+            {:  Element element = createElement("Entry", "Type");
+                setName(element, id);
+                RESULT = appendChild(element, type); :}
+    ;
+entry_tagged_types ::=
+        entry_tagged_type:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   entry_tagged_types:list COMMA entry_tagged_type:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+entry_tagged_types_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   entry_tagged_types:list  {: RESULT = list; :}
+    ;
+
+entry_type ::=
+        type_expr:type {: RESULT = appendChild(createElement("Entry", "Type"), type); :}
+    ;
+entry_types ::=
+        entry_type:p
+            {:  Vector list = new Vector(); list.add(p); RESULT = list; :}
+    |   entry_types:list COMMA entry_type:p
+            {:  list.add(p); RESULT = list; :}
+    ;
+entry_types_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   entry_types:list  {: RESULT = list; :}
+    ;
+
+expression ::=
+        expr_unary:e {: RESULT = e; :}
+    |   expr_binary:e {: RESULT = e; :}
+    ;
+expressions ::=
+        expression:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   expressions:list COMMA expression:e {: list.add(e); RESULT = list; :}
+    ;
+expressions_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   expressions:list {: RESULT = list; :}
+    ;
+
+expr_binary ::=
+        expr_unary:e1 binary_expression_op:o expr_unary:e2
+            {: RESULT = appendChild(createElement("Expr", "BinOpSeq"), e1, o, e2); :}
+    |   expr_binary:e binary_expression_op:o expr_unary:e2
+            {: RESULT = appendChild(e, o, e2); :}
+    ;
+
+expr_if ::=
+        IF expression:i THEN expression:t ELSE expression:f end_if
+            {: RESULT = appendChild(createElement("Expr", "If"), i, t, f); :}
+    |   IF:k error end_if {: error("Illegal if expression.", k, kleft, kright); RESULT = null; :}
+    ;
+
+expr_lambda ::=
+        const_opt:c LAMBDA LPAR decl_parameters_opt:d RPAR function_ret_type_opt:t
+            var_decl_variables_opt:v /*ZZZ*/ COLON expression:b end_lambda
+            {:  Element e = createElement("Expr", "Lambda");
+                if (c != null) setAttribute(e, "const", "Yes");
+                appendChildren(e, d);
+                appendChild(e, t);
+                appendChildren(e, v);
+                RESULT = appendChild(e, b); :}
+//    |   LAMBDA:k error end_lambda {: error("Illegal lambda expression.", k, kleft, kright); RESULT = null; :}
+    ;
+
+expr_let ::=
+        LET decl_variables:v /*ZZZ*/ COLON expression:b end_let
+            {:  Element e = createElement("Expr", "Let");
+                appendChildren(e, v);
+                RESULT = appendChild(e, b); :}
+    |   LET:k error end_let {: error("Illegal let expression.", k, kleft, kright); RESULT = null; :}
+    ;
+
+expr_list ::=
+        LBRACK RBRACK {: RESULT = createElement("Expr", "List"); :}
+     |  LBRACK expressions:l colon_generators_opt:g  RBRACK
+            {:  Element e = createElement("Expr", "List");
+                appendChildren(e, l);
+                RESULT = appendChildren(e, g);
+            :}
+    ;
+
+expr_literal ::=
+        character:v
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "Character");
+                RESULT = setAttribute(e, "value", v); :}
+    |   FALSE
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "Boolean");
+                RESULT = setAttribute(e, "value", "0"); :}
+    |   Integer:v
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "Integer");
+                RESULT = setAttribute(e, "value", v); :}
+    |   NULL
+            {:  RESULT = setAttribute(createElement("Expr", "Literal"), "literal-kind", "Null"); :}
+    |   Real:v
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "Real");
+                RESULT = setAttribute(e, "value", v); :}
+    |   string:v
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "String");
+                RESULT = setAttribute(e, "value", v); :}
+    |   TRUE
+            {:  Element e = createElement("Expr", "Literal");
+                setAttribute(e, "literal-kind", "Boolean");
+                RESULT = setAttribute(e, "value", "1"); :}
+    ;
+
+expr_map ::=
+        MAP LBRACE RBRACE {: RESULT = createElement("Expr", "Map"); :}
+    |   MAP LBRACE mappings:m colon_generators_opt:g RBRACE
+            {: RESULT = appendChildren(appendChildren(createElement("Expr", "Map"), m), g); :}
+    ;
+
+expr_postfix ::=
+        expr_primary:e {: RESULT = e; :}
+    |   expr_postfix:c LPAR expressions_opt:i RPAR
+            {:  Element e = appendChild(createElement("Expr", "Application"), c);
+                RESULT = appendChild(e, appendChildren(createElement("Args"), i)); :}
+    |   expr_postfix:c LBRACK expressions_opt:i RBRACK
+            {:  Element e = appendChild(createElement("Expr", "Indexer"), c);
+                RESULT = appendChild(e, appendChildren(createElement("Args"), i)); :}
+    |   expr_postfix:c DOT id:id {: RESULT = appendChild(setName(createElement("Expr", "Entry"), id), c); :}
+    ;
+
+expr_primary ::=
+        expr_var:e {: RESULT = e; :}
+    |   expr_literal:e {: RESULT = e; :}
+    |   expr_if:e {: RESULT = e; :}
+    |   expr_lambda:e {: RESULT = e; :}
+    |   expr_proc:e {: RESULT = e; :}
+    |   expr_let:e {: RESULT = e; :}
+    |   expr_tuple:e {: RESULT = e; :}
+    |   expr_list:e {: RESULT = e; :}
+    |   expr_set:e {: RESULT = e; :}
+    |   expr_map:e {: RESULT = e; :}
+    |   LPAR expression:e RPAR {: RESULT = e; :}
+    ;
+
+expr_proc ::=
+        PROC LPAR decl_parameters_opt:d RPAR var_decl_variables_opt:v BEGIN statements:s end_proc
+            {:  Element e = createElement("Expr", "Proc");
+                appendChildren(e, d);
+                appendChildren(e, v);
+                appendChildren(e, s);
+                RESULT = e; :}
+    |   PROC:k error end_procedure {: error("Illegal proc expression.", k, kleft, kright); RESULT = null; :}
+    ;
+
+expr_set ::=
+        LBRACE RBRACE {: RESULT = createElement("Expr", "Set"); :}
+    |   LBRACE expressions:m colon_generators_opt:g RBRACE
+            {:  Element e = createElement("Expr", "Set");
+                appendChildren(e, m);
+                appendChildren(e, g);
+                RESULT = e; :}
+    ;
+
+expr_tuple ::=
+        LPAR RPAR
+            {:  RESULT = createElement("Expr", "TaggedTuple"); :}
+    |   expr_tuple_tagged_head:e RPAR
+            {:  RESULT = e; :}
+    ;
+expr_tuple_tagged_head ::=
+        LPAR entry_tagged_expr:e {: RESULT = appendChild(createElement("Expr", "TaggedTuple"), e); :}
+    |   expr_tuple_tagged_head:tuple COMMA entry_tagged_expr:e  {: RESULT = appendChild(tuple, e); :}
+    ;
+
+expr_unary ::=
+        expr_postfix:e {: RESULT = e; :}
+    |   unary_expression_op:o expr_postfix:e
+            {: RESULT = appendChild(createElement("Expr", "UnaryOp"), o, e); :}
+    ;
+
+expr_var ::=
+        id:id {: RESULT = setName(createElement("Expr", "Var"), id); :}
+    |   OLD id:id
+            {:  Element e = createElement("Expr", "Var");
+                setName(e, id);
+                RESULT = setAttribute(e, "old", "Yes"); :}
+    ;
+
+generator ::=
+        for_each decl_generators:g generator_in_opt:i
+            {:  Element element = createElement("Generator");
+                appendChildren(element, g);
+                RESULT = appendChild(element, i); :}
+    |   for_each type_expr:type decl_generators:g generator_in_opt:i
+            {:  Element element = createElement("Generator");
+                appendChild(element, type);
+                appendChildren(element, g);
+                RESULT = appendChild(element, i); :}
+    ;
+generators ::=
+        generator:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   generators:list COMMA expression:e
+            {:  Element generator = (Element)list.get(list.size()-1);
+                NodeList filtList = generator.getElementsByTagName("Filters");
+                if ((filtList == null) || (filtList.getLength() <= 0))
+                    appendChild(generator, appendChild(createElement("Filters"), e));
+                else
+                    appendChild((Element)filtList.item(filtList.getLength()-1), e);
+                RESULT = list; :}
+    |   generators:list COMMA generator:e {: list.add(e); RESULT = list; :}
+    ;
+generator_in_opt ::=
+        /* empty */ {: RESULT = null; :} %prec SHIFT_THERE
+    |   IN expression:e {: RESULT = e; :}
+    ;
+
+guards_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   GUARD expressions:e {: RESULT = appendChildren(createElement("Guards"), e); :}
+    ;
+
+imports ::=
+        import_:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   imports:list import_:e {:  list.add(e); RESULT = list; :}
+    ;
+imports_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   imports:list {:  RESULT = list; :}
+    ;
+
+import_ ::=
+        IMPORT ALL qid:i SEMI
+            {:  Element element = createElement("Import");
+                setAttribute(element, "kind", "package");
+                RESULT = appendChild(element, i); :}
+    |   IMPORT qid:i SEMI
+            {:  Element element = createElement("Import");
+                setAttribute(element, "kind", "single");
+                RESULT = appendChild(element, i); :}
+    |   IMPORT qid:i EQUALS id:name SEMI
+            {:  Element element = createElement("Import");
+                setAttribute(element, "kind", "single");
+                setAttribute(element, "alias", name);
+                RESULT = appendChild(element, i); :}
+    |   IMPORT:k error SEMI {: error("Illegal import declaration.", k, kleft, kright); RESULT = null; :}
+    ;
+
+initializer ::=
+        INITIALIZE EQUALS_EQUALS_GT outputs_opt:o guards_opt:g var_decl_variables_opt:v do_statements_opt:s end_initialize
+            {:  Element action = createElement("Initializer");
+                appendChildren(action, o);
+                appendChild(action, g);
+                appendChildren(action, v);
+                appendChildren(action, s);
+                RESULT = action; :}
+    |   INITIALIZE guards_opt:g VAR decl_variables:v do_statements_opt:s end_initialize
+            {:  Element action = createElement("Initializer");
+                appendChild(action, g);
+                appendChildren(action, v);
+                appendChildren(action, s);
+                RESULT = action; :}
+    |   INITIALIZE do_opt statements:s end_initialize
+            {:   RESULT = appendChildren(createElement("Initializer"), s); :}
+    |   INITIALIZE end_initialize
+            {:  RESULT = createElement("Initializer"); :}
+//    |   INITIALIZE:k error end_initialize {: error("Illegal initializer.", k, kleft, kright); RESULT = null; :}
+    ;
+
+input ::=
+        input_body:input repeat_opt:r  channel_opt:c
+            {:  RESULT = appendChild(input, c, r); :}
+    |   id:id COLON input_body:input repeat_opt:r channel_opt:c
+            {:  setAttribute(input, "port", id);
+                RESULT = appendChild(input, c, r); :}
+    ;
+input_body ::=
+        decl_input:d
+            {:  RESULT = appendChild(createElement("Input", "Sequence"), d); :}
+    |   LBRACK RBRACK
+            {:  RESULT = createElement("Input", "Elements"); :}
+    |   LBRACK decl_inputs:d RBRACK
+            {:  RESULT = appendChildren(createElement("Input", "Elements"), d); :}
+//    |   LBRACK decl_inputs:d VBAR decl_input:t RBRACK             // The old tail syntax.
+//            {:  Element input = createElement("Input", "Sequence");
+//                appendChildren(input, d);
+//                RESULT = appendChild(input, t); :}
+    ;
+inputs ::=
+        input:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   inputs:list COMMA input:e {:  list.add(e); RESULT = list; :}
+    ;
+inputs_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   inputs:list {:  RESULT = list; :}
+    ;
+
+invariants ::=
+        INVARIANT expressions:e end_invariant
+            {: RESULT = e; :}
+    |   INVARIANT:k error end_initialize {: error("Illegal invariant.", k, kleft, kright); RESULT = null; :}
+    ;
+
+mapping ::=
+        expression:e1 DASH_GT expression:e2
+            {: RESULT = appendChild(createElement("Mapping"), e1, e2); :}
+    ;
+mappings ::=
+        mapping:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   mappings:list COMMA mapping:e {:  list.add(e); RESULT = list; :}
+    ;
+
+output ::=
+        label_opt:id LBRACK expressions_opt:e RBRACK repeat_opt:r channel_opt:c
+            {:  Element output = createElement("Output");
+                setAttribute(output, "port", id);
+                appendChildren(output, e);
+                RESULT = appendChild(output, c, r); :}
+    ;
+outputs ::=
+        output:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   outputs:list COMMA output:e {:  list.add(e); RESULT = list; :}
+    ;
+outputs_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   outputs:list {:  RESULT = list; :}
+    ;
+
+package_name_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   PACKAGE package_name:n SEMI {: RESULT = setName(createElement("Package"), n); :}
+    |   PACKAGE:k error SEMI {: error("Illegal package declaration.", k, kleft, kright); RESULT = null; :}
+    ;
+package_name ::=
+        any_id:n {: RESULT = n; :}
+    |   package_name:s1 DOT:s2 any_id:s3 {: RESULT = s1 + s2 + s3; :}
+    ;
+
+port_input ::=
+        multi_opt:m id:i
+            {:  Element port = createElement("Port", "Input");
+                setName(port, i);
+                if (m != null) setAttribute(port, "multi", "Yes");
+                RESULT = port; :}
+    |   multi_opt:m type_expr:t id:i
+            {:  Element port = createElement("Port", "Input");
+                setName(port, i);
+                if (m != null) setAttribute(port, "multi", "Yes");
+                appendChild(port, t);
+                RESULT = port; :}
+    ;
+port_inputs ::=
+        port_input:port {:  Vector list = new Vector(); list.add(port); RESULT = list; :}
+    |   port_inputs:list COMMA port_input:port {:  list.add(port); RESULT = list; :}
+    ;
+port_inputs_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   port_inputs:list {:  RESULT = list; :}
+    ;
+
+port_output ::=
+        multi_opt:m id:i
+            {:  Element port = createElement("Port", "Output");
+                setName(port, i);
+                if (m != null) setAttribute(port, "multi", "Yes");
+                RESULT = port; :}
+    |   multi_opt:m type_expr:t id:i
+            {:  Element port = createElement("Port", "Output");
+                setName(port, i);
+                if (m != null) setAttribute(port, "multi", "Yes");
+                appendChild(port, t);
+                RESULT = port; :}
+    ;
+port_outputs ::=
+        port_output:port {:  Vector list = new Vector(); list.add(port); RESULT = list; :}
+    |   port_outputs:list COMMA port_output:port {:  list.add(port); RESULT = list; :}
+    ;
+port_outputs_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   port_outputs:list {:  RESULT = list; :}
+    ;
+
+repeat_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   REPEAT expression:e {: RESULT = appendChild(createElement("Repeat"), e); :}
+    ;
+
+requires_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   REQUIRE expressions:e {: RESULT = appendChildren(createElement("Requires"), e); :}
+    ;
+
+schedule ::=
+        schedule_fsm:s {: RESULT = s; :}
+    |   schedule_regexp:s {: RESULT = s; :}
+    ;
+
+schedule_fsm ::=
+    SCHEDULE FSM end_schedule {: RESULT = null; :} // FIXME
+    ;
+
+schedule_regexp ::=
+	    SCHEDULE REGEXP schedule_expression:e end_schedule {: RESULT = e; :}
+    |   SCHEDULE:k error end_schedule {: error("Illegal schedule.", k, kleft, kright); RESULT = null; :}
+    ;
+
+schedule_alt_expression ::=
+        schedule_seq_expression:e {: RESULT = e; :}
+    |   schedule_alt_expressions:e {: RESULT = e; :}
+    ;
+schedule_alt_expressions ::=
+	schedule_seq_expression:e1 VBAR schedule_seq_expression:e2
+	    {: RESULT = appendChild(createElement("Selector", "Alt"), e1, e2); :}
+    |	schedule_alt_expressions:e1 VBAR schedule_seq_expression:e2
+	    {: RESULT = appendChild(e1, e2); :}
+    ;
+schedule_expression ::= schedule_alt_expression:e {: RESULT = e; :};
+schedule_multiplicity_expression ::=
+	LPAR schedule_expression:e RPAR {: RESULT = e; :}
+    |	LPAR schedule_expression:e RPAR PLUS
+	    {:  Element one = createElement("Expr", "Literal");
+		setAttribute(one, "literal-kind", "Integer");
+		setAttribute(one, "value", "1");
+		RESULT = appendChild(createElement("Selector", "Rep"), e, one); :}
+    |	LPAR schedule_expression:e RPAR STAR
+	    {:  Element zero = createElement("Expr", "Literal");
+		setAttribute(zero, "literal-kind", "Integer");
+		setAttribute(zero, "value", "0");
+		RESULT = appendChild(createElement("Selector", "Rep"), e, zero); :}
+    |	LPAR schedule_expression:e RPAR QMARK
+	    {:  Element zero = createElement("Expr", "Literal");
+		setAttribute(zero, "literal-kind", "Integer");
+		setAttribute(zero, "value", "0");
+		Element one = createElement("Expr", "Literal");
+		setAttribute(one, "literal-kind", "Integer");
+		setAttribute(one, "value", "1");
+		RESULT = appendChild(createElement("Selector", "Rep"), e, zero, one); :}
+    |	LPAR schedule_expression:e RPAR HASH LPAR expression:min RPAR
+            {:  RESULT = appendChild(createElement("Selector", "Rep"), e, min); :}
+    |	LPAR schedule_expression:e RPAR HASH LPAR expression:min COMMA expression:max RPAR
+            {:  RESULT = appendChild(createElement("Selector", "Rep"), e, min, max); :}
+    ;
+schedule_opt_expression ::=
+        LBRACK schedule_expression:e RBRACK
+            {:  Element zero = createElement("Expr", "Literal");
+                setAttribute(zero, "literal-kind", "Integer");
+                setAttribute(zero, "value", "0");
+                Element one = createElement("Expr", "Literal");
+                setAttribute(one, "literal-kind", "Integer");
+                setAttribute(one, "value", "1");
+                RESULT = appendChild(createElement("Selector", "Rep"), e, zero, one); :}
+    ;
+schedule_seq_expression ::=
+        schedule_unary_expression:e {: RESULT = e; :}
+    |   schedule_seq_expressions:e {: RESULT = e; :}
+    ;
+schedule_seq_expressions ::=
+        schedule_unary_expression:e1 schedule_unary_expression:e2
+            {: RESULT = appendChild(createElement("Selector", "Seq"), e1, e2); :}
+    |   schedule_seq_expressions:e1 schedule_unary_expression:e2
+            {: RESULT = appendChild(e1, e2); :}
+    ;
+schedule_unary_expression ::=
+        schedule_var_expression:e {: RESULT = e; :}
+    |   schedule_multiplicity_expression:e {: RESULT = e; :}
+    |   schedule_opt_expression:e {: RESULT = e; :}
+    ;
+schedule_var_expression ::=
+        id:i {: RESULT = setName(createElement("Selector", "Var"), i); :}
+     ;
+
+statement ::=
+        SEMI {: RESULT = null; :}
+    |   stmt_assign: s {: RESULT = s; :}
+    |   stmt_call: s {: RESULT = s; :}
+    |   stmt_choose: s {: RESULT = s; :}
+    |   stmt_guarded: s {: RESULT = s; :}
+    |   stmt_block: s {: RESULT = s; :}
+    |   stmt_if: s {: RESULT = s; :}
+    |   stmt_while: s {: RESULT = s; :}
+    |   stmt_foreach: s {: RESULT = s; :}
+    |   error SEMI {: error("Illegal statement."); RESULT = null; :}
+    ;
+statements ::=
+        statement:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   statements:list statement:e {:  list.add(e); RESULT = list; :}
+    ;
+statements_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   statements:list {:  RESULT = list; :}
+    ;
+
+stmt_assign ::=
+        stmt_assign_head:statement COLON_EQUALS expression:e SEMI
+            {:  RESULT = appendChild(statement, e); :}
+    ;
+stmt_assign_head ::=
+        expr_primary:e
+            {:  Element s = createElement("Stmt", "Assign");
+                Attr name = e.getAttributeNode("name");
+                if (name == null) {
+                    error("Left-hand side of assignment must be name or indexed name.");
+                    RESULT = appendChild(s, e);
+                }
+                else                                        // Preserved functionality
+                    RESULT = setName(s, name.getValue()); :}
+    |   expr_postfix:e LBRACK expressions_opt:i RBRACK
+            {:  Element s = createElement("Stmt", "Assign");
+                Element args = appendChildren(createElement("Args"), i);
+                Attr name = e.getAttributeNode("name");
+                if (name == null) {
+                    error("Left-hand side of assignment must be name or indexed name.");
+                    RESULT = appendChild(s, e);
+                }
+                else                               // Preserved functionality
+                    RESULT = appendChild(setName(s, name.getValue()), args); :}
+    |   expr_postfix:c DOT id:id
+            {:  Element e = setName(createElement("Expr", "Entry"), id);
+                RESULT = appendChild(createElement("Stmt", "Assign"), c, e); :}
+    ;
+
+stmt_choose ::=
+        CHOOSE generators:g var_decl_variables_opt:v DO statements:s end_choose
+            {:  Element statement = createElement("Stmt", "Choose");
+                appendChildren(statement, g);
+                Element body = createElement("Stmt", "Block");
+                appendChildren(body, v);
+                appendChildren(body, s);
+                RESULT = appendChild(statement, body); :}
+    |   CHOOSE:k error end_choose {: error("Illegal foreach statement.", k, kleft, kright); RESULT = null; :}
+    ;
+
+stmt_block ::=
+        BEGIN var_decl_variables_opt:v DO statements:s end_begin
+            {:  Element statement = createElement("Stmt", "Block");
+                appendChildren(statement, v);
+                appendChildren(statement, s);
+                RESULT = statement; :}
+    |   BEGIN statements:s end_begin
+            {:  Element statement = createElement("Stmt", "Block");
+                appendChildren(statement, s);
+                RESULT = statement; :}
+    |   BEGIN:k error end_begin {: error("Illegal block.", k, kleft, kright); RESULT = null; :}
+    ;
+
+stmt_call ::=
+        expr_postfix:c LPAR expressions_opt:i RPAR SEMI
+            {:  Element e = createElement("Stmt", "Call");
+                Attr a = c.getAttributeNode("kind");
+                if ((a != null) && a.getValue().equals("Tuple") && (c.getChildNodes().getLength() == 1))
+                    appendChild(e, c.getFirstChild());            // Lose syntactical parentheses
+                else
+                    appendChild(e, c);
+                RESULT = appendChild(e, appendChildren(createElement("Args"), i)); :}
+    ;
+
+stmt_foreach ::=
+        generators:g var_decl_variables_opt:v DO statements:s end_foreach   // FIXME: par/seq
+            {:  Element statement = createElement("Stmt", "Foreach");
+                appendChildren(statement, g);
+                Element body = createElement("Stmt", "Block");
+                appendChildren(body, v);
+                appendChildren(body, s);
+                RESULT = appendChild(statement, body); :}
+    |   for_each:k error end_foreach {: error("Illegal foreach statement.", k, kleft, kright); RESULT = null; :}
+    ;
+
+stmt_guarded ::=
+        stmt_guarded_head:statement end_assign {: RESULT = statement; :}
+    |   ASSIGN:k error end_assign {: error("Illegal guarded assignment statement.", k, kleft, kright); RESULT = null; :}
+    ;
+stmt_guarded_head ::=
+        ASSIGN expressions:e TO
+            {:  RESULT = appendChildren(createElement("Stmt", "Guarded"), e); :}
+    |   stmt_guarded_head:statement clause_guard:clause
+            {:  RESULT = appendChild(statement, clause); :}
+    |   stmt_guarded_head:statement clause_default:clause
+            {:  RESULT = appendChild(statement, clause); :}
+    ;
+
+stmt_if ::=
+        IF expression:i THEN body:t end_if
+            {:  RESULT = appendChild(createElement("Stmt", "If"), i, t); :}
+    |   IF expression:i THEN body:t ELSE body:f end_if
+            {:  RESULT = appendChild(createElement("Stmt", "If"), i, t, f); :}
+//    |   IF:k error end_if {: error("Illegal if statement.", k, kleft, kright); RESULT = null; :}
+    ;
+
+stmt_while ::=
+        WHILE expression:i var_decl_variables_opt:v DO statements_opt:s end_while
+            {:  Element body = createElement("Stmt", "Block");
+                appendChildren(body, v);
+                appendChildren(body, s);
+                RESULT = appendChild(createElement("Stmt", "While"), i, body); :}
+    |   WHILE:k error end_while {: error("Illegal while statement.", k, kleft, kright); RESULT = null; :}
+    ;
+
+time_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   TIME type_expr:type
+            {:  RESULT = appendChild(createElement("Time"), type); :}
+    ;
+
+type_expr ::=
+        type_function:type {: RESULT = type; :}
+    |   type_tuple:type {: RESULT = type; :}
+    |   type_list:type {: RESULT = type; :}
+    |   type_map:type {: RESULT = type; :}
+    |   type_unary:type {: RESULT = type; :}
+    ;
+
+type_function ::=
+        LBRACK entry_types_opt:e RBRACK
+            {:  RESULT = appendChildren(createElement("Type", "Procedure" ), e); :}
+    |   LBRACK entry_types_opt:e DASH_DASH_GT RBRACK
+            {:  RESULT = appendChildren(createElement("Type", "Procedure"), e); :}
+    |   LBRACK entry_types_opt:e DASH_DASH_GT type_expr:t RBRACK
+            {:  RESULT = appendChild(appendChildren(createElement("Type", "Function"), e), t); :}
+    ;
+
+type_list ::=
+        id:id LBRACK entry_types_opt:e RBRACK
+            {:  Element type = createElement("Type" /*, "List" */);
+                setName(type, id);
+                RESULT = appendChildren(type, e); :}
+    ;
+
+type_map ::=
+        id:id LPAR entry_taggeds_opt:e RPAR
+            {:  Element type = createElement("Type" /*, "Map" */);
+                setName(type, id);
+                RESULT = appendChildren(type, e); :}
+    ;
+
+type_parameters ::=
+        type_parameter:e {:  Vector list = new Vector(); list.add(e); RESULT = list; :}
+    |   type_parameters:list COMMA type_parameter:e {:  list.add(e); RESULT = list; :}
+    ;
+type_parameters_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   LBRACK RBRACK {:  RESULT = null; :}
+    |   LBRACK type_parameters:list RBRACK {:  RESULT = list; :}
+    ;
+type_parameter ::=
+        type_parameter_id:i {:  RESULT = i; :}
+    |   type_parameter_id:i LT type_expr:t {: RESULT = appendChild(i, t); :}
+    ;
+type_parameter_id ::=
+        id:i {: RESULT = setName(createElement("TypeParameter"), i); :}
+    ;
+
+type_tuple ::=
+        LPAR entry_tagged_types_opt:e RPAR
+            {:  Element type = createElement("Type" /*, "Tuple" */);
+                appendChildren(type, e);
+                RESULT = type; :}
+    ;
+
+type_unary ::=
+        id:id {: RESULT = setName(createElement("Type" /*, "Unary" */), id); :}
+    ;
+
+
+binary_expression_op ::=
+        expression_op_name:op {: RESULT = setName(createElement("Op"), op); :}
+//    |   COLON:k {: RESULT = setName(createElement("Op"), k);; :}
+    ;
+unary_expression_op ::=
+        expression_op_name:op {: RESULT = setName(createElement("Op"), op); :}
+    ;
+expression_op_name ::=
+        PartialOp:o {: RESULT = o; :}
+    |   AND:k {: RESULT = k; :}
+    |   DIV:k {: RESULT = k; :}
+    |   DOM:k {: RESULT = k; :}
+    |   DOTDOT:k {: RESULT = k; :}
+    |   MOD:k {: RESULT = k; :}
+    |   NOT:k {: RESULT = k; :}
+    |   OR:k {: RESULT = k; :}
+//    |   COLON:k {: RESULT = k; :}
+//    |   DASH_GT:k {: RESULT = k; :}
+    |   DASH_DASH_GT:k {: RESULT = k; :}
+    |   EQUALS:k {: RESULT = k; :}
+//    |   EQUALS_EQUALS_GT:k {: RESULT = k; :}
+    |   HASH:k {: RESULT = k; :}
+    |   LT:k {: RESULT = k; :}
+    |   GT:k {: RESULT = k; :}
+    |   PLUS:k {: RESULT = k; :}
+    |   QMARK:k {: RESULT = k; :}
+    |   STAR:k {: RESULT = k; :}
+    |   VBAR:k {: RESULT = k; :}
+    |   IllegalCharacter:k  {: RESULT = k; /* Never happens, but loses a warning */:}
+    ;
+
+any_id ::=
+        id:id {: RESULT = id; :}
+    |   ACTION:k {: RESULT = k; :}
+    |   ACTOR:k {: RESULT = k; :}
+    |   ALL:k {: RESULT = k; :}
+    |   AND:k {: RESULT = k; :}
+    |   ANY:k {: RESULT = k; :}
+    |   ASSIGN:k {: RESULT = k; :}
+    |   AT:k {: RESULT = k; :}
+    |   ATN:k {: RESULT = k; :}
+    |   BEGIN:k {: RESULT = k; :}
+    |   CONST:k {: RESULT = k; :}
+    |   DEFAULT:k {: RESULT = k; :}
+    |   DIV:k {: RESULT = k; :}
+    |   DO:k {: RESULT = k; :}
+    |   DOM:k {: RESULT = k; :}
+    |   ELSE:k {: RESULT = k; :}
+    |   END:k {: RESULT = k; :}
+    |   END_ACTION:k {: RESULT = k; :}
+    |   END_ACTOR:k {: RESULT = k; :}
+    |   END_ASSIGN:k {: RESULT = k; :}
+    |   END_BEGIN:k {: RESULT = k; :}
+    |   END_FOREACH:k {: RESULT = k; :}
+    |   END_FUNCTION:k {: RESULT = k; :}
+    |   END_IF:k {: RESULT = k; :}
+    |   END_INITIALIZE:k {: RESULT = k; :}
+    |   END_INVARIANT:k {: RESULT = k; :}
+    |   END_LAMBDA:k {: RESULT = k; :}
+    |   END_LET:k {: RESULT = k; :}
+    |   END_PROC:k {: RESULT = k; :}
+    |   END_PROCEDURE:k {: RESULT = k; :}
+    |   END_SCHEDULE:k {: RESULT = k; :}
+    |   END_WHILE:k {: RESULT = k; :}
+    |   ENSURE:k {: RESULT = k; :}
+    |   FALSE:k {: RESULT = k; :}
+    |   FOR:k {: RESULT = k; :}
+    |   FOREACH:k {: RESULT = k; :}
+    |   FUNCTION:k {: RESULT = k; :}
+    |   GUARD:k {: RESULT = k; :}
+    |   IF:k {: RESULT = k; :}
+    |   IMPORT:k {: RESULT = k; :}
+    |   IN:k {: RESULT = k; :}
+    |   INITIALIZE:k {: RESULT = k; :}
+    |   INVARIANT:k {: RESULT = k; :}
+    |   LET:k {: RESULT = k; :}
+    |   LAMBDA:k {: RESULT = k; :}
+    |   MAP:k {: RESULT = k; :}
+    |   MOD:k {: RESULT = k; :}
+    |   MULTI:k {: RESULT = k; :}
+    |   MUTABLE:k {: RESULT = k; :}
+    |   NOT:k {: RESULT = k; :}
+    |   NULL:k {: RESULT = k; :}
+    |   OLD:k {: RESULT = k; :}
+    |   OR:k {: RESULT = k; :}
+    |   PACKAGE:k {: RESULT = k; :}
+    |   PROC:k {: RESULT = k; :}
+    |   PROCEDURE:k {: RESULT = k; :}
+    |   REPEAT:k {: RESULT = k; :}
+    |   REQUIRE:k {: RESULT = k; :}
+    |   SCHEDULE:k {: RESULT = k; :}
+    |   THEN:k {: RESULT = k; :}
+    |   TIME:k {: RESULT = k; :}
+    |   TO:k {: RESULT = k; :}
+    |   TRUE:k {: RESULT = k; :}
+    |   VAR:k {: RESULT = k; :}
+    |   WHILE:k {: RESULT = k; :}
+    ;
+
+character ::=
+        Character:c {: RESULT = c; :}
+    |   UnterminatedCharacter:c {: error("Unterminated character \'" + c + " ."); RESULT = c; :}
+    ;
+
+id ::=
+        Id:id {: RESULT = id; :}
+//    |   AND:k {: RESULT = k; :}
+//    |   DIV:k {: RESULT = k; :}
+//    |   DOM:k {: RESULT = k; :}
+//    |   MOD:k {: RESULT = k; :}
+//    |   NOT:k {: RESULT = k; :}
+//    |   OR:k {: RESULT = k; :}
+    ;
+
+qid ::=
+     Id:id qid_tail:t
+     {:
+        Element qid = createElement("QID");
+        Element e = createElement("ID");
+        setName(e, id);
+        appendChild(qid, e);
+        for (int i = 0; i < t.size(); i++) {
+            e = createElement("ID");
+            setName(e, (String)t.get(i));
+            appendChild(qid, e);
+        }
+        RESULT = qid;
+     :}
+     ;
+
+qid_tail ::=
+        /* empty */  {: RESULT = new Vector(); :}
+    |   DOT id:i qid_tail:t
+            {:
+                t.add(0, i);
+                RESULT = t;
+            :}
+     ;
+
+string ::=
+        String:c {: RESULT = c; :}
+    |   UnterminatedString:c {: error("Unterminated string \"" + c + " ."); RESULT = c; :}
+    ;
+
+colon_generators_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   COLON generators:g {: RESULT = g; :}
+//    |   generators:g {: RESULT = g; :}
+    ;
+
+const_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   CONST:i {: RESULT = i; :}
+    ;
+do_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   DO:k {: RESULT = k; :}
+    ;
+do_statements_opt ::=
+        /* empty */ {:  RESULT = null; :}
+    |   DO statements:list {:  RESULT = list; :}
+    ;
+
+end_action ::= END | END_ACTION;
+end_actor ::= END | END_ACTOR;
+end_assign ::= END | END_ASSIGN;
+end_begin ::= END | END_BEGIN;
+end_choose ::= END | END_CHOOSE;
+end_foreach ::= END | END_FOREACH;
+end_function ::= END | END_FUNCTION;
+end_if ::= END | END_IF;
+end_initialize ::= END | END_INITIALIZE;
+end_invariant ::= END | END_INVARIANT;
+end_lambda ::= END | END_LAMBDA;
+end_let ::= END | END_LET;
+end_proc ::= END | END_PROC;
+end_procedure ::= END | END_PROCEDURE;
+end_schedule ::= END | END_SCHEDULE;
+end_while ::= END | END_WHILE;
+
+for_each ::=
+        FOR:k {: RESULT = k; :}
+    |   FOREACH:k {: RESULT = k; :}
+    ;
+
+label_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   id:i COLON {: RESULT = i; :}
+    ;
+multi_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   MULTI:i {: RESULT = i; :}
+    ;
+semi_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   SEMI:i {: RESULT = i; :}
+    ;
+
+var_decl_variables_opt ::=
+        /* empty */ {: RESULT = null; :}
+    |   VAR decl_variables:list {: RESULT = list; :}
+    ;
+
+/*--INSERT-PRODUCTIONS--*/
