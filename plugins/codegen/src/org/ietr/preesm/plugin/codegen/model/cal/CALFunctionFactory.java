@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 
+import org.ietr.preesm.plugin.codegen.model.CodeGenArgument;
+import org.ietr.preesm.plugin.codegen.model.CodeGenParameter;
 import org.ietr.preesm.plugin.codegen.model.FunctionCall;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
 import org.w3c.dom.Document;
@@ -37,12 +39,12 @@ public class CALFunctionFactory implements IFunctionFactory{
 				for(int i = 0 ; i < nodes.getLength() ; i ++){
 					Element e = (Element) nodes.item(i);
 					if(e.getNodeName().equals("Port") && e.getAttribute("kind").equals("Input")){
-						result.addInput(e.getAttribute("name"));
+						result.addInput(new CodeGenArgument(e.getAttribute("name")));
 					}else if(e.getNodeName().equals("Port") && e.getAttribute("kind").equals("Output")){
-						result.addOutput(e.getAttribute("name"));
+						result.addOutput(new CodeGenArgument(e.getAttribute("name")));
 					}
 					else if(e.getNodeName().equals("Decl") && e.getAttribute("kind").equals("Parameter")){
-						result.addParameter(e.getAttribute("name"));
+						result.addParameter(new CodeGenParameter(e.getAttribute("name")));
 					}
 				}
 			}else{

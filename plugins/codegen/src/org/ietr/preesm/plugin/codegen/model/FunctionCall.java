@@ -7,15 +7,15 @@ public class FunctionCall {
 
 	private String functionName;
 
-	private List<String> inputs;
-	private List<String> outputs;
-	private List<String> parameters;
+	private List<CodeGenArgument> inputs;
+	private List<CodeGenArgument> outputs;
+	private List<CodeGenParameter> parameters;
 
 	public FunctionCall(String name) {
 		functionName = name;
-		inputs = new ArrayList<String>();
-		outputs = new ArrayList<String>();
-		parameters = new ArrayList<String>();
+		inputs = new ArrayList<CodeGenArgument>();
+		outputs = new ArrayList<CodeGenArgument>();
+		parameters = new ArrayList<CodeGenParameter>();
 	}
 
 	public String getFunctionName() {
@@ -26,15 +26,15 @@ public class FunctionCall {
 		functionName = name;
 	}
 
-	public void addInput(String inputName) {
+	public void addInput(CodeGenArgument inputName) {
 		inputs.add(inputName);
 	}
 
-	public void addOutput(String outputName) {
+	public void addOutput(CodeGenArgument outputName) {
 		outputs.add(outputName);
 	}
 	
-	public void addParameter(String parameterName) {
+	public void addParameter(CodeGenParameter parameterName) {
 		parameters.add(parameterName);
 	}
 	

@@ -3,6 +3,8 @@ package org.ietr.preesm.plugin.codegen.model.idl;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import org.ietr.preesm.plugin.codegen.model.CodeGenArgument;
+import org.ietr.preesm.plugin.codegen.model.CodeGenParameter;
 import org.ietr.preesm.plugin.codegen.model.FunctionCall;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
 import org.jacorb.idl.AliasTypeSpec;
@@ -152,12 +154,15 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor{
 	public void visitParamDecl(ParamDecl arg0) {
         if( arg0.paramAttribute == ParamDecl.MODE_IN ){
         	if(arg0.paramTypeSpec.name().equals("parameter")){
-        		currentCall.addParameter(arg0.simple_declarator.name());
+        		CodeGenParameter parameter = new CodeGenParameter(arg0.simple_declarator.name());
+        		currentCall.addParameter(parameter);
         	}else{
-        		currentCall.addInput(arg0.simple_declarator.name());
+        		CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name());
+        		currentCall.addInput(argument);
         	}
         }else if( arg0.paramAttribute == ParamDecl.MODE_OUT ){
-        	currentCall.addOutput(arg0.simple_declarator.name());
+        	CodeGenArgument argument = new CodeGenArgument(arg0.simple_declarator.name());
+        	currentCall.addOutput(argument);
         }
         System.out.println(arg0.toString());
 	}
