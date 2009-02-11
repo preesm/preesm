@@ -16,8 +16,16 @@ import org.w3c.dom.NodeList;
 public class CALFunctionFactory implements IFunctionFactory{
 
 	public HashMap<String, FunctionCall> createdCall;
-
-	public CALFunctionFactory() {
+	public static CALFunctionFactory instance = null;
+	
+	public static CALFunctionFactory getInstance(){
+		if(instance == null){
+			instance = new CALFunctionFactory() ;
+		}
+		return instance ;
+	}
+	
+	private CALFunctionFactory() {
 		createdCall = new HashMap<String, FunctionCall>();
 	}
 

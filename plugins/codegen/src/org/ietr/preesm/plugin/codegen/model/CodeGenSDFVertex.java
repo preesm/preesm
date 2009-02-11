@@ -56,8 +56,8 @@ public class CodeGenSDFVertex extends SDFVertex{
 			}
 			code +="}\n";
 		}else{
-			if(this.getGraphDescription() == null){
-				code += this.getName()+"(";
+			if(this.getGraphDescription() == null && this.getRefinement() instanceof FunctionCall){
+				code += ((FunctionCall) this.getRefinement()).getFunctionName()+"(";
 				for(SDFEdge edge : this.getBase().incomingEdgesOf(this)){
 					code+=edge.getSource().getName()+"_"+edge.getSourceInterface().getName()+",";
 				}

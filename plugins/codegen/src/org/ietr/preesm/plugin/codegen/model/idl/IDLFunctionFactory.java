@@ -7,6 +7,7 @@ import org.ietr.preesm.plugin.codegen.model.CodeGenArgument;
 import org.ietr.preesm.plugin.codegen.model.CodeGenParameter;
 import org.ietr.preesm.plugin.codegen.model.FunctionCall;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
+import org.ietr.preesm.plugin.codegen.model.cal.CALFunctionFactory;
 import org.jacorb.idl.AliasTypeSpec;
 import org.jacorb.idl.ConstrTypeSpec;
 import org.jacorb.idl.Declaration;
@@ -37,6 +38,16 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor{
 
 	public HashMap<String, FunctionCall> createdIdl;
 	private FunctionCall currentCall ;
+	
+	public static IDLFunctionFactory instance = null;
+	
+	public static IDLFunctionFactory getInstance(){
+		if(instance == null){
+			instance = new IDLFunctionFactory() ;
+		}
+		return instance ;
+	}
+	
 	
 	private IDLFunctionFactory() {
 		createdIdl = new HashMap<String, FunctionCall>();

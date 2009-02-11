@@ -3,7 +3,9 @@ package org.ietr.preesm.plugin.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionCall {
+import org.sdf4j.model.IRefinement;
+
+public class FunctionCall implements IRefinement{
 
 	private String functionName;
 
