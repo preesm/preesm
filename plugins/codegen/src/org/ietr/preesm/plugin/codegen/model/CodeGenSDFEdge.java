@@ -12,6 +12,10 @@ public class CodeGenSDFEdge extends SDFEdge{
 		super(prod, cons, delay, dataType);
 	}
 	
+	public int getSize(){
+		return Math.max(getProd().intValue(), getCons().intValue());
+	}
+	
 	public String toString(){
 		return getDataType().toString()+" "+getSource().getName()+"_"+getSourceInterface().getName()+ " ["+getProd().intValue()+"];\n" ;
 	}

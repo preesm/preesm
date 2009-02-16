@@ -51,7 +51,7 @@ import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Generates code for a communication thread
@@ -70,11 +70,11 @@ public class CommThreadCodeGenerator {
 	/**
 	 * Adds semaphores to protect the data transmitted in this thread
 	 */
-	public void addSemaphores(SortedSet<DAGVertex> comVertices) {
+	public void addSemaphores(SortedSet<SDFAbstractVertex> comVertices) {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 
-		for (DAGVertex vertex : comVertices) {
+		for (SDFAbstractVertex vertex : comVertices) {
 			ICodeElement com = loopCode.getCodeElement(vertex);
 
 			AbstractBufferContainer container = thread.getGlobalContainer();
@@ -137,8 +137,8 @@ public class CommThreadCodeGenerator {
 	 * Adds send and receive functions from vertices allocated on the current
 	 * core. Vertices are already in the correct order.
 	 */
-	public void addSendsAndReceives(SortedSet<DAGVertex> vertices) {
-		for (DAGVertex vertex : vertices) {
+	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices) {
+		for (SDFAbstractVertex vertex : vertices) {
 			CommunicationFunctionCall com = CommunicationFunctionCall
 					.createCall(thread, vertex);
 			if (com != null) {

@@ -48,7 +48,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Generates code for a computation thread
@@ -68,19 +68,19 @@ public class CompThreadCodeGenerator {
 	 * Adds semaphores to protect the data transmitted in this thread. Iterates
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
-	public void addSemaphorePends(SortedSet<DAGVertex> taskVertices) {
+	public void addSemaphorePends(SortedSet<SDFAbstractVertex> taskVertices) {
 		AbstractBufferContainer container = thread.getGlobalContainer();
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 
-		for (DAGVertex task : taskVertices) {
+		for (SDFAbstractVertex task : taskVertices) {
 			// Getting incoming receive operations
-			SortedSet<DAGVertex> ownComVertices = thread.getComVertices(task,
+			SortedSet<SDFAbstractVertex> ownComVertices = thread.getComVertices(task,
 					true);
 
 			if (!ownComVertices.isEmpty()) {
 				ICodeElement taskElement = loopCode.getCodeElement(task);
-				for (DAGVertex com : ownComVertices) {
+				for (SDFAbstractVertex com : ownComVertices) {
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
 					// function
@@ -102,7 +102,7 @@ public class CompThreadCodeGenerator {
 
 			if (!ownComVertices.isEmpty()) {
 				ICodeElement taskElement = loopCode.getCodeElement(task);
-				for (DAGVertex com : ownComVertices) {
+				for (SDFAbstractVertex com : ownComVertices) {
 					// A first token must initialize the semaphore pend due to
 					// a sending operation
 					SemaphorePost init = new SemaphorePost(container, com,
@@ -131,12 +131,12 @@ public class CompThreadCodeGenerator {
 	/**
 	 * Adds one function call for each vertex in the ordered set
 	 */
-	public void addUserFunctionCalls(SortedSet<DAGVertex> vertices) {
+	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices) {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
 
-		for (DAGVertex vertex : vertices) {
+		for (SDFAbstractVertex vertex : vertices) {
 			ICodeElement beginningCall = new UserFunctionCall("init_"
 					+ vertex.getName(), vertex, thread);
 			beginningCode.addCodeElement(beginningCall);

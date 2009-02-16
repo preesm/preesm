@@ -48,6 +48,8 @@ import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
@@ -92,7 +94,9 @@ public class CodeGeneration implements ICodeGeneration {
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
 			MultiCoreArchitecture architecture, SourceFileList list) {
 		CodeGenerator codegen = new CodeGenerator(list);
-		codegen.generateSourceFiles(algorithm, architecture);
+		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory();
+		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
+		codegen.generateSourceFiles(sdfGraph, architecture);
 	}
 
 	/**

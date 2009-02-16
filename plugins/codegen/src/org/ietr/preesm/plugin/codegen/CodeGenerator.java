@@ -44,7 +44,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraph;
 
 /**
  * Top-level code generation class. Creates and fills source files
@@ -86,7 +86,7 @@ public class CodeGenerator {
 	/**
 	 * Creates and fills source files from an SDF and an architecture
 	 */
-	public void generateSourceFiles(DirectedAcyclicGraph algorithm,
+	public void generateSourceFiles(CodeGenSDFGraph algorithm,
 			MultiCoreArchitecture architecture) {
 		// Creates one source file per operator
 		createSourceFiles(architecture);
