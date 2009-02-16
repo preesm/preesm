@@ -33,11 +33,10 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -45,9 +44,8 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.AbstractEdge;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * A thread can contain buffer allocations as well as a source file (for static
@@ -93,9 +91,10 @@ public abstract class AbstractBufferContainer {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
-		
+
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+		// self
+
 		if (buffers.size() > 0) {
 			Iterator<BufferAllocation> iterator = buffers.iterator();
 
@@ -170,43 +169,24 @@ public abstract class AbstractBufferContainer {
 		return null;
 	}
 
-	/**
-	 * Gets the buffers corresponding to the given edge from its aggregate
-	 */
-	@SuppressWarnings("unchecked")
-	public Set<Buffer> getBuffers(AbstractEdge edge) {
-		BufferAggregate agg = (BufferAggregate) edge.getPropertyBean()
-				.getValue(BufferAggregate.propertyBeanName);
-		if (agg != null) {
-			Set<Buffer> bufferSet = getBuffers(agg);
-			return bufferSet;
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the buffers corresponding to the given edge from its aggregate
-	 */
-	public Set<Buffer> getBuffers(BufferAggregate agg) {
-		Set<Buffer> bufferSet = new HashSet<Buffer>();
-
-		Iterator<BufferAllocation> iterator = buffers.iterator();
-
-		while (iterator.hasNext()) {
-			BufferAllocation alloc = iterator.next();
-			Buffer buffer = alloc.getBuffer();
-			BufferAggregate bufferAggregate = buffer.getAggregate();
-
-			if (bufferAggregate.equals(agg)) {
-				bufferSet.add(buffer);
+	
+	public List<Buffer> getBuffers(Set<SDFEdge> edges){
+		List<Buffer> result = new ArrayList<Buffer>();
+		for(BufferAllocation alloc : buffers){
+			if(edges.contains(alloc.getBuffer().getEdge())){
+				result.add(alloc.getBuffer());
 			}
 		}
-
-		// Searching in the parent container
-		if (parentContainer != null)
-			bufferSet.addAll(parentContainer.getBuffers(agg));
-
-		return bufferSet;
+		return result ;
+	}
+	
+	public Buffer getBuffer(SDFEdge edge){
+		for(BufferAllocation alloc : buffers){
+			if(alloc.getBuffer().getEdge().equals(edge)){
+				alloc.getBuffer(); 
+			}
+		}
+		return null ;
 	}
 
 	/**

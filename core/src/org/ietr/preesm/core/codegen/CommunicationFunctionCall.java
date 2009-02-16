@@ -37,14 +37,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * code Element used to launch inter-core communication send or receive
@@ -57,7 +58,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	 * creates a send or a receive depending on the vertex type
 	 */
 	public static CommunicationFunctionCall createCall(
-			AbstractBufferContainer parentContainer, DAGVertex vertex) {
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 
 		CommunicationFunctionCall call = null;
 
@@ -68,30 +69,27 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		Medium medium = (Medium) vertex.getPropertyBean().getValue(
 				ImplementationPropertyNames.SendReceive_medium);
 
-		// Send and receive only have one input and one output edges
-		DAGEdge inEdge = (DAGEdge) (vertex.getBase().incomingEdgesOf(vertex)
-				.toArray()[0]);
-		DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(vertex)
-				.toArray()[0]);
+		Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
+		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
 
 		if (type != null && medium != null) {
 			if (type.isSend()) {
 
-				Set<Buffer> bufferSet = parentContainer.getBuffers(inEdge);
+				List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
 
 				// The target is the operator on which the corresponding receive
 				// operation is mapped
-				DAGVertex receive = outEdge.getTarget();
+				SDFAbstractVertex receive = ((SDFEdge) outEdges.toArray()[0]).getTarget();
 				Operator target = (Operator) receive.getPropertyBean()
 						.getValue(ImplementationPropertyNames.Vertex_Operator);
 				call = new Send(parentContainer, vertex, bufferSet, medium,
 						target);
 			} else if (type.isReceive()) {
-				Set<Buffer> bufferSet = parentContainer.getBuffers(outEdge);
+				List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
 
 				// The source is the operator on which the corresponding send
 				// operation is allocated
-				DAGVertex send = inEdge.getSource();
+				SDFAbstractVertex send = ((SDFEdge) outEdges.toArray()[0]).getSource();
 				Operator source = (Operator) send.getPropertyBean().getValue(
 						ImplementationPropertyNames.Vertex_Operator);
 				call = new Receive(parentContainer, vertex, bufferSet, medium,
@@ -105,7 +103,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	/**
 	 * Transmitted buffers
 	 */
-	private Set<Buffer> bufferSet;
+	private List<Buffer> bufferSet;
 
 	/**
 	 * Medium used
@@ -113,8 +111,8 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	private Medium medium;
 
 	public CommunicationFunctionCall(String name,
-			AbstractBufferContainer parentContainer, Set<Buffer> bufferSet,
-			Medium medium, DAGVertex correspondingVertex) {
+			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
+			Medium medium, SDFAbstractVertex correspondingVertex) {
 
 		super(name, parentContainer, correspondingVertex);
 
@@ -140,7 +138,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		}
 	}
 
-	public Set<Buffer> getBufferSet() {
+	public List<Buffer> getBufferSet() {
 		return bufferSet;
 	}
 

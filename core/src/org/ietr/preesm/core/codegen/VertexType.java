@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Represents the type of a vertex in its propertybeans
@@ -64,7 +64,7 @@ public class VertexType {
 	/**
 	 * Returns true if this receive operation leads to a send operation
 	 */
-	static public boolean isIntermediateReceive(DAGVertex vertex) {
+	static public boolean isIntermediateReceive(SDFAbstractVertex vertex) {
 
 		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
 				ImplementationPropertyNames.Vertex_vertexType);
@@ -86,7 +86,7 @@ public class VertexType {
 	/**
 	 * Returns true if this send operation follows a receive operation
 	 */
-	static public boolean isIntermediateSend(DAGVertex vertex) {
+	static public boolean isIntermediateSend(SDFAbstractVertex vertex) {
 
 		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
 				ImplementationPropertyNames.Vertex_vertexType);

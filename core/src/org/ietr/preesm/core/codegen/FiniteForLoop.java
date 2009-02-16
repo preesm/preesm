@@ -46,33 +46,30 @@ import java.util.TreeSet;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.AbstractEdge;
-import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.AbstractVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 public class FiniteForLoop extends AbstractBufferContainer implements
 		ICodeElement {
 
-	@SuppressWarnings("unchecked")
-	private Map<AbstractEdge, Buffer> buffers;
+	private Map<SDFEdge, Buffer> buffers;
 
 	private List<ICodeElement> calls;
 	private int increment;
 	private LoopIndex index;
 	private int startIndex;
 	private int stopIndex;
-	private AbstractVertex<?> vertexDescription;
+	private SDFAbstractVertex vertexDescription;
 
-	@SuppressWarnings("unchecked")
 	public FiniteForLoop(AbstractBufferContainer parentContainer,
-			AbstractVertex vertex, int nbIter) {
+			SDFAbstractVertex vertex, int nbIter) {
 		super(parentContainer);
 		startIndex = 0;
 		stopIndex = nbIter;
 		increment = 1;
 		vertexDescription = vertex;
 		calls = new ArrayList<ICodeElement>();
-		buffers = new HashMap<AbstractEdge, Buffer>();
+		buffers = new HashMap<SDFEdge, Buffer>();
 		for (VariableAllocation varDecl : parentContainer.getVariables()) {
 			if (varDecl.getVariable() instanceof LoopIndex) {
 				index = (LoopIndex) varDecl.getVariable();
@@ -89,15 +86,11 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				parentContainer.addVariable(index);
 			}
 		}
-		for (AbstractEdge edge : ((AbstractVertex<AbstractGraph<AbstractVertex, AbstractEdge>>) vertexDescription)
+		for (SDFEdge edge : ((SDFAbstractVertex) vertexDescription)
 				.getBase().edgesOf(vertex)) {
-			for (Buffer buf : parentContainer.getBuffers(edge)) {
-				SubBuffer subBuff = new SubBuffer(buf.getName(), buf.getSize(),
-						buf.getType(), buf.getAggregate());
-				subBuff.setParentBuffer(buf);
-				subBuff.setIndex(index);
-				this.addBuffer(subBuff, edge);
-			}
+			Buffer buf = parentContainer.getBuffer( edge) ;
+			SubBuffer subBuff = new SubBuffer(buf.getName()+"_"+index.getName(), buf.getSize(), index, buf);
+			this.addBuffer(subBuff, edge);
 		}
 
 	}
@@ -116,8 +109,8 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void addBuffer(Buffer buffer, AbstractEdge edge) {
+
+	public void addBuffer(Buffer buffer, SDFEdge edge) {
 		buffers.put(edge, buffer);
 	}
 
@@ -125,15 +118,15 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		calls.add(call);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Set<Buffer> getBuffers(AbstractEdge edge) {
+
+	public Set<Buffer> getBuffers(SDFEdge edge) {
 		Set<Buffer> buffer = new TreeSet<Buffer>();
 		buffer.add(buffers.get(edge));
 		return buffer;
 	}
 
 	@Override
-	public AbstractVertex<?> getCorrespondingVertex() {
+	public SDFAbstractVertex getCorrespondingVertex() {
 		return vertexDescription;
 	}
 

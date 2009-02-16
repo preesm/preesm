@@ -36,13 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import java.util.Set;
+import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * A send function transfers a data to another core
@@ -56,8 +56,8 @@ public class Send extends CommunicationFunctionCall {
 	 */
 	Operator target;
 
-	public Send(AbstractBufferContainer parentContainer, DAGVertex vertex,
-			Set<Buffer> bufferSet, Medium medium, Operator target) {
+	public Send(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
+			List<Buffer> bufferSet, Medium medium, Operator target) {
 		super("send", parentContainer, bufferSet, medium, vertex);
 
 		this.target = target;

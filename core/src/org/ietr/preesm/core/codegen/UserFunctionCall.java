@@ -44,8 +44,8 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.AbstractEdge;
-import org.sdf4j.model.AbstractVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Generated code consists primarily in a succession of code elements. A User
@@ -60,8 +60,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 */
 	private Set<Buffer> availableBuffers;
 
-	@SuppressWarnings("unchecked")
-	public UserFunctionCall(String name, AbstractVertex vertex,
+	public UserFunctionCall(String name, SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer) {
 		super(name, parentContainer, vertex);
 
@@ -98,8 +97,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Adds to the function call all the buffers created by the vertex.
 	 */
-	@SuppressWarnings("unchecked")
-	public void addVertexBuffers(AbstractVertex vertex) {
+	public void addVertexBuffers(SDFAbstractVertex vertex) {
 		addVertexBuffers(vertex, true);
 		addVertexBuffers(vertex, false);
 	}
@@ -107,10 +105,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Add input or output buffers for a vertex, depending on the direction
 	 */
-	@SuppressWarnings("unchecked")
-	public void addVertexBuffers(AbstractVertex vertex, boolean isInputBuffer) {
+	public void addVertexBuffers(SDFAbstractVertex vertex, boolean isInputBuffer) {
 
-		Iterator<AbstractEdge> eIterator;
+		Iterator<SDFEdge> eIterator;
 
 		if (isInputBuffer)
 			eIterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
@@ -119,9 +116,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		// Iteration on all the edges of each vertex belonging to ownVertices
 		while (eIterator.hasNext()) {
-			AbstractEdge edge = eIterator.next();
+			SDFEdge edge = eIterator.next();
 
-			addBuffers(getParentContainer().getBuffers(edge));
+			addBuffer(getParentContainer().getBuffer((SDFEdge)edge));
 		}
 	}
 

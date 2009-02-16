@@ -38,8 +38,8 @@ package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 
 /**
  * Container that handles the semaphores
@@ -70,7 +70,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		parentContainer.addBuffer(new BufferAllocation(buf));
 	}
 
-	public Semaphore createSemaphore(BufferAggregate agg, SemaphoreType type) {
+	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType type) {
 		Semaphore sem = getSemaphore(agg, type);
 
 		if (sem == null) {
@@ -82,7 +82,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		}
 	}
 
-	public Semaphore getSemaphore(BufferAggregate agg, SemaphoreType type) {
+	public Semaphore getSemaphore(List<Buffer> agg, SemaphoreType type) {
 		Semaphore sem = null;
 
 		Iterator<Semaphore> currentIt = iterator();

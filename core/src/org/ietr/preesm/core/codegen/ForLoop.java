@@ -38,7 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Each thread runs indefinitely. It contains a for loop. Thanks to SDF
@@ -64,7 +64,7 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 	}
 
 	@Override
-	public DAGVertex getCorrespondingVertex() {
+	public SDFAbstractVertex getCorrespondingVertex() {
 		// TODO Auto-generated method stub
 		return null;
 	}

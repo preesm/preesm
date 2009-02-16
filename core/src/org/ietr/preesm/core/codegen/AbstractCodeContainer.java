@@ -43,6 +43,7 @@ import java.util.List;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.AbstractVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * An abstract code container within a thread contains code elements (function
@@ -129,7 +130,7 @@ public abstract class AbstractCodeContainer {
 	 *            An {@link AbstractVertex}.
 	 * @return The matching code element or <code>null</code>.
 	 */
-	public ICodeElement getCodeElement(AbstractVertex<?> vertex) {
+	public ICodeElement getCodeElement(SDFAbstractVertex vertex) {
 		for (ICodeElement elt : codeElements) {
 			AbstractVertex<?> currentVertex = elt.getCorrespondingVertex();
 			if (elt.getCorrespondingVertex() != null

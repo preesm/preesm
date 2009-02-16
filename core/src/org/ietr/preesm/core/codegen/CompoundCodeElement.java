@@ -40,25 +40,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.AbstractVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFGraph;
 
-public class CompoundCodeElement implements ICodeElement {
+public class CompoundCodeElement extends AbstractBufferContainer implements ICodeElement {
 
 	private List<ICodeElement> calls;
 
-	private AbstractVertex<?> correspondingVertex;
+	private SDFAbstractVertex correspondingVertex;
 
 	private String name;
 
 	private AbstractBufferContainer parentContainer;
 
+	
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
-			AbstractVertex<?> correspondingVertex) {
+			SDFAbstractVertex correspondingVertex) {
+		super(parentContainer);
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
 		calls = new ArrayList<ICodeElement>();
+		if(correspondingVertex instanceof SDFAbstractVertex && correspondingVertex.getGraphDescription() != null){
+			SDFGraph graph = (SDFGraph) correspondingVertex.getGraphDescription();
+			for(SDFEdge edge : graph.edgeSet()){
+				// missing name size type ... this.addBuffer(new BufferAllocation(new Buffer(edge)));
+			}
+		}
 	}
 
 	@Override
@@ -73,7 +83,7 @@ public class CompoundCodeElement implements ICodeElement {
 	}
 
 	@Override
-	public AbstractVertex<?> getCorrespondingVertex() {
+	public SDFAbstractVertex getCorrespondingVertex() {
 		return correspondingVertex;
 	}
 

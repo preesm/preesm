@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
+import java.util.List;
+
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 
 /**
  * Class representing a semaphore in the code. A semaphore protects a buffer
@@ -56,7 +57,7 @@ public class Semaphore {
 	/**
 	 * The buffers protected by the current semaphore.
 	 */
-	private BufferAggregate protectedAggregate;
+	private List<Buffer> protectedBuffers;
 
 	/**
 	 * A semaphore can be the signal of a full buffer aggregate or the signal of
@@ -65,11 +66,11 @@ public class Semaphore {
 	private SemaphoreType semaphoreType;
 
 	public Semaphore(SemaphoreContainer container,
-			BufferAggregate protectedBuffers, SemaphoreType semaphoreType) {
+			List<Buffer> protectedBuffers, SemaphoreType semaphoreType) {
 
 		this.semaphoreType = semaphoreType;
 
-		this.protectedAggregate = protectedBuffers;
+		this.protectedBuffers = protectedBuffers;
 
 		this.container = container;
 	}
@@ -82,14 +83,18 @@ public class Semaphore {
 	public boolean equals(Object obj) {
 
 		if (obj instanceof Semaphore)
-			if (((Semaphore) obj).protectedAggregate == protectedAggregate)
+			for(Buffer buff : protectedBuffers){
+				if(!((Semaphore) obj).protectedBuffers.contains(buff)){
+					return false ;
+				}
+			}
 				if (((Semaphore) obj).semaphoreType == semaphoreType)
 					return true;
 		return false;
 	}
 
-	public BufferAggregate getProtectedBuffers() {
-		return protectedAggregate;
+	public List<Buffer> getProtectedBuffers() {
+		return protectedBuffers;
 	}
 
 	/**

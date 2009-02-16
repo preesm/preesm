@@ -36,11 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
+import java.util.List;
+import java.util.Set;
+
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Special function call pending a semaphore
@@ -59,19 +61,17 @@ public class SemaphorePend extends AbstractCodeElement {
 	 * the sender and receiver function calls
 	 */
 	public SemaphorePend(AbstractBufferContainer globalContainer,
-			DAGVertex vertex, SemaphoreType semType) {
+			SDFAbstractVertex vertex, SemaphoreType semType) {
 		super("semaphorePend", globalContainer, vertex);
 
 		SemaphoreContainer semContainer = globalContainer
 				.getSemaphoreContainer();
 
-		DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(vertex)
-				.toArray()[0]);
-		BufferAggregate agg = (BufferAggregate) outEdge.getPropertyBean()
-				.getValue(BufferAggregate.propertyBeanName);
+		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
+		List<Buffer> buffers = globalContainer.getBuffers(outEdges);
 
 		// The pending semaphore of a full buffer will be put before the send
-		semaphore = semContainer.createSemaphore(agg, semType);
+		semaphore = semContainer.createSemaphore(buffers, semType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

@@ -36,16 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 
 public class SubBuffer extends Buffer {
 
 	private Variable index;
 	private Buffer parentBuffer;
 
-	public SubBuffer(String name, Integer size, DataType type,
-			BufferAggregate aggregate) {
-		super(name, size, type, aggregate);
+	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer) {
+		super(name, size, parentBuffer.getType(), parentBuffer.getEdge());
+		this.parentBuffer = parentBuffer;
+		this.index = index ;
 	}
 
 	public Variable getIndex() {

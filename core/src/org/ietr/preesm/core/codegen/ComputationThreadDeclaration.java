@@ -40,8 +40,9 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
+
 
 /**
  * Declaration of a communication thread for code generation. A computation
@@ -61,14 +62,14 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	 * vertex, otherwise, returns the communication vertices following the
 	 * vertex. The communication vertices are returned in scheduling order
 	 */
-	public SortedSet<DAGVertex> getComVertices(DAGVertex vertex,
+	public SortedSet<SDFAbstractVertex> getComVertices(SDFAbstractVertex vertex,
 			boolean preceding) {
-		DAGVertex currentVertex = null;
+		SDFAbstractVertex currentVertex = null;
 
-		ConcurrentSkipListSet<DAGVertex> schedule = new ConcurrentSkipListSet<DAGVertex>(
+		ConcurrentSkipListSet<SDFAbstractVertex> schedule = new ConcurrentSkipListSet<SDFAbstractVertex>(
 				new SchedulingOrderComparator());
 
-		Iterator<DAGEdge> iterator = null;
+		Iterator<SDFEdge> iterator = null;
 
 		if (preceding) {
 			iterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
@@ -77,7 +78,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 		}
 
 		while (iterator.hasNext()) {
-			DAGEdge edge = iterator.next();
+			SDFEdge edge = iterator.next();
 
 			if (preceding) {
 				currentVertex = edge.getSource();

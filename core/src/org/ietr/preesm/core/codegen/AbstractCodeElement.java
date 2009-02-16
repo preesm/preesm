@@ -38,9 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.AbstractVertex;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Generated code within threads consists primarily in a succession of code
@@ -53,8 +51,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	/**
 	 * The vertex generating this function call
 	 */
-	@SuppressWarnings("unchecked")
-	private AbstractVertex correspondingVertex;
+	private SDFAbstractVertex correspondingVertex;
 
 	private String name;
 
@@ -63,10 +60,9 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	 */
 	private AbstractBufferContainer parentContainer;
 
-	@SuppressWarnings("unchecked")
 	public AbstractCodeElement(String name,
 			AbstractBufferContainer parentContainer,
-			AbstractVertex correspondingVertex) {
+			SDFAbstractVertex correspondingVertex) {
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
@@ -76,8 +72,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 	}
 
-	@SuppressWarnings("unchecked")
-	public AbstractVertex<DirectedAcyclicGraph> getCorrespondingVertex() {
+	public SDFAbstractVertex getCorrespondingVertex() {
 		return correspondingVertex;
 	}
 
@@ -89,7 +84,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 		return parentContainer;
 	}
 
-	public void setCorrespondingVertex(DAGVertex correspondingVertex) {
+	public void setCorrespondingVertex(SDFAbstractVertex correspondingVertex) {
 		this.correspondingVertex = correspondingVertex;
 	}
 
