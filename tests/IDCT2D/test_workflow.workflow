@@ -19,7 +19,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="D:\Projets\Preesm\trunk\tests\IDCT2D/flatten2.graphml"/>
+         <variable name="path" value="/IDCT2D/flatten2.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">
@@ -43,11 +43,25 @@
          <variable name="switchTask" value="false"/>
       </data>
    </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler2">
+      <data key="variables">
+         <variable name="displaySolutions" value="true"/>
+         <variable name="edgeSchedType" value="Switcher"/>
+         <variable name="margIn" value="16"/>
+         <variable name="maxCount" value="60"/>
+         <variable name="maxStep" value="60"/>
+         <variable name="nodesMin" value="5"/>
+         <variable name="procNumber" value="1"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
+         <variable name="switchTask" value="true"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
-   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="FAST scheduler"/>
-   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="FAST scheduler"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="HSDF"/>
+   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="FAST scheduler2"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="FAST scheduler2"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="FAST scheduler2"/>
+   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
 </preesm:workflow>

@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.0.2"
+      version="0.0.3"
       provider-name="IETR/INSA">
 
    <description url="http://www.example.com/description">
