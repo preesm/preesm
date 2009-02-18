@@ -38,6 +38,7 @@ package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -60,6 +61,6 @@ public interface ICodeGeneration extends ITransformation {
 	 * @param list
 	 *            A {@link SourceFileList}.
 	 */
-	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, TextParameters parameters);
+	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters);
 
 }

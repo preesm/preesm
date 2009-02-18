@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Represents the type of a vertex in its propertybeans
@@ -71,7 +71,7 @@ public class VertexType {
 
 		// If the communication operation is an intermediate step of a route
 		if (vType.isReceive()) {
-			DAGEdge outEdge = (DAGEdge) (vertex.getBase().outgoingEdgesOf(
+			SDFEdge outEdge = (SDFEdge) (vertex.getBase().outgoingEdgesOf(
 					vertex).toArray()[0]);
 			VertexType nextVType = (VertexType) outEdge.getTarget()
 					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
@@ -93,7 +93,7 @@ public class VertexType {
 
 		// If the communication operation is an intermediate step of a route
 		if (vType.isSend()) {
-			DAGEdge inEdge = (DAGEdge) (vertex.getBase()
+			SDFEdge inEdge = (SDFEdge) (vertex.getBase()
 					.incomingEdgesOf(vertex).toArray()[0]);
 			VertexType prevVType = (VertexType) inEdge.getSource()
 					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);

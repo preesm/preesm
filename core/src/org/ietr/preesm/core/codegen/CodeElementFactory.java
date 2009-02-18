@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
@@ -50,7 +51,7 @@ public class CodeElementFactory {
 	public static ICodeElement createElement(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		if (vertex.getGraphDescription() == null) {
-			return new UserFunctionCall(name, vertex, parentContainer);
+			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
 		} else if (vertex.getGraphDescription() != null
 				&& vertex.getNbRepeat() > 1) {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();

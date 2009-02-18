@@ -92,7 +92,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 			if (vertexType != null
 					&& (vertexType.equals(VertexType.send) || vertexType
-							.equals(VertexType.receive))) {
+							.equals(VertexType.receive)) && !schedule.contains(currentVertex)) {
 				schedule.add(currentVertex);
 			}
 		}

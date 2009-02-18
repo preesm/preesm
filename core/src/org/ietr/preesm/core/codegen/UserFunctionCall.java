@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -55,15 +57,40 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class UserFunctionCall extends AbstractCodeElement {
 
+	public enum CodeSection{
+		INIT,
+		LOOP,
+		END;
+	}
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
 	private Set<Buffer> availableBuffers;
 
-	public UserFunctionCall(String name, SDFAbstractVertex vertex,
-			AbstractBufferContainer parentContainer) {
-		super(name, parentContainer, vertex);
-
+	public UserFunctionCall(SDFAbstractVertex vertex,
+			AbstractBufferContainer parentContainer, CodeSection section) {
+		super(vertex.getName(), parentContainer, vertex);
+		if(vertex instanceof CodeGenSDFVertex){
+			FunctionCall call = ((FunctionCall) vertex.getRefinement());
+			if(call != null){
+				switch(section){
+				case INIT:
+					if(call.getInitCall() != null){
+						this.setName(call.getInitCall().getFunctionName());
+					}
+					break ;
+				case LOOP:
+					this.setName(call.getFunctionName());
+					break ;
+				case END:
+					if(call.getEndCall() != null){
+						this.setName(call.getEndCall().getFunctionName());
+					}
+					break ;
+						
+				}
+			}
+		}
 		availableBuffers = new HashSet<Buffer>();
 
 		// Adds all buffers that can be called by the user function

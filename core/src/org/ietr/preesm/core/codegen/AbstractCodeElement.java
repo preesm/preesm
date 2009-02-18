@@ -79,6 +79,10 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	public String getName() {
 		return name;
 	}
+	
+	public void setName(String name){
+		this.name = name ;
+	}
 
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;

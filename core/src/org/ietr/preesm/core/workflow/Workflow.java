@@ -240,7 +240,7 @@ public class Workflow {
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
 
 						if (dag != null)
-							nodeResult = codeGen.transform(dag, architecture,
+							nodeResult = codeGen.transform(dag, architecture, scenario,
 									parameters);
 
 						sourceFiles = nodeResult.getSourcefilelist();
