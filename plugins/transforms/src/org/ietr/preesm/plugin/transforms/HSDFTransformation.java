@@ -45,7 +45,7 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.ToHSDFVisitor;
+import org.sdf4j.visitors.OptimizedToHSDFVisitor;
 import org.sdf4j.visitors.VisitorOutput;
 
 /**
@@ -62,12 +62,16 @@ public class HSDFTransformation implements IGraphTransformation {
 		logger.setLevel(Level.FINEST);
 		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
 		VisitorOutput.setLogger(logger);
-		ToHSDFVisitor toHsdf = new ToHSDFVisitor();
-		algorithm.accept(toHsdf);
-		logger.log(Level.FINER,"HSDF transformation complete");
-		TaskResult result = new TaskResult();
-		result.setSDF((SDFGraph) toHsdf.getOutput());
-		return result;
+		if(algorithm.validateModel()){
+			OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+			algorithm.accept(toHsdf);
+			logger.log(Level.FINER,"HSDF transformation complete");
+			TaskResult result = new TaskResult();
+			result.setSDF((SDFGraph) toHsdf.getOutput());
+			return result;
+		}else{
+			throw(new PreesmException("Graph not valid, not schedulable"));
+		}
 	}
 
 }

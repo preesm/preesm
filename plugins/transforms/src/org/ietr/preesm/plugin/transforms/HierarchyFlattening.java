@@ -73,11 +73,15 @@ public class HierarchyFlattening implements IGraphTransformation {
 			logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
 			org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
 			VisitorOutput.setLogger(logger);
-			flatHier.flattenGraph(algorithm, depth);
-			logger.log(Level.FINER, "flattening complete");
-			TaskResult result = new TaskResult();
-			result.setSDF((SDFGraph) flatHier.getOutput());
-			return result;
+			if(algorithm.validateModel()){
+				flatHier.flattenGraph(algorithm, depth);
+				logger.log(Level.FINER, "flattening complete");
+				TaskResult result = new TaskResult();
+				result.setSDF((SDFGraph) flatHier.getOutput());
+				return result;
+			}else{
+				throw(new PreesmException("Graph not valid, not schedulable"));
+			}
 		}else{
 			logger.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
 			TaskResult result = new TaskResult();
