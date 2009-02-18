@@ -126,7 +126,7 @@ public class SendReceiveAbc extends
 
 			transactionManager.undo();
 			
-			tvertexAdder.addAndScheduleTransferVertices(implementation,transactionManager, vertex);
+			tvertexAdder.addAndScheduleTransferVertices(implementation,transactionManager, null);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 		}
 	}
