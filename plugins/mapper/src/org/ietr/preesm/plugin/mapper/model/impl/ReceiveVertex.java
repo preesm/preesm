@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
 
 /**
  * Vertex corresponding to receiving a data.
@@ -49,6 +50,10 @@ public class ReceiveVertex extends TransferVertex {
 
 	public ReceiveVertex(String id, MapperDAG base) {
 		super(id, base);
+	}
+	
+	public DAGDefaultVertexPropertyType getNbRepeat(){
+		return new DAGDefaultVertexPropertyType(1);
 	}
 
 }
