@@ -53,8 +53,8 @@ import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.plugin.codegen.model.CodeGenSDFEdge;
-import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -224,7 +224,7 @@ public class SourceFileCodeGenerator {
 			// the set in scheduling order
 			if (vertexOperator != null
 					&& vertexOperator.equals(file.getOperator())
-					&& vertexType != null && vertexType.equals(currentType)) {
+					&& vertexType != null && vertexType.equals(currentType) && !schedule.contains(vertex)) {
 				schedule.add(vertex);
 			}
 		}

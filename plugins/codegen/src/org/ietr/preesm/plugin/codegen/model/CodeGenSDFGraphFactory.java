@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IFile;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.factories.DAGVertexFactory;
@@ -24,6 +28,12 @@ import org.sdf4j.visitors.HierarchyFlattening;
 import org.sdf4j.visitors.ToHSDFVisitor;
 
 public class CodeGenSDFGraphFactory {
+	
+	private IFile mainFile ;
+	
+	public CodeGenSDFGraphFactory(IFile parentAlgoFile){
+		mainFile = parentAlgoFile ;
+	}
 	
 	public static void main(String [] args){
 		SDFAdapterDemo applet1 = new SDFAdapterDemo();
@@ -48,9 +58,9 @@ public class CodeGenSDFGraphFactory {
 			SDFGraph dag = visitor.getOutput().clone();
 			dag.accept(dageur);
 			applet2.init(dageur.getOutput());
-			CodeGenSDFGraphFactory codeGenGraphFactory = new CodeGenSDFGraphFactory();
-			CodeGenSDFGraph codeGenGraph = codeGenGraphFactory.create(dageur.getOutput());
-			System.out.println(codeGenGraph.toString());
+			//CodeGenSDFGraphFactory codeGenGraphFactory = new CodeGenSDFGraphFactory();
+			//CodeGenSDFGraph codeGenGraph = codeGenGraphFactory.create(dageur.getOutput());
+			//System.out.println(codeGenGraph.toString());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,7 +72,7 @@ public class CodeGenSDFGraphFactory {
 	
 	@SuppressWarnings("unchecked")
 	public CodeGenSDFGraph create(DirectedAcyclicGraph dag){
-		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
+		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
 		for(DAGVertex vertex : dag.vertexSet()){
@@ -105,7 +115,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public CodeGenSDFGraph create(SDFGraph sdf){
-		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory() ;
+		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(sdf.getName()) ;
 		for(SDFAbstractVertex vertex : sdf.vertexSet()){

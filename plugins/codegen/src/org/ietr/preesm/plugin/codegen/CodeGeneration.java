@@ -41,14 +41,19 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -82,7 +87,7 @@ public class CodeGeneration implements ICodeGeneration {
 		map.put("sourcePath", "d:/Test");
 		TextParameters params = new TextParameters(map);
 
-		gen.transform(algorithm, architecture, params);
+		//gen.transform(algorithm, architecture, params);
 
 		logger.log(Level.FINER, "Code generated");
 	}
@@ -92,9 +97,11 @@ public class CodeGeneration implements ICodeGeneration {
 	 * The implementation is a tagged SDF graph.
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, SourceFileList list) {
+			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) {
 		CodeGenerator codegen = new CodeGenerator(list);
-		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile iFile = workspace.getRoot().getFile(new Path(scenario.getAlgorithmURL()));
+		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
 		codegen.generateSourceFiles(sdfGraph, architecture);
 	}
@@ -104,15 +111,18 @@ public class CodeGeneration implements ICodeGeneration {
 	 */
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, TextParameters parameters) {
+			MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) {
 		String sourcePath = parameters.getVariable("sourcePath");
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
 		
+		try{
 		// Generate source file class
-		generateSourceFiles(algorithm, architecture, list);
-
+		generateSourceFiles(algorithm, architecture, scenario, list);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		// Generates the code
 		GenericPrinter printerChooser = new GenericPrinter(sourcePath,xslPath);
 		printerChooser.printList(list);

@@ -4,9 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 
-import org.ietr.preesm.plugin.codegen.model.CodeGenArgument;
-import org.ietr.preesm.plugin.codegen.model.CodeGenParameter;
-import org.ietr.preesm.plugin.codegen.model.FunctionCall;
+import org.ietr.preesm.core.codegen.model.CodeGenArgument;
+import org.ietr.preesm.core.codegen.model.CodeGenParameter;
+import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

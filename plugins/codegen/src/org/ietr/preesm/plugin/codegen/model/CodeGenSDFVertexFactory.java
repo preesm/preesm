@@ -9,6 +9,15 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSourceInterfaceVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.plugin.codegen.model.cal.CALFunctionFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
@@ -24,11 +33,17 @@ import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 public class CodeGenSDFVertexFactory {
+	
+	private IFile mainFile ;
+	
+	public CodeGenSDFVertexFactory(IFile parentAlgoFile){
+		mainFile = parentAlgoFile ;
+	}
 
 	public SDFAbstractVertex create(DAGVertex dagVertex) {
-		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory();
+		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(mainFile);
 		CodeGenSDFVertex newVertex;
-		String vertexType = (String) dagVertex.getPropertyBean().getValue(
+		VertexType vertexType = (VertexType) dagVertex.getPropertyBean().getValue(
 				ImplementationPropertyNames.Vertex_vertexType);
 		if (vertexType != null && vertexType.equals(VertexType.task)) {
 			SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
@@ -51,7 +66,7 @@ public class CodeGenSDFVertexFactory {
 			newVertex = new CodeGenSDFVertex();
 		}
 		newVertex.setName(dagVertex.getName());
-		if (dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
+		if (dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
 			newVertex.setGraphDescription(graphFactory
 					.create((SDFGraph) dagVertex.getCorrespondingSDFVertex()
 							.getGraphDescription()));
@@ -67,10 +82,9 @@ public class CodeGenSDFVertexFactory {
 					newVertex.addSource((SDFSourceInterfaceVertex) child);
 				}
 			}
-		}else if(dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement){
+		}else if(dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement){
 			CodeRefinement codeRef = (CodeRefinement) dagVertex.getCorrespondingSDFVertex().getRefinement();
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile iFile = workspace.getRoot().getFile(new Path(codeRef.getName()));
+			IFile iFile = mainFile.getParent().getFile(new Path(codeRef.getName()));
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());
@@ -120,7 +134,7 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 		newVertex.copyProperties(sdfVertex);
-		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory();
+		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(mainFile);
 		if (sdfVertex.getGraphDescription() != null) {
 			newVertex.setGraphDescription(graphFactory
 					.create((SDFGraph) sdfVertex.getGraphDescription()));
@@ -138,8 +152,7 @@ public class CodeGenSDFVertexFactory {
 			}
 		}else if(sdfVertex.getRefinement() instanceof CodeRefinement){
 			CodeRefinement codeRef = (CodeRefinement) sdfVertex.getRefinement();
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile iFile = workspace.getRoot().getFile(new Path(codeRef.getName()));
+			IFile iFile = mainFile.getParent().getFile(new Path(codeRef.getName()));
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());

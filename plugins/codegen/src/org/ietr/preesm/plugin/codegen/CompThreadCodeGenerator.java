@@ -48,6 +48,9 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -72,7 +75,7 @@ public class CompThreadCodeGenerator {
 		AbstractBufferContainer container = thread.getGlobalContainer();
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
-
+		
 		for (SDFAbstractVertex task : taskVertices) {
 			// Getting incoming receive operations
 			SortedSet<SDFAbstractVertex> ownComVertices = thread.getComVertices(task,
@@ -137,17 +140,21 @@ public class CompThreadCodeGenerator {
 		LinearCodeContainer endCode = thread.getEndCode();
 
 		for (SDFAbstractVertex vertex : vertices) {
-			ICodeElement beginningCall = new UserFunctionCall("init_"
-					+ vertex.getName(), vertex, thread);
-			beginningCode.addCodeElement(beginningCall);
-
+			if(vertex instanceof CodeGenSDFVertex && vertex.getGraphDescription() == null){
+					FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
+					if(vertexCall != null && vertexCall.getInitCall() != null){
+						ICodeElement beginningCall = new UserFunctionCall(vertex, thread, CodeSection.INIT);
+						beginningCode.addCodeElement(beginningCall);
+					}
+					if(vertexCall != null && vertexCall.getEndCall() != null){
+						ICodeElement endCall = new UserFunctionCall(vertex, thread, CodeSection.END);
+						endCode.addCodeElement(endCall);
+					}
+			}
 			ICodeElement loopCall = CodeElementFactory.createElement(vertex
 					.getName(), thread, vertex);
 			loopCode.addCodeElement(loopCall);
-
-			ICodeElement endCall = new UserFunctionCall("close_"
-					+ vertex.getName(), vertex, thread);
-			endCode.addCodeElement(endCall);
+			
 
 		}
 	}

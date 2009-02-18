@@ -1,5 +1,8 @@
 package org.ietr.preesm.plugin.codegen.model;
 
+import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.visitors.GraphVisitor;
