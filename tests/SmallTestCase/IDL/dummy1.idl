@@ -1,0 +1,5 @@
+module dummy1 {
+	interface loop{
+		 void first_dummy(out char output);
+	};
+};
