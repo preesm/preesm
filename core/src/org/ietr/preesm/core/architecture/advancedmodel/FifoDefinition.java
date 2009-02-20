@@ -61,15 +61,6 @@ public class FifoDefinition extends ArchitectureComponentDefinition {
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof FifoDefinition) {
-			FifoDefinition fifodef = (FifoDefinition) obj;
-			return this.getId().compareTo(fifodef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 

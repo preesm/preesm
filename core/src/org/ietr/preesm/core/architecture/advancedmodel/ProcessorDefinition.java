@@ -57,15 +57,6 @@ public class ProcessorDefinition extends ArchitectureComponentDefinition
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof ProcessorDefinition) {
-			ProcessorDefinition procDef = (ProcessorDefinition) obj;
-			return this.getId().compareTo(procDef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 

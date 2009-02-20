@@ -43,8 +43,14 @@ package org.ietr.preesm.core.architecture;
  */
 public class ArchitectureComponentType {
 	
+	// Simple model
 	public static final ArchitectureComponentType operator = new ArchitectureComponentType("operator");
 	public static final ArchitectureComponentType medium = new ArchitectureComponentType("medium");
+	public static final ArchitectureComponentType dma = new ArchitectureComponentType("dma");
+	public static final ArchitectureComponentType parallelNode = new ArchitectureComponentType("parallelNode");
+	public static final ArchitectureComponentType contentionNode = new ArchitectureComponentType("contentionNode");
+	
+	// Advanced model
 	public static final ArchitectureComponentType communicationNode = new ArchitectureComponentType("communicationNode");
 	public static final ArchitectureComponentType communicator = new ArchitectureComponentType("communicator");
 	public static final ArchitectureComponentType bus = new ArchitectureComponentType("bus");
@@ -61,8 +67,15 @@ public class ArchitectureComponentType {
 	}
 
 	public static ArchitectureComponentType getType(String name) {
+
+		// Simple model
 		if(name.equalsIgnoreCase("operator")) 				return operator;
 		else if(name.equalsIgnoreCase("medium")) 			return medium;
+		else if(name.equalsIgnoreCase("dma")) 				return dma;
+		else if(name.equalsIgnoreCase("parallelNode")) 		return parallelNode;
+		else if(name.equalsIgnoreCase("contentionNode")) 	return contentionNode;
+
+		// Advanced model
 		else if(name.equalsIgnoreCase("communicationNode")) return communicationNode;
 		else if(name.equalsIgnoreCase("communicator")) 		return communicator;
 		else if(name.equalsIgnoreCase("bus")) 				return bus;

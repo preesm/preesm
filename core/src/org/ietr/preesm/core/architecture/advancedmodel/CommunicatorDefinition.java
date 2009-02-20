@@ -54,15 +54,6 @@ public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof CommunicatorDefinition) {
-			CommunicatorDefinition opdef = (CommunicatorDefinition) obj;
-			return this.getId().compareTo(opdef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 

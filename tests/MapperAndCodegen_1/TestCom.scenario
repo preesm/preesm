@@ -2,46 +2,23 @@
 <scenario>
     <files>
         <algorithm url="/MapperAndCodegen_1/TestCom.graphml"/>
-        <architecture url="/MapperAndCodegen_1/4C64.ipxactds"/>
+        <architecture url="/MapperAndCodegen_1/4C64.design"/>
         <timingfile url=""/>
     </files>
     <constraints>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup>
             <operator name="C64_1"/>
+            <task name="Gen_int"/>
             <task name="ParallelTest"/>
+            <task name="ParallelTest2"/>
+            <task name="Actuator"/>
             <task name="Sensor"/>
             <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
         </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_3"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_4"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <timings/>
     <simuParams>

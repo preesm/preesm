@@ -61,15 +61,6 @@ public class BusDefinition extends ArchitectureComponentDefinition {
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof BusDefinition) {
-			BusDefinition opdef = (BusDefinition) obj;
-			return this.getId().compareTo(opdef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 

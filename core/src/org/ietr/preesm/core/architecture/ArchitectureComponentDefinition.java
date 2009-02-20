@@ -73,9 +73,9 @@ public abstract class ArchitectureComponentDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 
-		if (obj instanceof ArchitectureComponentDefinition) {
+		if (obj.getClass().equals(this.getClass())) {
 			ArchitectureComponentDefinition def = (ArchitectureComponentDefinition) obj;
 			return id.equalsIgnoreCase(def.getId())
 					&& category.equalsIgnoreCase(def.category);
@@ -104,6 +104,9 @@ public abstract class ArchitectureComponentDefinition {
 	public abstract ArchitectureComponentType getType();
 	
 	public abstract ArchitectureComponentDefinition clone();
-	
+
+	/**
+	 * Duplicates in the common definition the parameters from the input definition
+	 */
 	public abstract void fill(ArchitectureComponentDefinition origin);
 }

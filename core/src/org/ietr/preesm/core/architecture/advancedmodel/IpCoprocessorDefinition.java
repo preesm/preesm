@@ -59,15 +59,6 @@ public class IpCoprocessorDefinition extends ArchitectureComponentDefinition
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof IpCoprocessorDefinition) {
-			IpCoprocessorDefinition ipDef = (IpCoprocessorDefinition) obj;
-			return this.getId().compareTo(ipDef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 

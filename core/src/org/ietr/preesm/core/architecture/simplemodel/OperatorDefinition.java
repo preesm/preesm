@@ -52,16 +52,6 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 		super(id, "operator");
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof OperatorDefinition) {
-			OperatorDefinition opdef = (OperatorDefinition) obj;
-			return this.getId().compareTo(opdef.getId()) == 0;
-		}
-
-		return false;
-	}
-
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.operator;
 	}

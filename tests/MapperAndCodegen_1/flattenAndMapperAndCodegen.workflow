@@ -25,7 +25,7 @@
          <variable name="maxStep" value="20"/>
          <variable name="nodesMin" value="5"/>
          <variable name="procNumber" value="1"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
          <variable name="switchTask" value="false"/>
       </data>
    </preesm:task>

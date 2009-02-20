@@ -56,15 +56,6 @@ public class CommunicationNodeDefinition extends
 		return newdef;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof CommunicationNodeDefinition) {
-			CommunicationNodeDefinition opdef = (CommunicationNodeDefinition) obj;
-			return this.getId().compareTo(opdef.getId()) == 0;
-		}
-		return false;
-	}
-
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 
