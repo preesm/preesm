@@ -65,7 +65,7 @@ public class BusDefinition extends ArchitectureComponentDefinition {
 	public boolean equals(Object obj) {
 		if (obj instanceof BusDefinition) {
 			BusDefinition opdef = (BusDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+			return this.getId().compareTo(opdef.getId()) == 0;
 		}
 		return false;
 	}

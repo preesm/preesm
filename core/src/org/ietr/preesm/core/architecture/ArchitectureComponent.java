@@ -98,7 +98,7 @@ public abstract class ArchitectureComponent {
 	public boolean equals(Object obj) {
 		if (obj instanceof ArchitectureComponent) {
 			ArchitectureComponent op = (ArchitectureComponent) obj;
-			return this.getName().compareToIgnoreCase(op.getName()) == 0;
+			return this.getName().compareTo(op.getName()) == 0;
 		}
 
 		return false;

@@ -65,7 +65,7 @@ public class FifoDefinition extends ArchitectureComponentDefinition {
 	public boolean equals(Object obj) {
 		if (obj instanceof FifoDefinition) {
 			FifoDefinition fifodef = (FifoDefinition) obj;
-			return this.getId().compareToIgnoreCase(fifodef.getId()) == 0;
+			return this.getId().compareTo(fifodef.getId()) == 0;
 		}
 		return false;
 	}

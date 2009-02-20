@@ -56,6 +56,12 @@
          <variable name="switchTask" value="true"/>
       </data>
    </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
+      <data key="variables">
+         <variable name="sourcePath" value="/IDCT2D/Code"/>
+         <variable name="xslLibraryPath" value="/IDCT2D/Code/XSL"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
@@ -64,4 +70,6 @@
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="FAST scheduler2"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="FAST scheduler2"/>
    <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
+   <preesm:dataTransfer from="FAST scheduler2" sourceport="DAG" targetport="DAG" to="codegen"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="codegen"/>
 </preesm:workflow>

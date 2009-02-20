@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -95,21 +99,28 @@ public class OverviewPage extends FormPage {
 		layout.minNumColumns = 1;
 		form.getBody().setLayout(layout);
 
+		Set<String> algoExtensions = new HashSet<String>();
+		algoExtensions.add("graphml");
+		
 		// Algorithm file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
 				Messages.getString("Overview.algorithmDescription"),
 				Messages.getString("Overview.algorithmFileEdit"),
 				scenario.getAlgorithmURL(),
 				Messages.getString("Overview.algorithmBrowseTitle"),
-				"graphml");
+				algoExtensions);
 
+		Set<String> archiExtensions = new HashSet<String>();
+		archiExtensions.add("ipxactds");
+		archiExtensions.add("design");
+		
 		// Architecture file chooser section
 		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
 				Messages.getString("Overview.architectureDescription"),
 				Messages.getString("Overview.architectureFileEdit"),
 				scenario.getArchitectureURL(),
 				Messages.getString("Overview.architectureBrowseTitle"),
-				"ipxactds");
+				archiExtensions);
 		
 	}
 
@@ -152,7 +163,7 @@ public class OverviewPage extends FormPage {
 	 * @param initValue initial value of Text
 	 * @param browseTitle title of file browser
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,String fileExtension) {
+	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,Set<String> fileExtensions) {
 		
 		Composite client = createSection(mform, title, desc, 2);
 		
@@ -183,7 +194,7 @@ public class OverviewPage extends FormPage {
 		text.setLayoutData(gd);
 
 		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtension);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtensions);
 		button.addSelectionListener(adapter);
 		
 		toolkit.paintBordersFor(client);

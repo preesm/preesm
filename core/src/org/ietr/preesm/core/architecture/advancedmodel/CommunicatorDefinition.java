@@ -58,7 +58,7 @@ public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 	public boolean equals(Object obj) {
 		if (obj instanceof CommunicatorDefinition) {
 			CommunicatorDefinition opdef = (CommunicatorDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+			return this.getId().compareTo(opdef.getId()) == 0;
 		}
 		return false;
 	}

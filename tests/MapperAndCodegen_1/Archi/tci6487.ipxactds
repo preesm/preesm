@@ -18,6 +18,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -26,6 +27,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -34,6 +36,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -50,6 +53,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -58,6 +62,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -106,6 +111,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>

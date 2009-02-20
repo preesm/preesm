@@ -63,7 +63,7 @@ public class IpCoprocessorDefinition extends ArchitectureComponentDefinition
 	public boolean equals(Object obj) {
 		if (obj instanceof IpCoprocessorDefinition) {
 			IpCoprocessorDefinition ipDef = (IpCoprocessorDefinition) obj;
-			return this.getId().compareToIgnoreCase(ipDef.getId()) == 0;
+			return this.getId().compareTo(ipDef.getId()) == 0;
 		}
 		return false;
 	}

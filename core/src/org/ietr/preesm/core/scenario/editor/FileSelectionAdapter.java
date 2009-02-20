@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
@@ -53,18 +56,27 @@ public class FileSelectionAdapter extends SelectionAdapter{
 	private Text filePath;
 	private Shell shell;
 	private String title;
-	private String fileExtension;
+	Set<String> fileExtensions;
 	
 	public FileSelectionAdapter(Text filePath,Shell shell,String title,String fileExtension) {
 		super();
 		this.filePath = filePath;
 		this.shell = shell;
 		this.title = title;
-		this.fileExtension = fileExtension;
+		this.fileExtensions = new HashSet<String>();
+		this.fileExtensions.add(fileExtension);
+	}
+	
+	public FileSelectionAdapter(Text filePath,Shell shell,String title,Set<String> fileExtensions) {
+		super();
+		this.filePath = filePath;
+		this.shell = shell;
+		this.title = title;
+		this.fileExtensions = fileExtensions;
 	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		filePath.setText(EditorTools.browseFiles(shell, title, fileExtension));
+		filePath.setText(EditorTools.browseFiles(shell, title, fileExtensions));
 	}
 }

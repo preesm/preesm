@@ -58,7 +58,7 @@ public class MemoryDefinition extends ArchitectureComponentDefinition {
 	public boolean equals(Object obj) {
 		if (obj instanceof MemoryDefinition) {
 			MemoryDefinition opdef = (MemoryDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+			return this.getId().compareTo(opdef.getId()) == 0;
 		}
 		return false;
 	}

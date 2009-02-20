@@ -2,79 +2,27 @@
 <scenario>
     <files>
         <algorithm url="/MapperAndCodegen_1/Kwok.graphml"/>
-        <architecture url="/MapperAndCodegen_1/4C64.ipxactds"/>
+        <architecture url="/MapperAndCodegen_1/4C64.design"/>
         <timingfile url=""/>
     </files>
     <constraints>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup>
             <operator name="C64_1"/>
-            <task name="n4"/>
             <task name="n5"/>
-            <task name="n9"/>
-            <task name="n8"/>
-            <task name="n3"/>
-            <task name="n6"/>
-            <task name="n2"/>
             <task name="n1"/>
-            <task name="n7"/>
-        </constraintGroup>
-        <constraintGroup>
             <task name="n4"/>
-            <task name="n5"/>
-            <task name="n9"/>
-            <task name="n8"/>
-            <task name="n3"/>
-            <task name="n6"/>
             <task name="n2"/>
-            <task name="n1"/>
-            <task name="n7"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_3"/>
-            <task name="n4"/>
-            <task name="n5"/>
-            <task name="n9"/>
             <task name="n8"/>
-            <task name="n3"/>
-            <task name="n6"/>
-            <task name="n2"/>
-            <task name="n1"/>
-            <task name="n7"/>
-        </constraintGroup>
-        <constraintGroup>
-            <task name="n4"/>
-            <task name="n5"/>
             <task name="n9"/>
-            <task name="n8"/>
-            <task name="n3"/>
-            <task name="n6"/>
-            <task name="n2"/>
-            <task name="n1"/>
             <task name="n7"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_2"/>
-            <task name="n4"/>
-            <task name="n5"/>
-            <task name="n9"/>
-            <task name="n8"/>
-            <task name="n3"/>
             <task name="n6"/>
-            <task name="n2"/>
-            <task name="n1"/>
-            <task name="n7"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_4"/>
-            <task name="n4"/>
-            <task name="n5"/>
-            <task name="n9"/>
-            <task name="n8"/>
             <task name="n3"/>
-            <task name="n6"/>
-            <task name="n2"/>
-            <task name="n1"/>
-            <task name="n7"/>
         </constraintGroup>
     </constraints>
     <timings/>

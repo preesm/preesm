@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -60,11 +62,17 @@ public class EditorTools {
 	 */
 	public static class CoreContentProvider extends WorkbenchContentProvider {
 
-		String fileExtension = null;
+		Set<String> fileExtensions = null;
 
 		public CoreContentProvider(String fileExtension) {
 			super();
-			this.fileExtension = fileExtension;
+			this.fileExtensions = new HashSet<String>();
+			this.fileExtensions.add(fileExtension);
+		}
+		
+		public CoreContentProvider(Set<String> fileExtensions) {
+			super();
+			this.fileExtensions = new HashSet<String>(fileExtensions);
 		}
 
 		@Override
@@ -75,7 +83,7 @@ public class EditorTools {
 				if (o instanceof IFile) {
 					IFile file = (IFile) o;
 					if (file.getFileExtension() != null
-							&& file.getFileExtension().equals(fileExtension)) {
+							&& fileExtensions.contains(file.getFileExtension())) {
 						list.add(o);
 					}
 				} else {
@@ -92,11 +100,23 @@ public class EditorTools {
 	 */
 	static public String browseFiles(Shell shell, String title,
 			String fileExtension) {
+		Set<String> fileExtensions = new HashSet<String>();
+		fileExtensions.add(fileExtension);
+		
+		return browseFiles(shell, title,
+				fileExtensions);
+	}
+
+	/**
+	 * Displays a file browser in a shell. The path is relative to the project
+	 */
+	static public String browseFiles(Shell shell, String title,
+			Set<String> fileExtensions) {
 		String returnVal = "";
 
 		ElementTreeSelectionDialog tree = new ElementTreeSelectionDialog(shell,
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				new CoreContentProvider(fileExtension));
+				new CoreContentProvider(fileExtensions));
 		tree.setAllowMultiple(false);
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		tree.setMessage(title);

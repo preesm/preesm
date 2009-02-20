@@ -61,7 +61,7 @@ public class ProcessorDefinition extends ArchitectureComponentDefinition
 	public boolean equals(Object obj) {
 		if (obj instanceof ProcessorDefinition) {
 			ProcessorDefinition procDef = (ProcessorDefinition) obj;
-			return this.getId().compareToIgnoreCase(procDef.getId()) == 0;
+			return this.getId().compareTo(procDef.getId()) == 0;
 		}
 		return false;
 	}

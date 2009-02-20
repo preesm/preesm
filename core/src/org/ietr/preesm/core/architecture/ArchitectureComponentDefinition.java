@@ -91,14 +91,14 @@ public abstract class ArchitectureComponentDefinition {
 	 * Compares two definitions for category
 	 */
 	public boolean sameCategory(ArchitectureComponentDefinition othertype) {
-		return (category.compareToIgnoreCase(othertype.category) == 0);
+		return (category.compareTo(othertype.category) == 0);
 	}
 
 	/**
 	 * Compares two definitions for id
 	 */
 	public boolean sameId(ArchitectureComponentDefinition othertype) {
-		return (id.compareToIgnoreCase(othertype.id) == 0);
+		return (id.compareTo(othertype.id) == 0);
 	}
 
 	public abstract ArchitectureComponentType getType();

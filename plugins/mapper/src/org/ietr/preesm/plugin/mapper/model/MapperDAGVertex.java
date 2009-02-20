@@ -156,7 +156,7 @@ public class MapperDAGVertex extends DAGVertex {
 
 		if (obj instanceof MapperDAGVertex) {
 			MapperDAGVertex v = (MapperDAGVertex) obj;
-			return (this.getName().compareToIgnoreCase(v.getName()) == 0);
+			return (this.getName().compareTo(v.getName()) == 0);
 		}
 
 		return false;

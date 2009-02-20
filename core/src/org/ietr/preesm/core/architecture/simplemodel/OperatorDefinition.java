@@ -56,7 +56,7 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 	public boolean equals(Object obj) {
 		if (obj instanceof OperatorDefinition) {
 			OperatorDefinition opdef = (OperatorDefinition) obj;
-			return this.getId().compareToIgnoreCase(opdef.getId()) == 0;
+			return this.getId().compareTo(opdef.getId()) == 0;
 		}
 
 		return false;

@@ -330,7 +330,7 @@ public class MultiCoreArchitecture {
 		while (iterator.hasNext()) {
 			ArchitectureComponent currentcmp = iterator.next();
 
-			if (currentcmp.getName().compareToIgnoreCase(name) == 0) {
+			if (currentcmp.getName().compareTo(name) == 0) {
 				return (currentcmp);
 			}
 		}
