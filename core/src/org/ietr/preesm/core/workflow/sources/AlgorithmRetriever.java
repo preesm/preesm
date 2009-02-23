@@ -52,6 +52,7 @@ import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.ToHSDFVisitor;
 import org.sdf4j.visitors.TopologyVisitor;
 
@@ -82,8 +83,13 @@ public class AlgorithmRetriever {
 
 		// Transforms it with HSDF
 		ToHSDFVisitor visitor2 = new ToHSDFVisitor();
-		demoGraph.accept(visitor2);
-		demoGraph.accept(topo);
+		try {
+			demoGraph.accept(visitor2);
+			demoGraph.accept(topo);
+		} catch (SDF4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// Possibly sets random cost to edges
 		Random edgeSizeRand = new Random();

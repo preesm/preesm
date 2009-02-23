@@ -75,16 +75,20 @@ public class CodeGeneration implements ICodeGeneration {
 		logger.log(Level.FINER, "Testing code generation with an example");
 
 		// Creating generator
+		@SuppressWarnings("unused")
 		CodeGeneration gen = new CodeGeneration();
 
 		// Input archi & algo
 		// TODO: parse algorithm
+		@SuppressWarnings("unused")
 		MultiCoreArchitecture architecture = Examples.get2C64Archi();
+		@SuppressWarnings("unused")
 		DirectedAcyclicGraph algorithm = null;
 
 		// Input file list
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("sourcePath", "d:/Test");
+		@SuppressWarnings("unused")
 		TextParameters params = new TextParameters(map);
 
 		//gen.transform(algorithm, architecture, params);

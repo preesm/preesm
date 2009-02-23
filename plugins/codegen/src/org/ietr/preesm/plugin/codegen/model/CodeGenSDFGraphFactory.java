@@ -25,6 +25,7 @@ import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.sdf4j.visitors.DAGTransformation;
 import org.sdf4j.visitors.HierarchyFlattening;
+import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.ToHSDFVisitor;
 
 public class CodeGenSDFGraphFactory {
@@ -65,6 +66,9 @@ public class CodeGenSDFGraphFactory {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -54,22 +54,13 @@ public class CodeElementFactory {
 			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
 		} else if (vertex.getGraphDescription() != null
 				&& vertex.getNbRepeat() > 1) {
-			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
 					(SDFVertex) vertex, vertex.getNbRepeat());
-			for (SDFAbstractVertex child : graph.vertexSet()) {
-				loop.addCall(CodeElementFactory
-						.createElement(name, loop, child));
-			}
 			return loop;
 		} else {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, (SDFVertex) vertex);
-			for (SDFAbstractVertex child : graph.vertexSet()) {
-				compound.addCall(CodeElementFactory.createElement(name,
-						parentContainer, child));
-			}
 			return compound;
 		}
 	}

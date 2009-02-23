@@ -46,6 +46,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.ConsistencyChecker;
+import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.VisitorOutput;
 
 /**
@@ -74,7 +75,12 @@ public class HierarchyFlattening implements IGraphTransformation {
 			org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
 			VisitorOutput.setLogger(logger);
 			if(algorithm.validateModel()){
-				flatHier.flattenGraph(algorithm, depth);
+				try {
+					flatHier.flattenGraph(algorithm, depth);
+				} catch (SDF4JException e) {
+					e.printStackTrace();
+					throw(new PreesmException(e.getMessage()));
+				}
 				logger.log(Level.FINER, "flattening complete");
 				TaskResult result = new TaskResult();
 				result.setSDF((SDFGraph) flatHier.getOutput());

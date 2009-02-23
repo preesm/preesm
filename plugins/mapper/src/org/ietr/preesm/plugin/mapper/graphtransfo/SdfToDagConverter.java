@@ -73,6 +73,7 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.DAGTransformation;
+import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.TopologyVisitor;
 
 /**
@@ -94,8 +95,6 @@ public class SdfToDagConverter {
 		SDFGraph demoGraph = test.createRandomGraph(nbVertex, minInDegree,
 				maxInDegree, minOutDegree, maxOutDegree, minrate, maxrate);
 		// SDFGraph demoGraph =createTestComGraph();
-		TopologyVisitor topo = new TopologyVisitor();
-		demoGraph.accept(topo);
 
 		MultiCoreArchitecture architecture = Examples.get2C64Archi();
 
@@ -132,15 +131,18 @@ public class SdfToDagConverter {
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
 		MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);
-		TopologyVisitor topo = new TopologyVisitor();
-		sdf.accept(topo);
 
 		// Creates a visitor parameterized with the DAG
 		DAGTransformation<MapperDAG> visitor = new DAGTransformation<MapperDAG>(
 				dag, new MapperVertexFactory());
 
 		// visits the SDF to generate the DAG
-		sdf.accept(visitor);
+		try {
+			sdf.accept(visitor);
+		} catch (SDF4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// Adds the necessary properties to vertices and edges
 		addInitialProperties(dag, architecture, scenario);

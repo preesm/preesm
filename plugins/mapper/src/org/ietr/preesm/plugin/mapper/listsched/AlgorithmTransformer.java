@@ -55,6 +55,7 @@ import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.ToHSDFVisitor;
 import org.sdf4j.visitors.TopologyVisitor;
 
@@ -231,9 +232,13 @@ public class AlgorithmTransformer {
 						.nextInt(maxSensor));
 
 		ToHSDFVisitor visitor2 = new ToHSDFVisitor();
-		demoGraph.accept(visitor2);
+		try {
+			demoGraph.accept(visitor2);
+		} catch (SDF4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		demoGraph.accept(topo);
 		// applet.init(demoGraph);
 
 		// Random edgeSizeRand = new Random();
