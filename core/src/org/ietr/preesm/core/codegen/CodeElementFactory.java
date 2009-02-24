@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
@@ -60,7 +61,7 @@ public class CodeElementFactory {
 		} else {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
-					parentContainer, (SDFVertex) vertex);
+					parentContainer, (CodeGenSDFVertex) vertex);
 			return compound;
 		}
 	}

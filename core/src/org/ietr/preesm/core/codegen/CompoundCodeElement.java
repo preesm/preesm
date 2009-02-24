@@ -37,16 +37,24 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.sdf.SDFInterfaceVertex;
+import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 public class CompoundCodeElement extends AbstractBufferContainer implements ICodeElement {
 
 	private List<ICodeElement> calls;
+	
+	private HashMap<SDFEdge, Buffer> allocatedBuffers ;
 
 	private SDFAbstractVertex correspondingVertex;
 
@@ -57,20 +65,51 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 	
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
-			SDFAbstractVertex correspondingVertex) {
+			CodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);
+		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
 		calls = new ArrayList<ICodeElement>();
-		if(correspondingVertex instanceof SDFAbstractVertex && correspondingVertex.getGraphDescription() != null){
-			SDFGraph graph = (SDFGraph) correspondingVertex.getGraphDescription();
+		if(correspondingVertex.getGraphDescription() != null){
+			CodeGenSDFGraph graph = (CodeGenSDFGraph) correspondingVertex.getGraphDescription();
 			for(SDFEdge edge : graph.edgeSet()){
-				// missing name size type ... this.addBuffer(new BufferAllocation(new Buffer(edge)));
+				if(edge.getSource() instanceof SDFSourceInterfaceVertex){
+					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSourceInterfaceVertex) edge.getSource());
+					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
+					this.addBuffer(parentBuffer, outEdge);
+				}if(edge.getTarget() instanceof SDFSinkInterfaceVertex){
+					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSinkInterfaceVertex) edge.getTarget());
+					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
+					this.addBuffer(parentBuffer, outEdge);
+				}else{
+					String bufferName = edge.getSourceInterface().getName()+"_"+edge.getTargetInterface().getName();
+					this.addBuffer(new BufferAllocation(new Buffer(bufferName, Math.max(edge.getProd().intValue(), edge.getCons().intValue()), new DataType(edge.getDataType().toString()),edge)));
+				}
+			}
+			for(SDFAbstractVertex vertex : graph.vertexSet()){
+				if(!(vertex instanceof SDFInterfaceVertex)){
+					this.addCall(CodeElementFactory.createElement(vertex.getName(), this, vertex));
+				}
 			}
 		}
 	}
 
+	public void addBuffer(Buffer buff, SDFEdge edge){
+		if(allocatedBuffers.get(edge) == null){
+			allocatedBuffers.put(edge, buff);
+		}
+	}
+	
+	public Buffer getBuffer(SDFEdge edge){
+		if(super.getBuffer(edge) == null){
+			return allocatedBuffers.get(edge);
+		}else{
+			return super.getBuffer(edge) ;
+		}
+	}
+	
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		for (ICodeElement call : calls) {
