@@ -36,65 +36,75 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
-public class FiniteForLoop extends AbstractBufferContainer implements
-		ICodeElement {
+public class FiniteForLoop extends AbstractBufferContainer implements ICodeElement {
 
-	private Map<SDFEdge, Buffer> buffers;
+	private HashMap<SDFEdge, SubBuffer> allocatedBuffers;
 
-	private List<ICodeElement> calls;
-	private int increment;
+	private SDFAbstractVertex correspondingVertex;
+
 	private LoopIndex index;
-	private int startIndex;
-	private int stopIndex;
-	private SDFAbstractVertex vertexDescription;
+	
+	private ICodeElement content ;
+
+	private AbstractBufferContainer parentContainer;
 
 	public FiniteForLoop(AbstractBufferContainer parentContainer,
-			SDFAbstractVertex vertex, int nbIter) {
+			CodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);
-		startIndex = 0;
-		stopIndex = nbIter;
-		increment = 1;
-		vertexDescription = vertex;
-		calls = new ArrayList<ICodeElement>();
-		buffers = new HashMap<SDFEdge, Buffer>();
-		for (VariableAllocation varDecl : parentContainer.getVariables()) {
-			if (varDecl.getVariable() instanceof LoopIndex) {
-				index = (LoopIndex) varDecl.getVariable();
-			}
+		index = new LoopIndex("i", new DataType("long"));
+		allocatedBuffers = new HashMap<SDFEdge, SubBuffer>();
+		this.parentContainer = parentContainer;
+		this.correspondingVertex = correspondingVertex;
+		for (SDFEdge edge : correspondingVertex.getBase().outgoingEdgesOf(
+				correspondingVertex)) {
+			this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentContainer.getBuffer(edge)), edge);
 		}
-		if (index == null) {
-			if (parentContainer instanceof FiniteForLoop) {
-				char indexName = ((FiniteForLoop) parentContainer).getIndex()
-						.getNameAsChar();
-				indexName = (char) ((int) indexName++);
-				index = new LoopIndex(indexName, new DataType("int"));
-			} else {
-				index = new LoopIndex('i', new DataType("int"));
-				parentContainer.addVariable(index);
-			}
+		for (SDFEdge edge : correspondingVertex.getBase().incomingEdgesOf(
+				correspondingVertex)) {
+			this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentContainer.getBuffer(edge)), edge);
 		}
-		for (SDFEdge edge : ((SDFAbstractVertex) vertexDescription)
-				.getBase().edgesOf(vertex)) {
-			Buffer buf = parentContainer.getBuffer( edge) ;
-			SubBuffer subBuff = new SubBuffer(buf.getName()+"_"+index.getName(), buf.getSize(), index, buf);
-			this.addBuffer(subBuff, edge);
+		if(correspondingVertex.getGraphDescription() != null){
+			content = new CompoundCodeElement(correspondingVertex.getName(), this, correspondingVertex);
+		}else{
+			content = new UserFunctionCall(correspondingVertex, this, CodeSection.LOOP);
 		}
-
+	}
+	public ICodeElement getContent(){
+		return content ;
 	}
 
+	public void addBuffer(SubBuffer buff, SDFEdge edge) {
+		if (allocatedBuffers.get(edge) == null) {
+			allocatedBuffers.put(edge, buff);
+		}
+	}
+
+	public Buffer getBuffer(SDFEdge edge) {
+		if (super.getBuffer(edge) == null) {
+			return allocatedBuffers.get(edge);
+		} else {
+			return super.getBuffer(edge);
+		}
+	}
+
+	@Override
+	public SDFAbstractVertex getCorrespondingVertex() {
+		return correspondingVertex;
+	}
+
+	public AbstractBufferContainer getParentContainer() {
+		return parentContainer;
+	}
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		Iterator<VariableAllocation> iterator2 = variables.iterator();
@@ -104,34 +114,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			alloc.accept(printer, currentLocation); // Accepts allocations
 		}
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
-		for (ICodeElement call : calls) {
-			call.accept(printer, currentLocation);
-		}
-	}
-
-
-	public void addBuffer(Buffer buffer, SDFEdge edge) {
-		buffers.put(edge, buffer);
-	}
-
-	public void addCall(ICodeElement call) {
-		calls.add(call);
-	}
-
-
-	public Set<Buffer> getBuffers(SDFEdge edge) {
-		Set<Buffer> buffer = new TreeSet<Buffer>();
-		buffer.add(buffers.get(edge));
-		return buffer;
-	}
-
-	@Override
-	public SDFAbstractVertex getCorrespondingVertex() {
-		return vertexDescription;
-	}
-
-	public int getIncrement() {
-		return increment;
+		content.accept(printer, currentLocation);
 	}
 
 	public LoopIndex getIndex() {
@@ -145,56 +128,11 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	 */
 	@Override
 	public String getName() {
-		return "";
-	}
-
-	public int getStartIndex() {
-		return startIndex;
-	}
-
-	public int getStopIndex() {
-		return stopIndex;
-	}
-
-	/**
-	 * Sets the increment of the loop
-	 * 
-	 * @param inc
-	 *            The increment of the loop
-	 */
-	public void setIncrement(int inc) {
-		this.increment = inc;
-	}
-
-	/**
-	 * Sets the loop start index
-	 * 
-	 * @param start
-	 *            The start index of the loop
-	 */
-	public void setStartIndex(int start) {
-		this.startIndex = start;
-	}
-
-	/**
-	 * Sets the stop index of the loop
-	 * 
-	 * @param stop
-	 *            The stop index of the loop
-	 */
-	public void setStopIndex(int stop) {
-		this.stopIndex = stop;
+		return "for";
 	}
 
 	public String toString() {
-		String result = new String();
-		result += "for(int i =" + startIndex + " ; i < " + stopIndex
-				+ " ; i +=" + increment + " ){\n";
-		for (ICodeElement call : calls) {
-			result += call.toString() + ";\n";
-		}
-		result += " }";
-		return result;
+		return "";
 	}
 
 }

@@ -56,7 +56,7 @@ public class CodeElementFactory {
 		} else if (vertex.getGraphDescription() != null
 				&& vertex.getNbRepeat() > 1) {
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
-					(SDFVertex) vertex, vertex.getNbRepeat());
+					(CodeGenSDFVertex) vertex);
 			return loop;
 		} else {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
