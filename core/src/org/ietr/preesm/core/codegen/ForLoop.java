@@ -36,13 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import java.util.HashMap;
-
-import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Each thread runs indefinitely. It contains a for loop. Thanks to SDF
@@ -51,74 +47,39 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mwipliez
  * @author mpelcat
+ * @author jpiat
  */
-public class ForLoop extends AbstractBufferContainer implements ICodeElement {
+public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 
-	private HashMap<SDFEdge, SubBuffer> allocatedBuffers;
-
-	private SDFAbstractVertex correspondingVertex;
-
-	private Variable index;
-	
-	private ICodeElement content ;
-
-	private AbstractBufferContainer parentContainer;
-
-	public ForLoop(AbstractBufferContainer parentContainer,
-			CodeGenSDFVertex correspondingVertex) {
-		super(parentContainer);
-		index = new Variable("i", new DataType("long"));
-		allocatedBuffers = new HashMap<SDFEdge, SubBuffer>();
-		this.parentContainer = parentContainer;
-		this.correspondingVertex = correspondingVertex;
-		for (SDFEdge edge : correspondingVertex.getBase().outgoingEdgesOf(
-				correspondingVertex)) {
-			this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentContainer.getBuffer(edge)), edge);
-		}
-		for (SDFEdge edge : correspondingVertex.getBase().incomingEdgesOf(
-				correspondingVertex)) {
-			this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentContainer.getBuffer(edge)), edge);
-		}
-		if(correspondingVertex.getGraphDescription() != null){
-			content = new CompoundCodeElement(correspondingVertex.getName(), this, correspondingVertex);
-		}else{
-			content = new UserFunctionCall(correspondingVertex, this, CodeSection.LOOP);
-		}
-	}
-	public ICodeElement getContent(){
-		return content ;
+	/**
+	 * 
+	 */
+	public ForLoop() {
+		super();
 	}
 
-	public void addBuffer(SubBuffer buff, SDFEdge edge) {
-		if (allocatedBuffers.get(edge) == null) {
-			allocatedBuffers.put(edge, buff);
-		}
-	}
-
-	public Buffer getBuffer(SDFEdge edge) {
-		if (super.getBuffer(edge) == null) {
-			return allocatedBuffers.get(edge);
-		} else {
-			return super.getBuffer(edge);
-		}
-	}
-
-	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		super.accept(printer, currentLocation); // Accept the code container
 	}
 
 	@Override
 	public SDFAbstractVertex getCorrespondingVertex() {
-		return correspondingVertex;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public String getName() {
-		return "for";
-	}
+	/**
+	 * Displays pseudo-code for test
+	 */
+	public String toString() {
+		String code = "";
 
-	public AbstractBufferContainer getParentContainer() {
-		return parentContainer;
-	}
+		code += "\n\nfor(;;){\n";
+		code += super.toString();
+		code += "\n\n}\n";
 
+		return code;
+	}
 }
