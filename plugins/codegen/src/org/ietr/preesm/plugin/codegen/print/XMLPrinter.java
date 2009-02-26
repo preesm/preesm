@@ -182,6 +182,15 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(SubBuffer domElt, CodeZoneId index,
 			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element buffer = dom.createElement("subBuffer");
+			((Element)currentLocation).appendChild(buffer);
+
+			buffer.setAttribute("parentBuffer", domElt.getParentBuffer().getName());
+			buffer.setAttribute("index", domElt.getIndex().getName());
+			buffer.setAttribute("size", domElt.getSize().toString());
+		} 
+		
 		return currentLocation;
 	}
 
@@ -276,7 +285,15 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(FiniteForLoop domElt, int index, Object currentLocation) {
+	public Object visit(FiniteForLoop domElt, CodeZoneId index, Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element forLoop = dom.createElement("finiteForLoop");
+			forLoop.setAttribute("index", domElt.getIndex().toString());
+			forLoop.setAttribute("domain", ((Integer) domElt.getNbIteration()).toString());
+			((Element)currentLocation).appendChild(forLoop);
+			currentLocation = forLoop;
+		} 
+		
 		return currentLocation;
 	}
 
