@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+
 
 public class SubBuffer extends Buffer {
 
@@ -60,6 +63,10 @@ public class SubBuffer extends Buffer {
 		this.index = index;
 	}
 
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+	}
+	
 	public void setParentBuffer(Buffer parentBuffer) {
 		this.parentBuffer = parentBuffer;
 	}

@@ -51,14 +51,13 @@ public class CodeElementFactory {
 
 	public static ICodeElement createElement(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
-		if (vertex.getGraphDescription() == null) {
-			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
-		} else if (vertex.getGraphDescription() != null
-				&& vertex.getNbRepeat() > 1) {
+		if (vertex.getNbRepeat() > 1) {
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
 					(CodeGenSDFVertex) vertex);
 			return loop;
-		} else {
+		}else if (vertex.getGraphDescription() == null) {
+			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
+		}else {
 			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, (CodeGenSDFVertex) vertex);

@@ -183,7 +183,7 @@ public abstract class AbstractBufferContainer {
 	public Buffer getBuffer(SDFEdge edge){
 		for(BufferAllocation alloc : buffers){
 			if(alloc.getBuffer().getEdge().equals(edge)){
-				alloc.getBuffer(); 
+				return alloc.getBuffer(); 
 			}
 		}
 		return null ;

@@ -70,6 +70,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public UserFunctionCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSection section) {
 		super(vertex.getName(), parentContainer, vertex);
+		availableBuffers = new HashSet<Buffer>();
 		if(vertex instanceof CodeGenSDFVertex){
 			FunctionCall call = ((FunctionCall) vertex.getRefinement());
 			if(call != null){
@@ -90,11 +91,25 @@ public class UserFunctionCall extends AbstractCodeElement {
 						
 				}
 			}
+			for (SDFEdge edge : vertex.getBase().outgoingEdgesOf(
+					vertex)) {
+				AbstractBufferContainer parentBufferContainer = parentContainer ;
+				while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
+					parentBufferContainer = parentBufferContainer.getParentContainer();
+				}if(parentBufferContainer != null ){
+					this.addBuffer(parentBufferContainer.getBuffer(edge));
+				}
+			}
+			for (SDFEdge edge : vertex.getBase().incomingEdgesOf(
+					vertex)) {
+				AbstractBufferContainer parentBufferContainer = parentContainer ;
+				while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
+					parentBufferContainer = parentBufferContainer.getParentContainer();
+				}if(parentBufferContainer != null ){
+					this.addBuffer(parentBufferContainer.getBuffer(edge));
+				}
+			}
 		}
-		availableBuffers = new HashSet<Buffer>();
-
-		// Adds all buffers that can be called by the user function
-		addVertexBuffers(vertex);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

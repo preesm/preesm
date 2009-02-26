@@ -74,7 +74,7 @@ public interface IAbstractPrinter {
 	public Object visit(CommunicationFunctionCall element, CodeZoneId index, Object currentLocation);
 	public Object visit(ForLoop element, CodeZoneId index, Object currentLocation);
 	public Object visit(LinearCodeContainer element, CodeZoneId index, Object currentLocation);
-	public Object visit(FiniteForLoop element, int index, Object currentLocation);
+	public Object visit(FiniteForLoop element, CodeZoneId index, Object currentLocation);
 	public Object visit(Receive element, CodeZoneId index, Object currentLocation);
 	public Object visit(Semaphore element, CodeZoneId index, Object currentLocation);
 	public Object visit(SemaphorePend element, CodeZoneId index, Object currentLocation);
