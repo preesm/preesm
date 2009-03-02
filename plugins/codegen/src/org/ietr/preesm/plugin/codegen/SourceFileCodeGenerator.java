@@ -152,10 +152,11 @@ public class SourceFileCodeGenerator {
 	}
 
 	/**
-	 * Fills itself from an SDF and an architecture
+	 * Fills its source file from an SDF and an architecture
 	 */
 	public void generateSource(CodeGenSDFGraph algorithm,
 			MultiCoreArchitecture architecture) {
+		
 		// Gets the task vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(algorithm,
@@ -176,26 +177,29 @@ public class SourceFileCodeGenerator {
 		allocateRouteSteps(ownCommunicationVertices);
 
 		// Creating computation thread in which all SDF function calls will be
-		// placed
+		// located
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
-		compCodegen.addSemaphorePends(ownTaskVertices);
+		compCodegen.addSemaphoreFunctions(ownTaskVertices);
 
 		// Creating communication where communication processes are launched
-		CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
-				file);
-		file.addThread(communicationThread);
-		CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
-				communicationThread);
-		commCodeGen.addSendsAndReceives(ownCommunicationVertices);
-		commCodeGen.addSemaphores(ownCommunicationVertices);
-
-		// Allocates the semaphores globally
-		file.getSemaphoreContainer().allocateSemaphores();
+		if(!ownCommunicationVertices.isEmpty()){
+			CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
+					file);
+			file.addThread(communicationThread);
+			
+			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
+					communicationThread);
+			commCodeGen.addSendsAndReceives(ownCommunicationVertices);
+			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
+			
+			// Allocates the semaphores globally
+			file.getSemaphoreContainer().allocateSemaphores();
+		}
 	}
 
 	/**

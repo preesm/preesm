@@ -70,7 +70,7 @@ public class CommThreadCodeGenerator {
 	/**
 	 * Adds semaphores to protect the data transmitted in this thread
 	 */
-	public void addSemaphores(SortedSet<SDFAbstractVertex> comVertices) {
+	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> comVertices) {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 

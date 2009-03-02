@@ -71,7 +71,7 @@ public class CompThreadCodeGenerator {
 	 * Adds semaphores to protect the data transmitted in this thread. Iterates
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
-	public void addSemaphorePends(SortedSet<SDFAbstractVertex> taskVertices) {
+	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> taskVertices) {
 		AbstractBufferContainer container = thread.getGlobalContainer();
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();

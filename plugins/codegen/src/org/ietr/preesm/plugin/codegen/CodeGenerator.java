@@ -54,6 +54,9 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
  */
 public class CodeGenerator {
 
+	/**
+	 * A list of source file objects
+	 */
 	private SourceFileList list;
 
 	public CodeGenerator(SourceFileList list) {

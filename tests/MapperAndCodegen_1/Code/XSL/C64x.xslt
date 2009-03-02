@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet 
     xmlns="http://graphml.graphdrawing.org/xmlns"
-    xmlns:sourceCode="http://ietr.preesm.sourceCode"
+    xmlns:sourceCode="http://org.ietr.preesm.sourceCode"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
     
     <xsl:output indent="yes" method="text"/>
@@ -24,51 +24,19 @@
     <!-- Big blocks level -->
     <xsl:template match="sourceCode:SourceFile">
         
-        <xsl:call-template name="includeSection1"/>
+        <xsl:call-template name="includeSection"/>
         <xsl:apply-templates select="sourceCode:bufferContainer"/>
-        <xsl:call-template name="includeSection2"/>
         <xsl:apply-templates select="sourceCode:threadDeclaration" mode="prototype"/>
         <xsl:value-of select="$new_line"/>
         <xsl:apply-templates select="sourceCode:threadDeclaration"/>
     </xsl:template>
     
     <!-- includes -->
-    <xsl:template name="includeSection1">
+    <xsl:template name="includeSection">
         
-        <xsl:value-of select="concat($curIndent,'#include &lt;stdio.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &lt;stdlib.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &lt;std.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &lt;tsk.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#define uchar unsigned char',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#define ushort unsigned short',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'//#define uint unsigned int',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#define ulong unsigned long',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#define prec_synchro int',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#define stream uchar',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &quot;..\..\lib_RACH\common.h&quot;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &quot;..\..\lib_RACH\preproc.h&quot;',$new_line)"/>
+        <xsl:value-of select="concat($curIndent,'#include &quot;c64x.h&quot;',$new_line)"/>
         <xsl:value-of select="$new_line"/>
         
-    </xsl:template>
-    
-    <!-- includes -->
-    <xsl:template name="includeSection2">
-        
-        <xsl:value-of select="concat($curIndent,'#include &lt;csl_edma3.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &lt;csl_intc.h&gt;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &lt;soc.h&gt;',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
-        <xsl:value-of select="concat($curIndent,'#include &quot;C64x+_dmamsg.h&quot;',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'#include &quot;CI_types.h&quot;',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
-        <xsl:value-of select="concat($curIndent,'void Init_DMAMSG(Media_DMAMSG *media);',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'void Close_DMAMSG(Media_DMAMSG *media);',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'void Send_DMAMSG(Media_DMAMSG *media,char *Buffer,const int NB_bytes,unsigned char receiverId);',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'void Receive_DMAMSG(Media_DMAMSG *media,char *Buffer,const int NB_bytes,unsigned char senderId);',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
-        <xsl:value-of select="concat($curIndent,'/* External Variables */',$new_line)"/>
-        <xsl:value-of select="concat($curIndent,'extern far int L2RAM;   /* Generated within BIOS configuration */',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
     </xsl:template>
     
     <!-- Declaring thread functions prototypes -->
@@ -78,20 +46,24 @@
     
     <xsl:template match="sourceCode:threadDeclaration">
         <xsl:value-of select="concat($curIndent,'void ',@name,'(void){',$new_line)"/>
-        <xsl:apply-templates select="sourceCode:bufferContainer | sourceCode:linearCodeContainer | sourceCode:forLoop"/>
-        <xsl:value-of select="concat($curIndent,'}//thread',$new_line)"/>
+        <xsl:apply-templates select="sourceCode:bufferContainer | sourceCode:linearCodeContainer | sourceCode:forLoop">
+            <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
+        </xsl:apply-templates>
+        <xsl:value-of select="concat($curIndent,'}//',@name,$new_line)"/>
         <xsl:value-of select="$new_line"/>
     </xsl:template>
     
     <!-- Middle blocks level -->
     
     <xsl:template match="sourceCode:bufferContainer">
+        <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'// Buffer declarations',$new_line)"/>
         <xsl:apply-templates select="sourceCode:bufferAllocation"/>
         <xsl:value-of select="$new_line"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:linearCodeContainer">
+        <xsl:param name="curIndent"/>
         <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'{',$new_line)"/>
             
@@ -105,6 +77,7 @@
     </xsl:template>
     
     <xsl:template match="sourceCode:forLoop">
+        <xsl:param name="curIndent"/>
         <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
             

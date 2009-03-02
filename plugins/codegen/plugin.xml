@@ -6,7 +6,7 @@
       <task
             id="org.ietr.preesm.plugin.codegen"
             name="Default code generation"
-            type="org.ietr.preesm.plugin.codegen.CodeGeneration">
+            type="org.ietr.preesm.plugin.codegen.CodeGenerationTransformation">
       </task>
    </extension>
 
