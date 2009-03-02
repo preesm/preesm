@@ -91,7 +91,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("http://ietr.preesm.sourceCode", "sourceCode",null);
+			dom = impl.createDocument("http://org.ietr.preesm.sourceCode", "sourceCode",null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

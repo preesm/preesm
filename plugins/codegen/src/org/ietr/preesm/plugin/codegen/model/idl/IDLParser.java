@@ -1,5 +1,8 @@
 package org.ietr.preesm.plugin.codegen.model.idl;
 
+import java.util.logging.Level;
+
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
 import org.jacorb.idl.IDLTreeVisitor;
@@ -25,7 +28,7 @@ public class IDLParser extends parser {
 
 			new parser().parse();
 		} catch (Exception e) {
-			e.printStackTrace();
+			PreesmLogger.getLogger().log(Level.INFO,"IDL Parser: " + e.getMessage());
 		}
 	}
 

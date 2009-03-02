@@ -28,6 +28,9 @@ import org.sdf4j.visitors.HierarchyFlattening;
 import org.sdf4j.visitors.SDF4JException;
 import org.sdf4j.visitors.ToHSDFVisitor;
 
+/**
+ * @author jpiat
+ */
 public class CodeGenSDFGraphFactory {
 	
 	private IFile mainFile ;

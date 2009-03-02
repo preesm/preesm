@@ -8,12 +8,20 @@ import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.visitors.GraphVisitor;
 import org.sdf4j.visitors.SDF4JException;
 
+/**
+ * Visitor of a graph of type CodegenSDF
+ * 
+ * @author jpiat
+ */
 public class CodeGeneratorVisitor implements GraphVisitor<CodeGenSDFGraph, CodeGenSDFVertex, CodeGenSDFEdge>{
 	
 	public void visit(CodeGenSDFEdge edge){
 		
 	}
 	
+	/**
+	 * visiting a vertex implies accepting its children
+	 */
 	public void visit(CodeGenSDFVertex vertex) throws SDF4JException{
 		if(vertex.getGraphDescription() != null){
 			vertex.getGraphDescription().accept(this);

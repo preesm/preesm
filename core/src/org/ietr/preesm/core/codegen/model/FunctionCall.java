@@ -11,21 +11,19 @@ public class FunctionCall implements IRefinement {
 	public FunctionCall initCall = null;
 	public FunctionCall endCall = null;
 
-	private List<CodeGenArgument> inputs;
-	private List<CodeGenArgument> outputs;
+	private List<CodeGenArgument> arguments;
+
 	private List<CodeGenParameter> parameters;
 
 	public FunctionCall(){
 		functionName = "";
-		inputs = new ArrayList<CodeGenArgument>();
-		outputs = new ArrayList<CodeGenArgument>();
+		arguments = new ArrayList<CodeGenArgument>();
 		parameters = new ArrayList<CodeGenParameter>();
 	}
 	
 	public FunctionCall(String name) {
 		functionName = name;
-		inputs = new ArrayList<CodeGenArgument>();
-		outputs = new ArrayList<CodeGenArgument>();
+		arguments = new ArrayList<CodeGenArgument>();
 		parameters = new ArrayList<CodeGenParameter>();
 	}
 
@@ -37,12 +35,8 @@ public class FunctionCall implements IRefinement {
 		functionName = name;
 	}
 
-	public void addInput(CodeGenArgument inputName) {
-		inputs.add(inputName);
-	}
-
-	public void addOutput(CodeGenArgument outputName) {
-		outputs.add(outputName);
+	public void addArgument(CodeGenArgument arg) {
+		arguments.add(arg);
 	}
 
 	public void addParameter(CodeGenParameter parameterName) {
@@ -63,6 +57,10 @@ public class FunctionCall implements IRefinement {
 
 	public void setEndCall(FunctionCall end) {
 		endCall = end;
+	}
+	
+	public List<CodeGenArgument> getArguments() {
+		return arguments;
 	}
 
 }

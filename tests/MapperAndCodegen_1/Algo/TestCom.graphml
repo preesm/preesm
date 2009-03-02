@@ -22,32 +22,32 @@
       <data key="parameters"/>
       <data key="variables"/>
       <node id="Sensor" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/Sensor.idl</data>
          <data key="name">Sensor</data>
          <data key="arguments"/>
       </node>
       <node id="Gen_int" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/Gen_int.idl</data>
          <data key="name">Gen_int</data>
          <data key="arguments"/>
       </node>
       <node id="Copy" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/Copy.idl</data>
          <data key="name">Copy</data>
          <data key="arguments"/>
       </node>
       <node id="Actuator" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/Actuator.idl</data>
          <data key="name">Actuator</data>
          <data key="arguments"/>
       </node>
       <node id="ParallelTest" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/ParallelTest.idl</data>
          <data key="name">ParallelTest</data>
          <data key="arguments"/>
       </node>
       <node id="ParallelTest2" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/ParallelTest.idl</data>
          <data key="name">ParallelTest2</data>
          <data key="arguments"/>
       </node>

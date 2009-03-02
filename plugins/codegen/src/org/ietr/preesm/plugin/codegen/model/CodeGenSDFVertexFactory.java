@@ -30,6 +30,9 @@ import org.sdf4j.model.sdf.esdf.SDFJoinVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
+/**
+ * @author jpiat
+ */
 public class CodeGenSDFVertexFactory {
 	
 	private IFile mainFile ;

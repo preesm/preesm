@@ -33,6 +33,11 @@ import org.jacorb.idl.Value;
 import org.jacorb.idl.VectorType;
 import org.jacorb.idl.parser;
 
+/**
+ * Retrieving prototype data from an idl file
+ * 
+ * @author jpiat
+ */
 public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 
 	public HashMap<String, FunctionCall> createdIdl;
@@ -168,13 +173,15 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 				currentCall.addParameter(parameter);
 			} else {
 				CodeGenArgument argument = new CodeGenArgument(
-						arg0.simple_declarator.name());
-				currentCall.addInput(argument);
+						arg0.simple_declarator.name(),CodeGenArgument.INPUT);
+				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+				currentCall.addArgument(argument);
 			}
 		} else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
 			CodeGenArgument argument = new CodeGenArgument(
-					arg0.simple_declarator.name());
-			currentCall.addOutput(argument);
+					arg0.simple_declarator.name(),CodeGenArgument.OUTPUT);
+			argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+			currentCall.addArgument(argument);
 		}
 	}
 

@@ -43,7 +43,10 @@ import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
 
 /**
+ * Creating code elements from a vertex
+ * 
  * @author jpiat
+ * @author mpelcat
  */
 public class CodeElementFactory {
 

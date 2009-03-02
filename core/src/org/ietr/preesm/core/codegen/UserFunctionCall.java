@@ -36,11 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.codegen.model.CodeGenArgument;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -54,68 +57,119 @@ import org.sdf4j.model.sdf.SDFEdge;
  * Function Call is a call corresponding to a vertex in the graph
  * 
  * @author mpelcat
+ * @author jpiat
  */
 public class UserFunctionCall extends AbstractCodeElement {
 
-	public enum CodeSection{
-		INIT,
-		LOOP,
-		END;
+	public enum CodeSection {
+		INIT, LOOP, END;
 	}
+
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
-	private Set<Buffer> availableBuffers;
+	private List<Buffer> callBuffers;
 
 	public UserFunctionCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSection section) {
 		super(vertex.getName(), parentContainer, vertex);
-		availableBuffers = new HashSet<Buffer>();
-		if(vertex instanceof CodeGenSDFVertex){
+
+		// Buffers associated to the function call
+		callBuffers = new ArrayList<Buffer>();
+		// Candidate buffers that will be added if present in prototype
+		Set<Buffer> candidateBuffers = new HashSet<Buffer>();
+
+		// Replacing the name of the vertex by the name of the prototype, if any
+		// is available.
+		if (vertex instanceof CodeGenSDFVertex) {
 			FunctionCall call = ((FunctionCall) vertex.getRefinement());
-			if(call != null){
-				switch(section){
+			if (call != null) {
+
+				switch (section) {
 				case INIT:
-					if(call.getInitCall() != null){
+					if (call.getInitCall() != null) {
 						this.setName(call.getInitCall().getFunctionName());
 					}
-					break ;
+					break;
 				case LOOP:
-					this.setName(call.getFunctionName());
-					break ;
+					if (call.getFunctionName().isEmpty()) {
+						PreesmLogger.getLogger().log(
+								Level.INFO,
+								"Name not found in the IDL for function: "
+										+ vertex.getName());
+					} else {
+						this.setName(call.getFunctionName());
+					}
+
+					break;
 				case END:
-					if(call.getEndCall() != null){
+					if (call.getEndCall() != null) {
 						this.setName(call.getEndCall().getFunctionName());
 					}
-					break ;
-						
+					break;
 				}
 			}
-			for (SDFEdge edge : vertex.getBase().outgoingEdgesOf(
-					vertex)) {
-				AbstractBufferContainer parentBufferContainer = parentContainer ;
-				while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
-					parentBufferContainer = parentBufferContainer.getParentContainer();
-				}if(parentBufferContainer != null ){
-					this.addBuffer(parentBufferContainer.getBuffer(edge));
+
+			// Adding output buffers
+			for (SDFEdge edge : vertex.getBase().outgoingEdgesOf(vertex)) {
+				AbstractBufferContainer parentBufferContainer = parentContainer;
+				while (parentBufferContainer != null
+						&& parentBufferContainer.getBuffer(edge) == null) {
+					parentBufferContainer = parentBufferContainer
+							.getParentContainer();
+				}
+				if (parentBufferContainer != null) {
+					candidateBuffers.add(parentBufferContainer.getBuffer(edge));
 				}
 			}
-			for (SDFEdge edge : vertex.getBase().incomingEdgesOf(
-					vertex)) {
-				AbstractBufferContainer parentBufferContainer = parentContainer ;
-				while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
-					parentBufferContainer = parentBufferContainer.getParentContainer();
-				}if(parentBufferContainer != null ){
-					this.addBuffer(parentBufferContainer.getBuffer(edge));
+
+			// Adding input buffers
+			for (SDFEdge edge : vertex.getBase().incomingEdgesOf(vertex)) {
+				AbstractBufferContainer parentBufferContainer = parentContainer;
+				while (parentBufferContainer != null
+						&& parentBufferContainer.getBuffer(edge) == null) {
+					parentBufferContainer = parentBufferContainer
+							.getParentContainer();
 				}
+				if (parentBufferContainer != null) {
+					candidateBuffers.add(parentBufferContainer.getBuffer(edge));
+				}
+			}
+
+			// Filters and orders the buffers to fit the prototype
+			for (CodeGenArgument arg : call.getArguments()) {
+				Buffer currentBuffer = null;
+
+				if (arg.getDirection() == CodeGenArgument.INPUT) {
+					for (Buffer buffer : candidateBuffers) {
+						if (buffer.getDestInputPortID().equals(arg.getName()))
+							currentBuffer = buffer;
+					}
+				} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
+					for (Buffer buffer : candidateBuffers) {
+						if (buffer.getSourceOutputPortID()
+								.equals(arg.getName()))
+							currentBuffer = buffer;
+					}
+				}
+
+				if (currentBuffer != null) {
+					addBuffer(currentBuffer);
+				} else {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"Vertex: " + vertex.getName() + ". Error interpreting the prototype: no port found with name: "
+									+ arg.getName());
+				}
+				String argName = arg.getName();
 			}
 		}
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer
-				.visit(this, CodeZoneId.body, currentLocation); // Visit self
-		for (Buffer buffer : availableBuffers) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+		// self
+		for (Buffer buffer : callBuffers) {
 			buffer.accept(printer, currentLocation);
 		}
 	}
@@ -125,7 +179,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		if (buffer == null)
 			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
 		else
-			availableBuffers.add(buffer);
+			callBuffers.add(buffer);
 	}
 
 	public void addBuffers(Set<Buffer> buffers) {
@@ -160,12 +214,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 		while (eIterator.hasNext()) {
 			SDFEdge edge = eIterator.next();
 
-			addBuffer(getParentContainer().getBuffer((SDFEdge)edge));
+			addBuffer(getParentContainer().getBuffer((SDFEdge) edge));
 		}
-	}
-
-	public Set<Buffer> getAvailableBuffers() {
-		return availableBuffers;
 	}
 
 	/**
@@ -179,7 +229,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		code += super.toString();
 		code += "(";
 
-		Iterator<Buffer> iterator = availableBuffers.iterator();
+		Iterator<Buffer> iterator = callBuffers.iterator();
 
 		while (iterator.hasNext()) {
 

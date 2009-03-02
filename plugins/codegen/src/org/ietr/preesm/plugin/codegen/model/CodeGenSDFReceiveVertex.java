@@ -5,6 +5,9 @@ import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 
+/**
+ * @author jpiat
+ */
 public class CodeGenSDFReceiveVertex extends CodeGenSDFVertex{
 
 	public static final String INTERFACE ="interface"; 

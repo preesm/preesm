@@ -151,4 +151,11 @@ public class Buffer {
 		return getName();
 	}
 
+	public String getDestInputPortID() {
+		return destInputPortID;
+	}
+
+	public String getSourceOutputPortID() {
+		return sourceOutputPortID;
+	}
 }

@@ -47,9 +47,9 @@ public class CALFunctionFactory implements IFunctionFactory{
 				for(int i = 0 ; i < nodes.getLength() ; i ++){
 					Element e = (Element) nodes.item(i);
 					if(e.getNodeName().equals("Port") && e.getAttribute("kind").equals("Input")){
-						result.addInput(new CodeGenArgument(e.getAttribute("name")));
+						result.addArgument(new CodeGenArgument(e.getAttribute("name"),CodeGenArgument.INPUT));
 					}else if(e.getNodeName().equals("Port") && e.getAttribute("kind").equals("Output")){
-						result.addOutput(new CodeGenArgument(e.getAttribute("name")));
+						result.addArgument(new CodeGenArgument(e.getAttribute("name"),CodeGenArgument.OUTPUT));
 					}
 					else if(e.getNodeName().equals("Decl") && e.getAttribute("kind").equals("Parameter")){
 						result.addParameter(new CodeGenParameter(e.getAttribute("name")));
