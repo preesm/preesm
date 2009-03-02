@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <node id="Sensor" kind="vertex"/>
+        <node id="Gen_int" kind="vertex"/>
+        <node id="Actuator" kind="vertex"/>
+        <node id="ParallelTest" kind="vertex"/>
+        <node id="ParallelTest2" kind="vertex"/>
+        <node id="explode_Gen_int_o1" kind="fork"/>
+        <node id="implode_Actuator_i1" kind="join"/>
+        <node id="Copy_0" kind="vertex"/>
+        <node id="Copy_1" kind="vertex"/>
+        <node id="Copy_2" kind="vertex"/>
+        <node id="Copy_3" kind="vertex"/>
+        <node id="Copy_4" kind="vertex"/>
+        <node id="Copy_5" kind="vertex"/>
+        <node id="Copy_6" kind="vertex"/>
+        <node id="Copy_7" kind="vertex"/>
+        <node id="Copy_8" kind="vertex"/>
+        <node id="Copy_9" kind="vertex"/>
+        <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o1"
+            target="explode_Gen_int_o1" targetport="i1">
+            <data key="edge_prod">10</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">10</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="implode_Actuator_i1" sourceport="o1"
+            target="Actuator" targetport="i1">
+            <data key="edge_prod">10</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">10</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor" sourceport="o2" target="ParallelTest" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest" sourceport="o1"
+            target="ParallelTest2" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_0" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_2" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_3" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_4" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_5" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_6" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_7" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_8" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="explode_Gen_int_o1" sourceport="o1"
+            target="Copy_9" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_0" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_1" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_2" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_3" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_4" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_5" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_6" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_7" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_8" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy_9" sourceport="o1"
+            target="implode_Actuator_i1" targetport="i1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>
