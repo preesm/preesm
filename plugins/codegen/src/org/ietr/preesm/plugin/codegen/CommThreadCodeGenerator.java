@@ -144,6 +144,9 @@ public class CommThreadCodeGenerator {
 			if (com != null) {
 				thread.getLoopCode().addCodeElement(com);
 			}
+			else{
+				PreesmLogger.getLogger().log(Level.SEVERE,"problem creating a send or receive function call: " + vertex.getName());
+			}
 		}
 	}
 }

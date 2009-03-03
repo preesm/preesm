@@ -25,7 +25,9 @@
     <xsl:template match="sourceCode:SourceFile">
         
         <xsl:call-template name="includeSection"/>
-        <xsl:apply-templates select="sourceCode:bufferContainer"/>
+        <xsl:apply-templates select="sourceCode:bufferContainer">
+            <xsl:with-param name="curIndent" select="$curIndent"/>
+        </xsl:apply-templates>
         <xsl:apply-templates select="sourceCode:threadDeclaration" mode="prototype"/>
         <xsl:value-of select="$new_line"/>
         <xsl:apply-templates select="sourceCode:threadDeclaration"/>

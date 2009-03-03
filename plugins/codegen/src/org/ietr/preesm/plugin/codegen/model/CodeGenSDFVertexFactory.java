@@ -101,17 +101,18 @@ public class CodeGenSDFVertexFactory {
 				newVertex.setRefinement(factory.create(iFile.getRawLocation().toOSString()));
 			}
 		}
-		if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_Operator) != null) {
-			newVertex.setOperator((ArchitectureComponent) dagVertex
-					.getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_Operator));
-		}
-		if ((Integer) dagVertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_schedulingOrder) != null) {
-			newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
-					ImplementationPropertyNames.Vertex_schedulingOrder));
-		}
+		newVertex.copyProperties(dagVertex);
+//		if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
+//				ImplementationPropertyNames.Vertex_Operator) != null) {
+//			newVertex.setOperator((ArchitectureComponent) dagVertex
+//					.getPropertyBean().getValue(
+//							ImplementationPropertyNames.Vertex_Operator));
+//		}
+//		if ((Integer) dagVertex.getPropertyBean().getValue(
+//				ImplementationPropertyNames.Vertex_schedulingOrder) != null) {
+//			newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
+//					ImplementationPropertyNames.Vertex_schedulingOrder));
+//		}
 		return newVertex;
 	}
 

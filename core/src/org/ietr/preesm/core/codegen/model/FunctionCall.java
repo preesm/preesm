@@ -48,7 +48,7 @@ public class FunctionCall implements IRefinement {
 	}
 
 	public FunctionCall getEndCall() {
-		return initCall;
+		return endCall;
 	}
 
 	public void setInitCall(FunctionCall init) {
