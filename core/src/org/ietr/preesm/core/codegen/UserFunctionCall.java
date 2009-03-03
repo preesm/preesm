@@ -142,13 +142,13 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 				if (arg.getDirection() == CodeGenArgument.INPUT) {
 					for (Buffer buffer : candidateBuffers) {
-						if (buffer.getDestInputPortID().equals(arg.getName()))
+						if (buffer.getDestInputPortID().equals(arg.getName()) && buffer.getEdge().getTarget().equals(vertex))
 							currentBuffer = buffer;
 					}
 				} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
 					for (Buffer buffer : candidateBuffers) {
 						if (buffer.getSourceOutputPortID()
-								.equals(arg.getName()))
+								.equals(arg.getName()) && buffer.getEdge().getSource().equals(vertex))
 							currentBuffer = buffer;
 					}
 				}

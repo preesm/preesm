@@ -1,7 +1,6 @@
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
