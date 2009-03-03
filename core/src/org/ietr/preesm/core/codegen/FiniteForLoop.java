@@ -65,11 +65,11 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 		while(parentLoop != null && !(parentLoop instanceof FiniteForLoop)){
 			parentLoop = parentLoop.getParentContainer();
 		}
-		if(parentLoop != null){
+		if(parentLoop != null && parentLoop instanceof FiniteForLoop){
 			char newIndex = (char) (((int)((FiniteForLoop) parentLoop).getIndex().getNameAsChar()) + 1);
 			index = new LoopIndex( newIndex, new DataType("long"));
 		}else{
-			index = new LoopIndex("i", new DataType("long"));
+			index = new LoopIndex('i', new DataType("long"));
 		}
 		allocatedBuffers = new HashMap<SDFEdge, SubBuffer>();
 		this.parentContainer = parentContainer;
@@ -131,7 +131,6 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		Iterator<VariableAllocation> iterator2 = variables.iterator();
-
 		while (iterator2.hasNext()) {
 			VariableAllocation alloc = iterator2.next();
 			alloc.accept(printer, currentLocation); // Accepts allocations

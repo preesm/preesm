@@ -39,8 +39,6 @@ package org.ietr.preesm.core.codegen;
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Creating code elements from a vertex
@@ -61,7 +59,6 @@ public class CodeElementFactory {
 		}else if (vertex.getGraphDescription() == null) {
 			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
 		}else {
-			SDFGraph graph = (SDFGraph) vertex.getGraphDescription();
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, (CodeGenSDFVertex) vertex);
 			return compound;

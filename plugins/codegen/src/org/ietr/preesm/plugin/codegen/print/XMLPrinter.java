@@ -48,6 +48,7 @@ import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
@@ -402,6 +403,18 @@ public class XMLPrinter implements IAbstractPrinter {
 			receive.setAttribute("mediumDef", domElt.getMedium().getDefinition().getId());
 			receive.setAttribute("source", domElt.getSource().getName());
 			currentLocation = receive;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(CompoundCodeElement element, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element compound = dom.createElement("CompoundCode");
+			((Element)currentLocation).appendChild(compound);
+			currentLocation = compound;
 		} 
 		
 		return currentLocation;

@@ -45,10 +45,6 @@ public class LoopIndex extends Variable {
 		indexName = name;
 	}
 
-	public LoopIndex(String name, DataType type) {
-		super(name, type);
-	}
-
 	public char getNameAsChar() {
 		return indexName;
 	}

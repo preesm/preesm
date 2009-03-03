@@ -42,10 +42,10 @@ import java.util.List;
 
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
@@ -112,6 +112,14 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 	
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
+		for(Buffer buff : allocatedBuffers.values()){
+			if(buff != null){
+				buff.accept(printer, currentLocation);
+			}else{
+				System.out.println();
+			}
+		}
 		for (ICodeElement call : calls) {
 			call.accept(printer, currentLocation);
 		}
