@@ -186,7 +186,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element buffer = dom.createElement("subBuffer");
 			((Element)currentLocation).appendChild(buffer);
-
+			buffer.setAttribute("name", domElt.getName());
 			buffer.setAttribute("parentBuffer", domElt.getParentBuffer().getName());
 			buffer.setAttribute("index", domElt.getIndex().getName());
 			buffer.setAttribute("size", domElt.getSize().toString());

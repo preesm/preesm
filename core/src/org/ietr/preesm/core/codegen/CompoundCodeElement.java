@@ -78,11 +78,11 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 				if(edge.getSource() instanceof SDFSourceInterfaceVertex){
 					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSourceInterfaceVertex) edge.getSource());
 					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
-					this.addBuffer(parentBuffer, outEdge);
-				}if(edge.getTarget() instanceof SDFSinkInterfaceVertex){
+					this.addBuffer(parentBuffer, edge);
+				}else if(edge.getTarget() instanceof SDFSinkInterfaceVertex){
 					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSinkInterfaceVertex) edge.getTarget());
 					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
-					this.addBuffer(parentBuffer, outEdge);
+					this.addBuffer(parentBuffer, edge);
 				}else{
 					String bufferName = edge.getSourceInterface().getName()+"_"+edge.getTargetInterface().getName();
 					this.addBuffer(new BufferAllocation(new Buffer(bufferName, Math.max(edge.getProd().intValue(), edge.getCons().intValue()), new DataType(edge.getDataType().toString()),edge)));

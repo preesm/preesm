@@ -95,8 +95,8 @@ public class Buffer {
 
 		this.sourceID = null;
 		this.destID = null;
-		this.sourceOutputPortID = null;
-		this.destInputPortID = null;
+		this.sourceOutputPortID = edge.getSourceInterface().getName();
+		this.destInputPortID = edge.getSourceInterface().getName();
 
 		this.size = size;
 		this.type = type;

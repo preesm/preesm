@@ -80,7 +80,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 			while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
 				parentBufferContainer = parentBufferContainer.getParentContainer();
 			}if(parentBufferContainer != null ){
-				this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge)), edge);
+				this.addBuffer(new SubBuffer("sub_"+index.getName()+"_"+parentBufferContainer.getBuffer(edge).getName(), edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge)), edge);
 			}
 		}
 		for (SDFEdge edge : correspondingVertex.getBase().incomingEdgesOf(
@@ -89,7 +89,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 			while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
 				parentBufferContainer = parentBufferContainer.getParentContainer();
 			}if(parentBufferContainer != null ){
-				this.addBuffer(new SubBuffer("sub", edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge)), edge);
+				this.addBuffer(new SubBuffer("sub_"+index.getName()+"_"+parentBufferContainer.getBuffer(edge).getName(), edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge)), edge);
 			}
 		}
 		if(correspondingVertex.getGraphDescription() != null){

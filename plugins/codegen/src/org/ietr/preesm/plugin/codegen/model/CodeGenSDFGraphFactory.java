@@ -176,16 +176,130 @@ public class CodeGenSDFGraphFactory {
 				noInterface &= !(vertex instanceof SDFInterfaceVertex) ;
 			}
 			if(noInterface && strong.size() > 1){
-				SDFAbstractVertex cluster = culsterizeLoop(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
+				SDFAbstractVertex cluster = culsterizeLoopTest(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
 				i ++ ;
 			}
 			
 		}
 	}
 	
-	public static SDFAbstractVertex culsterizeLoop(SDFGraph graph,
+	public static SDFAbstractVertex culsterizeLoopTest(SDFGraph graph,
 			List<SDFAbstractVertex> block, String name) {
 		graph.validateModel();
+		
+		if (block.size() > 1) {
+			int pgcd = 0 ;
+			int nbLoopPort = 0 ;
+			SDFGraph clusterGraph = graph.clone();
+			clusterGraph.setName(name);
+			SDFVertex cluster = new SDFVertex();
+			cluster.setName(name);
+			cluster.setGraphDescription(clusterGraph);
+			graph.addVertex(cluster);
+			HashMap<SDFAbstractVertex, SDFAbstractVertex> copies = new HashMap<SDFAbstractVertex, SDFAbstractVertex>();
+			List<SDFAbstractVertex> vertices = new ArrayList<SDFAbstractVertex>(clusterGraph.vertexSet());
+			for(int i = 0 ; i < vertices.size() ; i ++){
+				boolean isInBlock = false;
+				for (int r = 0; r < block.size(); r++) {
+					if(block.get(r).getName().equals(vertices.get(i).getName())){
+						isInBlock = true ;
+						copies.put(block.get(r), vertices.get(i));
+					}
+				}
+				if(!isInBlock){
+					clusterGraph.removeVertex(vertices.get(i));
+				}
+			}
+			for (int r = 0; r < block.size(); r++) {
+				SDFAbstractVertex seed = copies.get(block.get(r));
+				if(pgcd == 0){
+					pgcd = seed.getNbRepeat();
+				}else{
+					pgcd = SDFMath.gcd(pgcd, seed.getNbRepeat());
+				}
+				List<SDFEdge> outgoingEdges = new ArrayList<SDFEdge>(graph
+						.outgoingEdgesOf(block.get(r)));
+				for (SDFEdge edge : outgoingEdges) {
+					SDFAbstractVertex target = graph.getEdgeTarget(edge);
+					if(!block.contains(target)){
+						SDFInterfaceVertex targetPort = new SDFSinkInterfaceVertex();
+						targetPort.setName(cluster.getName() + "_"
+								+ edge.getTargetInterface().getName());
+						cluster.addSink(targetPort);
+						SDFEdge extEdge = graph.addEdge(cluster, target);
+						extEdge.copyProperties(edge);
+						extEdge.setSourceInterface(targetPort);
+						cluster.setInterfaceVertexExternalLink(extEdge, targetPort);
+						SDFEdge newEdge = clusterGraph
+								.addEdge(seed, targetPort);
+						newEdge.copyProperties(edge);
+						newEdge.setCons(new SDFIntEdgePropertyType(newEdge.getProd().intValue()));
+						graph.removeEdge(edge);
+					}
+				}
+				List<SDFEdge> incomingEdges = new ArrayList<SDFEdge>(graph
+						.incomingEdgesOf(block.get(r)));
+				for (SDFEdge edge : incomingEdges) {
+					SDFAbstractVertex source = graph.getEdgeSource(edge);
+					SDFAbstractVertex target = graph.getEdgeTarget(edge);
+					if(block.contains(source) && block.contains(target)&& edge.getDelay().intValue() > 0){
+						SDFInterfaceVertex targetPort = new SDFSinkInterfaceVertex();
+						targetPort.setName("outLoopPort_"+nbLoopPort);
+						SDFInterfaceVertex sourcePort = new SDFSourceInterfaceVertex();
+						sourcePort.setName("inLoopPort_"+nbLoopPort);
+						nbLoopPort ++ ;
+						cluster.addSink(targetPort);
+						cluster.addSource(sourcePort);
+						
+						SDFEdge loopEdge = graph.addEdge(cluster, cluster);
+						loopEdge.copyProperties(edge);
+						edge.setSourceInterface(targetPort);
+						edge.setTargetInterface(sourcePort);
+						
+						
+						SDFEdge lastLoop = clusterGraph.addEdge(copies.get(source), targetPort);
+						lastLoop.copyProperties(edge);
+						lastLoop.setDelay(new SDFIntEdgePropertyType(0));
+						
+						SDFEdge firstLoop = clusterGraph.addEdge(sourcePort, copies.get(target));
+						firstLoop.copyProperties(edge);
+						firstLoop.setDelay(new SDFIntEdgePropertyType(0));
+						SDFEdge inLoopEdge = clusterGraph.getEdge(copies.get(source), copies.get(target));
+						if(inLoopEdge.getDelay().intValue() > 0){
+							clusterGraph.removeEdge(inLoopEdge);
+						}
+						graph.removeEdge(edge);
+					}else if (!block.contains(source)) {
+						SDFInterfaceVertex sourcePort = new SDFSourceInterfaceVertex();
+						sourcePort.setName(cluster.getName() + "_"
+								+ edge.getSourceInterface().getName());
+						cluster.addSource(sourcePort);
+						SDFEdge extEdge = graph.addEdge(source, cluster);
+						extEdge.copyProperties(edge);
+						extEdge.setTargetInterface(sourcePort);
+						cluster.setInterfaceVertexExternalLink(extEdge, sourcePort);
+						SDFEdge newEdge = clusterGraph
+								.addEdge(sourcePort, seed);
+						newEdge.copyProperties(edge);
+						newEdge.setProd(newEdge.getCons());
+						graph.removeEdge(edge);
+					}
+				}
+			}
+			for (int r = 0; r < block.size(); r++) {
+				graph.removeVertex(block.get(r));
+			}
+			clusterGraph.validateModel();	
+			cluster.setNbRepeat(pgcd);
+			return cluster;
+		}else{
+			return null ;
+		}
+	}
+	
+	public static SDFAbstractVertex culsterizeLoop(SDFGraph graph,
+			List<SDFAbstractVertex> block, String name) {
+		
 		if (block.size() > 1) {
 			int pgcd = 0 ;
 			int nbLoopPort = 0 ;
@@ -197,7 +311,9 @@ public class CodeGenSDFGraphFactory {
 			graph.addVertex(cluster);
 			for (int r = 0; r < block.size(); r++) {
 				SDFAbstractVertex seed = block.get(r);
-				clusterGraph.addVertex(seed);
+				if(! clusterGraph.vertexSet().contains(seed)){
+					clusterGraph.addVertex(seed);
+				}
 				if(pgcd == 0){
 					pgcd = seed.getNbRepeat();
 				}else{
@@ -274,14 +390,12 @@ public class CodeGenSDFGraphFactory {
 						graph.removeEdge(edge);
 					}
 				}
-				graph.removeVertex(seed);
+			}
+			for (int r = 0; r < block.size(); r++) {
+				graph.removeVertex(block.get(r));
 			}
 			clusterGraph.validateModel();	
 			cluster.setNbRepeat(pgcd);
-			SDFAdapterDemo clusterDisp = new SDFAdapterDemo() ;
-			SDFAdapterDemo graphDisp = new SDFAdapterDemo() ;
-			clusterDisp.init(clusterGraph);
-			graphDisp.init(graph);
 			return cluster;
 		}
 		return null;
