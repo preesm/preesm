@@ -55,27 +55,23 @@ public class SemaphorePend extends AbstractCodeElement {
 
 	/**
 	 * Creates a semaphore pend function to protect the data transmitted by a
-	 * communication vertex. protectCom = true means that the pending function
-	 * is being put in the communication thread. protectCom = false means that
-	 * the pending function is being put in the computation thread to protect
-	 * the sender and receiver function calls
+	 * communication vertex.
 	 */
 	public SemaphorePend(AbstractBufferContainer globalContainer,
-			SDFAbstractVertex vertex, SemaphoreType semType) {
+			List<Buffer> protectedBuffers, SDFAbstractVertex vertex,
+			SemaphoreType semType) {
 		super("semaphorePend", globalContainer, vertex);
 
 		SemaphoreContainer semContainer = globalContainer
 				.getSemaphoreContainer();
 
-		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
-		List<Buffer> buffers = globalContainer.getBuffers(outEdges);
-
 		// The pending semaphore of a full buffer will be put before the send
-		semaphore = semContainer.createSemaphore(buffers, semType);
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 		semaphore.accept(printer, currentLocation); // Accept the code container
 	}
 

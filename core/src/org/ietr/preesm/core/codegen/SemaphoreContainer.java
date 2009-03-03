@@ -90,7 +90,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		while (currentIt.hasNext()) {
 			sem = currentIt.next();
 
-			// Two semaphores protecting the same buffer in the same direction
+			// Two semaphores protecting the same buffers in the same direction
 			// are the same semaphore
 			if (sem.getProtectedBuffers() == agg
 					&& sem.getSemaphoreType() == type) {

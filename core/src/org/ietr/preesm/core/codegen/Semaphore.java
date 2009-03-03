@@ -115,8 +115,8 @@ public class Semaphore {
 
 		String code = "";
 
-		code += "sem[" + getSemaphoreNumber() + "], "
-				+ semaphoreType.toString();
+		code += "sem[" + getSemaphoreNumber() + ","
+				+ semaphoreType.toString() + "]";
 
 		return code;
 	}

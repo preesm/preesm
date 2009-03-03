@@ -48,11 +48,11 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class Buffer {
 
 	// Buffer representing an edge: characteristic names
-	
+
 	/**
-	 * The edge this buffer correspond to 
+	 * The edge this buffer correspond to
 	 */
-	private SDFEdge edge ;
+	private SDFEdge edge;
 
 	/**
 	 * destination name of the corresponding edge
@@ -90,23 +90,23 @@ public class Buffer {
 	 */
 	private DataType type;
 
-	public Buffer(String name, Integer size, DataType type,
-			SDFEdge edge) {
+	public Buffer(String name, Integer size, DataType type, SDFEdge edge) {
 
 		this.sourceID = null;
 		this.destID = null;
-		this.sourceOutputPortID = edge.getSourceInterface().getName();
-		this.destInputPortID = edge.getSourceInterface().getName();
+		if (edge != null) {
+			this.sourceOutputPortID = edge.getSourceInterface().getName();
+			this.destInputPortID = edge.getSourceInterface().getName();
+		}
 
 		this.size = size;
 		this.type = type;
-		this.edge = edge ;
+		this.edge = edge;
 		this.name = name;
 	}
 
 	public Buffer(String sourceID, String destID, String sourceOutputPortID,
-			String destInputPortID, Integer size, DataType type,
-			SDFEdge edge) {
+			String destInputPortID, Integer size, DataType type, SDFEdge edge) {
 
 		this.sourceID = sourceID;
 		this.destID = destID;
@@ -123,11 +123,12 @@ public class Buffer {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
 
-	public SDFEdge getEdge(){
-		return edge ;
+	public SDFEdge getEdge() {
+		return edge;
 	}
 
 	public String getName() {

@@ -61,16 +61,14 @@ public class SemaphorePost extends AbstractCodeElement {
 	 * the sender and receiver function calls
 	 */
 	public SemaphorePost(AbstractBufferContainer globalContainer,
+			List<Buffer> protectedBuffers, 
 			SDFAbstractVertex vertex, SemaphoreType semType) {
 		super("semaphorePost", globalContainer, vertex);
 
 		SemaphoreContainer semContainer = globalContainer
 				.getSemaphoreContainer();
 
-		Set<SDFEdge> outEdges =(vertex.getBase().outgoingEdgesOf(vertex));
-		List<Buffer> buffers = globalContainer.getBuffers(outEdges);
-
-		semaphore = semContainer.createSemaphore(buffers, semType);
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

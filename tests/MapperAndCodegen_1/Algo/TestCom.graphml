@@ -52,45 +52,45 @@
          <data key="arguments"/>
       </node>
       <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Sensor" sourceport="o2" target="ParallelTest" targetport="i1">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="ParallelTest" sourceport="o1" target="ParallelTest2" targetport="i1">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">1000</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">1000</data>
          <data key="data_type">char</data>
       </edge>
    </graph>

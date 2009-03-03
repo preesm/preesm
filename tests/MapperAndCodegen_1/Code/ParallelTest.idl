@@ -1,0 +1,8 @@
+module parallel {
+	interface init {
+		 void parallel_init( in char i1, out char o1);
+	};
+	interface loop {
+		 void parallel( in char i1, out char o1);
+	};
+};

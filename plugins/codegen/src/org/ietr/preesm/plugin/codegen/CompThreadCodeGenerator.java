@@ -36,9 +36,12 @@ knowledge of the CeCILL-B license and that you accept its terms.
  
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.CodeElementFactory;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
@@ -52,6 +55,7 @@ import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Generates code for a computation thread
@@ -87,12 +91,15 @@ public class CompThreadCodeGenerator {
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
 					// function
-					SemaphorePend pend = new SemaphorePend(container, com,
+					Set<SDFEdge> outEdges = (com.getBase().outgoingEdgesOf(com));
+					List<Buffer> buffers = container.getBuffers(outEdges);
+					
+					SemaphorePend pend = new SemaphorePend(container, buffers, com,
 							SemaphoreType.full);
 
 					// Creates the semaphore if necessary and creates the
 					// posting function
-					SemaphorePost post = new SemaphorePost(container, com,
+					SemaphorePost post = new SemaphorePost(container, buffers, com,
 							SemaphoreType.empty);
 
 					loopCode.addCodeElementBefore(taskElement, pend);
@@ -108,7 +115,10 @@ public class CompThreadCodeGenerator {
 				for (SDFAbstractVertex com : ownComVertices) {
 					// A first token must initialize the semaphore pend due to
 					// a sending operation
-					SemaphorePost init = new SemaphorePost(container, com,
+					Set<SDFEdge> inEdges = (com.getBase().incomingEdgesOf(com));
+					List<Buffer> buffers = container.getBuffers(inEdges);
+					
+					SemaphorePost init = new SemaphorePost(container, buffers, com,
 							SemaphoreType.empty);
 
 					beginningCode.addCodeElementBefore(taskElement, init);
@@ -116,12 +126,12 @@ public class CompThreadCodeGenerator {
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
 					// function
-					SemaphorePend pend = new SemaphorePend(container, com,
+					SemaphorePend pend = new SemaphorePend(container, buffers, com,
 							SemaphoreType.empty);
 
 					// Creates the semaphore if necessary and creates the
 					// posting function
-					SemaphorePost post = new SemaphorePost(container, com,
+					SemaphorePost post = new SemaphorePost(container, buffers, com,
 							SemaphoreType.full);
 
 					loopCode.addCodeElementBefore(taskElement, pend);

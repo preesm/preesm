@@ -36,10 +36,13 @@ knowledge of the CeCILL-B license and that you accept its terms.
  
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
@@ -52,6 +55,7 @@ import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Generates code for a communication thread
@@ -78,6 +82,7 @@ public class CommThreadCodeGenerator {
 			ICodeElement com = loopCode.getCodeElement(vertex);
 
 			AbstractBufferContainer container = thread.getGlobalContainer();
+			List<Buffer> buffers = null;
 
 			// First test on the type of vertex that will be protected by a
 			// semaphore
@@ -93,23 +98,27 @@ public class CommThreadCodeGenerator {
 				continue;
 			}
 
+			if (vType.isSend()) {
+				sType = SemaphoreType.full;
+				Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
+				buffers = container.getBuffers(inEdges);
+			} else if (vType.isReceive()) {
+				sType = SemaphoreType.empty;
+				Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
+				buffers = container.getBuffers(outEdges);
+			}
+
 			// A first token must initialize the empty buffer semaphores before
 			// receive operations
 			if (vType.isReceive()) {
-				SemaphorePost init = new SemaphorePost(container, vertex,
+				SemaphorePost init = new SemaphorePost(container,buffers, vertex,
 						SemaphoreType.empty);
 				beginningCode.addCodeElement(init);
 			}
 
-			if (vType.isSend()) {
-				sType = SemaphoreType.full;
-			} else if (vType.isReceive()) {
-				sType = SemaphoreType.empty;
-			}
-
 			// Creates the semaphore if necessary ; retrieves it otherwise
 			// from global declaration and creates the pending function
-			SemaphorePend pend = new SemaphorePend(container, vertex, sType);
+			SemaphorePend pend = new SemaphorePend(container, buffers, vertex, sType);
 
 			if (vType.isSend()) {
 				sType = SemaphoreType.empty;
@@ -119,7 +128,7 @@ public class CommThreadCodeGenerator {
 
 			// Creates the semaphore if necessary and creates the posting
 			// function
-			SemaphorePost post = new SemaphorePost(container, vertex, sType);
+			SemaphorePost post = new SemaphorePost(container, buffers, vertex, sType);
 
 			if (pend != null && post != null) {
 				// Adding a semaphore pend before the communication call and

@@ -1,0 +1,8 @@
+module actuator {
+	interface init {
+		 void actuator_init( in char i1, in char i2, in char i3);
+	};
+	interface loop {
+		 void actuator( in char i1, in char i2, in char i3);
+	};
+};

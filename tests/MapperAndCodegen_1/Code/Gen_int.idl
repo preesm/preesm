@@ -1,0 +1,8 @@
+module gen_int {
+	interface init {
+		 void gen_int_init( in char i1, out char o1, out char o2);
+	};
+	interface loop {
+		 void gen_int( in char i1, out char o1, out char o2);
+	};
+};
