@@ -89,7 +89,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 				// The source is the operator on which the corresponding send
 				// operation is allocated
-				SDFAbstractVertex send = ((SDFEdge) outEdges.toArray()[0]).getSource();
+				SDFAbstractVertex send = ((SDFEdge) inEdges.toArray()[0]).getSource();
 				Operator source = (Operator) send.getPropertyBean().getValue(
 						ImplementationPropertyNames.Vertex_Operator);
 				call = new Receive(parentContainer, vertex, bufferSet, medium,

@@ -172,9 +172,10 @@ public abstract class AbstractBufferContainer {
 	
 	public List<Buffer> getBuffers(Set<SDFEdge> edges){
 		List<Buffer> result = new ArrayList<Buffer>();
-		for(BufferAllocation alloc : buffers){
-			if(edges.contains(alloc.getBuffer().getEdge())){
-				result.add(alloc.getBuffer());
+		for(SDFEdge edge : edges){
+			Buffer buf = getBuffer(edge);
+			if(buf!=null){
+				result.add(buf);
 			}
 		}
 		return result ;
@@ -186,6 +187,10 @@ public abstract class AbstractBufferContainer {
 				return alloc.getBuffer(); 
 			}
 		}
+
+		if (parentContainer != null)
+			return (parentContainer.getBuffer(edge));
+		
 		return null ;
 	}
 

@@ -120,34 +120,14 @@
     
     <xsl:template match="sourceCode:send">
         <xsl:param name="curIndent"/>
-        
-        <!-- Specific code for each type of communicator -->
-        <xsl:choose>
-            <xsl:when test="@mediumDef='edma'">
-                <xsl:value-of select="concat($curIndent,'Send_DMAMSG','(&quot;',@target,'&quot;,')"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat('//Unknown send type: ',@mediumDef,'    ')"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        
+        <xsl:value-of select="concat($curIndent,'Send(',@mediumDef,',',@target,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receive">
         <xsl:param name="curIndent"/>
-        
-        <!-- Specific code for each type of communicator -->
-        <xsl:choose>
-            <xsl:when test="@mediumDef='edma'">
-                <xsl:value-of select="concat($curIndent,'Receive_DMAMSG','(&quot;',@source,'&quot;,')"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat('//Unknown receive type: ',@mediumDef,'    ')"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        
+        <xsl:value-of select="concat($curIndent,'Receive(',@mediumDef,',',@source,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
