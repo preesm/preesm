@@ -153,7 +153,7 @@ public class CodeGenSDFGraphFactory {
 				sourceInterface.setName(edge.getSourceInterface().getName());
 				newSource.addSink(sourceInterface);
 			}
-			if((targetInterface = newSource.getInterface(edge.getTargetInterface().getName())) == null){
+			if((targetInterface = newTarget.getInterface(edge.getTargetInterface().getName())) == null){
 				targetInterface = new SDFSourceInterfaceVertex();
 				targetInterface.setName(edge.getTargetInterface().getName());
 				newTarget.addSource(targetInterface);
@@ -253,8 +253,8 @@ public class CodeGenSDFGraphFactory {
 						
 						SDFEdge loopEdge = graph.addEdge(cluster, cluster);
 						loopEdge.copyProperties(edge);
-						edge.setSourceInterface(targetPort);
-						edge.setTargetInterface(sourcePort);
+						loopEdge.setSourceInterface(targetPort);
+						loopEdge.setTargetInterface(sourcePort);
 						
 						
 						SDFEdge lastLoop = clusterGraph.addEdge(copies.get(source), targetPort);

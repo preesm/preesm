@@ -21,6 +21,7 @@ import org.sdf4j.model.CodeRefinement;
 import org.sdf4j.model.CodeRefinement.Language;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
 import org.sdf4j.model.sdf.esdf.SDFForkVertex;
