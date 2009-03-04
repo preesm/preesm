@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/MapperAndCodegen_1/Algo/Kwok.graphml"/>
+        <architecture url="/MapperAndCodegen_1/Archi/4C64.design"/>
+        <timingfile url=""/>
+    </files>
+    <constraints>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="n5"/>
+            <task name="n1"/>
+            <task name="n4"/>
+            <task name="n2"/>
+            <task name="n8"/>
+            <task name="n9"/>
+            <task name="n7"/>
+            <task name="n6"/>
+            <task name="n3"/>
+        </constraintGroup>
+    </constraints>
+    <timings/>
+    <simuParams>
+        <mainCore>C64_1</mainCore>
+        <mainMedium>EDMA3_1</mainMedium>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+    </simuParams>
+</scenario>
