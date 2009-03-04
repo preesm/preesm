@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +77,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Buffers associated to the function call
 		callBuffers = new ArrayList<Buffer>();
 		// Candidate buffers that will be added if present in prototype
-		Set<Buffer> candidateBuffers = new HashSet<Buffer>();
+		HashMap<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
 
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
@@ -119,7 +119,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 							.getParentContainer();
 				}
 				if (parentBufferContainer != null) {
-					candidateBuffers.add(parentBufferContainer.getBuffer(edge));
+					candidateBuffers.put(edge, parentBufferContainer.getBuffer(edge));
 				}
 			}
 
@@ -132,7 +132,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 							.getParentContainer();
 				}
 				if (parentBufferContainer != null) {
-					candidateBuffers.add(parentBufferContainer.getBuffer(edge));
+					candidateBuffers.put(edge, parentBufferContainer.getBuffer(edge));
 				}
 			}
 
@@ -141,15 +141,14 @@ public class UserFunctionCall extends AbstractCodeElement {
 				Buffer currentBuffer = null;
 
 				if (arg.getDirection() == CodeGenArgument.INPUT) {
-					for (Buffer buffer : candidateBuffers) {
-						if (buffer.getDestInputPortID().equals(arg.getName()) && buffer.getEdge().getTarget().equals(vertex))
-							currentBuffer = buffer;
+					for (SDFEdge link : candidateBuffers.keySet()) {
+						if (link.getTargetInterface().getName().equals(arg.getName()) && link.getTarget().equals(vertex))
+							currentBuffer = candidateBuffers.get(link);
 					}
 				} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
-					for (Buffer buffer : candidateBuffers) {
-						if (buffer.getSourceOutputPortID()
-								.equals(arg.getName()) && buffer.getEdge().getSource().equals(vertex))
-							currentBuffer = buffer;
+					for (SDFEdge link : candidateBuffers.keySet()) {
+						if (link.getSourceInterface().getName().equals(arg.getName()) && link.getSource().equals(vertex))
+							currentBuffer = candidateBuffers.get(link);
 					}
 				}
 
