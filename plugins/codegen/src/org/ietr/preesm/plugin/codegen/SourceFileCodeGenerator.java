@@ -51,7 +51,10 @@ import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
+import org.ietr.preesm.core.codegen.SemaphoreContainer;
+import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.SourceFile;
+import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
@@ -97,11 +100,10 @@ public class SourceFileCodeGenerator {
 	 */
 	public void allocateEdgeBuffers(SDFEdge edge, boolean isInputBuffer) {
 
-		
-		Buffer buf = new Buffer(edge.getSource().getName(), edge
-				.getTarget().getName(), edge.getSourceInterface().getName(),
-				edge.getTargetInterface().getName(), ((CodeGenSDFEdge)edge).getSize(), new DataType(
-						edge.getDataType().toString()), edge);
+		Buffer buf = new Buffer(edge.getSource().getName(), edge.getTarget()
+				.getName(), edge.getSourceInterface().getName(), edge
+				.getTargetInterface().getName(), ((CodeGenSDFEdge) edge)
+				.getSize(), new DataType(edge.getDataType().toString()), edge);
 
 		BufferAllocation allocation = new BufferAllocation(buf);
 		file.addBuffer(allocation);
@@ -129,13 +131,14 @@ public class SourceFileCodeGenerator {
 	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
 	 * allocates the input buffers, otherwise allocates output buffers.
 	 */
-	public void allocateVertexBuffers(SDFAbstractVertex vertex, boolean isInputBuffer) {
+	public void allocateVertexBuffers(SDFAbstractVertex vertex,
+			boolean isInputBuffer) {
 		Set<SDFEdge> edgeSet;
 
 		if (isInputBuffer) {
 			edgeSet = new HashSet<SDFEdge>(vertex.getBase().incomingEdgesOf(
 					vertex));
-			// Removes edges between two operators. They are replaced by edges 
+			// Removes edges between two operators. They are replaced by edges
 			// to communication vertices
 			removeInterEdges(edgeSet);
 		} else {
@@ -156,11 +159,11 @@ public class SourceFileCodeGenerator {
 	 */
 	public void generateSource(CodeGenSDFGraph algorithm,
 			MultiCoreArchitecture architecture) {
-		
+
 		// Gets the task vertices allocated to the current operator in
 		// scheduling order
-		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(algorithm,
-				VertexType.task);
+		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(
+				algorithm, VertexType.task);
 
 		// Gets the communication vertices allocated to the current operator in
 		// scheduling order
@@ -187,27 +190,44 @@ public class SourceFileCodeGenerator {
 		compCodegen.addSemaphoreFunctions(ownTaskVertices);
 
 		// Creating communication where communication processes are launched
-		if(!ownCommunicationVertices.isEmpty()){
+		if (!ownCommunicationVertices.isEmpty()) {
 			CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
 					file);
 			file.addThread(communicationThread);
-			
+
 			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
 					communicationThread);
 			commCodeGen.addSendsAndReceives(ownCommunicationVertices);
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
-			
+
 			// Allocates the semaphores globally
 			file.getSemaphoreContainer().allocateSemaphores();
+
+			// Calls the semaphore initialization function at the beginning of
+			// computation thread
+			initializeSemaphores(computationThread);
 		}
+	}
+
+	/**
+	 * Calls the semaphore initialization function at the beginning of
+	 * computation thread
+	 */
+	public void initializeSemaphores(
+			ComputationThreadDeclaration computationThread) {
+
+		SemaphoreInit call = new SemaphoreInit(file.getGlobalContainer(), file
+				.getGlobalContainer().getBuffer(
+						SemaphoreContainer.semaphoreBufferName));
+		computationThread.getBeginningCode().addCodeElementFirst(call);
 	}
 
 	/**
 	 * Gets every task vertices allocated to the current operator in their
 	 * scheduling order
 	 */
-	public SortedSet<SDFAbstractVertex> getOwnVertices(CodeGenSDFGraph algorithm,
-			VertexType currentType) {
+	public SortedSet<SDFAbstractVertex> getOwnVertices(
+			CodeGenSDFGraph algorithm, VertexType currentType) {
 
 		ConcurrentSkipListSet<SDFAbstractVertex> schedule = new ConcurrentSkipListSet<SDFAbstractVertex>(
 				new SchedulingOrderComparator());
@@ -228,7 +248,8 @@ public class SourceFileCodeGenerator {
 			// the set in scheduling order
 			if (vertexOperator != null
 					&& vertexOperator.equals(file.getOperator())
-					&& vertexType != null && vertexType.equals(currentType) && !schedule.contains(vertex)) {
+					&& vertexType != null && vertexType.equals(currentType)
+					&& !schedule.contains(vertex)) {
 				schedule.add(vertex);
 			}
 		}
@@ -244,7 +265,7 @@ public class SourceFileCodeGenerator {
 			if (!edge.getSource().getPropertyBean().getValue(
 					ImplementationPropertyNames.Vertex_Operator).equals(
 					edge.getTarget().getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_Operator))){
+							ImplementationPropertyNames.Vertex_Operator))) {
 				eIterator.remove();
 			}
 		}

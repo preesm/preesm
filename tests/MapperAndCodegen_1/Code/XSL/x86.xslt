@@ -6,6 +6,7 @@
     
     <xsl:output indent="yes" method="text"/>
     <xsl:variable name="new_line" select="'&#xA;'" />
+    <xsl:variable name="coreName" select="sourceCode:sourceCode/sourceCode:coreName"/>  
     <xsl:template match="text()"/>
     
     <!-- defining globally useful variables -->
@@ -16,7 +17,7 @@
         <xsl:variable name="coreType" select="sourceCode:coreType"/>  
         
         <!-- checking the core type of the target core -->
-        <xsl:if test="$coreType='C64x'">
+        <xsl:if test="$coreType='x86'">
             <xsl:apply-templates select="sourceCode:SourceFile"/>
         </xsl:if>
     </xsl:template>
@@ -34,20 +35,18 @@
     </xsl:template>
     
     <!-- includes -->
-    <xsl:template name="includeSection">
-        
-        <xsl:value-of select="concat($curIndent,'#include &quot;c64x.h&quot;',$new_line)"/>
+    <xsl:template name="includeSection"> 
+        <xsl:value-of select="concat($curIndent,'#include &quot;../src/x86.h&quot;',$new_line)"/>
         <xsl:value-of select="$new_line"/>
-        
     </xsl:template>
     
     <!-- Declaring thread functions prototypes -->
     <xsl:template match="sourceCode:threadDeclaration" mode="prototype">
-        <xsl:value-of select="concat($curIndent,'void ',@name,'(void);',$new_line)"/>
+        <xsl:value-of select="concat($curIndent,'void ',@name,'_',$coreName,'(void);',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:threadDeclaration">
-        <xsl:value-of select="concat($curIndent,'void ',@name,'(void){',$new_line)"/>
+        <xsl:value-of select="concat($curIndent,'void ',@name,'_',$coreName,'(void){',$new_line)"/>
         <xsl:apply-templates select="sourceCode:bufferContainer | sourceCode:linearCodeContainer | sourceCode:forLoop">
             <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
         </xsl:apply-templates>
@@ -106,16 +105,16 @@
     
     <xsl:template match="sourceCode:semaphorePost">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'SEM_post','(')"/>
+        <xsl:value-of select="concat($curIndent,'ReleaseSemaphore','(')"/>
         <xsl:value-of select="concat('sem[',@number,']')"/>
-        <xsl:value-of select="concat(');',' //',@type,$new_line)"/>
+        <xsl:value-of select="concat(',1,&amp;previous);',' //',@type,$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:semaphorePend">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'SEM_pend','(')"/>
+        <xsl:value-of select="concat($curIndent,'WaitForSingleObject','(')"/>
         <xsl:value-of select="concat('sem[',@number,']')"/>
-        <xsl:value-of select="concat(');',' //',@type,$new_line)"/>
+        <xsl:value-of select="concat(',INFINITE);',' //',@type,$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:send">

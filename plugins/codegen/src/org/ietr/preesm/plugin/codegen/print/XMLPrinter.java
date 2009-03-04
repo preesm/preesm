@@ -54,6 +54,7 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
+import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
@@ -344,6 +345,21 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element semaphorePost = dom.createElement("semaphorePost");
 			((Element)currentLocation).appendChild(semaphorePost);
 			currentLocation = semaphorePost;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(SemaphoreInit domElt, CodeZoneId index,
+			Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element semaphoreInit = dom.createElement("userFunctionCall");
+			((Element)currentLocation).appendChild(semaphoreInit);
+
+			semaphoreInit.setAttribute("name", "semaphoreInit");
+			currentLocation = semaphoreInit;
 		} 
 		
 		return currentLocation;

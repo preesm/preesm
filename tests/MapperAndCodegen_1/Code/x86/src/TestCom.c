@@ -1,18 +1,15 @@
 /*
  ============================================================================
  Name        : TestCom.c
- Author      :
+ Author      : mpelcat
  Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Copyright   : Calling a PREESM generated code
+ Description :
  ============================================================================
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
+#include "x86.h"
 
 int main(void) {
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+	puts("Executing PREESM generated code"); /* prints !!!Hello World!!! */
 	return EXIT_SUCCESS;
 }

@@ -3,6 +3,7 @@
 	<name>TestCom</name>
 	<comment></comment>
 	<projects>
+		<project>MultiPlatformOSCode</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

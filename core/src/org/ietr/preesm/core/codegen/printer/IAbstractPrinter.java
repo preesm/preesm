@@ -48,6 +48,7 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
+import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
@@ -81,6 +82,7 @@ public interface IAbstractPrinter {
 	public Object visit(Semaphore element, CodeZoneId index, Object currentLocation);
 	public Object visit(SemaphorePend element, CodeZoneId index, Object currentLocation);
 	public Object visit(SemaphorePost element, CodeZoneId index, Object currentLocation);
+	public Object visit(SemaphoreInit element, CodeZoneId index, Object currentLocation);
 	public Object visit(Send element, CodeZoneId index, Object currentLocation);
 	public Object visit(SourceFile element, CodeZoneId index, Object currentLocation);
 	public Object visit(ThreadDeclaration element, CodeZoneId index, Object currentLocation);

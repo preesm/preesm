@@ -86,6 +86,16 @@ public abstract class AbstractCodeContainer {
 	}
 
 	/**
+	 * Adds the given code element at the beginning of the code element list.
+	 * 
+	 * @param element
+	 *            An object implementing {@link ICodeElement}.
+	 */
+	public void addCodeElementFirst(ICodeElement element) {
+		codeElements.add(0,element);
+	}
+
+	/**
 	 * Adds the given given code element <code>newElement</code> after the
 	 * reference code element <code>oldElement</code>.
 	 * 

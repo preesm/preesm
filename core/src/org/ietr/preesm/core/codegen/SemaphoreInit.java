@@ -36,80 +36,47 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
- * Container that handles the semaphores
+ * Special function call making the initialization of the semaphores. 
+ * It receives the number of semaphores to initialize and the buffer
+ * containing the semaphores
  * 
  * @author mpelcat
  */
-public class SemaphoreContainer extends ArrayList<Semaphore> {
+public class SemaphoreInit extends AbstractCodeElement {
+
+	private Buffer semaphoreBuffer;
+
+	public SemaphoreInit(AbstractBufferContainer globalContainer,
+			Buffer semaphoreBuffer) {
+		super("semaphoreInit", globalContainer, null);
+
+		this.semaphoreBuffer = semaphoreBuffer;
+	}
+
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
+		semaphoreBuffer.accept(printer, currentLocation); // Accept the code container
+	}
 
 	/**
-	 * 
+	 * Displays pseudo-code for test
 	 */
-	private static final long serialVersionUID = 1L;
+	public String toString() {
 
-	public static final String semaphoreBufferName = "sem";
+		String code = super.getName();
 
-	/**
-	 * Buffer container containing the current semaphore manager
-	 */
-	AbstractBufferContainer parentContainer;
+		code += "(" + semaphoreBuffer.toString() + ");";
 
-	public SemaphoreContainer(AbstractBufferContainer parentContainer) {
-		super();
-		this.parentContainer = parentContainer;
-	}
-
-	public void allocateSemaphores() {
-		Buffer buf = new Buffer(semaphoreBufferName, this.size(), new DataType("semaphore"),
-				null);
-
-		parentContainer.addBuffer(new BufferAllocation(buf));
-	}
-
-	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType type) {
-		Semaphore sem = getSemaphore(agg, type);
-
-		if (sem == null) {
-			sem = new Semaphore(this, agg, type);
-			add(sem);
-			return sem;
-		} else {
-			return sem;
-		}
-	}
-
-	public Semaphore getSemaphore(List<Buffer> bufList, SemaphoreType type) {
-		Semaphore sem = null;
-
-		Iterator<Semaphore> currentIt = iterator();
-
-		while (currentIt.hasNext()) {
-			sem = currentIt.next();
-
-			List<Buffer> semBufList = sem.getProtectedBuffers();
-			boolean sameBuffers = semBufList.size() == bufList.size();
-			// Two semaphores protecting the same buffers in the same direction
-			// are the same semaphore
-			if (sameBuffers) {
-				for (Buffer buf : semBufList) {
-					if (!bufList.contains(buf)) {
-						sameBuffers = false;
-						break;
-					}
-
-				}
-			}
-
-			if (sameBuffers && sem.getSemaphoreType() == type) {
-				return sem;
-			}
-		}
-
-		return null;
+		return code;
 	}
 }
