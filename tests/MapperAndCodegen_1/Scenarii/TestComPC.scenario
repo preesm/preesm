@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
+        <architecture url="/MapperAndCodegen_1/Archi/8CoreX86.design"/>
+        <timingfile url="/MapperAndCodegen_1/Scenarii/TestComPC.xls"/>
+        <codegenDirectory url="/MapperAndCodegen_1/Code/x86/generatedSrc"/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core8"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="Gen_int"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+    </constraints>
+    <timings>
+        <timing opname="C64x" time="10000" vertexname="Sensor"/>
+        <timing opname="C64x" time="10000" vertexname="Gen_int"/>
+        <timing opname="C64x" time="10000" vertexname="Copy"/>
+        <timing opname="C64x" time="10000" vertexname="Actuator"/>
+        <timing opname="C64x" time="10000" vertexname="ParallelTest"/>
+        <timing opname="C64x" time="10000" vertexname="ParallelTest2"/>
+        <timing opname="x86" time="10000" vertexname="Sensor"/>
+        <timing opname="x86" time="10000" vertexname="Gen_int"/>
+        <timing opname="x86" time="10000" vertexname="Copy"/>
+        <timing opname="x86" time="10000" vertexname="Actuator"/>
+        <timing opname="x86" time="10000" vertexname="ParallelTest"/>
+        <timing opname="x86" time="10000" vertexname="ParallelTest2"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core1</mainCore>
+        <mainMedium>Shared_Ram</mainMedium>
+        <dataTypes/>
+    </simuParams>
+</scenario>
