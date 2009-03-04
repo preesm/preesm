@@ -103,10 +103,10 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 	}
 	
 	public Buffer getBuffer(SDFEdge edge){
-		if(super.getBuffer(edge) == null){
-			return allocatedBuffers.get(edge);
+		if(allocatedBuffers.get(edge) == null){
+			return super.getBuffer(edge);
 		}else{
-			return super.getBuffer(edge) ;
+			return allocatedBuffers.get(edge) ;
 		}
 	}
 	

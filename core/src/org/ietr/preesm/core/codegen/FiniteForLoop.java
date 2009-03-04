@@ -113,10 +113,10 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 	}
 	
 	public Buffer getBuffer(SDFEdge edge) {
-		if (super.getBuffer(edge) == null) {
-			return allocatedBuffers.get(edge);
-		} else {
+		if (allocatedBuffers.get(edge) == null) {
 			return super.getBuffer(edge);
+		}else {
+			return allocatedBuffers.get(edge);
 		}
 	}
 
