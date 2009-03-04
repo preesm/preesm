@@ -150,9 +150,11 @@ public class GenericPrinter {
 	public XMLPrinter getPrinter(Operator opRef) {
 		XMLPrinter printer = null;
 		String opRefId = opRef.getDefinition().getId();
+		String opName = opRef.getName();
 
 		printer = new XMLPrinter();
 		printer.setCoreType(opRefId);
+		printer.setCoreName(opName);
 
 		return printer;
 	}

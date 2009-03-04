@@ -136,6 +136,17 @@ public class XMLPrinter implements IAbstractPrinter {
 		eCoreType.setTextContent(coreType);
 		root.appendChild(eCoreType);
 	}
+
+	/**
+	 * The core name is an additional information for the xsl transformation
+	 */
+	public void setCoreName(String coreName){
+		
+		Element root = dom.getDocumentElement();
+		Element eCoreName= dom.createElement("coreName");
+		eCoreName.setTextContent(coreName);
+		root.appendChild(eCoreName);
+	}
 	
 	/**
 	 * Compares two buffers by their alphabetical order
