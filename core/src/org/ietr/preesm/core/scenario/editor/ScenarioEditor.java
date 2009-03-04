@@ -119,7 +119,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 			addPage(constraintsPage);
 			addPage(timingsPage);
 			addPage(simulationPage);
-			//addPage(codegenPage);
+			addPage(codegenPage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

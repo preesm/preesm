@@ -173,6 +173,11 @@ public class ScenarioWriter {
 		timings.setAttribute("url", scenario.getTimingManager()
 				.getTimingFileURL());
 
+		Element codeGenDir = dom.createElement("codegenDirectory");
+		files.appendChild(codeGenDir);
+		codeGenDir.setAttribute("url", scenario.getCodegenManager()
+				.getCodegenDirectory());
+
 	}
 
 	private void addConstraints(Element parent) {

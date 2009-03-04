@@ -4,7 +4,7 @@
    <preesm:scenario/>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
       <data key="variables">
-         <variable name="sourcePath" value="/MapperAndCodegen_1/Code"/>
+         <variable name="sourcePath" value="/MapperAndCodegen_1/Code/C_Code"/>
          <variable name="xslLibraryPath" value="/MapperAndCodegen_1/Code/XSL"/>
       </data>
    </preesm:task>

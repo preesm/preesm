@@ -229,14 +229,18 @@ public class ScenarioParser {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
 				String url = elt.getAttribute("url");
-				if (type.equals("algorithm") && url.length()>0) {
-					scenario.setAlgorithmURL(url);
-					algo = getAlgorithm(url);
-				} else if (type.equals("architecture")&& url.length()>0) {
-					scenario.setArchitectureURL(url);
-					archi = getArchitecture(url);
-				} else if (type.equals("timingfile")&& url.length()>0) {
-					scenario.getTimingManager().setTimingFileURL(url, null);
+				if (url.length() > 0) {
+					if (type.equals("algorithm")) {
+						scenario.setAlgorithmURL(url);
+						algo = getAlgorithm(url);
+					} else if (type.equals("architecture")) {
+						scenario.setArchitectureURL(url);
+						archi = getArchitecture(url);
+					} else if (type.equals("timingfile")) {
+						scenario.getTimingManager().setTimingFileURL(url, null);
+					} else if (type.equals("codegenDirectory")) {
+						scenario.getCodegenManager().setCodegenDirectory(url);
+					}
 				}
 			}
 
@@ -311,7 +315,8 @@ public class ScenarioParser {
 					String type = elt.getTagName();
 					String name = elt.getAttribute("name");
 					if (type.equals("task")) {
-						SDFAbstractVertex vertex = algo.getHierarchicalVertexFromPath(name);
+						SDFAbstractVertex vertex = algo
+								.getHierarchicalVertexFromPath(name);
 						if (vertex != null)
 							cg.addVertex(vertex);
 					} else if (type.equals("operator")) {
@@ -383,7 +388,8 @@ public class ScenarioParser {
 					time = -1;
 				}
 
-				SDFAbstractVertex vertex = algo.getHierarchicalVertex(vertexpath);
+				SDFAbstractVertex vertex = algo
+						.getHierarchicalVertex(vertexpath);
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);

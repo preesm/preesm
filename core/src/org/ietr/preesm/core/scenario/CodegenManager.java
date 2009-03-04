@@ -16,20 +16,24 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class CodegenManager {
 
 	/**
-	 * Names of the data types with their size
+	 * Directory in which generated code is stored
 	 */
-	private Map<SDFAbstractVertex,CodegenVertexPhases> codegenPhases;
-	
-	
+	private String codegenDirectory;
+
 
 	public CodegenManager() {
 		super();
 
-		codegenPhases = new HashMap<SDFAbstractVertex, CodegenVertexPhases>();
+		codegenDirectory = new String();
+	}
+	
+
+	public String getCodegenDirectory() {
+		return codegenDirectory;
 	}
 
-	public Map<SDFAbstractVertex, CodegenVertexPhases> getCodegenPhases() {
-		return codegenPhases;
+	public void setCodegenDirectory(String codegenDirectory) {
+		this.codegenDirectory = codegenDirectory;
 	}
 
 }

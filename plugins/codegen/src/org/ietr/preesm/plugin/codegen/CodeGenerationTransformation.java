@@ -116,7 +116,17 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
 			MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) {
+		
+		// Default source path is given in the workflow
 		String sourcePath = parameters.getVariable("sourcePath");
+		
+		// If a source path is defined in the scenario, it overrides the one from the workflow
+		if(!scenario.getCodegenManager().getCodegenDirectory().isEmpty()){
+			sourcePath = scenario.getCodegenManager().getCodegenDirectory();
+		}
+		
+		
+		
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();

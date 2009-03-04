@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 /**
  * Container that handles the semaphores
  * 
@@ -82,7 +81,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		}
 	}
 
-	public Semaphore getSemaphore(List<Buffer> agg, SemaphoreType type) {
+	public Semaphore getSemaphore(List<Buffer> bufList, SemaphoreType type) {
 		Semaphore sem = null;
 
 		Iterator<Semaphore> currentIt = iterator();
@@ -90,10 +89,21 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		while (currentIt.hasNext()) {
 			sem = currentIt.next();
 
+			List<Buffer> semBufList = sem.getProtectedBuffers();
+			boolean sameBuffers = semBufList.size() == bufList.size();
 			// Two semaphores protecting the same buffers in the same direction
 			// are the same semaphore
-			if (sem.getProtectedBuffers() == agg
-					&& sem.getSemaphoreType() == type) {
+			if (sameBuffers) {
+				for (Buffer buf : semBufList) {
+					if (!bufList.contains(buf)) {
+						sameBuffers = false;
+						break;
+					}
+
+				}
+			}
+
+			if (sameBuffers && sem.getSemaphoreType() == type) {
 				return sem;
 			}
 		}

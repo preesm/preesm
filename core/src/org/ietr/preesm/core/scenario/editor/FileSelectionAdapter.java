@@ -74,6 +74,14 @@ public class FileSelectionAdapter extends SelectionAdapter{
 		this.title = title;
 		this.fileExtensions = fileExtensions;
 	}
+	
+	public FileSelectionAdapter(Text filePath,Shell shell,String title) {
+		super();
+		this.filePath = filePath;
+		this.shell = shell;
+		this.title = title;
+		this.fileExtensions = null;
+	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {

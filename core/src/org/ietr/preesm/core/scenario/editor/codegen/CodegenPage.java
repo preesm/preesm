@@ -36,17 +36,31 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor.codegen;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeSection;
 
@@ -55,7 +69,7 @@ import org.ietr.preesm.core.scenario.editor.SDFTreeSection;
  * 
  * @author mpelcat
  */
-public class CodegenPage extends FormPage implements IPropertyListener {
+public class CodegenPage extends FormPage {
 
 	/**
 	 * Currently edited scenario
@@ -74,23 +88,39 @@ public class CodegenPage extends FormPage implements IPropertyListener {
 	protected void createFormContent(IManagedForm managedForm) {
 		super.createFormContent(managedForm);
 		
-		ScrolledForm f = managedForm.getForm();
-		f.setText(Messages.getString("Codegen.title"));
-		f.getBody().setLayout(new GridLayout());
+		ScrolledForm form = managedForm.getForm();
+		form.setText(Messages.getString("Codegen.title"));
+		
+		ColumnLayout layout = new ColumnLayout();
+		layout.topMargin = 0;
+		layout.bottomMargin = 5;
+		layout.leftMargin = 10;
+		layout.rightMargin = 10;
+		layout.horizontalSpacing = 10;
+		layout.verticalSpacing = 10;
+		layout.maxNumColumns = 4;
+		layout.minNumColumns = 1;
+		form.getBody().setLayout(layout);
 
-		// Section to select the code generation phase for each task
-		createCodegenPhaseSection(managedForm, Messages.getString("Codegen.Phase.title"),
-				Messages.getString("Codegen.Phase.description"));
+		Set<String> algoExtensions = new HashSet<String>();
+		algoExtensions.add("graphml");
+		
+		// Algorithm file chooser section
+		createDirectorySection(managedForm, Messages.getString("Codegen.codeDirectory"),
+				Messages.getString("Codegen.codeDirectoryDescription"),
+				Messages.getString("Codegen.codeDirectoryEdit"),
+				scenario.getCodegenManager().getCodegenDirectory(),
+				Messages.getString("Codegen.codeDirectoryBrowseTitle"));
+
 		
 		
 		managedForm.refresh();
 
 	}
-
 	/**
-	 * Creates a generic section
+	 * Creates a blank section with expansion capabilities
 	 */
-	public Section createSection(IManagedForm mform, String title,
+	private Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns) {
 		
 		final ScrolledForm form = mform.getForm();
@@ -99,35 +129,64 @@ public class CodegenPage extends FormPage implements IPropertyListener {
 				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
 		section.setText(title);
 		section.setDescription(desc);
+
 		toolkit.createCompositeSeparator(section);
-		return section;
+		Composite client = toolkit.createComposite(section);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = numColumns;
+		client.setLayout(layout);
+		section.setClient(client);
+		section.addExpansionListener(new ExpansionAdapter() {
+			public void expansionStateChanged(ExpansionEvent e) {
+				form.reflow(false);
+			}
+		});
+		return client;
 	}
 
-	/**
-	 * Creates the section editing constraints
-	 */
-	private void createCodegenPhaseSection(IManagedForm managedForm, String title, String desc) {
-
-		// Creates the section
-		managedForm.getForm().setLayout(new FillLayout());
-		Section section = createSection(managedForm, title, desc, 2);
-		section.setLayout(new ColumnLayout());
-	
-
-		CodegenPhasesCheckStateListener checkStateListener = new CodegenPhasesCheckStateListener(
-				section, scenario);
-		
-		// Creates the section part containing the tree with SDF vertices
-		new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this, checkStateListener);
-	}
 
 	/**
-	 * Function of the property listener used to transmit the dirty property
+	 * Creates a section to edit a directory
+	 * 
+	 * @param mform form containing the section
+	 * @param title section title
+	 * @param desc description of the section
+	 * @param fileEdit text to display in text label
+	 * @param initValue initial value of Text
+	 * @param browseTitle title of file browser
 	 */
-	@Override
-	public void propertyChanged(Object source, int propId) {
-		if(propId == PROP_DIRTY)
-			firePropertyChange(PROP_DIRTY);
+	private void createDirectorySection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle) {
 		
+		Composite client = createSection(mform, title, desc, 2);
+		
+		FormToolkit toolkit = mform.getToolkit();
+
+		GridData gd = new GridData();
+		toolkit.createLabel(client, fileEdit);
+
+		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)e.getSource();
+				String type = ((String)text.getData());
+				
+				scenario.getCodegenManager().setCodegenDirectory(text.getText());
+				
+				firePropertyChange(PROP_DIRTY);
+				
+			}});
+		
+		gd.widthHint =400;
+		text.setLayoutData(gd);
+
+		final Button button = toolkit.createButton(client, Messages.getString("Codegen.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle);
+		button.addSelectionListener(adapter);
+		
+		toolkit.paintBordersFor(client);
 	}
 }

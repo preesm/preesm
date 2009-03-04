@@ -4,61 +4,62 @@
         <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
         <architecture url="/MapperAndCodegen_1/Archi/Faraday.design"/>
         <timingfile url="/MapperAndCodegen_1/TestCom.xls"/>
+        <codegenDirectory url="/MapperAndCodegen_1/Code/C_Code"/>
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="C64_1"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="C64_4"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
             <task name="Gen_int"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_3"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
             <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="C64_5"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
             <task name="Sensor"/>
+            <task name="Actuator"/>
             <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
+            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
             <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_3"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_5"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="C64_0"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
             <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
         </constraintGroup>
     </constraints>
     <timings>
