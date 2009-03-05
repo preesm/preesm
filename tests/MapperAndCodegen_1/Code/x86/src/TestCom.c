@@ -11,22 +11,24 @@
 
 DWORD WINAPI ThreadFunc( LPVOID lpParam )
 {
-	printf("test");
+	printf("test\n");
     return 0;
+}
+
+void test(void)
+{
+	LPTHREAD_START_ROUTINE routine[8];
+
+	routine[0] = ThreadFunc;
+
+    int stacksize = 8000;
+    CreateThread(NULL,stacksize,routine[0],NULL,0,NULL);
+
+	printf("finished\n");
 }
 
 void main(void)
 {
-    DWORD dwThreadId, dwThrdParam = 1;
-    HANDLE hThread;
-
-    hThread = CreateThread(
-        NULL,                        // attribut de securité par defaut
-        0,                           // taille de la pile par defaut
-        ThreadFunc,                  // notre function
-        &dwThrdParam,                // l'argument pour la fonction
-        0,                           // flag de creation par defaut
-        &dwThreadId);                // retourne l'id du thread
-
+	test();
     system("PAUSE");
 }

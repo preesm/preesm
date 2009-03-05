@@ -60,10 +60,10 @@ void copy(char* i1, char* o1){
 	}
 }
 
-void actuator(char* i1,char* i2,char* i3){
+void actuator(char* i1,char* i2,char* i3, int size){
 	int i = 0;
 
-	for(i=0;i<1000;i++){
+	for(i=0;i<size;i++){
 		printf("%d,%d,%d\n",i1,i2,i3);
 	}
 }

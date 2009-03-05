@@ -11,6 +11,6 @@ void sensor(char* o1, char* o2);
 void parallel(char* i1, char* o1);
 void gen_int(char* i1,char* o1,char* o2);
 void copy(char* i1, char* o1);
-void actuator(char* i1,char* i2,char* i3);
+void actuator(char* i1,char* i2,char* i3,int size);
 
 #endif
