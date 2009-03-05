@@ -48,6 +48,7 @@ import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
@@ -55,11 +56,13 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
+import org.ietr.preesm.core.codegen.ReceiveInit;
 import org.ietr.preesm.core.codegen.Semaphore;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
+import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
@@ -433,6 +436,22 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(CommunicationFunctionCall domElt, CodeZoneId index,
 			Object currentLocation) {
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(CommunicationFunctionInit domElt, CodeZoneId index,
+			Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element init = dom.createElement(domElt.getName());
+			((Element)currentLocation).appendChild(init);
+			
+			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
+			init.setAttribute("mediumId", domElt.getMediumId());
+			currentLocation = init;
+		} 
+		
 		return currentLocation;
 	}
 

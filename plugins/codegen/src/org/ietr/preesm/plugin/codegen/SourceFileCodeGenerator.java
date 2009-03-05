@@ -46,14 +46,20 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
+import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LaunchThread;
+import org.ietr.preesm.core.codegen.Receive;
+import org.ietr.preesm.core.codegen.ReceiveInit;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SemaphoreContainer;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
+import org.ietr.preesm.core.codegen.Send;
+import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VertexType;
@@ -228,6 +234,47 @@ public class SourceFileCodeGenerator {
 				file.getGlobalContainer().getBuffer(
 						SemaphoreContainer.semaphoreBufferName));
 		computationThread.getBeginningCode().addCodeElementFirst(semInit);
+
+		// Initializing the Send and Receive channels only for the channels
+		// really used and only once per channel
+		Set<CommunicationFunctionInit> alreadyInits = new HashSet<CommunicationFunctionInit>();
+
+		for (ICodeElement elt : communicationThread.getLoopCode()
+				.getCodeElements()) {
+
+			CommunicationFunctionInit init = null;
+
+			if (elt instanceof Send) {
+				Send send = (Send) elt;
+
+				init = new SendInit(file.getGlobalContainer(), send.getTarget()
+						.getName(), send.getMedium().getDefinition().getId());
+			} else if (elt instanceof Receive) {
+				Receive receive = (Receive) elt;
+
+				init = new ReceiveInit(file.getGlobalContainer(), receive
+						.getSource().getName(), receive.getMedium()
+						.getDefinition().getId());
+			}
+
+			if (init != null) {
+				for (CommunicationFunctionInit oldInit : alreadyInits) {
+					if (oldInit.getName().equals(init.getName())
+							&& oldInit.getConnectedCoreId().equals(
+									init.getConnectedCoreId())
+							&& oldInit.getMediumId().equals(init.getMediumId())) {
+						//init has already been done
+						init = null;
+					}
+				}
+			}
+
+			if (init != null) {
+				communicationThread.getBeginningCode()
+						.addCodeElementFirst(init);
+				alreadyInits.add(init);
+			}
+		}
 	}
 
 	/**

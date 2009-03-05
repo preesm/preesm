@@ -8,14 +8,18 @@
  ============================================================================
  */
 
-void Init(int comId, int coreId, void* buffer, int size){
+void sendInit(int comId, int coreId, void* buffer, int size){
 
 }
 
-void Send(int comId, int coreId, void* buffer, int size){
+void receiveInit(int comId, int coreId, void* buffer, int size){
 
 }
 
-void Receive(int comId, int coreId, void* buffer, int size){
+void send(int comId, int coreId, void* buffer, int size){
+
+}
+
+void receive(int comId, int coreId, void* buffer, int size){
 
 }

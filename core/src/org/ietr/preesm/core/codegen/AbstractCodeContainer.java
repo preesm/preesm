@@ -151,6 +151,10 @@ public abstract class AbstractCodeContainer {
 
 		return null;
 	}
+	
+	public List<ICodeElement> getCodeElements() {
+		return codeElements;
+	}
 
 	/**
 	 * Displays pseudo-code for test
