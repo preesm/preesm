@@ -35,18 +35,19 @@ import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
  * @author jpiat
  */
 public class CodeGenSDFVertexFactory {
-	
-	private IFile mainFile ;
-	
-	public CodeGenSDFVertexFactory(IFile parentAlgoFile){
-		mainFile = parentAlgoFile ;
+
+	private IFile mainFile;
+
+	public CodeGenSDFVertexFactory(IFile parentAlgoFile) {
+		mainFile = parentAlgoFile;
 	}
 
 	public SDFAbstractVertex create(DAGVertex dagVertex) {
-		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(mainFile);
+		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
+				mainFile);
 		CodeGenSDFVertex newVertex;
-		VertexType vertexType = (VertexType) dagVertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_vertexType);
+		VertexType vertexType = (VertexType) dagVertex.getPropertyBean()
+				.getValue(ImplementationPropertyNames.Vertex_vertexType);
 		if (vertexType != null && vertexType.equals(VertexType.task)) {
 			SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
 			if (sdfVertex instanceof SDFBroadcastVertex) {
@@ -68,7 +69,8 @@ public class CodeGenSDFVertexFactory {
 			newVertex = new CodeGenSDFVertex();
 		}
 		newVertex.setName(dagVertex.getName());
-		if (dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
+		if (dagVertex.getCorrespondingSDFVertex() != null
+				&& dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
 			newVertex.setGraphDescription(graphFactory
 					.create((SDFGraph) dagVertex.getCorrespondingSDFVertex()
 							.getGraphDescription()));
@@ -84,9 +86,12 @@ public class CodeGenSDFVertexFactory {
 					newVertex.addSource((SDFSourceInterfaceVertex) child);
 				}
 			}
-		}else if(dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement){
-			CodeRefinement codeRef = (CodeRefinement) dagVertex.getCorrespondingSDFVertex().getRefinement();
-			IFile iFile = mainFile.getParent().getFile(new Path(codeRef.getName()));
+		} else if (dagVertex.getCorrespondingSDFVertex() != null
+				&& dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement) {
+			CodeRefinement codeRef = (CodeRefinement) dagVertex
+					.getCorrespondingSDFVertex().getRefinement();
+			IFile iFile = mainFile.getParent().getFile(
+					new Path(codeRef.getName()));
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());
@@ -94,32 +99,37 @@ public class CodeGenSDFVertexFactory {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-			if(codeRef.getLanguage() == Language.CAL){
+			if (codeRef.getLanguage() == Language.CAL) {
 				CALFunctionFactory factory = CALFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation().toOSString()));
-			}else if(codeRef.getLanguage() == Language.IDL){
+				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+						.toOSString()));
+			} else if (codeRef.getLanguage() == Language.IDL) {
 				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation().toOSString()));
+				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+						.toOSString()));
 			}
 		}
 		newVertex.copyProperties(dagVertex);
-		if(dagVertex.getCorrespondingSDFVertex().getArguments() != null){
-			for(Argument arg : dagVertex.getCorrespondingSDFVertex().getArguments().values()){
-				newVertex.addArgument(arg);
+		if (dagVertex.getCorrespondingSDFVertex() != null) {
+			if (dagVertex.getCorrespondingSDFVertex().getArguments() != null) {
+				for (Argument arg : dagVertex.getCorrespondingSDFVertex()
+						.getArguments().values()) {
+					newVertex.addArgument(arg);
+				}
 			}
 		}
 
-//		if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
-//				ImplementationPropertyNames.Vertex_Operator) != null) {
-//			newVertex.setOperator((ArchitectureComponent) dagVertex
-//					.getPropertyBean().getValue(
-//							ImplementationPropertyNames.Vertex_Operator));
-//		}
-//		if ((Integer) dagVertex.getPropertyBean().getValue(
-//				ImplementationPropertyNames.Vertex_schedulingOrder) != null) {
-//			newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
-//					ImplementationPropertyNames.Vertex_schedulingOrder));
-//		}
+		// if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
+		// ImplementationPropertyNames.Vertex_Operator) != null) {
+		// newVertex.setOperator((ArchitectureComponent) dagVertex
+		// .getPropertyBean().getValue(
+		// ImplementationPropertyNames.Vertex_Operator));
+		// }
+		// if ((Integer) dagVertex.getPropertyBean().getValue(
+		// ImplementationPropertyNames.Vertex_schedulingOrder) != null) {
+		// newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
+		// ImplementationPropertyNames.Vertex_schedulingOrder));
+		// }
 		return newVertex;
 	}
 
@@ -143,7 +153,8 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 		newVertex.copyProperties(sdfVertex);
-		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(mainFile);
+		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
+				mainFile);
 		if (sdfVertex.getGraphDescription() != null) {
 			newVertex.setGraphDescription(graphFactory
 					.create((SDFGraph) sdfVertex.getGraphDescription()));
@@ -159,9 +170,10 @@ public class CodeGenSDFVertexFactory {
 					newVertex.addSource((SDFSourceInterfaceVertex) child);
 				}
 			}
-		}else if(sdfVertex.getRefinement() instanceof CodeRefinement){
+		} else if (sdfVertex.getRefinement() instanceof CodeRefinement) {
 			CodeRefinement codeRef = (CodeRefinement) sdfVertex.getRefinement();
-			IFile iFile = mainFile.getParent().getFile(new Path(codeRef.getName()));
+			IFile iFile = mainFile.getParent().getFile(
+					new Path(codeRef.getName()));
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());
@@ -169,12 +181,14 @@ public class CodeGenSDFVertexFactory {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-			if(codeRef.getLanguage() == Language.CAL){
+			if (codeRef.getLanguage() == Language.CAL) {
 				CALFunctionFactory factory = CALFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation().toOSString()));
-			}else if(codeRef.getLanguage() == Language.IDL){
+				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+						.toOSString()));
+			} else if (codeRef.getLanguage() == Language.IDL) {
 				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation().toOSString()));
+				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+						.toOSString()));
 			}
 		}
 		return newVertex;

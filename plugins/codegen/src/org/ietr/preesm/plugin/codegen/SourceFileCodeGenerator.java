@@ -50,6 +50,7 @@ import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SemaphoreContainer;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
@@ -186,7 +187,7 @@ public class SourceFileCodeGenerator {
 		file.addThread(computationThread);
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
-		
+
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
@@ -206,9 +207,9 @@ public class SourceFileCodeGenerator {
 			// Allocates the semaphores globally
 			file.getSemaphoreContainer().allocateSemaphores();
 
-			// Calls the semaphore initialization function at the beginning of
-			// computation thread
-			initializeSemaphores(computationThread);
+			// Calls the semaphore initialization function and launch com thread
+			// at the beginning of computation thread
+			initialization(computationThread, communicationThread);
 		}
 	}
 
@@ -216,13 +217,17 @@ public class SourceFileCodeGenerator {
 	 * Calls the semaphore initialization function at the beginning of
 	 * computation thread
 	 */
-	public void initializeSemaphores(
-			ComputationThreadDeclaration computationThread) {
+	public void initialization(ComputationThreadDeclaration computationThread,
+			CommunicationThreadDeclaration communicationThread) {
 
-		SemaphoreInit call = new SemaphoreInit(file.getGlobalContainer(), file
-				.getGlobalContainer().getBuffer(
+		LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
+				communicationThread.getName(), 8000, 1);
+		computationThread.getBeginningCode().addCodeElementFirst(launchThread);
+
+		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
+				file.getGlobalContainer().getBuffer(
 						SemaphoreContainer.semaphoreBufferName));
-		computationThread.getBeginningCode().addCodeElementFirst(call);
+		computationThread.getBeginningCode().addCodeElementFirst(semInit);
 	}
 
 	/**

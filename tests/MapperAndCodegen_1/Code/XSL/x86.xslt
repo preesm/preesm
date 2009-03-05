@@ -140,7 +140,7 @@
     </xsl:template>
     
     <xsl:template match="sourceCode:constant">
-        <xsl:value-of select="concat(@value,',')"/>
+        <xsl:value-of select="concat(@value,'/*',@name,'*/',',')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:bufferAllocation">

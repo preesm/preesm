@@ -88,7 +88,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 				switch (section) {
 				case INIT:
 					if (call.getInitCall() != null) {
-						this.setName(call.getInitCall().getFunctionName());
+						call = call.getInitCall();
+						this.setName(call.getFunctionName());
 					}
 					break;
 				case LOOP:
@@ -104,7 +105,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 					break;
 				case END:
 					if (call.getEndCall() != null) {
-						this.setName(call.getEndCall().getFunctionName());
+						call = call.getEndCall();
+						this.setName(call.getFunctionName());
 					}
 					break;
 				}

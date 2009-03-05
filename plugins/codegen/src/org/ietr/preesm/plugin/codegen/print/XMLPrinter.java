@@ -52,6 +52,7 @@ import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
+import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
@@ -406,6 +407,23 @@ public class XMLPrinter implements IAbstractPrinter {
 			threadElt.setAttribute("name", domElt.getName());
 			currentLocation = threadElt;
 		}
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(LaunchThread domElt, CodeZoneId index,
+			Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element launchThread = dom.createElement("launchThread");
+			((Element)currentLocation).appendChild(launchThread);
+
+			launchThread.setAttribute("threadName", domElt.getThreadName());
+			launchThread.setAttribute("stackSize", String.valueOf(domElt.getStackSize()));
+			launchThread.setAttribute("priority", String.valueOf(domElt.getPriority()));
+			currentLocation = launchThread;
+		} 
 		
 		return currentLocation;
 	}

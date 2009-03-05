@@ -9,7 +9,24 @@
  */
 #include "x86.h"
 
-int main(void) {
-	puts("Executing PREESM generated code"); /* prints !!!Hello World!!! */
-	return EXIT_SUCCESS;
+DWORD WINAPI ThreadFunc( LPVOID lpParam )
+{
+	printf("test");
+    return 0;
+}
+
+void main(void)
+{
+    DWORD dwThreadId, dwThrdParam = 1;
+    HANDLE hThread;
+
+    hThread = CreateThread(
+        NULL,                        // attribut de securité par defaut
+        0,                           // taille de la pile par defaut
+        ThreadFunc,                  // notre function
+        &dwThrdParam,                // l'argument pour la fonction
+        0,                           // flag de creation par defaut
+        &dwThreadId);                // retourne l'id du thread
+
+    system("PAUSE");
 }
