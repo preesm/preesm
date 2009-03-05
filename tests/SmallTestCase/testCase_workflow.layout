@@ -9,7 +9,7 @@
       <vertex id="DAG Plotter" x="725" y="71"/>
       <vertex id="Exporter" x="525" y="101"/>
       <vertex id="Mapper" x="525" y="212"/>
-      <vertex id="HSDF" x="375" y="149"/>
+      <vertex id="HSDF" x="397" y="88"/>
       <vertex id="FAST scheduler" x="57" y="164"/>
    </vertices>
 </layout>

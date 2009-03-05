@@ -19,7 +19,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="/IDCT2D/flattenTest.graphml"/>
+         <variable name="path" value="/SmallTestCase/flattenTest.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="Mapper">
@@ -45,12 +45,12 @@
    </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
-   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
-   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Mapper"/>
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="Mapper"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="Mapper"/>
    <preesm:dataTransfer from="Mapper" sourceport="DAG" targetport="DAG" to="CodeGen"/>
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="CodeGen"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HSDF"/>
+   <preesm:dataTransfer from="Mapper" sourceport="customData" targetport="customData" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
 </preesm:workflow>

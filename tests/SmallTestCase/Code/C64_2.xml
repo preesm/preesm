@@ -1,348 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sourceCode xmlns="http://ietr.preesm.sourceCode">
-    <coreType>C64x</coreType>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>x86</coreType>
+    <coreName>C64_2</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation
-                name="First_0outputs_First_0explode_First_0_output_1input"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="First_0outputexplode_First_0_outputinput" size="3" type="char"/>
-            <bufferAllocation
-                name="r_First_0explode_First_0_output_2outputexplode_First_0_outputinput"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="explode_First_0_outputoutputimplode_Second_1_inputinput"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="explode_First_0_outputoutputSecond_0input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="explode_First_0_outputoutputs_explode_First_0_outputSecond_0_1input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_First_0_outputSecond_0_2outputSecond_0input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="Second_0outputs_Second_0explode_Second_0_output_1input"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="Second_0outputexplode_Second_0_outputinput"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="r_Second_0explode_Second_0_output_2outputexplode_Second_0_outputinput"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="explode_Second_0_outputoutputs_explode_Second_0_outputThird_0_1input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="explode_Second_0_outputoutputs_explode_Second_0_outputimplode_Third_1_input_1input"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="explode_Second_0_outputoutputThird_0input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_Second_0_outputThird_0_2outputThird_0input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_First_1_outputimplode_Second_1_input_1outputimplode_Second_1_inputinput"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="implode_Second_1_inputoutputs_implode_Second_1_inputSecond_1_1input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_First_2_outputSecond_3_1outputSecond_3input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="Second_3outputs_Second_3explode_Second_3_output_1input"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="r_explode_First_3_outputSecond_5_1outputSecond_5input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="Second_5outputs_Second_5explode_Second_5_output_1input"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="r_implode_Second_4_inputSecond_4_1outputSecond_4input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="Second_4outputexplode_Second_4_outputinput"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="Second_4outputs_Second_4explode_Second_4_output_1input"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="r_Second_4explode_Second_4_output_2outputexplode_Second_4_outputinput"
-                size="3" type="char"/>
-            <bufferAllocation
-                name="explode_Second_4_outputoutputimplode_Third_7_inputinput"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="explode_Second_4_outputoutputThird_6input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="explode_Second_4_outputoutputs_explode_Second_4_outputThird_6_1input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_Second_5_outputimplode_Third_7_input_1outputimplode_Third_7_inputinput"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="implode_Third_7_inputoutputs_implode_Third_7_inputThird_7_1input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="implode_Third_7_inputoutputThird_7input" size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_Second_3_outputThird_5_1outputThird_5input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_Second_1_outputThird_2_1outputThird_2input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_explode_Second_4_outputThird_6_2outputThird_6input"
-                size="2" type="char"/>
-            <bufferAllocation
-                name="r_implode_Third_7_inputThird_7_2outputThird_7input"
-                size="2" type="char"/>
-            <bufferAllocation name="sem" size="210" type="semaphore"/>
+            <bufferAllocation name="FirstoutputSecondinput" size="16" type="char"/>
+            <bufferAllocation name="SecondoutputThirdinput" size="4" type="char"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer/>
-            <linearCodeContainer>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-            </linearCodeContainer>
-            <forLoop>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="first_dummy"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="6" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="explode_First_0_output"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="7" type="empty"/>
-                <semaphorePend number="16" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="second_dummy"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="17" type="empty"/>
-                <semaphorePend number="26" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="explode_Second_0_output"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="27" type="empty"/>
-                <semaphorePend number="39" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <userFunctionCall name="third_dummy"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="40" type="empty"/>
-                <semaphorePend number="43" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="implode_Second_1_input"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="44" type="empty"/>
-                <semaphorePend number="48" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="second_dummy"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="49" type="empty"/>
-                <semaphorePend number="53" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="second_dummy"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="54" type="empty"/>
-                <semaphorePend number="58" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="second_dummy"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="59" type="empty"/>
-                <semaphorePend number="66" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="explode_Second_4_output"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="67" type="empty"/>
-                <semaphorePend number="76" type="full"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <userFunctionCall name="implode_Third_7_input"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePost number="77" type="empty"/>
-                <semaphorePend number="84" type="full"/>
-                <userFunctionCall name="third_dummy"/>
-                <semaphorePost number="85" type="empty"/>
-                <semaphorePend number="86" type="full"/>
-                <userFunctionCall name="third_dummy"/>
-                <semaphorePost number="87" type="empty"/>
-                <semaphorePend number="88" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <userFunctionCall name="third_dummy"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="89" type="empty"/>
-                <semaphorePend number="92" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <userFunctionCall name="third_dummy"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="93" type="empty"/>
-            </forLoop>
             <linearCodeContainer/>
-        </threadDeclaration>
-        <threadDeclaration name="communicationThread">
-            <bufferContainer/>
-            <linearCodeContainer>
-                <semaphorePost number="7" type="empty"/>
-                <semaphorePost number="17" type="empty"/>
-                <semaphorePost number="27" type="empty"/>
-                <semaphorePost number="40" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="44" type="empty"/>
-                <semaphorePost number="49" type="empty"/>
-                <semaphorePost number="54" type="empty"/>
-                <semaphorePost number="59" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="67" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="85" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="77" type="empty"/>
-                <semaphorePost number="87" type="empty"/>
-                <semaphorePost number="89" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePost number="93" type="empty"/>
-            </linearCodeContainer>
             <forLoop>
-                <semaphorePend number="7" type="empty"/>
-                <semaphorePost number="6" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="17" type="empty"/>
-                <semaphorePost number="16" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="27" type="empty"/>
-                <semaphorePost number="26" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="40" type="empty"/>
-                <semaphorePost number="39" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="44" type="empty"/>
-                <semaphorePost number="43" type="full"/>
-                <semaphorePend number="49" type="empty"/>
-                <semaphorePost number="48" type="full"/>
-                <semaphorePend number="54" type="empty"/>
-                <semaphorePost number="53" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="59" type="empty"/>
-                <semaphorePost number="58" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="67" type="empty"/>
-                <semaphorePost number="66" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="85" type="empty"/>
-                <semaphorePost number="84" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="77" type="empty"/>
-                <semaphorePost number="76" type="full"/>
-                <semaphorePend number="87" type="empty"/>
-                <semaphorePost number="86" type="full"/>
-                <semaphorePend number="89" type="empty"/>
-                <semaphorePost number="88" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
-                <semaphorePend number="0" type="empty"/>
-                <semaphorePost number="2" type="full"/>
-                <semaphorePend number="93" type="empty"/>
-                <semaphorePost number="92" type="full"/>
-                <semaphorePend number="2" type="full"/>
-                <semaphorePost number="0" type="empty"/>
+                <userFunctionCall name="first_dummy">
+                    <buffer name="FirstoutputSecondinput" size="16" type="char"/>
+                    <constant name="firstParam" type="int" value="3"/>
+                </userFunctionCall>
+                <finiteForLoop domain="4" index="i">
+                    <CompoundCode>
+                        <subBuffer index="i"
+                            name="sub_i_FirstoutputSecondinput"
+                            parentBuffer="FirstoutputSecondinput" size="16"/>
+                        <subBuffer index="i"
+                            name="sub_i_SecondoutputThirdinput"
+                            parentBuffer="SecondoutputThirdinput" size="4"/>
+                        <finiteForLoop domain="4" index="j">
+                            <CompoundCode>
+                                <subBuffer index="j"
+                                    name="sub_j_sub_i_SecondoutputThirdinput"
+                                    parentBuffer="sub_i_SecondoutputThirdinput" size="1"/>
+                                <subBuffer index="j"
+                                    name="sub_j_outLoopPort_0_inLoopPort_0"
+                                    parentBuffer="outLoopPort_0_inLoopPort_0" size="1"/>
+                                <subBuffer index="j"
+                                    name="sub_j_outLoopPort_0_inLoopPort_0"
+                                    parentBuffer="outLoopPort_0_inLoopPort_0" size="1"/>
+                                <subBuffer index="j"
+                                    name="sub_j_sub_i_FirstoutputSecondinput"
+                                    parentBuffer="sub_i_FirstoutputSecondinput" size="4"/>
+                                <userFunctionCall name="mux">
+                                    <subBuffer index="j"
+                                    name="sub_j_sub_i_FirstoutputSecondinput"
+                                    parentBuffer="sub_i_FirstoutputSecondinput" size="4"/>
+                                    <subBuffer index="j"
+                                    name="sub_j_outLoopPort_0_inLoopPort_0"
+                                    parentBuffer="outLoopPort_0_inLoopPort_0" size="1"/>
+                                    <buffer name="dataOut_dataIn"
+                                    size="1" type="char"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="process_tokens">
+                                    <buffer name="dataOut_dataIn"
+                                    size="1" type="char"/>
+                                    <subBuffer index="j"
+                                    name="sub_j_sub_i_SecondoutputThirdinput"
+                                    parentBuffer="sub_i_SecondoutputThirdinput" size="1"/>
+                                    <subBuffer index="j"
+                                    name="sub_j_outLoopPort_0_inLoopPort_0"
+                                    parentBuffer="outLoopPort_0_inLoopPort_0" size="1"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
+                    </CompoundCode>
+                </finiteForLoop>
+                <finiteForLoop domain="16" index="i">
+                    <userFunctionCall name="third_dummy">
+                        <subBuffer index="i"
+                            name="sub_i_SecondoutputThirdinput"
+                            parentBuffer="SecondoutputThirdinput" size="4"/>
+                    </userFunctionCall>
+                </finiteForLoop>
             </forLoop>
             <linearCodeContainer/>
         </threadDeclaration>
