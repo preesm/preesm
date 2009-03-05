@@ -20,6 +20,7 @@ import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
 import org.sdf4j.model.CodeRefinement.Language;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.parameters.Argument;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -102,6 +103,12 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 		newVertex.copyProperties(dagVertex);
+		if(dagVertex.getCorrespondingSDFVertex().getArguments() != null){
+			for(Argument arg : dagVertex.getCorrespondingSDFVertex().getArguments().values()){
+				newVertex.addArgument(arg);
+			}
+		}
+
 //		if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
 //				ImplementationPropertyNames.Vertex_Operator) != null) {
 //			newVertex.setOperator((ArchitectureComponent) dagVertex

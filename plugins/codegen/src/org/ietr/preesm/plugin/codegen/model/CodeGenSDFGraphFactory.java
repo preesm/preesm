@@ -83,6 +83,7 @@ public class CodeGenSDFGraphFactory {
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
+		output.copyProperties(dag);
 		for(DAGVertex vertex : dag.vertexSet()){
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
 			if(codeGenVertex instanceof CodeGenSDFVertex){
