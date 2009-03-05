@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.sdf4j.model.parameters.ParameterSet;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**

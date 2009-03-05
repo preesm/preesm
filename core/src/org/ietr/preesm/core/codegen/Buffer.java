@@ -45,7 +45,7 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mpelcat
  */
-public class Buffer {
+public class Buffer extends Parameter{
 
 	// Buffer representing an edge: characteristic names
 
@@ -64,12 +64,6 @@ public class Buffer {
 	 */
 	private String destInputPortID;
 
-	// Buffer generated from a name
-	/**
-	 * Buffer name if not generated from edge characteristics
-	 */
-	private String name;
-
 	/**
 	 * Size of the allocated buffer
 	 */
@@ -85,13 +79,9 @@ public class Buffer {
 	 */
 	private String sourceOutputPortID;
 
-	/**
-	 * Type of the allocated buffer
-	 */
-	private DataType type;
-
 	public Buffer(String name, Integer size, DataType type, SDFEdge edge) {
 
+		super(name, type);
 		this.sourceID = null;
 		this.destID = null;
 		if (edge != null) {
@@ -100,27 +90,24 @@ public class Buffer {
 		}
 
 		this.size = size;
-		this.type = type;
 		this.edge = edge;
-		this.name = name;
 	}
 
 	public Buffer(String sourceID, String destID, String sourceOutputPortID,
 			String destInputPortID, Integer size, DataType type, SDFEdge edge) {
 
+		super(sourceID + sourceOutputPortID + destID + destInputPortID, type);
 		this.sourceID = sourceID;
 		this.destID = destID;
 		this.sourceOutputPortID = sourceOutputPortID;
 		this.destInputPortID = destInputPortID;
 
 		this.size = size;
-		this.type = type;
 
 		this.edge = edge;
-
-		this.name = null;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -131,25 +118,8 @@ public class Buffer {
 		return edge;
 	}
 
-	public String getName() {
-
-		if (name == null)
-			return sourceID + sourceOutputPortID + destID + destInputPortID;
-		else
-			return name;
-	}
-
 	public Integer getSize() {
 		return size;
-	}
-
-	public DataType getType() {
-		return type;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
 	}
 
 	public String getDestInputPortID() {

@@ -186,6 +186,9 @@ public class SourceFileCodeGenerator {
 		file.addThread(computationThread);
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
+		
+		// Inserts the user function calls and adds their parameters; possibly
+		// including graph parameters
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
 		compCodegen.addSemaphoreFunctions(ownTaskVertices);
 

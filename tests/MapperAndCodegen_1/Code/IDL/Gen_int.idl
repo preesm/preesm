@@ -1,4 +1,4 @@
-module gen_int {
+module Gen_int {
 	interface init {
 		 void gen_int_init( in char i1, out char o1, out char o2);
 	};

@@ -1,4 +1,4 @@
-module copy {
+module Copy {
 	interface init {
 		 void copy_init( in char i1, out char o1);
 	};

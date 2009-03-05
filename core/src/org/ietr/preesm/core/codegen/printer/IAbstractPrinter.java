@@ -43,6 +43,7 @@ import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
+import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
@@ -69,6 +70,7 @@ public interface IAbstractPrinter {
 	public Object visit(AbstractBufferContainer element, CodeZoneId index, Object currentLocation);
 	public Object visit(AbstractCodeContainer element, CodeZoneId index, Object currentLocation);
 	public Object visit(Buffer element, CodeZoneId index, Object currentLocation);
+	public Object visit(Constant element, CodeZoneId index, Object currentLocation);
 	public Object visit(SubBuffer element, CodeZoneId index, Object currentLocation);
 	public Object visit(BufferAllocation element, CodeZoneId index, Object currentLocation);
 	public Object visit(VariableAllocation element, CodeZoneId index, Object currentLocation);

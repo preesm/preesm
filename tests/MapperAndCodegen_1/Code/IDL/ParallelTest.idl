@@ -1,4 +1,4 @@
-module parallel {
+module ParallelTest {
 	interface init {
 		 void parallel_init( in char i1, out char o1);
 	};

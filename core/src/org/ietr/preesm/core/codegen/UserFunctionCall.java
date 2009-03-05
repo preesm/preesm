@@ -68,14 +68,14 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
-	private List<Buffer> callBuffers;
+	private List<Parameter> callParameters;
 
 	public UserFunctionCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSection section) {
 		super(vertex.getName(), parentContainer, vertex);
 
 		// Buffers associated to the function call
-		callBuffers = new ArrayList<Buffer>();
+		callParameters = new ArrayList<Parameter>();
 		// Candidate buffers that will be added if present in prototype
 		HashMap<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
 
@@ -137,30 +137,39 @@ public class UserFunctionCall extends AbstractCodeElement {
 			}
 
 			// Filters and orders the buffers to fit the prototype
+			// Adds parameters if no buffer fits the prototype name
 			for (CodeGenArgument arg : call.getArguments()) {
-				Buffer currentBuffer = null;
+				Parameter currentParam = null;
 
+				String argName = arg.getName();
 				if (arg.getDirection() == CodeGenArgument.INPUT) {
 					for (SDFEdge link : candidateBuffers.keySet()) {
 						if (link.getTargetInterface().getName().equals(arg.getName()) && link.getTarget().equals(vertex))
-							currentBuffer = candidateBuffers.get(link);
+							currentParam = candidateBuffers.get(link);
 					}
 				} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
 					for (SDFEdge link : candidateBuffers.keySet()) {
 						if (link.getSourceInterface().getName().equals(arg.getName()) && link.getSource().equals(vertex))
-							currentBuffer = candidateBuffers.get(link);
+							currentParam = candidateBuffers.get(link);
+
 					}
 				}
 
-				if (currentBuffer != null) {
-					addBuffer(currentBuffer);
+				// If no buffer was found with the given port name, a parameter is sought
+				if (currentParam == null && arg.getDirection() == CodeGenArgument.INPUT) {
+					if(vertex.getArgument(argName) != null){
+						currentParam = new Constant(argName,vertex.getArgument(argName).intValue());
+					}
+				}
+				
+				if (currentParam != null) {
+					addParameter(currentParam);
 				} else {
 					PreesmLogger.getLogger().log(
 							Level.SEVERE,
 							"Vertex: " + vertex.getName() + ". Error interpreting the prototype: no port found with name: "
-									+ arg.getName());
+									+ argName);
 				}
-				String argName = arg.getName();
 			}
 		}
 	}
@@ -168,23 +177,23 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
-		for (Buffer buffer : callBuffers) {
-			buffer.accept(printer, currentLocation);
+		for (Parameter param : callParameters) {
+			param.accept(printer, currentLocation);
 		}
 	}
 
-	public void addBuffer(Buffer buffer) {
+	public void addParameter(Parameter param) {
 
-		if (buffer == null)
+		if (param == null)
 			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
 		else
-			callBuffers.add(buffer);
+			callParameters.add(param);
 	}
 
 	public void addBuffers(Set<Buffer> buffers) {
 		if (buffers != null) {
 			for (Buffer buffer : buffers) {
-				addBuffer(buffer);
+				addParameter(buffer);
 			}
 		}
 	}
@@ -213,7 +222,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		while (eIterator.hasNext()) {
 			SDFEdge edge = eIterator.next();
 
-			addBuffer(getParentContainer().getBuffer((SDFEdge) edge));
+			addParameter(getParentContainer().getBuffer((SDFEdge) edge));
 		}
 	}
 
@@ -228,7 +237,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		code += super.toString();
 		code += "(";
 
-		Iterator<Buffer> iterator = callBuffers.iterator();
+		Iterator<Parameter> iterator = callParameters.iterator();
 
 		while (iterator.hasNext()) {
 
@@ -237,9 +246,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 			else
 				first = false;
 
-			Buffer buf = iterator.next();
+			Parameter param = iterator.next();
 
-			code += buf.toString();
+			code += param.toString();
 		}
 
 		code += ");";

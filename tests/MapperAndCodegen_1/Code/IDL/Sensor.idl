@@ -1,4 +1,4 @@
-module sensor {
+module Sensor {
 	interface init {
 		 void sensor_init(out char o1, out char o2);
 	};

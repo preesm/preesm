@@ -49,6 +49,7 @@ import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
+import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
@@ -187,6 +188,21 @@ public class XMLPrinter implements IAbstractPrinter {
 			buffer.setAttribute("name", domElt.getName());
 			buffer.setAttribute("size", domElt.getSize().toString());
 			buffer.setAttribute("type", domElt.getType().getTypeName());
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(Constant domElt, CodeZoneId index, Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element constant = dom.createElement("constant");
+			((Element)currentLocation).appendChild(constant);
+
+			constant.setAttribute("name", domElt.getName());
+			constant.setAttribute("type", domElt.getType().getTypeName());
+			constant.setAttribute("value", domElt.getValue());
 		} 
 		
 		return currentLocation;
