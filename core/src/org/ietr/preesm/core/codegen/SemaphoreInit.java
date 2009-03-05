@@ -54,18 +54,21 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class SemaphoreInit extends AbstractCodeElement {
 
 	private Buffer semaphoreBuffer;
+	private Constant semaphoreNumber;
 
 	public SemaphoreInit(AbstractBufferContainer globalContainer,
 			Buffer semaphoreBuffer) {
 		super("semaphoreInit", globalContainer, null);
 
 		this.semaphoreBuffer = semaphoreBuffer;
+		this.semaphoreNumber = new Constant("semNumber",semaphoreBuffer.getSize());
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
-		semaphoreBuffer.accept(printer, currentLocation); // Accept the code container
+		semaphoreBuffer.accept(printer, currentLocation); // Accept the semaphore buffer
+		semaphoreNumber.accept(printer, currentLocation); // Accept the semaphore number constant
 	}
 
 	/**
