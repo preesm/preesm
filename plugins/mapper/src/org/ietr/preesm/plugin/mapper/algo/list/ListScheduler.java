@@ -135,12 +135,12 @@ public class ListScheduler {
 	 * @param : MapperDAG, MapperDAGVertex, Operator, IArchitectureSimulator
 	 * @return : integer
 	 */
-	public int operatorvertexstarttime(MapperDAG dag, MapperDAGVertex vertex,
+	public long operatorvertexstarttime(MapperDAG dag, MapperDAGVertex vertex,
 			Operator operator, IAbc simu) {
 
 		// Variables
-		int temptime;
-		int starttime = 0;
+		long temptime;
+		long starttime = 0;
 		MapperDAGVertex preccurrentvertex;
 		Set<DAGVertex> predset = new HashSet<DAGVertex>();
 
@@ -240,7 +240,7 @@ public class ListScheduler {
 
 			} else {
 
-				int time = Integer.MAX_VALUE;
+				long time = Long.MAX_VALUE;
 				// Choose the operator
 				OperatorIterator iterop = new OperatorIterator(currentvertex,
 						archisimu.getArchitecture());
@@ -252,7 +252,7 @@ public class ListScheduler {
 							+ currentoperator.getName() + " on the vertex "
 							+ currentvertex.getName());
 
-					int test = operatorvertexstarttime(dag, currentvertex,
+					long test = operatorvertexstarttime(dag, currentvertex,
 							currentoperator, archisimu);
 					// test the earliest ready operator
 					if (test < time) {

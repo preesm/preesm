@@ -102,7 +102,7 @@ public class PFastAlgorithm extends Observable {
 		@Override
 		public int compare(MapperDAG o1, MapperDAG o2) {
 
-			int difference = 0;
+			long difference = 0;
 
 			difference = o1.getScheduleLatency();
 
@@ -112,7 +112,7 @@ public class PFastAlgorithm extends Observable {
 				difference = 1;
 			}
 
-			return difference;
+			return (int)difference;
 		}
 
 		/**
@@ -349,9 +349,9 @@ public class PFastAlgorithm extends Observable {
 				blockingnodeVector, fcpVector, archisimu, null, null).clone();
 
 		bestTotalOrder = archisimu.getTotalOrder().toMap();
-		int iBest = (Integer) archisimu.getFinalTime();
+		long iBest = (Long) archisimu.getFinalTime();
 		
-		int initiale = iBest;
+		long initiale = iBest;
 		setChanged();
 		notifyObservers(iBest);
 		dagfinal.setScheduleLatency(iBest);
@@ -452,7 +452,7 @@ public class PFastAlgorithm extends Observable {
 		bestTotalOrder = (Map<String,Integer>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
 		
-		int finale = dagfinal.getScheduleLatency();
+		long finale = dagfinal.getScheduleLatency();
 		logger
 				.log(
 						Level.INFO,

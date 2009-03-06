@@ -28,16 +28,16 @@ public class DeploymentProperties implements IStructuredContentProvider,
 
 	private StatGenerator statGen;
 
-	private Map<Operator, Integer> loads;
+	private Map<Operator, Long> loads;
 	private Map<Operator, Integer> memoryNeeds;
 	
-	private int repetitionPeriod;
+	private long repetitionPeriod;
 
 	public DeploymentProperties(StatGenerator statGen) {
 		super();
 		this.statGen = statGen;
 
-		loads = new HashMap<Operator, Integer>();
+		loads = new HashMap<Operator, Long>();
 		memoryNeeds = new HashMap<Operator, Integer>();
 
 		repetitionPeriod = statGen.getFinalTime();
@@ -129,7 +129,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 
-	public int getRepetitionPeriod() {
+	public long getRepetitionPeriod() {
 		return repetitionPeriod;
 	}
 

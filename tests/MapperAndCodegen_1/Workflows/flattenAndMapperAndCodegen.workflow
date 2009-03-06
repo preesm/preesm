@@ -19,14 +19,14 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
          <variable name="displaySolutions" value="false"/>
-         <variable name="edgeSchedType" value="Simple"/>
-         <variable name="margIn" value="8"/>
-         <variable name="maxCount" value="20"/>
-         <variable name="maxStep" value="20"/>
+         <variable name="edgeSchedType" value="Switcher"/>
+         <variable name="margIn" value="100"/>
+         <variable name="maxCount" value="200"/>
+         <variable name="maxStep" value="200"/>
          <variable name="nodesMin" value="5"/>
          <variable name="procNumber" value="1"/>
          <variable name="simulatorType" value="AccuratelyTimed"/>
-         <variable name="switchTask" value="false"/>
+         <variable name="switchTask" value="true"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">

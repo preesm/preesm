@@ -45,23 +45,23 @@ package org.ietr.preesm.plugin.mapper.model;
  */
 public class TimingVertexProperty {
 
-	static public final int UNAVAILABLE = -1;
+	static public final long UNAVAILABLE = -1;
 
 	/**
 	 * B Level is the time between the vertex start and the total end of
 	 * execution. Valid only with infinite homogeneous architecture simulator
 	 */
-	private int bLevel;
+	private long bLevel;
 
 	/**
 	 * T Level is the time between the start of execution and the vertex start
 	 */
-	private int tLevel;
+	private long tLevel;
 
 	/**
 	 * time to execute the vertex
 	 */
-	private int cost;
+	private long cost;
 
 	public TimingVertexProperty() {
 		super();
@@ -77,12 +77,12 @@ public class TimingVertexProperty {
 		return property;
 	}
 
-	public int getBlevel() {
+	public long getBlevel() {
 
 		return bLevel;
 	}
 
-	public int getTlevel() {
+	public long getTlevel() {
 		return tLevel;
 	}
 
@@ -100,11 +100,11 @@ public class TimingVertexProperty {
 		bLevel = UNAVAILABLE;
 	}
 
-	public void setBlevel(int blevel) {
+	public void setBlevel(long blevel) {
 		this.bLevel = blevel;
 	}
 
-	public void setTlevel(int tlevel) {
+	public void setTlevel(long tlevel) {
 		this.tLevel = tlevel;
 	}
 
@@ -116,11 +116,11 @@ public class TimingVertexProperty {
 		return "";
 	}
 
-	public int getCost() {
+	public long getCost() {
 		return cost;
 	}
 
-	public void setCost(int cost) {
+	public void setCost(long cost) {
 		this.cost = cost;
 	}
 

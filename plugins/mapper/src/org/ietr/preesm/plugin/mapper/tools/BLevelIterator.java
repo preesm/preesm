@@ -56,7 +56,7 @@ public class BLevelIterator extends ImplantationIterator {
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		int TLevelDifference = (simulator.getBLevel(arg0) - simulator
+		long TLevelDifference = (simulator.getBLevel(arg0) - simulator
 				.getBLevel(arg1));
 
 		if (!directOrder)
@@ -65,7 +65,7 @@ public class BLevelIterator extends ImplantationIterator {
 		if (TLevelDifference == 0)
 			TLevelDifference++;
 
-		return TLevelDifference;
+		return (int)TLevelDifference;
 	}
 
 }

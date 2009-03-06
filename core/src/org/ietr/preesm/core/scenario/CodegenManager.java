@@ -3,10 +3,6 @@
  */
 package org.ietr.preesm.core.scenario;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Handles code generation parameters

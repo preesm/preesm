@@ -174,7 +174,7 @@ public class TransferVertexAdder {
 						implementation, orderManager, i, step, TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 			} else {
 
-				int transferCost = router.evaluateTransfer(edge, step
+				long transferCost = router.evaluateTransfer(edge, step
 						.getSender(), step.getReceiver());
 
 				transaction = new AddTransferVertexTransaction(edgeScheduler,

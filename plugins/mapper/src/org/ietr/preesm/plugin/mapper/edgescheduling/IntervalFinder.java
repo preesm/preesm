@@ -39,7 +39,7 @@ public class IntervalFinder {
 		
 		Schedule schedule = orderManager.getSchedule(component);
 
-		int minIndexVertexEndTime = -1;
+		long minIndexVertexEndTime = -1;
 		int minIndex = -1;
 		
 		if(minVertex != null){
@@ -66,9 +66,9 @@ public class IntervalFinder {
 					newInt = new Interval(props.getCost(),props.getTlevel(),orderManager.totalIndexOf(v));
 	
 					if(newInt.getTotalOrderIndex() > minIndex && newInt.getTotalOrderIndex() <= maxIndex){
-						int oldEnd = oldInt.getStartTime() + oldInt.getDuration();
-						int available = Math.max(minIndexVertexEndTime, oldEnd);
-						int freeIntervalSize = newInt.getStartTime() - available;
+						long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+						long available = Math.max(minIndexVertexEndTime, oldEnd);
+						long freeIntervalSize = newInt.getStartTime() - available;
 						
 						if(freeIntervalSize > biggestFreeInterval.getDuration()){
 							// The free interval takes the index of its following task v.
@@ -91,7 +91,7 @@ public class IntervalFinder {
 		Schedule schedule = orderManager.getSchedule(component);
 
 		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
-		int availability = sourceProps.getTlevel() + sourceProps.getCost();
+		long availability = sourceProps.getTlevel() + sourceProps.getCost();
 		if(sourceProps.getTlevel() < 0) 
 			availability = -1;
 		

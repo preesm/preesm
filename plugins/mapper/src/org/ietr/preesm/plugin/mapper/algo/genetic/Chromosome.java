@@ -66,7 +66,7 @@ public class Chromosome {
 	private List<Gene> ChromoList;
 
 	// Cost of the solution represented by this chromosome
-	private int evaluateCost;
+	private long evaluateCost;
 
 	// Reference MapperDAG of this chromosome
 	private MapperDAG dag;
@@ -214,11 +214,11 @@ public class Chromosome {
 		this.dag = dag;
 	}
 
-	public int getEvaluateCost() {
+	public long getEvaluateCost() {
 		return evaluateCost;
 	}
 
-	public void setEvaluateCost(int evaluateCost) {
+	public void setEvaluateCost(long evaluateCost) {
 		this.evaluateCost = evaluateCost;
 	}
 

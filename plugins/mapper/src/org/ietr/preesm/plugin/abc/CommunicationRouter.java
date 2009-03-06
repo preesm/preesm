@@ -75,11 +75,11 @@ public class CommunicationRouter {
 	/**
 	 * Evaluates the transfer between two operators
 	 */
-	public int evaluateTransfer(MapperDAGEdge edge, Operator op1, Operator op2) {
+	public long evaluateTransfer(MapperDAGEdge edge, Operator op1, Operator op2) {
 
 		// Retrieving the route
 		Route route = getRoute(op1, op2);
-		int cost = 0;
+		long cost = 0;
 
 		Iterator<RouteStep> it = route.iterator();
 
@@ -96,7 +96,7 @@ public class CommunicationRouter {
 	/**
 	 * Evaluates the transfer between two operators
 	 */
-	public int evaluateSingleTransfer(MapperDAGEdge edge, RouteStep step) {
+	public long evaluateSingleTransfer(MapperDAGEdge edge, RouteStep step) {
 
 		Operator sender = step.getSender();
 		Operator receiver = step.getReceiver();
@@ -110,7 +110,7 @@ public class CommunicationRouter {
 			Float time = datasize.floatValue()
 					* def.getInvSpeed();
 
-			return time.intValue();
+			return time.longValue();
 		} else {
 
 			PreesmLogger.getLogger().log(

@@ -107,7 +107,7 @@ public class LooselyTimedAbc extends
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
 			
-			int vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 			
 			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);

@@ -39,12 +39,10 @@ package org.ietr.preesm.core.codegen;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Source file to be executed on a given core. A source file contains Buffer

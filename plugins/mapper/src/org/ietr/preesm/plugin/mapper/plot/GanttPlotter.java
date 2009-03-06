@@ -374,7 +374,7 @@ public class GanttPlotter extends ApplicationFrame {
 
 		logger.log(Level.FINEST, "Getting finishing times");
 
-		int test;
+		long test;
 
 
 		simulator.retrieveTotalOrder();

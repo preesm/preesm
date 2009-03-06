@@ -40,7 +40,7 @@ public class StatGenerator {
 
 	private IScenario scenario = null;
 	private TextParameters params = null;
-	private int finalTime = 0;
+	private long finalTime = 0;
 
 	public StatGenerator(IAbc abc, IScenario scenario, TextParameters params) {
 		super();
@@ -62,7 +62,7 @@ public class StatGenerator {
 	 * infinity of cores of main type totally connected with perfect media. The
 	 * span complex because the DAG is not serial-parallel but can be any DAG.
 	 */
-	public int getDAGComplexSpanLength() {
+	public long getDAGComplexSpanLength() {
 
 		MapperDAG taskDag = abc.getDAG().clone();
 		removeSendReceive(taskDag);
@@ -76,7 +76,7 @@ public class StatGenerator {
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
 				localArchi, false);
-		int span = simu.getFinalTime();
+		long span = simu.getFinalTime();
 
 		PreesmLogger.getLogger().log(Level.INFO,
 				"infinite homogeneous timing: " + span);
@@ -88,9 +88,9 @@ public class StatGenerator {
 	/**
 	 * The work is the sum of all task lengths
 	 */
-	public int getDAGComplexWorkLength() {
+	public long getDAGComplexWorkLength() {
 
-		int work = 0;
+		long work = 0;
 		MapperDAG localDag = abc.getDAG().clone();
 		MultiCoreArchitecture archi = abc.getArchitecture().clone();
 
@@ -123,7 +123,7 @@ public class StatGenerator {
 	 * The load is the percentage of a processing resource used for the given
 	 * algorithm
 	 */
-	public Integer getLoad(Operator operator) {
+	public Long getLoad(Operator operator) {
 
 		return abc.getLoad(operator);
 	}
@@ -169,7 +169,7 @@ public class StatGenerator {
 		return params;
 	}
 
-	public int getFinalTime() {
+	public long getFinalTime() {
 		return finalTime;
 	}
 

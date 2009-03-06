@@ -88,7 +88,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
-			int difference = 0;
+			long difference = 0;
 			if (o1.isDirty())
 				o1.evaluate(simulatorType, edgeSchedType);
 			if (o2.isDirty())
@@ -100,7 +100,7 @@ public class StandardGeneticAlgorithm extends Observable {
 				difference = 1;
 			}
 
-			return difference;
+			return (int)difference;
 		}
 
 		/**
@@ -244,7 +244,7 @@ public class StandardGeneticAlgorithm extends Observable {
 			}
 
 			// Data Window
-			int iBest = chromoSet.first().getEvaluateCost();
+			long iBest = chromoSet.first().getEvaluateCost();
 			setChanged();
 			notifyObservers(iBest);
 

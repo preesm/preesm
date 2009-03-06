@@ -73,26 +73,26 @@ public interface IAbc {
 	 * implementation information is not enough to calculate this timing, returns
 	 * TIME_UNKNOWN
 	 */
-	public int getFinalTime();
+	public long getFinalTime();
 
 	/**
 	 * Gives the final time of the given vertex in the current implementation. If
 	 * current implementation information is not enough to calculate this timing,
 	 * returns TIME_UNKNOWN
 	 */
-	public int getFinalTime(MapperDAGVertex vertex);
+	public long getFinalTime(MapperDAGVertex vertex);
 
 	/**
 	 * Gives the implementation time on the given operator if possible. It
 	 * considers a partially implanted graph and ignores the non implanted
 	 * vertices
 	 */
-	public int getFinalTime(ArchitectureComponent component);
+	public long getFinalTime(ArchitectureComponent component);
 
 	/**
 	 * Returns the sum of execution times on the given component
 	 */
-	public int getLoad(ArchitectureComponent component);
+	public long getLoad(ArchitectureComponent component);
 
 	/**
 	 * Gets the rank of the given vertex on its operator. -1 if the vertex has
@@ -128,7 +128,7 @@ public interface IAbc {
 	 * B Level is the time between the vertex start and the total end of
 	 * execution
 	 */
-	public int getBLevel(MapperDAGVertex vertex);
+	public long getBLevel(MapperDAGVertex vertex);
 	
 	/**
 	 * Gives the T level of the given vertex in the current implementation. If
@@ -137,17 +137,17 @@ public interface IAbc {
 	 * 
 	 * T Level is the time between the start of execution and the vertex start
 	 */
-	public int getTLevel(MapperDAGVertex vertex);
+	public long getTLevel(MapperDAGVertex vertex);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation
 	 */
-	public int getCost(MapperDAGVertex vertex);
+	public long getCost(MapperDAGVertex vertex);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation
 	 */
-	public int getCost(MapperDAGEdge edge);
+	public long getCost(MapperDAGEdge edge);
 
 	/**
 	 * Implants the vertex on the operator the rank is the scheduling order. The

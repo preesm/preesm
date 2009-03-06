@@ -5,7 +5,6 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Calling a function launching a thread

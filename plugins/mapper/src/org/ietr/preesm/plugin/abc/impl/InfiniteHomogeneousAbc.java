@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
-import java.util.Iterator;
-
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -49,7 +47,6 @@ import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Simulates an architecture having as many cores as necessary to
@@ -109,55 +106,14 @@ public class InfiniteHomogeneousAbc extends
 			}
 			
 			// Setting vertex time
-			int vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
-			// Setting incoming edges times
-			Iterator<DAGEdge> iterator = vertex.incomingEdges()
-					.iterator();
-
-			while (iterator.hasNext()) {
-				MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
-
-				int edgesize = edge.getInitialEdgeProperty().getDataSize();
-
-				/**
-				 * In a Infinite Homogeneous Architecture, each communication is
-				 * supposed to be done on the main medium. The communication
-				 * cost is simply calculated from the main medium speed.
-				 */
-
-				if (archi.getMainMedium() != null) {
-					MediumDefinition def = (MediumDefinition) archi
-							.getMainMedium().getDefinition();
-					Float speed = def.getInvSpeed();
-					speed = edgesize * speed;
-					edge.getTimingEdgeProperty().setCost(speed.intValue());
-				} else {
-
-					PreesmLogger
-							.getLogger()
-							.info(
-									"current architecture has no main medium. infinite homogeneous simulator will use default speed");
-
-					Float speed = 1f;
-					speed = edgesize * speed;
-					edge.getTimingEdgeProperty().setCost(speed.intValue());
-				}
-			}
-
-			// Setting outgoing edges times
-			iterator = vertex.outgoingEdges().iterator();
-
-			while (iterator.hasNext()) {
-				MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
-
-				int edgedatasize = edge.getInitialEdgeProperty().getDataSize();
-
-				// medium is considered 1cycle/unit for the moment (test)
-				edge.getTimingEdgeProperty().setCost(edgedatasize);
-			}
+			// Setting edges times
+			
+			setEdgesCosts(vertex.incomingEdges());
+			setEdgesCosts(vertex.outgoingEdges());
 		}
 	}
 
@@ -186,6 +142,30 @@ public class InfiniteHomogeneousAbc extends
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
+		long edgesize = edge.getInitialEdgeProperty().getDataSize();
+
+		/**
+		 * In a Infinite Homogeneous Architecture, each communication is
+		 * supposed to be done on the main medium. The communication
+		 * cost is simply calculated from the main medium speed.
+		 */
+		if (archi.getMainMedium() != null) {
+			MediumDefinition def = (MediumDefinition) archi
+					.getMainMedium().getDefinition();
+			Float speed = def.getInvSpeed();
+			speed = edgesize * speed;
+			edge.getTimingEdgeProperty().setCost(speed.intValue());
+		} else {
+
+			PreesmLogger
+					.getLogger()
+					.info(
+							"current architecture has no main medium. infinite homogeneous simulator will use default speed");
+
+			Float speed = 1f;
+			speed = edgesize * speed;
+			edge.getTimingEdgeProperty().setCost(speed.intValue());
+		}
 	}
 	
 	public EdgeSchedType getEdgeSchedType() {

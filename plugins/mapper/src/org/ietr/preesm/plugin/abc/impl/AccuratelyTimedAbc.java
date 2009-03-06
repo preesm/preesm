@@ -42,10 +42,12 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -108,7 +110,8 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	 * Called when a new vertex operator is set
 	 */
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex,
+			boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -120,8 +123,8 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 			if (updateRank) {
 				if (this.abcType.isSwitchTask()) {
-					TaskSwitcher taskSwitcher = new TaskSwitcher(
-							orderManager, vertex);
+					TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager,
+							vertex);
 					taskSwitcher.insertVertex();
 				} else {
 					orderManager.addLast(vertex);
@@ -129,8 +132,8 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
-			
-			int vertextime = vertex.getInitialVertexProperty().getTime(
+
+			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
@@ -139,16 +142,18 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			tvertexAdder.addAndScheduleTransferVertices(implementation,
 					transactionManager, vertex);
 
-			overtexAdder.addAndScheduleOverheadVertices(implementation, transactionManager, vertex);
+			overtexAdder.addAndScheduleOverheadVertices(implementation,
+					transactionManager, vertex);
 
-			//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
-			
+			// precedenceEdgeAdder.checkPrecedences(implementation, archi,
+			// null);
+
 			// Set costs
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
-			
+
 		}
 	}
 
@@ -157,17 +162,17 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		
+
 		vertex.getTimingVertexProperty().resetCost();
 
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 
-		//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
-		
+		// precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
+
 		transactionManager.undoTransactions(vertex);
-		
-		//precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
+
+		// precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
 
 	}
 
@@ -189,8 +194,29 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 		edge.getTimingEdgeProperty().setCost(0);
 
+		long dissuasiveCost = 1000000000l;
+		// Special vertices create edges with dissuasive costs
+		if (edge.getTarget() != null
+				&& SpecialVertexManager.isFork(edge.getTarget())) {
+			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
+					.getSource()).getImplementationVertexProperty();
+			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+					.getTarget()).getImplementationVertexProperty();
+
+			Operator sourceOp = sourceimp.getEffectiveOperator();
+			Operator destOp = destimp.getEffectiveOperator();
+
+			if (sourceOp != Operator.NO_COMPONENT
+					&& destOp != Operator.NO_COMPONENT) {
+				if (sourceOp.equals(destOp)) {
+					edge.getTimingEdgeProperty().setCost(0);
+				} else {
+					edge.getTimingEdgeProperty().setCost(dissuasiveCost);
+				}
+			}
+		}
 	}
-	
+
 	public EdgeSchedType getEdgeSchedType() {
 		return edgeScheduler.getEdgeSchedType();
 	}

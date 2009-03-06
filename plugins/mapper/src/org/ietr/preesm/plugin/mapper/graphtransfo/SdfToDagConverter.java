@@ -74,7 +74,6 @@ import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.visitors.DAGTransformation;
 import org.sdf4j.visitors.SDF4JException;
-import org.sdf4j.visitors.TopologyVisitor;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

@@ -96,7 +96,7 @@ public class PGeneticAlgo extends Observable {
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
-			int difference = 0;
+			long difference = 0;
 			if (o1.isDirty())
 				o1.evaluate(simulatorType,edgeSchedType);
 			if (o2.isDirty())
@@ -108,7 +108,7 @@ public class PGeneticAlgo extends Observable {
 				difference = 1;
 			}
 
-			return difference;
+			return (int)difference;
 		}
 
 		/**
@@ -202,7 +202,7 @@ public class PGeneticAlgo extends Observable {
 		// simple verification and variables
 		if (result.first().isDirty())
 			result.first().evaluate(type, edgeSchedType);
-		int iBest = result.first().getEvaluateCost();
+		long iBest = result.first().getEvaluateCost();
 		setChanged();
 		notifyObservers(iBest);
 		int i = 0;

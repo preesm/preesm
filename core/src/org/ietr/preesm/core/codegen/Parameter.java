@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**

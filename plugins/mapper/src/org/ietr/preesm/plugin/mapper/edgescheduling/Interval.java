@@ -10,22 +10,22 @@ package org.ietr.preesm.plugin.mapper.edgescheduling;
  */
 public class Interval {
 	
-	private int startTime;
-	private int duration;
+	private long startTime;
+	private long duration;
 	private int totalOrderIndex;
 
-	public Interval(int duration, int startTime, int totalOrderIndex) {
+	public Interval(long duration, long startTime, int totalOrderIndex) {
 		super();
 		this.duration = duration;
 		this.startTime = startTime;
 		this.totalOrderIndex = totalOrderIndex;
 	}
 	
-	public int getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
 
-	public int getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 

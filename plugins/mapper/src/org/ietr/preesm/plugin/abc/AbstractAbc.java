@@ -248,14 +248,14 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	@Override
-	public final int getFinalTime() {
+	public final long getFinalTime() {
 
 		updateTimings();
 
 		// visualize results
 		// monitor.render(new SimpleTextRenderer());
 
-		int finalTime = timeKeeper.getFinalTime();
+		long finalTime = timeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
@@ -266,12 +266,12 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	@Override
-	public final int getFinalTime(MapperDAGVertex vertex) {
+	public final long getFinalTime(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
 		updateTimings();
 
-		int finalTime = timeKeeper.getFinalTime(vertex);
+		long finalTime = timeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
@@ -283,11 +283,11 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	@Override
-	public final int getFinalTime(ArchitectureComponent component) {
+	public final long getFinalTime(ArchitectureComponent component) {
 
 		updateTimings();
 
-		int finalTime = timeKeeper.getFinalTime(component);
+		long finalTime = timeKeeper.getFinalTime(component);
 
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
@@ -298,9 +298,9 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	@Override
-	public final int getLoad(ArchitectureComponent component) {
+	public final long getLoad(ArchitectureComponent component) {
 
-		Integer load = 0;
+		long load = 0;
 
 		if (implementation != null) {
 
@@ -404,7 +404,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	@Override
-	public final int getTLevel(MapperDAGVertex vertex) {
+	public final long getTLevel(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
 		updateTimings();
@@ -412,7 +412,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	@Override
-	public final int getBLevel(MapperDAGVertex vertex) {
+	public final long getBLevel(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
 		updateTimings();
@@ -712,7 +712,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the time of the given vertex
 	 */
 	@Override
-	public final int getCost(MapperDAGVertex vertex) {
+	public final long getCost(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 		return vertex.getTimingVertexProperty().getCost();
 	}
@@ -721,7 +721,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the cost of the given vertex in the implementation
 	 */
 	@Override
-	public int getCost(MapperDAGEdge edge) {
+	public long getCost(MapperDAGEdge edge) {
 		edge = translateInImplantationEdge(edge);
 		return edge.getTimingEdgeProperty().getCost();
 

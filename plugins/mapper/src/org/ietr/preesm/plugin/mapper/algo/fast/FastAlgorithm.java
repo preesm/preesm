@@ -229,7 +229,7 @@ public class FastAlgorithm extends Observable {
 		// understand the steps, please refer to the Kwok thesis
 
 		// step 3
-		int bestSL = Integer.MAX_VALUE;
+		long bestSL = Long.MAX_VALUE;
 		int searchcount = 0;
 
 		// step 1
@@ -241,7 +241,7 @@ public class FastAlgorithm extends Observable {
 			simulator.setDAG(dag);
 		}
 		// display initial time after the list scheduling
-		int initial = simulator.getFinalTime();
+		long initial = simulator.getFinalTime();
 
 		bestTotalOrder = simulator.getTotalOrder().toMap();
 		if (displaySolutions) {
@@ -255,19 +255,19 @@ public class FastAlgorithm extends Observable {
 			writer.printLatency(initial);
 		}
 
-		int SL = initial;
+		long SL = initial;
 		dag.setScheduleLatency(initial);
 		if (BlockingNodesList.size() < 2)
 			return simulator.getDAG().clone();
 		bestSL = initial;
-		Integer iBest;
+		Long iBest;
 		MapperDAG dagfinal = simulator.getDAG().clone();
 		dagfinal.setScheduleLatency(bestSL);
 
 		// step 4/17
 		while (searchcount++ <= maxcount) {
 
-			iBest = (Integer) bestSL;
+			iBest = (Long) bestSL;
 			setChanged();
 			notifyObservers(iBest);
 
@@ -331,7 +331,7 @@ public class FastAlgorithm extends Observable {
 				simulator.implant(currentvertex, operatortest, false);
 
 				// step 10
-				int newSL = simulator.getFinalTime();
+				long newSL = simulator.getFinalTime();
 				if (newSL >= SL) {
 
 					simulator.implant(currentvertex, operatorprec, false);

@@ -70,7 +70,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	/**
 	 * The latency of the implementation
 	 */
-	private int ScheduleLatency;
+	private long ScheduleLatency;
 	
 	/**
 	 * Creactor of a DAG from a edge factory and a converted graph
@@ -99,11 +99,11 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		}
 	}
 
-	public int getScheduleLatency() {
+	public long getScheduleLatency() {
 		return ScheduleLatency;
 	}
 
-	public void setScheduleLatency(int scheduleLatency) {
+	public void setScheduleLatency(long scheduleLatency) {
 		ScheduleLatency = scheduleLatency;
 	}
 

@@ -43,19 +43,18 @@ package org.ietr.preesm.plugin.mapper.model;
  * @author mpelcat
  */
 public class TimingEdgeProperty {
-	static public final int UNAVAILABLE = -1;
+	static public final long UNAVAILABLE = -1;
 
 	/**
 	 * time to execute the edge
 	 */
-	private int cost;
+	private long cost;
 
 	public TimingEdgeProperty() {
 		super();
 		reset();
 	}
 
-	@Override
 	public TimingEdgeProperty clone() {
 		TimingEdgeProperty property = new TimingEdgeProperty();
 		property.setCost(this.getCost());
@@ -70,11 +69,11 @@ public class TimingEdgeProperty {
 		return "cost: " + cost;
 	}
 
-	public int getCost() {
+	public long getCost() {
 		return cost;
 	}
 
-	public void setCost(int cost) {
+	public void setCost(long cost) {
 		this.cost = cost;
 	}
 

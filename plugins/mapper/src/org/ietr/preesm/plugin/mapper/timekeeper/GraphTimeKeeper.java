@@ -210,10 +210,10 @@ public class GraphTimeKeeper {
 	 * 
 	 * @return last finishing time
 	 */
-	private int getLongestPrecedingPath(Set<DAGVertex> graphset,
+	private long getLongestPrecedingPath(Set<DAGVertex> graphset,
 			MapperDAGVertex inputvertex) {
 
-		int timing = TimingVertexProperty.UNAVAILABLE;
+		long timing = TimingVertexProperty.UNAVAILABLE;
 
 		if (!inputvertex.getImplementationVertexProperty()
 				.hasEffectiveComponent()) {
@@ -233,7 +233,7 @@ public class GraphTimeKeeper {
 					.getTimingVertexProperty();
 			MapperDAGEdge edge = (MapperDAGEdge) implementation.getEdge(vertex,
 					inputvertex);
-			int edgeCost = edge.getTimingEdgeProperty().getCost();
+			long edgeCost = edge.getTimingEdgeProperty().getCost();
 
 			// If we lack information on predecessors, path calculation fails
 			// No recalculation of predecessor T Level if already calculated
@@ -255,7 +255,7 @@ public class GraphTimeKeeper {
 				return TimingVertexProperty.UNAVAILABLE;
 			}
 
-			int newPathLength = vertexTProperty.getTlevel()
+			long newPathLength = vertexTProperty.getTlevel()
 					+ vertexTProperty.getCost() + edgeCost;
 
 			if (timing < newPathLength) {
@@ -347,7 +347,7 @@ public class GraphTimeKeeper {
 			Set<DAGVertex> predset,
 			DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex) {
 
-		int currentBLevel = 0;
+		long currentBLevel = 0;
 		TimingVertexProperty starttimingproperty = startvertex
 				.getTimingVertexProperty();
 		boolean hasStartVertexBLevel = starttimingproperty.hasBlevel();
@@ -362,7 +362,7 @@ public class GraphTimeKeeper {
 			TimingVertexProperty currenttimingproperty = currentvertex
 					.getTimingVertexProperty();
 
-			int edgeweight = ((MapperDAGEdge) implementation.getEdge(
+			long edgeweight = ((MapperDAGEdge) implementation.getEdge(
 					currentvertex, startvertex)).getTimingEdgeProperty()
 					.getCost();
 
@@ -393,9 +393,9 @@ public class GraphTimeKeeper {
 	 * If current implementation information is not enough to calculate this
 	 * timing, returns UNAVAILABLE
 	 */
-	public int getFinalTime(MapperDAGVertex vertex) {
+	public long getFinalTime(MapperDAGVertex vertex) {
 
-		int vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
+		long vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
 		TimingVertexProperty timingproperty = vertex.getTimingVertexProperty();
 		if (vertex.getTimingVertexProperty().hasCost()) {
 			if (timingproperty.hasTlevel()) {
@@ -413,15 +413,15 @@ public class GraphTimeKeeper {
 	 * implementation information is not enough to calculate this timing,
 	 * returns UNAVAILABLE
 	 */
-	public int getFinalTime() {
+	public long getFinalTime() {
 
-		int finaltime = TimingVertexProperty.UNAVAILABLE;
+		long finaltime = TimingVertexProperty.UNAVAILABLE;
 
 		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex next = (MapperDAGVertex) iterator.next();
-			int nextFinalTime = getFinalTime(next);
+			long nextFinalTime = getFinalTime(next);
 
 			// Returns TimingVertexProperty.UNAVAILABLE if at least one
 			// vertex has no final time. Otherwise returns the highest final
@@ -444,8 +444,8 @@ public class GraphTimeKeeper {
 	 * considers a partially implanted graph and ignores the non implanted
 	 * vertices
 	 */
-	public int getFinalTime(ArchitectureComponent component) {
-		int finaltime = 0;
+	public long getFinalTime(ArchitectureComponent component) {
+		long finaltime = 0;
 
 		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
 
@@ -454,7 +454,7 @@ public class GraphTimeKeeper {
 
 			if (component.equals(next.getImplementationVertexProperty()
 					.getEffectiveComponent())) {
-				int nextFinalTime = getFinalTime(next);
+				long nextFinalTime = getFinalTime(next);
 
 				// Returns TimingVertexProperty.UNAVAILABLE if at least one
 				// vertex has no final time. Otherwise returns the highest final
@@ -479,9 +479,6 @@ public class GraphTimeKeeper {
 		if (areTimingsDirty()) {
 			calculateTLevel();
 			setAsClean();
-		} else {
-			int i = 0;
-			i++;
 		}
 
 	}
@@ -518,7 +515,7 @@ public class GraphTimeKeeper {
 	 */
 	public static void main(String[] args) {
 
-		int time;
+		long time;
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.ALL);
 
@@ -712,7 +709,7 @@ public class GraphTimeKeeper {
 
 		logger.log(Level.FINEST, "Getting finishing times");
 
-		int test;
+		long test;
 
 		// simulator.setDAG(dag);
 

@@ -82,7 +82,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	/**
 	 * Cost of the transfer to give to the transfer vertex
 	 */
-	private int transferCost = 0;
+	private long transferCost = 0;
 
 	/**
 	 * Index of the route step within its route
@@ -116,7 +116,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, RouteStep step, int transferCost,
+			int routeIndex, RouteStep step, long transferCost,
 			boolean scheduleVertex) {
 		super();
 		this.edge = edge;

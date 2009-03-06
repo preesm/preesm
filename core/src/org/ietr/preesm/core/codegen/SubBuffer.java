@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
-import java.util.Set;
-
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 

@@ -86,7 +86,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Cost of the transfer to give to the transfer vertex
 	 */
-	private int transferCost = 0;
+	private long transferCost = 0;
 
 	/**
 	 * Index of the route step within its route
@@ -118,7 +118,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	public AddTransferVertexTransaction(IEdgeSched edgeScheduler,
 			MapperDAGEdge edge, MapperDAG implementation,
 			SchedOrderManager orderManager, int routeIndex, RouteStep step,
-			int transferCost, boolean scheduleVertex) {
+			long transferCost, boolean scheduleVertex) {
 		super();
 		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;

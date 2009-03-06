@@ -43,7 +43,6 @@ import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.parameters.ParameterSet;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 

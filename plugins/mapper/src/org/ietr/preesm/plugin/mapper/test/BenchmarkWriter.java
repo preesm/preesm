@@ -61,9 +61,9 @@ public class BenchmarkWriter {
 	 
 	 private long initialTime = 0;
 	 
-	 private int initialLatency = -1;
+	 private long initialLatency = -1;
 	 
-	 private int latencyDisplayType = -1;
+	 private long latencyDisplayType = -1;
 
 	public BenchmarkWriter(int latencyDisplayType) {
 		
@@ -91,7 +91,7 @@ public class BenchmarkWriter {
 	/**
 	 * Printing latency to the log file
 	 */
-	public void printLatency(int latency) {
+	public void printLatency(long latency) {
 		
 		// initialized at first call
 		if(initialLatency < 0){

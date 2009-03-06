@@ -263,6 +263,7 @@ public class SourceFileCodeGenerator {
 							&& oldInit.getMediumId().equals(init.getMediumId())) {
 						//init has already been done
 						init = null;
+						break;
 					}
 				}
 			}

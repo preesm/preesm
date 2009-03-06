@@ -19,6 +19,10 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isBroadCast(DAGVertex vertex) {
 
+		if(vertex.getKind() == null){
+			return false;
+		}
+
 		if(vertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
 			return true;
 		}
@@ -31,6 +35,10 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isFork(DAGVertex vertex) {
 
+		if(vertex.getKind() == null){
+			return false;
+		}
+		
 		if(vertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
 			return true;
 		}
@@ -43,6 +51,10 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isJoin(DAGVertex vertex) {
 
+		if(vertex.getKind() == null){
+			return false;
+		}
+
 		if(vertex.getKind().equalsIgnoreCase("dag_join_vertex")){
 			return true;
 		}
@@ -54,6 +66,10 @@ public class SpecialVertexManager {
 	 * Tests if a vertex is of type init
 	 */
 	static public boolean isInit(DAGVertex vertex) {
+
+		if(vertex.getKind() == null){
+			return false;
+		}
 
 		if(vertex.getKind().equalsIgnoreCase("dag_init_vertex")){
 			return true;

@@ -136,7 +136,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
 				dag, architecture, parameters.getSimulatorType().isSwitchTask());
-
+		
 		InitialLists initial = new InitialLists();
 
 		if (!initial.constructInitialLists(dag, simu))

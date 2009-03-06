@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.codegen;
 
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * Function initializing a point to point communication system

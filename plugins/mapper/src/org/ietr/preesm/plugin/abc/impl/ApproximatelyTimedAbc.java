@@ -131,7 +131,7 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
 
-			int vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
 			precedenceEdgeAdder.scheduleNewVertex(implementation,

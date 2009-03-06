@@ -115,7 +115,7 @@ public class SendReceiveAbc extends
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
 			
-			int vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
 			// Set costs

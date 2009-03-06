@@ -121,7 +121,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 							.getParentContainer();
 				}
 				if (parentBufferContainer != null) {
-					candidateBuffers.put(edge, parentBufferContainer.getBuffer(edge));
+					candidateBuffers.put(edge, parentBufferContainer
+							.getBuffer(edge));
 				}
 			}
 
@@ -134,43 +135,57 @@ public class UserFunctionCall extends AbstractCodeElement {
 							.getParentContainer();
 				}
 				if (parentBufferContainer != null) {
-					candidateBuffers.put(edge, parentBufferContainer.getBuffer(edge));
+					candidateBuffers.put(edge, parentBufferContainer
+							.getBuffer(edge));
 				}
 			}
 
 			// Filters and orders the buffers to fit the prototype
 			// Adds parameters if no buffer fits the prototype name
-			for (CodeGenArgument arg : call.getArguments()) {
-				Parameter currentParam = null;
+			if (call != null) {
+				for (CodeGenArgument arg : call.getArguments()) {
+					Parameter currentParam = null;
 
-				String argName = arg.getName();
-				if (arg.getDirection() == CodeGenArgument.INPUT) {
-					for (SDFEdge link : candidateBuffers.keySet()) {
-						if (link.getTargetInterface().getName().equals(arg.getName()) && link.getTarget().equals(vertex))
-							currentParam = candidateBuffers.get(link);
-					}
-				} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
-					for (SDFEdge link : candidateBuffers.keySet()) {
-						if (link.getSourceInterface().getName().equals(arg.getName()) && link.getSource().equals(vertex))
-							currentParam = candidateBuffers.get(link);
+					String argName = arg.getName();
+					if (arg.getDirection() == CodeGenArgument.INPUT) {
+						for (SDFEdge link : candidateBuffers.keySet()) {
+							if (link.getTargetInterface().getName().equals(
+									arg.getName())
+									&& link.getTarget().equals(vertex))
+								currentParam = candidateBuffers.get(link);
+						}
+					} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
+						for (SDFEdge link : candidateBuffers.keySet()) {
+							if (link.getSourceInterface().getName().equals(
+									arg.getName())
+									&& link.getSource().equals(vertex))
+								currentParam = candidateBuffers.get(link);
 
+						}
 					}
-				}
 
-				// If no buffer was found with the given port name, a parameter is sought
-				if (currentParam == null && arg.getDirection() == CodeGenArgument.INPUT) {
-					if(vertex.getArgument(argName) != null){
-						currentParam = new Constant(argName,vertex.getArgument(argName).intValue());
+					// If no buffer was found with the given port name, a
+					// parameter is sought
+					if (currentParam == null
+							&& arg.getDirection() == CodeGenArgument.INPUT) {
+						if (vertex.getArgument(argName) != null) {
+							currentParam = new Constant(argName, vertex
+									.getArgument(argName).intValue());
+						}
 					}
-				}
-				
-				if (currentParam != null) {
-					addParameter(currentParam);
-				} else {
-					PreesmLogger.getLogger().log(
-							Level.SEVERE,
-							"Vertex: " + vertex.getName() + ". Error interpreting the prototype: no port found with name: "
-									+ argName);
+
+					if (currentParam != null) {
+						addParameter(currentParam);
+					} else {
+						PreesmLogger
+								.getLogger()
+								.log(
+										Level.SEVERE,
+										"Vertex: "
+												+ vertex.getName()
+												+ ". Error interpreting the prototype: no port found with name: "
+												+ argName);
+					}
 				}
 			}
 		}

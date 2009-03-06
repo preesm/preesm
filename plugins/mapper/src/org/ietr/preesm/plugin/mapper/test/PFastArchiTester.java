@@ -180,7 +180,7 @@ public class PFastArchiTester {
 				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		simu2.resetImplementation();
 		simu2.setDAG(dag);
-		int finale = simu2.getFinalTime();
+		long finale = simu2.getFinalTime();
 		logger.log(Level.FINE, "FinalSPlength " + finale);
 		simu2.plotImplementation(false);
 		simu2.resetImplementation();
