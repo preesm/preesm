@@ -59,7 +59,9 @@
     <xsl:template match="sourceCode:bufferContainer">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'// Buffer declarations',$new_line)"/>
-        <xsl:apply-templates select="sourceCode:bufferAllocation"/>
+        <xsl:apply-templates select="sourceCode:bufferAllocation | sourceCode:variableAllocation">
+            <xsl:with-param name="curIndent" select="$curIndent"/> 
+        </xsl:apply-templates>
         <xsl:value-of select="$new_line"/>
     </xsl:template>
     
@@ -79,10 +81,10 @@
     
     <xsl:template match="sourceCode:forLoop">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+        <xsl:if test="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -95,9 +97,9 @@
     <xsl:template match="sourceCode:finiteForLoop">
         <xsl:param name="curIndent"/>
         <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop |sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
-            <xsl:value-of select="concat($curIndent,'for(int ',@index,' = 0; ',@index,'&lt;',@domain,' ; ',@index,' ++)',$new_line)"/>
+            <xsl:value-of select="concat($curIndent,'for(',@index,' = 0; ',@index,'&lt;',@domain,' ; ',@index,' ++)',$new_line)"/>
             <xsl:apply-templates select="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
-                <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
+                <xsl:with-param name="curIndent" select="$curIndent"/>
             </xsl:apply-templates>
         </xsl:if>
     </xsl:template>
@@ -107,7 +109,7 @@
         <xsl:param name="curIndent"/>
         <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'{',$new_line)"/>
-            <xsl:apply-templates select="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:bufferAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             <xsl:value-of select="concat($curIndent,'}',$new_line)"/>
@@ -163,7 +165,7 @@
     </xsl:template>
     
     <xsl:template match="sourceCode:subBuffer">
-        <xsl:value-of select="concat(@name,'[',@index,']',',')"/>
+        <xsl:value-of select="concat(@name,',')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:constant">
@@ -171,7 +173,18 @@
     </xsl:template>
     
     <xsl:template match="sourceCode:bufferAllocation">
+        <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:subBufferAllocation">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,@type,' *',@name,' =&amp;',@parentBuffer,'[',@index,'*',@size,']', ';',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:variableAllocation">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,@type,' ',@name,' ;',$new_line)"/>
     </xsl:template>
     
 </xsl:stylesheet>

@@ -10,6 +10,7 @@
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
       <data key="variables">
          <variable name="sourcePath" value="SmallTestCase/Code"/>
+         <variable name="xslLibraryPath" value="SmallTestCase/Code/XSL"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sourceCode xmlns="http://org.ietr.preesm.sourceCode">
-    <coreType>C64x</coreType>
-    <coreName>C64_1</coreName>
+    <coreType>x86</coreType>
+    <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
             <bufferAllocation name="Firstout_0" size="16" type="char"/>
             <bufferAllocation name="Secondou_0" size="16" type="char"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
-            <bufferContainer/>
+            <bufferContainer>
+                <variableAllocation name="i" type="long"/>
+                <variableAllocation name="j" type="long"/>
+            </bufferContainer>
             <linearCodeContainer/>
             <forLoop>
                 <userFunctionCall name="first_dummy">
@@ -17,18 +20,18 @@
                 </userFunctionCall>
                 <finiteForLoop domain="4" index="i">
                     <CompoundCode>
-                        <subBuffer index="i" name="sub_i_Se_0"
-                            parentBuffer="Secondou_0" size="4"/>
-                        <subBuffer index="i" name="sub_i_Fi_0"
-                            parentBuffer="Firstout_0" size="4"/>
+                        <subBufferAllocation index="i" name="sub_i_Se_0"
+                            parentBuffer="Secondou_0" size="4" type="char"/>
+                        <subBufferAllocation index="i" name="sub_i_Fi_0"
+                            parentBuffer="Firstout_0" size="4" type="char"/>
+                        <bufferAllocation name="outLoopP_0" size="1" type="char"/>
                         <finiteForLoop domain="4" index="j">
                             <CompoundCode>
-                                <buffer name="outLoopP_0" size="1" type="char"/>
-                                <subBuffer index="j" name="sub_j_su_0"
-                                    parentBuffer="sub_i_Se_0" size="1"/>
-                                <buffer name="outLoopP_0" size="1" type="char"/>
-                                <subBuffer index="j" name="sub_j_su_0"
-                                    parentBuffer="sub_i_Fi_0" size="1"/>
+                                <subBufferAllocation index="j"
+                                    name="sub_j_su_0"
+                                    parentBuffer="sub_i_Se_0" size="1" type="char"/>
+                                <bufferAllocation name="dataOut__0"
+                                    size="1" type="char"/>
                                 <userFunctionCall name="mux">
                                     <subBuffer index="j"
                                     name="sub_j_su_0"
@@ -48,10 +51,14 @@
                     </CompoundCode>
                 </finiteForLoop>
                 <finiteForLoop domain="16" index="i">
-                    <userFunctionCall name="third_dummy">
-                        <subBuffer index="i" name="sub_i_Se_0"
-                            parentBuffer="Secondou_0" size="1"/>
-                    </userFunctionCall>
+                    <CompoundCode>
+                        <subBufferAllocation index="i" name="sub_i_Se_0"
+                            parentBuffer="Secondou_0" size="1" type="char"/>
+                        <userFunctionCall name="third_dummy">
+                            <subBuffer index="i" name="sub_i_Se_0"
+                                parentBuffer="Secondou_0" size="1"/>
+                        </userFunctionCall>
+                    </CompoundCode>
                 </finiteForLoop>
             </forLoop>
             <linearCodeContainer/>
