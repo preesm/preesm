@@ -42,10 +42,12 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -186,6 +188,28 @@ public class ApproximatelyTimedAbc extends AbstractAbc {
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
 		edge.getTimingEdgeProperty().setCost(0);
+
+		// Special vertices create edges with dissuasive costs so that they
+		// are mapped correctly: fork after the sender and join before the receiver
+		if ((edge.getTarget() != null
+				&& SpecialVertexManager.isFork(edge.getTarget())) || (edge.getSource() != null && SpecialVertexManager.isJoin(edge.getSource()))) {
+			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
+					.getSource()).getImplementationVertexProperty();
+			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+					.getTarget()).getImplementationVertexProperty();
+
+			Operator sourceOp = sourceimp.getEffectiveOperator();
+			Operator destOp = destimp.getEffectiveOperator();
+
+			if (sourceOp != Operator.NO_COMPONENT
+					&& destOp != Operator.NO_COMPONENT) {
+				if (sourceOp.equals(destOp)) {
+					edge.getTimingEdgeProperty().setCost(0);
+				} else {
+					edge.getTimingEdgeProperty().setCost(SpecialVertexManager.dissuasiveCost);
+				}
+			}
+		}
 
 	}
 

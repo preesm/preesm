@@ -194,10 +194,13 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 
 		edge.getTimingEdgeProperty().setCost(0);
 
-		long dissuasiveCost = 1000000000l;
-		// Special vertices create edges with dissuasive costs
-		if (edge.getTarget() != null
-				&& SpecialVertexManager.isFork(edge.getTarget())) {
+		// Special vertices create edges with dissuasive costs so that they
+		// are mapped correctly: fork after the sender and join before the
+		// receiver
+		if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
+				.getTarget()))
+				|| (edge.getSource() != null && SpecialVertexManager
+						.isJoin(edge.getSource()))) {
 			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
 					.getSource()).getImplementationVertexProperty();
 			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
@@ -211,7 +214,7 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 				if (sourceOp.equals(destOp)) {
 					edge.getTimingEdgeProperty().setCost(0);
 				} else {
-					edge.getTimingEdgeProperty().setCost(dissuasiveCost);
+					edge.getTimingEdgeProperty().setCost(SpecialVertexManager.dissuasiveCost);
 				}
 			}
 		}

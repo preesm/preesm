@@ -42,6 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -172,6 +173,16 @@ public class LooselyTimedAbc extends
 
 				edge.getTimingEdgeProperty().setCost(
 						router.evaluateTransfer(edge, sourceOp, destOp));
+
+				// Special vertices create edges with dissuasive costs so that they
+				// are mapped correctly: fork after the sender and join before the receiver
+				if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
+						.getTarget()))
+						|| (edge.getSource() != null && SpecialVertexManager
+								.isJoin(edge.getSource()))){
+
+					edge.getTimingEdgeProperty().setCost(SpecialVertexManager.dissuasiveCost);
+				}
 			}
 		}
 
