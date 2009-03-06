@@ -52,7 +52,7 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class SemaphorePend extends AbstractCodeElement {
 
 	private Semaphore semaphore;
-
+	private SemaphoreContainer semContainer;
 	/**
 	 * Creates a semaphore pend function to protect the data transmitted by a
 	 * communication vertex.
@@ -62,8 +62,7 @@ public class SemaphorePend extends AbstractCodeElement {
 			SemaphoreType semType) {
 		super("semaphorePend", globalContainer, vertex);
 
-		SemaphoreContainer semContainer = globalContainer
-				.getSemaphoreContainer();
+		semContainer = globalContainer.getSemaphoreContainer();
 
 		// The pending semaphore of a full buffer will be put before the send
 		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
@@ -73,6 +72,7 @@ public class SemaphorePend extends AbstractCodeElement {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
 		semaphore.accept(printer, currentLocation); // Accept the code container
+		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
 	}
 
 	public Semaphore getSemaphore() {

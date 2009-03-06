@@ -108,14 +108,14 @@
     <xsl:template match="sourceCode:semaphorePost">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'ReleaseSemaphore','(')"/>
-        <xsl:value-of select="concat('sem[',@number,']')"/>
+        <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
         <xsl:value-of select="concat(',1,&amp;previous);',' //',@type,$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:semaphorePend">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'WaitForSingleObject','(')"/>
-        <xsl:value-of select="concat('sem[',@number,']')"/>
+        <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
         <xsl:value-of select="concat(',INFINITE);',' //',@type,$new_line)"/>
     </xsl:template>
     

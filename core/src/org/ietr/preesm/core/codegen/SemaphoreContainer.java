@@ -57,7 +57,12 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	/**
 	 * Buffer container containing the current semaphore manager
 	 */
-	AbstractBufferContainer parentContainer;
+	private AbstractBufferContainer parentContainer;
+
+	/**
+	 * Allocation of the semaphores
+	 */
+	private Buffer semaphoreBuffer = null;
 
 	public SemaphoreContainer(AbstractBufferContainer parentContainer) {
 		super();
@@ -65,11 +70,11 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	}
 
 	public Buffer allocateSemaphores() {
-		Buffer buf = new Buffer(semaphoreBufferName, this.size(), new DataType("semaphore"),
+		semaphoreBuffer = new Buffer(semaphoreBufferName, this.size(), new DataType("semaphore"),
 				null, parentContainer);
 
-		parentContainer.addBuffer(new BufferAllocation(buf));
-		return buf;
+		parentContainer.addBuffer(new BufferAllocation(semaphoreBuffer));
+		return semaphoreBuffer;
 	}
 
 	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType type) {
@@ -113,4 +118,10 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 
 		return null;
 	}
+
+	public Buffer getSemaphoreBuffer() {
+		return semaphoreBuffer;
+	}
+	
+	
 }

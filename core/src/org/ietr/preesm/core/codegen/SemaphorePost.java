@@ -52,6 +52,7 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class SemaphorePost extends AbstractCodeElement {
 
 	private Semaphore semaphore;
+	private SemaphoreContainer semContainer;
 
 	/**
 	 * Creates a semaphore post function to protect the data transmitted by a
@@ -65,8 +66,7 @@ public class SemaphorePost extends AbstractCodeElement {
 			SDFAbstractVertex vertex, SemaphoreType semType) {
 		super("semaphorePost", globalContainer, vertex);
 
-		SemaphoreContainer semContainer = globalContainer
-				.getSemaphoreContainer();
+		semContainer = globalContainer.getSemaphoreContainer();
 
 		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
 	}
@@ -74,6 +74,7 @@ public class SemaphorePost extends AbstractCodeElement {
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 		semaphore.accept(printer, currentLocation); // Accept the semaphore
+		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
 	}
 
 	public Semaphore getSemaphore() {
