@@ -50,6 +50,7 @@
         <xsl:apply-templates select="sourceCode:bufferContainer | sourceCode:linearCodeContainer | sourceCode:forLoop">
             <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
         </xsl:apply-templates>
+        <xsl:value-of select="concat($curIndent,$sglIndent,'return 0;',$new_line)"/>
         <xsl:value-of select="concat($curIndent,'}//',@name,$new_line)"/>
         <xsl:value-of select="$new_line"/>
     </xsl:template>
@@ -80,7 +81,7 @@
     <xsl:template match="sourceCode:forLoop">
         <xsl:param name="curIndent"/>
         <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
-            <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
+            <xsl:value-of select="concat($curIndent,'while(1){',$new_line)"/>
             
             <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
@@ -121,14 +122,14 @@
     
     <xsl:template match="sourceCode:send">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'send(',@mediumDef,',',@target,',')"/>
+        <xsl:value-of select="concat($curIndent,'sendData(',@mediumDef,',',$coreName,',',@target,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receive">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'receive(',@mediumDef,',',@source,',')"/>
+        <xsl:value-of select="concat($curIndent,'receiveData(',@mediumDef,',',@source,',',$coreName,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
@@ -141,13 +142,13 @@
     
     <xsl:template match="sourceCode:sendInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sendInit(',@mediumId,',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'sendInit(',@mediumId,',',$coreName,',',@connectedCoreId)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receiveInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'receiveInit(',@mediumId,',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'receiveInit(',@mediumId,',',@connectedCoreId,',',$coreName)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     

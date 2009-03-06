@@ -61,7 +61,7 @@
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
-         <spirit:instanceName>Core8</spirit:instanceName>
+         <spirit:instanceName>Core0</spirit:instanceName>
          <spirit:componentRef spirit:library="" spirit:name="x86" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
@@ -118,7 +118,7 @@
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core8"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core0"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>

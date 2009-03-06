@@ -65,11 +65,11 @@
       <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
          <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size/2</data>
+         <data key="edge_cons">size</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
-         <data key="edge_prod">size/2</data>
+         <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">size</data>
          <data key="data_type">char</data>
