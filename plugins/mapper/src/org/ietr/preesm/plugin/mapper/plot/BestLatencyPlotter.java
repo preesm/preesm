@@ -255,12 +255,12 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 			FastAlgorithm fast = (FastAlgorithm) o;
 			fast.countObservers();
 
-			if (arg instanceof Integer) {
+			if (arg instanceof Long) {
 
 				int i = 0;
 				// final Millisecond now = new Millisecond();
 				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Integer) arg).doubleValue();
+				this.lastValue[i] = ((Long) arg).doubleValue();
 
 				Millisecond milli = new Millisecond();
 
@@ -275,12 +275,12 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 			PFastAlgorithm pfast = (PFastAlgorithm) o;
 			pfast.countObservers();
 
-			if (arg instanceof Integer) {
+			if (arg instanceof Long) {
 
 				int i = 0;
 				// final Millisecond now = new Millisecond();
 				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Integer) arg).doubleValue();
+				this.lastValue[i] = ((Long) arg).doubleValue();
 				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
 						this.lastValue[i]);
 
@@ -292,12 +292,12 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 			StandardGeneticAlgorithm geneticAlgorithm = (StandardGeneticAlgorithm) o;
 			geneticAlgorithm.countObservers();
 
-			if (arg instanceof Integer) {
+			if (arg instanceof Long) {
 
 				int i = 0;
 				// final Millisecond now = new Millisecond();
 				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Integer) arg).doubleValue();
+				this.lastValue[i] = ((Long) arg).doubleValue();
 				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
 						this.lastValue[i]);
 
@@ -309,12 +309,12 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 			PGeneticAlgo geneticAlgorithm = (PGeneticAlgo) o;
 			geneticAlgorithm.countObservers();
 
-			if (arg instanceof Integer) {
+			if (arg instanceof Long) {
 
 				int i = 0;
 				// final Millisecond now = new Millisecond();
 				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Integer) arg).doubleValue();
+				this.lastValue[i] = ((Long) arg).doubleValue();
 				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
 						this.lastValue[i]);
 
