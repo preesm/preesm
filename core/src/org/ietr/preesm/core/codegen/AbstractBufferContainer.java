@@ -139,6 +139,20 @@ public abstract class AbstractBufferContainer {
 		VariableAllocation alloc = new VariableAllocation(var);
 		variables.add(alloc);
 	}
+	
+	/**
+	 * Gives the variable with the given name
+	 * @param name The name of the variable to return
+	 * @return The variable if found, null otherwise
+	 */
+	public Variable getVariable(String name){
+		for(VariableAllocation var : variables){
+			if(var.getVariable().getName().equals(name)){
+				return var.getVariable();
+			}
+		}
+		return null ;
+	}
 
 	/**
 	 * Returns true the buffer with the given name already exists somewhere
@@ -221,6 +235,12 @@ public abstract class AbstractBufferContainer {
 		return variables;
 	}
 
+	
+	public List<BufferAllocation> getBufferAllocations(){
+		return buffers;
+	}
+	
+	
 	@Override
 	public String toString() {
 		String code = "";

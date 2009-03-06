@@ -39,7 +39,6 @@ package org.ietr.preesm.core.codegen;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -73,6 +72,14 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		} else {
 			index = new LoopIndex('i', new DataType("long"));
 		}
+		parentLoop = parentContainer;
+		while (parentLoop != null
+				&& !(parentLoop instanceof ComputationThreadDeclaration)) {
+			parentLoop = parentLoop.getParentContainer();
+		}
+		if (parentLoop.getVariable(index.getName()) == null) {
+			parentLoop.addVariable(index);
+		}
 		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
@@ -92,6 +99,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 							edge.getProd().intValue(), index,
 							parentBufferContainer.getBuffer(edge),
 							parentBufferContainer), edge);
+					this.addBuffer(new SubBufferAllocation(this.getBuffer(edge)));
 				} else {
 					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
 				}
@@ -106,25 +114,22 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 						.getParentContainer();
 			}
 			if (parentBufferContainer != null) {
-				if(edge.getCons().intValue() != parentBufferContainer
-						.getBuffer(edge).getSize()){
+				if (edge.getCons().intValue() != parentBufferContainer
+						.getBuffer(edge).getSize()) {
 					this.addBuffer(new SubBuffer("sub_" + index.getName() + "_"
-							+ parentBufferContainer.getBuffer(edge).getName(), edge
-							.getCons().intValue(), index, parentBufferContainer
-							.getBuffer(edge), parentBufferContainer), edge);
-				}else{
+							+ parentBufferContainer.getBuffer(edge).getName(),
+							edge.getCons().intValue(), index,
+							parentBufferContainer.getBuffer(edge),
+							parentBufferContainer), edge);
+					this.addBuffer(new SubBufferAllocation(this.getBuffer(edge)));
+				} else {
 					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
 				}
-				
+
 			}
 		}
-		if (correspondingVertex.getGraphDescription() != null) {
-			content = new CompoundCodeElement(correspondingVertex.getName(),
-					this, correspondingVertex);
-		} else {
-			content = new UserFunctionCall(correspondingVertex, this,
-					CodeSection.LOOP);
-		}
+		content = new CompoundCodeElement(correspondingVertex.getName(), this,
+				correspondingVertex);
 	}
 
 	public ICodeElement getContent() {
@@ -135,6 +140,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		if (allocatedBuffers.get(edge) == null) {
 			allocatedBuffers.put(edge, buff);
 		}
+
 	}
 
 	public int getNbIteration() {

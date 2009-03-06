@@ -56,15 +56,14 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
-import org.ietr.preesm.core.codegen.ReceiveInit;
 import org.ietr.preesm.core.codegen.Semaphore;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
-import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SubBuffer;
+import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
@@ -495,6 +494,22 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element compound = dom.createElement("CompoundCode");
 			((Element)currentLocation).appendChild(compound);
 			currentLocation = compound;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(SubBufferAllocation element, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element bufferAllocation = dom.createElement("subBufferAllocation");
+			((Element)currentLocation).appendChild(bufferAllocation);
+			bufferAllocation.setAttribute("name", element.getBuffer().getName());
+			bufferAllocation.setAttribute("size", element.getBuffer().getSize().toString());
+			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
+			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element.getBuffer()).getParentBuffer().getName());
+			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().getName());
 		} 
 		
 		return currentLocation;

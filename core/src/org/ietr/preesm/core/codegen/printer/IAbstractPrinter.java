@@ -57,6 +57,7 @@ import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SubBuffer;
+import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
@@ -75,6 +76,7 @@ public interface IAbstractPrinter {
 	public Object visit(Constant element, CodeZoneId index, Object currentLocation);
 	public Object visit(SubBuffer element, CodeZoneId index, Object currentLocation);
 	public Object visit(BufferAllocation element, CodeZoneId index, Object currentLocation);
+	public Object visit(SubBufferAllocation element, CodeZoneId index, Object currentLocation);
 	public Object visit(VariableAllocation element, CodeZoneId index, Object currentLocation);
 	public Object visit(AbstractCodeElement element, CodeZoneId index, Object currentLocation);
 	public Object visit(CommunicationFunctionCall element, CodeZoneId index, Object currentLocation);

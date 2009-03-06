@@ -38,8 +38,10 @@ package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -93,6 +95,8 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 					this.addCall(CodeElementFactory.createElement(vertex.getName(), this, vertex));
 				}
 			}
+		}else{
+			this.addCall(new UserFunctionCall(correspondingVertex, this, CodeSection.LOOP));
 		}
 	}
 
@@ -113,11 +117,21 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
-		for(Buffer buff : allocatedBuffers.values()){
+		Iterator<VariableAllocation> iterator2 = variables.iterator();
+		while (iterator2.hasNext()) {
+			VariableAllocation alloc = iterator2.next();
+			alloc.accept(printer, currentLocation); // Accepts allocations
+		}
+		if(this.getParentContainer() instanceof FiniteForLoop){
+			for(BufferAllocation buff : this.getParentContainer().getBufferAllocations()){
+				if(buff != null){
+					buff.accept(printer, currentLocation);
+				}
+			}
+		}
+		for(BufferAllocation buff : this.getBufferAllocations()){
 			if(buff != null){
 				buff.accept(printer, currentLocation);
-			}else{
-				System.out.println();
 			}
 		}
 		for (ICodeElement call : calls) {
