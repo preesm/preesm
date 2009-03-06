@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import java.util.Set;
+
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
@@ -45,8 +47,8 @@ public class SubBuffer extends Buffer {
 	private Variable index;
 	private Buffer parentBuffer;
 
-	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer) {
-		super(name, size, parentBuffer.getType(), parentBuffer.getEdge());
+	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, AbstractBufferContainer container) {
+		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
 		this.parentBuffer = parentBuffer;
 		this.index = index ;
 	}

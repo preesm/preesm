@@ -120,14 +120,13 @@ public abstract class AbstractBufferContainer {
 	 *            A {@link BufferAllocation}.
 	 */
 	public void addBuffer(BufferAllocation alloc) {
-		if (getBuffer(alloc.getBuffer().getName()) == null)
+		if (!existBuffer(alloc.getBuffer().getName(),true))
 			buffers.add(alloc);
 		else
-			PreesmLogger.getLogger()
-					.log(
-							Level.FINE,
-							"buffer " + alloc.getBuffer().getName()
-									+ " already exists");
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"buffer " + alloc.getBuffer().getName()
+							+ " already exists in the source file list");
 	}
 
 	/**
@@ -142,56 +141,54 @@ public abstract class AbstractBufferContainer {
 	}
 
 	/**
-	 * Gets the buffer with the given name.
-	 * 
-	 * @param name
-	 *            The buffer name.
-	 * @return The buffer created.
+	 * Returns true the buffer with the given name already exists somewhere
+	 * (accessible or not).
 	 */
-	public Buffer getBuffer(String name) {
-		Buffer buffer = null;
+	public boolean existBuffer(String name, boolean searchInOtherFiles) {
 		Iterator<BufferAllocation> iterator = buffers.iterator();
 
 		// Looks for the buffer in the current container
 		while (iterator.hasNext()) {
 			BufferAllocation alloc = iterator.next();
-			buffer = alloc.getBuffer();
+			Buffer buffer = alloc.getBuffer();
 
 			if (alloc.getBuffer().getName().equalsIgnoreCase(name)) {
-				return buffer;
+				return true;
 			}
 		}
 
 		// If not found, searching in the parent container
-		if (parentContainer != null)
-			return (parentContainer.getBuffer(name));
+		if (parentContainer != null) {
+			if (parentContainer.existBuffer(name, searchInOtherFiles)) {
+				return true;
+			}
+		}
 
-		return null;
+		return false;
 	}
 
-	
-	public List<Buffer> getBuffers(Set<SDFEdge> edges){
+	public List<Buffer> getBuffers(Set<SDFEdge> edges) {
 		List<Buffer> result = new ArrayList<Buffer>();
-		for(SDFEdge edge : edges){
+		for (SDFEdge edge : edges) {
 			Buffer buf = getBuffer(edge);
-			if(buf!=null){
+			if (buf != null) {
 				result.add(buf);
 			}
 		}
-		return result ;
+		return result;
 	}
-	
-	public Buffer getBuffer(SDFEdge edge){
-		for(BufferAllocation alloc : buffers){
-			if(alloc.getBuffer().getEdge().equals(edge)){
-				return alloc.getBuffer(); 
+
+	public Buffer getBuffer(SDFEdge edge) {
+		for (BufferAllocation alloc : buffers) {
+			if (alloc.getBuffer().getEdge().equals(edge)) {
+				return alloc.getBuffer();
 			}
 		}
 
 		if (parentContainer != null)
 			return (parentContainer.getBuffer(edge));
-		
-		return null ;
+
+		return null;
 	}
 
 	/**

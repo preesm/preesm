@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
+import java.util.Set;
+
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -45,7 +47,7 @@ import org.sdf4j.model.sdf.SDFEdge;
  * 
  * @author mpelcat
  */
-public class Buffer extends Parameter{
+public class Buffer extends Parameter {
 
 	// Buffer representing an edge: characteristic names
 
@@ -79,9 +81,16 @@ public class Buffer extends Parameter{
 	 */
 	private String sourceOutputPortID;
 
-	public Buffer(String name, Integer size, DataType type, SDFEdge edge) {
+	/**
+	 * Maximal size of a reduced name
+	 */
+	private static final int maxReducedNameSize = 10;
+
+	public Buffer(String name, Integer size, DataType type, SDFEdge edge,
+			AbstractBufferContainer container) {
 
 		super(name, type);
+		reduceName(container);
 		this.sourceID = null;
 		this.destID = null;
 		if (edge != null) {
@@ -94,9 +103,11 @@ public class Buffer extends Parameter{
 	}
 
 	public Buffer(String sourceID, String destID, String sourceOutputPortID,
-			String destInputPortID, Integer size, DataType type, SDFEdge edge) {
+			String destInputPortID, Integer size, DataType type, SDFEdge edge,
+			AbstractBufferContainer container) {
 
 		super(sourceID + sourceOutputPortID + destID + destInputPortID, type);
+		reduceName(container);
 		this.sourceID = sourceID;
 		this.destID = destID;
 		this.sourceOutputPortID = sourceOutputPortID;
@@ -111,7 +122,7 @@ public class Buffer extends Parameter{
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
-																					// self
+		// self
 	}
 
 	public SDFEdge getEdge() {
@@ -128,5 +139,35 @@ public class Buffer extends Parameter{
 
 	public String getSourceOutputPortID() {
 		return sourceOutputPortID;
+	}
+
+	/**
+	 * Generates a shorter name fitting the max name size and not existing in
+	 * name set
+	 */
+	public void reduceName(AbstractBufferContainer container) {
+
+		if (container != null) {
+			String currentName = getName();
+			if (maxReducedNameSize <= currentName.length()
+					|| container.existBuffer(currentName,true)) {
+				String indexString = "_" + String.valueOf(0);
+
+				for (int index = 0; maxReducedNameSize>=indexString.length(); index++) {
+					
+					indexString = "_" + String.valueOf(index);
+					int reducedNameSizeMinIndex = Math.min(maxReducedNameSize
+							- indexString.length(), getName().length());
+					currentName = currentName.substring(0,
+							reducedNameSizeMinIndex);
+					currentName = currentName + indexString;
+					if (!container.existBuffer(currentName,true)){
+						break;
+					}
+				}
+
+				setName(currentName);
+			}
+		}
 	}
 }

@@ -110,7 +110,7 @@ public class SourceFileCodeGenerator {
 		Buffer buf = new Buffer(edge.getSource().getName(), edge.getTarget()
 				.getName(), edge.getSourceInterface().getName(), edge
 				.getTargetInterface().getName(), ((CodeGenSDFEdge) edge)
-				.getSize(), new DataType(edge.getDataType().toString()), edge);
+				.getSize(), new DataType(edge.getDataType().toString()), edge, file.getGlobalContainer());
 
 		BufferAllocation allocation = new BufferAllocation(buf);
 		file.addBuffer(allocation);
@@ -211,11 +211,11 @@ public class SourceFileCodeGenerator {
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
 
 			// Allocates the semaphores globally
-			file.getSemaphoreContainer().allocateSemaphores();
+			Buffer semBuf = file.getSemaphoreContainer().allocateSemaphores();
 
 			// Calls the semaphore initialization function and launch com thread
 			// at the beginning of computation thread
-			initialization(computationThread, communicationThread);
+			initialization(computationThread, communicationThread, semBuf);
 		}
 	}
 
@@ -224,15 +224,13 @@ public class SourceFileCodeGenerator {
 	 * computation thread
 	 */
 	public void initialization(ComputationThreadDeclaration computationThread,
-			CommunicationThreadDeclaration communicationThread) {
+			CommunicationThreadDeclaration communicationThread, Buffer semBuf) {
 
 		LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
 				communicationThread.getName(), 8000, 1);
 		computationThread.getBeginningCode().addCodeElementFirst(launchThread);
 
-		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
-				file.getGlobalContainer().getBuffer(
-						SemaphoreContainer.semaphoreBufferName));
+		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),semBuf);
 		computationThread.getBeginningCode().addCodeElementFirst(semInit);
 
 		// Initializing the Send and Receive channels only for the channels

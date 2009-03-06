@@ -39,10 +39,12 @@ package org.ietr.preesm.core.codegen;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Source file to be executed on a given core. A source file contains Buffer
@@ -69,6 +71,11 @@ public class SourceFile extends AbstractBufferContainer {
 	private List<ThreadDeclaration> threads;
 
 	/**
+	 * The list containing this file
+	 */
+	private SourceFileList fileList;
+
+	/**
 	 * Creates a new source file with the given name on the given operator.
 	 * 
 	 * @param name
@@ -76,11 +83,12 @@ public class SourceFile extends AbstractBufferContainer {
 	 * @param operator
 	 *            The operator it is created on.
 	 */
-	public SourceFile(String name, Operator operator) {
+	public SourceFile(String name, Operator operator, SourceFileList fileList) {
 		super(null);
 		this.name = name;
 		this.operator = operator;
 		threads = new ArrayList<ThreadDeclaration>();
+		this.fileList = fileList;
 	}
 
 	/**
@@ -144,6 +152,30 @@ public class SourceFile extends AbstractBufferContainer {
 	 */
 	public void removeThread(ThreadDeclaration thread) {
 		threads.remove(thread);
+	}
+
+	/**
+	 * Gets the file list containing this file
+	 */
+	public SourceFileList getFileList() {
+		return fileList;
+	}
+
+	/**
+	 * Returns true the buffer with the given name already exists somewhere
+	 * (accessible or not).
+	 */
+	@Override
+	public boolean existBuffer(String name, boolean searchInOtherFiles) {
+		boolean bufferFound = super.existBuffer(name,false);
+		
+		if(!bufferFound && searchInOtherFiles){
+			for(SourceFile file : fileList){
+				bufferFound |= file.existBuffer(name,false);
+			}
+		}
+
+		return bufferFound;
 	}
 
 	/**

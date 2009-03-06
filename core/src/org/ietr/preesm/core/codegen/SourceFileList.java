@@ -33,10 +33,12 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A generated code is the gathering of source files, each one corresponding to
@@ -57,6 +59,11 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	 * The main source file.
 	 */
 	private SourceFile main;
+
+	/**
+	 * A set of defined buffer names to avoid global double definition
+	 */
+	private Set<String> bufferNames = new HashSet<String>();
 
 	/**
 	 * Returns the main source file.
@@ -80,6 +87,20 @@ public class SourceFileList extends ArrayList<SourceFile> {
 		}
 
 		this.main = main;
+	}
+
+	/**
+	 * Returns the defined buffer names
+	 */
+	public Set<String> getBufferNames() {
+		return bufferNames;
+	}
+
+	/**
+	 * Adding a buffer name in a file list to avoid multiple defines
+	 */
+	public void addBufferName(String name) {
+		bufferNames.add(name);
 	}
 
 	/**

@@ -52,7 +52,7 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static final String semaphoreBufferName = "sem";
+	private static final String semaphoreBufferName = "sem";
 
 	/**
 	 * Buffer container containing the current semaphore manager
@@ -64,11 +64,12 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		this.parentContainer = parentContainer;
 	}
 
-	public void allocateSemaphores() {
+	public Buffer allocateSemaphores() {
 		Buffer buf = new Buffer(semaphoreBufferName, this.size(), new DataType("semaphore"),
-				null);
+				null, parentContainer);
 
 		parentContainer.addBuffer(new BufferAllocation(buf));
+		return buf;
 	}
 
 	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType type) {

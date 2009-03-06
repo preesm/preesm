@@ -76,7 +76,7 @@ public class CodeGenerator {
 			Operator currentOp = (Operator) iterator.next();
 
 			SourceFile sourceFile = new SourceFile(currentOp.getName(),
-					currentOp);
+					currentOp, list);
 			list.add(sourceFile);
 
 			// The main operator leads to the main source file
