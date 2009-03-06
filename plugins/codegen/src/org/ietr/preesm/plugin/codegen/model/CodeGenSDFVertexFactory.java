@@ -110,12 +110,9 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 		newVertex.copyProperties(dagVertex);
-		if (dagVertex.getCorrespondingSDFVertex() != null) {
-			if (dagVertex.getCorrespondingSDFVertex().getArguments() != null) {
-				for (Argument arg : dagVertex.getCorrespondingSDFVertex()
-						.getArguments().values()) {
-					newVertex.addArgument(arg);
-				}
+		if(dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getArguments() != null){
+			for(Argument arg : dagVertex.getCorrespondingSDFVertex().getArguments().values()){
+				newVertex.addArgument(arg);
 			}
 		}
 

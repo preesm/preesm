@@ -56,17 +56,18 @@ import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.ReceiveInit;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
-import org.ietr.preesm.core.codegen.SemaphoreContainer;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.sdf4j.iterators.SDFIterator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Generates code for a source file
@@ -85,18 +86,18 @@ public class SourceFileCodeGenerator {
 	/**
 	 * Buffers belonging to SDF vertices in the given set are allocated here.
 	 */
-	public void allocateBuffers(Set<SDFAbstractVertex> ownVertices) {
-		Iterator<SDFAbstractVertex> vIterator = ownVertices.iterator();
-
+	public void allocateBuffers(SDFGraph algo) {
+		SDFIterator iterator = new SDFIterator(algo);
 		// Iteration on own buffers
-		while (vIterator.hasNext()) {
-			SDFAbstractVertex vertex = vIterator.next();
-
-			// Allocating all input buffers of vertex
-			allocateVertexBuffers(vertex, true);
-
-			// Allocating all output buffers of vertex
-			allocateVertexBuffers(vertex, false);
+		while (iterator.hasNext()) {
+			SDFAbstractVertex vertex = iterator.next();
+			// retrieving the operator where the vertex is allocated
+			Operator vertexOperator = (Operator) vertex.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_Operator);
+			if(vertex instanceof CodeGenSDFVertex && vertexOperator.equals(file.getOperator())){
+				// Allocating all input buffers of vertex
+				allocateVertexOutputBuffers(vertex);
+			}
 		}
 	}
 
@@ -105,7 +106,7 @@ public class SourceFileCodeGenerator {
 	 * boolean isInputBuffer is true if the aggregate belongs to an incoming
 	 * edge and false if the aggregate belongs to an outgoing edge
 	 */
-	public void allocateEdgeBuffers(SDFEdge edge, boolean isInputBuffer) {
+	public void allocateEdgeBuffers(SDFEdge edge) {
 
 		Buffer buf = new Buffer(edge.getSource().getName(), edge.getTarget()
 				.getName(), edge.getSourceInterface().getName(), edge
@@ -129,7 +130,7 @@ public class SourceFileCodeGenerator {
 			SDFAbstractVertex vertex = vIterator.next();
 
 			if (VertexType.isIntermediateReceive(vertex)) {
-				allocateVertexBuffers(vertex, false);
+				allocateVertexOutputBuffers(vertex);
 			}
 		}
 	}
@@ -138,26 +139,18 @@ public class SourceFileCodeGenerator {
 	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
 	 * allocates the input buffers, otherwise allocates output buffers.
 	 */
-	public void allocateVertexBuffers(SDFAbstractVertex vertex,
-			boolean isInputBuffer) {
+	public void allocateVertexOutputBuffers(SDFAbstractVertex vertex) {
 		Set<SDFEdge> edgeSet;
 
-		if (isInputBuffer) {
-			edgeSet = new HashSet<SDFEdge>(vertex.getBase().incomingEdgesOf(
-					vertex));
-			// Removes edges between two operators. They are replaced by edges
-			// to communication vertices
-			removeInterEdges(edgeSet);
-		} else {
+
 			edgeSet = new HashSet<SDFEdge>(vertex.getBase().outgoingEdgesOf(
 					vertex));
 			// Removes edges between two operators
 			removeInterEdges(edgeSet);
-		}
 
 		// Iteration on all the edges of each vertex belonging to ownVertices
 		for (SDFEdge edge : edgeSet) {
-			allocateEdgeBuffers(edge, isInputBuffer);
+			allocateEdgeBuffers(edge);
 		}
 	}
 
@@ -167,11 +160,12 @@ public class SourceFileCodeGenerator {
 	public void generateSource(CodeGenSDFGraph algorithm,
 			MultiCoreArchitecture architecture) {
 
-		// Gets the task vertices allocated to the current operator in
+
+		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(
 				algorithm, VertexType.task);
-
+		
 		// Gets the communication vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownCommunicationVertices = getOwnVertices(
@@ -181,7 +175,7 @@ public class SourceFileCodeGenerator {
 
 		// Buffers defined as global variables are retrieved here. They are
 		// added globally to the file
-		allocateBuffers(ownTaskVertices);
+		allocateBuffers(algorithm);
 
 		// Allocation of route step buffers
 		allocateRouteSteps(ownCommunicationVertices);

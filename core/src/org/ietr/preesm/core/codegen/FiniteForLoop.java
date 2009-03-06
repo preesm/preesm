@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import java.util.HashMap;
@@ -46,76 +46,105 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
-public class FiniteForLoop extends AbstractBufferContainer implements ICodeElement {
+public class FiniteForLoop extends AbstractBufferContainer implements
+		ICodeElement {
 
-	private HashMap<SDFEdge, SubBuffer> allocatedBuffers;
+	private HashMap<SDFEdge, Buffer> allocatedBuffers;
 
 	private SDFAbstractVertex correspondingVertex;
 
 	private LoopIndex index;
-	
-	private ICodeElement content ;
+
+	private ICodeElement content;
 
 	private AbstractBufferContainer parentContainer;
 
 	public FiniteForLoop(AbstractBufferContainer parentContainer,
 			CodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);
-		AbstractBufferContainer parentLoop = parentContainer ;
-		while(parentLoop != null && !(parentLoop instanceof FiniteForLoop)){
+		AbstractBufferContainer parentLoop = parentContainer;
+		while (parentLoop != null && !(parentLoop instanceof FiniteForLoop)) {
 			parentLoop = parentLoop.getParentContainer();
 		}
-		if(parentLoop != null && parentLoop instanceof FiniteForLoop){
-			char newIndex = (char) (((int)((FiniteForLoop) parentLoop).getIndex().getNameAsChar()) + 1);
-			index = new LoopIndex( newIndex, new DataType("long"));
-		}else{
+		if (parentLoop != null && parentLoop instanceof FiniteForLoop) {
+			char newIndex = (char) (((int) ((FiniteForLoop) parentLoop)
+					.getIndex().getNameAsChar()) + 1);
+			index = new LoopIndex(newIndex, new DataType("long"));
+		} else {
 			index = new LoopIndex('i', new DataType("long"));
 		}
-		allocatedBuffers = new HashMap<SDFEdge, SubBuffer>();
+		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = correspondingVertex;
 		for (SDFEdge edge : correspondingVertex.getBase().outgoingEdgesOf(
 				correspondingVertex)) {
-			AbstractBufferContainer parentBufferContainer = parentContainer ;
-			while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
-				parentBufferContainer = parentBufferContainer.getParentContainer();
-			}if(parentBufferContainer != null ){
-				this.addBuffer(new SubBuffer("sub_"+index.getName()+"_"+parentBufferContainer.getBuffer(edge).getName(), edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge), parentBufferContainer), edge);
+			AbstractBufferContainer parentBufferContainer = parentContainer;
+			while (parentBufferContainer != null
+					&& parentBufferContainer.getBuffer(edge) == null) {
+				parentBufferContainer = parentBufferContainer
+						.getParentContainer();
+			}
+			if (parentBufferContainer != null) {
+				if (edge.getProd().intValue() != parentBufferContainer
+						.getBuffer(edge).getSize()) {
+					this.addBuffer(new SubBuffer("sub_" + index.getName() + "_"
+							+ parentBufferContainer.getBuffer(edge).getName(),
+							edge.getProd().intValue(), index,
+							parentBufferContainer.getBuffer(edge),
+							parentBufferContainer), edge);
+				} else {
+					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
+				}
 			}
 		}
 		for (SDFEdge edge : correspondingVertex.getBase().incomingEdgesOf(
 				correspondingVertex)) {
-			AbstractBufferContainer parentBufferContainer = parentContainer ;
-			while(parentBufferContainer != null && parentBufferContainer.getBuffer(edge)==null){
-				parentBufferContainer = parentBufferContainer.getParentContainer();
-			}if(parentBufferContainer != null ){
-				this.addBuffer(new SubBuffer("sub_"+index.getName()+"_"+parentBufferContainer.getBuffer(edge).getName(), edge.getProd().intValue(), index, parentBufferContainer.getBuffer(edge), parentBufferContainer), edge);
+			AbstractBufferContainer parentBufferContainer = parentContainer;
+			while (parentBufferContainer != null
+					&& parentBufferContainer.getBuffer(edge) == null) {
+				parentBufferContainer = parentBufferContainer
+						.getParentContainer();
+			}
+			if (parentBufferContainer != null) {
+				if(edge.getCons().intValue() != parentBufferContainer
+						.getBuffer(edge).getSize()){
+					this.addBuffer(new SubBuffer("sub_" + index.getName() + "_"
+							+ parentBufferContainer.getBuffer(edge).getName(), edge
+							.getCons().intValue(), index, parentBufferContainer
+							.getBuffer(edge), parentBufferContainer), edge);
+				}else{
+					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
+				}
+				
 			}
 		}
-		if(correspondingVertex.getGraphDescription() != null){
-			content = new CompoundCodeElement(correspondingVertex.getName(), this, correspondingVertex);
-		}else{
-			content = new UserFunctionCall(correspondingVertex, this, CodeSection.LOOP);
+		if (correspondingVertex.getGraphDescription() != null) {
+			content = new CompoundCodeElement(correspondingVertex.getName(),
+					this, correspondingVertex);
+		} else {
+			content = new UserFunctionCall(correspondingVertex, this,
+					CodeSection.LOOP);
 		}
 	}
-	public ICodeElement getContent(){
-		return content ;
+
+	public ICodeElement getContent() {
+		return content;
 	}
 
-	public void addBuffer(SubBuffer buff, SDFEdge edge) {
+	public void addBuffer(Buffer buff, SDFEdge edge) {
 		if (allocatedBuffers.get(edge) == null) {
 			allocatedBuffers.put(edge, buff);
 		}
 	}
 
-	public int getNbIteration(){
+	public int getNbIteration() {
 		return correspondingVertex.getNbRepeat();
 	}
-	
+
 	public Buffer getBuffer(SDFEdge edge) {
 		if (allocatedBuffers.get(edge) == null) {
 			return super.getBuffer(edge);
-		}else {
+		} else {
 			return allocatedBuffers.get(edge);
 		}
 	}
@@ -128,6 +157,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements ICodeEleme
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;
 	}
+
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		Iterator<VariableAllocation> iterator2 = variables.iterator();
