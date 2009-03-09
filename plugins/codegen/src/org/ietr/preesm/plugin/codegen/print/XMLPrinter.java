@@ -53,6 +53,8 @@ import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
+import org.ietr.preesm.core.codegen.ForkCall;
+import org.ietr.preesm.core.codegen.JoinCall;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
@@ -510,6 +512,54 @@ public class XMLPrinter implements IAbstractPrinter {
 			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
 			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element.getBuffer()).getParentBuffer().getName());
 			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().getName());
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(ForkCall element, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element forkCall = dom.createElement("forkCall");
+			((Element)currentLocation).appendChild(forkCall);
+			forkCall.setAttribute("name", element.getName());
+			//adding input buffer
+			Element inputBuffer = dom.createElement("inputBuffers");
+			((Element)forkCall).appendChild(inputBuffer);
+			visit(element.getInputBuffer(), index, inputBuffer);
+			
+			//adding output buffers
+			Element outputBuffers = dom.createElement("outputBuffers");
+			((Element)forkCall).appendChild(outputBuffers);
+			for(Buffer outputBuffer : element.getOutputBuffers()){
+				visit(outputBuffer, index, outputBuffers);
+			}
+			currentLocation = forkCall;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(JoinCall element, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element joinCall = dom.createElement("joinCall");
+			((Element)currentLocation).appendChild(joinCall);
+			joinCall.setAttribute("name", element.getName());
+			//adding input buffer
+			Element outputBuffer = dom.createElement("outputBuffers");
+			((Element)joinCall).appendChild(outputBuffer);
+			visit(element.getOutputBuffer(), index, outputBuffer);
+			
+			//adding output buffers
+			Element intputBuffers = dom.createElement("inputBuffers");
+			((Element)joinCall).appendChild(intputBuffers);
+			for(Buffer outputBufferb : element.getInputBuffers()){
+				visit(outputBufferb, index, intputBuffers);
+			}
+			currentLocation = joinCall;
 		} 
 		
 		return currentLocation;
