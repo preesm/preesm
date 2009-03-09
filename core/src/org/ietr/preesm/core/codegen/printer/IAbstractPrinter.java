@@ -47,6 +47,8 @@ import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
+import org.ietr.preesm.core.codegen.ForkCall;
+import org.ietr.preesm.core.codegen.JoinCall;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
@@ -95,4 +97,6 @@ public interface IAbstractPrinter {
 	public Object visit(ThreadDeclaration element, CodeZoneId index, Object currentLocation);
 	public Object visit(LaunchThread element, CodeZoneId index, Object currentLocation);
 	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
+	public Object visit(ForkCall element, CodeZoneId index, Object currentLocation);
+	public Object visit(JoinCall element, CodeZoneId index, Object currentLocation);
 }

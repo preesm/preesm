@@ -33,10 +33,12 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -48,17 +50,21 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  */
 public class CodeElementFactory {
 
-
-
 	public static ICodeElement createElement(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
-		if (vertex.getNbRepeat() > 1) {
+		if (vertex instanceof CodeGenSDFVertex && vertex.getNbRepeat() > 1) {
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
 					(CodeGenSDFVertex) vertex);
 			return loop;
-		}else if (vertex.getGraphDescription() == null) {
-			return new UserFunctionCall(vertex, parentContainer, CodeSection.LOOP);
-		}else {
+		} else if (vertex instanceof CodeGenSDFForkVertex) {
+			return new ForkCall(vertex, parentContainer);
+		} else if (vertex instanceof CodeGenSDFJoinVertex) {
+			return new JoinCall(vertex, parentContainer);
+		} else if (vertex instanceof CodeGenSDFVertex
+				&& vertex.getGraphDescription() == null) {
+			return new UserFunctionCall(vertex, parentContainer,
+					CodeSection.LOOP);
+		} else {
 			CompoundCodeElement compound = new CompoundCodeElement(name,
 					parentContainer, (CodeGenSDFVertex) vertex);
 			return compound;
