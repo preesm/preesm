@@ -131,13 +131,13 @@ public class ListSchedulingArchiTester {
 
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominantList());
+		initial.orderlistdisplay(initial.getCpnDominant());
 
 		PreesmLogger.getLogger().log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodesList());
+		initial.orderlistdisplay(initial.getBlockingNodes());
 
 		PreesmLogger.getLogger().log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+		initial.orderlistdisplay(initial.getCriticalpath());
 
 		simu.resetDAG();
 
@@ -155,8 +155,8 @@ public class ListSchedulingArchiTester {
 				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"Evaluating List scheduling ");
-		scheduler.schedule(dag, initial.getCpnDominantList(), initial
-				.getBlockingNodesList(), initial.getFinalcriticalpathList(),
+		scheduler.schedule(dag, initial.getCpnDominant(), initial
+				.getBlockingNodes(), initial.getCriticalpath(),
 				simu2, null, null);
 
 		PreesmLogger.getLogger().log(Level.FINEST, "Displaying dag implanted ");

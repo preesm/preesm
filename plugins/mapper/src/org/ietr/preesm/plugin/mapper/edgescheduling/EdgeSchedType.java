@@ -45,7 +45,9 @@ public enum EdgeSchedType {
 
 	Simple,
 
-	Switcher;
+	Switcher,
+
+	Advanced;
 
 	@Override
 	public String toString() {
@@ -54,6 +56,8 @@ public enum EdgeSchedType {
 			return "Simple";
 		} else if (this == Switcher) {
 			return "Switcher";
+		} else if (this == Advanced) {
+			return "Advanced";
 		}
 
 		return null;
@@ -65,6 +69,8 @@ public enum EdgeSchedType {
 			return Simple;
 		} else if (type.equalsIgnoreCase("Switcher")) {
 			return Switcher;
+		} else if (type.equalsIgnoreCase("Advanced")) {
+			return Advanced;
 		} 
 
 		return null;

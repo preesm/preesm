@@ -325,13 +325,13 @@ public class ListScheduler {
 		initial.constructInitialLists(dag, simu);
 
 		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominantList());
+		initial.orderlistdisplay(initial.getCpnDominant());
 
 		logger.log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodesList());
+		initial.orderlistdisplay(initial.getBlockingNodes());
 
 		logger.log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+		initial.orderlistdisplay(initial.getCriticalpath());
 
 		ListScheduler scheduler = new ListScheduler();
 		simu.resetImplementation();
@@ -340,8 +340,8 @@ public class ListScheduler {
 				dag, archi, abcType);
 
 		logger.log(Level.FINEST, "Evaluating first scheduling ");
-		scheduler.schedule(dag, initial.getCpnDominantList(), initial
-				.getBlockingNodesList(), initial.getFinalcriticalpathList(),
+		scheduler.schedule(dag, initial.getCpnDominant(), initial
+				.getBlockingNodes(), initial.getCriticalpath(),
 				simu2, null, null);
 
 		logger.log(Level.FINEST, "Displaying dag implanted ");

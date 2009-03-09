@@ -70,15 +70,13 @@ import org.sdf4j.model.dag.DAGVertex;
 public class InitialLists {
 
 	// List of the nodes with a link with the critical path
-	protected List<MapperDAGVertex> blockingNodesList;
+	protected List<MapperDAGVertex> blockingNodes;
 
 	// List of the nodes which are ordered by the CPNDominant Sequence List
-	protected List<MapperDAGVertex> cpnDominantList;
+	protected List<MapperDAGVertex> cpnDominant;
 
 	// List of the nodes of the critical path
-	protected List<MapperDAGVertex> finalcriticalpathList;
-
-	protected List<MapperDAGVertex> OBNlist;
+	protected List<MapperDAGVertex> criticalPath;
 
 	/**
 	 * constructors
@@ -86,10 +84,9 @@ public class InitialLists {
 
 	public InitialLists() {
 		super();
-		cpnDominantList = new ArrayList<MapperDAGVertex>();
-		blockingNodesList = new ArrayList<MapperDAGVertex>();
-		finalcriticalpathList = new ArrayList<MapperDAGVertex>();
-		OBNlist = new ArrayList<MapperDAGVertex>();
+		cpnDominant = new ArrayList<MapperDAGVertex>();
+		blockingNodes = new ArrayList<MapperDAGVertex>();
+		criticalPath = new ArrayList<MapperDAGVertex>();
 
 	}
 
@@ -109,7 +106,7 @@ public class InitialLists {
 		List<MapperDAGVertex> newlist = new ArrayList<MapperDAGVertex>();
 
 		// retrieve and clone the cpnDominantList
-		Iterator<MapperDAGVertex> iter = this.cpnDominantList.listIterator();
+		Iterator<MapperDAGVertex> iter = this.cpnDominant.listIterator();
 		while (iter.hasNext()) {
 			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
 			if (temp != null)
@@ -119,7 +116,7 @@ public class InitialLists {
 
 		// retrieve and clone the blockingNodesList
 		List<MapperDAGVertex> newlist2 = new ArrayList<MapperDAGVertex>();
-		iter = this.blockingNodesList.iterator();
+		iter = this.blockingNodes.iterator();
 		while (iter.hasNext()) {
 			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
 			if (temp != null)
@@ -129,7 +126,7 @@ public class InitialLists {
 
 		// retrieve and clone the finalcriticalpathList
 		List<MapperDAGVertex> newlist3 = new ArrayList<MapperDAGVertex>();
-		iter = this.finalcriticalpathList.iterator();
+		iter = this.criticalPath.iterator();
 		while (iter.hasNext()) {
 			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
 			if (temp != null)
@@ -238,8 +235,8 @@ public class InitialLists {
 	 * constructCPN : Critical Path implemented in the CPN-DominantList
 	 * (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP)
 	 */
-	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> orderList,
-			List<MapperDAGVertex> fcplist, IAbc abc) {
+	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> cpnDominant,
+			List<MapperDAGVertex> criticalPath, IAbc abc) {
 
 		PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
@@ -266,8 +263,8 @@ public class InitialLists {
 
 		// the first CPNdominant is found
 		// put it in the order list and the FCP list
-		orderList.add(currentvertex);
-		fcplist.add(currentvertex);
+		cpnDominant.add(currentvertex);
+		criticalPath.add(currentvertex);
 		cpnvertex = currentvertex;
 		MapperDAG base = (MapperDAG) currentvertex.getBase();
 
@@ -303,14 +300,14 @@ public class InitialLists {
 
 			cpnvertex = tempvertex;
 			currentvertex = tempvertex;
-			fcplist.add(currentvertex);
+			criticalPath.add(currentvertex);
 			succset.clear();
 			succset.addAll(neighborindex.successorListOf(currentvertex));
 			// Search for the predecessor of the final critical path nodes
 			// because they must be implanted before their successors
-			while (!(orderList.contains(currentvertex))) {
+			while (!(cpnDominant.contains(currentvertex))) {
 				// If no predecessor was found
-				if (!checkpredecessor(dag, currentvertex, orderList, abc)) {
+				if (!checkpredecessor(dag, currentvertex, cpnDominant, abc)) {
 					PreesmLogger.getLogger().log(
 							Level.SEVERE,
 							"No predecessor was found for vertex: "
@@ -331,12 +328,12 @@ public class InitialLists {
 
 		while (topoDAGIterator.hasNext()) {
 			MapperDAGVertex v = (MapperDAGVertex) topoDAGIterator.next();
-			if (orderList.contains(v))
+			if (cpnDominant.contains(v))
 				newOrderlist.add(v);
 		}
 
-		orderList.clear();
-		orderList.addAll(newOrderlist);
+		cpnDominant.clear();
+		cpnDominant.addAll(newOrderlist);
 
 		return true;
 
@@ -349,8 +346,8 @@ public class InitialLists {
 	 * @param : MapperDAG , List<MapperDAGVertex>, List<MapperDAGVertex>
 	 * @return : void
 	 */
-	private void constructCPNobn(MapperDAG dag,
-			List<MapperDAGVertex> orderlist, List<MapperDAGVertex> OBNList,
+	private void addCPNobn(MapperDAG dag,
+			List<MapperDAGVertex> orderlist,
 			IAbc archi) {
 
 		// Variables
@@ -362,7 +359,6 @@ public class InitialLists {
 			currentvertex = iterator.next();
 			if (!orderlist.contains(currentvertex)) {
 				orderlist.add(currentvertex);
-				OBNList.add(currentvertex);
 
 			}
 		}
@@ -383,59 +379,30 @@ public class InitialLists {
 	 */
 	public boolean constructInitialLists(MapperDAG dag, IAbc simu) {
 
-		cpnDominantList.clear();
-		blockingNodesList.clear();
-		finalcriticalpathList.clear();
-		OBNlist.clear();
+		cpnDominant.clear();
+		blockingNodes.clear();
+		criticalPath.clear();
 
 		// construction step by step of all the lists
-		if (!constructCPN(dag, cpnDominantList,
-				finalcriticalpathList, simu)) {
+		if (!constructCPN(dag, cpnDominant,
+				criticalPath, simu)) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Problem with initial list construction");
 			return false;
 		}
 
 		PreesmLogger.getLogger().log(Level.INFO, "Building OBN list");
-		constructCPNobn(dag, cpnDominantList, OBNlist, simu);
-
-		Set<DAGVertex> currentset = dag.vertexSet();
-
-		SubsetFinder<DAGVertex, List<MapperDAGVertex>> subsetfinder = new SubsetFinder<DAGVertex, List<MapperDAGVertex>>(
-				currentset, finalcriticalpathList) {
-
-			@Override
-			protected boolean subsetCondition(DAGVertex tested,
-					List<MapperDAGVertex> finalcriticalpathList) {
-
-				boolean test = false;
-
-				if (!(finalcriticalpathList.contains(tested)))
-					test = true;
-
-				return test;
+		addCPNobn(dag, cpnDominant, simu);
+		
+		for(DAGVertex v : dag.vertexSet()){
+			if(!(criticalPath.contains(v))){
+				blockingNodes.add((MapperDAGVertex)v);
 			}
+		}
 
-		};
-
-		blockingNodesList.clear();
-		addAllNodes(blockingNodesList, subsetfinder.subset());
 		simu.resetImplementation();
 
 		return true;
-	}
-
-	/**
-	 * Adds all vertices from newSet in destination
-	 */
-	static public void addAllNodes(List<MapperDAGVertex> destination,
-			Set<DAGVertex> newSet) {
-		Iterator<DAGVertex> it = newSet.iterator();
-
-		while (it.hasNext()) {
-			MapperDAGVertex vertex = (MapperDAGVertex) it.next();
-			destination.add(vertex);
-		}
 	}
 
 	/**
@@ -479,43 +446,35 @@ public class InitialLists {
 	 * 
 	 */
 
-	public List<MapperDAGVertex> getBlockingNodesList() {
-		return blockingNodesList;
+	public List<MapperDAGVertex> getBlockingNodes() {
+		return blockingNodes;
 	}
 
-	public List<MapperDAGVertex> getCpnDominantList() {
-		return cpnDominantList;
+	public List<MapperDAGVertex> getCpnDominant() {
+		return cpnDominant;
 	}
 
-	public List<MapperDAGVertex> getFinalcriticalpathList() {
-		return finalcriticalpathList;
+	public List<MapperDAGVertex> getCriticalpath() {
+		return criticalPath;
 	}
 
 	public void setBlockingNodesList(List<MapperDAGVertex> blockingNodesList) {
-		this.blockingNodesList = blockingNodesList;
+		this.blockingNodes = blockingNodesList;
 	}
 
 	public void setCpnDominantList(List<MapperDAGVertex> cpnDominantList) {
-		this.cpnDominantList = cpnDominantList;
+		this.cpnDominant = cpnDominantList;
 	}
 
 	public void setFinalcriticalpathList(
 			List<MapperDAGVertex> finalcriticalpathList) {
-		this.finalcriticalpathList = finalcriticalpathList;
-	}
-
-	public List<MapperDAGVertex> getOBNlist() {
-		return OBNlist;
-	}
-
-	public void setOBNlist(List<MapperDAGVertex> nlist) {
-		OBNlist = nlist;
+		this.criticalPath = finalcriticalpathList;
 	}
 
 	/**
 	 * Main for tests
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 
 		List<MapperDAGVertex> testCPN = new ArrayList<MapperDAGVertex>();
 		List<MapperDAGVertex> testBL = new ArrayList<MapperDAGVertex>();
@@ -567,5 +526,5 @@ public class InitialLists {
 		scheduler.orderlistdisplay(scheduler.finalcriticalpathList);
 
 		logger.log(Level.FINEST, "Test finished");
-	}
+	}*/
 }

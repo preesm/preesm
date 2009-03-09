@@ -37,9 +37,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.tools;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -55,7 +57,14 @@ public class OperatorIterator implements Iterator<Operator> {
 	private int currentIndex = -1;
 
 	private List<Operator> operatorlist;
-
+	
+	private class OpNameComparator implements Comparator<Operator>{
+		@Override
+		public int compare(Operator o1, Operator o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	}
+	
 	/**
 	 * Constructor from an architecture and a reference vertex
 	 */
@@ -72,8 +81,10 @@ public class OperatorIterator implements Iterator<Operator> {
 		Set<Operator> defset = vertex.getInitialVertexProperty()
 				.getOperatorSet();
 
-		operatorlist = new ArrayList<Operator>();
+		Set<Operator> operatorlist = new ConcurrentSkipListSet<Operator>(new OpNameComparator());
 		operatorlist.addAll(defset);
+		
+		this.operatorlist = new ArrayList<Operator>(operatorlist);
 	}
 
 	public List<Operator> getOperatorList() {

@@ -270,9 +270,9 @@ public class Chromosome {
 		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
 		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
-		scheduler.schedule(dag, initialLists.getCpnDominantList(), initialLists
-				.getBlockingNodesList(), initialLists
-				.getFinalcriticalpathList(), archisimu, null, null);
+		scheduler.schedule(dag, initialLists.getCpnDominant(), initialLists
+				.getBlockingNodes(), initialLists
+				.getCriticalpath(), archisimu, null, null);
 
 		// test constructor
 		Chromosome chromosome = new Chromosome(dag, archi);

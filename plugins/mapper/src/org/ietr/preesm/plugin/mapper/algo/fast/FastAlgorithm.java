@@ -136,13 +136,13 @@ public class FastAlgorithm extends Observable {
 		initial.constructInitialLists(dag, simu);
 
 		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominantList());
+		initial.orderlistdisplay(initial.getCpnDominant());
 
 		logger.log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodesList());
+		initial.orderlistdisplay(initial.getBlockingNodes());
 
 		logger.log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+		initial.orderlistdisplay(initial.getCriticalpath());
 
 		ListScheduler scheduler = new ListScheduler();
 
@@ -152,9 +152,9 @@ public class FastAlgorithm extends Observable {
 		FastAlgorithm algorithm = new FastAlgorithm();
 
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
-				dag, archi, initial.getCpnDominantList(), initial
-						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), 50, 50, 5, false, true,
+				dag, archi, initial.getCpnDominant(), initial
+						.getBlockingNodes(), initial
+						.getCriticalpath(), 50, 50, 5, false, true,
 				null, false, null);
 
 		IAbc simu2 = AbstractAbc.getInstance(AbcType.LooselyTimed,

@@ -179,9 +179,9 @@ public class FastPopulation {
 			// perform the fast algo
 			FastAlgorithm algorithm = new FastAlgorithm();
 			tempdag = algorithm.map("population", this.simulatorType, this.edgeSchedType, tempdag,
-					this.archi, initial.getCpnDominantList(),
-					initial.getBlockingNodesList(),
-					initial.getFinalcriticalpathList(), MAXCOUNT, MAXSTEP,
+					this.archi, initial.getCpnDominant(),
+					initial.getBlockingNodes(),
+					initial.getCriticalpath(), MAXCOUNT, MAXSTEP,
 					MARGIN, false, true, null, false, null).clone();
 			temp.add(tempdag.clone());
 

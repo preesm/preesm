@@ -162,8 +162,8 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		ListScheduler scheduler = new ListScheduler();
 
-		scheduler.schedule(dag, initial.getCpnDominantList(), initial.getBlockingNodesList(),
-			initial.getFinalcriticalpathList(), simu2, null, null);
+		scheduler.schedule(dag, initial.getCpnDominant(), initial.getBlockingNodes(),
+			initial.getCriticalpath(), simu2, null, null);
 
 		PreesmLogger.getLogger().log(Level.FINER, "Plotting");
 		//Date date = new Date(1221555438562L);

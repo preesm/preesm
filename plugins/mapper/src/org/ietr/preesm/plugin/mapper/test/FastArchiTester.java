@@ -148,13 +148,13 @@ public class FastArchiTester {
 		initial.constructInitialLists(dag, simu);
 
 		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominantList());
+		initial.orderlistdisplay(initial.getCpnDominant());
 
 		logger.log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodesList());
+		initial.orderlistdisplay(initial.getBlockingNodes());
 
 		logger.log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+		initial.orderlistdisplay(initial.getCriticalpath());
 
 		simu.resetDAG();
 
@@ -174,8 +174,8 @@ public class FastArchiTester {
 		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
 		
 		dag = algorithm.map("test", simulatorType, edgeSchedType, dag, archi, initial
-				.getCpnDominantList(), initial.getBlockingNodesList(), initial
-				.getFinalcriticalpathList(), 40, 40, 6, false, false, null, false, null);
+				.getCpnDominant(), initial.getBlockingNodes(), initial
+				.getCriticalpath(), 40, 40, 6, false, false, null, false, null);
 
 		// display
 		IAbc simu2 = AbstractAbc

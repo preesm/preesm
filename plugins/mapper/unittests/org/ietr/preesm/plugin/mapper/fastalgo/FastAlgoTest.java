@@ -115,9 +115,9 @@ public class FastAlgoTest extends TestCase {
 		FastAlgorithm algorithm = new FastAlgorithm();
 
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
-				dag, archi, initial.getCpnDominantList(), initial
-						.getBlockingNodesList(), initial
-						.getFinalcriticalpathList(), 50, 50, 16, false, false, null, false, null);
+				dag, archi, initial.getCpnDominant(), initial
+						.getBlockingNodes(), initial
+						.getCriticalpath(), 50, 50, 16, false, false, null, false, null);
 		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
 		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);

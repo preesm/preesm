@@ -14,7 +14,7 @@ import org.sdf4j.model.dag.DAGVertex;
 public class SpecialVertexManager {
 
 
-	public static final long dissuasiveCost = 1000000000l;
+	public static final long dissuasiveCost = 10l;
 	
 	/**
 	 * Tests if a vertex is of type broadcast

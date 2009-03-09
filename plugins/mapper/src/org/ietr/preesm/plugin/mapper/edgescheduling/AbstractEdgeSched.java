@@ -67,6 +67,8 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 			edgeSched = new SimpleEdgeSched(orderManager);
 		} else if (edgeSchedType == EdgeSchedType.Switcher) {
 			edgeSched = new SwitcherEdgeSched(orderManager);
+		} else if (edgeSchedType == EdgeSchedType.Advanced) {
+			edgeSched = new AdvancedEdgeSched(orderManager);
 		}
 		else{
 			// Default scheduler

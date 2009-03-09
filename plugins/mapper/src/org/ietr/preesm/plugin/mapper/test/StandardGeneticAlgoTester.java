@@ -148,13 +148,13 @@ public class StandardGeneticAlgoTester {
 		initial.constructInitialLists(dag, simu);
 
 		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominantList());
+		initial.orderlistdisplay(initial.getCpnDominant());
 
 		logger.log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodesList());
+		initial.orderlistdisplay(initial.getBlockingNodes());
 
 		logger.log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getFinalcriticalpathList());
+		initial.orderlistdisplay(initial.getCriticalpath());
 
 		simu.resetDAG();
 

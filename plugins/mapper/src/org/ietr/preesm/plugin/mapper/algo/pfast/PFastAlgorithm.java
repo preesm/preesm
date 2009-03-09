@@ -161,7 +161,7 @@ public class PFastAlgorithm extends Observable {
 		int nbsubsets = 0;
 		int nbnodes = 0;
 		List<MapperDAGVertex> BNlist = new ArrayList<MapperDAGVertex>();
-		BNlist.addAll(initialLists.getBlockingNodesList());
+		BNlist.addAll(initialLists.getBlockingNodes());
 		Set<String> tempSet = null;
 		nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
 
@@ -309,11 +309,11 @@ public class PFastAlgorithm extends Observable {
 		int k = 0;
 		int totalsearchcount = 0;
 		Vector<MapperDAGVertex> cpnDominantVector = new Vector<MapperDAGVertex>(
-				initialLists.getCpnDominantList());
+				initialLists.getCpnDominant());
 		Vector<MapperDAGVertex> blockingnodeVector = new Vector<MapperDAGVertex>(
-				initialLists.getBlockingNodesList());
+				initialLists.getBlockingNodes());
 		Vector<MapperDAGVertex> fcpVector = new Vector<MapperDAGVertex>(
-				initialLists.getFinalcriticalpathList());
+				initialLists.getCriticalpath());
 		MapperDAG dagfinal;
 		ListScheduler scheduler = new ListScheduler();
 		IAbc archisimu = AbstractAbc

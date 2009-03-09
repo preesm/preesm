@@ -152,8 +152,8 @@ public class FASTTransformation extends AbstractMapping {
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
 		dag = fastAlgorithm.map("test", parameters.getSimulatorType(),
 				parameters.getEdgeSchedType(), dag, architecture, initial
-						.getCpnDominantList(), initial.getBlockingNodesList(),
-				initial.getFinalcriticalpathList(), parameters.getMaxCount(),
+						.getCpnDominant(), initial.getBlockingNodes(),
+				initial.getCriticalpath(), parameters.getMaxCount(),
 				parameters.getMaxStep(), parameters.getMargIn(), false, false,
 				null, parameters.isDisplaySolutions(), monitor);
 
