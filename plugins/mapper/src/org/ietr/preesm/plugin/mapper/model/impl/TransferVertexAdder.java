@@ -160,6 +160,9 @@ public class TransferVertexAdder {
 				currentDest.getImplementationVertexProperty()
 						.getEffectiveOperator());
 
+		if(route == null){
+			return ;
+		}
 		Iterator<RouteStep> it = route.iterator();
 		int i = 1;
 
