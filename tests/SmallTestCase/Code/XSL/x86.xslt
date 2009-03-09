@@ -81,10 +81,10 @@
     
     <xsl:template match="sourceCode:forLoop">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+        <xsl:if test="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive | sourceCode:forkCall | sourceCode:joinCall">
             <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive | sourceCode:forkCall | sourceCode:joinCall">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -128,6 +128,38 @@
         <!-- removing last coma -->
         <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
         <xsl:value-of select="concat($buffers,');',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:forkCall">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'explode','(')"/>
+        <!-- adding buffers -->
+        <xsl:variable name="buffers">
+            <xsl:apply-templates select="sourceCode:inputBuffers | sourceCode:outputBuffers "/>
+        </xsl:variable>
+        <!-- removing last coma -->
+        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
+        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:joinCall">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'implode','(')"/>
+        <!-- adding buffers -->
+        <xsl:variable name="buffers">
+            <xsl:apply-templates select="sourceCode:inputBuffers | sourceCode:outputBuffers "/>
+        </xsl:variable>
+        <!-- removing last coma -->
+        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
+        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:inputBuffers">
+        <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:outputBuffers">
+        <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:semaphorePost">

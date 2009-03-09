@@ -51,7 +51,7 @@
       <edge source="Second" sourceport="output" target="Third" targetport="input">
          <data key="edge_prod">4</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">1</data>
+         <data key="edge_cons">16</data>
          <data key="data_type">char</data>
       </edge>
    </graph>
