@@ -1,0 +1,11 @@
+module clip {
+	interface init {
+		 void init_clip();
+	};
+	interface loop {
+		 void clip(in char blockIn, in boolean signed, out char clip_out);
+	};
+	interface end {
+		 void end_clip();
+	};  
+};

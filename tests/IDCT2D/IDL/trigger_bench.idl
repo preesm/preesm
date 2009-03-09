@@ -1,0 +1,6 @@
+module trigger_bench {
+	typedef short parameter ;
+	interface loop {
+		 void trigger_bench(out char MB, out boolean signed, in parameter nbBlocks);
+	};
+};

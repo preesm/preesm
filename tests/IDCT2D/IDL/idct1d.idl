@@ -1,0 +1,5 @@
+module idct1d {
+	interface loop{
+		 void idct1d(in char lineIn, out char lineOut);
+	};
+};
