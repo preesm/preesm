@@ -66,10 +66,10 @@
     
     <xsl:template match="sourceCode:linearCodeContainer">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+        <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:send | sourceCode:receive | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
             <xsl:value-of select="concat($curIndent,'{',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:send | sourceCode:receive | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -118,6 +118,17 @@
         <xsl:value-of select="concat($curIndent,'WaitForSingleObject','(')"/>
         <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
         <xsl:value-of select="concat(',INFINITE);',' //',@type,$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:semaphoreInit">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'semaphoreInit','(')"/>
+        <!-- adding buffers -->
+        <xsl:variable name="buffers">
+            <xsl:apply-templates select="sourceCode:buffer | sourceCode:constant"/>
+        </xsl:variable>
+        <!-- removing last coma -->
+        <xsl:value-of select="concat($buffers,$coreName,');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:send">

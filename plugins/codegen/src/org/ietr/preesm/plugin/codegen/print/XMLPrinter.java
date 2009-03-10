@@ -376,10 +376,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element semaphoreInit = dom.createElement("userFunctionCall");
+			Element semaphoreInit = dom.createElement("semaphoreInit");
 			((Element)currentLocation).appendChild(semaphoreInit);
-
-			semaphoreInit.setAttribute("name", "semaphoreInit");
 			currentLocation = semaphoreInit;
 		} 
 		
