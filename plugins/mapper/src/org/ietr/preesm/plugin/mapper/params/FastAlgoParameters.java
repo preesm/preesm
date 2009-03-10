@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm

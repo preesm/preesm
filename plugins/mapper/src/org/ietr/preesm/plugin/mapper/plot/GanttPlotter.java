@@ -43,7 +43,10 @@ import java.awt.Frame;
 import java.awt.LinearGradientPaint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,8 +68,8 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -202,34 +205,19 @@ public class GanttPlotter extends ApplicationFrame {
 		Task currenttask;
 
 		// Creating the Operator lines
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
-		Set<ArchitectureComponent> components = new HashSet<ArchitectureComponent>();
-
-		while (iterator.hasNext()) {
-			MapperDAGVertex currentvertex = (MapperDAGVertex)iterator.next();
-
-			ArchitectureComponent currentComponent = currentvertex
-					.getImplementationVertexProperty().getEffectiveComponent();
-
-			if (currentComponent != ArchitectureComponent.NO_COMPONENT) {
-				
-				// Looks inside the set for components with same name
-				for(ArchitectureComponent c : components){
-					if(c.equals(currentComponent))
-						currentComponent = c;
-				}
-				
-				if (!components.contains(currentComponent)) {
-					components.add(currentComponent);
-					currenttask = new Task(currentComponent.getName(),
-							new SimpleTimePeriod(0, simulator
-									.getFinalTime(currentComponent)));
-					series.add(currenttask);
-				}
-			}
+		List<ArchitectureComponent> cmps = simulator.getArchitecture().getComponents();
+		Collections.sort(cmps, new ArchitectureComponent.ArchitectureComponentComparator());
+		
+		for(ArchitectureComponent c : cmps){
+			currenttask = new Task(c.getName(),
+					new SimpleTimePeriod(0, simulator
+							.getFinalTime(c)));
+			series.add(currenttask);
+			
 		}
+		
 
-		// Creating the Operator lines
+		// Populating the Operator lines
 		TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
 
 		while (viterator.hasNext()) {
@@ -246,7 +234,20 @@ public class GanttPlotter extends ApplicationFrame {
 				series.get(cmp.getName()).addSubtask(t);
 			}
 		}
-
+		
+		// Removing the empty lines
+		Set<Task> TasksToRemove = new HashSet<Task>();
+		for(Object currentObject : series.getTasks()){
+			Task currentTask = (Task)currentObject;
+			if(currentTask.getSubtaskCount() == 0){
+				TasksToRemove.add(currentTask);
+			}
+		}
+		
+		for(Task currentTask : TasksToRemove){
+			series.remove(currentTask);
+		}
+		
 		TaskSeriesCollection collection = new TaskSeriesCollection();
 		collection.add(series);
 
@@ -271,7 +272,7 @@ public class GanttPlotter extends ApplicationFrame {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
 

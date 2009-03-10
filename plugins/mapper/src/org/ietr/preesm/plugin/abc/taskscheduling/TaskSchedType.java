@@ -33,35 +33,46 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-package org.ietr.preesm.plugin.mapper.edgescheduling;
-
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+ 
+package org.ietr.preesm.plugin.abc.taskscheduling;
 
 /**
- * An edge scheduler that simply adds the transfer as soon as possible after the sender
+ * Types of task scheduler to be used in parameters
  * 
  * @author mpelcat
  */
-public class SimpleEdgeSched extends AbstractEdgeSched {
+public enum TaskSchedType {
 
-	public SimpleEdgeSched(SchedOrderManager orderManager) {
-		super(orderManager);
-	}
+	Simple,
 
-	public static void main(String[] args) {
+	Switcher,
 
-	}
+	Topological;
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
-		orderManager.insertVertexAfter(source, vertex);
+	public String toString() {
 
+		if (this == Simple) {
+			return "Simple";
+		} else if (this == Switcher) {
+			return "Switcher";
+		} else if (this == Topological) {
+			return "Topological";
+		}
+
+		return null;
 	}
 
-	public EdgeSchedType getEdgeSchedType(){
-		return EdgeSchedType.Simple;
+	public static TaskSchedType fromString(String type) {
+
+		if (type.equalsIgnoreCase("Simple")) {
+			return Simple;
+		} else if (type.equalsIgnoreCase("Switcher")) {
+			return Switcher;
+		} else if (type.equalsIgnoreCase("Topological")) {
+			return Topological;
+		} 
+
+		return null;
 	}
 }

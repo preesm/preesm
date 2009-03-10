@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.abc;
 
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+
 /**
  * Types of simulator to be used in parameters
  * 
@@ -46,12 +48,12 @@ public class AbcType {
 	/**
 	 * Available Abc types
 	 */
-	public static final AbcType InfiniteHomogeneous = new AbcType("InfiniteHomogeneous", false);
-	public static final AbcType LooselyTimed = new AbcType("LooselyTimed", false);
-	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed", false);
-	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed", false);
-	public static final AbcType CommConten = new AbcType("CommConten", false);
-	public static final AbcType SendReceive = new AbcType("SendReceive", false);
+	public static final AbcType InfiniteHomogeneous = new AbcType("InfiniteHomogeneous");
+	public static final AbcType LooselyTimed = new AbcType("LooselyTimed");
+	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed");
+	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
+	public static final AbcType CommConten = new AbcType("CommConten");
+	public static final AbcType SendReceive = new AbcType("SendReceive");
 
 	/**
 	 * Name of the current type
@@ -62,13 +64,13 @@ public class AbcType {
 	 * True if the tasks are switched while mapping using algorithms that do further tests
 	 * than the mapping/scheduling chosen algorithm
 	 */
-	private boolean switchTask = false;
+	private TaskSchedType taskSchedType = null;
 	
 
-	public AbcType(String name, boolean switchTask) {
+	public AbcType(String name) {
 		super();
 		this.name = name;
-		this.switchTask = switchTask;
+		this.taskSchedType = TaskSchedType.Simple;
 	}
 
 	@Override
@@ -96,12 +98,18 @@ public class AbcType {
 		return null;
 	}
 	
-	public boolean isSwitchTask() {
-		return switchTask;
+	public TaskSchedType getTaskSchedType() {
+		return taskSchedType;
 	}
 
-	public AbcType setSwitchTask(boolean switchTask) {
-		this.switchTask = switchTask;
+	
+	public AbcType setTaskSchedType(TaskSchedType taskSchedType) {
+		if(taskSchedType != null){
+			this.taskSchedType = taskSchedType;
+		}
+		else{
+			this.taskSchedType = TaskSchedType.Simple;
+		}
 		
 		return this;
 	}

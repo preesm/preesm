@@ -41,8 +41,8 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.RouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -151,9 +151,8 @@ public class AddOverheadVertexTransaction extends Transaction {
 
 
 			if (true) {
-				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager,
-						oVertex);
-				taskSwitcher.insertVertexBefore(currentTarget);
+				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
+				taskSwitcher.insertVertexBefore(currentTarget, oVertex);
 			} else {
 				orderManager.insertVertexBefore(currentTarget, oVertex);
 			}

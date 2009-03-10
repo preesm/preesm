@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
 import java.util.logging.Level;
 
@@ -169,5 +169,9 @@ public class IntervalFinder {
 		}
 
 		PreesmLogger.getLogger().log(Level.INFO, trace);
+	}
+
+	public SchedOrderManager getOrderManager() {
+		return orderManager;
 	}
 }

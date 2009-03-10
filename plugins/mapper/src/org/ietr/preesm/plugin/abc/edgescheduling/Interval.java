@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
 /**
  * Time interval for the transfer scheduling

@@ -34,49 +34,34 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+
 /**
- * An advanced edge scheduler. It looks for the largest free interval in scheduling
- * and schedules the new communication in this slot.
+ * An edge scheduler that simply adds the transfer as soon as possible after the sender
  * 
  * @author mpelcat
  */
-public class SwitcherEdgeSched extends AbstractEdgeSched {
+public class SimpleEdgeSched extends AbstractEdgeSched {
 
-	private IntervalFinder intervalFinder = null;
-	
-	public SwitcherEdgeSched(SchedOrderManager orderManager) {
+	public SimpleEdgeSched(SchedOrderManager orderManager) {
 		super(orderManager);
-		
-		intervalFinder = new IntervalFinder(orderManager);
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 
 	}
 
 	@Override
 	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
+		orderManager.insertVertexAfter(source, vertex);
 
-		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
-		//intervalFinder.displayCurrentSchedule(vertex, source);
-		Interval largestInterval = intervalFinder.findLargestFreeInterval(component, source, target);
-		
-		if(largestInterval.getDuration()>0)
-			orderManager.insertVertexAtIndex(largestInterval.getTotalOrderIndex(), vertex);
-		else
-			orderManager.insertVertexAfter(source, vertex);
 	}
 
 	public EdgeSchedType getEdgeSchedType(){
-		return EdgeSchedType.Switcher;
+		return EdgeSchedType.Simple;
 	}
 }

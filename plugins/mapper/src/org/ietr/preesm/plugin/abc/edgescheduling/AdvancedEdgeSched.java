@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;

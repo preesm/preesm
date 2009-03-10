@@ -1,12 +1,15 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc;
+package org.ietr.preesm.plugin.abc.taskscheduling;
 
+import java.util.Random;
+
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.plugin.abc.edgescheduling.Interval;
+import org.ietr.preesm.plugin.abc.edgescheduling.IntervalFinder;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.mapper.edgescheduling.Interval;
-import org.ietr.preesm.plugin.mapper.edgescheduling.IntervalFinder;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.sdf4j.model.dag.DAGEdge;
@@ -17,22 +20,13 @@ import org.sdf4j.model.dag.DAGEdge;
  * 
  * @author mpelcat
  */
-public class TaskSwitcher {
+public class TaskSwitcher extends AbstractTaskSched{
 
-	/**
-	 * Current mapped vertex
-	 */
-	private MapperDAGVertex vertex;
-
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	protected SchedOrderManager orderManager = null;
-
-	public TaskSwitcher(SchedOrderManager orderManager, MapperDAGVertex vertex) {
-		super();
-		this.orderManager = orderManager;
-		this.vertex = vertex;
+	private IntervalFinder intervalFinder;
+	
+	public TaskSwitcher(SchedOrderManager orderManager) {
+		super(orderManager);
+		intervalFinder = new IntervalFinder(orderManager);
 	}
 
 	/**
@@ -79,7 +73,7 @@ public class TaskSwitcher {
 	/**
 	 * Returns the best index to schedule vertex in total order
 	 */
-	public int getBestIndex() {
+	public int getBestIndex(MapperDAGVertex vertex) {
 		int index = -1;
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
@@ -89,56 +83,62 @@ public class TaskSwitcher {
 			getLatestPredecessorIndex(vertex);
 		}
 
-		IntervalFinder intervalFinder = new IntervalFinder(orderManager);
-
 		Operator op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
-		MapperDAGVertex minVertex = (latePred == -1) ? null : orderManager
+		MapperDAGVertex source = (latePred == -1) ? null : orderManager
 				.getVertex(latePred);
-		MapperDAGVertex maxVertex = (earlySuc == -1) ? null : orderManager
+		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
 				.getVertex(earlySuc);
 
 		if (op != null) {
-			Interval itv = intervalFinder.findLargestFreeInterval(op,
-					minVertex, maxVertex);
-
-			if (itv.getDuration() > 0) {
-				index = itv.getTotalOrderIndex();
-				// PreesmLogger.getLogger().log(Level.INFO,"bestidx:"+vertex.
-				// toString()+"->"+index+",pred:"+latePred+",suc:"+earlySuc+","+
-				// orderManager.getTotalOrder().toString());
-
+			Interval largestInterval = intervalFinder.findLargestFreeInterval(op, source, target);
+			
+			if(largestInterval.getDuration()>0){
+				index = largestInterval.getTotalOrderIndex();
 			}
+			else{
+				int sourceIndex = intervalFinder.getOrderManager().totalIndexOf(source)+1;
+				int targetIndex = intervalFinder.getOrderManager().totalIndexOf(target);
+				
+				if(targetIndex-sourceIndex > 0){
+					Random r = new Random();
+					int randomVal = Math.abs(r.nextInt());
+					randomVal = randomVal%(targetIndex-sourceIndex);
+					index = sourceIndex+randomVal;
+				}
+			}
+			
 		}
 
 		return index;
 	}
 
-	public void insertVertex() {
+	public void insertVertexBefore(MapperDAGVertex successor, MapperDAGVertex vertex) {
 
 		// Removing the vertex if necessary before inserting it
 		if (orderManager.totalIndexOf(vertex) != -1)
 			orderManager.remove(vertex, true);
 
-		int newIndex = getBestIndex();
-		if (newIndex >= 0) {
-			orderManager.insertVertexAtIndex(newIndex, vertex);
-		} else {
-			orderManager.addLast(vertex);
-		}
-	}
-
-	public void insertVertexBefore(MapperDAGVertex successor) {
-
-		// Removing the vertex if necessary before inserting it
-		if (orderManager.totalIndexOf(vertex) != -1)
-			orderManager.remove(vertex, true);
-
-		int newIndex = getBestIndex();
+		int newIndex = getBestIndex(vertex);
 		if (newIndex >= 0) {
 			orderManager.insertVertexAtIndex(newIndex, vertex);
 		} else {
 			orderManager.insertVertexBefore(successor, vertex);
+		}
+	}
+
+	@Override
+	public void insertVertex(MapperDAGVertex vertex) {
+
+		// Removing the vertex if necessary before inserting it
+		if (orderManager.totalIndexOf(vertex) != -1)
+			orderManager.remove(vertex, true);
+
+		int newIndex = getBestIndex(vertex);
+		if (newIndex >= 0) {
+			orderManager.insertVertexAtIndex(newIndex, vertex);
+		} else {
+			orderManager.addLast(vertex);
 		}
 	}
 }

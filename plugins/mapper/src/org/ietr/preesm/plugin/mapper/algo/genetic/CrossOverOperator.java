@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
 /**
  * Operator able to perform cross overs between 2 chromosomes

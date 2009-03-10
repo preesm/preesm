@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
@@ -54,8 +55,10 @@ import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -116,6 +119,11 @@ public abstract class AbstractAbc implements IAbc {
 	protected AbcType abcType = null;
 
 	/**
+	 * Task scheduler
+	 */
+	protected AbstractTaskSched taskScheduler = null;
+
+	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcType simulatorType,
@@ -125,8 +133,7 @@ public abstract class AbstractAbc implements IAbc {
 		AbstractAbc abc = null;
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi,
-					simulatorType.isSwitchTask());
+			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi);
 		} else if (simulatorType == AbcType.LooselyTimed) {
 			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
@@ -161,7 +168,8 @@ public abstract class AbstractAbc implements IAbc {
 		timeKeeper.resetTimings();
 
 		this.archi = archi;
-
+		
+		resetTaskScheduler(TaskSchedType.Topological);
 		// currentRank = 0;
 	}
 
@@ -752,6 +760,14 @@ public abstract class AbstractAbc implements IAbc {
 
 	public AbcType getType() {
 		return abcType;
+	}
+
+	public void resetTaskScheduler(TaskSchedType taskSchedType){
+
+		taskScheduler = AbstractTaskSched.getInstance(taskSchedType, orderManager);
+		if(taskScheduler instanceof TopologicalTaskSched){
+			((TopologicalTaskSched)taskScheduler).createTopology(dag);
+		}
 	}
 
 }

@@ -36,9 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -364,6 +366,13 @@ public class MultiCoreArchitecture {
 		}
 
 		return ops;
+	}
+
+	/**
+	 * Returns all the components
+	 */
+	public List<ArchitectureComponent> getComponents() {
+		return new ArrayList<ArchitectureComponent>(architectureComponents.values());
 	}
 
 	/**

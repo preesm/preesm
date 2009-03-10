@@ -38,7 +38,8 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 
 /**
  * Common behavior of all the mapping algorithm parameters
@@ -67,7 +68,6 @@ public abstract class AbstractParameters {
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
 		textParameters.addVariable("simulatorType", simulatorType.toString());
-		textParameters.addVariable("switchTask", ((Boolean)simulatorType.isSwitchTask()).toString());
 		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
 	}
 	
@@ -77,7 +77,6 @@ public abstract class AbstractParameters {
 	public AbstractParameters(TextParameters textParameters) {
 		this.textParameters = textParameters;
 		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
-		this.simulatorType.setSwitchTask(Boolean.parseBoolean(textParameters.getVariable("switchTask")));
 		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));
 	}
 	

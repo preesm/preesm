@@ -46,12 +46,12 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
@@ -103,7 +103,7 @@ public class FastAlgoTest extends TestCase {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, false);
+				dag, archi);
 		simu.getFinalTime();
 		InitialLists initial = new InitialLists();
 
@@ -118,7 +118,7 @@ public class FastAlgoTest extends TestCase {
 				dag, archi, initial.getCpnDominant(), initial
 						.getBlockingNodes(), initial
 						.getCriticalpath(), 50, 50, 16, false, false, null, false, null);
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
 		simu2.resetImplementation();

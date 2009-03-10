@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -49,6 +50,14 @@ import java.util.ListIterator;
  */
 public abstract class ArchitectureComponent {
 
+	public static class ArchitectureComponentComparator implements
+			Comparator<ArchitectureComponent> {
+		@Override
+		public int compare(ArchitectureComponent o1, ArchitectureComponent o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	}
+
 	public static final ArchitectureComponent NO_COMPONENT = null;
 
 	/**
@@ -58,8 +67,8 @@ public abstract class ArchitectureComponent {
 	protected List<ArchitectureInterface> availableInterfaces;
 
 	/**
-	 * The definition contains the category (medium or operator) and the id (example:
-	 * C64x+) as well as specific parameters
+	 * The definition contains the category (medium or operator) and the id
+	 * (example: C64x+) as well as specific parameters
 	 */
 	private ArchitectureComponentDefinition definition;
 
@@ -90,7 +99,7 @@ public abstract class ArchitectureComponent {
 	public final ArchitectureInterface addInterface(ArchitectureInterface intf) {
 
 		availableInterfaces.add(intf);
-		
+
 		return intf;
 	}
 
@@ -120,21 +129,21 @@ public abstract class ArchitectureComponent {
 	public ArchitectureInterface getInterface(BusReference busRef) {
 
 		ArchitectureInterface searchedIntf = null;
-		
+
 		ListIterator<ArchitectureInterface> it = getAvailableInterfaces()
 				.listIterator();
 
 		while (it.hasNext()) {
 			ArchitectureInterface intf = it.next();
 			if (busRef.equals(intf.getBusReference())) {
-				searchedIntf =  intf;
+				searchedIntf = intf;
 			}
 		}
 
-		if(searchedIntf == null){
-			searchedIntf = new ArchitectureInterface(busRef,this);
+		if (searchedIntf == null) {
+			searchedIntf = new ArchitectureInterface(busRef, this);
 		}
-		
+
 		return searchedIntf;
 	}
 
@@ -149,13 +158,13 @@ public abstract class ArchitectureComponent {
 
 	public abstract ArchitectureComponentType getType();
 
-	
 	public final ArchitectureComponent clone(MultiCoreArchitecture archi) {
 
-		// Definition is cloned		
-		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition().getType(),this.getDefinition().getId(), this.getName());
+		// Definition is cloned
+		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
+				.getType(), this.getDefinition().getId(), this.getName());
 		newCmp.getDefinition().fill(this.getDefinition());
-		
+
 		// We iterate on interfaces
 		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
 				.iterator();
@@ -164,8 +173,9 @@ public abstract class ArchitectureComponent {
 			// Each interface is cloned and added to the new medium.
 			// The interface medium definition is set to the current definition
 			ArchitectureInterface itf = interIt.next();
-			newCmp.availableInterfaces.add(itf.clone(
-					archi.createBusReference(itf.getBusReference().getId()), newCmp));
+			newCmp.availableInterfaces
+					.add(itf.clone(archi.createBusReference(itf
+							.getBusReference().getId()), newCmp));
 		}
 
 		return newCmp;

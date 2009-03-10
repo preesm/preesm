@@ -51,9 +51,9 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -155,8 +155,7 @@ public class ListSchedulingArchiTester {
 				.getInstance(simulatorType, EdgeSchedType.Simple, dag, archi);
 		PreesmLogger.getLogger().log(Level.FINEST,
 				"Evaluating List scheduling ");
-		scheduler.schedule(dag, initial.getCpnDominant(), initial
-				.getBlockingNodes(), initial.getCriticalpath(),
+		scheduler.schedule(dag, initial.getCpnDominant(),
 				simu2, null, null);
 
 		PreesmLogger.getLogger().log(Level.FINEST, "Displaying dag implanted ");

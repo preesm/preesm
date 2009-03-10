@@ -60,11 +60,11 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -345,8 +345,7 @@ public class PFastAlgorithm extends Observable {
 
 		// step 1
 		// step 2
-		dagfinal = scheduler.schedule(dag, cpnDominantVector,
-				blockingnodeVector, fcpVector, archisimu, null, null).clone();
+		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
 
 		bestTotalOrder = archisimu.getTotalOrder().toMap();
 		long iBest = (Long) archisimu.getFinalTime();
@@ -482,7 +481,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, false);
+				dag, archi);
 
 		InitialLists initial = new InitialLists();
 

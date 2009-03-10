@@ -34,32 +34,51 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * Specification of the edgeScheduler interface
+ * Methods common to every edge schedulers
  * 
  * @author mpelcat
  */
-public interface IEdgeSched {
-
-	/**
-	 * Schedules a transfer which source is given.
-	 * Scheduling consists in giving a total order.
-	 */
-	void schedule(TransferVertex tVertex, MapperDAGVertex source, MapperDAGVertex target);
-
-	/**
-	 * Gets the internal order manager
-	 */
-	public SchedOrderManager getOrderManager();
+public abstract class AbstractEdgeSched implements IEdgeSched {
 	
 	/**
-	 * Gets the current edge scheduling type
+	 * Contains the rank list of all the vertices in an implementation
 	 */
-	public EdgeSchedType getEdgeSchedType();
+	protected SchedOrderManager orderManager = null;
+
+	public AbstractEdgeSched(SchedOrderManager orderManager) {
+		super();
+		this.orderManager = orderManager;
+	}
+
+	/**
+	 * Gets the edge scheduler from an edge scheduler type
+	 */
+	public static IEdgeSched getInstance(EdgeSchedType edgeSchedType,
+			SchedOrderManager orderManager) {
+
+		AbstractEdgeSched edgeSched = null;
+		
+		if (edgeSchedType == EdgeSchedType.Simple) {
+			edgeSched = new SimpleEdgeSched(orderManager);
+		} else if (edgeSchedType == EdgeSchedType.Switcher) {
+			edgeSched = new SwitcherEdgeSched(orderManager);
+		} else if (edgeSchedType == EdgeSchedType.Advanced) {
+			edgeSched = new AdvancedEdgeSched(orderManager);
+		}
+		else{
+			// Default scheduler
+			edgeSched = new SimpleEdgeSched(orderManager);
+		}
+
+		return edgeSched;
+	}
+	
+	public SchedOrderManager getOrderManager() {
+		return orderManager;
+	}
 }

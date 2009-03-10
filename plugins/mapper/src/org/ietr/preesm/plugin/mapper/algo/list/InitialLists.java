@@ -48,8 +48,8 @@ import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -77,7 +77,7 @@ public class InitialLists {
 
 	// List of the nodes of the critical path
 	protected List<MapperDAGVertex> criticalPath;
-
+	
 	/**
 	 * constructors
 	 */
@@ -318,26 +318,11 @@ public class InitialLists {
 
 		}
 
-		// Careful! Reordering the CPN dominant list in topological order.
-		// Improves a lot some schedulings but could damage others. To test in
-		// the long run
-		PreesmLogger.getLogger().log(Level.INFO, "Reordering CPN list.");
-
-		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
-		List<MapperDAGVertex> newOrderlist = new ArrayList<MapperDAGVertex>();
-
-		while (topoDAGIterator.hasNext()) {
-			MapperDAGVertex v = (MapperDAGVertex) topoDAGIterator.next();
-			if (cpnDominant.contains(v))
-				newOrderlist.add(v);
-		}
-
-		cpnDominant.clear();
-		cpnDominant.addAll(newOrderlist);
-
 		return true;
 
 	}
+	
+	
 
 	/**
 	 * constructCPNobn: Add to the CPN dominant list and the Blocking Node list

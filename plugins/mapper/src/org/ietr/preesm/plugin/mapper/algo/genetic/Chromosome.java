@@ -46,11 +46,11 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -263,16 +263,14 @@ public class Chromosome {
 
 		ListScheduler scheduler = new ListScheduler();
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, false);
+				dag, archi);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc archisimu = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
-		scheduler.schedule(dag, initialLists.getCpnDominant(), initialLists
-				.getBlockingNodes(), initialLists
-				.getCriticalpath(), archisimu, null, null);
+		scheduler.schedule(dag, initialLists.getCpnDominant(), archisimu, null, null);
 
 		// test constructor
 		Chromosome chromosome = new Chromosome(dag, archi);

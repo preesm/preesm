@@ -33,46 +33,33 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.plugin.mapper.edgescheduling;
+
+package org.ietr.preesm.plugin.abc.edgescheduling;
+
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * Types of edge scheduler to be used in parameters
+ * Specification of the edgeScheduler interface
  * 
  * @author mpelcat
  */
-public enum EdgeSchedType {
+public interface IEdgeSched {
 
-	Simple,
+	/**
+	 * Schedules a transfer which source is given.
+	 * Scheduling consists in giving a total order.
+	 */
+	void schedule(TransferVertex tVertex, MapperDAGVertex source, MapperDAGVertex target);
 
-	Switcher,
-
-	Advanced;
-
-	@Override
-	public String toString() {
-
-		if (this == Simple) {
-			return "Simple";
-		} else if (this == Switcher) {
-			return "Switcher";
-		} else if (this == Advanced) {
-			return "Advanced";
-		}
-
-		return null;
-	}
-
-	public static EdgeSchedType fromString(String type) {
-
-		if (type.equalsIgnoreCase("Simple")) {
-			return Simple;
-		} else if (type.equalsIgnoreCase("Switcher")) {
-			return Switcher;
-		} else if (type.equalsIgnoreCase("Advanced")) {
-			return Advanced;
-		} 
-
-		return null;
-	}
+	/**
+	 * Gets the internal order manager
+	 */
+	public SchedOrderManager getOrderManager();
+	
+	/**
+	 * Gets the current edge scheduling type
+	 */
+	public EdgeSchedType getEdgeSchedType();
 }

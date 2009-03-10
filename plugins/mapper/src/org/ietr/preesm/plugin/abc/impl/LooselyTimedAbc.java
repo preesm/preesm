@@ -43,8 +43,9 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
-import org.ietr.preesm.plugin.abc.TaskSwitcher;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -97,13 +98,7 @@ public class LooselyTimedAbc extends
 		} else {
 
 			if (updateRank) {
-				if (this.abcType.isSwitchTask()) {
-					TaskSwitcher taskSwitcher = new TaskSwitcher(
-							orderManager, vertex);
-					taskSwitcher.insertVertex();
-				} else {
-					orderManager.addLast(vertex);
-				}
+				taskScheduler.insertVertex(vertex);
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}

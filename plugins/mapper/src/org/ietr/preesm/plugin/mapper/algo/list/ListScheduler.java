@@ -57,9 +57,10 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -210,9 +211,7 @@ public class ListScheduler {
 	 * @return : Implemented MapperDAG
 	 */
 
-	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
-			List<MapperDAGVertex> blockingnodelist,
-			List<MapperDAGVertex> fcplist, IAbc archisimu,
+	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist, IAbc archisimu,
 			Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
 		// Variables
@@ -315,7 +314,7 @@ public class ListScheduler {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, false);
+				dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 
@@ -335,13 +334,12 @@ public class ListScheduler {
 
 		ListScheduler scheduler = new ListScheduler();
 		simu.resetImplementation();
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc simu2 = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
 
 		logger.log(Level.FINEST, "Evaluating first scheduling ");
-		scheduler.schedule(dag, initial.getCpnDominant(), initial
-				.getBlockingNodes(), initial.getCriticalpath(),
+		scheduler.schedule(dag, initial.getCpnDominant(),
 				simu2, null, null);
 
 		logger.log(Level.FINEST, "Displaying dag implanted ");

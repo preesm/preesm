@@ -58,13 +58,13 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastPopulation;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -142,7 +142,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().isSwitchTask());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
 
 		InitialLists initial = new InitialLists();
 

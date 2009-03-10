@@ -75,6 +75,10 @@ public class InitialVertexProperty {
 	 */
 	private int nbRepeat;
 
+	/**
+	 * Level of the vertex in topological order
+	 */
+	private int topologicalLevel;
 
 	public int getNbRepeat() {
 		return nbRepeat;
@@ -86,6 +90,7 @@ public class InitialVertexProperty {
 		this.nbRepeat = 1;
 		parentVertex = null;
 		operators = new HashSet<Operator>();
+		this.topologicalLevel = -1;
 	}
 
 	public void setNbRepeat(int nbRepeat) {
@@ -224,5 +229,14 @@ public class InitialVertexProperty {
 
 	public void setParentVertex(MapperDAGVertex parentVertex) {
 		this.parentVertex = parentVertex;
+	}
+
+
+	public int getTopologicalLevel() {
+		return topologicalLevel;
+	}
+
+	public void setTopologicalLevel(int topologicalLevel) {
+		this.topologicalLevel = topologicalLevel;
 	}
 }

@@ -61,10 +61,11 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -125,8 +126,7 @@ public class FastAlgorithm extends Observable {
 		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag,
-				archi, false);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag, archi);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 
@@ -153,9 +153,8 @@ public class FastAlgorithm extends Observable {
 
 		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
 				dag, archi, initial.getCpnDominant(), initial
-						.getBlockingNodes(), initial
-						.getCriticalpath(), 50, 50, 5, false, true,
-				null, false, null);
+						.getBlockingNodes(), initial.getCriticalpath(), 50, 50,
+				5, false, true, null, false, null);
 
 		IAbc simu2 = AbstractAbc.getInstance(AbcType.LooselyTimed,
 				EdgeSchedType.Simple, dag, archi);
@@ -209,6 +208,8 @@ public class FastAlgorithm extends Observable {
 		// Variables
 		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
 				dag, archi);
+		simulator.resetTaskScheduler(TaskSchedType.Topological);
+
 		ListScheduler listscheduler = new ListScheduler();
 		Iterator<Operator> prociter;
 
@@ -234,9 +235,7 @@ public class FastAlgorithm extends Observable {
 
 		// step 1
 		if (!alreadyimplanted) {
-
-			listscheduler.schedule(dag, CpnDominantList, BlockingNodesList,
-					FinalcriticalpathList, simulator, null, null);
+			listscheduler.schedule(dag, CpnDominantList, simulator, null, null);
 		} else {
 			simulator.setDAG(dag);
 		}
@@ -245,9 +244,10 @@ public class FastAlgorithm extends Observable {
 
 		bestTotalOrder = simulator.getTotalOrder().toMap();
 		if (displaySolutions) {
-			GanttEditor.createEditor(simulator, getBestTotalOrder(), "List Solution: " + initial);
+			GanttEditor.createEditor(simulator, getBestTotalOrder(),
+					"List Solution: " + initial);
 		}
-		
+
 		logger.log(Level.FINE, "InitialSP " + initial);
 
 		// The writer allows textual logs
@@ -264,6 +264,7 @@ public class FastAlgorithm extends Observable {
 		MapperDAG dagfinal = simulator.getDAG().clone();
 		dagfinal.setScheduleLatency(bestSL);
 
+		simulator.resetTaskScheduler(TaskSchedType.Switcher);
 		// step 4/17
 		while (searchcount++ <= maxcount) {
 
@@ -317,13 +318,10 @@ public class FastAlgorithm extends Observable {
 
 				prociter = new RandomIterator<Operator>(operatorlist,
 						new Random());
+
+				// The mapping can reaffect the same operator as before,
+				// refining the edge scheduling
 				operatortest = prociter.next();
-				if (operatortest.equals(dagfinal.getMapperDAGVertex(
-						currentvertex.getName())
-						.getImplementationVertexProperty()
-						.getEffectiveOperator())) {
-					operatortest = prociter.next();
-				}
 				operatorprec = (Operator) simulator
 						.getEffectiveComponent(currentvertex);
 
@@ -359,10 +357,9 @@ public class FastAlgorithm extends Observable {
 
 				bestTotalOrder = simulator.getTotalOrder().toMap();
 				if (displaySolutions) {
-					GanttEditor.createEditor(simulator, getBestTotalOrder(), "FAST solution: "
-							+ bestSL);
+					GanttEditor.createEditor(simulator, getBestTotalOrder(),
+							"FAST solution: " + bestSL);
 				}
-
 
 				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
@@ -387,8 +384,8 @@ public class FastAlgorithm extends Observable {
 
 				operatorfcp = prociter.next();
 			}
-			listscheduler.schedule(dag, CpnDominantList, BlockingNodesList,
-					FinalcriticalpathList, simulator, operatorfcp, fcpvertex);
+			listscheduler.schedule(dag, CpnDominantList, simulator,
+					operatorfcp, fcpvertex);
 
 		}
 

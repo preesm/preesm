@@ -48,8 +48,8 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
-import org.ietr.preesm.plugin.mapper.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
@@ -101,7 +101,7 @@ public class GraphTimeKeeperTest extends TestCase {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample1(archi);
 
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
 
@@ -206,7 +206,7 @@ public class GraphTimeKeeperTest extends TestCase {
 		logger.log(Level.FINEST, "Creating DAG");
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
-		AbcType abcType = AbcType.LooselyTimed.setSwitchTask(false);
+		AbcType abcType = AbcType.LooselyTimed;
 		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, 
 				dag, archi, abcType);
 

@@ -33,52 +33,46 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-package org.ietr.preesm.plugin.mapper.edgescheduling;
-
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+ 
+package org.ietr.preesm.plugin.abc.edgescheduling;
 
 /**
- * Methods common to every edge schedulers
+ * Types of edge scheduler to be used in parameters
  * 
  * @author mpelcat
  */
-public abstract class AbstractEdgeSched implements IEdgeSched {
-	
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	protected SchedOrderManager orderManager = null;
+public enum EdgeSchedType {
 
-	public AbstractEdgeSched(SchedOrderManager orderManager) {
-		super();
-		this.orderManager = orderManager;
-	}
+	Simple,
 
-	/**
-	 * Gets the edge scheduler from an edge scheduler type
-	 */
-	public static IEdgeSched getInstance(EdgeSchedType edgeSchedType,
-			SchedOrderManager orderManager) {
+	Switcher,
 
-		AbstractEdgeSched edgeSched = null;
-		
-		if (edgeSchedType == EdgeSchedType.Simple) {
-			edgeSched = new SimpleEdgeSched(orderManager);
-		} else if (edgeSchedType == EdgeSchedType.Switcher) {
-			edgeSched = new SwitcherEdgeSched(orderManager);
-		} else if (edgeSchedType == EdgeSchedType.Advanced) {
-			edgeSched = new AdvancedEdgeSched(orderManager);
-		}
-		else{
-			// Default scheduler
-			edgeSched = new SimpleEdgeSched(orderManager);
+	Advanced;
+
+	@Override
+	public String toString() {
+
+		if (this == Simple) {
+			return "Simple";
+		} else if (this == Switcher) {
+			return "Switcher";
+		} else if (this == Advanced) {
+			return "Advanced";
 		}
 
-		return edgeSched;
+		return null;
 	}
-	
-	public SchedOrderManager getOrderManager() {
-		return orderManager;
+
+	public static EdgeSchedType fromString(String type) {
+
+		if (type.equalsIgnoreCase("Simple")) {
+			return Simple;
+		} else if (type.equalsIgnoreCase("Switcher")) {
+			return Switcher;
+		} else if (type.equalsIgnoreCase("Advanced")) {
+			return Advanced;
+		} 
+
+		return null;
 	}
 }
