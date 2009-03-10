@@ -766,7 +766,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		taskScheduler = AbstractTaskSched.getInstance(taskSchedType, orderManager);
 		if(taskScheduler instanceof TopologicalTaskSched){
-			((TopologicalTaskSched)taskScheduler).createTopology(dag);
+			((TopologicalTaskSched)taskScheduler).createTopology(implementation);
 		}
 	}
 

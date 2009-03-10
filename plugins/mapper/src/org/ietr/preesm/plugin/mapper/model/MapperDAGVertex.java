@@ -164,9 +164,10 @@ public class MapperDAGVertex extends DAGVertex {
 
 	public String toString() {
 
+		String toString = "";
 		if (implementationVertexProperty.hasEffectiveComponent()) {
 			// If the vertex is implanted, displays its component and rank
-			return getName()
+			toString = getName()
 					+ "("
 					+ implementationVertexProperty.getEffectiveComponent()
 							.toString() + ","
@@ -174,8 +175,14 @@ public class MapperDAGVertex extends DAGVertex {
 					+ ")";
 		} else {
 			// If the vertex is not implanted, displays its weight
-			return getName() + "(" + this.getNbRepeat() + ")";
+			toString = getName() + "(" + this.getNbRepeat() + ")";
 		}
+		
+		if(initialVertexProperty.getTopologicalLevel() != -1){
+			toString += "[" + initialVertexProperty.getTopologicalLevel() + "]";
+		}
+		
+		return toString;
 	}
 
 	public Set<MapperDAGVertex> getPredecessorSet() {

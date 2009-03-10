@@ -208,6 +208,7 @@ public class FastAlgorithm extends Observable {
 		// Variables
 		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
 				dag, archi);
+		// A topological task scheduler is chosen for the list scheduling
 		simulator.resetTaskScheduler(TaskSchedType.Topological);
 
 		ListScheduler listscheduler = new ListScheduler();
@@ -264,6 +265,7 @@ public class FastAlgorithm extends Observable {
 		MapperDAG dagfinal = simulator.getDAG().clone();
 		dagfinal.setScheduleLatency(bestSL);
 
+		// A switcher task scheduler is chosen for the fast refinement
 		simulator.resetTaskScheduler(TaskSchedType.Switcher);
 		// step 4/17
 		while (searchcount++ <= maxcount) {

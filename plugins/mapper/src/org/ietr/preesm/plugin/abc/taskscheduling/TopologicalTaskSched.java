@@ -91,12 +91,14 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 			if (v.incomingEdges().isEmpty()) {
 				v.getInitialVertexProperty().setTopologicalLevel(0);
 			} else {
-				MapperDAGVertex vertex = (MapperDAGVertex) ((DAGEdge) v
-						.incomingEdges().toArray()[0]).getSource();
-				int precedentLevel = vertex.getInitialVertexProperty()
-						.getTopologicalLevel();
-				v.getInitialVertexProperty().setTopologicalLevel(
-						precedentLevel + 1);
+				int precedentLevel = 0;
+				for(DAGEdge edge : v.incomingEdges()){
+					MapperDAGVertex precVertex = (MapperDAGVertex) edge.getSource();
+					precedentLevel = Math.max(precedentLevel, precVertex.getInitialVertexProperty()
+							.getTopologicalLevel());
+					v.getInitialVertexProperty().setTopologicalLevel(
+							precedentLevel + 1);
+				}
 			}
 		}
 		
@@ -106,7 +108,9 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 	@Override
 	public void insertVertex(MapperDAGVertex vertex) {
 		int topoOrder = topolist.indexOf(vertex);
-		if (topolist != null && topoOrder > 0) {
+		boolean inserted = false;
+		
+		if (topolist != null && topoOrder >= 0) {
 
 			topoOrder--;
 			while (topoOrder >= 0) {
@@ -114,9 +118,14 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				int totalOrder = orderManager.totalIndexOf(previousCandidate);
 				if (orderManager.getTotalOrder().contains(previousCandidate)) {
 					orderManager.insertVertexAfter(orderManager.getVertex(totalOrder), vertex);
+					inserted = true;
 					break;
 				}
 				topoOrder--;
+			}
+			
+			if(!inserted && vertex.getInitialVertexProperty().getTopologicalLevel() == 0){
+				orderManager.addFirst(vertex);
 			}
 		} else {
 			orderManager.addLast(vertex);

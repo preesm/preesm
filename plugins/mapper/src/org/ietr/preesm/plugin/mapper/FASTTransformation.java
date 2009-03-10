@@ -57,6 +57,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
@@ -173,6 +174,7 @@ public class FASTTransformation extends AbstractMapping {
 				.getEdgeSchedType());
 		
 		result.setDAG(dag);
+		simu2.resetTaskScheduler(TaskSchedType.Simple);
 		result.setCustomData(simu2);
 
 		return result;
