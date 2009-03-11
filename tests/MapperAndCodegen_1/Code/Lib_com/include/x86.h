@@ -8,13 +8,15 @@
 #ifndef X86_H_
 #define X86_H_
 
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <windows.h>
 
 #define semaphore HANDLE
 
-#define x86SharedRAM 0
+#define MEDIUM_SEND 0
+#define MEDIUM_RCV 1
+#define TCP 100
 
 #define CORE_NUMBER 8
 
@@ -27,11 +29,9 @@
 #define Core6 6
 #define Core7 7
 
-#include "testcomSources.h"
-#include "windows_mailbox.h"
-#include "windows_semaphore.h"
+#include "OS_Com.h"
+#include "PC_x86_SEM.h"
 
-// Necessary for semaphore release
-LONG previous ;
+
 
 #endif /* X86_H_ */

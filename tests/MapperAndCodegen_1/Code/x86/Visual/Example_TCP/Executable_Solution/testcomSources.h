@@ -1,4 +1,3 @@
-
 #ifndef TESTCOMSOURCE_H_
 #define TESTCOMSOURCE_H_
 

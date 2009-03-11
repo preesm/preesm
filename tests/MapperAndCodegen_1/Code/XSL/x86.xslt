@@ -36,7 +36,7 @@
     
     <!-- includes -->
     <xsl:template name="includeSection"> 
-        <xsl:value-of select="concat($curIndent,'#include &quot;../src/x86.h&quot;',$new_line)"/>
+        <xsl:value-of select="concat($curIndent,'#include &quot;../../Lib_com/include/x86.h&quot;',$new_line)"/>
         <xsl:value-of select="$new_line"/>
     </xsl:template>
     
@@ -110,7 +110,7 @@
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'ReleaseSemaphore','(')"/>
         <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
-        <xsl:value-of select="concat(',1,&amp;previous);',' //',@type,$new_line)"/>
+        <xsl:value-of select="concat(',1,NULL);',' //',@type,$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:semaphorePend">
@@ -153,13 +153,13 @@
     
     <xsl:template match="sourceCode:sendInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sendInit(',@mediumId,',',$coreName,',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_SEND,',@mediumId,',',$coreName,',',@connectedCoreId)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receiveInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'receiveInit(',@mediumId,',',@connectedCoreId,',',$coreName)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_RCV,',@mediumId,',',@connectedCoreId,',',$coreName)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     

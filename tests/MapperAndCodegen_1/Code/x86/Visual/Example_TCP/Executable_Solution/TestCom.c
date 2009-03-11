@@ -7,7 +7,8 @@
  Description :
  ============================================================================
  */
-#include "x86.h"
+    #include "../../../../Lib_com/include/x86.h"
+
 /*
 DWORD WINAPI ThreadFunc( LPVOID lpParam )
 {
@@ -40,6 +41,10 @@ extern DWORD WINAPI computationThread_Core7( LPVOID lpParam );
 int main(void)
 {
 	LPTHREAD_START_ROUTINE routine[CORE_NUMBER];
+
+	int i;
+    int stacksize = 8000;
+
 	routine[0] = computationThread_Core0;
 	routine[1] = computationThread_Core1;
 	routine[2] = computationThread_Core2;
@@ -49,15 +54,20 @@ int main(void)
 	routine[6] = computationThread_Core6;
 	routine[7] = computationThread_Core7;
 
-	int i;
-    int stacksize = 8000;
+	/*for(i=0;i<MEDIA_NR;i++){
+		memset(&Media[i][],0,sizeof(Medium));
+	}*/
+
+	sem_init1 =CreateSemaphoreA(NULL,1,1,"sem_init1");
+	sem_init2 =CreateSemaphoreA(NULL,1,1,"sem_init2");
+
 
 	for(i=0;i<CORE_NUMBER;i++){
 		HANDLE thread = CreateThread(NULL,stacksize,routine[i],NULL,0,NULL);
-		SetThreadPriority(
+		/*SetThreadPriority(
 				thread,
 				THREAD_PRIORITY_HIGHEST
-		);
+		);*/
 
 	}
 
