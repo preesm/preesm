@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.codegen;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.Buffer;
@@ -54,6 +55,7 @@ import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.parameters.ParameterSet;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -87,7 +89,12 @@ public class CompThreadCodeGenerator {
 					true);
 
 			if (!ownComVertices.isEmpty()) {
-				ICodeElement taskElement = loopCode.getCodeElement(task);
+				List<ICodeElement> taskElements = loopCode.getCodeElements(task);
+				if(taskElements.size() != 1){
+					PreesmLogger.getLogger().log(Level.SEVERE,"Not one single function call for function: " + task.getName());
+				}
+				ICodeElement taskElement = taskElements.get(0);
+				
 				for (SDFAbstractVertex com : ownComVertices) {
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
@@ -112,7 +119,12 @@ public class CompThreadCodeGenerator {
 			ownComVertices = thread.getComVertices(task, false);
 
 			if (!ownComVertices.isEmpty()) {
-				ICodeElement taskElement = loopCode.getCodeElement(task);
+				List<ICodeElement> taskElements = loopCode.getCodeElements(task);
+				if(taskElements.size() != 1){
+					PreesmLogger.getLogger().log(Level.SEVERE,"Not one single function call for function: " + task.getName());
+				}
+				ICodeElement taskElement = taskElements.get(0);
+				
 				for (SDFAbstractVertex com : ownComVertices) {
 					// A first token must initialize the semaphore pend due to
 					// a sending operation

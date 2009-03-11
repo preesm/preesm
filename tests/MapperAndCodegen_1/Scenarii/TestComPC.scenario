@@ -8,84 +8,42 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core7"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
             <task name="Copy"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core6"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core4"/>
             <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
             <task name="Sensor"/>
             <task name="Actuator"/>
-            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
             <task name="Copy"/>
+            <task name="Gen_int"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core5"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
+            <operator name="Core0"/>
             <task name="Sensor"/>
             <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
         </constraintGroup>
     </constraints>
     <timings>

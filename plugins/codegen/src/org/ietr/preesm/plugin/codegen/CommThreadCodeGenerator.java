@@ -79,7 +79,7 @@ public class CommThreadCodeGenerator {
 		ForLoop loopCode = thread.getLoopCode();
 
 		for (SDFAbstractVertex vertex : comVertices) {
-			ICodeElement com = loopCode.getCodeElement(vertex);
+			List<ICodeElement> coms = loopCode.getCodeElements(vertex);
 
 			AbstractBufferContainer container = thread.getGlobalContainer();
 			List<Buffer> buffers = null;
@@ -131,10 +131,10 @@ public class CommThreadCodeGenerator {
 			SemaphorePost post = new SemaphorePost(container, buffers, vertex, sType);
 
 			if (pend != null && post != null) {
-				// Adding a semaphore pend before the communication call and
-				// a semaphore post after it
-				loopCode.addCodeElementBefore(com, pend);
-				loopCode.addCodeElementAfter(com, post);
+				// Adding a semaphore pend before the communication calls and
+				// a semaphore post after them
+				loopCode.addCodeElementBefore(coms.get(0), pend);
+				loopCode.addCodeElementAfter(coms.get(coms.size()-1), post);
 			} else {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"semaphore creation failed");
@@ -148,10 +148,12 @@ public class CommThreadCodeGenerator {
 	 */
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices) {
 		for (SDFAbstractVertex vertex : vertices) {
-			CommunicationFunctionCall com = CommunicationFunctionCall
-					.createCall(thread, vertex);
-			if (com != null) {
-				thread.getLoopCode().addCodeElement(com);
+			List<CommunicationFunctionCall> coms = CommunicationFunctionCall
+					.createCalls(thread, vertex);
+			if (!coms.isEmpty()) {
+				for(CommunicationFunctionCall call : coms){
+					thread.getLoopCode().addCodeElement(call);
+				}
 			}
 			else{
 				PreesmLogger.getLogger().log(Level.SEVERE,"problem creating a send or receive function call: " + vertex.getName());

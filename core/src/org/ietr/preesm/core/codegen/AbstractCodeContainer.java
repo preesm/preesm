@@ -140,16 +140,18 @@ public abstract class AbstractCodeContainer {
 	 *            An {@link AbstractVertex}.
 	 * @return The matching code element or <code>null</code>.
 	 */
-	public ICodeElement getCodeElement(SDFAbstractVertex vertex) {
+	public List<ICodeElement> getCodeElements(SDFAbstractVertex vertex) {
+		List<ICodeElement> vList = new ArrayList<ICodeElement>();
+		
 		for (ICodeElement elt : codeElements) {
 			AbstractVertex<?> currentVertex = elt.getCorrespondingVertex();
 			if (elt.getCorrespondingVertex() != null
 					&& currentVertex.equals(vertex)) {
-				return elt;
+				vList.add(elt);
 			}
 		}
 
-		return null;
+		return vList;
 	}
 	
 	public List<ICodeElement> getCodeElements() {

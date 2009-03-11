@@ -69,8 +69,8 @@
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
-         <spirit:instanceName>Shared_Ram</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="x86SharedRAM" spirit:vendor="" spirit:version=""/>
+         <spirit:instanceName>TCP_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="TCP" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -83,41 +83,41 @@
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core2"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core3"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core4"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core5"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core6"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core7"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Shared_Ram"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core0"/>
       </spirit:interconnection>
    </spirit:interconnections>

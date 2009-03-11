@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -57,10 +58,10 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	/**
 	 * creates a send or a receive depending on the vertex type
 	 */
-	public static CommunicationFunctionCall createCall(
+	public static List<CommunicationFunctionCall> createCalls(
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 
-		CommunicationFunctionCall call = null;
+		List<CommunicationFunctionCall> calls = new ArrayList<CommunicationFunctionCall>();
 
 		// retrieving the vertex type
 		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
@@ -82,8 +83,19 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				SDFAbstractVertex receive = ((SDFEdge) outEdges.toArray()[0]).getTarget();
 				Operator target = (Operator) receive.getPropertyBean()
 						.getValue(ImplementationPropertyNames.Vertex_Operator);
-				call = new Send(parentContainer, vertex, bufferSet, medium,
-						target);
+				
+				// Case of one send for multiple buffers
+				//calls.add(new Send(parentContainer, vertex, bufferSet, medium,
+				//		target));
+
+				// Case of one send per buffer
+				for(Buffer buf : bufferSet){
+					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+					singleBufferSet.add(buf);
+					calls.add(new Send(parentContainer, vertex, singleBufferSet, medium,
+							target));
+				}
+				
 			} else if (type.isReceive()) {
 				List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
 
@@ -92,12 +104,22 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				SDFAbstractVertex send = ((SDFEdge) inEdges.toArray()[0]).getSource();
 				Operator source = (Operator) send.getPropertyBean().getValue(
 						ImplementationPropertyNames.Vertex_Operator);
-				call = new Receive(parentContainer, vertex, bufferSet, medium,
-						source);
+				
+				// Case of one receive for multiple buffers
+				//calls.add(new Receive(parentContainer, vertex, bufferSet, medium,
+				//		source));
+
+				// Case of one receive per buffer
+				for(Buffer buf : bufferSet){
+					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+					singleBufferSet.add(buf);
+					calls.add(new Receive(parentContainer, vertex, singleBufferSet, medium,
+							source));
+				}
 			}
 		}
 
-		return call;
+		return calls;
 	}
 
 	/**
