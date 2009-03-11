@@ -41,11 +41,11 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -194,8 +194,8 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 		// receiver
 		if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
 				.getTarget()))
-				|| (edge.getSource() != null && SpecialVertexManager
-						.isJoin(edge.getSource()))) {
+				/*|| (edge.getSource() != null && SpecialVertexManager
+						.isJoin(edge.getSource()))*/) {
 			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
 					.getSource()).getImplementationVertexProperty();
 			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge

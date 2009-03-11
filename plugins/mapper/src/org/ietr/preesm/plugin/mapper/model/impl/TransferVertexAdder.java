@@ -39,12 +39,15 @@ package org.ietr.preesm.plugin.mapper.model.impl;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.Route;
 import org.ietr.preesm.core.architecture.RouteStep;
-import org.ietr.preesm.plugin.abc.CommunicationRouter;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
@@ -155,13 +158,19 @@ public class TransferVertexAdder {
 		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex currentDest = (MapperDAGVertex) edge.getTarget();
 
-		Route route = router.getRoute(currentSource
-				.getImplementationVertexProperty().getEffectiveOperator(),
-				currentDest.getImplementationVertexProperty()
-						.getEffectiveOperator());
+		Operator sourceOp = currentSource.getImplementationVertexProperty()
+				.getEffectiveOperator();
+		Operator destOp = currentDest.getImplementationVertexProperty()
+				.getEffectiveOperator();
 
-		if(route == null){
-			return ;
+		Route route = router.getRoute(sourceOp, destOp);
+
+		if (route == null) {
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"No route was found between the cores: " + sourceOp
+							+ " and " + destOp);
+			return;
 		}
 		Iterator<RouteStep> it = route.iterator();
 		int i = 1;
@@ -174,14 +183,16 @@ public class TransferVertexAdder {
 			if (sendReceive) {
 				// TODO: set a size to send and receive. From medium definition?
 				transaction = new AddSendReceiveTransaction(edge,
-						implementation, orderManager, i, step, TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
+						implementation, orderManager, i, step,
+						TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 			} else {
 
 				long transferCost = router.evaluateTransfer(edge, step
 						.getSender(), step.getReceiver());
 
 				transaction = new AddTransferVertexTransaction(edgeScheduler,
-						edge, implementation, orderManager, i, step, transferCost, scheduleVertex);
+						edge, implementation, orderManager, i, step,
+						transferCost, scheduleVertex);
 			}
 
 			transactionManager.add(transaction, refVertex);

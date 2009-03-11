@@ -46,8 +46,8 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class SpecialVertexManager {
 
-
-	public static final long dissuasiveCost = 10l;
+	// Still not ready to use. Needs some improvements on scheduling before
+	public static final long dissuasiveCost = 0l;
 	
 	/**
 	 * Tests if a vertex is of type broadcast

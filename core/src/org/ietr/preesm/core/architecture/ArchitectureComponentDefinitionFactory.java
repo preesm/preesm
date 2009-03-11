@@ -43,8 +43,14 @@ import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 
 
 /**
@@ -59,12 +65,23 @@ public class ArchitectureComponentDefinitionFactory {
 		ArchitectureComponentDefinition result = null;
 		
 		if(type != null){
+			//Simple model
 			if(type == ArchitectureComponentType.medium){
 				result = new MediumDefinition(name);
 			}
 			else if(type == ArchitectureComponentType.operator){
 				result = new OperatorDefinition(name);
 			}
+			else if(type == ArchitectureComponentType.contentionNode){
+				result = new ContentionNodeDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.parallelNode){
+				result = new ParallelNodeDefinition(name);
+			}
+			else if(type == ArchitectureComponentType.dma){
+				result = new DmaDefinition(name);
+			}
+			// Advanced model
 			else if(type == ArchitectureComponentType.processor){
 				result = new ProcessorDefinition(name);
 			}

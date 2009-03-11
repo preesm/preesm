@@ -50,10 +50,16 @@ import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 
 /**
  * Factory able to create an architecture component of any type
@@ -67,12 +73,24 @@ public class ArchitectureComponentFactory {
 		ArchitectureComponent result = null;
 		
 		if(type != null){
+			// Simple model
 			if(type instanceof MediumDefinition){
 				result = new Medium(name,(MediumDefinition)type);
 			}
 			else if(type instanceof OperatorDefinition){
 				result = new Operator(name,(OperatorDefinition)type);
 			}
+			else if(type instanceof ContentionNodeDefinition){
+				result = new ContentionNode(name,(ContentionNodeDefinition)type);
+			}
+			else if(type instanceof DmaDefinition){
+				result = new Dma(name,(DmaDefinition)type);
+			}
+			else if(type instanceof ParallelNodeDefinition){
+				result = new ParallelNode(name,(ParallelNodeDefinition)type);
+			}
+			
+			// Advanced model
 			else if(type instanceof CommunicationNodeDefinition){
 				result = new CommunicationNode(name,(CommunicationNodeDefinition)type);
 			}

@@ -401,6 +401,8 @@ public class DesignParser {
 
 			ArchitectureComponent cmp1 = archi.getComponent(componentRefList
 					.get(0));
+			cmp1 = archi.getComponent(componentRefList
+					.get(0));
 			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
 			ArchitectureInterface if1 = cmp1
 					.addInterface(new ArchitectureInterface(busRef1, cmp1));

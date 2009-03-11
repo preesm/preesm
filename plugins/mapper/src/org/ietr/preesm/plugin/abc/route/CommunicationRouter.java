@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc;
+package org.ietr.preesm.plugin.abc.route;
 
 import java.util.ArrayList;
 import java.util.Iterator;
