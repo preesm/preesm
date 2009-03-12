@@ -10,11 +10,9 @@ typedef struct {
 	void* medium;
 }Medium;
 
-#define MEDIA_NR 20
+#define MEDIA_NR 8
 Medium Media[MEDIA_NR][MEDIA_NR];
-
-semaphore sem_init1;
-semaphore sem_init2;
+semaphore sem_init[MEDIA_NR][MEDIA_NR];
 
 #endif /* #ifndef _OS_LIB_COM*/
 

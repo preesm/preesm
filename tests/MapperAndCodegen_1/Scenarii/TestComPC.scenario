@@ -8,42 +8,43 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="Core7"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core6"/>
         </constraintGroup>
         <constraintGroup>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Actuator"/>
+            <operator name="Core4"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
             <task name="ParallelTest"/>
             <task name="Copy"/>
-            <task name="Gen_int"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core0"/>
+            <task name="ParallelTest"/>
+            <task name="Copy"/>
             <task name="Sensor"/>
+            <task name="Gen_int"/>
             <task name="Actuator"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
+            <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core3"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core4"/>
+            <operator name="Core0"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="ParallelTest3"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
         </constraintGroup>
     </constraints>
     <timings>

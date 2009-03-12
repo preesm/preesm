@@ -57,7 +57,7 @@ int Com_Init (int direction, int PC_type_of_cible, int SenderId, int ReceiverId)
 
 	switch(direction){
 		case MEDIUM_SEND:
-			WaitForSingleObject(sem_init1,INFINITE); //full
+			WaitForSingleObject(sem_init[SenderId][ReceiverId],INFINITE); //full
 			if(Media[SenderId][ReceiverId].medium == NULL){
 				Media_TCP *medium = (Media_TCP *) malloc(sizeof(Media_TCP));
 				
@@ -66,11 +66,11 @@ int Com_Init (int direction, int PC_type_of_cible, int SenderId, int ReceiverId)
 
 				Media[SenderId][ReceiverId].medium = medium;
 			}
-			ReleaseSemaphore(sem_init1,1,NULL); //empty
+			ReleaseSemaphore(sem_init[SenderId][ReceiverId],1,NULL); //empty
 			break;
 
 		case MEDIUM_RCV: 	
-			WaitForSingleObject(sem_init2,INFINITE); //full
+			WaitForSingleObject(sem_init[ReceiverId][SenderId],INFINITE); //full
 			if(Media[ReceiverId][SenderId].medium == NULL){		
 				Media_TCP *medium = (Media_TCP *) malloc(sizeof(Media_TCP));
 
@@ -79,7 +79,7 @@ int Com_Init (int direction, int PC_type_of_cible, int SenderId, int ReceiverId)
 
 				Media[ReceiverId][SenderId].medium = medium;
 			}
-			ReleaseSemaphore(sem_init2,1,NULL); //empty
+			ReleaseSemaphore(sem_init[ReceiverId][SenderId],1,NULL); //empty
 			break;
 		default: return (ERROR);
 	}

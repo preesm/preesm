@@ -8,11 +8,11 @@ void semaphoreInit(HANDLE* semaphores, int semNumber,int ID) {
 
 	for(cpt=0;cpt<semNumber;cpt++) {
 		sem_name[0]='\0';
-		strcat(sem_name,temp);
-		itoa(cpt,sem_num,10);
-		strcat(sem_name,sem_num);
-		itoa(ID,sem_num,10);
-		strcat(sem_name,sem_num);
+		strcat_s(sem_name,20,temp);
+		_itoa_s(cpt,sem_num,2,10);
+		strcat_s(sem_name,20,sem_num);
+		_itoa_s(ID,sem_num,2,10);
+		strcat_s(sem_name,20,sem_num);
 		semaphores[cpt] = CreateSemaphoreA(NULL,0,1,sem_name);
 		if (semaphores[cpt] == NULL) {
 			exit(1);
