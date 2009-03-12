@@ -305,6 +305,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		combocps.setLayout(new FillLayout());
 		combocps.setVisible(true);
 		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
+		combo.setVisibleItemCount(20);
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
 
