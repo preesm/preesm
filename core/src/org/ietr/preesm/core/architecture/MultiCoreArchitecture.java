@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
@@ -210,7 +211,8 @@ public class MultiCoreArchitecture {
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
 			boolean isDirected) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
-			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2, isDirected));
+			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2,
+					isDirected));
 			if (isDirected) {
 				if (cmp1.getType() == ArchitectureComponentType.fifo) {
 					if (((Fifo) cmp1).getOutputInterface() == null) {
@@ -352,7 +354,8 @@ public class MultiCoreArchitecture {
 	 */
 	public Set<ArchitectureComponent> getComponents(
 			ArchitectureComponentType type) {
-		Set<ArchitectureComponent> ops = new HashSet<ArchitectureComponent>();
+		Set<ArchitectureComponent> ops = new ConcurrentSkipListSet<ArchitectureComponent>(
+				new ArchitectureComponent.ArchitectureComponentComparator());
 
 		Iterator<ArchitectureComponent> iterator = architectureComponents
 				.values().iterator();
@@ -372,7 +375,8 @@ public class MultiCoreArchitecture {
 	 * Returns all the components
 	 */
 	public List<ArchitectureComponent> getComponents() {
-		return new ArrayList<ArchitectureComponent>(architectureComponents.values());
+		return new ArrayList<ArchitectureComponent>(architectureComponents
+				.values());
 	}
 
 	/**

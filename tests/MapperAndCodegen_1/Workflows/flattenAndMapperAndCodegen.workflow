@@ -55,6 +55,6 @@
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="HierarchyFlattening"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="HSDF"/>
+   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
 </preesm:workflow>
