@@ -56,6 +56,8 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
+import org.sdf4j.demo.SDFAdapterDemo;
+import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 
 /**
@@ -107,6 +109,13 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		IFile iFile = workspace.getRoot().getFile(new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
+		
+		// Displays the DAG
+		if (false) {
+			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
+			applet2.init(algorithm);
+		}
+		
 		codegen.generateSourceFiles(sdfGraph, architecture);
 	}
 

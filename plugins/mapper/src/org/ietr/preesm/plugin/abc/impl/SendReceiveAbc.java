@@ -57,13 +57,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
  *         
  * @author mpelcat   
  */
-public class SendReceiveAbc extends
-		AbstractAbc {
-
-	/**
-	 * simulator of the transfers
-	 */
-	protected CommunicationRouter router;
+public class SendReceiveAbc extends LatencyAbc {
 
 	/**
 	 * Transfer vertex adder for edge scheduling
@@ -71,23 +65,14 @@ public class SendReceiveAbc extends
 	protected TransferVertexAdder tvertexAdder;
 
 	/**
-	 * Current precedence edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-
-	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
 	public SendReceiveAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
-		super(dag, archi, abcType);
+		super(edgeSchedType, dag, archi, abcType);
 
-		// The media simulator calculates the edges costs
-		router = new CommunicationRouter(archi);
 		tvertexAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false);
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 	}
 
 	/**
@@ -96,65 +81,15 @@ public class SendReceiveAbc extends
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 
+		super.fireNewMappedVertex(vertex,updateRank);
+
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			PreesmLogger.getLogger().severe(
-					"implementation of " + vertex.getName() + " failed");
-		} else {
-
-			if (updateRank) {
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
-			}
-			
-			long vertextime = vertex.getInitialVertexProperty().getTime(
-					effectiveOp);
-
-			// Set costs
-			vertex.getTimingVertexProperty().setCost(vertextime);
-
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
-
-			transactionManager.undo();
-			
+		if (effectiveOp != Operator.NO_COMPONENT) {
 			tvertexAdder.addAndScheduleTransferVertices(implementation,transactionManager, null);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 		}
-	}
-
-	@Override
-	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
-
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
-
-		// unimplanting a vertex resets the cost of the current vertex
-		// and its edges
-		// It also removes incoming and outgoing schedule edges
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			vertex.getTimingVertexProperty().resetCost();
-
-			resetCost(vertex.incomingEdges());
-			resetCost(vertex.outgoingEdges());
-
-		} else {
-			PreesmLogger.getLogger().severe(
-					"unimplementation of " + vertex.getName() + " failed");
-		}
-	}
-
-	/**
-	 * Asks the time keeper to update timings. Crucial and costly operation.
-	 * Depending on the king of timings we want, calls the necessary updates.
-	 */
-	@Override
-	protected final void updateTimings() {
-
-		timeKeeper.updateTLevels();
 	}
 
 	/**

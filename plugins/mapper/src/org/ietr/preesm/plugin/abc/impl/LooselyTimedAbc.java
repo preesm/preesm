@@ -53,107 +53,49 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 
 /**
- * A loosely timed architecture simulator associates a simple cost to
- * each communication. This cost is the transfer size multiplied by the
- * medium speed. The communications are parallel with computation and
- * all parallel with each other.
- *         
- * @author mpelcat   
+ * A loosely timed architecture simulator associates a simple cost to each
+ * communication. This cost is the transfer size multiplied by the medium speed.
+ * The communications are parallel with computation and all parallel with each
+ * other.
+ * 
+ * @author mpelcat
  */
-public class LooselyTimedAbc extends
-		AbstractAbc {
+public class LooselyTimedAbc extends LatencyAbc {
 
-	/**
-	 * simulator of the transfers
-	 */
-	protected CommunicationRouter router;
-
-	/**
-	 * Current precedence edge adder: called exclusively by simulator to schedule
-	 * vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-	
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
-		super(dag, archi, abcType);
-
-		// The media simulator calculates the edges costs
-		router = new CommunicationRouter(archi);
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+			MultiCoreArchitecture archi, AbcType abcType) {
+		super(edgeSchedType, dag, archi, abcType);
 	}
 
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex,
+			boolean updateRank) {
+
+		super.fireNewMappedVertex(vertex,updateRank);
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			PreesmLogger.getLogger().severe(
-					"implementation of " + vertex.getName() + " failed");
-		} else {
-
-			if (updateRank) {
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
-			}
-			
-			long vertextime = vertex.getInitialVertexProperty().getTime(
-					effectiveOp);
-			
-			precedenceEdgeAdder.scheduleNewVertex(implementation,transactionManager,vertex,vertex);
-			//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
-			
-			// Set costs
-			vertex.getTimingVertexProperty().setCost(vertextime);
-
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
+		if (effectiveOp != Operator.NO_COMPONENT) {
+			precedenceEdgeAdder.scheduleNewVertex(implementation,
+					transactionManager, vertex, vertex);
 		}
-	}
-
-	@Override
-	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
-
-		// unimplanting a vertex resets the cost of the current vertex
-		// and its edges
-		
-		vertex.getTimingVertexProperty().resetCost();
-
-		resetCost(vertex.incomingEdges());
-		resetCost(vertex.outgoingEdges());
-
-		//precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
-
-		transactionManager.undoTransactions(vertex);
-
-		//precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
-	}
-
-	/**
-	 * Asks the time keeper to update timings. Crucial and costly operation.
-	 * Depending on the king of timings we want, calls the necessary updates.
-	 */
-	@Override
-	protected final void updateTimings() {
-
-		timeKeeper.updateTLevels();
 	}
 
 	/**
 	 * In the loosely timed ABC, the edges receive the communication times.
 	 */
+	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		ImplementationVertexProperty sourceimp = ((MapperDAGVertex)edge.getSource())
-				.getImplementationVertexProperty();
-		ImplementationVertexProperty destimp = ((MapperDAGVertex)edge.getTarget())
-				.getImplementationVertexProperty();
+		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
+				.getSource()).getImplementationVertexProperty();
+		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+				.getTarget()).getImplementationVertexProperty();
 
 		Operator sourceOp = sourceimp.getEffectiveOperator();
 		Operator destOp = destimp.getEffectiveOperator();
@@ -168,21 +110,14 @@ public class LooselyTimedAbc extends
 
 				edge.getTimingEdgeProperty().setCost(
 						router.evaluateTransfer(edge, sourceOp, destOp));
-
-				// Special vertices create edges with dissuasive costs so that they
-				// are mapped correctly: fork after the sender and join before the receiver
-				if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
-						.getTarget()))
-						|| (edge.getSource() != null && SpecialVertexManager
-								.isJoin(edge.getSource()))){
-
-					edge.getTimingEdgeProperty().setCost(SpecialVertexManager.dissuasiveCost);
-				}
 			}
 		}
 
+		//Setting edge costs for special types
+		super.setEdgeCost(edge);
 	}
-	
+
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return null;
 	}

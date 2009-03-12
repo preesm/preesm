@@ -61,18 +61,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
  * 
  * @author mpelcat
  */
-public class AccuratelyTimedAbc extends AbstractAbc {
-
-	/**
-	 * simulator of the transfers
-	 */
-	protected CommunicationRouter router;
-
-	/**
-	 * Current precedence edge adder: called exclusively by simulator to
-	 * schedule vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
+public class AccuratelyTimedAbc extends LatencyAbc {
 
 	/**
 	 * Transfer vertex adder for edge scheduling
@@ -95,15 +84,13 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	 */
 	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
-		super(dag, archi, abcType);
+		super(edgeSchedType, dag, archi, abcType);
 
 		// The media simulator calculates the edges costs
-		router = new CommunicationRouter(archi);
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
 		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
 				orderManager, false, false);
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 		overtexAdder = new OverheadVertexAdder(orderManager);
 	}
 
@@ -114,23 +101,12 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
+		super.fireNewMappedVertex(vertex,updateRank);
+
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp == Operator.NO_COMPONENT) {
-			PreesmLogger.getLogger().severe(
-					"implementation of " + vertex.getName() + " failed");
-		} else {
-
-			if (updateRank) {
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
-			}
-
-			long vertextime = vertex.getInitialVertexProperty().getTime(
-					effectiveOp);
-
+		if (effectiveOp != Operator.NO_COMPONENT) {
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
 
@@ -140,81 +116,22 @@ public class AccuratelyTimedAbc extends AbstractAbc {
 			overtexAdder.addAndScheduleOverheadVertices(implementation,
 					transactionManager, vertex);
 
-			// precedenceEdgeAdder.checkPrecedences(implementation, archi,
-			// null);
-
-			// Set costs
-			vertex.getTimingVertexProperty().setCost(vertextime);
-
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
-
 		}
-	}
-
-	@Override
-	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
-
-		// unimplanting a vertex resets the cost of the current vertex
-		// and its edges
-
-		vertex.getTimingVertexProperty().resetCost();
-
-		resetCost(vertex.incomingEdges());
-		resetCost(vertex.outgoingEdges());
-
-		// precedenceEdgeAdder.checkPrecedences(implementation, archi, null);
-
-		transactionManager.undoTransactions(vertex);
-
-		// precedenceEdgeAdder.checkPrecedences(implementation, archi, vertex);
-
-	}
-
-	/**
-	 * Asks the time keeper to update timings. Crucial and costly operation.
-	 * Depending on the king of timings we want, calls the necessary updates.
-	 */
-	@Override
-	protected final void updateTimings() {
-
-		// Only T level necessary. No update of B Level
-		timeKeeper.updateTLevels();
 	}
 
 	/**
 	 * Edge scheduling vertices are added. Thus useless edge costs are removed
 	 */
+	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
 		edge.getTimingEdgeProperty().setCost(0);
 
-		// Special vertices create edges with dissuasive costs so that they
-		// are mapped correctly: fork after the sender and join before the
-		// receiver
-		if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
-				.getTarget()))
-				/*|| (edge.getSource() != null && SpecialVertexManager
-						.isJoin(edge.getSource()))*/) {
-			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
-					.getSource()).getImplementationVertexProperty();
-			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
-					.getTarget()).getImplementationVertexProperty();
-
-			Operator sourceOp = sourceimp.getEffectiveOperator();
-			Operator destOp = destimp.getEffectiveOperator();
-
-			if (sourceOp != Operator.NO_COMPONENT
-					&& destOp != Operator.NO_COMPONENT) {
-				if (sourceOp.equals(destOp)) {
-					edge.getTimingEdgeProperty().setCost(0);
-				} else {
-					edge.getTimingEdgeProperty().setCost(SpecialVertexManager.dissuasiveCost);
-				}
-			}
-		}
+		//Setting edge costs for special types
+		super.setEdgeCost(edge);
 	}
 
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return edgeScheduler.getEdgeSchedType();
 	}

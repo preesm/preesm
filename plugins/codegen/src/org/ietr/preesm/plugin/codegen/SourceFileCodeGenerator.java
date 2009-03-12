@@ -64,6 +64,8 @@ import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.sdf4j.demo.SDFAdapterDemo;
+import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.iterators.SDFIterator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -95,7 +97,7 @@ public class SourceFileCodeGenerator {
 			Operator vertexOperator = (Operator) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 			if(vertex instanceof CodeGenSDFVertex && vertexOperator.equals(file.getOperator())){
-				// Allocating all input buffers of vertex
+				// Allocating all output buffers of vertex
 				allocateVertexOutputBuffers(vertex);
 			}
 		}
@@ -159,7 +161,6 @@ public class SourceFileCodeGenerator {
 	 */
 	public void generateSource(CodeGenSDFGraph algorithm,
 			MultiCoreArchitecture architecture) {
-
 
 		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
