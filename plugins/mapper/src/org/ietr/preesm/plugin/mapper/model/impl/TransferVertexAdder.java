@@ -174,6 +174,9 @@ public class TransferVertexAdder {
 		}
 		Iterator<RouteStep> it = route.iterator();
 		int i = 1;
+		// Transactions need to be linked so that the communication vertices
+		// created are also linked
+		Transaction precedingTransaction = null;
 
 		while (it.hasNext()) {
 			RouteStep step = it.next();
@@ -182,20 +185,21 @@ public class TransferVertexAdder {
 
 			if (sendReceive) {
 				// TODO: set a size to send and receive. From medium definition?
-				transaction = new AddSendReceiveTransaction(edge,
-						implementation, orderManager, i, step,
+				transaction = new AddSendReceiveTransaction(precedingTransaction,
+						edge, implementation, orderManager, i, step,
 						TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 			} else {
 
 				long transferCost = router.evaluateTransfer(edge, step
 						.getSender(), step.getReceiver());
 
-				transaction = new AddTransferVertexTransaction(edgeScheduler,
-						edge, implementation, orderManager, i, step,
-						transferCost, scheduleVertex);
+				transaction = new AddTransferVertexTransaction(precedingTransaction,
+						edgeScheduler, edge, implementation, orderManager, i,
+						step, transferCost, scheduleVertex);
 			}
 
 			transactionManager.add(transaction, refVertex);
+			precedingTransaction = transaction;
 
 			if (rmvOrigEdge) {
 				transactionManager.add(new RemoveEdgeTransaction(edge,

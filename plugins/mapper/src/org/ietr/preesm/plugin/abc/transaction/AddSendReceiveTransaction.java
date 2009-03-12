@@ -53,12 +53,17 @@ import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * A transaction that adds a send and a receive vertex in an implentation.
+ * A transaction that adds a send and a receive vertex in an implementation.
  * 
  * @author mpelcat
  */
 public class AddSendReceiveTransaction extends Transaction {
 	// Inputs
+	/**
+	 * If not null, the transfer vertices need to be chained with formerly added
+	 * ones
+	 */
+	private Transaction precedingTransaction = null;
 	/**
 	 * Implementation DAG to which the vertex is added
 	 */
@@ -119,6 +124,22 @@ public class AddSendReceiveTransaction extends Transaction {
 			int routeIndex, RouteStep step, long transferCost,
 			boolean scheduleVertex) {
 		super();
+		this.precedingTransaction = null;
+		this.edge = edge;
+		this.implementation = implementation;
+		this.orderManager = orderManager;
+		this.routeIndex = routeIndex;
+		this.step = step;
+		this.transferCost = transferCost;
+		this.scheduleVertex = scheduleVertex;
+	}
+
+	public AddSendReceiveTransaction(Transaction precedingTransaction,
+			MapperDAGEdge edge, MapperDAG implementation,
+			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			long transferCost, boolean scheduleVertex) {
+		super();
+		this.precedingTransaction = precedingTransaction;
 		this.edge = edge;
 		this.implementation = implementation;
 		this.orderManager = orderManager;
@@ -132,15 +153,24 @@ public class AddSendReceiveTransaction extends Transaction {
 	public void execute() {
 		super.execute();
 
-		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentSource = null;
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
+		if (precedingTransaction != null
+				&& precedingTransaction instanceof AddSendReceiveTransaction) {
+			currentSource = ((AddSendReceiveTransaction) precedingTransaction).receiveVertex;
+			
+			currentSource.getBase().removeAllEdges(currentSource, currentTarget);
+		} else {
+			currentSource = (MapperDAGVertex) edge.getSource();
+		}
 
 		// Careful!!! Those names are used in code generation
-		String sendVertexID = "s_" + currentSource.getName()
+		String nameRadix = ((MapperDAGVertex) edge.getSource()).getName()
 				+ currentTarget.getName() + "_" + routeIndex;
 
-		String receiveVertexID = "r_" + currentSource.getName()
-				+ currentTarget.getName() + "_" + routeIndex;
+		String sendVertexID = "s_" + nameRadix;
+
+		String receiveVertexID = "r_" + nameRadix;
 
 		Medium currentMedium = step.getMedium();
 

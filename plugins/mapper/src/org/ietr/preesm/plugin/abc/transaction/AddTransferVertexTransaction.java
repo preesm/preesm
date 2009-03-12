@@ -59,6 +59,11 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 public class AddTransferVertexTransaction extends Transaction {
 	// Inputs
 	/**
+	 * If not null, the transfer vertices need to be chained with formerly added
+	 * ones
+	 */
+	private Transaction precedingTransaction = null;
+	/**
 	 * Scheduling the transfer vertices on the media
 	 */
 	protected IEdgeSched edgeScheduler = null;
@@ -120,6 +125,23 @@ public class AddTransferVertexTransaction extends Transaction {
 			SchedOrderManager orderManager, int routeIndex, RouteStep step,
 			long transferCost, boolean scheduleVertex) {
 		super();
+		this.precedingTransaction = null;
+		this.edgeScheduler = edgeScheduler;
+		this.edge = edge;
+		this.implementation = implementation;
+		this.routeIndex = routeIndex;
+		this.step = step;
+		this.transferCost = transferCost;
+		this.orderManager = orderManager;
+		this.scheduleVertex = scheduleVertex;
+	}
+
+	public AddTransferVertexTransaction(Transaction precedingTransaction, IEdgeSched edgeScheduler,
+			MapperDAGEdge edge, MapperDAG implementation,
+			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			long transferCost, boolean scheduleVertex) {
+		super();
+		this.precedingTransaction = precedingTransaction;
 		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;
 		this.implementation = implementation;
@@ -134,11 +156,19 @@ public class AddTransferVertexTransaction extends Transaction {
 	public void execute() {
 		super.execute();
 
-		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentSource = null;
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
+		
+		if (precedingTransaction != null
+				&& precedingTransaction instanceof AddTransferVertexTransaction) {
+			currentSource = ((AddTransferVertexTransaction) precedingTransaction).tVertex;
+			currentSource.getBase().removeAllEdges(currentSource, currentTarget);
+		} else {
+			currentSource = (MapperDAGVertex) edge.getSource();
+		}
 
 		String tvertexID = "__transfer" + routeIndex + " ("
-				+ currentSource.getName() + "," + currentTarget.getName() + ")";
+				+ ((MapperDAGVertex) edge.getSource()).getName() + "," + currentTarget.getName() + ")";
 
 		Medium currentMedium = step.getMedium();
 
