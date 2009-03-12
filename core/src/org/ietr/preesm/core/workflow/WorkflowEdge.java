@@ -78,8 +78,8 @@ public class WorkflowEdge {
 			case SOURCELIST:
 				this.data.setSourcefilelist(data.getSourcefilelist());
 				break;
-			case CUSTOMDATA:
-				this.data.setCustomData(data.getCustomData());
+			case ABC:
+				this.data.setAbc(data.getAbc());
 				break;
 			default:
 	

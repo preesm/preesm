@@ -166,7 +166,7 @@ public class PFASTTransformation extends AbstractMapping {
 		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		result.setDAG(dag);
-		result.setCustomData(simu2);
+		result.setAbc(simu2);
 
 		return result;
 	}

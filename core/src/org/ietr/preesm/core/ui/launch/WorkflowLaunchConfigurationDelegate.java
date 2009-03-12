@@ -38,6 +38,7 @@ package org.ietr.preesm.core.ui.launch;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,7 +46,12 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.WorkbenchException;
 import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 import org.ietr.preesm.core.workflow.Workflow;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
@@ -57,35 +63,39 @@ import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
  */
 public class WorkflowLaunchConfigurationDelegate implements
 		ILaunchConfigurationDelegate {
-	
+
 	public static final String ATTR_WORKFLOW_FILE_NAME = "org.ietr.preesm.core.workflowFileName";
-	
+
 	public static String WORKFLOW_LAUNCH_CONFIGURATION_TYPE_ID = "org.ietr.preesm.core.workflowLaunchConfigurationType";
 
 	/**
 	 * Launches a workflow
 	 * 
 	 * @param configuration
-	 * 			Retrieved from configuration tabs
+	 *            Retrieved from configuration tabs
 	 * @param mode
-	 * 			Run or debug
+	 *            Run or debug
 	 * @param launch
-	 * 			Not used
+	 *            Not used
 	 * @param monitor
-	 * 			Monitoring the workflow progress
+	 *            Monitoring the workflow progress
 	 */
-	@SuppressWarnings("unchecked") 
+	@SuppressWarnings("unchecked")
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		String workflowName = configuration.getAttribute(
 				ATTR_WORKFLOW_FILE_NAME, "");
-		
+
+		// Activates the Preesm perspective
+		activatePerspective();
+
 		// Retrieving environment variables
-		Map<String,String> configEnv = configuration.getAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, (Map) null);
+		Map<String, String> configEnv = configuration.getAttribute(
+				ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, (Map) null);
 		if (configEnv == null) {
-			configEnv = new HashMap<String,String>() ;
+			configEnv = new HashMap<String, String>();
 		}
-		
+
 		configuration.getName();
 		System.out.println("Launching " + workflowName + "...");
 
@@ -93,14 +103,19 @@ public class WorkflowLaunchConfigurationDelegate implements
 		workflow.parse(workflowName);
 		if (workflow.check(monitor)) {
 
-			AlgorithmConfiguration algorithmConfiguration = new AlgorithmConfiguration(configuration);
-			
-			ArchitectureConfiguration architectureConfiguration = new ArchitectureConfiguration(configuration);
-			
-			ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(configuration);
+			AlgorithmConfiguration algorithmConfiguration = new AlgorithmConfiguration(
+					configuration);
+
+			ArchitectureConfiguration architectureConfiguration = new ArchitectureConfiguration(
+					configuration);
+
+			ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration(
+					configuration);
 
 			try {
-				workflow.execute(monitor, algorithmConfiguration, architectureConfiguration, scenarioConfiguration,configEnv);
+				workflow.execute(monitor, algorithmConfiguration,
+						architectureConfiguration, scenarioConfiguration,
+						configEnv);
 			} catch (PreesmException e) {
 				e.printStackTrace();
 				monitor.setCanceled(true);
@@ -108,5 +123,26 @@ public class WorkflowLaunchConfigurationDelegate implements
 		} else {
 			monitor.setCanceled(true);
 		}
+	}
+
+	private void activatePerspective() {
+		PreesmLogger.getLogger().createConsole();
+		PreesmLogger.getLogger().setLevel(Level.INFO);
+
+		Activator.getDefault().getWorkbench().getDisplay().syncExec(
+				new Runnable() {
+					@Override
+					public void run() {
+						IWorkbenchWindow window = Activator.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow();
+						try {
+							Activator.getDefault().getWorkbench()
+									.showPerspective(CorePerspectiveFactory.ID,
+											window);
+						} catch (WorkbenchException e) {
+							e.printStackTrace();
+						}
+					}
+				});
 	}
 }

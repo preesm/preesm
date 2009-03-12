@@ -175,7 +175,7 @@ public class FASTTransformation extends AbstractMapping {
 		
 		result.setDAG(dag);
 		simu2.resetTaskScheduler(TaskSchedType.Simple);
-		result.setCustomData(simu2);
+		result.setAbc(simu2);
 
 		return result;
 	}

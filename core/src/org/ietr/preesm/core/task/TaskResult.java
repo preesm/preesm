@@ -39,8 +39,10 @@ package org.ietr.preesm.core.task;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.types.IMapperAbc;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
+
 
 /**
  * This class provides a generic result for a transformation.
@@ -77,7 +79,7 @@ public class TaskResult {
 	/**
 	 * Returned custom input
 	 */
-	private Object customData ;
+	private IMapperAbc abc ;
 
 	/**
 	 * Creates a result with no contents.
@@ -88,7 +90,7 @@ public class TaskResult {
 		architecture = null;
 		sourcefilelist = null;
 		scenario = null;
-		customData = null;
+		abc = null;
 	}
 
 	/**
@@ -127,8 +129,8 @@ public class TaskResult {
 		return scenario ;
 	}
 	
-	public Object getCustomData() {
-		return customData;
+	public IMapperAbc getAbc() {
+		return abc;
 	}
 	
 	/**
@@ -179,8 +181,8 @@ public class TaskResult {
 		this.scenario = scenario ;
 	}
 
-	public void setCustomData(Object customData) {
-		this.customData = customData;
+	public void setAbc(IMapperAbc abc) {
+		this.abc = abc;
 	}
 
 	public String toString() {

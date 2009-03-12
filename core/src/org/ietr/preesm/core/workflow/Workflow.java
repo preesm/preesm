@@ -68,6 +68,7 @@ import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
@@ -78,6 +79,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
+
 
 /**
  * This class provides methods to check and execute a workflow. A workflow
@@ -116,8 +118,13 @@ public class Workflow {
 			IWorkflowNode node = it.next();
 			if (node.isTaskNode()) {
 				// Testing only connected nodes
-				if (!workflow.edgesOf(node).isEmpty())
+				if (!workflow.edgesOf(node).isEmpty()){
 					workflowOk = ((TaskNode) node).isTaskPossible();
+				}
+				
+				if(!workflowOk){
+					PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find plugin " + ((TaskNode) node).getTaskId() + " from workflow.");
+				}
 			}
 		}
 
@@ -139,17 +146,13 @@ public class Workflow {
 			ScenarioConfiguration scenarioConfiguration,
 			Map<String, String> envVars) throws PreesmException{
 
-		// Activates the Preesm perspective
-		activatePerspective();
-
-
 		WorkflowStepManager stepManager = new WorkflowStepManager(monitor,workflow.vertexSet().size());
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		MultiCoreArchitecture architecture = null;
 		IScenario scenario = null;
 		SourceFileList sourceFiles = null;
-		Object customData = null; // This input type is known from the sender and the receiver
+		IMapperAbc abc = null; // This input type is known from the sender and the receiver
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -181,8 +184,8 @@ public class Workflow {
 					if (edge.getCarriedData().getScenario() != null) {
 						scenario = edge.getCarriedData().getScenario();
 					}
-					if (edge.getCarriedData().getCustomData() != null) {
-						customData = edge.getCarriedData().getCustomData();
+					if (edge.getCarriedData().getAbc() != null) {
+						abc = edge.getCarriedData().getAbc();
 					}
 				}
 			}
@@ -284,7 +287,7 @@ public class Workflow {
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
 						
-						plotter.transform(customData,scenario,parameters);
+						plotter.transform(abc,scenario,parameters);
 					}
 				}
 
@@ -350,26 +353,5 @@ public class Workflow {
 		}
 
 		return workspace;
-	}
-
-	private void activatePerspective() {
-		PreesmLogger.getLogger().createConsole();
-		PreesmLogger.getLogger().setLevel(Level.INFO);
-		
-		Activator.getDefault().getWorkbench().getDisplay().syncExec(
-				new Runnable() {
-					@Override
-					public void run() {
-						IWorkbenchWindow window = Activator.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow();
-						try {
-							Activator.getDefault().getWorkbench()
-									.showPerspective(CorePerspectiveFactory.ID,
-											window);
-						} catch (WorkbenchException e) {
-							e.printStackTrace();
-						}
-					}
-				});
 	}
 }

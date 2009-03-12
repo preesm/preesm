@@ -51,7 +51,7 @@
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="ImplementationExporter"/>
    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="codegen"/>
    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="ImplementationExporter"/>
-   <preesm:dataTransfer from="FAST scheduler" sourceport="customData" targetport="customData" to="DAG Plotter"/>
+   <preesm:dataTransfer from="FAST scheduler" sourceport="ABC" targetport="ABC" to="DAG Plotter"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
    <preesm:dataTransfer from="__algorithm" sourceport="" targetport="SDF" to="HierarchyFlattening"/>

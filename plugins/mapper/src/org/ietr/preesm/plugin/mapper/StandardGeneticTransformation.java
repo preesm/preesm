@@ -204,7 +204,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
 
 		transfoResult.setDAG(dag);
-		transfoResult.setCustomData(simu2);
+		transfoResult.setAbc(simu2);
 
 		return transfoResult;
 	}

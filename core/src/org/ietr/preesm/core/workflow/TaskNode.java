@@ -38,12 +38,14 @@ package org.ietr.preesm.core.workflow;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.preesm.core.task.ITask;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * This class provides a transformation workflow node.
@@ -175,9 +177,13 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			e.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find plugins from workflow");
 			return false;
 		}
+	}
+
+	public String getTaskId() {
+		return taskId;
 	}
 
 }
