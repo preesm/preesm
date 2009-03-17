@@ -1,5 +1,5 @@
 module readBlock {
 	interface loop {
-		 void readBlock(in char in_1, in char in_2, in boolean trig, out char out_1);
+		 void readBlock(in char in_1, in char in_2, in char trig, out char out_1);
 	};
 };

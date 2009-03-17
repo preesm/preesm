@@ -47,37 +47,37 @@
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="readBlock" sourceport="out_1" target="IDCT1D" targetport="lineIn">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">8</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="IDCT1D" sourceport="lineOut" target="Transpose" targetport="blockIn">
-         <data key="edge_prod">8</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
-      </edge>
-      <edge source="Transpose" sourceport="blockOut" target="block_out" targetport="out">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
       </edge>
       <edge source="trigger" sourceport="trig" target="readBlock" targetport="trig">
          <data key="edge_prod">2</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
       </edge>
       <edge source="Transpose" sourceport="blockOutLoop" target="readBlock" targetport="in_2">
          <data key="edge_prod">64</data>
          <data key="edge_delay">64</data>
          <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="Transpose" sourceport="blockOut" target="block_out" targetport="out">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="readBlock" sourceport="out_1" target="IDCT1D" targetport="lineIn">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">8</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="IDCT1D" sourceport="lineOut" target="Transpose" targetport="blockIn">
+         <data key="edge_prod">8</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
       </edge>
    </graph>
 </graphml>

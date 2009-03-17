@@ -1,12 +1,5 @@
 module group_bench {
-	typedef short parameter ;
-	interface init {
-		 void init_group_bench();
-	};
 	interface loop {
-		void group_bench(in char MB, in parameter nbBlocks);
+		void group_bench(in char MB);
 	};
-	interface end {
-		 void end_group_bench();
-	}; 
 };

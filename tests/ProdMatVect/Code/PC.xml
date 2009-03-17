@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>x86</coreType>
+    <coreName>PC</coreName>
+    <SourceFile>
+        <bufferContainer>
+            <bufferAllocation name="outputMatrixo_0" size="100" type="int"/>
+            <bufferAllocation name="outputVectoro_0" size="10" type="int"/>
+            <bufferAllocation name="ProdMatVectve_0" size="10" type="int"/>
+        </bufferContainer>
+        <threadDeclaration name="computationThread">
+            <bufferContainer>
+                <variableAllocation name="i" type="long"/>
+                <variableAllocation name="j" type="long"/>
+            </bufferContainer>
+            <linearCodeContainer/>
+            <forLoop>
+                <userFunctionCall name="generateMatrix">
+                    <buffer name="outputMatrixo_0" size="100" type="int"/>
+                    <constant name="size" type="int" value="10"/>
+                </userFunctionCall>
+                <userFunctionCall name="generateVect">
+                    <buffer name="outputVectoro_0" size="10" type="int"/>
+                    <constant name="size" type="int" value="10"/>
+                </userFunctionCall>
+                <CompoundCode name="ProdMatVect">
+                    <bufferAllocation name="accOut_accIn" size="10" type="int"/>
+                    <userFunctionCall name="init_accIn">
+                        <buffer name="accOut_accIn" size="10" type="int"/>
+                        <constant name="init_size" type="int" value="10"/>
+                    </userFunctionCall>
+                    <finiteForLoop domain="10" index="i">
+                        <CompoundCode name="prodScalVect">
+                            <subBufferAllocation index="i" modulo="100"
+                                name="outSub_i_outp_0"
+                                parentBuffer="outputMatrixo_0" size="10" type="int"/>
+                            <subBufferAllocation index="i" modulo="10"
+                                name="outSub_i_outp_1"
+                                parentBuffer="outputVectoro_0" size="1" type="int"/>
+                            <bufferAllocation name="scalOut_inData"
+                                size="10" type="int"/>
+                            <finiteForLoop domain="10" index="j">
+                                <CompoundCode name="productScal">
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="inSub_j_scalO_0"
+                                    parentBuffer="scalOut_inData"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="outSub_j_outS_0"
+                                    parentBuffer="outSub_i_outp_0"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="outSub_j_accO_0"
+                                    parentBuffer="accOut_accIn"
+                                    size="1" type="int"/>
+                                    <bufferAllocation name="res_op1"
+                                    size="1" type="int"/>
+                                    <userFunctionCall name="mult">
+                                    <subBuffer index="j"
+                                    name="outSub_j_outS_0"
+                                    parentBuffer="outSub_i_outp_0" size="1"/>
+                                    <subBuffer index="i"
+                                    name="outSub_i_outp_1"
+                                    parentBuffer="outputVectoro_0" size="1"/>
+                                    <buffer name="res_op1" size="1" type="int"/>
+                                    </userFunctionCall>
+                                    <userFunctionCall name="add">
+                                    <buffer name="res_op1" size="1" type="int"/>
+                                    <subBuffer index="j"
+                                    name="outSub_j_accO_0"
+                                    parentBuffer="accOut_accIn" size="1"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j_scalO_0"
+                                    parentBuffer="scalOut_inData" size="1"/>
+                                    </userFunctionCall>
+                                </CompoundCode>
+                            </finiteForLoop>
+                            <finiteForLoop domain="10" index="j">
+                                <CompoundCode name="copyData">
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="inSub_j_accOu_0"
+                                    parentBuffer="accOut_accIn"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="inSub_j_ProdM_0"
+                                    parentBuffer="ProdMatVectve_0"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="10"
+                                    name="outSub_j_scal_0"
+                                    parentBuffer="scalOut_inData"
+                                    size="1" type="int"/>
+                                    <userFunctionCall name="copyData">
+                                    <subBuffer index="j"
+                                    name="outSub_j_scal_0"
+                                    parentBuffer="scalOut_inData" size="1"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j_accOu_0"
+                                    parentBuffer="accOut_accIn" size="1"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j_ProdM_0"
+                                    parentBuffer="ProdMatVectve_0" size="1"/>
+                                    </userFunctionCall>
+                                </CompoundCode>
+                            </finiteForLoop>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <userFunctionCall name="display">
+                    <buffer name="ProdMatVectve_0" size="10" type="int"/>
+                    <constant name="size" type="int" value="10"/>
+                </userFunctionCall>
+            </forLoop>
+            <linearCodeContainer/>
+        </threadDeclaration>
+    </SourceFile>
+</sourceCode>

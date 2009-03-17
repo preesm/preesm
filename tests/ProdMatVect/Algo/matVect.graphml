@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="name">matVect</data>
+      <data key="parameters">
+         <parameter name="size"/>
+      </data>
+      <data key="variables"/>
+      <node id="matrixIn" kind="port" port_direction="Input"/>
+      <node id="vectorIn" kind="port" port_direction="Input"/>
+      <node id="vectorOut" kind="port" port_direction="Output"/>
+      <node id="prodScalVect" kind="vertex">
+         <data key="graph_desc">prodVectVect.graphml</data>
+         <data key="name">prodScalVect</data>
+         <data key="arguments">
+            <argument name="size" value="size"/>
+         </data>
+      </node>
+      <edge source="matrixIn" sourceport="in" target="prodScalVect" targetport="vector1In">
+         <data key="edge_prod">size*size</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">size</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="vectorIn" sourceport="in" target="prodScalVect" targetport="ScalIn">
+         <data key="edge_prod">size</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="prodScalVect" sourceport="vectorOut" target="vectorOut" targetport="out">
+         <data key="edge_prod">size</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">size</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="prodScalVect" sourceport="accOut" target="prodScalVect" targetport="accIn">
+         <data key="edge_prod">size</data>
+         <data key="edge_delay">size</data>
+         <data key="edge_cons">size</data>
+         <data key="data_type">int</data>
+      </edge>
+   </graph>
+</graphml>

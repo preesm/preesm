@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="vector1In" x="165" y="106"/>
+      <vertex id="ScalIn" x="143" y="196"/>
+      <vertex id="vectorOut" x="528" y="176"/>
+      <vertex id="productScal" x="282" y="163"/>
+      <vertex id="accIn" x="155" y="291"/>
+      <vertex id="accOut" x="533" y="98"/>
+      <vertex id="copyData" x="389" y="148"/>
+   </vertices>
+</layout>

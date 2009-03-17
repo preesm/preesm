@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <graph edgedefault="directed">
+        <data key="name">testMatVect</data>
+        <data key="variables">
+            <variable name="size" value="2"/>
+        </data>
+        <node id="outputMatrix" kind="vertex">
+            <data key="graph_desc">../IDL/generateMatrix.idl</data>
+        </node>
+        <node id="outputVector" kind="vertex">
+            <data key="graph_desc">../IDL/generateVector.idl</data>
+        </node>
+        <node id="displayResult" kind="vertex">
+            <data key="graph_desc">../IDL/displayResult.idl</data>
+        </node>
+        <node id="ProdMatVect_0_explode_matrixIn" kind="fork"/>
+        <node id="ProdMatVect_0_explode_vectorIn" kind="fork"/>
+        <node id="ProdMatVect_0_roundBuffer_vectorOut" kind="Broadcast"/>
+        <node id="ProdMatVect_0_prodScalVect_0" kind="vertex">
+            <data key="graph_desc">prodVectVect.xml</data>
+            <data key="arguments">
+                <argument name="size" value="2"/>
+            </data>
+        </node>
+        <node id="ProdMatVect_0_prodScalVect_1" kind="vertex">
+            <data key="graph_desc">prodVectVect.xml</data>
+            <data key="arguments">
+                <argument name="size" value="2"/>
+            </data>
+        </node>
+        <edge source="outputMatrix" sourceport="outMat"
+            target="ProdMatVect_0_explode_matrixIn" targetport="in">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="outputVector" sourceport="outVect"
+            target="ProdMatVect_0_explode_vectorIn" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_roundBuffer_vectorOut"
+            sourceport="out" target="displayResult" targetport="inResult">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0" sourceport="accOut"
+            target="ProdMatVect_0_prodScalVect_1" targetport="accIn">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1" sourceport="accOut"
+            target="ProdMatVect_0_prodScalVect_0" targetport="accIn">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">2</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_explode_matrixIn" sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0" targetport="vector1In">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_explode_matrixIn" sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1" targetport="vector1In">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_explode_vectorIn" sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0" targetport="ScalIn">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_explode_vectorIn" sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1" targetport="ScalIn">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0"
+            sourceport="vectorOut"
+            target="ProdMatVect_0_roundBuffer_vectorOut" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1"
+            sourceport="vectorOut"
+            target="ProdMatVect_0_roundBuffer_vectorOut" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>

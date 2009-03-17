@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="outputMatrix" x="57" y="70"/>
+      <vertex id="outputVector" x="57" y="181"/>
+      <vertex id="displayResult" x="517" y="126"/>
+      <vertex id="ProdMatVect_0_prodScalVect" x="200" y="108"/>
+   </vertices>
+</layout>

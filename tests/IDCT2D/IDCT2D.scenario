@@ -10,53 +10,43 @@
         <constraintGroup/>
         <constraintGroup>
             <operator name="PC"/>
-            <task name="IDCT2D"/>
-            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
-            <task name="Group"/>
-            <task name="IDCT2D/IDCT2D_basic"/>
-            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
-            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
             <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
             <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D"/>
             <task name="IDCT2D/clip"/>
+            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
+            <task name="Group"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="C64_1"/>
+            <task name="Trigger"/>
             <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="IDCT2D"/>
             <task name="IDCT2D/clip"/>
             <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
-            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
             <task name="IDCT2D/IDCT2D_basic"/>
-            <task name="IDCT2D"/>
-            <task name="Trigger"/>
             <task name="Group"/>
-            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
         </constraintGroup>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup>
-            <operator name="C64_2"/>
+            <task name="Trigger"/>
             <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="IDCT2D"/>
             <task name="IDCT2D/clip"/>
             <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
-            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
             <task name="IDCT2D/IDCT2D_basic"/>
-            <task name="IDCT2D"/>
-            <task name="Trigger"/>
             <task name="Group"/>
-            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
         </constraintGroup>
-        <constraintGroup/>
     </constraints>
-    <timings>
-        <timing opname="C64x" time="10" vertexname="Group"/>
-        <timing opname="C64x" time="10000" vertexname="IDCT1D"/>
-        <timing opname="C64x" time="50" vertexname="Transpose"/>
-        <timing opname="C64x" time="10" vertexname="Trigger"/>
-        <timing opname="C64x" time="10" vertexname="clip"/>
-        <timing opname="C64x" time="10" vertexname="readBlock"/>
-        <timing opname="C64x" time="1" vertexname="trigger"/>
-    </timings>
+    <timings/>
     <simuParams>
         <mainCore>PC</mainCore>
         <mainMedium>EDMA3_1</mainMedium>

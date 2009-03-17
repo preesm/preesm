@@ -9,7 +9,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
       <data key="variables">
-         <variable name="sourcePath" value="IDCT2D/Code"/>
+         <variable name="sourcePath" value="IDCT2D"/>
          <variable name="xslLibraryPath" value="IDCT2D/Code/XSL"/>
       </data>
    </preesm:task>
@@ -53,6 +53,5 @@
    <preesm:dataTransfer from="Mapper" sourceport="DAG" targetport="DAG" to="CodeGen"/>
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="CodeGen"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Mapper"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
 </preesm:workflow>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>C64x</coreType>
+    <coreName>C64_2</coreName>
+    <SourceFile>
+        <bufferContainer/>
+    </SourceFile>
+</sourceCode>

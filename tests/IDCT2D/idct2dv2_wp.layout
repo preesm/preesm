@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="blockIn" x="57" y="181"/>
+      <vertex id="signed" x="171" y="70"/>
+      <vertex id="out" x="492" y="126"/>
+      <vertex id="clip" x="338" y="126"/>
+      <vertex id="IDCT2D_basic" x="172" y="177"/>
+   </vertices>
+</layout>

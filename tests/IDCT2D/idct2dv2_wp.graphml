@@ -38,25 +38,25 @@
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
-         <data key="data_type"/>
+         <data key="data_type">int</data>
       </edge>
       <edge source="clip" sourceport="clip_out" target="out" targetport="out">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
-         <data key="data_type"/>
+         <data key="data_type">int</data>
       </edge>
       <edge source="blockIn" sourceport="blockIn" target="IDCT2D_basic" targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
       </edge>
       <edge source="IDCT2D_basic" sourceport="block_out" target="clip" targetport="blockIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
       </edge>
    </graph>
 </graphml>

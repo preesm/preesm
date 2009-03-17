@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="blockIn" x="57" y="70"/>
+      <vertex id="block_out" x="607" y="136"/>
+      <vertex id="IDCT1D" x="322" y="55"/>
+      <vertex id="Transpose" x="448" y="154"/>
+      <vertex id="readBlock" x="213" y="119"/>
+      <vertex id="trigger" x="57" y="181"/>
+   </vertices>
+</layout>

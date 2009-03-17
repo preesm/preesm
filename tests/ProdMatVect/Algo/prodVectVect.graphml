@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="name">prodVectVect</data>
+      <data key="parameters">
+         <parameter name="size"/>
+      </data>
+      <data key="variables"/>
+      <node id="vector1In" kind="port" port_direction="Input"/>
+      <node id="ScalIn" kind="port" port_direction="Input"/>
+      <node id="vectorOut" kind="port" port_direction="Output"/>
+      <node id="productScal" kind="vertex">
+         <data key="graph_desc">MAC.graphml</data>
+         <data key="name">productScal</data>
+         <data key="arguments"/>
+      </node>
+      <node id="accIn" kind="port" port_direction="Input"/>
+      <node id="accOut" kind="port" port_direction="Output"/>
+      <node id="copyData" kind="vertex">
+         <data key="graph_desc">../IDL/copyData.idl</data>
+         <data key="name">copyData</data>
+         <data key="arguments"/>
+      </node>
+      <edge source="vector1In" sourceport="in" target="productScal" targetport="scal1">
+         <data key="edge_prod">size</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="ScalIn" sourceport="in" target="productScal" targetport="scal2">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="accIn" sourceport="in" target="productScal" targetport="acc">
+         <data key="edge_prod">size</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="productScal" sourceport="scalOut" target="copyData" targetport="inData">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="copyData" sourceport="outData1" target="accOut" targetport="out">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">size</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="copyData" sourceport="outData2" target="vectorOut" targetport="out">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">size</data>
+         <data key="data_type">int</data>
+      </edge>
+   </graph>
+</graphml>
