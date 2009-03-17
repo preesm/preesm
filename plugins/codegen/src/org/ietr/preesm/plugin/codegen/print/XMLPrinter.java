@@ -53,10 +53,9 @@ import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
-import org.ietr.preesm.core.codegen.ForkCall;
-import org.ietr.preesm.core.codegen.JoinCall;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
+import org.ietr.preesm.core.codegen.LoopIndex;
 import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.Semaphore;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
@@ -64,6 +63,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
+import org.ietr.preesm.core.codegen.SpecialBehaviorCall;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
@@ -493,6 +493,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element compound = dom.createElement("CompoundCode");
 			((Element)currentLocation).appendChild(compound);
+			compound.setAttribute("name", element.getName());
 			currentLocation = compound;
 		} 
 		
@@ -508,6 +509,9 @@ public class XMLPrinter implements IAbstractPrinter {
 			bufferAllocation.setAttribute("name", element.getBuffer().getName());
 			bufferAllocation.setAttribute("size", element.getBuffer().getSize().toString());
 			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
+			if(((SubBuffer) element.getBuffer()).getIndex() instanceof LoopIndex){
+				bufferAllocation.setAttribute("modulo",  Integer.toString(((SubBuffer) element.getBuffer()).getModulo()));
+			}
 			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element.getBuffer()).getParentBuffer().getName());
 			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().getName());
 		} 
@@ -516,51 +520,31 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(ForkCall element, CodeZoneId index,
+	public Object visit(SpecialBehaviorCall element, CodeZoneId index,
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
-			Element forkCall = dom.createElement("forkCall");
-			((Element)currentLocation).appendChild(forkCall);
-			forkCall.setAttribute("name", element.getName());
+			Element specialCall = dom.createElement("specialBehavior");
+			((Element)currentLocation).appendChild(specialCall);
+			specialCall.setAttribute("behavior", element.getBehaviorId());
+			specialCall.setAttribute("name", element.getName());
 			//adding input buffer
-			Element inputBuffer = dom.createElement("inputBuffers");
-			((Element)forkCall).appendChild(inputBuffer);
-			visit(element.getInputBuffer(), index, inputBuffer);
+			Element inputBuffers = dom.createElement("inputBuffers");
+			((Element)specialCall).appendChild(inputBuffers);
+			for(Buffer inputBuffer : element.getInputBuffers()){
+				visit(inputBuffer, index, inputBuffers);
+			}
 			
 			//adding output buffers
 			Element outputBuffers = dom.createElement("outputBuffers");
-			((Element)forkCall).appendChild(outputBuffers);
+			((Element)specialCall).appendChild(outputBuffers);
 			for(Buffer outputBuffer : element.getOutputBuffers()){
 				visit(outputBuffer, index, outputBuffers);
 			}
-			currentLocation = forkCall;
+			currentLocation = specialCall;
 		} 
 		
 		return currentLocation;
 	}
 
-	@Override
-	public Object visit(JoinCall element, CodeZoneId index,
-			Object currentLocation) {
-		if (index == CodeZoneId.body) {
-			Element joinCall = dom.createElement("joinCall");
-			((Element)currentLocation).appendChild(joinCall);
-			joinCall.setAttribute("name", element.getName());
-			//adding input buffer
-			Element outputBuffer = dom.createElement("outputBuffers");
-			((Element)joinCall).appendChild(outputBuffer);
-			visit(element.getOutputBuffer(), index, outputBuffer);
-			
-			//adding output buffers
-			Element intputBuffers = dom.createElement("inputBuffers");
-			((Element)joinCall).appendChild(intputBuffers);
-			for(Buffer outputBufferb : element.getInputBuffers()){
-				visit(outputBufferb, index, intputBuffers);
-			}
-			currentLocation = joinCall;
-		} 
-		
-		return currentLocation;
-	}
 
 }

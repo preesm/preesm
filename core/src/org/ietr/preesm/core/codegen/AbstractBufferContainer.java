@@ -122,11 +122,15 @@ public abstract class AbstractBufferContainer {
 	public void addBuffer(BufferAllocation alloc) {
 		if (!existBuffer(alloc.getBuffer().getName(),true))
 			buffers.add(alloc);
-		else
+		else{
+			alloc.getBuffer().reduceName(this);
+			addBuffer(alloc);
 			PreesmLogger.getLogger().log(
 					Level.SEVERE,
 					"buffer " + alloc.getBuffer().getName()
-							+ " already exists in the source file list");
+							+ " already exists in the source file list renamed to "+alloc.getBuffer().getName());
+		}
+			
 	}
 
 	/**
@@ -240,6 +244,25 @@ public abstract class AbstractBufferContainer {
 		return buffers;
 	}
 	
+	
+	/**
+	 * Add a global buffer declaration
+	 * @param alloc
+	 */
+	public void addGlobalBuffer(BufferAllocation alloc){
+		getGlobalContainer().addBuffer(alloc);
+	}
+	
+	public void removeBufferAllocation(Buffer buff){
+		for(int i = 0 ; i < buffers.size() ; i ++){
+			BufferAllocation alloc = buffers.get(i);
+			if(alloc.getBuffer().equals(buff)){
+				buffers.remove(alloc);
+				return ;
+			}
+		}
+		this.parentContainer.removeBufferAllocation(buff);
+	}
 	
 	@Override
 	public String toString() {

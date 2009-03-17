@@ -52,14 +52,15 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  * @author Maxime Pelcat
  * @author Matthieu Wipliez
  */
-public abstract class AbstractCodeContainer {
+public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 
 	/**
 	 * List of the elements that are not included in the main loop
 	 */
 	private List<ICodeElement> codeElements;
 
-	public AbstractCodeContainer() {
+	public AbstractCodeContainer(AbstractBufferContainer parentContainer) {
+		super(parentContainer);
 		codeElements = new ArrayList<ICodeElement>();
 	}
 

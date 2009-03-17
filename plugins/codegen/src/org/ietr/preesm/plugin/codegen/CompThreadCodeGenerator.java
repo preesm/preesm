@@ -53,7 +53,11 @@ import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.parameters.ParameterSet;
@@ -161,9 +165,16 @@ public class CompThreadCodeGenerator {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
-
+		
+		
 		for (SDFAbstractVertex vertex : vertices) {
-			if(vertex instanceof CodeGenSDFVertex && vertex.getGraphDescription() == null){
+			if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex || vertex instanceof CodeGenSDFRoundBufferVertex){
+				CodeElementFactory.treatSpecialBehaviorVertex(vertex
+						.getName(), loopCode, vertex);
+			}
+		}
+		for (SDFAbstractVertex vertex : vertices) {
+			if(vertex instanceof ICodeGenSDFVertex && vertex.getGraphDescription() == null){
 					FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
 					if(vertexCall != null && vertexCall.getInitCall() != null){
 						ICodeElement beginningCall = new UserFunctionCall(vertex, thread, CodeSection.INIT);
@@ -174,11 +185,13 @@ public class CompThreadCodeGenerator {
 						endCode.addCodeElement(endCall);
 					}
 			}
-			ICodeElement loopCall = CodeElementFactory.createElement(vertex
-					.getName(), thread, vertex);
-			loopCode.addCodeElement(loopCall);
-			
-
+			if(vertex instanceof ICodeGenSDFVertex){
+				ICodeElement loopCall = CodeElementFactory.createElement(vertex
+						.getName(), loopCode, vertex);
+				if(loopCall != null){
+					loopCode.addCodeElement(loopCall);
+				}
+			}
 		}
 	}
 }

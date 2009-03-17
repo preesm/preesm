@@ -82,9 +82,9 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 
 		this.name = name;
 
-		beginningCode = new LinearCodeContainer();
-		loopCode = new ForLoop();
-		endCode = new LinearCodeContainer();
+		beginningCode = new LinearCodeContainer(this);
+		loopCode = new ForLoop(this);
+		endCode = new LinearCodeContainer(this);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

@@ -33,17 +33,23 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -52,11 +58,12 @@ import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
-public class CompoundCodeElement extends AbstractBufferContainer implements ICodeElement {
+public class CompoundCodeElement extends AbstractBufferContainer implements
+		ICodeElement {
 
 	private List<ICodeElement> calls;
-	
-	private HashMap<SDFEdge, Buffer> allocatedBuffers ;
+
+	private HashMap<SDFEdge, Buffer> allocatedBuffers;
 
 	private SDFAbstractVertex correspondingVertex;
 
@@ -64,56 +71,183 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 
 	private AbstractBufferContainer parentContainer;
 
-	
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
-			CodeGenSDFVertex correspondingVertex) {
+			ICodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);
 		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;
-		this.correspondingVertex = correspondingVertex;
+		this.correspondingVertex = (SDFAbstractVertex) correspondingVertex;
 		calls = new ArrayList<ICodeElement>();
-		if(correspondingVertex.getGraphDescription() != null){
-			CodeGenSDFGraph graph = (CodeGenSDFGraph) correspondingVertex.getGraphDescription();
-			for(SDFEdge edge : graph.edgeSet()){
-				if(edge.getSource() instanceof SDFSourceInterfaceVertex){
-					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSourceInterfaceVertex) edge.getSource());
+		if (correspondingVertex.getGraphDescription() != null) {
+			CodeGenSDFGraph graph = (CodeGenSDFGraph) correspondingVertex
+					.getGraphDescription();
+			for (SDFEdge edge : graph.edgeSet()) {
+				if (edge.getSource() instanceof SDFSourceInterfaceVertex) {
+					SDFEdge outEdge = this.correspondingVertex
+							.getAssociatedEdge((SDFSourceInterfaceVertex) edge
+									.getSource());
 					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
 					this.addBuffer(parentBuffer, edge);
-				}else if(edge.getTarget() instanceof SDFSinkInterfaceVertex){
-					SDFEdge outEdge = correspondingVertex.getAssociatedEdge((SDFSinkInterfaceVertex) edge.getTarget());
+				} else if (edge.getTarget() instanceof SDFSinkInterfaceVertex) {
+					SDFEdge outEdge = this.correspondingVertex
+							.getAssociatedEdge((SDFSinkInterfaceVertex) edge
+									.getTarget());
 					Buffer parentBuffer = parentContainer.getBuffer(outEdge);
 					this.addBuffer(parentBuffer, edge);
-				}else if(this.getBuffer(edge) == null){
-					String bufferName = edge.getSourceInterface().getName()+"_"+edge.getTargetInterface().getName();
-					this.addBuffer(new BufferAllocation(new Buffer(bufferName, Math.max(edge.getProd().intValue(), edge.getCons().intValue()), new DataType(edge.getDataType().toString()),edge, parentContainer)));
+				} else if (this.getBuffer(edge) == null) {
+					String bufferName = edge.getSourceInterface().getName()
+							+ "_" + edge.getTargetInterface().getName();
+					if (edge.getTarget() == edge.getSource()) {
+						this.addBuffer(new BufferAllocation(new Buffer(
+								bufferName, Math.max(edge.getProd().intValue(),
+										edge.getCons().intValue()),
+								new DataType(edge.getDataType().toString()),
+								edge, parentContainer)));
+					} else {
+						this.addBuffer(new BufferAllocation(new Buffer(
+								bufferName, Math.max(edge.getProd().intValue()
+										* edge.getSource().getNbRepeat(), edge
+										.getCons().intValue()
+										* edge.getTarget().getNbRepeat()),
+								new DataType(edge.getDataType().toString()),
+								edge, parentContainer)));
+					}
+				}
+				if(edge.getDelay().intValue() > 0){
+					UserFunctionCall initCall = new UserFunctionCall("init_"+edge.getTargetInterface().getName(),this);
+					initCall.addParameter(this.getBuffer(edge));
+					initCall.addParameter(new Constant("init_size",edge.getDelay().intValue()));
+					this.addCall(initCall);
 				}
 			}
-			for(SDFAbstractVertex vertex : graph.vertexSet()){
-				if(!(vertex instanceof SDFInterfaceVertex)){
-					this.addCall(CodeElementFactory.createElement(vertex.getName(), this, vertex));
-				}
-			}
-		}else{
-			this.addCall(new UserFunctionCall(correspondingVertex, this, CodeSection.LOOP));
+			treatCalls(graph.vertexSet());
+		} else {
+			this.addCall(new UserFunctionCall(this.correspondingVertex, this,
+					CodeSection.LOOP));
 		}
 	}
 
-	public void addBuffer(Buffer buff, SDFEdge edge){
-		if(allocatedBuffers.get(edge) == null){
+	public void addBuffer(Buffer buff, SDFEdge edge) {
+		if (allocatedBuffers.get(edge) == null) {
 			allocatedBuffers.put(edge, buff);
 		}
 	}
-	
-	public Buffer getBuffer(SDFEdge edge){
-		if(allocatedBuffers.get(edge) == null){
-			return super.getBuffer(edge);
-		}else{
-			return allocatedBuffers.get(edge) ;
+
+	private void treatCalls(Set<SDFAbstractVertex> vertices) {
+		for (SDFAbstractVertex vertex : vertices) {
+			if (vertex instanceof CodeGenSDFForkVertex
+					|| vertex instanceof CodeGenSDFJoinVertex
+					|| vertex instanceof CodeGenSDFBroadcastVertex
+					|| vertex instanceof CodeGenSDFRoundBufferVertex) {
+				treatSpecialBehaviorVertex(vertex.getName(), this, vertex);
+			}
+		}
+		for (SDFAbstractVertex vertex : vertices) {
+			if (vertex instanceof ICodeGenSDFVertex
+					&& !(vertex instanceof SDFInterfaceVertex)) {
+				ICodeElement loopCall = CodeElementFactory.createElement(vertex
+						.getName(), this, vertex);
+				if (loopCall != null) {
+					this.addCall(loopCall);
+				}
+			}
 		}
 	}
-	
+
+	public void treatSpecialBehaviorVertex(String name,
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
+		if (vertex instanceof CodeGenSDFForkVertex) {
+			SDFEdge incomingEdge = null;
+			int i = 0;
+			for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
+				incomingEdge = inEdge;
+			}
+			Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
+			for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+				ConstantValue index = new ConstantValue("",
+						new DataType("int"), ((CodeGenSDFForkVertex) vertex)
+								.getEdgeIndex(outEdge));
+				String buffName = parentContainer.getBuffer(outEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd()
+						.intValue(), index, inBuffer, outEdge, parentContainer);
+				if (allocatedBuffers.get(outEdge) == null) {
+					parentContainer.removeBufferAllocation(parentContainer
+							.getBuffer(outEdge));
+					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				}
+				i++;
+			}
+		} else if (vertex instanceof CodeGenSDFJoinVertex) {
+			SDFEdge outgoingEdge = null;
+			int i = 0;
+			for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+				outgoingEdge = outEdge;
+			}
+			Buffer outBuffer = parentContainer.getBuffer(outgoingEdge);
+			for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
+				ConstantValue index = new ConstantValue("",
+						new DataType("int"), ((CodeGenSDFJoinVertex) vertex)
+								.getEdgeIndex(inEdge));
+				String buffName = parentContainer.getBuffer(inEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
+						.intValue(), index, outBuffer, inEdge, parentContainer);
+				if (allocatedBuffers.get(inEdge) == null) {
+					parentContainer.removeBufferAllocation(parentContainer
+							.getBuffer(inEdge));
+					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				}
+				i++;
+			}
+		} else if (vertex instanceof CodeGenSDFBroadcastVertex) {
+			SDFEdge incomingEdge = null;
+			for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
+				incomingEdge = inEdge;
+			}
+			Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
+			for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+				ConstantValue index = new ConstantValue("",
+						new DataType("int"), 0);
+				String buffName = parentContainer.getBuffer(outEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd()
+						.intValue(), index, inBuffer, outEdge, parentContainer);
+				if (allocatedBuffers.get(outEdge) == null) {
+					parentContainer.removeBufferAllocation(parentContainer
+							.getBuffer(outEdge));
+					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				}
+			}
+		} else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
+			SDFEdge outgoingEdge = null;
+			for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+				outgoingEdge = outEdge;
+			}
+			Buffer outBuffer = parentContainer.getBuffer(outgoingEdge);
+			for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
+				ConstantValue index = new ConstantValue("",
+						new DataType("int"), 0);
+				String buffName = parentContainer.getBuffer(inEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
+						.intValue(), index, outBuffer, inEdge, parentContainer);
+				if (allocatedBuffers.get(inEdge) == null) {
+					parentContainer.removeBufferAllocation(parentContainer
+							.getBuffer(inEdge));
+					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				}
+				;
+			}
+		}
+	}
+
+	public Buffer getBuffer(SDFEdge edge) {
+		if (allocatedBuffers.get(edge) == null) {
+			return super.getBuffer(edge);
+		} else {
+			return allocatedBuffers.get(edge);
+		}
+	}
+
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
@@ -122,15 +256,16 @@ public class CompoundCodeElement extends AbstractBufferContainer implements ICod
 			VariableAllocation alloc = iterator2.next();
 			alloc.accept(printer, currentLocation); // Accepts allocations
 		}
-		if(this.getParentContainer() instanceof FiniteForLoop){
-			for(BufferAllocation buff : this.getParentContainer().getBufferAllocations()){
-				if(buff != null){
+		if (this.getParentContainer() instanceof FiniteForLoop) {
+			for (BufferAllocation buff : this.getParentContainer()
+					.getBufferAllocations()) {
+				if (buff != null) {
 					buff.accept(printer, currentLocation);
 				}
 			}
 		}
-		for(BufferAllocation buff : this.getBufferAllocations()){
-			if(buff != null){
+		for (BufferAllocation buff : this.getBufferAllocations()) {
+			if (buff != null) {
 				buff.accept(printer, currentLocation);
 			}
 		}

@@ -98,5 +98,9 @@ public class FunctionCall implements IRefinement {
 	public List<CodeGenArgument> getArguments() {
 		return arguments;
 	}
+	
+	public List<CodeGenParameter> getParameters() {
+		return parameters;
+	}
 
 }

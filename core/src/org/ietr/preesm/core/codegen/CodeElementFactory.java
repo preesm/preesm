@@ -37,10 +37,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Creating code elements from a vertex
@@ -52,22 +56,89 @@ public class CodeElementFactory {
 
 	public static ICodeElement createElement(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
-		if (vertex instanceof CodeGenSDFVertex && vertex.getNbRepeat() > 1) {
+		if (vertex instanceof ICodeGenSDFVertex && vertex.getNbRepeat() > 1) {
 			FiniteForLoop loop = new FiniteForLoop(parentContainer,
-					(CodeGenSDFVertex) vertex);
+					(ICodeGenSDFVertex) vertex);
 			return loop;
-		} else if (vertex instanceof CodeGenSDFForkVertex) {
-			return new ForkCall(vertex, parentContainer);
-		} else if (vertex instanceof CodeGenSDFJoinVertex) {
-			return new JoinCall(vertex, parentContainer);
-		} else if (vertex instanceof CodeGenSDFVertex
+		}else if (vertex instanceof CodeGenSDFBroadcastVertex) {
+			return null ;
+		}else if (vertex instanceof CodeGenSDFForkVertex) {
+			return null ;
+		}else if (vertex instanceof CodeGenSDFJoinVertex) {
+			return null ;
+		}else if (vertex instanceof CodeGenSDFInitVertex) {
+			return null ;
+		}else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
+			return null ;
+		}else if (vertex instanceof ICodeGenSDFVertex
 				&& vertex.getGraphDescription() == null) {
 			return new UserFunctionCall(vertex, parentContainer,
 					CodeSection.LOOP);
 		} else {
 			CompoundCodeElement compound = new CompoundCodeElement(name,
-					parentContainer, (CodeGenSDFVertex) vertex);
+					parentContainer, (ICodeGenSDFVertex) vertex);
 			return compound;
+		}
+	}
+	
+	public static void treatSpecialBehaviorVertex(String name,
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
+		if (vertex instanceof CodeGenSDFForkVertex) {
+			SDFEdge incomingEdge = null;
+			int i = 0 ;
+			for(SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)){
+				incomingEdge = inEdge ;
+			}
+			Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
+			for(SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)){
+				ConstantValue index = new ConstantValue("", new DataType("int"), ((CodeGenSDFForkVertex) vertex).getEdgeIndex(outEdge));
+				String buffName = parentContainer.getBuffer(outEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd().intValue(), index, inBuffer, outEdge, parentContainer );
+				parentContainer.removeBufferAllocation(parentContainer.getBuffer(outEdge));
+				parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				i ++ ;
+			}
+		} else if (vertex instanceof CodeGenSDFJoinVertex) {
+			SDFEdge outgoingEdge = null;
+			int i = 0 ;
+			for(SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)){
+				outgoingEdge = outEdge ;
+			}
+			Buffer outBuffer = parentContainer.getBuffer(outgoingEdge) ;
+			for(SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)){
+				ConstantValue index = new ConstantValue("", new DataType("int"), ((CodeGenSDFJoinVertex) vertex).getEdgeIndex(inEdge));
+				String buffName = parentContainer.getBuffer(inEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons().intValue(), index, outBuffer, inEdge, parentContainer );
+				parentContainer.removeBufferAllocation(parentContainer.getBuffer(inEdge));
+				parentContainer.addBuffer(new SubBufferAllocation(subElt));
+				i ++ ;
+			}
+		}else if (vertex instanceof CodeGenSDFBroadcastVertex) {
+			SDFEdge incomingEdge = null;
+			for(SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)){
+				incomingEdge = inEdge ;
+			}
+			Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
+			for(SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)){
+				ConstantValue index = new ConstantValue("", new DataType("int"), 0);
+				String buffName = parentContainer.getBuffer(outEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd().intValue(), index, inBuffer, outEdge, parentContainer );
+				parentContainer.removeBufferAllocation(parentContainer.getBuffer(outEdge));
+				parentContainer.addBuffer(new SubBufferAllocation(subElt));
+			}
+		} else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
+			SDFEdge outgoingEdge = null;
+			for(SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)){
+				outgoingEdge = outEdge ;
+			}
+			Buffer outBuffer = parentContainer.getBuffer(outgoingEdge) ;
+			for(SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)){
+				ConstantValue index = new ConstantValue("", new DataType("int"), 0);
+				String buffName = parentContainer.getBuffer(inEdge).getName();
+				SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons().intValue(), index, outBuffer, inEdge, parentContainer );
+				parentContainer.removeBufferAllocation(parentContainer.getBuffer(inEdge));
+				parentContainer.addBuffer(new SubBufferAllocation(subElt));
+			}
 		}
 	}
 }

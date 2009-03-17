@@ -63,7 +63,7 @@ import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.iterators.SDFIterator;
@@ -96,7 +96,7 @@ public class SourceFileCodeGenerator {
 			// retrieving the operator where the vertex is allocated
 			Operator vertexOperator = (Operator) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			if(vertex instanceof CodeGenSDFVertex && vertexOperator.equals(file.getOperator())){
+			if(vertex instanceof ICodeGenSDFVertex && vertexOperator.equals(file.getOperator())){
 				// Allocating all output buffers of vertex
 				allocateVertexOutputBuffers(vertex);
 			}

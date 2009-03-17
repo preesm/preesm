@@ -44,8 +44,9 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -70,6 +71,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 */
 	private List<Parameter> callParameters;
 
+	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
+		super(name,parentContainer, null);
+		callParameters = new ArrayList<Parameter>();
+	}
+
 	public UserFunctionCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSection section) {
 		super(vertex.getName(), parentContainer, vertex);
@@ -81,7 +87,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
-		if (vertex instanceof CodeGenSDFVertex) {
+		if (vertex instanceof ICodeGenSDFVertex) {
 			FunctionCall call = ((FunctionCall) vertex.getRefinement());
 			if (call != null) {
 
@@ -185,6 +191,14 @@ public class UserFunctionCall extends AbstractCodeElement {
 												+ vertex.getName()
 												+ ". Error interpreting the prototype: no port found with name: "
 												+ argName);
+					}
+				}
+
+				for (CodeGenParameter param : call.getParameters()) {
+					if (vertex.getArgument(param.getName()) != null) {
+						Parameter currentParam = new Constant(param.getName(),
+								vertex.getArgument(param.getName()).intValue());
+						addParameter(currentParam);
 					}
 				}
 			}

@@ -46,7 +46,8 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.demo.SDFAdapterDemo;
@@ -122,8 +123,8 @@ public class CodeGenSDFGraphFactory {
 		output.copyProperties(dag);
 		for(DAGVertex vertex : dag.vertexSet()){
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
-			if(codeGenVertex instanceof CodeGenSDFVertex){
-				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat().intValue());
+			if(codeGenVertex instanceof CodeGenSDFTaskVertex){
+				((ICodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat().intValue());
 			}
 			aliases.put(vertex, codeGenVertex);
 			output.addVertex(codeGenVertex);
@@ -151,11 +152,15 @@ public class CodeGenSDFGraphFactory {
 					}
 					newEdge.setSourceInterface(sourceInterface);
 					newEdge.setTargetInterface(targetInterface);
-					newEdge.setCons(sdfSubEdge.getCons().clone());
-					newEdge.setProd(sdfSubEdge.getProd().clone());
+					newEdge.setCons(new SDFIntEdgePropertyType(sdfSubEdge.getCons().intValue()));
+					newEdge.setProd(new SDFIntEdgePropertyType(sdfSubEdge.getProd().intValue()));
+					newEdge.setDelay(new SDFIntEdgePropertyType(sdfSubEdge.getDelay().intValue()));
+					newEdge.setDataType(sdfSubEdge.getDataType());
 				}
 			}
 		}
+//		SDFAdapterDemo applet1 = new SDFAdapterDemo();
+//		applet1.init(output);
 		return output ;
 	}
 	
@@ -169,9 +174,9 @@ public class CodeGenSDFGraphFactory {
 		while(iterator.hasNext()){
 			SDFAbstractVertex vertex = iterator.next();
 			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
-			if(codeGenVertex instanceof CodeGenSDFVertex){
-				((CodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat());
-				((CodeGenSDFVertex) codeGenVertex).setPos(pos);
+			if(codeGenVertex instanceof CodeGenSDFTaskVertex){
+				((ICodeGenSDFVertex)codeGenVertex).setNbRepeat(vertex.getNbRepeat());
+				((ICodeGenSDFVertex) codeGenVertex).setPos(pos);
 				pos ++ ;
 			}
 			aliases.put(vertex, codeGenVertex);
@@ -197,9 +202,10 @@ public class CodeGenSDFGraphFactory {
 			}
 			newEdge.setSourceInterface(sourceInterface);
 			newEdge.setTargetInterface(targetInterface);
-			newEdge.setCons(edge.getCons().clone());
-			newEdge.setProd(edge.getProd().clone());
-			newEdge.setDelay(edge.getDelay().clone());
+			newEdge.setCons(new SDFIntEdgePropertyType(edge.getCons().intValue()));
+			newEdge.setProd(new SDFIntEdgePropertyType(edge.getProd().intValue()));
+			newEdge.setDelay(new SDFIntEdgePropertyType(edge.getDelay().intValue()));
+			newEdge.setDataType(edge.getDataType());
 		}
 		return output ;
 	}

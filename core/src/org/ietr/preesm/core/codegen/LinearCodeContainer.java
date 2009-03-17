@@ -46,6 +46,11 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
  */
 public class LinearCodeContainer extends AbstractCodeContainer {
 
+	public LinearCodeContainer(AbstractBufferContainer parentContainer) {
+		super(parentContainer);
+		// TODO Auto-generated constructor stub
+	}
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
@@ -66,5 +71,11 @@ public class LinearCodeContainer extends AbstractCodeContainer {
 		code += "\n}\n";
 
 		return code;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return toString();
 	}
 }

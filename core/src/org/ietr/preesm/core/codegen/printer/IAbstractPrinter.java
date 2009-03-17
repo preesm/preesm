@@ -47,8 +47,6 @@ import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
-import org.ietr.preesm.core.codegen.ForkCall;
-import org.ietr.preesm.core.codegen.JoinCall;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.Receive;
@@ -58,6 +56,7 @@ import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
+import org.ietr.preesm.core.codegen.SpecialBehaviorCall;
 import org.ietr.preesm.core.codegen.SubBuffer;
 import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
@@ -97,6 +96,5 @@ public interface IAbstractPrinter {
 	public Object visit(ThreadDeclaration element, CodeZoneId index, Object currentLocation);
 	public Object visit(LaunchThread element, CodeZoneId index, Object currentLocation);
 	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
-	public Object visit(ForkCall element, CodeZoneId index, Object currentLocation);
-	public Object visit(JoinCall element, CodeZoneId index, Object currentLocation);
+	public Object visit(SpecialBehaviorCall element, CodeZoneId index, Object currentLocation);
 }

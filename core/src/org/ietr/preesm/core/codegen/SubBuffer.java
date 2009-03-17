@@ -38,17 +38,27 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.sdf4j.model.sdf.SDFEdge;
 
 
 public class SubBuffer extends Buffer {
 
 	private Variable index;
+	private int modulo ;
 	private Buffer parentBuffer;
 
 	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, AbstractBufferContainer container) {
 		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
 		this.parentBuffer = parentBuffer;
 		this.index = index ;
+		modulo = parentBuffer.getSize();
+	}
+	
+	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+		super(name, size, parentBuffer.getType(), edge, container);
+		this.parentBuffer = parentBuffer;
+		this.index = index ;
+		modulo = parentBuffer.getSize();
 	}
 
 	public Variable getIndex() {
@@ -57,6 +67,10 @@ public class SubBuffer extends Buffer {
 
 	public Buffer getParentBuffer() {
 		return parentBuffer;
+	}
+	
+	public int getModulo(){
+		return modulo ;
 	}
 
 	public void setIndex(Variable index) {

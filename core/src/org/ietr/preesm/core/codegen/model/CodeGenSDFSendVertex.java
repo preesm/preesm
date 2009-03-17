@@ -40,7 +40,7 @@ import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
 
-public class CodeGenSDFSendVertex extends CodeGenSDFVertex{
+public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex{
 
 	public static final String INTERFACE ="interface";
 	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;

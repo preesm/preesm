@@ -82,7 +82,7 @@ public class Buffer extends Parameter {
 	/**
 	 * Maximal size of a reduced name
 	 */
-	private static final int maxReducedNameSize = 10;
+	private static final int maxReducedNameSize = 15;
 
 	public Buffer(String name, Integer size, DataType type, SDFEdge edge,
 			AbstractBufferContainer container) {

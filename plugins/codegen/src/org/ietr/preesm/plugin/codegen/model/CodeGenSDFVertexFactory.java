@@ -47,10 +47,13 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSourceInterfaceVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.plugin.codegen.model.cal.CALFunctionFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
@@ -58,12 +61,12 @@ import org.sdf4j.model.CodeRefinement.Language;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.Argument;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
 import org.sdf4j.model.sdf.esdf.SDFForkVertex;
 import org.sdf4j.model.sdf.esdf.SDFInitVertex;
 import org.sdf4j.model.sdf.esdf.SDFJoinVertex;
+import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
@@ -81,45 +84,47 @@ public class CodeGenSDFVertexFactory {
 	public SDFAbstractVertex create(DAGVertex dagVertex) {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
-		CodeGenSDFVertex newVertex;
+		ICodeGenSDFVertex newVertex;
 		VertexType vertexType = (VertexType) dagVertex.getPropertyBean()
 				.getValue(ImplementationPropertyNames.Vertex_vertexType);
 		if (vertexType != null && vertexType.equals(VertexType.task)) {
 			SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-			if (sdfVertex instanceof SDFBroadcastVertex) {
+			if (sdfVertex instanceof SDFBroadcastVertex && !(sdfVertex instanceof SDFRoundBufferVertex)) {
 				newVertex = new CodeGenSDFBroadcastVertex();
 			} else if (sdfVertex instanceof SDFForkVertex) {
 				newVertex = new CodeGenSDFForkVertex();
 			} else if (sdfVertex instanceof SDFJoinVertex) {
 				newVertex = new CodeGenSDFJoinVertex();
+			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
+				newVertex = new CodeGenSDFRoundBufferVertex();
 			} else if (sdfVertex instanceof SDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
 			} else {
-				newVertex = new CodeGenSDFVertex();
+				newVertex = new CodeGenSDFTaskVertex();
 			}
 		} else if (vertexType != null && vertexType.equals(VertexType.send)) {
 			newVertex = new CodeGenSDFSendVertex();
 		} else if (vertexType != null && vertexType.equals(VertexType.receive)) {
 			newVertex = new CodeGenSDFReceiveVertex();
 		} else {
-			newVertex = new CodeGenSDFVertex();
+			newVertex = new CodeGenSDFTaskVertex();
 		}
-		newVertex.setName(dagVertex.getName());
+		((SDFAbstractVertex) newVertex).setName(dagVertex.getName());
 		if (dagVertex.getCorrespondingSDFVertex() != null
 				&& dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
-			newVertex.setGraphDescription(graphFactory
+			((SDFAbstractVertex) newVertex).setGraphDescription(graphFactory
 					.create((SDFGraph) dagVertex.getCorrespondingSDFVertex()
 							.getGraphDescription()));
 			for (SDFAbstractVertex child : ((CodeGenSDFGraph) newVertex
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {
-					newVertex.getSinks().remove(
-							(newVertex.getInterface(child.getName())));
-					newVertex.addSink((SDFSinkInterfaceVertex) child);
+					((SDFAbstractVertex) newVertex).getSinks().remove(
+							(((SDFAbstractVertex) newVertex).getInterface(child.getName())));
+					((SDFAbstractVertex) newVertex).addSink((SDFSinkInterfaceVertex) child);
 				} else if (child instanceof SDFSourceInterfaceVertex) {
-					newVertex.getSources().remove(
-							(newVertex.getInterface(child.getName())));
-					newVertex.addSource((SDFSourceInterfaceVertex) child);
+					((SDFAbstractVertex) newVertex).getSources().remove(
+							(((SDFAbstractVertex) newVertex).getInterface(child.getName())));
+					((SDFAbstractVertex) newVertex).addSource((SDFSourceInterfaceVertex) child);
 				}
 			}
 		} else if (dagVertex.getCorrespondingSDFVertex() != null
@@ -137,18 +142,18 @@ public class CodeGenSDFVertexFactory {
 			}
 			if (codeRef.getLanguage() == Language.CAL) {
 				CALFunctionFactory factory = CALFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+				((SDFAbstractVertex) newVertex).setRefinement(factory.create(iFile.getRawLocation()
 						.toOSString()));
 			} else if (codeRef.getLanguage() == Language.IDL) {
 				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation()
+				((SDFAbstractVertex) newVertex).setRefinement(factory.create(iFile.getRawLocation()
 						.toOSString()));
 			}
 		}
-		newVertex.copyProperties(dagVertex);
+		((SDFAbstractVertex) newVertex).copyProperties(dagVertex);
 		if(dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getArguments() != null){
 			for(Argument arg : dagVertex.getCorrespondingSDFVertex().getArguments().values()){
-				newVertex.addArgument(arg);
+				((SDFAbstractVertex) newVertex).addArgument(arg);
 			}
 		}
 
@@ -163,7 +168,7 @@ public class CodeGenSDFVertexFactory {
 		// newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
 		// ImplementationPropertyNames.Vertex_schedulingOrder));
 		// }
-		return newVertex;
+		return ((SDFAbstractVertex) newVertex);
 	}
 
 	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) {
@@ -179,10 +184,12 @@ public class CodeGenSDFVertexFactory {
 				newVertex = new CodeGenSDFForkVertex();
 			} else if (sdfVertex instanceof SDFJoinVertex) {
 				newVertex = new CodeGenSDFJoinVertex();
-			} else if (sdfVertex instanceof SDFInitVertex) {
+			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
+				newVertex = new CodeGenSDFRoundBufferVertex();
+			}  else if (sdfVertex instanceof SDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
 			} else {
-				newVertex = new CodeGenSDFVertex();
+				newVertex = new CodeGenSDFTaskVertex();
 			}
 		}
 		newVertex.copyProperties(sdfVertex);
