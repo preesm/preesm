@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.0.4"
+      version="0.0.5"
       provider-name="IETR/INSA">
 
    <description url="http://www.example.com/description">
@@ -133,6 +133,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
    <plugin
          id="net.sf.graphiti"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.plugin.architransform"
          download-size="0"
          install-size="0"
          version="0.0.0"

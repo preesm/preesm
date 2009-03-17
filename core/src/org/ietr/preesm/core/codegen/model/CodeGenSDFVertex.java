@@ -112,7 +112,7 @@ public class CodeGenSDFVertex extends SDFVertex{
 				}
 				code = code.substring(0,code.length()-1);
 				code +=");\n";
-			}else{
+			}else if(this.getGraphDescription() != null){
 				code +=this.getGraphDescription().toString();
 			}
 		}
