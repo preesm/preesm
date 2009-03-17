@@ -38,14 +38,12 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Set;
 
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -60,10 +58,6 @@ import org.sdf4j.model.dag.DAGVertex;
 public class AddNewVertexOverheadsTransaction extends Transaction {
 
 	// Inputs
-	/**
-	 * The object handling the schedulings as well as the total order.
-	 */
-	private SchedOrderManager orderManager;
 
 	/**
 	 * Vertex to add in the schedule
@@ -76,17 +70,16 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 	private MapperDAG implementation = null;
 	
 	private TransactionManager localTransactionManager = null;
-	private OverheadVertexAdder overheadVertexAdder = null;
+	private TransferVertexAdder tVertexAdder = null;
 
-	public AddNewVertexOverheadsTransaction(SchedOrderManager orderManager,
+	public AddNewVertexOverheadsTransaction(TransferVertexAdder tVertexAdder,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
-		this.orderManager = orderManager;
 		this.newVertex = newVertex;
 		this.implementation = implementation;
 
 		localTransactionManager = new TransactionManager();
-		overheadVertexAdder = new OverheadVertexAdder(orderManager);
+		this.tVertexAdder = tVertexAdder;
 	}
 
 	@Override
@@ -95,12 +88,12 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 
 		 Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
 		
-		overheadVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
+		tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 
 		for (DAGVertex tvertex : transfers) {
 			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
 				if(!(incomingEdge instanceof PrecedenceEdge)){
-					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), orderManager),null);
+					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), tVertexAdder.getOrderManager()),null);
 				}
 			}
 		}
@@ -117,7 +110,7 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 		
 		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
 		
-		overheadVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
+		tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 	}
 
 	@Override

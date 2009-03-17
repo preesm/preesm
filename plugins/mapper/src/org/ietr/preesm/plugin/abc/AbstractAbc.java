@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -66,10 +65,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
-import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
-import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
@@ -269,17 +264,6 @@ public abstract class AbstractAbc implements IAbc {
 	 * Reorders the implementation using the given total order
 	 */
 	public void reorder(Map<String, Integer> totalOrder) {
-		/*
-		 * int test = totalOrder.get("IDFT_7"); int test2 =
-		 * totalOrder.get("FFT_a1_3");
-		 * 
-		 * // Just for test. Checks for doublets Set<String> sSet = new
-		 * HashSet<String>(); for(DAGVertex v : implementation.vertexSet()){
-		 * MapperDAGVertex implVertex = (MapperDAGVertex)v;
-		 * if(sSet.contains(implVertex.getName())){
-		 * PreesmLogger.getLogger().log(Level.SEVERE,"duplicated vertex: " +
-		 * implVertex.getName()); } sSet.add(implVertex.getName()); }
-		 */
 
 		if (implementation != null && dag != null) {
 

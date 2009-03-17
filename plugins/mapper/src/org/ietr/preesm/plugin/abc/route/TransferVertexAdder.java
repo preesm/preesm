@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.model.impl;
+package org.ietr.preesm.plugin.abc.route;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.transaction.AddNewVertexOverheadsTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
@@ -59,6 +59,9 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -69,7 +72,12 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class TransferVertexAdder {
 
-	private CommunicationRouter router;
+	/**
+	 * True if we take into account the transfer overheads
+	 */
+	private boolean handleOverheads;
+	
+	private RouteCalculator router;
 
 	private SchedOrderManager orderManager;
 
@@ -91,14 +99,15 @@ public class TransferVertexAdder {
 	protected IEdgeSched edgeScheduler;
 
 	public TransferVertexAdder(IEdgeSched edgeScheduler,
-			CommunicationRouter router, SchedOrderManager orderManager,
-			boolean sendReceive, boolean rmvOrigEdge) {
+			RouteCalculator router, SchedOrderManager orderManager,
+			boolean sendReceive, boolean rmvOrigEdge, boolean handleOverheads) {
 		super();
 		this.edgeScheduler = edgeScheduler;
 		this.router = router;
 		this.orderManager = orderManager;
 		this.sendReceive = sendReceive;
 		this.rmvOrigEdge = rmvOrigEdge;
+		this.handleOverheads = handleOverheads;
 	}
 
 	/**
@@ -108,8 +117,9 @@ public class TransferVertexAdder {
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
 		transactionManager.add(
-				new AddNewVertexTransfersTransaction(edgeScheduler, router,
-						orderManager, implementation, refVertex), refVertex);
+				new AddNewVertexTransfersTransaction(this, implementation, refVertex), refVertex);
+		transactionManager.add(new AddNewVertexOverheadsTransaction(
+				this, implementation, refVertex), refVertex);
 		transactionManager.execute();
 	}
 
@@ -185,17 +195,19 @@ public class TransferVertexAdder {
 
 			if (sendReceive) {
 				// TODO: set a size to send and receive. From medium definition?
-				transaction = new AddSendReceiveTransaction(precedingTransaction,
-						edge, implementation, orderManager, i, step,
+				transaction = new AddSendReceiveTransaction(
+						precedingTransaction, edge, implementation,
+						orderManager, i, step,
 						TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 			} else {
 
 				long transferCost = router.evaluateTransfer(edge, step
 						.getSender(), step.getReceiver());
 
-				transaction = new AddTransferVertexTransaction(precedingTransaction,
-						edgeScheduler, edge, implementation, orderManager, i,
-						step, transferCost, scheduleVertex);
+				transaction = new AddTransferVertexTransaction(
+						precedingTransaction, edgeScheduler, edge,
+						implementation, orderManager, i, step, transferCost,
+						scheduleVertex);
 			}
 
 			transactionManager.add(transaction, refVertex);
@@ -226,6 +238,24 @@ public class TransferVertexAdder {
 			}
 		}
 
+		transactionManager.execute();
+	}
+
+	/**
+	 * Removes all overheads from routes coming from or going to vertex
+	 */
+	public void removeAllOverheads(Set<DAGVertex> transfers, MapperDAG implementation,
+			TransactionManager transactionManager){
+
+		for (DAGVertex v : transfers) {
+			if (v instanceof TransferVertex) {
+				MapperDAGVertex o = ((TransferVertex)v).getPrecedingOverhead();
+				if (o != null && o instanceof OverheadVertex){
+					transactionManager.add(new RemoveVertexTransaction(o,implementation,orderManager), null);
+				}
+			}
+		}
+	
 		transactionManager.execute();
 	}
 
@@ -288,5 +318,9 @@ public class TransferVertexAdder {
 		}
 
 		return transfers;
+	}
+
+	public SchedOrderManager getOrderManager() {
+		return orderManager;
 	}
 }

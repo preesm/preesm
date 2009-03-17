@@ -14,7 +14,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -35,7 +35,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * simulator of the transfers
 	 */
-	protected CommunicationRouter router;
+	protected RouteCalculator router;
 
 	/**
 	 * Current precedence edge adder: called exclusively by simulator to
@@ -58,7 +58,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		super(dag, archi, abcType);
 
 		// The media simulator calculates the edges costs
-		router = new CommunicationRouter(archi);
+		router = new RouteCalculator(archi);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);

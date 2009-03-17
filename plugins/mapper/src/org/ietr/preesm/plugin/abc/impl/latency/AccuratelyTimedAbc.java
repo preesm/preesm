@@ -38,23 +38,14 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
-import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
-import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 
 /**
  * The accurately timed ABC schedules edges and set-up times
@@ -67,11 +58,6 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	 * Transfer vertex adder for edge scheduling
 	 */
 	protected TransferVertexAdder tvertexAdder;
-
-	/**
-	 * Overhead vertex adder for edge scheduling
-	 */
-	protected OverheadVertexAdder overtexAdder;
 
 	/**
 	 * Scheduling the transfer vertices on the media
@@ -90,8 +76,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
 		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
-				orderManager, false, false);
-		overtexAdder = new OverheadVertexAdder(orderManager);
+				orderManager, false, false, true);
 	}
 
 	/**
@@ -111,9 +96,6 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 					transactionManager, vertex, vertex);
 
 			tvertexAdder.addAndScheduleTransferVertices(implementation,
-					transactionManager, vertex);
-
-			overtexAdder.addAndScheduleOverheadVertices(implementation,
 					transactionManager, vertex);
 
 		}

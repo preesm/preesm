@@ -50,7 +50,8 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.RouteCalculator;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -58,7 +59,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
@@ -118,7 +118,7 @@ public class TagDAG {
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched
 				.getInstance(EdgeSchedType.Simple, orderMgr),
-				new CommunicationRouter(architecture), orderMgr, true, false);
+				new RouteCalculator(architecture), orderMgr, true, false, false);
 		tvAdder.addTransferVertices(dag, new TransactionManager(), false);
 		orderMgr.tagDAG(dag);
 	}

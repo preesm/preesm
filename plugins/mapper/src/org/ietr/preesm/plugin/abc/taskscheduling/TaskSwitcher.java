@@ -38,7 +38,6 @@ package org.ietr.preesm.plugin.abc.taskscheduling;
 
 import java.util.Random;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.edgescheduling.Interval;
 import org.ietr.preesm.plugin.abc.edgescheduling.IntervalFinder;

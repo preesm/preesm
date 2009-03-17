@@ -39,7 +39,6 @@ package org.ietr.preesm.plugin.mapper.params;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 
 /**
  * Common behavior of all the mapping algorithm parameters

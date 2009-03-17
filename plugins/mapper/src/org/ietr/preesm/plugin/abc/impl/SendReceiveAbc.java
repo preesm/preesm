@@ -38,20 +38,14 @@ package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
-import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 
 /**
  * A send receive abc adds send and receive operations for each inter-core operations
@@ -73,7 +67,7 @@ public class SendReceiveAbc extends LatencyAbc {
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
 
-		tvertexAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false);
+		tvertexAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false, false);
 	}
 
 	/**

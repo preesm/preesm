@@ -41,13 +41,13 @@ import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.RouteCalculator;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
@@ -75,16 +75,14 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 	private TransactionManager localTransactionManager = null;
 	private TransferVertexAdder transferVertexAdder = null;
 
-	public AddNewVertexTransfersTransaction(IEdgeSched edgeSched,
-			CommunicationRouter router, SchedOrderManager orderManager,
+	public AddNewVertexTransfersTransaction(TransferVertexAdder transferVertexAdder,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 		super();
 		this.newVertex = newVertex;
 		this.implementation = implementation;
 
 		localTransactionManager = new TransactionManager();
-		transferVertexAdder = new TransferVertexAdder(
-				edgeSched, router, orderManager, false, false);
+		this.transferVertexAdder = transferVertexAdder;
 	}
 
 	@Override
