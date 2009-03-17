@@ -329,7 +329,7 @@ public class DesignParser {
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-			String fileExt = "ipxactcmp";
+			String fileExt = "component";
 			IResource resource = workspace.getRoot().findMember(
 					currentFile.getFullPath().removeLastSegments(1) + "/"
 							+ componentRefinement + "." + fileExt);
