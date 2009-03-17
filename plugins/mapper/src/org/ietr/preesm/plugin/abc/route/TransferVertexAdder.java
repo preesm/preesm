@@ -76,7 +76,7 @@ public class TransferVertexAdder {
 	 * True if we take into account the transfer overheads
 	 */
 	private boolean handleOverheads;
-	
+
 	private RouteCalculator router;
 
 	private SchedOrderManager orderManager;
@@ -116,10 +116,12 @@ public class TransferVertexAdder {
 	public void addAndScheduleTransferVertices(MapperDAG implementation,
 			TransactionManager transactionManager, MapperDAGVertex refVertex) {
 
-		transactionManager.add(
-				new AddNewVertexTransfersTransaction(this, implementation, refVertex), refVertex);
-		transactionManager.add(new AddNewVertexOverheadsTransaction(
-				this, implementation, refVertex), refVertex);
+		transactionManager.add(new AddNewVertexTransfersTransaction(this,
+				implementation, refVertex), refVertex);
+		if (handleOverheads) {
+			transactionManager.add(new AddNewVertexOverheadsTransaction(this,
+					implementation, refVertex), refVertex);
+		}
 		transactionManager.execute();
 	}
 
@@ -244,18 +246,19 @@ public class TransferVertexAdder {
 	/**
 	 * Removes all overheads from routes coming from or going to vertex
 	 */
-	public void removeAllOverheads(Set<DAGVertex> transfers, MapperDAG implementation,
-			TransactionManager transactionManager){
+	public void removeAllOverheads(Set<DAGVertex> transfers,
+			MapperDAG implementation, TransactionManager transactionManager) {
 
 		for (DAGVertex v : transfers) {
 			if (v instanceof TransferVertex) {
-				MapperDAGVertex o = ((TransferVertex)v).getPrecedingOverhead();
-				if (o != null && o instanceof OverheadVertex){
-					transactionManager.add(new RemoveVertexTransaction(o,implementation,orderManager), null);
+				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
+				if (o != null && o instanceof OverheadVertex) {
+					transactionManager.add(new RemoveVertexTransaction(o,
+							implementation, orderManager), null);
 				}
 			}
 		}
-	
+
 		transactionManager.execute();
 	}
 
