@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -43,6 +44,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 
 /**
  * Prepared for communication contentious list scheduling ABC
@@ -78,13 +80,31 @@ public class CommContenAbc extends AbstractAbc {
 
 	}
 
-	@Override
-	protected void updateTimings() {
-		// TODO Auto-generated method stub
-
+	public EdgeSchedType getEdgeSchedType() {
+		return null;
 	}
 
-	public EdgeSchedType getEdgeSchedType() {
+	@Override
+	public long getFinalCost() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getFinalCost(MapperDAGVertex vertex) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getFinalCost(ArchitectureComponent component) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public IImplementationPlotter plotImplementation(boolean delegateDisplay) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

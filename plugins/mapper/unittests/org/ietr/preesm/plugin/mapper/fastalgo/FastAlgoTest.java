@@ -47,8 +47,8 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
@@ -104,7 +104,7 @@ public class FastAlgoTest extends TestCase {
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
 				dag, archi);
-		simu.getFinalTime();
+		simu.getFinalCost();
 		InitialLists initial = new InitialLists();
 
 		logger.log(Level.FINEST, "Evaluating constructInitialList ");
@@ -127,8 +127,8 @@ public class FastAlgoTest extends TestCase {
 		logger.log(Level.FINER, "Displaying dag implanted ");
 		scheduler.dagimplanteddisplay(dag, simu2);
 
-		logger.log(Level.FINER, "length : " + simu2.getFinalTime());
-		assertEquals(simu2.getFinalTime(), 23);
+		logger.log(Level.FINER, "length : " + simu2.getFinalCost());
+		assertEquals(simu2.getFinalCost(), 23);
 		simu2.plotImplementation(false);
 	}
 

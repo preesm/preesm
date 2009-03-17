@@ -61,7 +61,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
@@ -348,7 +348,7 @@ public class PFastAlgorithm extends Observable {
 		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
 
 		bestTotalOrder = archisimu.getTotalOrder().toMap();
-		long iBest = (Long) archisimu.getFinalTime();
+		long iBest = (Long) archisimu.getFinalCost();
 		
 		long initiale = iBest;
 		setChanged();

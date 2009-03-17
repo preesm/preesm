@@ -1,8 +1,11 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc.impl;
+package org.ietr.preesm.plugin.abc.impl.latency;
 
+import java.util.logging.Level;
+
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -16,6 +19,9 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
+import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
+import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 
 /**
  * Abc that minimizes latency
@@ -35,6 +41,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 	protected PrecedenceEdgeAdder precedenceEdgeAdder;
 
 	/**
+	 * Current time keeper: called exclusively by simulator to update the useful
+	 * time tags in DAG
+	 */
+	protected GraphTimeKeeper timeKeeper;
+
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
@@ -45,6 +57,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// The media simulator calculates the edges costs
 		router = new CommunicationRouter(archi);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+
+		this.timeKeeper = new GraphTimeKeeper(implementation);
+		timeKeeper.resetTimings();
+	}
+	@Override
+	public void setDAG(MapperDAG dag) {
+		this.timeKeeper = new GraphTimeKeeper(implementation);
+		timeKeeper.resetTimings();
+		super.setDAG(dag);
 	}
 
 	@Override
@@ -74,6 +95,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 		}
+
+		timeKeeper.setAsDirty(vertex);
 	}
 
 	@Override
@@ -88,14 +111,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 		resetCost(vertex.outgoingEdges());
 
 		transactionManager.undoTransactions(vertex);
+
+		timeKeeper.setAsDirty(vertex);
 	}
 
 	/**
 	 * Asks the time keeper to update timings. Crucial and costly operation.
 	 * Depending on the king of timings we want, calls the necessary updates.
 	 */
-	@Override
-	protected final void updateTimings() {
+	protected void updateTimings() {
 
 		timeKeeper.updateTLevels();
 	}
@@ -134,4 +158,88 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 	public abstract EdgeSchedType getEdgeSchedType();
 
+
+	/**
+	 * *********Timing accesses**********
+	 */
+
+	@Override
+	public final long getFinalCost() {
+
+		updateTimings();
+
+		// visualize results
+		// monitor.render(new SimpleTextRenderer());
+
+		long finalTime = timeKeeper.getFinalTime();
+
+		if (finalTime < 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"negative implementation final time");
+		}
+
+		return finalTime;
+	}
+
+	@Override
+	public final long getFinalCost(MapperDAGVertex vertex) {
+		vertex = translateInImplementationVertex(vertex);
+
+		updateTimings();
+
+		long finalTime = timeKeeper.getFinalTime(vertex);
+
+		if (finalTime < 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"negative vertex final time");
+		}
+
+		return finalTime;
+
+	}
+
+	@Override
+	public final long getFinalCost(ArchitectureComponent component) {
+
+		updateTimings();
+
+		long finalTime = timeKeeper.getFinalTime(component);
+
+		if (finalTime < 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"negative component final time");
+		}
+
+		return finalTime;
+	}
+
+	public final long getTLevel(MapperDAGVertex vertex) {
+		vertex = translateInImplementationVertex(vertex);
+
+		updateTimings();
+		return vertex.getTimingVertexProperty().getTlevel();
+	}
+	
+	public final long getBLevel(MapperDAGVertex vertex) {
+		vertex = translateInImplementationVertex(vertex);
+
+		updateTimings();
+		return vertex.getTimingVertexProperty().getBlevel();
+	}
+
+	/**
+	 * Plots the current implementation. If delegatedisplay=false, the gantt is
+	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
+	 */
+	public final IImplementationPlotter plotImplementation(boolean delegateDisplay) {
+
+		if (!delegateDisplay) {
+			updateTimings();
+			GanttPlotter.plot(implementation, this);
+			return null;
+		} else {
+			updateTimings();
+			return new GanttPlotter("Solution gantt", implementation, this);
+		}
+	}
 }

@@ -62,7 +62,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
@@ -241,7 +241,7 @@ public class FastAlgorithm extends Observable {
 			simulator.setDAG(dag);
 		}
 		// display initial time after the list scheduling
-		long initial = simulator.getFinalTime();
+		long initial = simulator.getFinalCost();
 
 		bestTotalOrder = simulator.getTotalOrder().toMap();
 		if (displaySolutions) {
@@ -311,7 +311,7 @@ public class FastAlgorithm extends Observable {
 			do {
 				// step 7
 				currentvertex = (MapperDAGVertex) vertexiter.next();
-				SL = simulator.getFinalTime();
+				SL = simulator.getFinalCost();
 
 				// step 8
 				OperatorIterator iteratorop = new OperatorIterator(
@@ -331,7 +331,7 @@ public class FastAlgorithm extends Observable {
 				simulator.implant(currentvertex, operatortest, false);
 
 				// step 10
-				long newSL = simulator.getFinalTime();
+				long newSL = simulator.getFinalCost();
 				if (newSL >= SL) {
 
 					simulator.implant(currentvertex, operatorprec, false);
@@ -349,13 +349,13 @@ public class FastAlgorithm extends Observable {
 			} while (searchstep++ < maxstep && counter < margin);
 
 			// step 12
-			if (bestSL > simulator.getFinalTime()) {
+			if (bestSL > simulator.getFinalCost()) {
 
 				// step 13
 				dagfinal = simulator.getDAG().clone();
 				// step 14
 
-				bestSL = simulator.getFinalTime();
+				bestSL = simulator.getFinalCost();
 
 				bestTotalOrder = simulator.getTotalOrder().toMap();
 				if (displaySolutions) {

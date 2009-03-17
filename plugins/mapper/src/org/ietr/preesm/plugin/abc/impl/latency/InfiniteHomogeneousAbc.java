@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.impl;
+package org.ietr.preesm.plugin.abc.impl.latency;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -59,7 +59,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * @author mpelcat   
  */
 public class InfiniteHomogeneousAbc extends
-		AbstractAbc {
+		LatencyAbc {
 
 	/**
 	 * Constructor 
@@ -75,7 +75,7 @@ public class InfiniteHomogeneousAbc extends
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType) {
-		super(dag, archi, AbcType.InfiniteHomogeneous);
+		super(null, dag, archi, AbcType.InfiniteHomogeneous);
 		this.getType().setTaskSchedType(taskSchedType);
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done

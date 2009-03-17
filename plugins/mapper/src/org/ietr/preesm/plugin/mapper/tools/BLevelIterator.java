@@ -50,7 +50,6 @@ public class BLevelIterator extends ImplantationIterator {
 	public BLevelIterator(MapperDAG implementation,
 			IAbc simulator, boolean directOrder) {
 		super(implementation, simulator, directOrder);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

@@ -50,6 +50,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
+import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 
 /**
@@ -76,21 +77,21 @@ public interface IAbc extends IMapperAbc {
 	 * implementation information is not enough to calculate this timing, returns
 	 * TIME_UNKNOWN
 	 */
-	public long getFinalTime();
+	public long getFinalCost();
 
 	/**
 	 * Gives the final time of the given vertex in the current implementation. If
 	 * current implementation information is not enough to calculate this timing,
 	 * returns TIME_UNKNOWN
 	 */
-	public long getFinalTime(MapperDAGVertex vertex);
+	public long getFinalCost(MapperDAGVertex vertex);
 
 	/**
 	 * Gives the implementation time on the given operator if possible. It
 	 * considers a partially implanted graph and ignores the non implanted
 	 * vertices
 	 */
-	public long getFinalTime(ArchitectureComponent component);
+	public long getFinalCost(ArchitectureComponent component);
 
 	/**
 	 * Returns the sum of execution times on the given component
@@ -117,30 +118,6 @@ public interface IAbc extends IMapperAbc {
 	 * Reorders the implementation using the given total order
 	 */
 	public void reorder(Map<String,Integer> totalOrder);
-
-	/**
-	 * Internal time keeper. Should be used for tests only
-	 */
-	public GraphTimeKeeper getTimeKeeper();
-
-	/**
-	 * Gives the B level of the given vertex in the current implementation. If
-	 * current implementation information is not enough to calculate this timing,
-	 * returns TIME_UNKNOWN
-	 * 
-	 * B Level is the time between the vertex start and the total end of
-	 * execution
-	 */
-	public long getBLevel(MapperDAGVertex vertex);
-	
-	/**
-	 * Gives the T level of the given vertex in the current implementation. If
-	 * current implementation information is not enough to calculate this timing,
-	 * returns TIME_UNKNOWN
-	 * 
-	 * T Level is the time between the start of execution and the vertex start
-	 */
-	public long getTLevel(MapperDAGVertex vertex);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation
@@ -174,7 +151,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Plots the current implementation
 	 */
-	public GanttPlotter plotImplementation(boolean delegateDisplay);
+	public IImplementationPlotter plotImplementation(boolean delegateDisplay);
 
 	/**
 	 * Unimplants all vertices in internal implementation

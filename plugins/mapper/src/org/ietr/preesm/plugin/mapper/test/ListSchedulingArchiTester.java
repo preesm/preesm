@@ -161,7 +161,7 @@ public class ListSchedulingArchiTester {
 		PreesmLogger.getLogger().log(Level.FINEST, "Displaying dag implanted ");
 		scheduler.dagimplanteddisplay(dag, simu2);
 
-		long finalTime = simu2.getFinalTime();
+		long finalTime = simu2.getFinalCost();
 		PreesmLogger.getLogger().log(
 				Level.FINER,
 				"DAG Final Time on " + archi.getNumberOfOperators()

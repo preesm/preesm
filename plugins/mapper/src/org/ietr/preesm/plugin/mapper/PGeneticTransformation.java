@@ -58,7 +58,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastPopulation;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;

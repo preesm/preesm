@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.impl;
+package org.ietr.preesm.plugin.abc.impl.latency;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -42,9 +42,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
-import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
@@ -52,51 +50,27 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertexAdder;
 
 /**
- * The accurately timed ABC schedules edges and set-up times
+ * A loosely timed architecture simulator associates a simple cost to each
+ * communication. This cost is the transfer size multiplied by the medium speed.
+ * The communications are parallel with computation and all parallel with each
+ * other.
  * 
  * @author mpelcat
  */
-public class AccuratelyTimedAbc extends LatencyAbc {
-
-	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected TransferVertexAdder tvertexAdder;
-
-	/**
-	 * Overhead vertex adder for edge scheduling
-	 */
-	protected OverheadVertexAdder overtexAdder;
-
-	/**
-	 * Scheduling the transfer vertices on the media
-	 */
-	protected IEdgeSched edgeScheduler;
+public class LooselyTimedAbc extends LatencyAbc {
 
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
-
-		// The media simulator calculates the edges costs
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
-				orderManager);
-		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
-				orderManager, false, false);
-		overtexAdder = new OverheadVertexAdder(orderManager);
 	}
 
-	/**
-	 * Called when a new vertex operator is set
-	 */
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
@@ -109,23 +83,35 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 		if (effectiveOp != Operator.NO_COMPONENT) {
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
-
-			tvertexAdder.addAndScheduleTransferVertices(implementation,
-					transactionManager, vertex);
-
-			overtexAdder.addAndScheduleOverheadVertices(implementation,
-					transactionManager, vertex);
-
 		}
 	}
 
 	/**
-	 * Edge scheduling vertices are added. Thus useless edge costs are removed
+	 * In the loosely timed ABC, the edges receive the communication times.
 	 */
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		edge.getTimingEdgeProperty().setCost(0);
+		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
+				.getSource()).getImplementationVertexProperty();
+		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+				.getTarget()).getImplementationVertexProperty();
+
+		Operator sourceOp = sourceimp.getEffectiveOperator();
+		Operator destOp = destimp.getEffectiveOperator();
+
+		if (sourceOp != Operator.NO_COMPONENT
+				&& destOp != Operator.NO_COMPONENT) {
+			if (sourceOp.equals(destOp)) {
+				edge.getTimingEdgeProperty().setCost(0);
+			} else {
+
+				// The transfer evaluation takes into account the route
+
+				edge.getTimingEdgeProperty().setCost(
+						router.evaluateTransfer(edge, sourceOp, destOp));
+			}
+		}
 
 		//Setting edge costs for special types
 		super.setEdgeCost(edge);
@@ -133,6 +119,6 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
 	@Override
 	public EdgeSchedType getEdgeSchedType() {
-		return edgeScheduler.getEdgeSchedType();
+		return null;
 	}
 }

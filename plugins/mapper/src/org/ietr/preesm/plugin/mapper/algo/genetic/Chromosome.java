@@ -47,8 +47,8 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
@@ -167,7 +167,7 @@ public class Chromosome {
 		IAbc simulator = AbstractAbc
 				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi);
 		simulator.setDAG(this.getDag());
-		this.setEvaluateCost(simulator.getFinalTime());
+		this.setEvaluateCost(simulator.getFinalCost());
 		this.setDirty(false);
 	}
 

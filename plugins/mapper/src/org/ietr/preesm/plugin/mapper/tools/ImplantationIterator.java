@@ -41,17 +41,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
 /**
- * Iterates the graph in ascending or descending order using the given
- * compare function
- *         
+ * Iterates the graph in ascending or descending order using the given compare
+ * function
+ * 
  * @author mpelcat
  */
 public abstract class ImplantationIterator extends
@@ -73,13 +76,21 @@ public abstract class ImplantationIterator extends
 	/**
 	 * Current architecture simulator
 	 */
-	protected IAbc simulator;
+	protected LatencyAbc simulator;
 
-	public ImplantationIterator(MapperDAG dag,
-			IAbc simulator, boolean directOrder) {
+	public ImplantationIterator(MapperDAG dag, IAbc simulator,
+			boolean directOrder) {
 		super();
 		this.directOrder = directOrder;
-		this.simulator = simulator;
+		if (simulator instanceof LatencyAbc) {
+			this.simulator = (LatencyAbc) simulator;
+		} else {
+			this.simulator = null;
+			PreesmLogger
+					.getLogger()
+					.log(Level.SEVERE,
+							"To iterate a graph in timed order, a latency ABC is needed.");
+		}
 
 		createOrderedList(dag);
 
@@ -98,7 +109,7 @@ public abstract class ImplantationIterator extends
 				implementation);
 
 		while (iterator.hasNext()) {
-			currentvertex = (MapperDAGVertex)iterator.next();
+			currentvertex = (MapperDAGVertex) iterator.next();
 
 			vertexSet.add(currentvertex);
 		}

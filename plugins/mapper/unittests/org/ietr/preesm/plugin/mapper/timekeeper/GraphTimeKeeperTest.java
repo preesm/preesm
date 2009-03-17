@@ -49,7 +49,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
@@ -110,89 +110,89 @@ public class GraphTimeKeeperTest extends TestCase {
 		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 2);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 2);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 5);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 5);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 8);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_2"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
 
 		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_3"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
 
 		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 12);
 
 		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 19);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 19);
 
 		// Useless but just to test if it doesn't break anything
 		// simulator.setImplantation(dag);
 
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n1")), 2);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n2")), 8);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n3")), 5);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n4")), 7);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n5")), 8);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n6")), 13);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n7")), 12);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n8")), 12);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n9")), 19);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n1")), 2);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n2")), 8);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n3")), 5);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n4")), 7);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n5")), 8);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n6")), 13);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n7")), 12);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n8")), 12);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n9")), 19);
 
-		assertEquals(simulator.getFinalTime(), 19);
+		assertEquals(simulator.getFinalCost(), 19);
 	}
 
 	public void testGetFinalTimeExample2() {
@@ -215,89 +215,89 @@ public class GraphTimeKeeperTest extends TestCase {
 		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 2);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 2);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 5);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 5);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 8);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_2"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 0);
 
 		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 0);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
 
 		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_3"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 8);
 
 		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 17);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 17);
 
 		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
 				true);
 
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
-		assertEquals((simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 24);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"))), 12);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"))), 13);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"))), 7);
+		assertEquals((simulator.getFinalCost(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"))), 24);
 
 		// Useless but just to test if it doesn't break anything
 		// simulator.setImplantation(dag);
 
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n1")), 2);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n2")), 8);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n3")), 5);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n4")), 7);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n5")), 8);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n6")), 13);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n7")), 12);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n8")), 17);
-		assertEquals(simulator.getFinalTime(dag.getMapperDAGVertex("n9")), 24);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n1")), 2);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n2")), 8);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n3")), 5);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n4")), 7);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n5")), 8);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n6")), 13);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n7")), 12);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n8")), 17);
+		assertEquals(simulator.getFinalCost(dag.getMapperDAGVertex("n9")), 24);
 
-		assertEquals(simulator.getFinalTime(), 24);
+		assertEquals(simulator.getFinalCost(), 24);
 	}
 
 }

@@ -52,7 +52,8 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -527,7 +528,7 @@ public class GraphTimeKeeper {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		AbcType abcType = AbcType.LooselyTimed;
-		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag, archi,
+		LatencyAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag, archi,
 				abcType);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
@@ -536,16 +537,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -553,16 +554,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -570,16 +571,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -587,16 +588,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -604,16 +605,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_2"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -621,16 +622,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -638,16 +639,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_3"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -655,16 +656,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -672,16 +673,16 @@ public class GraphTimeKeeper {
 				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_1"));
 		logger.log(Level.FINEST, "final time c64x_1: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_2"));
 		logger.log(Level.FINEST, "final time c64x_2: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_3"));
 		logger.log(Level.FINEST, "final time c64x_3: " + time);
-		time = simulator.getFinalTime(archi.getComponent(
+		time = simulator.getFinalCost(archi.getComponent(
 				ArchitectureComponentType.operator, "c64x_4"));
 		logger.log(Level.FINEST, "final time c64x_4: " + time + "\n");
 
@@ -713,19 +714,19 @@ public class GraphTimeKeeper {
 
 		// simulator.setDAG(dag);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n1"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n1"));
 		logger.log(Level.FINEST, "n1: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n5"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n5"));
 		logger.log(Level.FINEST, "n5: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n8"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n8"));
 		logger.log(Level.FINEST, "n8: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n9"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n9"));
 		logger.log(Level.FINEST, "n9: " + test);
 
-		test = simulator.getFinalTime();
+		test = simulator.getFinalCost();
 		logger.log(Level.FINEST, "final: " + test);
 
 		logger.log(Level.FINEST, "Test finished");

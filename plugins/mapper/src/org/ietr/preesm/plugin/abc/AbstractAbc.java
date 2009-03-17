@@ -47,12 +47,12 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.AccuratelyTimedAbc;
-import org.ietr.preesm.plugin.abc.impl.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
@@ -67,6 +67,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
+import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
@@ -101,12 +102,6 @@ public abstract class AbstractAbc implements IAbc {
 	 * edges/vertices and calculate times
 	 */
 	protected MapperDAG implementation;
-
-	/**
-	 * Current time keeper: called exclusively by simulator to update the useful
-	 * time tags in DAG
-	 */
-	protected GraphTimeKeeper timeKeeper;
 
 	/**
 	 * Transactions are used to add/remove vertices in the implementation
@@ -164,13 +159,9 @@ public abstract class AbstractAbc implements IAbc {
 		// implementation is a duplicate from dag
 		this.implementation = dag.clone();
 
-		this.timeKeeper = new GraphTimeKeeper(implementation);
-		timeKeeper.resetTimings();
-
 		this.archi = archi;
 		
 		resetTaskScheduler(TaskSchedType.Topological);
-		// currentRank = 0;
 	}
 
 	public MapperDAG getDAG() {
@@ -191,9 +182,6 @@ public abstract class AbstractAbc implements IAbc {
 		this.implementation = dag.clone();
 
 		this.transactionManager.clear();
-
-		this.timeKeeper = new GraphTimeKeeper(implementation);
-		timeKeeper.resetTimings();
 
 		orderManager.reconstructTotalOrderFromDAG(implementation);
 
@@ -252,58 +240,17 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * *********Timing accesses**********
+	 * *********Costs accesses**********
 	 */
 
 	@Override
-	public final long getFinalTime() {
-
-		updateTimings();
-
-		// visualize results
-		// monitor.render(new SimpleTextRenderer());
-
-		long finalTime = timeKeeper.getFinalTime();
-
-		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"negative implementation final time");
-		}
-
-		return finalTime;
-	}
+	public abstract long getFinalCost();
 
 	@Override
-	public final long getFinalTime(MapperDAGVertex vertex) {
-		vertex = translateInImplementationVertex(vertex);
-
-		updateTimings();
-
-		long finalTime = timeKeeper.getFinalTime(vertex);
-
-		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"negative vertex final time");
-		}
-
-		return finalTime;
-
-	}
+	public abstract long getFinalCost(MapperDAGVertex vertex);
 
 	@Override
-	public final long getFinalTime(ArchitectureComponent component) {
-
-		updateTimings();
-
-		long finalTime = timeKeeper.getFinalTime(component);
-
-		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"negative component final time");
-		}
-
-		return finalTime;
-	}
+	public abstract long getFinalCost(ArchitectureComponent component);
 
 	@Override
 	public final long getLoad(ArchitectureComponent component) {
@@ -404,30 +351,6 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Gets the time keeper
-	 */
-	@Override
-	public final GraphTimeKeeper getTimeKeeper() {
-		return this.timeKeeper;
-	}
-
-	@Override
-	public final long getTLevel(MapperDAGVertex vertex) {
-		vertex = translateInImplementationVertex(vertex);
-
-		updateTimings();
-		return vertex.getTimingVertexProperty().getTlevel();
-	}
-
-	@Override
-	public final long getBLevel(MapperDAGVertex vertex) {
-		vertex = translateInImplementationVertex(vertex);
-
-		updateTimings();
-		return vertex.getTimingVertexProperty().getBlevel();
-	}
-
-	/**
 	 * Implants the vertex on the operator. If updaterank is true, finds a new
 	 * place for the vertex in the schedule. Otherwise, use the vertex rank to
 	 * know where to schedule it.
@@ -468,8 +391,6 @@ public abstract class AbstractAbc implements IAbc {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Operator asked may not exist");
 		}
-
-		timeKeeper.setAsDirty(impvertex);
 	}
 
 	/**
@@ -592,22 +513,6 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	/**
-	 * Plots the current implementation. If delegatedisplay=false, the gantt is
-	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
-	 */
-	public GanttPlotter plotImplementation(boolean delegateDisplay) {
-
-		if (!delegateDisplay) {
-			updateTimings();
-			GanttPlotter.plot(implementation, this);
-			return null;
-		} else {
-			updateTimings();
-			return new GanttPlotter("Solution gantt", implementation, this);
-		}
-	}
-
-	/**
 	 * resets the costs of a set of edges
 	 */
 	protected final void resetCost(Set<DAGEdge> edges) {
@@ -624,7 +529,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Returns the implementation vertex corresponding to the DAG vertex
 	 */
-	private final MapperDAGVertex translateInImplementationVertex(
+	protected final MapperDAGVertex translateInImplementationVertex(
 			MapperDAGVertex vertex) {
 
 		MapperDAGVertex internalVertex = implementation
@@ -710,8 +615,6 @@ public abstract class AbstractAbc implements IAbc {
 		// Keeps the total order
 		orderManager.remove(impvertex, false);
 
-		timeKeeper.setAsDirty(impvertex);
-
 		// PreesmLogger.getLogger().log(Level.SEVERE,"unimplanting " +
 		// impvertex.getName() + "\n");
 	}
@@ -734,11 +637,6 @@ public abstract class AbstractAbc implements IAbc {
 		return edge.getTimingEdgeProperty().getCost();
 
 	}
-
-	/**
-	 * Asks the time keeper to update timings. Crucial and costly operation.
-	 */
-	protected abstract void updateTimings();
 
 	protected abstract void setEdgeCost(MapperDAGEdge edge);
 

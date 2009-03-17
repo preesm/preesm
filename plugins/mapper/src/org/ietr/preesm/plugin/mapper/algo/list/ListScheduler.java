@@ -58,8 +58,8 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -167,7 +167,7 @@ public class ListScheduler {
 
 		// check if the vertex is a source vertex with no predecessors
 		if (predset.isEmpty())
-			return simu.getFinalTime(operator);
+			return simu.getFinalCost(operator);
 
 		// Search the predecessors to find when the data will be available
 		while (iter.hasNext()) {
@@ -175,7 +175,7 @@ public class ListScheduler {
 			logger.log(Level.FINEST, " test parent time ");
 			temptime = 0;
 			simu.retrieveTotalOrder();
-			temptime = simu.getFinalTime(preccurrentvertex);
+			temptime = simu.getFinalCost(preccurrentvertex);
 			logger.log(Level.FINEST, " time parent " + temptime);
 
 			// test if the data are already available in this operator
@@ -183,9 +183,9 @@ public class ListScheduler {
 					.equals(operator))) {
 				temptime = Math.max(temptime
 						+ simu.getCost((MapperDAGEdge)dag.getEdge(preccurrentvertex, vertex)),
-						simu.getFinalTime(operator));
+						simu.getFinalCost(operator));
 			} else {
-				temptime = Math.max(temptime, simu.getFinalTime(operator));
+				temptime = Math.max(temptime, simu.getFinalCost(operator));
 			}
 			logger.log(Level.FINEST, " time with edge " + temptime);
 			if (temptime > starttime) {
@@ -345,7 +345,7 @@ public class ListScheduler {
 		logger.log(Level.FINEST, "Displaying dag implanted ");
 		scheduler.dagimplanteddisplay(dag, simu2);
 
-		logger.log(Level.FINEST, "Evaluating time : " + simu2.getFinalTime());
+		logger.log(Level.FINEST, "Evaluating time : " + simu2.getFinalCost());
 		// simu2.setImplementation(dag);
 		simu2.plotImplementation(false);
 

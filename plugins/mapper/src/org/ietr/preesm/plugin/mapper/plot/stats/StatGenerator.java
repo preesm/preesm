@@ -51,7 +51,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -81,7 +81,7 @@ public class StatGenerator {
 		this.scenario = scenario;
 		this.abc = abc;
 
-		this.finalTime = abc.getFinalTime();
+		this.finalTime = abc.getFinalCost();
 
 		// getDAGComplexSpanLength();
 		// getDAGComplexWorkLength();
@@ -109,7 +109,7 @@ public class StatGenerator {
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
 				localArchi);
-		long span = simu.getFinalTime();
+		long span = simu.getFinalCost();
 
 		PreesmLogger.getLogger().log(Level.INFO,
 				"infinite homogeneous timing: " + span);
@@ -142,7 +142,7 @@ public class StatGenerator {
 			simu.resetDAG();
 			simu.implantAllVerticesOnOperator(archi.getMainOperator());
 
-			work = simu.getFinalTime();
+			work = simu.getFinalCost();
 
 			PreesmLogger.getLogger().log(Level.INFO,
 					"single core timing: " + work);

@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.plugin.mapper.plot;
 
 import java.awt.Color;
@@ -69,7 +68,8 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.LooselyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -99,14 +99,15 @@ import org.jfree.ui.RefineryUtilities;
  * 
  * @author mpelcat
  */
-public class GanttPlotter extends ApplicationFrame {
+public class GanttPlotter extends ApplicationFrame implements
+		IImplementationPlotter {
 
-	public class SizeListener implements ControlListener{
+	public class SizeListener implements ControlListener {
 
 		Composite composite;
 
 		Container frame;
-		
+
 		public SizeListener(Composite composite, Container frame) {
 			super();
 			this.composite = composite;
@@ -123,11 +124,11 @@ public class GanttPlotter extends ApplicationFrame {
 		public void controlResized(ControlEvent e) {
 			// TODO Auto-generated method stub
 
-			frame.setSize(composite.getSize().x,composite.getSize().y);
+			frame.setSize(composite.getSize().x, composite.getSize().y);
 		}
-		
+
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -199,55 +200,57 @@ public class GanttPlotter extends ApplicationFrame {
 	 * @return The dataset.
 	 */
 	private static IntervalCategoryDataset createDataset(MapperDAG dag,
-			IAbc simulator) {
+			LatencyAbc simulator) {
 
 		TaskSeries series = new TaskSeries("Scheduled");
 		Task currenttask;
 
 		// Creating the Operator lines
-		List<ArchitectureComponent> cmps = simulator.getArchitecture().getComponents();
-		Collections.sort(cmps, new ArchitectureComponent.ArchitectureComponentComparator());
-		
-		for(ArchitectureComponent c : cmps){
-			currenttask = new Task(c.getName(),
-					new SimpleTimePeriod(0, simulator
-							.getFinalTime(c)));
+		List<ArchitectureComponent> cmps = simulator.getArchitecture()
+				.getComponents();
+		Collections.sort(cmps,
+				new ArchitectureComponent.ArchitectureComponentComparator());
+
+		for (ArchitectureComponent c : cmps) {
+			currenttask = new Task(c.getName(), new SimpleTimePeriod(0,
+					simulator.getFinalCost(c)));
 			series.add(currenttask);
-			
+
 		}
-		
 
 		// Populating the Operator lines
 		TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
 
 		while (viterator.hasNext()) {
-			MapperDAGVertex currentVertex = (MapperDAGVertex)viterator.next();
+			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
 			ArchitectureComponent cmp = simulator
 					.getEffectiveComponent(currentVertex);
 
 			if (cmp != ArchitectureComponent.NO_COMPONENT) {
 				long start = simulator.getTLevel(currentVertex);
-				long end = simulator.getFinalTime(currentVertex);
-				String taskName = currentVertex.getName() + " (x" + currentVertex.getInitialVertexProperty().getNbRepeat() + ")";
-				Task t = new Task(taskName, new SimpleTimePeriod(
-						start, end));
+				long end = simulator.getFinalCost(currentVertex);
+				String taskName = currentVertex.getName()
+						+ " (x"
+						+ currentVertex.getInitialVertexProperty()
+								.getNbRepeat() + ")";
+				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
 				series.get(cmp.getName()).addSubtask(t);
 			}
 		}
-		
+
 		// Removing the empty lines
 		Set<Task> TasksToRemove = new HashSet<Task>();
-		for(Object currentObject : series.getTasks()){
-			Task currentTask = (Task)currentObject;
-			if(currentTask.getSubtaskCount() == 0){
+		for (Object currentObject : series.getTasks()) {
+			Task currentTask = (Task) currentObject;
+			if (currentTask.getSubtaskCount() == 0) {
 				TasksToRemove.add(currentTask);
 			}
 		}
-		
-		for(Task currentTask : TasksToRemove){
+
+		for (Task currentTask : TasksToRemove) {
 			series.remove(currentTask);
 		}
-		
+
 		TaskSeriesCollection collection = new TaskSeriesCollection();
 		collection.add(series);
 
@@ -273,82 +276,127 @@ public class GanttPlotter extends ApplicationFrame {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		AbcType abcType = AbcType.LooselyTimed;
-		IAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, 
-				dag, archi, abcType);
+		LatencyAbc simulator = new LooselyTimedAbc(EdgeSchedType.Simple, dag,
+				archi, abcType);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 		// simulator.implantAllVerticesOnOperator(archi.getMainOperator());
-		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n1"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n3"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n2"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_1"),
+		simulator.implant(dag.getMapperDAGVertex("n7"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_1"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_2"),
+		simulator.implant(dag.getMapperDAGVertex("n6"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_2"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n5"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_3"),
+		simulator.implant(dag.getMapperDAGVertex("n4"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_3"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n8"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
-		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator)archi.getComponent(ArchitectureComponentType.operator,"c64x_4"),
+		simulator.implant(dag.getMapperDAGVertex("n9"), (Operator) archi
+				.getComponent(ArchitectureComponentType.operator, "c64x_4"),
 				true);
 
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_1"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_2"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_3"));
-		simulator.getFinalTime(archi.getComponent(ArchitectureComponentType.operator,"c64x_4"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_1"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_2"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_3"));
+		simulator.getFinalCost(archi.getComponent(
+				ArchitectureComponentType.operator, "c64x_4"));
 
 		logger.log(Level.FINEST, "Iterating in t order");
 
@@ -377,23 +425,22 @@ public class GanttPlotter extends ApplicationFrame {
 
 		long test;
 
-
 		simulator.retrieveTotalOrder();
 		simulator.setDAG(dag);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n1"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n1"));
 		logger.log(Level.FINEST, "n1: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n5"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n5"));
 		logger.log(Level.FINEST, "n5: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n8"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n8"));
 		logger.log(Level.FINEST, "n8: " + test);
 
-		test = simulator.getFinalTime(dag.getMapperDAGVertex("n9"));
+		test = simulator.getFinalCost(dag.getMapperDAGVertex("n9"));
 		logger.log(Level.FINEST, "n9: " + test);
 
-		test = simulator.getFinalTime();
+		test = simulator.getFinalCost();
 		logger.log(Level.FINEST, "final: " + test);
 
 		logger.log(Level.FINEST, "Test finished");
@@ -401,24 +448,23 @@ public class GanttPlotter extends ApplicationFrame {
 		GanttPlotter plot = new GanttPlotter("Solution cost evolution", dag,
 				simulator);
 
-		//plot.pack();
-		//RefineryUtilities.centerFrameOnScreen(plot);
-		//plot.setVisible(true);
-		
+		// plot.pack();
+		// RefineryUtilities.centerFrameOnScreen(plot);
+		// plot.setVisible(true);
+
 		Display display = Display.getDefault();
-		
+
 		Shell shell = new Shell();
-	    shell.setLayout(new FillLayout());
-	    shell.setText("test");
-	    shell.setSize(new Point(240, 460));
-	    shell.open();
-	    
-	    Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.FILL);
-	    Frame frame = SWT_AWT.new_Frame(composite);
-	    frame.add(plot.getContentPane());
+		shell.setLayout(new FillLayout());
+		shell.setText("test");
+		shell.setSize(new Point(240, 460));
+		shell.open();
 
-	    shell.addControlListener(plot.new SizeListener(composite,frame));
+		Composite composite = new Composite(shell, SWT.EMBEDDED | SWT.FILL);
+		Frame frame = SWT_AWT.new_Frame(composite);
+		frame.add(plot.getContentPane());
 
+		shell.addControlListener(plot.new SizeListener(composite, frame));
 
 		while (!shell.isDisposed()) {
 
@@ -437,7 +483,7 @@ public class GanttPlotter extends ApplicationFrame {
 	public static void plot(MapperDAG dag, IAbc simulator) {
 
 		GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
-				+ simulator.getFinalTime(), dag, simulator);
+				+ simulator.getFinalCost(), dag, simulator);
 
 		plot.pack();
 		RefineryUtilities.centerFrameOnScreen(plot);
@@ -450,15 +496,18 @@ public class GanttPlotter extends ApplicationFrame {
 	 */
 	public static void plotInComposite(IAbc simulator, Composite parent) {
 
-		GanttPlotter plot = simulator.plotImplementation(true);
+		IImplementationPlotter plotter = simulator.plotImplementation(true);
+		if (plotter instanceof GanttPlotter) {
+			GanttPlotter plot = (GanttPlotter) simulator
+					.plotImplementation(true);
 
-	    Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
-	    parent.setLayout(new FillLayout());
-	    Frame frame = SWT_AWT.new_Frame(composite);
-	    frame.add(plot.getContentPane());
+			Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
+			parent.setLayout(new FillLayout());
+			Frame frame = SWT_AWT.new_Frame(composite);
+			frame.add(plot.getContentPane());
 
-	    parent.addControlListener(plot.new SizeListener(composite,frame));
-		
+			parent.addControlListener(plot.new SizeListener(composite, frame));
+		}
 	}
 
 	/**
@@ -468,22 +517,26 @@ public class GanttPlotter extends ApplicationFrame {
 	 * @param title
 	 *            the frame title.
 	 */
-	public GanttPlotter(String title, MapperDAG dag,
-			IAbc simulator) {
+	public GanttPlotter(String title, MapperDAG dag, IAbc simulator) {
 		super(title);
-		JFreeChart chart = createChart(createDataset(dag, simulator));
-		ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-		chartPanel.setMouseZoomable(true, false);
-		setContentPane(chartPanel);
+		if (simulator instanceof LatencyAbc) {
+			JFreeChart chart = createChart(createDataset(dag,
+					(LatencyAbc) simulator));
+			ChartPanel chartPanel = new ChartPanel(chart);
+			chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+			chartPanel.setMouseZoomable(true, false);
+			setContentPane(chartPanel);
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"To display a graph Gantt chart, a latency ABC is needed.");
+		}
 
 	}
 
-	public void windowClosing(WindowEvent event){
-		if(event.equals(WindowEvent.WINDOW_CLOSING)){
-			
+	public void windowClosing(WindowEvent event) {
+		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
+
 		}
 	}
-	
-	
+
 }

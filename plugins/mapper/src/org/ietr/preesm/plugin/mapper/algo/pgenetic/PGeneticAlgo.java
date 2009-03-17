@@ -64,7 +64,7 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;

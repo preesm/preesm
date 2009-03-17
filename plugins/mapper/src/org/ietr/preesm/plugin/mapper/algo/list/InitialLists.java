@@ -49,7 +49,8 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -57,6 +58,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.ietr.preesm.plugin.mapper.tools.SubsetFinder;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -148,7 +151,7 @@ public class InitialLists {
 	 */
 	private boolean checkpredecessor(MapperDAG dag,
 			MapperDAGVertex currentvertex, List<MapperDAGVertex> orderlist,
-			IAbc abc) {
+			LatencyAbc abc) {
 
 		MapperDAGVertex cpnvertex = null;
 
@@ -193,7 +196,7 @@ public class InitialLists {
 	 * @return : MapperDAGVertex
 	 */
 	private MapperDAGVertex ibnChoice(MapperDAG dag, Set<DAGVertex> predset,
-			List<MapperDAGVertex> orderlist, IAbc archi) {
+			List<MapperDAGVertex> orderlist, LatencyAbc archi) {
 
 		Iterator<DAGVertex> iter = predset.iterator();
 		MapperDAGVertex currentvertex = null;
@@ -236,7 +239,7 @@ public class InitialLists {
 	 * (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP)
 	 */
 	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> cpnDominant,
-			List<MapperDAGVertex> criticalPath, IAbc abc) {
+			List<MapperDAGVertex> criticalPath, LatencyAbc abc) {
 
 		PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
@@ -368,11 +371,17 @@ public class InitialLists {
 		blockingNodes.clear();
 		criticalPath.clear();
 
-		// construction step by step of all the lists
-		if (!constructCPN(dag, cpnDominant,
-				criticalPath, simu)) {
+		if (simu instanceof LatencyAbc) {
+			// construction step by step of all the lists
+			if (!constructCPN(dag, cpnDominant,
+					criticalPath, (LatencyAbc)simu)) {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"Problem with initial list construction");
+				return false;
+			}
+		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,
-					"Problem with initial list construction");
+					"To construct initial lists, a latency ABC is needed.");
 			return false;
 		}
 
