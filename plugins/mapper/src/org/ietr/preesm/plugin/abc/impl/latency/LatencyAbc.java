@@ -3,6 +3,7 @@
  */
 package org.ietr.preesm.plugin.abc.impl.latency;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -22,6 +23,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
+import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Abc that minimizes latency
@@ -61,11 +64,48 @@ public abstract class LatencyAbc extends AbstractAbc {
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
 	}
+
+	/**
+	 * Sets the DAG as current DAG and retrieves all implementation to calculate
+	 * timings
+	 */
 	@Override
 	public void setDAG(MapperDAG dag) {
+
+		this.dag = dag;
+		this.implementation = dag.clone();
+
+		this.transactionManager.clear();
+
+		orderManager.reconstructTotalOrderFromDAG(implementation);
+
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
-		super.setDAG(dag);
+		
+		// Forces the unmapping process before the new mapping process
+		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
+
+		for (DAGVertex v : dag.vertexSet()) {
+			MapperDAGVertex mdv = (MapperDAGVertex) v;
+			operators.put(mdv, mdv.getImplementationVertexProperty()
+					.getEffectiveOperator());
+			mdv.getImplementationVertexProperty().setEffectiveComponent(
+					Operator.NO_COMPONENT);
+			implementation.getMapperDAGVertex(mdv.getName())
+					.getImplementationVertexProperty().setEffectiveComponent(
+							Operator.NO_COMPONENT);
+			;
+		}
+
+		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
+				this.dag, this, true);
+
+		while (iterator.hasNext()) {
+			MapperDAGVertex vertex = iterator.next();
+			Operator operator = operators.get(vertex);
+
+			implant(vertex, operator, false);
+		}
 	}
 
 	@Override
@@ -95,8 +135,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 		}
-
-		timeKeeper.setAsDirty(vertex);
 	}
 
 	@Override
@@ -111,10 +149,25 @@ public abstract class LatencyAbc extends AbstractAbc {
 		resetCost(vertex.outgoingEdges());
 
 		transactionManager.undoTransactions(vertex);
-
-		timeKeeper.setAsDirty(vertex);
 	}
+	
+	
 
+	@Override
+	public void implant(MapperDAGVertex dagvertex, Operator operator,
+			boolean updateRank) {
+		super.implant(dagvertex, operator, updateRank);
+		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+		timeKeeper.setAsDirty(dagvertex);
+	}
+	
+	@Override
+	public void unimplant(MapperDAGVertex dagvertex) {
+		super.unimplant(dagvertex);
+		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+		timeKeeper.setAsDirty(dagvertex);
+	}
+	
 	/**
 	 * Asks the time keeper to update timings. Crucial and costly operation.
 	 * Depending on the king of timings we want, calls the necessary updates.

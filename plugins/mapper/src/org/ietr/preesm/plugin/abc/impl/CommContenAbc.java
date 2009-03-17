@@ -107,4 +107,10 @@ public class CommContenAbc extends AbstractAbc {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void setDAG(MapperDAG dag) {
+		// TODO Auto-generated method stub
+		
+	}
 }

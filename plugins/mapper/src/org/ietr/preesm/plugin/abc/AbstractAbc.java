@@ -173,45 +173,6 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Sets the DAG as current DAG and retrieves all implementation to calculate
-	 * timings
-	 */
-	public void setDAG(MapperDAG dag) {
-
-		this.dag = dag;
-		this.implementation = dag.clone();
-
-		this.transactionManager.clear();
-
-		orderManager.reconstructTotalOrderFromDAG(implementation);
-
-		// Forces the unmapping process before the new mapping process
-		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
-
-		for (DAGVertex v : dag.vertexSet()) {
-			MapperDAGVertex mdv = (MapperDAGVertex) v;
-			operators.put(mdv, mdv.getImplementationVertexProperty()
-					.getEffectiveOperator());
-			mdv.getImplementationVertexProperty().setEffectiveComponent(
-					Operator.NO_COMPONENT);
-			implementation.getMapperDAGVertex(mdv.getName())
-					.getImplementationVertexProperty().setEffectiveComponent(
-							Operator.NO_COMPONENT);
-			;
-		}
-
-		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
-				this.dag, this, true);
-
-		while (iterator.hasNext()) {
-			MapperDAGVertex vertex = iterator.next();
-			Operator operator = operators.get(vertex);
-
-			implant(vertex, operator, false);
-		}
-	}
-
-	/**
 	 * Called whenever the implementation of a vertex occurs
 	 */
 	protected abstract void fireNewMappedVertex(MapperDAGVertex vertex,
