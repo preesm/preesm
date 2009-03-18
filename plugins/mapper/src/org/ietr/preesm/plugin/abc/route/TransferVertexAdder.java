@@ -47,8 +47,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.transaction.AddNewVertexOverheadsTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
@@ -116,15 +114,10 @@ public class TransferVertexAdder {
 	 */
 	public void addAndScheduleTransferVertices(MapperDAG implementation, MapperDAGVertex refVertex) {
 
-		TransactionManager localTransactionManager = new TransactionManager();
-		
-		localTransactionManager.add(new AddNewVertexTransfersTransaction(this,
-				implementation, refVertex), refVertex);
+		addNewVertexTransfers(implementation, refVertex);
 		if (handleOverheads) {
-			localTransactionManager.add(new AddNewVertexOverheadsTransaction(this,
-					implementation, refVertex), refVertex);
+			addNewVertexOverheads(implementation, refVertex);
 		}
-		localTransactionManager.execute();
 	}
 
 	/**
