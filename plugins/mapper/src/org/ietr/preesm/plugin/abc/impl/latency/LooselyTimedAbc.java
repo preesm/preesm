@@ -74,7 +74,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			precedenceEdgeAdder.scheduleNewVertex(implementation, vertex, vertex);
+			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
 		}
 	}
 

@@ -193,8 +193,6 @@ public class TransferVertexAdder {
 		TransactionManager localTransactionManager = new TransactionManager();
 
 		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
-		
-		//tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 
 		for (DAGVertex tvertex : transfers) {
 			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){

@@ -84,20 +84,20 @@ public class RemoveVertexTransaction extends Transaction {
 		//Unscheduling first
 		MapperDAGVertex prev = orderManager.getPreviousVertex(vertex);
 		MapperDAGVertex next = orderManager.getNextVertex(vertex);
-
+		PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		if(prev != null){
-			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
+			precEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
 		}
 		
 		if(next != null){
-			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
+			precEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
 		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
 		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
-			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
+			precEdgeAdder.addPrecedenceEdge(implementation, prev, next);
 		}
 		
 		implementation.removeVertex(vertex);

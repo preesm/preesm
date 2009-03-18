@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
@@ -89,12 +90,6 @@ public class AddOverheadVertexTransaction extends Transaction {
 	 */
 	private MapperDAGEdge newInEdge = null;
 	private MapperDAGEdge newOutEdge = null;
-
-	/**
-	 * Transaction to schedule and unschedule the vertex
-	 */
-	private SchedNewVertexTransaction schedulingTransaction = null;
-	
 	
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, RouteStep step,SchedOrderManager orderManager) {
@@ -158,9 +153,8 @@ public class AddOverheadVertexTransaction extends Transaction {
 			}
 			
 			// Scheduling overhead vertex
-			schedulingTransaction = new SchedNewVertexTransaction(orderManager,
-					implementation, oVertex);
-			schedulingTransaction.execute();
+			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+			precEdgeAdder.scheduleVertex(implementation, oVertex);
 		}
 		
 	}

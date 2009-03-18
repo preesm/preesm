@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
@@ -112,12 +113,6 @@ public class AddSendReceiveTransaction extends Transaction {
 	 * true if the added vertex needs to be scheduled
 	 */
 	private boolean scheduleVertex = false;
-
-	/**
-	 * Transaction to schedule and unschedule the vertices
-	 */
-	private SchedNewVertexTransaction sendSchedulingTransaction = null;
-	private SchedNewVertexTransaction receiveSchedulingTransaction = null;
 
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
@@ -231,12 +226,9 @@ public class AddSendReceiveTransaction extends Transaction {
 
 				if (scheduleVertex) {
 					// Scheduling transfer vertex
-					sendSchedulingTransaction = new SchedNewVertexTransaction(
-							orderManager, implementation, sendVertex);
-					sendSchedulingTransaction.execute();
-					receiveSchedulingTransaction = new SchedNewVertexTransaction(
-							orderManager, implementation, receiveVertex);
-					receiveSchedulingTransaction.execute();
+					PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+					precEdgeAdder.scheduleVertex(implementation, sendVertex);
+					precEdgeAdder.scheduleVertex(implementation, receiveVertex);
 				}
 			}
 		}

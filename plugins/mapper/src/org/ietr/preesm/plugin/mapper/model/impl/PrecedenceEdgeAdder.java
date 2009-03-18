@@ -49,7 +49,6 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
-import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -72,20 +71,6 @@ public class PrecedenceEdgeAdder {
 		super();
 
 		this.orderManager = orderManager;
-	}
-
-	/**
-	 * Adds the schedule edges to schedule a new vertex
-	 */
-	public void scheduleNewVertex(MapperDAG implementation,
-			MapperDAGVertex scheduledVertex,
-			MapperDAGVertex transactionRefVertex) {
-		TransactionManager localTransactionManager = new TransactionManager();
-		Transaction transaction = new SchedNewVertexTransaction(orderManager,
-				implementation, scheduledVertex);
-
-		localTransactionManager.add(transaction, transactionRefVertex);
-		localTransactionManager.execute();
 	}
 
 	/**
@@ -146,7 +131,7 @@ public class PrecedenceEdgeAdder {
 		localTransactionManager.execute();
 	}
 
-	static public PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
+	public PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
 		precedenceEdge.getTimingEdgeProperty().setCost(0);
@@ -154,7 +139,7 @@ public class PrecedenceEdgeAdder {
 		return precedenceEdge;
 	}
 
-	static public void removePrecedenceEdge(MapperDAG implementation,
+	public void removePrecedenceEdge(MapperDAG implementation,
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
 
@@ -204,6 +189,36 @@ public class PrecedenceEdgeAdder {
 					pv = v;
 				}
 			}
+		}
+	}
+
+	/**
+	 * Schedules a given vertex
+	 */
+	public void scheduleVertex(MapperDAG implementation, MapperDAGVertex newVertex) {
+
+		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
+		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
+ 		
+		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
+		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
+
+		boolean prevAndNewLinked = (prevEdges != null && !prevEdges.isEmpty());
+		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
+		
+		if ((prev != null && newVertex != null) && !prevAndNewLinked){
+			addPrecedenceEdge(implementation, prev, newVertex);
+			prevAndNewLinked = true;
+		}
+
+		if ((newVertex != null && next != null) && !newAndNextLinked){
+			addPrecedenceEdge(implementation, newVertex, next);
+			newAndNextLinked = true;
+		}
+		
+		if(prevAndNewLinked && newAndNextLinked){
+			//TODO: Understand why this does not work
+			removePrecedenceEdge(implementation, prev, next);
 		}
 	}
 }
