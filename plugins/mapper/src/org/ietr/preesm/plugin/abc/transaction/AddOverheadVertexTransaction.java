@@ -169,15 +169,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	public void undo() {
 		super.undo();
 
-		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: Careful not to undo the wrong transfers");
-		
-		// Unscheduling transfer vertex
-		schedulingTransaction.undo();
-		
-		implementation.removeEdge(newInEdge);
-		implementation.removeEdge(newOutEdge);
-		implementation.removeVertex(oVertex);
-		orderManager.remove(oVertex, true);
+		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddOverheadVertexTransaction");
 	}
 
 	@Override

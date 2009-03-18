@@ -4,6 +4,7 @@
 package org.ietr.preesm.plugin.abc.impl.latency;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -14,7 +15,11 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.route.RouteCalculator;
+import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
+import org.ietr.preesm.plugin.abc.transaction.SchedNewVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -147,8 +152,22 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
-
-		transactionManager.undoTransactions(vertex);
+		
+		ImplementationCleaner cleaner = new ImplementationCleaner(orderManager,implementation);
+		cleaner.removeAllOverheads(vertex);
+		cleaner.removeAllTransfers(vertex);
+		cleaner.unscheduleVertex(vertex);
+		
+		
+		/*TransferVertexAdder adder = new TransferVertexAdder(null,null,orderManager,false,false,false);
+		TransactionManager mgr = new TransactionManager();
+		adder.removeAllOverheads(adder.getAllTransfers(vertex,
+				implementation, mgr),implementation, mgr);
+		adder.removeAllTransfers(vertex,implementation, mgr);
+		
+		SchedNewVertexTransaction sched = new SchedNewVertexTransaction(orderManager,implementation,vertex);
+		sched.undo();*/
+		//transactionManager.undoTransactions(vertex);
 	}
 	
 	

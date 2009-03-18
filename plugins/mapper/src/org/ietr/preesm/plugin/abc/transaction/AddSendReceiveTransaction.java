@@ -244,25 +244,9 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	@Override
 	public void undo() {
-		super.undo();
+		super.undo();		
+		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddSendReceiveTransaction");
 
-		PreesmLogger.getLogger().log(Level.SEVERE,
-				"DEBUG: Careful not to undo the wrong transfers");
-
-		// Unscheduling transfer vertex
-
-		if (scheduleVertex) {
-			receiveSchedulingTransaction.undo();
-			sendSchedulingTransaction.undo();
-		}
-
-		implementation.removeEdge(newEdge1);
-		implementation.removeEdge(newEdge2);
-		implementation.removeEdge(newEdge3);
-		implementation.removeVertex(sendVertex);
-		orderManager.remove(sendVertex, true);
-		implementation.removeVertex(receiveVertex);
-		orderManager.remove(receiveVertex, true);
 	}
 
 	@Override

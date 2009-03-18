@@ -226,19 +226,8 @@ public class AddTransferVertexTransaction extends Transaction {
 	@Override
 	public void undo() {
 		super.undo();
+		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddTransferVertexTransaction");
 
-		PreesmLogger.getLogger().log(Level.SEVERE,
-				"DEBUG: Careful not to undo the wrong transfers");
-
-		// Unscheduling transfer vertex
-		if (scheduleVertex) {
-			schedulingTransaction.undo();
-		}
-
-		implementation.removeEdge(newInEdge);
-		implementation.removeEdge(newOutEdge);
-		implementation.removeVertex(tVertex);
-		edgeScheduler.getOrderManager().remove(tVertex, true);
 	}
 
 	@Override
