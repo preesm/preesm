@@ -42,33 +42,60 @@ import java.util.LinkedList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * This is a transaction container that enables the consecutive execution of
- * several listed transactions.
+ * This is a transaction container that enables the consecutive
+ * execution of several listed transactions.
  * 
  * @author mpelcat
  */
 public class TransactionManager {
-
+	
 	LinkedList<Transaction> transactionList = new LinkedList<Transaction>();
-
-	public void execute() {
+	
+	public void execute(){
 		Iterator<Transaction> it = transactionList.iterator();
-
-		while (it.hasNext()) {
+		
+		while(it.hasNext()){
 			Transaction currentT = it.next();
-			currentT.execute();
-			if (currentT.getRef() == null) {
-				it.remove();
+			if(!currentT.isExecuted()){
+				currentT.execute();
+				if(currentT.getRef() == null){
+					it.remove();
+				}
 			}
 		}
 	}
-
-	public void add(Transaction transaction, MapperDAGVertex refVertex) {
+	
+	public void undoTransactions(MapperDAGVertex refVertex){
+		
+		// All transactions relative to a vertex are grouped. Once we are out
+		// of this group, we can stop undoing them
+		boolean alreadyUndoneFew=false;
+		
+		Iterator<Transaction> it = transactionList.descendingIterator();
+		//PreesmLogger.getLogger().log(Level.INFO,"undoing!");
+		
+		while(it.hasNext()){
+			Transaction currentT = it.next();
+			if(currentT.getRef() != null && currentT.getRef().equals(refVertex)){
+				if(currentT.isExecuted()){
+					//PreesmLogger.getLogger().log(Level.INFO,"undoing " + currentT.toString());
+					//currentT.undo();
+				}
+				it.remove(); // Removing the transation from the list
+				alreadyUndoneFew = true;
+			}
+			else if(alreadyUndoneFew){
+				return;
+			}
+		}
+	}
+	
+	public void add(Transaction transaction, MapperDAGVertex refVertex){
 		transaction.setRef(refVertex);
 		transactionList.add(transaction);
 	}
-
-	public void clear() {
+	
+	public void clear(){
 		transactionList.clear();
 	}
 }
