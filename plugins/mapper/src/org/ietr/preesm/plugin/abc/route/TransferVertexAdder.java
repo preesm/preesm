@@ -110,7 +110,7 @@ public class TransferVertexAdder {
 	}
 
 	/**
-	 * Adds all necessary transfer vertices
+	 * Adds all necessary transfer vertices for one given vertex
 	 */
 	public void addAndScheduleTransferVertices(MapperDAG implementation, MapperDAGVertex refVertex) {
 
@@ -121,9 +121,9 @@ public class TransferVertexAdder {
 	}
 
 	/**
-	 * Adds all necessary transfer vertices
+	 * Adds all necessary transfer vertices for the whole implementation
 	 */
-	public void addTransferVertices(MapperDAG implementation, boolean scheduleThem) {
+	public void addAndScheduleAllTransferVertices(MapperDAG implementation, boolean scheduleThem) {
 		TransactionManager localTransactionManager = new TransactionManager();
 
 		// We iterate the edges and process the ones with different allocations

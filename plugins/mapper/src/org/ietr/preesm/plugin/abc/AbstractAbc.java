@@ -99,11 +99,6 @@ public abstract class AbstractAbc implements IAbc {
 	protected MapperDAG implementation;
 
 	/**
-	 * Transactions are used to add/remove vertices in the implementation
-	 */
-	protected TransactionManager transactionManager = new TransactionManager();
-
-	/**
 	 * Current Abc type
 	 */
 	protected AbcType abcType = null;
@@ -289,8 +284,7 @@ public abstract class AbstractAbc implements IAbc {
 					orderManager);
 			precEdgeAdder.removePrecedenceEdges(implementation,
 					localTransactionManager);
-			precEdgeAdder.addPrecedenceEdges(implementation,
-					localTransactionManager);
+			precEdgeAdder.addPrecedenceEdges(implementation);
 
 		}
 	}

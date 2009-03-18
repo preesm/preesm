@@ -80,8 +80,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 		this.dag = dag;
 		this.implementation = dag.clone();
 
-		this.transactionManager.clear();
-
 		orderManager.reconstructTotalOrderFromDAG(implementation);
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);

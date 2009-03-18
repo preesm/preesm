@@ -78,15 +78,14 @@ public class PrecedenceEdgeAdder {
 	 * Adds the schedule edges to schedule a new vertex
 	 */
 	public void scheduleNewVertex(MapperDAG implementation,
-			TransactionManager transactionManager,
 			MapperDAGVertex scheduledVertex,
 			MapperDAGVertex transactionRefVertex) {
-
+		TransactionManager localTransactionManager = new TransactionManager();
 		Transaction transaction = new SchedNewVertexTransaction(orderManager,
 				implementation, scheduledVertex);
 
-		transactionManager.add(transaction, transactionRefVertex);
-		transactionManager.execute();
+		localTransactionManager.add(transaction, transactionRefVertex);
+		localTransactionManager.execute();
 	}
 
 	/**
@@ -108,9 +107,9 @@ public class PrecedenceEdgeAdder {
 	 * Adds all necessary precedence edges to an implementation respecting the
 	 * order given by the scheduling order manager.
 	 */
-	public void addPrecedenceEdges(MapperDAG implementation,
-			TransactionManager transactionManager) {
+	public void addPrecedenceEdges(MapperDAG implementation) {
 
+		TransactionManager localTransactionManager = new TransactionManager();
 		Iterator<ArchitectureComponent> schedIt = orderManager
 				.getArchitectureComponents().iterator();
 
@@ -137,14 +136,14 @@ public class PrecedenceEdgeAdder {
 						Transaction transaction = new AddPrecedenceEdgeTransaction(
 								orderManager, implementation, src, dst,
 								AddPrecedenceEdgeTransaction.simpleDelete);
-						transactionManager.add(transaction, null);
+						localTransactionManager.add(transaction, null);
 					}
 				}
 			}
 		}
 
 		// Executes the transactions
-		transactionManager.execute();
+		localTransactionManager.execute();
 	}
 
 	static public PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
