@@ -225,44 +225,6 @@ public class TransferVertexAdder {
 	}
 
 	/**
-	 * Removes all transfers from routes coming from or going to vertex
-	 */
-	public void removeAllTransfers(MapperDAGVertex vertex,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		for (DAGVertex v : getAllTransfers(vertex, implementation,
-				transactionManager)) {
-			if (v instanceof TransferVertex) {
-				transactionManager.add(new RemoveVertexTransaction(
-						(MapperDAGVertex) v, implementation, orderManager),
-						null);
-
-			}
-		}
-
-		transactionManager.execute();
-	}
-
-	/**
-	 * Removes all overheads from routes coming from or going to vertex
-	 */
-	public void removeAllOverheads(Set<DAGVertex> transfers,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		for (DAGVertex v : transfers) {
-			if (v instanceof TransferVertex) {
-				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
-				if (o != null && o instanceof OverheadVertex) {
-					transactionManager.add(new RemoveVertexTransaction(o,
-							implementation, orderManager), null);
-				}
-			}
-		}
-
-		transactionManager.execute();
-	}
-
-	/**
 	 * Gets all transfers from routes coming from or going to vertex. Do not
 	 * execute if overheads are present
 	 */

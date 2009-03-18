@@ -107,30 +107,6 @@ public class SchedNewVertexTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();
-
-		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
-		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
-
-
-		if(prev != null){
-			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, newVertex);
-		}
-		
-		if(next != null){
-			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, newVertex, next);
-		}
-
-		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
-
-		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
-			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
-		}
-
-	}
-
-	@Override
 	public String toString() {
 		return("SchedNewVertex(" + newVertex.toString() +")");
 	}

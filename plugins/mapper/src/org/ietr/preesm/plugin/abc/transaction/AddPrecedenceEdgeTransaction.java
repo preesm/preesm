@@ -106,30 +106,6 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();
-
-		// Clever Undo. Removes the precedence edge but adds a new edge if
-		// necessary between the preceding and following vertices in the 
-		// current schedule.
-		implementation.removeEdge(precedenceEdge);
-		
-		if(undoType == compensateSourceRemoval){
-			MapperDAGVertex prev = orderManager.getPreviousVertex(destination);
-			
-			if(prev != null){
-				precedenceEdge = new PrecedenceEdge();
-				precedenceEdge.getTimingEdgeProperty().setCost(0);
-				implementation.addEdge(prev, destination, precedenceEdge);
-			}
-		}
-		else if(undoType == compensateTargetRemoval){
-			
-		}
-
-	}
-
-	@Override
 	public String toString() {
 		return("AddPrecedence(" + precedenceEdge.toString() +")");
 	}

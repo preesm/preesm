@@ -224,13 +224,6 @@ public class AddTransferVertexTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();
-		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddTransferVertexTransaction");
-
-	}
-
-	@Override
 	public String toString() {
 		return ("AddTransfer(" + tVertex.toString() + ")");
 	}

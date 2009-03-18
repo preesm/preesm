@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc.impl;
+package org.ietr.preesm.plugin.abc.impl.latency;
 
 import java.util.HashSet;
 import java.util.Set;

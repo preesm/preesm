@@ -105,12 +105,6 @@ public class RemoveVertexTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		PreesmLogger.getLogger().log(Level.SEVERE,"DEBUG: No possible undo");
-		super.undo();
-	}
-
-	@Override
 	public String toString() {
 		return("RemoveVertex(" + vertex.toString() +")");
 	}

@@ -72,17 +72,6 @@ public class RemoveEdgeTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();
-
-		MapperDAGEdge newEdge = (MapperDAGEdge)implementation.addEdge(edge.getSource(),edge.getTarget());
-		newEdge.setAggregate(edge.getAggregate());
-		newEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty());
-		newEdge.setTimingEdgeProperty(edge.getTimingEdgeProperty());
-		newEdge.setWeight(edge.getWeight());
-	}
-
-	@Override
 	public String toString() {
 		return("RemoveEdge(" + edge.toString() +")");
 	}

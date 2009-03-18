@@ -89,7 +89,7 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 	public void execute() {
 		super.execute();
 
-		transferVertexAdder.removeAllTransfers(newVertex, implementation, localTransactionManager);
+		//transferVertexAdder.removeAllTransfers(newVertex, implementation, localTransactionManager);
 
 		Set<DAGEdge> edges = new HashSet<DAGEdge>();
 		if(newVertex.incomingEdges()!= null)
@@ -122,13 +122,6 @@ public class AddNewVertexTransfersTransaction extends Transaction {
 		localTransactionManager.execute();
 		localTransactionManager.clear();
 
-	}
-
-	@Override
-	public void undo() {
-		super.undo();
-		
-		transferVertexAdder.removeAllTransfers(newVertex, implementation, localTransactionManager);
 	}
 
 	@Override

@@ -166,13 +166,6 @@ public class AddOverheadVertexTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();
-
-		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddOverheadVertexTransaction");
-	}
-
-	@Override
 	public String toString() {
 		return("AddOverhead(" + oVertex.toString() +")");
 	}

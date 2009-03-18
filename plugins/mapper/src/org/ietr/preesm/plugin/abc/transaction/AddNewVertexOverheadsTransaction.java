@@ -88,7 +88,7 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 
 		 Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
 		
-		tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
+		//tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 
 		for (DAGVertex tvertex : transfers) {
 			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
@@ -102,15 +102,6 @@ public class AddNewVertexOverheadsTransaction extends Transaction {
 		localTransactionManager.execute();
 		localTransactionManager.clear();
 
-	}
-
-	@Override
-	public void undo() {
-		super.undo();
-		
-		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
-		
-		tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
 	}
 
 	@Override

@@ -243,13 +243,6 @@ public class AddSendReceiveTransaction extends Transaction {
 	}
 
 	@Override
-	public void undo() {
-		super.undo();		
-		PreesmLogger.getLogger().log(Level.SEVERE,"Do not use this transaction undo: AddSendReceiveTransaction");
-
-	}
-
-	@Override
 	public String toString() {
 		return ("AddSendReceive");
 	}
