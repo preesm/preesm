@@ -82,7 +82,7 @@ public class SendReceiveAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			tvertexAdder.addAndScheduleTransferVertices(implementation,transactionManager, null);
+			tvertexAdder.addAndScheduleTransferVertices(implementation, null);
 			precedenceEdgeAdder.addPrecedenceEdges(implementation,transactionManager);
 		}
 	}

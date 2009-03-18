@@ -119,7 +119,7 @@ public class TagDAG {
 		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched
 				.getInstance(EdgeSchedType.Simple, orderMgr),
 				new RouteCalculator(architecture), orderMgr, true, false, false);
-		tvAdder.addTransferVertices(dag, new TransactionManager(), false);
+		tvAdder.addTransferVertices(dag, false);
 		orderMgr.tagDAG(dag);
 	}
 

@@ -49,6 +49,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexOverheadsTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddNewVertexTransfersTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
@@ -113,23 +114,24 @@ public class TransferVertexAdder {
 	/**
 	 * Adds all necessary transfer vertices
 	 */
-	public void addAndScheduleTransferVertices(MapperDAG implementation,
-			TransactionManager transactionManager, MapperDAGVertex refVertex) {
+	public void addAndScheduleTransferVertices(MapperDAG implementation, MapperDAGVertex refVertex) {
 
-		transactionManager.add(new AddNewVertexTransfersTransaction(this,
+		TransactionManager localTransactionManager = new TransactionManager();
+		
+		localTransactionManager.add(new AddNewVertexTransfersTransaction(this,
 				implementation, refVertex), refVertex);
 		if (handleOverheads) {
-			transactionManager.add(new AddNewVertexOverheadsTransaction(this,
+			localTransactionManager.add(new AddNewVertexOverheadsTransaction(this,
 					implementation, refVertex), refVertex);
 		}
-		transactionManager.execute();
+		localTransactionManager.execute();
 	}
 
 	/**
 	 * Adds all necessary transfer vertices
 	 */
-	public void addTransferVertices(MapperDAG implementation,
-			TransactionManager transactionManager, boolean scheduleThem) {
+	public void addTransferVertices(MapperDAG implementation, boolean scheduleThem) {
+		TransactionManager localTransactionManager = new TransactionManager();
 
 		// We iterate the edges and process the ones with different allocations
 		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
@@ -150,13 +152,67 @@ public class TransferVertexAdder {
 						// Adds several transfers for one edge depending on the
 						// route steps
 						addTransferVertices(currentEdge, implementation,
-								transactionManager, null, scheduleThem);
+								localTransactionManager, null, scheduleThem);
 					}
 				}
 			}
 		}
 
-		transactionManager.execute();
+		localTransactionManager.execute();
+	}
+	
+	public void addNewVertexTransfers(MapperDAG implementation, MapperDAGVertex newVertex){
+		TransactionManager localTransactionManager = new TransactionManager();
+
+		Set<DAGEdge> edges = new HashSet<DAGEdge>();
+		if(newVertex.incomingEdges()!= null)
+			edges.addAll(newVertex.incomingEdges());
+		if(newVertex.outgoingEdges()!= null)
+			edges.addAll(newVertex.outgoingEdges());
+
+		for (DAGEdge edge : edges) {
+
+			if (!(edge instanceof PrecedenceEdge)) {
+				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) edge
+						.getSource()).getImplementationVertexProperty();
+				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) edge
+						.getTarget()).getImplementationVertexProperty();
+
+				if (currentSourceProp.hasEffectiveOperator()
+						&& currentDestProp.hasEffectiveOperator()) {
+					if (!currentSourceProp.getEffectiveOperator().equals(currentDestProp
+							.getEffectiveOperator())) {
+						// Adds several transfers for one edge depending on the
+						// route steps
+						addTransferVertices(
+								(MapperDAGEdge) edge, implementation,
+								localTransactionManager, null, true);
+					}
+				}
+			}
+		}
+		
+		localTransactionManager.execute();
+	}
+	
+	
+	public void addNewVertexOverheads(MapperDAG implementation, MapperDAGVertex newVertex){
+		TransactionManager localTransactionManager = new TransactionManager();
+
+		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
+		
+		//tVertexAdder.removeAllOverheads(transfers, implementation, localTransactionManager);
+
+		for (DAGVertex tvertex : transfers) {
+			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
+				if(!(incomingEdge instanceof PrecedenceEdge)){
+					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), getOrderManager()),null);
+				}
+			}
+		}
+
+		
+		localTransactionManager.execute();
 	}
 
 	/**
@@ -282,7 +338,7 @@ public class TransferVertexAdder {
 	/**
 	 * Gets all transfers preceding vertex. Recursive function
 	 */
-	public static Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex,
+	private static Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex,
 			MapperDAG implementation, TransactionManager transactionManager) {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
@@ -304,7 +360,7 @@ public class TransferVertexAdder {
 	/**
 	 * Gets all transfers following vertex. Recursive function
 	 */
-	public static Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex,
+	private static Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex,
 			MapperDAG implementation, TransactionManager transactionManager) {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();

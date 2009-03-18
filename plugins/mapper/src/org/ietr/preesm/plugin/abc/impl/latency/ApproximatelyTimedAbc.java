@@ -100,8 +100,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 			precedenceEdgeAdder.scheduleNewVertex(implementation,
 					transactionManager, vertex, vertex);
 
-			tvertexAdder.addAndScheduleTransferVertices(implementation,
-					transactionManager, vertex);
+			tvertexAdder.addAndScheduleTransferVertices(implementation, vertex);
 
 		}
 	}
