@@ -142,7 +142,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		
 		try{
 		// Generate source file class
-		generateSourceFiles(algorithm, architecture, scenario, list);
+			generateSourceFiles(algorithm, architecture, scenario, list);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -26,7 +26,6 @@
          <variable name="nodesMin" value="5"/>
          <variable name="procNumber" value="1"/>
          <variable name="simulatorType" value="AccuratelyTimed"/>
-         <variable name="switchTask" value="true"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">

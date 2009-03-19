@@ -61,6 +61,7 @@ import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
+import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
@@ -96,7 +97,8 @@ public class SourceFileCodeGenerator {
 			// retrieving the operator where the vertex is allocated
 			Operator vertexOperator = (Operator) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			if(vertex instanceof ICodeGenSDFVertex && vertexOperator.equals(file.getOperator())){
+			if (vertex instanceof ICodeGenSDFVertex
+					&& vertexOperator.equals(file.getOperator())) {
 				// Allocating all output buffers of vertex
 				allocateVertexOutputBuffers(vertex);
 			}
@@ -113,7 +115,8 @@ public class SourceFileCodeGenerator {
 		Buffer buf = new Buffer(edge.getSource().getName(), edge.getTarget()
 				.getName(), edge.getSourceInterface().getName(), edge
 				.getTargetInterface().getName(), ((CodeGenSDFEdge) edge)
-				.getSize(), new DataType(edge.getDataType().toString()), edge, file.getGlobalContainer());
+				.getSize(), new DataType(edge.getDataType().toString()), edge,
+				file.getGlobalContainer());
 
 		BufferAllocation allocation = new BufferAllocation(buf);
 		file.addBuffer(allocation);
@@ -144,11 +147,9 @@ public class SourceFileCodeGenerator {
 	public void allocateVertexOutputBuffers(SDFAbstractVertex vertex) {
 		Set<SDFEdge> edgeSet;
 
-
-			edgeSet = new HashSet<SDFEdge>(vertex.getBase().outgoingEdgesOf(
-					vertex));
-			// Removes edges between two operators
-			removeInterEdges(edgeSet);
+		edgeSet = new HashSet<SDFEdge>(vertex.getBase().outgoingEdgesOf(vertex));
+		// Removes edges between two operators
+		removeInterEdges(edgeSet);
 
 		// Iteration on all the edges of each vertex belonging to ownVertices
 		for (SDFEdge edge : edgeSet) {
@@ -166,7 +167,7 @@ public class SourceFileCodeGenerator {
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(
 				algorithm, VertexType.task);
-		
+
 		// Gets the communication vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownCommunicationVertices = getOwnVertices(
@@ -215,17 +216,20 @@ public class SourceFileCodeGenerator {
 	}
 
 	/**
-	 * Calls the semaphore initialization function at the beginning of
-	 * computation thread
+	 * Calls the initialization functions at the beginning of computation and
+	 * communication thread executions
 	 */
 	public void initialization(ComputationThreadDeclaration computationThread,
 			CommunicationThreadDeclaration communicationThread, Buffer semBuf) {
 
+		// Launching the communication thread in the computation thread
 		LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
 				communicationThread.getName(), 8000, 1);
 		computationThread.getBeginningCode().addCodeElementFirst(launchThread);
 
-		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),semBuf);
+		// Initializing the semaphores
+		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
+				semBuf);
 		computationThread.getBeginningCode().addCodeElementFirst(semInit);
 
 		// Initializing the Send and Receive channels only for the channels
@@ -236,37 +240,54 @@ public class SourceFileCodeGenerator {
 				.getCodeElements()) {
 
 			CommunicationFunctionInit init = null;
+			WaitForCore wait = null;
 
+			// Creating Send and Receive initialization calls
 			if (elt instanceof Send) {
 				Send send = (Send) elt;
 
 				init = new SendInit(file.getGlobalContainer(), send.getTarget()
 						.getName(), send.getMedium().getDefinition().getId());
+				wait = new WaitForCore(file.getGlobalContainer(), send
+						.getTarget().getName());
 			} else if (elt instanceof Receive) {
 				Receive receive = (Receive) elt;
 
 				init = new ReceiveInit(file.getGlobalContainer(), receive
 						.getSource().getName(), receive.getMedium()
 						.getDefinition().getId());
+				wait = new WaitForCore(file.getGlobalContainer(), receive
+						.getSource().getName());
 			}
 
+			// Checking that the initialization has not already been done
 			if (init != null) {
 				for (CommunicationFunctionInit oldInit : alreadyInits) {
-					if (oldInit.getName().equals(init.getName())
-							&& oldInit.getConnectedCoreId().equals(
-									init.getConnectedCoreId())
+					if (oldInit.getConnectedCoreId().equals(
+							init.getConnectedCoreId())
 							&& oldInit.getMediumId().equals(init.getMediumId())) {
-						//init has already been done
-						init = null;
+						// core wait has already been done
+						wait = null;
+
+						if (oldInit.getName().equals(init.getName())) {
+							// init has already been done with same direction
+							init = null;
+						}
 						break;
 					}
 				}
 			}
 
+			// Adding Send and Receive initialization calls
 			if (init != null) {
 				communicationThread.getBeginningCode()
 						.addCodeElementFirst(init);
 				alreadyInits.add(init);
+			}
+			
+			// Adding other cores wait
+			if (wait != null) {
+				communicationThread.getBeginningCode().addCodeElement(wait);
 			}
 		}
 	}

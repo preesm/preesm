@@ -62,6 +62,7 @@ import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
+import org.ietr.preesm.core.codegen.WaitForCore;
 
 
 /**
@@ -97,4 +98,5 @@ public interface IAbstractPrinter {
 	public Object visit(LaunchThread element, CodeZoneId index, Object currentLocation);
 	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
 	public Object visit(SpecialBehaviorCall element, CodeZoneId index, Object currentLocation);
+	public Object visit(WaitForCore element, CodeZoneId index, Object currentLocation);
 }

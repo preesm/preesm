@@ -69,6 +69,7 @@ import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
+import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.w3c.dom.DOMImplementation;
@@ -541,6 +542,21 @@ public class XMLPrinter implements IAbstractPrinter {
 				visit(outputBuffer, index, outputBuffers);
 			}
 			currentLocation = specialCall;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(WaitForCore domElt, CodeZoneId index,
+			Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element wait = dom.createElement(domElt.getName());
+			((Element)currentLocation).appendChild(wait);
+			
+			wait.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
+			currentLocation = wait;
 		} 
 		
 		return currentLocation;
