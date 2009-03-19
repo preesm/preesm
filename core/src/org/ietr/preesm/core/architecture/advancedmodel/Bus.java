@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * A bus is a hyperedge used to connect different nodes and transfer data
@@ -67,5 +68,10 @@ public class Bus extends ArchitectureComponent implements ILink {
 
 	public void setDataRate(double dataRate) {
 		((BusDefinition) this.getDefinition()).setDataRate(dataRate);
+	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new Bus(getName(),null);
 	}
 }

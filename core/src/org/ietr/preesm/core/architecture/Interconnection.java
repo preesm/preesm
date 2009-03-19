@@ -36,42 +36,34 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.sdf4j.model.AbstractEdge;
+
 /**
  * An interconnection joins one interface of a component to one interface of a
  * component
  * 
  * @author mpelcat
  */
-public class Interconnection {
+public class Interconnection extends AbstractEdge<MultiCoreArchitecture, ArchitectureComponent> {
 
 	private boolean directed = false;
 
-	private ArchitectureComponent cp1;
-	private ArchitectureInterface if1;
+	private ArchitectureComponent cp1 = null;
+	private ArchitectureInterface if1 = null;
 
-	private ArchitectureComponent cp2;
-	private ArchitectureInterface if2;
+	private ArchitectureComponent cp2 = null;
+	private ArchitectureInterface if2 = null;
 
-	public Interconnection(ArchitectureComponent cp1,
-			ArchitectureInterface if1, ArchitectureComponent cp2,
-			ArchitectureInterface if2) {
+	public Interconnection(ArchitectureComponent cp1, ArchitectureComponent cp2) {
 		this.cp1 = cp1;
 		this.cp2 = cp2;
-
-		this.if1 = if1;
-		this.if2 = if2;
 	}
 
-	public Interconnection(ArchitectureComponent cp1,
-			ArchitectureInterface if1, ArchitectureComponent cp2,
-			ArchitectureInterface if2, boolean directed) {
+	public Interconnection(ArchitectureComponent cp1, ArchitectureInterface if1, ArchitectureComponent cp2, ArchitectureInterface if2) {
 		this.cp1 = cp1;
-		this.cp2 = cp2;
-
 		this.if1 = if1;
+		this.cp2 = cp2;
 		this.if2 = if2;
-
-		this.directed = directed;
 	}
 
 	@Override
@@ -102,6 +94,14 @@ public class Interconnection {
 
 	public ArchitectureInterface getIf2() {
 		return if2;
+	}
+	
+	public void setIf1(ArchitectureInterface if1) {
+		this.if1 = if1;
+	}
+
+	public void setIf2(ArchitectureInterface if2) {
+		this.if2 = if2;
 	}
 
 	public ArchitectureInterface getInterface(ArchitectureComponentType type) {

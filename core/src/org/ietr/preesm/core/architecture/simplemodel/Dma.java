@@ -54,4 +54,9 @@ public class Dma extends ArchitectureComponent {
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.dma;
 	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new Dma(getName(),null);
+	}
 }

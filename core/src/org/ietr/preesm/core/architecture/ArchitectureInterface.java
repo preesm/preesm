@@ -112,5 +112,7 @@ public class ArchitectureInterface {
 	public ArchitectureComponent getOwner() {
 		return owner;
 	}
+	
+	
 
 }

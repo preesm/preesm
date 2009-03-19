@@ -154,6 +154,12 @@ public class TagDAG {
 						.setValue(ImplementationPropertyNames.SendReceive_medium,
 								((SendVertex) currentVertex).getRouteStep()
 										.getMedium());
+				
+				if(((SendVertex) currentVertex).getRouteStep()
+						.getMedium().getDefinition() == null){
+					int i = 0;
+					i++;
+				}
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInitialEdgeProperty()
@@ -185,6 +191,12 @@ public class TagDAG {
 				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
 						((ReceiveVertex) currentVertex).getRouteStep()
 								.getMedium());
+				
+				if(((ReceiveVertex) currentVertex).getRouteStep()
+								.getMedium().getDefinition() == null){
+					int i = 0;
+					i++;
+				}
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInitialEdgeProperty()

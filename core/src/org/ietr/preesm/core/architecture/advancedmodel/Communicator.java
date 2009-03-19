@@ -83,7 +83,18 @@ public class Communicator extends ArchitectureComponent implements
 		return setupTimes;
 	}
 
+	public void setSetupTimes(Map<String, Double> setupTimes) {
+		this.setupTimes = setupTimes;
+	}
+
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicator;
+	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		Communicator com =  new Communicator(getName(),null);
+		com.getSetupTimes().putAll(setupTimes);
+		return com;
 	}
 }

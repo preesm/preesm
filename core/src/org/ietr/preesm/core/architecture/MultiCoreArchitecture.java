@@ -48,28 +48,28 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.sdf4j.model.AbstractGraph;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFInterfaceVertex;
 
 /**
  * Architecture based on a fixed number of cores
  * 
  * @author mpelcat
  */
-public class MultiCoreArchitecture {
+public class MultiCoreArchitecture extends
+		AbstractGraph<ArchitectureComponent, Interconnection> {
 
 	/**
-	 * List of the cores + accelerators + media with their IDs.
+	 * 
 	 */
-	private Map<String, ArchitectureComponent> architectureComponents;
+	private static final long serialVersionUID = -7297201138766758092L;
 
 	/**
 	 * List of the component definitions with their IDs.
 	 */
 	private Map<String, ArchitectureComponentDefinition> architectureComponentDefinitions;
-
-	/**
-	 * List of the interconnections between components.
-	 */
-	private Set<Interconnection> interconnections;
 
 	/**
 	 * List of the bus references associated to interfaces
@@ -91,12 +91,9 @@ public class MultiCoreArchitecture {
 	 * Creating an empty architecture.
 	 */
 	public MultiCoreArchitecture(String name) {
-		architectureComponents = new HashMap<String, ArchitectureComponent>();
+		super(new InterconnectionFactory());
 		architectureComponentDefinitions = new HashMap<String, ArchitectureComponentDefinition>();
 		busReferences = new HashMap<String, BusReference>();
-
-		interconnections = new HashSet<Interconnection>();
-		// fifos = new HashSet<Fifo>();
 
 		this.name = name;
 	}
@@ -126,14 +123,14 @@ public class MultiCoreArchitecture {
 	 */
 	public ArchitectureComponent addComponent(ArchitectureComponentType type,
 			String defId, String name) {
-		if (architectureComponents.containsKey(name)) {
-			return architectureComponents.get(name);
+		if (getVertex(name) != null) {
+			return getVertex(name);
 		} else {
 			ArchitectureComponentDefinition newDef = addComponentDefinition(
 					type, defId);
 			ArchitectureComponent cmp = ArchitectureComponentFactory
 					.createElement(newDef, name);
-			architectureComponents.put(name, cmp);
+			addVertex(cmp);
 			return cmp;
 		}
 	}
@@ -157,50 +154,38 @@ public class MultiCoreArchitecture {
 
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
+		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
 
-		// Iterating on components
-		Iterator<ArchitectureComponent> cmpIt = architectureComponents.values()
-				.iterator();
-
-		while (cmpIt.hasNext()) {
-			ArchitectureComponent next = cmpIt.next();
-
-			// each component is cloned and added to the new archi
-			ArchitectureComponent newCmp = newArchi.addComponent(
-					next.getType(), next.getDefinition().getId(), next
-							.getName());
-			newCmp.getDefinition().fill(next.getDefinition());
+		for (BusReference ref : busReferences.values()) {
+			newArchi.createBusReference(ref.getId());
 		}
 
-		// We iterate on interconnections
-		Iterator<Interconnection> intIt = interconnections.iterator();
-
-		while (intIt.hasNext()) {
-			Interconnection nextInt = intIt.next();
-			newArchi.connect(nextInt.getCp1(), nextInt.getIf1(), nextInt
-					.getCp2(), nextInt.getIf2(), false);
+		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
+				.values()) {
+			newArchi.addComponentDefinition(def.getType(), def.getId());
 		}
+
+		for (ArchitectureComponent vertex : vertexSet()) {
+			ArchitectureComponent newVertex = (ArchitectureComponent) vertex
+					.clone();
+			newVertex.fill(vertex, newArchi);
+			newArchi.addVertex(newVertex);
+			matchCopies.put(vertex, newVertex);
+		}
+
+		for (Interconnection edge : edgeSet()) {
+			ArchitectureComponent newSource = matchCopies.get(edge.getSource());
+			ArchitectureComponent newTarget = matchCopies.get(edge.getTarget());
+			Interconnection newEdge = newArchi.addEdge(newSource, newTarget);
+			newEdge.setIf1(newSource.getInterface(edge.getIf1()
+					.getBusReference()));
+			newEdge.setIf2(newTarget.getInterface(edge.getIf2()
+					.getBusReference()));
+			newEdge.setDirected(edge.isDirected());
+		}
+
 		return newArchi;
 	}
-
-	// /**
-	// * Connects a medium and an operator
-	// *
-	// * @return true if the medium could be added
-	// */
-	// public void connect(ArchitectureComponent cmp1, ArchitectureInterface
-	// if1,
-	// ArchitectureComponent cmp2, ArchitectureInterface if2,
-	// boolean isFifo) {
-	//
-	// if (isFifo) {
-	// fifos.add(new Fifo(cmp1, if1, cmp2, if2));
-	// } else {
-	// if (!existInterconnection(cmp1, if1, cmp2, if2))
-	// interconnections.add(new Interconnection(cmp1, if1, cmp2, if2));
-	// }
-	//
-	// }
 
 	/**
 	 * Connect two components. If the connection is directed, cmp1 and cmp2 are
@@ -211,16 +196,22 @@ public class MultiCoreArchitecture {
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
 			boolean isDirected) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
-			interconnections.add(new Interconnection(cmp1, if1, cmp2, if2,
-					isDirected));
-			if (isDirected) {
-				if (cmp1.getType() == ArchitectureComponentType.fifo) {
-					if (((Fifo) cmp1).getOutputInterface() == null) {
-						((Fifo) cmp1).setOutputInterface(if1);
-					}
-				} else if (cmp2.getType() == ArchitectureComponentType.fifo) {
-					if (((Fifo) cmp2).getInputInterface() == null) {
-						((Fifo) cmp2).setInputInterface(if2);
+			Interconnection itc = this.addEdge(cmp1, cmp2);
+			
+			if (itc != null) {
+				itc.setIf1(if1);
+				itc.setIf2(if2);
+				itc.setDirected(isDirected);
+
+				if (isDirected) {
+					if (cmp1.getType() == ArchitectureComponentType.fifo) {
+						if (((Fifo) cmp1).getOutputInterface() == null) {
+							((Fifo) cmp1).setOutputInterface(if1);
+						}
+					} else if (cmp2.getType() == ArchitectureComponentType.fifo) {
+						if (((Fifo) cmp2).getInputInterface() == null) {
+							((Fifo) cmp2).setInputInterface(if2);
+						}
 					}
 				}
 			}
@@ -234,8 +225,9 @@ public class MultiCoreArchitecture {
 			ArchitectureInterface if1, ArchitectureComponent cmp2,
 			ArchitectureInterface if2) {
 
+		Set<Interconnection> iSet = getAllEdges(cmp1, cmp2);
 		Interconnection testInter = new Interconnection(cmp1, if1, cmp2, if2);
-		Iterator<Interconnection> iterator = interconnections.iterator();
+		Iterator<Interconnection> iterator = iSet.iterator();
 
 		while (iterator.hasNext()) {
 			Interconnection currentInter = iterator.next();
@@ -250,19 +242,30 @@ public class MultiCoreArchitecture {
 	private boolean existInterconnection(ArchitectureComponent cmp1,
 			ArchitectureComponent cmp2) {
 
-		Iterator<Interconnection> iterator = interconnections.iterator();
+		// Traduction in case the components are equal in names but notas java objects
+		for(ArchitectureComponent cmp : vertexSet()){
+			if(cmp.equals(cmp1)) cmp1 = cmp;
+			if(cmp.equals(cmp2)) cmp2 = cmp;
+		}
+		
+		boolean existInterconnection = false;
+		Set<Interconnection> connections = getAllEdges(cmp1, cmp2);
 
-		while (iterator.hasNext()) {
-			Interconnection currentInter = iterator.next();
-
-			if ((currentInter.getCp1().equals(cmp1) && currentInter.getCp2()
-					.equals(cmp2))
-					|| (currentInter.getCp2().equals(cmp1) && currentInter
-							.getCp1().equals(cmp2)))
-				return true;
+		if (connections != null && !connections.isEmpty()) {
+			existInterconnection = true;
+		} else {
+			// In case of undirected edges, tests opposite edges
+			Set<Interconnection> reverseConnections = getAllEdges(cmp2, cmp1);
+			if (reverseConnections != null) {
+				for (Interconnection i : reverseConnections) {
+					if (!i.isDirected()) {
+						return true;
+					}
+				}
+			}
 		}
 
-		return false;
+		return existInterconnection;
 	}
 
 	public Medium getMainMedium() {
@@ -346,7 +349,7 @@ public class MultiCoreArchitecture {
 	 * Returns the Component with the given name
 	 */
 	public ArchitectureComponent getComponent(String name) {
-		return architectureComponents.get(name);
+		return getVertex(name);
 	}
 
 	/**
@@ -357,8 +360,7 @@ public class MultiCoreArchitecture {
 		Set<ArchitectureComponent> ops = new ConcurrentSkipListSet<ArchitectureComponent>(
 				new ArchitectureComponent.ArchitectureComponentComparator());
 
-		Iterator<ArchitectureComponent> iterator = architectureComponents
-				.values().iterator();
+		Iterator<ArchitectureComponent> iterator = vertexSet().iterator();
 
 		while (iterator.hasNext()) {
 			ArchitectureComponent currentCmp = iterator.next();
@@ -375,8 +377,7 @@ public class MultiCoreArchitecture {
 	 * Returns all the components
 	 */
 	public List<ArchitectureComponent> getComponents() {
-		return new ArrayList<ArchitectureComponent>(architectureComponents
-				.values());
+		return new ArrayList<ArchitectureComponent>(vertexSet());
 	}
 
 	/**
@@ -420,7 +421,7 @@ public class MultiCoreArchitecture {
 	 * Returns all the interconnections
 	 */
 	public Set<Interconnection> getInterconnections() {
-		return interconnections;
+		return edgeSet();
 	}
 
 	public String getName() {
@@ -441,6 +442,12 @@ public class MultiCoreArchitecture {
 		if (m != null) {
 			this.mainMedium = m;
 		}
+
+	}
+
+	@Override
+	public void update(AbstractGraph<?, ?> observable, Object arg) {
+		// TODO Auto-generated method stub
 
 	}
 

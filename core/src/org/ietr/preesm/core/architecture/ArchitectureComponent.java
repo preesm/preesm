@@ -42,13 +42,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.sdf4j.model.AbstractEdge;
+import org.sdf4j.model.AbstractVertex;
+
 /**
  * Common features of components in an architecture. Media and Operators are
  * ArchitectureComponents
  * 
  * @author mpelcat
  */
-public abstract class ArchitectureComponent {
+public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArchitecture> {
 
 	public static class ArchitectureComponentComparator implements
 			Comparator<ArchitectureComponent> {
@@ -187,6 +190,34 @@ public abstract class ArchitectureComponent {
 
 	public void setBaseAddress(String baseAddress) {
 		this.baseAddress = baseAddress;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void ConnectionAdded(AbstractEdge e) {
+		// Nothing to do for the moment
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void ConnectionRemoved(AbstractEdge e) {
+		// Nothing to do for the moment
+		
+	}
+	
+	public void setDefinition(ArchitectureComponentDefinition definition) {
+		this.definition = definition;
+	}
+
+	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi){
+		this.setBaseAddress(cmp.getBaseAddress());
+		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition().getType(), cmp.getDefinition().getId()));
+		
+		for(ArchitectureInterface itf : availableInterfaces){
+			ArchitectureInterface newItf = new ArchitectureInterface(newArchi.getBusReference(itf.getBusReference().getId()),this);
+			this.getAvailableInterfaces().add(newItf);
+		}
 	}
 
 }

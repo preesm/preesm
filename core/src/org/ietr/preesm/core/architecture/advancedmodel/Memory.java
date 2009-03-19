@@ -76,4 +76,9 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.memory;
 	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new Memory(getName(),null);
+	}
 }

@@ -54,4 +54,9 @@ public class ParallelNode extends ArchitectureComponent {
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.parallelNode;
 	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new ParallelNode(getName(),null);
+	}
 }

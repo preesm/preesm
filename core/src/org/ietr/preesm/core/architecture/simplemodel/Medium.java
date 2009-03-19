@@ -38,6 +38,8 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 
 
 /**
@@ -48,12 +50,17 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class Medium extends ArchitectureComponent {
 	
-	public Medium(String name, MediumDefinition type) {
-		super(name, type);
+	public Medium(String name, MediumDefinition def) {
+		super(name, def);
 	}
 	
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.medium;
+	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new Medium(getName(),(MediumDefinition)getDefinition());
 	}
 
 }

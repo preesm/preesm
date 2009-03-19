@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * a communication node (exemple: a switch)
@@ -57,5 +58,10 @@ public class CommunicationNode extends ArchitectureComponent {
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicationNode;
+	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new CommunicationNode(getName(),null);
 	}
 }

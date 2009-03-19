@@ -39,6 +39,8 @@ package org.ietr.preesm.core.architecture.simplemodel;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.architecture.advancedmodel.Memory;
+import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 
 
 /**
@@ -56,5 +58,10 @@ public class Operator extends ArchitectureComponent implements IOperator {
 	
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.operator;
+	}
+
+	@Override
+	public ArchitectureComponent clone() {
+		return new Operator(getName(),(OperatorDefinition)getDefinition());
 	}
 }
