@@ -38,59 +38,37 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /**
  * 
  */
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.route;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 
 /**
- * Represents a single step in a route between two operators
+ * Represents a single step in a route between two operators separated by a medium
  * 
  * @author mpelcat
  */
-public class RouteStep {
+public class MediumRouteStep extends AbstractRouteStep {
 
 	private Medium medium;
 
-	private Operator receiver;
-
-	private Operator sender;
-
-	public RouteStep(Operator sender, Medium medium, Operator receiver) {
-		super();
-		this.sender = sender;
+	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {
+		super(sender,receiver);
 		this.medium = medium;
-		this.receiver = receiver;
 	}
 
 	public Medium getMedium() {
 		return medium;
 	}
 
-	public Operator getReceiver() {
-		return receiver;
-	}
-
-	public Operator getSender() {
-		return sender;
-	}
-
 	public void setMedium(Medium medium) {
 		this.medium = medium;
 	}
 
-	public void setReceiver(Operator receiver) {
-		this.receiver = receiver;
-	}
-
-	public void setSender(Operator sender) {
-		this.sender = sender;
-	}
-
 	@Override
 	public String toString() {
-		return "{" + sender.toString() + " -> " + medium.toString() + " -> "
-				+ receiver.toString() + "}";
+		return "{" + getSender().toString() + " -> " + medium.toString() + " -> "
+				+ getReceiver().toString() + "}";
 	}
 }

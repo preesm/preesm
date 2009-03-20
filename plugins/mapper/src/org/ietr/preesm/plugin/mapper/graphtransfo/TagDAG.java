@@ -118,8 +118,8 @@ public class TagDAG {
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 		ImplementationFiller tvAdder = new ImplementationFiller(AbstractEdgeSched
 				.getInstance(EdgeSchedType.Simple, orderMgr),
-				new RouteCalculator(architecture), orderMgr, true, false, false);
-		tvAdder.addAndScheduleAllTransferVertices(dag, false);
+				new RouteCalculator(architecture), orderMgr, false, false);
+		tvAdder.addAndScheduleAllSendReceiveVertices(dag, false);
 		orderMgr.tagDAG(dag);
 	}
 

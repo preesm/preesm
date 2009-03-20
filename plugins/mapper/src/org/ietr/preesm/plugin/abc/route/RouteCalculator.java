@@ -45,8 +45,8 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.Route;
-import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.route.Route;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -81,11 +81,11 @@ public class RouteCalculator {
 		Route route = getRoute(op1, op2);
 		long cost = 0;
 
-		Iterator<RouteStep> it = route.iterator();
+		Iterator<MediumRouteStep> it = route.iterator();
 
 		// Iterating the route and incrementing transfer cost
 		while (it.hasNext()) {
-			RouteStep step = it.next();
+			MediumRouteStep step = it.next();
 
 			cost += evaluateSingleTransfer(edge, step);
 		}
@@ -96,7 +96,7 @@ public class RouteCalculator {
 	/**
 	 * Evaluates the transfer between two operators
 	 */
-	public long evaluateSingleTransfer(MapperDAGEdge edge, RouteStep step) {
+	public long evaluateSingleTransfer(MapperDAGEdge edge, MediumRouteStep step) {
 
 		Operator sender = step.getSender();
 		Operator receiver = step.getReceiver();
@@ -172,7 +172,7 @@ public class RouteCalculator {
 		if (direct != null) {
 			// There is a best medium directly connecting op1 and op2
 			// Adding it to the route
-			route.add(new RouteStep(op1, direct, op2));
+			route.add(new MediumRouteStep(op1, direct, op2));
 			return true;
 		} else {
 
@@ -193,7 +193,7 @@ public class RouteCalculator {
 					alreadyVisited.add(op);
 
 					Route subRoute = new Route();
-					subRoute.add(new RouteStep(op1, m, op));
+					subRoute.add(new MediumRouteStep(op1, m, op));
 
 					if (appendRoute(new ArrayList<Operator>(alreadyVisited),
 							subRoute, op, op2)) {

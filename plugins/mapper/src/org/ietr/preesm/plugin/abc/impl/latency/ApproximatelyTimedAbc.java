@@ -80,7 +80,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
 		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
-				orderManager, false, false, false);
+				orderManager, false, false);
 	}
 
 	/**

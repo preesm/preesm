@@ -47,7 +47,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
-import org.ietr.preesm.plugin.abc.impl.SendReceiveAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -129,8 +128,6 @@ public abstract class AbstractAbc implements IAbc {
 					simulatorType);
 		} else if (simulatorType == AbcType.CommConten) {
 			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType);
-		} else if (simulatorType == AbcType.SendReceive) {
-			abc = new SendReceiveAbc(edgeSchedType, dag, archi, simulatorType);
 		}
 
 		return abc;

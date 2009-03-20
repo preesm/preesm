@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -82,7 +82,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Route step corresponding to this overhead
 	 */
-	private RouteStep step = null;
+	private MediumRouteStep step = null;
 
 	/**
 	 * Original edge corresponding to this overhead
@@ -118,7 +118,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 	public AddTransferVertexTransaction(IEdgeSched edgeScheduler,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			SchedOrderManager orderManager, int routeIndex, MediumRouteStep step,
 			long transferCost, boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = null;
@@ -134,7 +134,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 	public AddTransferVertexTransaction(Transaction precedingTransaction, IEdgeSched edgeScheduler,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			SchedOrderManager orderManager, int routeIndex, MediumRouteStep step,
 			long transferCost, boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = precedingTransaction;

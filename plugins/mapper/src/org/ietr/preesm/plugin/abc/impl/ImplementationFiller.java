@@ -41,8 +41,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.Route;
-import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.route.Route;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
@@ -82,12 +82,6 @@ public class ImplementationFiller {
 	private SchedOrderManager orderManager;
 
 	/**
-	 * True if we want to add a send and a receive operation, false if a simple
-	 * transfer vertex should be added
-	 */
-	private boolean sendReceive;
-
-	/**
 	 * True if we the edge that will go through transfers replaces the original
 	 * edge. False if both paths are kept
 	 */
@@ -99,13 +93,11 @@ public class ImplementationFiller {
 	protected IEdgeSched edgeScheduler;
 
 	public ImplementationFiller(IEdgeSched edgeScheduler,
-			RouteCalculator router, SchedOrderManager orderManager,
-			boolean sendReceive, boolean rmvOrigEdge, boolean handleOverheads) {
+			RouteCalculator router, SchedOrderManager orderManager, boolean rmvOrigEdge, boolean handleOverheads) {
 		super();
 		this.edgeScheduler = edgeScheduler;
 		this.router = router;
 		this.orderManager = orderManager;
-		this.sendReceive = sendReceive;
 		this.rmvOrigEdge = rmvOrigEdge;
 		this.handleOverheads = handleOverheads;
 	}
@@ -119,40 +111,6 @@ public class ImplementationFiller {
 		if (handleOverheads) {
 			addNewVertexOverheads(implementation, refVertex);
 		}
-	}
-
-	/**
-	 * Adds all necessary transfer vertices for the whole implementation
-	 */
-	public void addAndScheduleAllTransferVertices(MapperDAG implementation, boolean scheduleThem) {
-		TransactionManager localTransactionManager = new TransactionManager();
-
-		// We iterate the edges and process the ones with different allocations
-		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
-
-			if (!(currentEdge instanceof PrecedenceEdge)) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
-						.getTarget()).getImplementationVertexProperty();
-
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
-						// Adds several transfers for one edge depending on the
-						// route steps
-						addTransferVertices(currentEdge, implementation,
-								localTransactionManager, null, scheduleThem);
-					}
-				}
-			}
-		}
-
-		localTransactionManager.execute();
 	}
 	
 	public void addNewVertexTransfers(MapperDAG implementation, MapperDAGVertex newVertex){
@@ -208,6 +166,94 @@ public class ImplementationFiller {
 	}
 
 	/**
+	 * Adds all necessary transfer vertices for the whole implementation
+	 */
+	public void addAndScheduleAllSendReceiveVertices(MapperDAG implementation, boolean scheduleThem) {
+		TransactionManager localTransactionManager = new TransactionManager();
+
+		// We iterate the edges and process the ones with different allocations
+		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
+
+		while (iterator.hasNext()) {
+			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
+
+			if (!(currentEdge instanceof PrecedenceEdge)) {
+				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
+						.getSource()).getImplementationVertexProperty();
+				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
+						.getTarget()).getImplementationVertexProperty();
+
+				if (currentSourceProp.hasEffectiveOperator()
+						&& currentDestProp.hasEffectiveOperator()) {
+					if (currentSourceProp.getEffectiveOperator() != currentDestProp
+							.getEffectiveOperator()) {
+						// Adds several transfers for one edge depending on the
+						// route steps
+						addSendReceiveVertices(currentEdge, implementation,
+								localTransactionManager, null, scheduleThem);
+					}
+				}
+			}
+		}
+
+		localTransactionManager.execute();
+	}
+
+	/**
+	 * Adds one transfer vertex per route step. It does not remove the original
+	 * edge
+	 */
+	public void addSendReceiveVertices(MapperDAGEdge edge,
+			MapperDAG implementation, TransactionManager transactionManager,
+			MapperDAGVertex refVertex, boolean scheduleVertex) {
+
+		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentDest = (MapperDAGVertex) edge.getTarget();
+
+		Operator sourceOp = currentSource.getImplementationVertexProperty()
+				.getEffectiveOperator();
+		Operator destOp = currentDest.getImplementationVertexProperty()
+				.getEffectiveOperator();
+
+		Route route = router.getRoute(sourceOp, destOp);
+
+		if (route == null) {
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"No route was found between the cores: " + sourceOp
+							+ " and " + destOp);
+			return;
+		}
+		Iterator<MediumRouteStep> it = route.iterator();
+		int i = 1;
+		// Transactions need to be linked so that the communication vertices
+		// created are also linked
+		Transaction precedingTransaction = null;
+
+		while (it.hasNext()) {
+			MediumRouteStep step = it.next();
+
+			Transaction transaction = null;
+
+			// TODO: set a size to send and receive. From medium definition?
+			transaction = new AddSendReceiveTransaction(
+					precedingTransaction, edge, implementation,
+					orderManager, i, step,
+					TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
+
+			transactionManager.add(transaction, refVertex);
+			precedingTransaction = transaction;
+
+			if (rmvOrigEdge) {
+				transactionManager.add(new RemoveEdgeTransaction(edge,
+						implementation), refVertex);
+			}
+
+			i++;
+		}
+	}
+
+	/**
 	 * Adds one transfer vertex per route step. It does not remove the original
 	 * edge
 	 */
@@ -232,33 +278,24 @@ public class ImplementationFiller {
 							+ " and " + destOp);
 			return;
 		}
-		Iterator<RouteStep> it = route.iterator();
+		Iterator<MediumRouteStep> it = route.iterator();
 		int i = 1;
 		// Transactions need to be linked so that the communication vertices
 		// created are also linked
 		Transaction precedingTransaction = null;
 
 		while (it.hasNext()) {
-			RouteStep step = it.next();
+			MediumRouteStep step = it.next();
 
 			Transaction transaction = null;
 
-			if (sendReceive) {
-				// TODO: set a size to send and receive. From medium definition?
-				transaction = new AddSendReceiveTransaction(
-						precedingTransaction, edge, implementation,
-						orderManager, i, step,
-						TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
-			} else {
+			long transferCost = router.evaluateTransfer(edge, step
+					.getSender(), step.getReceiver());
 
-				long transferCost = router.evaluateTransfer(edge, step
-						.getSender(), step.getReceiver());
-
-				transaction = new AddTransferVertexTransaction(
-						precedingTransaction, edgeScheduler, edge,
-						implementation, orderManager, i, step, transferCost,
-						scheduleVertex);
-			}
+			transaction = new AddTransferVertexTransaction(
+					precedingTransaction, edgeScheduler, edge,
+					implementation, orderManager, i, step, transferCost,
+					scheduleVertex);
 
 			transactionManager.add(transaction, refVertex);
 			precedingTransaction = transaction;

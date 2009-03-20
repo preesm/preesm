@@ -76,7 +76,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
 		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
-				orderManager, false, false, true);
+				orderManager, false, true);
 	}
 
 	/**

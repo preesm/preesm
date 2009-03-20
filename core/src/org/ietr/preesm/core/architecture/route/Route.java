@@ -38,7 +38,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /**
  * 
  */
-package org.ietr.preesm.core.architecture;
+package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 
@@ -47,7 +47,7 @@ import java.util.ArrayList;
  * 
  * @author mpelcat
  */
-public class Route extends ArrayList<RouteStep> {
+public class Route extends ArrayList<MediumRouteStep> {
 
 	/**
 	 * ID used to reference the element in a property bean

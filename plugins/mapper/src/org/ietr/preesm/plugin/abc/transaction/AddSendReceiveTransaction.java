@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.RouteStep;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -73,7 +73,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	/**
 	 * Route step corresponding to this overhead
 	 */
-	private RouteStep step = null;
+	private MediumRouteStep step = null;
 
 	/**
 	 * Original edge corresponding to this overhead
@@ -116,7 +116,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, RouteStep step, long transferCost,
+			int routeIndex, MediumRouteStep step, long transferCost,
 			boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = null;
@@ -131,7 +131,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(Transaction precedingTransaction,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, RouteStep step,
+			SchedOrderManager orderManager, int routeIndex, MediumRouteStep step,
 			long transferCost, boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = precedingTransaction;

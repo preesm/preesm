@@ -53,7 +53,6 @@ public class AbcType {
 	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed");
 	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
 	public static final AbcType CommConten = new AbcType("CommConten");
-	public static final AbcType SendReceive = new AbcType("SendReceive");
 
 	/**
 	 * Name of the current type
@@ -91,8 +90,6 @@ public class AbcType {
 			return AccuratelyTimed;
 		} else if (type.equalsIgnoreCase("CommConten")) {
 			return CommConten;
-		} else if (type.equalsIgnoreCase("SendReceive")) {
-			return SendReceive;
 		}
 
 		return null;
