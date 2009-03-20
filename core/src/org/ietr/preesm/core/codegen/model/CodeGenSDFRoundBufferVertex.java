@@ -3,9 +3,9 @@ package org.ietr.preesm.core.codegen.model;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
+import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 
-public class CodeGenSDFRoundBufferVertex extends SDFBroadcastVertex implements ICodeGenSDFVertex{
+public class CodeGenSDFRoundBufferVertex extends SDFRoundBufferVertex implements ICodeGenSDFVertex{
 
 	
 	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;

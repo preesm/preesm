@@ -25,31 +25,31 @@
                     <buffer name="Firstout_0" size="16" type="char"/>
                     <constant name="firstParam" type="int" value="3"/>
                 </userFunctionCall>
-                <forkCall name="explode_First_output">
+                <specialBehavior behavior="fork" name="explode_First_output">
                     <inputBuffers>
                         <buffer name="Firstout_0" size="16" type="char"/>
                     </inputBuffers>
                     <outputBuffers>
-                        <buffer name="explode__0" size="4" type="char"/>
-                        <buffer name="explode__1" size="4" type="char"/>
                         <buffer name="explode__3" size="4" type="char"/>
+                        <buffer name="explode__1" size="4" type="char"/>
+                        <buffer name="explode__0" size="4" type="char"/>
                         <buffer name="explode__2" size="4" type="char"/>
                     </outputBuffers>
-                </forkCall>
+                </specialBehavior>
                 <CompoundCode>
                     <bufferAllocation name="outLoopP_0" size="1" type="char"/>
                     <finiteForLoop domain="4" index="i">
                         <CompoundCode>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_Se_0"
                                 parentBuffer="Second_0_0" size="1" type="char"/>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_ex_0"
-                                parentBuffer="explode__0" size="1" type="char"/>
+                                parentBuffer="explode__3" size="1" type="char"/>
                             <bufferAllocation name="dataOut__0" size="1" type="char"/>
                             <userFunctionCall name="mux">
                                 <subBuffer index="i" name="sub_i_ex_0"
-                                    parentBuffer="explode__0" size="1"/>
+                                    parentBuffer="explode__3" size="1"/>
                                 <buffer name="outLoopP_0" size="1" type="char"/>
                                 <buffer name="dataOut__0" size="1" type="char"/>
                             </userFunctionCall>
@@ -66,10 +66,10 @@
                     <bufferAllocation name="outLoopP_0" size="1" type="char"/>
                     <finiteForLoop domain="4" index="i">
                         <CompoundCode>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_Se_0"
                                 parentBuffer="Second_1_0" size="1" type="char"/>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_ex_0"
                                 parentBuffer="explode__1" size="1" type="char"/>
                             <bufferAllocation name="dataOut__0" size="1" type="char"/>
@@ -92,16 +92,16 @@
                     <bufferAllocation name="outLoopP_0" size="1" type="char"/>
                     <finiteForLoop domain="4" index="i">
                         <CompoundCode>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_Se_0"
                                 parentBuffer="Second_2_0" size="1" type="char"/>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_ex_0"
-                                parentBuffer="explode__3" size="1" type="char"/>
+                                parentBuffer="explode__0" size="1" type="char"/>
                             <bufferAllocation name="dataOut__0" size="1" type="char"/>
                             <userFunctionCall name="mux">
                                 <subBuffer index="i" name="sub_i_ex_0"
-                                    parentBuffer="explode__3" size="1"/>
+                                    parentBuffer="explode__0" size="1"/>
                                 <buffer name="outLoopP_0" size="1" type="char"/>
                                 <buffer name="dataOut__0" size="1" type="char"/>
                             </userFunctionCall>
@@ -118,10 +118,10 @@
                     <bufferAllocation name="outLoopP_0" size="1" type="char"/>
                     <finiteForLoop domain="4" index="i">
                         <CompoundCode>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_Se_0"
                                 parentBuffer="Second_3_0" size="1" type="char"/>
-                            <subBufferAllocation index="i"
+                            <subBufferAllocation index="i" modulo="4"
                                 name="sub_i_ex_0"
                                 parentBuffer="explode__2" size="1" type="char"/>
                             <bufferAllocation name="dataOut__0" size="1" type="char"/>
@@ -140,17 +140,17 @@
                         </CompoundCode>
                     </finiteForLoop>
                 </CompoundCode>
-                <joinCall name="implode_Third_input">
-                    <outputBuffers>
-                        <buffer name="implode__0" size="16" type="char"/>
-                    </outputBuffers>
+                <specialBehavior behavior="join" name="implode_Third_input">
                     <inputBuffers>
                         <buffer name="Second_0_0" size="4" type="char"/>
                         <buffer name="Second_1_0" size="4" type="char"/>
                         <buffer name="Second_2_0" size="4" type="char"/>
                         <buffer name="Second_3_0" size="4" type="char"/>
                     </inputBuffers>
-                </joinCall>
+                    <outputBuffers>
+                        <buffer name="implode__0" size="16" type="char"/>
+                    </outputBuffers>
+                </specialBehavior>
                 <userFunctionCall name="third_dummy">
                     <buffer name="implode__0" size="16" type="char"/>
                 </userFunctionCall>

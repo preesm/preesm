@@ -4,93 +4,110 @@
     <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="Triggersigned_0" size="1" type="int"/>
             <bufferAllocation name="TriggerMBIDCT_0" size="64" type="int"/>
-            <bufferAllocation name="IDCT2DoutGrou_0" size="64" type="int"/>
+            <bufferAllocation name="Triggersigned_0" size="1" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_0" size="2" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_1" size="1" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_2" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_5" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_6" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_7" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDCT_9" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDC_10" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDC_11" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_IDC_13" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_0_clip_0" size="64" type="int"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer>
                 <variableAllocation name="i" type="long"/>
-                <variableAllocation name="j" type="long"/>
             </bufferContainer>
             <linearCodeContainer/>
             <forLoop>
+                <subBufferAllocation index="0" name="IDCT2D_0_IDC_14"
+                    parentBuffer="TriggerMBIDCT_0" size="64" type="int"/>
+                <subBufferAllocation index="0" name="IDCT2D_0_IDCT_4"
+                    parentBuffer="TriggerMBIDCT_0" size="128" type="int"/>
+                <subBufferAllocation index="0" name="IDCT2D_0_IDCT_3"
+                    parentBuffer="IDCT2D_0_IDC_13" size="64" type="int"/>
+                <subBufferAllocation index="0" name="IDCT2D_0_IDC__0"
+                    parentBuffer="IDCT2D_0_IDC_13" size="128" type="int"/>
+                <userFunctionCall name="init_in_2">
+                    <buffer name="IDCT2D_0_IDCT_2" size="64" type="int"/>
+                    <constant name="init_size" type="int" value="64"/>
+                </userFunctionCall>
+                <userFunctionCall name="trigger">
+                    <buffer name="IDCT2D_0_IDCT_1" size="1" type="int"/>
+                </userFunctionCall>
                 <userFunctionCall name="trigger_bench">
                     <buffer name="TriggerMBIDCT_0" size="64" type="int"/>
                     <buffer name="Triggersigned_0" size="1" type="int"/>
                 </userFunctionCall>
-                <CompoundCode name="IDCT2D">
-                    <bufferAllocation name="block_out_blo_0" size="64" type="int"/>
-                    <CompoundCode name="IDCT2D_basic">
-                        <bufferAllocation name="trig_cluster__0"
-                            size="2" type="int"/>
-                        <bufferAllocation name="outLoopPort_0_0"
-                            size="64" type="int"/>
-                        <userFunctionCall name="trigger">
-                            <buffer name="trig_cluster__0" size="2" type="int"/>
+                <userFunctionCall name="readBlock">
+                    <subBuffer index="0" name="IDCT2D_0_IDC_14"
+                        parentBuffer="TriggerMBIDCT_0" size="64"/>
+                    <buffer name="IDCT2D_0_IDCT_2" size="64" type="int"/>
+                    <buffer name="IDCT2D_0_IDCT_1" size="1" type="int"/>
+                    <buffer name="IDCT2D_0_IDCT_5" size="64" type="int"/>
+                </userFunctionCall>
+                <finiteForLoop domain="8" index="i">
+                    <CompoundCode name="IDCT2D_0_IDCT2D_basic_0_IDCT1D">
+                        <subBufferAllocation index="i" modulo="64"
+                            name="inSub_i_IDCT2_0"
+                            parentBuffer="IDCT2D_0_IDCT_6" size="8" type="int"/>
+                        <subBufferAllocation index="i" modulo="64"
+                            name="outSub_i_IDCT_0"
+                            parentBuffer="IDCT2D_0_IDCT_5" size="8" type="int"/>
+                        <userFunctionCall name="idct1d">
+                            <subBuffer index="i" name="outSub_i_IDCT_0"
+                                parentBuffer="IDCT2D_0_IDCT_5" size="8"/>
+                            <subBuffer index="i" name="inSub_i_IDCT2_0"
+                                parentBuffer="IDCT2D_0_IDCT_6" size="8"/>
                         </userFunctionCall>
-                        <finiteForLoop domain="2" index="i">
-                            <CompoundCode name="cluster_0">
-                                <subBufferAllocation index="i"
-                                    modulo="2" name="outSub_i_trig_0"
-                                    parentBuffer="trig_cluster__0"
-                                    size="1" type="int"/>
-                                <bufferAllocation name="out_1_lineIn"
-                                    size="64" type="int"/>
-                                <bufferAllocation name="lineOut_block_0"
-                                    size="64" type="int"/>
-                                <userFunctionCall name="readBlock">
-                                    <buffer name="TriggerMBIDCT_0"
-                                    size="64" type="int"/>
-                                    <buffer name="outLoopPort_0_0"
-                                    size="64" type="int"/>
-                                    <subBuffer index="i"
-                                    name="outSub_i_trig_0"
-                                    parentBuffer="trig_cluster__0" size="1"/>
-                                    <buffer name="out_1_lineIn"
-                                    size="64" type="int"/>
-                                </userFunctionCall>
-                                <finiteForLoop domain="8" index="j">
-                                    <CompoundCode name="IDCT1D">
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="inSub_j_lineO_0"
-                                    parentBuffer="lineOut_block_0"
-                                    size="8" type="int"/>
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="outSub_j_out__0"
-                                    parentBuffer="out_1_lineIn"
-                                    size="8" type="int"/>
-                                    <userFunctionCall name="idct1d">
-                                    <subBuffer index="j"
-                                    name="outSub_j_out__0"
-                                    parentBuffer="out_1_lineIn" size="8"/>
-                                    <subBuffer index="j"
-                                    name="inSub_j_lineO_0"
-                                    parentBuffer="lineOut_block_0" size="8"/>
-                                    </userFunctionCall>
-                                    </CompoundCode>
-                                </finiteForLoop>
-                                <userFunctionCall name="transpose">
-                                    <buffer name="lineOut_block_0"
-                                    size="64" type="int"/>
-                                    <buffer name="block_out_blo_0"
-                                    size="64" type="int"/>
-                                    <buffer name="outLoopPort_0_0"
-                                    size="64" type="int"/>
-                                </userFunctionCall>
-                            </CompoundCode>
-                        </finiteForLoop>
                     </CompoundCode>
-                    <userFunctionCall name="clip">
-                        <buffer name="block_out_blo_0" size="64" type="int"/>
-                        <buffer name="Triggersigned_0" size="1" type="int"/>
-                        <buffer name="IDCT2DoutGrou_0" size="64" type="int"/>
-                    </userFunctionCall>
-                </CompoundCode>
+                </finiteForLoop>
+                <userFunctionCall name="transpose">
+                    <buffer name="IDCT2D_0_IDCT_6" size="64" type="int"/>
+                    <subBuffer index="0" name="IDCT2D_0_IDCT_3"
+                        parentBuffer="IDCT2D_0_IDC_13" size="64"/>
+                    <buffer name="IDCT2D_0_IDCT_7" size="64" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="readBlock">
+                    <subBuffer index="0" name="IDCT2D_0_IDCT_4"
+                        parentBuffer="TriggerMBIDCT_0" size="128"/>
+                    <buffer name="IDCT2D_0_IDCT_7" size="64" type="int"/>
+                    <buffer name="IDCT2D_0_IDCT_0" size="2" type="int"/>
+                    <buffer name="IDCT2D_0_IDCT_9" size="64" type="int"/>
+                </userFunctionCall>
+                <finiteForLoop domain="8" index="i">
+                    <CompoundCode name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_1">
+                        <subBufferAllocation index="i" modulo="64"
+                            name="inSub_i_IDCT2_0"
+                            parentBuffer="IDCT2D_0_IDC_10" size="8" type="int"/>
+                        <subBufferAllocation index="i" modulo="64"
+                            name="outSub_i_IDCT_0"
+                            parentBuffer="IDCT2D_0_IDCT_9" size="8" type="int"/>
+                        <userFunctionCall name="idct1d">
+                            <subBuffer index="i" name="outSub_i_IDCT_0"
+                                parentBuffer="IDCT2D_0_IDCT_9" size="8"/>
+                            <subBuffer index="i" name="inSub_i_IDCT2_0"
+                                parentBuffer="IDCT2D_0_IDC_10" size="8"/>
+                        </userFunctionCall>
+                    </CompoundCode>
+                </finiteForLoop>
+                <userFunctionCall name="transpose">
+                    <buffer name="IDCT2D_0_IDC_10" size="64" type="int"/>
+                    <subBuffer index="0" name="IDCT2D_0_IDC__0"
+                        parentBuffer="IDCT2D_0_IDC_13" size="128"/>
+                    <buffer name="IDCT2D_0_IDC_11" size="64" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="clip">
+                    <buffer name="IDCT2D_0_IDC_13" size="64" type="int"/>
+                    <buffer name="Triggersigned_0" size="1" type="int"/>
+                    <buffer name="IDCT2D_0_clip_0" size="64" type="int"/>
+                </userFunctionCall>
                 <userFunctionCall name="group_bench">
-                    <buffer name="IDCT2DoutGrou_0" size="64" type="int"/>
+                    <buffer name="IDCT2D_0_clip_0" size="64" type="int"/>
                 </userFunctionCall>
             </forLoop>
             <linearCodeContainer/>

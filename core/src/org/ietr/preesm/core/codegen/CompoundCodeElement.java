@@ -48,7 +48,6 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;

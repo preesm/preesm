@@ -29,7 +29,7 @@ void generateMatrix(int * matOut, int size){
 	int i, j ;
 	srand(time(NULL)); 
 	for(i = 0 ; i < size*size ; i ++){
-			matOut[i] = rand();
+			matOut[i] = 2 ;//rand();
 	}
 	display(matOut, size*size);
 }
@@ -38,12 +38,19 @@ void generateVect(int * matVect, int size){
 	int i;
 	srand(time(NULL)); 
 	for(i = 0 ; i < size ; i ++){
-			matVect[i] = rand();
+			matVect[i] = 1 ;//rand();
 	}
 	display(matVect, size);
 }
 
 void init_accIn(int * data, int size){
+	int i;
+	for(i = 0 ; i < size ; i ++){
+			data[i] = 0;
+	}
+}
+
+void init_in(int * data, int size){
 	int i;
 	for(i = 0 ; i < size ; i ++){
 			data[i] = 0;

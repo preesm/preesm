@@ -1,42 +1,49 @@
-
-
-    // Buffer declarations
-    int Triggersigned_0[1];
+   // Buffer declarations
     int TriggerMBIDCT_0[64];
-    int IDCT2DoutGrou_0[64];
+    int Triggersigned_0[1];
+    int IDCT2D_0_IDCT_0[2];
+    int IDCT2D_0_IDCT_1[1];
+    int IDCT2D_0_IDCT_2[64];
+    int IDCT2D_0_IDCT_5[64];
+    int IDCT2D_0_IDCT_6[64];
+    int IDCT2D_0_IDCT_7[64];
+    int IDCT2D_0_IDCT_9[64];
+    int IDCT2D_0_IDC_10[64];
+    int IDCT2D_0_IDC_11[64];
+    int IDCT2D_0_IDC_13[64];
+    int IDCT2D_0_clip_0[64];
 
 
     void main(void){
         // Buffer declarations
         long i ;
-        long j ;
 
         for(;;){
+            int *IDCT2D_0_IDC_14 =&TriggerMBIDCT_0[(0*64)];
+            int *IDCT2D_0_IDCT_4 =&TriggerMBIDCT_0[(0*128)];
+            int *IDCT2D_0_IDCT_3 =&IDCT2D_0_IDC_13[(0*64)];
+            int *IDCT2D_0_IDC__0 =&IDCT2D_0_IDC_13[(0*128)];
+            //init_in_2(IDCT2D_0_IDCT_2,64/*init_size*/);
+            trigger(IDCT2D_0_IDCT_1);
             trigger_bench(TriggerMBIDCT_0,Triggersigned_0);
-            {//IDCT2D
-                int block_out_blo_0[64];
-                {//IDCT2D_basic
-                    int trig_cluster__0[2];
-                    int outLoopPort_0_0[64];
-                    trigger(trig_cluster__0);
-                    for(i = 0; i<2 ; i ++)
-                    {//cluster_0
-                        int *outSub_i_trig_0 =&trig_cluster__0[(i*1)%2];
-                        int out_1_lineIn[64];
-                        int lineOut_block_0[64];
-                        readBlock(TriggerMBIDCT_0,outLoopPort_0_0,outSub_i_trig_0,out_1_lineIn);
-                        for(j = 0; j<8 ; j ++)
-                        {//IDCT1D
-                            int *inSub_j_lineO_0 =&lineOut_block_0[(j*8)%64];
-                            int *outSub_j_out__0 =&out_1_lineIn[(j*8)%64];
-                            idct1d(outSub_j_out__0,inSub_j_lineO_0);
-                        }
-                        transpose(lineOut_block_0,block_out_blo_0,outLoopPort_0_0);
-                    }
-                }
-                clip(block_out_blo_0,Triggersigned_0,IDCT2DoutGrou_0);
+            readBlock(IDCT2D_0_IDC_14,IDCT2D_0_IDCT_2,IDCT2D_0_IDCT_1,IDCT2D_0_IDCT_5);
+            for(i = 0; i<8 ; i ++)
+            {//IDCT2D_0_IDCT2D_basic_0_IDCT1D
+                int *inSub_i_IDCT2_0 =&IDCT2D_0_IDCT_6[(i*8)%64];
+                int *outSub_i_IDCT_0 =&IDCT2D_0_IDCT_5[(i*8)%64];
+                idct1d(outSub_i_IDCT_0,inSub_i_IDCT2_0);
             }
-            group_bench(IDCT2DoutGrou_0);
+            transpose(IDCT2D_0_IDCT_6,IDCT2D_0_IDCT_3,IDCT2D_0_IDCT_7);
+            readBlock(IDCT2D_0_IDCT_4,IDCT2D_0_IDCT_7,IDCT2D_0_IDCT_0,IDCT2D_0_IDCT_9);
+            for(i = 0; i<8 ; i ++)
+            {//IDCT2D_0_IDCT2D_basic_0_IDCT1D_1
+                int *inSub_i_IDCT2_0 =&IDCT2D_0_IDC_10[(i*8)%64];
+                int *outSub_i_IDCT_0 =&IDCT2D_0_IDCT_9[(i*8)%64];
+                idct1d(outSub_i_IDCT_0,inSub_i_IDCT2_0);
+            }
+            transpose(IDCT2D_0_IDC_10,IDCT2D_0_IDC__0,IDCT2D_0_IDC_11);
+            clip(IDCT2D_0_IDC_13,Triggersigned_0,IDCT2D_0_clip_0);
+            group_bench(IDCT2D_0_clip_0);
         }
 
     }//computationThread

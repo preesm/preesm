@@ -36,6 +36,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
  
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -166,7 +167,45 @@ public class CompThreadCodeGenerator {
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
 		
-		
+		List<SDFAbstractVertex> specialVertices = new ArrayList<SDFAbstractVertex>(vertices);
+		List<SDFAbstractVertex> treatedVertices  = new ArrayList<SDFAbstractVertex>();
+		while(specialVertices.size() > 0){
+			SDFAbstractVertex origin = specialVertices.get(0);
+			if(origin instanceof CodeGenSDFForkVertex || origin instanceof CodeGenSDFBroadcastVertex ){
+				boolean toBeTreated = true ;
+				for(SDFEdge inEdge : origin.getBase().incomingEdgesOf(origin)){
+					if(!treatedVertices.contains(inEdge.getSource()) && (inEdge.getSource() instanceof CodeGenSDFJoinVertex || inEdge.getSource() instanceof CodeGenSDFRoundBufferVertex)){
+						specialVertices.remove(inEdge.getSource());
+						specialVertices.add(0, inEdge.getSource());
+						toBeTreated = false ;
+					}
+				}
+				if(toBeTreated){
+					CodeElementFactory.treatSpecialBehaviorVertex(origin
+							.getName(), loopCode, origin);
+					treatedVertices.add(origin);
+					specialVertices.remove(origin);
+				}
+			}
+			else if(origin instanceof CodeGenSDFJoinVertex || origin instanceof CodeGenSDFRoundBufferVertex){
+				boolean toBeTreated = true ;
+				for(SDFEdge outEdge : origin.getBase().outgoingEdgesOf(origin)){
+					if(!treatedVertices.contains(outEdge.getTarget()) && (outEdge.getTarget() instanceof CodeGenSDFJoinVertex || outEdge.getTarget() instanceof CodeGenSDFRoundBufferVertex)){
+						specialVertices.remove(outEdge.getTarget());
+						specialVertices.add(0, outEdge.getTarget());
+						toBeTreated = false ;
+					}
+				}
+				if(toBeTreated){
+					CodeElementFactory.treatSpecialBehaviorVertex(origin
+							.getName(), loopCode, origin);
+					treatedVertices.add(origin);
+					specialVertices.remove(origin);
+				}
+			}else{
+				specialVertices.remove(origin);
+			}
+		}
 		for (SDFAbstractVertex vertex : vertices) {
 			if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex || vertex instanceof CodeGenSDFRoundBufferVertex){
 				CodeElementFactory.treatSpecialBehaviorVertex(vertex
@@ -184,6 +223,7 @@ public class CompThreadCodeGenerator {
 						ICodeElement endCall = new UserFunctionCall(vertex, thread, CodeSection.END);
 						endCode.addCodeElement(endCall);
 					}
+					
 			}
 			if(vertex instanceof ICodeGenSDFVertex){
 				ICodeElement loopCall = CodeElementFactory.createElement(vertex

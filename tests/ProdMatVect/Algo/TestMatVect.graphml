@@ -21,7 +21,7 @@
       <data key="name">testMatVect</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="size" value="10"/>
+         <variable name="size" value="80"/>
       </data>
       <node id="outputMatrix" kind="vertex">
          <data key="graph_desc">../IDL/generateMatrix.idl</data>

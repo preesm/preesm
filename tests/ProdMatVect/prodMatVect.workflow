@@ -2,11 +2,6 @@
    <preesm:algorithm/>
    <preesm:architecture/>
    <preesm:scenario/>
-   <preesm:task pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
-      <data key="variables">
-         <variable name="depth" value="1"/>
-      </data>
-   </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
       <data key="variables">
          <variable name="sourcePath" value="MatVectProduct/Code"/>
@@ -42,13 +37,18 @@
          <variable name="switchTask" value="false"/>
       </data>
    </preesm:task>
+   <preesm:task pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
+      <data key="variables">
+         <variable name="depth" value="2"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="" to="__architecture"/>
-   <preesm:dataTransfer from="Mapper" sourceport="customData" targetport="customData" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="Mapper"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="Mapper"/>
    <preesm:dataTransfer from="Mapper" sourceport="DAG" targetport="DAG" to="CodeGen"/>
-   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
-   <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="Mapper"/>
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="CodeGen"/>
+   <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
+   <preesm:dataTransfer from="Mapper" sourceport="ABC" targetport="ABC" to="DAG Plotter"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
 </preesm:workflow>

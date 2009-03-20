@@ -20,7 +20,7 @@
     <graph edgedefault="directed">
         <data key="name"/>
         <data key="variables">
-            <variable name="nb_slot" value="5"/>
+            <variable name="nb_slot" value="2"/>
         </data>
         <node id="DPCCH_ind" kind="vertex"/>
         <node id="PRINT" kind="vertex"/>
@@ -29,34 +29,16 @@
         <node id="CST_SCR" kind="vertex"/>
         <node id="SLOT_process_0_SCR_0" kind="vertex"/>
         <node id="SLOT_process_0_SCR_1" kind="vertex"/>
-        <node id="SLOT_process_0_SCR_2" kind="vertex"/>
-        <node id="SLOT_process_0_SCR_3" kind="vertex"/>
-        <node id="SLOT_process_0_SCR_4" kind="vertex"/>
         <node id="SLOT_process_0_SPR_dpdch_0" kind="vertex"/>
         <node id="SLOT_process_0_SPR_dpdch_1" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpdch_2" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpdch_3" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpdch_4" kind="vertex"/>
         <node id="SLOT_process_0_SPR_dpcch_0" kind="vertex"/>
         <node id="SLOT_process_0_SPR_dpcch_1" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpcch_2" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpcch_3" kind="vertex"/>
-        <node id="SLOT_process_0_SPR_dpcch_4" kind="vertex"/>
         <node id="SLOT_process_0_CTRL_dpcch_0" kind="vertex"/>
         <node id="SLOT_process_0_CTRL_dpcch_1" kind="vertex"/>
-        <node id="SLOT_process_0_CTRL_dpcch_2" kind="vertex"/>
-        <node id="SLOT_process_0_CTRL_dpcch_3" kind="vertex"/>
-        <node id="SLOT_process_0_CTRL_dpcch_4" kind="vertex"/>
         <node id="SLOT_process_0_sum_0" kind="vertex"/>
         <node id="SLOT_process_0_sum_1" kind="vertex"/>
-        <node id="SLOT_process_0_sum_2" kind="vertex"/>
-        <node id="SLOT_process_0_sum_3" kind="vertex"/>
-        <node id="SLOT_process_0_sum_4" kind="vertex"/>
         <node id="SLOT_process_0_prec_0" kind="Broadcast"/>
         <node id="SLOT_process_0_prec_1" kind="Broadcast"/>
-        <node id="SLOT_process_0_prec_2" kind="Broadcast"/>
-        <node id="SLOT_process_0_prec_3" kind="Broadcast"/>
-        <node id="SLOT_process_0_prec_4" kind="Broadcast"/>
         <node id="SLOT_process_0_broadcast_coeff" kind="Broadcast"/>
         <node id="SLOT_process_0_broadcast_ctrl" kind="Broadcast"/>
         <node id="explode_DPCCH_ind" kind="fork"/>
@@ -70,23 +52,11 @@
         <node id="SLOT_process_0_PSH_1_Buffer" kind="vertex"/>
         <node id="SLOT_process_0_PSH_1_PSH2" kind="vertex"/>
         <node id="SLOT_process_0_PSH_1_MUX" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_2_PSH1" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_2_Buffer" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_2_PSH2" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_2_MUX" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_3_PSH1" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_3_Buffer" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_3_PSH2" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_3_MUX" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_4_PSH1" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_4_Buffer" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_4_PSH2" kind="vertex"/>
-        <node id="SLOT_process_0_PSH_4_MUX" kind="vertex"/>
         <edge source="DPCCH_ind" sourceport="out"
             target="explode_DPCCH_ind" targetport="in">
-            <data key="edge_prod">5</data>
+            <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">5</data>
+            <data key="edge_cons">2</data>
             <data key="data_type">char</data>
         </edge>
         <edge source="explode_DPCCH_ind" sourceport="out"
@@ -98,27 +68,6 @@
         </edge>
         <edge source="explode_DPCCH_ind" sourceport="out"
             target="SLOT_process_0_SPR_dpdch_1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="explode_DPCCH_ind" sourceport="out"
-            target="SLOT_process_0_SPR_dpdch_2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="explode_DPCCH_ind" sourceport="out"
-            target="SLOT_process_0_SPR_dpdch_3" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="explode_DPCCH_ind" sourceport="out"
-            target="SLOT_process_0_SPR_dpdch_4" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
@@ -138,27 +87,6 @@
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="SLOT_process_0_SPR_dpdch_2" sourceport="out"
-            target="SLOT_process_0_sum_2" targetport="data">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SPR_dpdch_3" sourceport="out"
-            target="SLOT_process_0_sum_3" targetport="data">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SPR_dpdch_4" sourceport="out"
-            target="SLOT_process_0_sum_4" targetport="data">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
         <edge source="SLOT_process_0_CTRL_dpcch_0" sourceport="out"
             target="SLOT_process_0_SPR_dpcch_0" targetport="in">
             <data key="edge_prod">1</data>
@@ -168,27 +96,6 @@
         </edge>
         <edge source="SLOT_process_0_CTRL_dpcch_1" sourceport="out"
             target="SLOT_process_0_SPR_dpcch_1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_CTRL_dpcch_2" sourceport="out"
-            target="SLOT_process_0_SPR_dpcch_2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_CTRL_dpcch_3" sourceport="out"
-            target="SLOT_process_0_SPR_dpcch_3" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_CTRL_dpcch_4" sourceport="out"
-            target="SLOT_process_0_SPR_dpcch_4" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
@@ -208,27 +115,6 @@
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="SLOT_process_0_SPR_dpcch_2" sourceport="out"
-            target="SLOT_process_0_sum_2" targetport="ctrl">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SPR_dpcch_3" sourceport="out"
-            target="SLOT_process_0_sum_3" targetport="ctrl">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SPR_dpcch_4" sourceport="out"
-            target="SLOT_process_0_sum_4" targetport="ctrl">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
         <edge source="SLOT_process_0_sum_0" sourceport="out"
             target="SLOT_process_0_SCR_0" targetport="in">
             <data key="edge_prod">1</data>
@@ -243,31 +129,10 @@
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="SLOT_process_0_sum_2" sourceport="out"
-            target="SLOT_process_0_SCR_2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_sum_3" sourceport="out"
-            target="SLOT_process_0_SCR_3" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_sum_4" sourceport="out"
-            target="SLOT_process_0_SCR_4" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
         <edge source="CST_SCR" sourceport="out" target="explode_CST_SCR" targetport="code">
-            <data key="edge_prod">5</data>
+            <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">5</data>
+            <data key="edge_cons">2</data>
             <data key="data_type">char</data>
         </edge>
         <edge source="explode_CST_SCR" sourceport="out"
@@ -284,31 +149,10 @@
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="explode_CST_SCR" sourceport="out"
-            target="SLOT_process_0_SCR_2" targetport="code">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="explode_CST_SCR" sourceport="out"
-            target="SLOT_process_0_SCR_3" targetport="code">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="explode_CST_SCR" sourceport="out"
-            target="SLOT_process_0_SCR_4" targetport="code">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
         <edge source="implode_PRINT" sourceport="out" target="PRINT" targetport="in">
-            <data key="edge_prod">5</data>
+            <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">5</data>
+            <data key="edge_cons">2</data>
             <data key="data_type">char</data>
         </edge>
         <edge source="SLOT_process_0_prec_0" sourceport="o1"
@@ -325,27 +169,6 @@
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="SLOT_process_0_prec_2" sourceport="o1"
-            target="SLOT_process_0_CTRL_dpcch_2" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_prec_3" sourceport="o1"
-            target="SLOT_process_0_CTRL_dpcch_3" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_prec_4" sourceport="o1"
-            target="SLOT_process_0_CTRL_dpcch_4" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
         <edge source="SLOT_process_0_prec_0" sourceport="o2"
             target="SLOT_process_0_SPR_dpdch_0" targetport="cons">
             <data key="edge_prod">1</data>
@@ -355,27 +178,6 @@
         </edge>
         <edge source="SLOT_process_0_prec_1" sourceport="o2"
             target="SLOT_process_0_SPR_dpdch_1" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_prec_2" sourceport="o2"
-            target="SLOT_process_0_SPR_dpdch_2" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_prec_3" sourceport="o2"
-            target="SLOT_process_0_SPR_dpdch_3" targetport="cons">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_prec_4" sourceport="o2"
-            target="SLOT_process_0_SPR_dpdch_4" targetport="cons">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
@@ -404,27 +206,6 @@
         </edge>
         <edge source="SLOT_process_0_broadcast_ctrl" sourceport="out"
             target="SLOT_process_0_CTRL_dpcch_1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_ctrl" sourceport="out"
-            target="SLOT_process_0_CTRL_dpcch_2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_ctrl" sourceport="out"
-            target="SLOT_process_0_CTRL_dpcch_3" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_ctrl" sourceport="out"
-            target="SLOT_process_0_CTRL_dpcch_4" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
@@ -564,216 +345,6 @@
             <data key="data_type">char</data>
         </edge>
         <edge source="SLOT_process_0_PSH_1_MUX" sourceport="prec"
-            target="SLOT_process_0_prec_2" targetport="i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_2_PSH1" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_Buffer" sourceport="trans_o"
-            target="SLOT_process_0_PSH_2_Buffer" targetport="trans_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">1</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_Buffer" sourceport="out_1"
-            target="SLOT_process_0_PSH_2_PSH1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_Buffer" sourceport="out_2"
-            target="SLOT_process_0_PSH_2_PSH2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_2_PSH2" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_PSH1" sourceport="out"
-            target="SLOT_process_0_PSH_2_MUX" targetport="in1">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_PSH2" sourceport="out"
-            target="SLOT_process_0_PSH_2_MUX" targetport="in2">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_MUX" sourceport="out"
-            target="implode_PRINT" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SCR_2" sourceport="out"
-            target="SLOT_process_0_PSH_2_Buffer" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_2_MUX" sourceport="prec"
-            target="SLOT_process_0_prec_3" targetport="i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_3_PSH1" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_Buffer" sourceport="trans_o"
-            target="SLOT_process_0_PSH_3_Buffer" targetport="trans_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">1</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_Buffer" sourceport="out_1"
-            target="SLOT_process_0_PSH_3_PSH1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_Buffer" sourceport="out_2"
-            target="SLOT_process_0_PSH_3_PSH2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_3_PSH2" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_PSH1" sourceport="out"
-            target="SLOT_process_0_PSH_3_MUX" targetport="in1">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_PSH2" sourceport="out"
-            target="SLOT_process_0_PSH_3_MUX" targetport="in2">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_MUX" sourceport="out"
-            target="implode_PRINT" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SCR_3" sourceport="out"
-            target="SLOT_process_0_PSH_3_Buffer" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_3_MUX" sourceport="prec"
-            target="SLOT_process_0_prec_4" targetport="i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_4_PSH1" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_Buffer" sourceport="trans_o"
-            target="SLOT_process_0_PSH_4_Buffer" targetport="trans_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">1</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_Buffer" sourceport="out_1"
-            target="SLOT_process_0_PSH_4_PSH1" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_Buffer" sourceport="out_2"
-            target="SLOT_process_0_PSH_4_PSH2" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_broadcast_coeff" sourceport="out"
-            target="SLOT_process_0_PSH_4_PSH2" targetport="coeff">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_PSH1" sourceport="out"
-            target="SLOT_process_0_PSH_4_MUX" targetport="in1">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_PSH2" sourceport="out"
-            target="SLOT_process_0_PSH_4_MUX" targetport="in2">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_MUX" sourceport="out"
-            target="implode_PRINT" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_SCR_4" sourceport="out"
-            target="SLOT_process_0_PSH_4_Buffer" targetport="in">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="SLOT_process_0_PSH_4_MUX" sourceport="prec"
             target="SLOT_process_0_prec_0" targetport="i">
             <data key="edge_prod">1</data>
             <data key="edge_delay">1</data>

@@ -9,7 +9,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="D:/Projects/AAM/Preesm/tests/UMTS/flatten.graphml"/>
+         <variable name="path" value="D:\Preesm\trunk\tests\UMTS\flatten.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
@@ -18,6 +18,5 @@
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="" to="__architecture"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="HSDF"/>
-   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
 </preesm:workflow>

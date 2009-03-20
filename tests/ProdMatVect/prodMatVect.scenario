@@ -11,17 +11,20 @@
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="PC"/>
-            <task name="ProdMatVect/prodScalVect/productScal"/>
-            <task name="ProdMatVect"/>
             <task name="displayResult"/>
-            <task name="outputVector"/>
-            <task name="outputMatrix"/>
             <task name="ProdMatVect/prodScalVect"/>
+            <task name="outputMatrix"/>
+            <task name="ProdMatVect/prodScalVect/productScal"/>
+            <task name="ProdMatVect/prodScalVect/copyData"/>
+            <task name="ProdMatVect"/>
+            <task name="outputVector"/>
+            <task name="ProdMatVect/prodScalVect/productScal/add"/>
+            <task name="ProdMatVect/prodScalVect/productScal/mult"/>
         </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
     </constraints>

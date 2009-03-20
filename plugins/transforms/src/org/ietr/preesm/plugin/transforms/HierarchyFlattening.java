@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.transforms;
 
 import java.util.logging.Level;
@@ -58,7 +58,8 @@ import org.sdf4j.visitors.VisitorOutput;
 public class HierarchyFlattening implements IGraphTransformation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException{
+	public TaskResult transform(SDFGraph algorithm, TextParameters params)
+			throws PreesmException {
 		String depthS = params.getVariable("depth");
 		int depth;
 		if (depthS != null) {
@@ -70,32 +71,37 @@ public class HierarchyFlattening implements IGraphTransformation {
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 		ConsistencyChecker checkConsistent = new ConsistencyChecker();
-		if(checkConsistent.verifyGraph(algorithm)){
-			logger.log(Level.FINER, "flattening application "+algorithm.getName()+" at level "+depth);
+		if (checkConsistent.verifyGraph(algorithm)) {
+			logger.log(Level.FINER, "flattening application "
+					+ algorithm.getName() + " at level " + depth);
 			org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
 			VisitorOutput.setLogger(logger);
-			if(algorithm.validateModel()){
+			if (algorithm.validateModel()) {
 				try {
 					flatHier.flattenGraph(algorithm, depth);
 				} catch (SDF4JException e) {
 					e.printStackTrace();
-					throw(new PreesmException(e.getMessage()));
+					throw (new PreesmException(e.getMessage()));
 				}
 				logger.log(Level.FINER, "flattening complete");
 				TaskResult result = new TaskResult();
-				result.setSDF((SDFGraph) flatHier.getOutput());
+				SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
+				result.setSDF(resultGraph);
 				return result;
-			}else{
-				throw(new PreesmException("Graph not valid, not schedulable"));
+			} else {
+				throw (new PreesmException("Graph not valid, not schedulable"));
 			}
-		}else{
-			logger.log(Level.SEVERE, "Inconsistent Hierarchy, graph can't be flattened");
+		} else {
+			logger.log(Level.SEVERE,
+					"Inconsistent Hierarchy, graph can't be flattened");
 			TaskResult result = new TaskResult();
 			result.setSDF((SDFGraph) algorithm.clone());
-			throw(new PreesmException("Inconsistent Hierarchy, graph can't be flattened"));
+			throw (new PreesmException(
+					"Inconsistent Hierarchy, graph can't be flattened"));
 		}
-		
 
 	}
+	
+
 
 }

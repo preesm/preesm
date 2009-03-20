@@ -24,106 +24,232 @@
         </data>
         <node id="outputMatrix" kind="vertex">
             <data key="graph_desc">../IDL/generateMatrix.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
         </node>
         <node id="outputVector" kind="vertex">
             <data key="graph_desc">../IDL/generateVector.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
         </node>
         <node id="displayResult" kind="vertex">
             <data key="graph_desc">../IDL/displayResult.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
         </node>
-        <node id="ProdMatVect_0_explode_matrixIn" kind="fork"/>
-        <node id="ProdMatVect_0_explode_vectorIn" kind="fork"/>
         <node id="ProdMatVect_0_roundBuffer_vectorOut" kind="Broadcast"/>
-        <node id="ProdMatVect_0_prodScalVect_0" kind="vertex">
-            <data key="graph_desc">prodVectVect.xml</data>
-            <data key="arguments">
-                <argument name="size" value="2"/>
-            </data>
+        <node id="explode_outputMatrix_outMat" kind="fork"/>
+        <node id="explode_outputVector_outVect" kind="fork"/>
+        <node id="implode_ProdMatVect_0_roundBuffer_vectorOut_in" kind="join"/>
+        <node id="ProdMatVect_0_prodScalVect_0_productScal" kind="vertex">
+            <data key="graph_desc"/>
         </node>
-        <node id="ProdMatVect_0_prodScalVect_1" kind="vertex">
-            <data key="graph_desc">prodVectVect.xml</data>
-            <data key="arguments">
-                <argument name="size" value="2"/>
-            </data>
+        <node id="ProdMatVect_0_prodScalVect_0_copyData" kind="vertex">
+            <data key="graph_desc">../IDL/copyData.idl</data>
         </node>
+        <node id="ProdMatVect_0_prodScalVect_0_explode_vector1In" kind="fork"/>
+        <node id="ProdMatVect_0_prodScalVect_0_broadcast_ScalIn" kind="Broadcast"/>
+        <node id="ProdMatVect_0_prodScalVect_0_implode_vectorOut" kind="join"/>
+        <node id="ProdMatVect_0_prodScalVect_0_explode_accIn" kind="fork"/>
+        <node id="ProdMatVect_0_prodScalVect_0_implode_accOut" kind="join"/>
+        <node id="ProdMatVect_0_prodScalVect_1_productScal" kind="vertex">
+            <data key="graph_desc"/>
+        </node>
+        <node id="ProdMatVect_0_prodScalVect_1_copyData" kind="vertex">
+            <data key="graph_desc">../IDL/copyData.idl</data>
+        </node>
+        <node id="ProdMatVect_0_prodScalVect_1_explode_vector1In" kind="fork"/>
+        <node id="ProdMatVect_0_prodScalVect_1_broadcast_ScalIn" kind="Broadcast"/>
+        <node id="ProdMatVect_0_prodScalVect_1_implode_vectorOut" kind="join"/>
+        <node id="ProdMatVect_0_prodScalVect_1_explode_accIn" kind="fork"/>
+        <node id="ProdMatVect_0_prodScalVect_1_implode_accOut" kind="join"/>
         <edge source="outputMatrix" sourceport="outMat"
-            target="ProdMatVect_0_explode_matrixIn" targetport="in">
+            target="explode_outputMatrix_outMat" targetport="vector1In">
             <data key="edge_prod">4</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">4</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
         <edge source="outputVector" sourceport="outVect"
-            target="ProdMatVect_0_explode_vectorIn" targetport="in">
+            target="explode_outputVector_outVect" targetport="ScalIn">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
         <edge source="ProdMatVect_0_roundBuffer_vectorOut"
             sourceport="out" target="displayResult" targetport="inResult">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
-        <edge source="ProdMatVect_0_prodScalVect_0" sourceport="accOut"
-            target="ProdMatVect_0_prodScalVect_1" targetport="accIn">
+        <edge source="implode_ProdMatVect_0_roundBuffer_vectorOut_in"
+            sourceport="vectorOut"
+            target="ProdMatVect_0_roundBuffer_vectorOut" targetport="in">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_productScal"
+            sourceport="scalOut"
+            target="ProdMatVect_0_prodScalVect_0_copyData" targetport="inData">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_outputMatrix_outMat" sourceport="outMat"
+            target="ProdMatVect_0_prodScalVect_0_explode_vector1In" targetport="in">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
-        <edge source="ProdMatVect_0_prodScalVect_1" sourceport="accOut"
-            target="ProdMatVect_0_prodScalVect_0" targetport="accIn">
+        <edge source="ProdMatVect_0_prodScalVect_0_explode_vector1In"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0_productScal" targetport="scal1">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_outputVector_outVect" sourceport="outVect"
+            target="ProdMatVect_0_prodScalVect_0_broadcast_ScalIn" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_broadcast_ScalIn"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0_productScal" targetport="scal2">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_implode_vectorOut"
+            sourceport="out"
+            target="implode_ProdMatVect_0_roundBuffer_vectorOut_in" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_copyData"
+            sourceport="outData2"
+            target="ProdMatVect_0_prodScalVect_0_implode_vectorOut" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_explode_accIn"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0_productScal" targetport="acc">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_copyData"
+            sourceport="outData1"
+            target="ProdMatVect_0_prodScalVect_0_implode_accOut" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_productScal"
+            sourceport="scalOut"
+            target="ProdMatVect_0_prodScalVect_1_copyData" targetport="inData">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_outputMatrix_outMat" sourceport="outMat"
+            target="ProdMatVect_0_prodScalVect_1_explode_vector1In" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_explode_vector1In"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1_productScal" targetport="scal1">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_outputVector_outVect" sourceport="outVect"
+            target="ProdMatVect_0_prodScalVect_1_broadcast_ScalIn" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_broadcast_ScalIn"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1_productScal" targetport="scal2">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_implode_vectorOut"
+            sourceport="out"
+            target="implode_ProdMatVect_0_roundBuffer_vectorOut_in" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_copyData"
+            sourceport="outData2"
+            target="ProdMatVect_0_prodScalVect_1_implode_vectorOut" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_0_implode_accOut"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1_explode_accIn" targetport="in">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_explode_accIn"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_1_productScal" targetport="acc">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="ProdMatVect_0_prodScalVect_1_implode_accOut"
+            sourceport="out"
+            target="ProdMatVect_0_prodScalVect_0_explode_accIn" targetport="in">
             <data key="edge_prod">2</data>
             <data key="edge_delay">2</data>
             <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
-        <edge source="ProdMatVect_0_explode_matrixIn" sourceport="out"
-            target="ProdMatVect_0_prodScalVect_0" targetport="vector1In">
-            <data key="edge_prod">2</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="ProdMatVect_0_explode_matrixIn" sourceport="out"
-            target="ProdMatVect_0_prodScalVect_1" targetport="vector1In">
-            <data key="edge_prod">2</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="ProdMatVect_0_explode_vectorIn" sourceport="out"
-            target="ProdMatVect_0_prodScalVect_0" targetport="ScalIn">
+        <edge source="ProdMatVect_0_prodScalVect_1_copyData"
+            sourceport="outData1"
+            target="ProdMatVect_0_prodScalVect_1_implode_accOut" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="ProdMatVect_0_explode_vectorIn" sourceport="out"
-            target="ProdMatVect_0_prodScalVect_1" targetport="ScalIn">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="ProdMatVect_0_prodScalVect_0"
-            sourceport="vectorOut"
-            target="ProdMatVect_0_roundBuffer_vectorOut" targetport="in">
-            <data key="edge_prod">2</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="ProdMatVect_0_prodScalVect_1"
-            sourceport="vectorOut"
-            target="ProdMatVect_0_roundBuffer_vectorOut" targetport="in">
-            <data key="edge_prod">2</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
     </graph>
 </graphml>

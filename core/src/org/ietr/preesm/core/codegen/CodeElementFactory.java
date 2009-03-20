@@ -67,6 +67,13 @@ public class CodeElementFactory {
 		}else if (vertex instanceof CodeGenSDFJoinVertex) {
 			return null ;
 		}else if (vertex instanceof CodeGenSDFInitVertex) {
+			if(vertex.getBase().outgoingEdgesOf(vertex).size()>0){
+				SDFEdge initEdge = (SDFEdge) vertex.getBase().outgoingEdgesOf(vertex).toArray()[0];
+				UserFunctionCall initCall = new UserFunctionCall("init_"+initEdge.getTargetInterface().getName(),parentContainer);
+				initCall.addParameter(parentContainer.getBuffer(initEdge));
+				initCall.addParameter(new Constant("init_size",initEdge.getProd().intValue()));
+				return initCall ;
+			}
 			return null ;
 		}else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
 			return null ;
@@ -122,7 +129,7 @@ public class CodeElementFactory {
 			for(SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)){
 				ConstantValue index = new ConstantValue("", new DataType("int"), 0);
 				String buffName = parentContainer.getBuffer(outEdge).getName();
-				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd().intValue(), index, inBuffer, outEdge, parentContainer );
+				SubBuffer subElt = new SubBuffer(buffName, outEdge.getCons().intValue(), index, inBuffer, outEdge, parentContainer );
 				parentContainer.removeBufferAllocation(parentContainer.getBuffer(outEdge));
 				parentContainer.addBuffer(new SubBufferAllocation(subElt));
 			}
