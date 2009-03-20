@@ -29,7 +29,7 @@ void generateMatrix(int * matOut, int size){
 	int i, j ;
 	srand(time(NULL)); 
 	for(i = 0 ; i < size*size ; i ++){
-			matOut[i] = 2 ;//rand();
+			matOut[i] = 5 ;//rand();
 	}
 	display(matOut, size*size);
 }

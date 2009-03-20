@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="prodMatVect" x="312" y="147"/>
+      <vertex id="Mat1" x="139" y="100"/>
+      <vertex id="Mat2" x="132" y="240"/>
+      <vertex id="MatOut" x="521" y="160"/>
+   </vertices>
+</layout>
