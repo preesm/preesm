@@ -65,31 +65,6 @@ public class TransactionManager {
 		}
 	}
 	
-	public void undoTransactions(MapperDAGVertex refVertex){
-		
-		// All transactions relative to a vertex are grouped. Once we are out
-		// of this group, we can stop undoing them
-		boolean alreadyUndoneFew=false;
-		
-		Iterator<Transaction> it = transactionList.descendingIterator();
-		//PreesmLogger.getLogger().log(Level.INFO,"undoing!");
-		
-		while(it.hasNext()){
-			Transaction currentT = it.next();
-			if(currentT.getRef() != null && currentT.getRef().equals(refVertex)){
-				if(currentT.isExecuted()){
-					//PreesmLogger.getLogger().log(Level.INFO,"undoing " + currentT.toString());
-					//currentT.undo();
-				}
-				it.remove(); // Removing the transation from the list
-				alreadyUndoneFew = true;
-			}
-			else if(alreadyUndoneFew){
-				return;
-			}
-		}
-	}
-	
 	public void add(Transaction transaction, MapperDAGVertex refVertex){
 		transaction.setRef(refVertex);
 		transactionList.add(transaction);

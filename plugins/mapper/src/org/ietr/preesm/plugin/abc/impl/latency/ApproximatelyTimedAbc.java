@@ -42,7 +42,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
+import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -61,7 +61,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 	/**
 	 * Transfer vertex adder for edge scheduling
 	 */
-	protected TransferVertexAdder tvertexAdder;
+	protected ImplementationFiller tvertexAdder;
 
 	/**
 	 * Scheduling the transfer vertices on the media
@@ -79,7 +79,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
-		tvertexAdder = new TransferVertexAdder(edgeScheduler, router,
+		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
 				orderManager, false, false, false);
 	}
 

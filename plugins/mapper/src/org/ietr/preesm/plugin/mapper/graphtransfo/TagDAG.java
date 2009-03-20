@@ -49,9 +49,9 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.RouteCalculator;
-import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -116,7 +116,7 @@ public class TagDAG {
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		TransferVertexAdder tvAdder = new TransferVertexAdder(AbstractEdgeSched
+		ImplementationFiller tvAdder = new ImplementationFiller(AbstractEdgeSched
 				.getInstance(EdgeSchedType.Simple, orderMgr),
 				new RouteCalculator(architecture), orderMgr, true, false, false);
 		tvAdder.addAndScheduleAllTransferVertices(dag, false);

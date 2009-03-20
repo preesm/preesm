@@ -41,7 +41,7 @@ public class ImplementationCleaner {
 	 */
 	public void removeAllTransfers(MapperDAGVertex vertex) {
 
-		for (DAGVertex v : getAllTransfers(vertex)) {
+		for (DAGVertex v : ImplementationTools.getAllTransfers(vertex)) {
 			if (v instanceof TransferVertex) {
 				transactionManager.add(new RemoveVertexTransaction(
 						(MapperDAGVertex) v, implementation, orderManager),
@@ -59,7 +59,7 @@ public class ImplementationCleaner {
 	 */
 	public void removeAllOverheads(MapperDAGVertex vertex) {
 
-		for (DAGVertex v : getAllTransfers(vertex)) {
+		for (DAGVertex v : ImplementationTools.getAllTransfers(vertex)) {
 			if (v instanceof TransferVertex) {
 				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
 				if (o != null && o instanceof OverheadVertex) {
@@ -71,60 +71,6 @@ public class ImplementationCleaner {
 
 		transactionManager.execute();
 		transactionManager.clear();
-	}
-
-	/**
-	 * Gets all transfers from routes coming from or going to vertex. Do not
-	 * execute if overheads are present
-	 */
-	public Set<DAGVertex> getAllTransfers(MapperDAGVertex vertex) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		transfers.addAll(getPrecedingTransfers(vertex));
-		transfers.addAll(getFollowingTransfers(vertex));
-
-		return transfers;
-	}
-
-	/**
-	 * Gets all transfers preceding vertex. Recursive function
-	 */
-	public Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		for (DAGEdge edge : vertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex v = (MapperDAGVertex) edge.getSource();
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getPrecedingTransfers(v));
-				}
-			}
-		}
-
-		return transfers;
-	}
-
-	/**
-	 * Gets all transfers following vertex. Recursive function
-	 */
-	public Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		for (DAGEdge edge : vertex.outgoingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex v = (MapperDAGVertex) edge.getTarget();
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getFollowingTransfers(v));
-				}
-			}
-		}
-
-		return transfers;
 	}
 
 	public void unscheduleVertex(MapperDAGVertex vertex) {

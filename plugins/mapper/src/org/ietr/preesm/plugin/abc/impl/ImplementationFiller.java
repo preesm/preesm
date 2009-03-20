@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.route;
+package org.ietr.preesm.plugin.abc.impl;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +47,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.RouteCalculator;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
@@ -69,7 +70,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class TransferVertexAdder {
+public class ImplementationFiller {
 
 	/**
 	 * True if we take into account the transfer overheads
@@ -97,7 +98,7 @@ public class TransferVertexAdder {
 	 */
 	protected IEdgeSched edgeScheduler;
 
-	public TransferVertexAdder(IEdgeSched edgeScheduler,
+	public ImplementationFiller(IEdgeSched edgeScheduler,
 			RouteCalculator router, SchedOrderManager orderManager,
 			boolean sendReceive, boolean rmvOrigEdge, boolean handleOverheads) {
 		super();
@@ -192,7 +193,7 @@ public class TransferVertexAdder {
 	public void addNewVertexOverheads(MapperDAG implementation, MapperDAGVertex newVertex){
 		TransactionManager localTransactionManager = new TransactionManager();
 
-		Set<DAGVertex> transfers = TransferVertexAdder.getAllTransfers(newVertex, implementation, localTransactionManager);
+		Set<DAGVertex> transfers = ImplementationTools.getAllTransfers(newVertex);
 
 		for (DAGVertex tvertex : transfers) {
 			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
@@ -269,105 +270,6 @@ public class TransferVertexAdder {
 
 			i++;
 		}
-	}
-
-	/**
-	 * Removes all transfers from routes coming from or going to vertex
-	 */
-	public void removeAllTransfers(MapperDAGVertex vertex,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		for (DAGVertex v : getAllTransfers(vertex, implementation,
-				transactionManager)) {
-			if (v instanceof TransferVertex) {
-				transactionManager.add(new RemoveVertexTransaction(
-						(MapperDAGVertex) v, implementation, orderManager),
-						null);
-
-			}
-		}
-
-		transactionManager.execute();
-	}
-
-	/**
-	 * Removes all overheads from routes coming from or going to vertex
-	 */
-	public void removeAllOverheads(Set<DAGVertex> transfers,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		for (DAGVertex v : transfers) {
-			if (v instanceof TransferVertex) {
-				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
-				if (o != null && o instanceof OverheadVertex) {
-					transactionManager.add(new RemoveVertexTransaction(o,
-							implementation, orderManager), null);
-				}
-			}
-		}
-
-		transactionManager.execute();
-	}
-
-	/**
-	 * Gets all transfers from routes coming from or going to vertex. Do not
-	 * execute if overheads are present
-	 */
-	public static Set<DAGVertex> getAllTransfers(MapperDAGVertex vertex,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		transfers.addAll(getPrecedingTransfers(vertex, implementation,
-				transactionManager));
-		transfers.addAll(getFollowingTransfers(vertex, implementation,
-				transactionManager));
-
-		return transfers;
-	}
-
-	/**
-	 * Gets all transfers preceding vertex. Recursive function
-	 */
-	private static Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		for (DAGEdge edge : vertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex v = (MapperDAGVertex) edge.getSource();
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getPrecedingTransfers(v, implementation,
-							transactionManager));
-				}
-			}
-		}
-
-		return transfers;
-	}
-
-	/**
-	 * Gets all transfers following vertex. Recursive function
-	 */
-	private static Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex,
-			MapperDAG implementation, TransactionManager transactionManager) {
-
-		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
-
-		for (DAGEdge edge : vertex.outgoingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex v = (MapperDAGVertex) edge.getTarget();
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getFollowingTransfers(v, implementation,
-							transactionManager));
-				}
-			}
-		}
-
-		return transfers;
 	}
 
 	public SchedOrderManager getOrderManager() {

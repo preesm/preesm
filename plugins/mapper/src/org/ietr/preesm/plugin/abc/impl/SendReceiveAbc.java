@@ -42,7 +42,6 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
-import org.ietr.preesm.plugin.abc.route.TransferVertexAdder;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -57,7 +56,7 @@ public class SendReceiveAbc extends LatencyAbc {
 	/**
 	 * Transfer vertex adder for edge scheduling
 	 */
-	protected TransferVertexAdder tvertexAdder;
+	protected ImplementationFiller tvertexAdder;
 
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
@@ -67,7 +66,7 @@ public class SendReceiveAbc extends LatencyAbc {
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
 
-		tvertexAdder = new TransferVertexAdder(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false, false);
+		tvertexAdder = new ImplementationFiller(AbstractEdgeSched.getInstance(edgeSchedType,orderManager),router, orderManager, true, false, false);
 	}
 
 	/**
