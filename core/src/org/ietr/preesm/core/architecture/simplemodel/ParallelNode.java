@@ -45,7 +45,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * 
  * @author mpelcat
  */
-public class ParallelNode extends ArchitectureComponent {
+public class ParallelNode extends AbstractNode {
 
 	public ParallelNode(String name, ParallelNodeDefinition type) {
 		super(name, type);

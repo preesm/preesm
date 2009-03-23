@@ -50,7 +50,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
  * @author mpelcat
  */
 public class MediumRouteStep extends AbstractRouteStep {
-
+	
 	private Medium medium;
 
 	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {

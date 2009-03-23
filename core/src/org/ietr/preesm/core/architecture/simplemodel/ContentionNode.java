@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
  * 
  * @author mpelcat
  */
-public class ContentionNode extends ArchitectureComponent {
+public class ContentionNode extends AbstractNode {
 
 	public ContentionNode(String name, ContentionNodeDefinition type) {
 		super(name, type);
