@@ -52,9 +52,9 @@ import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.SDF4JException;
-import org.sdf4j.visitors.ToHSDFVisitor;
-import org.sdf4j.visitors.TopologyVisitor;
+import org.sdf4j.model.sdf.visitors.ToHSDFVisitor;
+import org.sdf4j.model.sdf.visitors.TopologyVisitor;
+import org.sdf4j.model.visitors.SDF4JException;
 
 /**
  * Class used while retrieving the algorithm at the beginning of the workflow execution

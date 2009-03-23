@@ -20,35 +20,37 @@
    <graph edgedefault="directed">
       <data key="name">prodMatMat</data>
       <data key="parameters">
-         <parameter name="size"/>
+         <parameter name="xsize"/>
+         <parameter name="ysize"/>
       </data>
       <data key="variables"/>
       <node id="prodMatVect" kind="vertex">
          <data key="graph_desc">matVect.graphml</data>
          <data key="name">prodMatVect</data>
          <data key="arguments">
-            <argument name="size" value="size"/>
+            <argument name="xsize" value="xsize"/>
+            <argument name="ysize" value="ysize"/>
          </data>
       </node>
       <node id="Mat1" kind="port" port_direction="Input"/>
       <node id="Mat2" kind="port" port_direction="Input"/>
       <node id="MatOut" kind="port" port_direction="Output"/>
       <edge source="Mat1" sourceport="in" target="prodMatVect" targetport="matrixIn">
-         <data key="edge_prod">size*size</data>
+         <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size*size</data>
+         <data key="edge_cons">xsize*ysize</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="Mat2" sourceport="in" target="prodMatVect" targetport="vectorIn">
-         <data key="edge_prod">size*size</data>
+         <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size</data>
+         <data key="edge_cons">ysize</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="prodMatVect" sourceport="vectorOut" target="MatOut" targetport="out">
-         <data key="edge_prod">size</data>
+         <data key="edge_prod">ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size*size</data>
+         <data key="edge_cons">xsize*ysize</data>
          <data key="data_type">int</data>
       </edge>
    </graph>

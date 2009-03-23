@@ -45,10 +45,9 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.OptimizedToHSDFVisitor;
-import org.sdf4j.visitors.SDF4JException;
-import org.sdf4j.visitors.VisitorOutput;
-
+import org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor;
+import org.sdf4j.model.visitors.SDF4JException;
+import org.sdf4j.model.visitors.VisitorOutput;
 /**
  * Class used to transform a SDF graph into a HSDF graph
  * 
@@ -64,7 +63,7 @@ public class HSDFTransformation implements IGraphTransformation {
 		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
 		VisitorOutput.setLogger(logger);
 		if(algorithm.validateModel()){
-			OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+			org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 			try {
 				algorithm.accept(toHsdf);
 			} catch (SDF4JException e) {

@@ -72,13 +72,14 @@ Export-Package: net.sf.saxon,
  org.sdf4j.model.sdf,
  org.sdf4j.model.sdf.esdf,
  org.sdf4j.model.sdf.types,
+ org.sdf4j.model.sdf.visitors,
+ org.sdf4j.model.visitors,
  org.sdf4j.optimisations.clustering,
  org.sdf4j.optimisations.clustering.fast,
  org.sdf4j.optimisations.clustering.internalisation,
  org.sdf4j.optimisations.clustering.mfa,
  org.sdf4j.optimisations.clustering.stronglyconnected,
  org.sdf4j.optimisations.loops.detection,
- org.sdf4j.optimisations.loops.pipelining,
- org.sdf4j.visitors
+ org.sdf4j.optimisations.loops.pipelining
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

@@ -45,9 +45,10 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.ConsistencyChecker;
-import org.sdf4j.visitors.SDF4JException;
-import org.sdf4j.visitors.VisitorOutput;
+import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
+import org.sdf4j.model.sdf.visitors.SDFHierarchyFlattening;
+import org.sdf4j.model.visitors.SDF4JException;
+import org.sdf4j.model.visitors.VisitorOutput;
 
 /**
  * Class used to flatten the hierarchy of a given graph
@@ -74,7 +75,7 @@ public class HierarchyFlattening implements IGraphTransformation {
 		if (checkConsistent.verifyGraph(algorithm)) {
 			logger.log(Level.FINER, "flattening application "
 					+ algorithm.getName() + " at level " + depth);
-			org.sdf4j.visitors.HierarchyFlattening flatHier = new org.sdf4j.visitors.HierarchyFlattening();
+			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
 			VisitorOutput.setLogger(logger);
 			if (algorithm.validateModel()) {
 				try {

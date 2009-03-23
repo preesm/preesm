@@ -72,8 +72,8 @@ import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
-import org.sdf4j.visitors.DAGTransformation;
-import org.sdf4j.visitors.SDF4JException;
+import org.sdf4j.model.sdf.visitors.DAGTransformation;
+import org.sdf4j.model.visitors.SDF4JException;
 
 /**
  * @author jpiat

@@ -40,8 +40,8 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.visitors.GraphVisitor;
-import org.sdf4j.visitors.SDF4JException;
+import org.sdf4j.model.sdf.visitors.GraphVisitor;
+import org.sdf4j.model.visitors.SDF4JException;
 
 /**
  * Visitor of a graph of type CodegenSDF

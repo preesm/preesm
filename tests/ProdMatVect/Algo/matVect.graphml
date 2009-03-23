@@ -20,7 +20,8 @@
    <graph edgedefault="directed">
       <data key="name">matVect</data>
       <data key="parameters">
-         <parameter name="size"/>
+         <parameter name="xsize"/>
+         <parameter name="ysize"/>
       </data>
       <data key="variables"/>
       <node id="matrixIn" kind="port" port_direction="Input"/>
@@ -30,31 +31,31 @@
          <data key="graph_desc">prodVectVect.graphml</data>
          <data key="name">prodScalVect</data>
          <data key="arguments">
-            <argument name="size" value="size"/>
+            <argument name="size" value="ysize"/>
          </data>
       </node>
       <edge source="matrixIn" sourceport="in" target="prodScalVect" targetport="vector1In">
-         <data key="edge_prod">size*size</data>
+         <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size</data>
+         <data key="edge_cons">ysize</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="vectorIn" sourceport="in" target="prodScalVect" targetport="ScalIn">
-         <data key="edge_prod">size</data>
+         <data key="edge_prod">ysize</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="prodScalVect" sourceport="vectorOut" target="vectorOut" targetport="out">
-         <data key="edge_prod">size</data>
+         <data key="edge_prod">ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size</data>
+         <data key="edge_cons">ysize</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="prodScalVect" sourceport="accOut" target="prodScalVect" targetport="accIn">
-         <data key="edge_prod">size</data>
-         <data key="edge_delay">size</data>
-         <data key="edge_cons">size</data>
+         <data key="edge_prod">ysize</data>
+         <data key="edge_delay">ysize</data>
+         <data key="edge_cons">ysize</data>
          <data key="data_type">int</data>
       </edge>
    </graph>
