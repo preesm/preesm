@@ -44,8 +44,7 @@ public class ImplementationCleaner {
 		for (DAGVertex v : ImplementationTools.getAllTransfers(vertex)) {
 			if (v instanceof TransferVertex) {
 				transactionManager.add(new RemoveVertexTransaction(
-						(MapperDAGVertex) v, implementation, orderManager),
-						null);
+						(MapperDAGVertex) v, implementation, orderManager));
 
 			}
 		}
@@ -64,7 +63,7 @@ public class ImplementationCleaner {
 				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
 				if (o != null && o instanceof OverheadVertex) {
 					transactionManager.add(new RemoveVertexTransaction(o,
-							implementation, orderManager), null);
+							implementation, orderManager));
 				}
 			}
 		}

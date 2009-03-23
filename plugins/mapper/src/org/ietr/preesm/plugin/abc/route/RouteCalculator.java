@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
@@ -53,12 +54,13 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- *	This class can evaluate a given transfer and choose the best route
- *	between two operators
- *   
- *	@author mpelcat
+ * This class can evaluate a given transfer and choose the best route between
+ * two operators
+ * 
+ * @author mpelcat
  */
 public class RouteCalculator {
 
@@ -81,13 +83,13 @@ public class RouteCalculator {
 		Route route = getRoute(op1, op2);
 		long cost = 0;
 
-		Iterator<MediumRouteStep> it = route.iterator();
+		Iterator<AbstractRouteStep> it = route.iterator();
 
 		// Iterating the route and incrementing transfer cost
 		while (it.hasNext()) {
-			MediumRouteStep step = it.next();
+			AbstractRouteStep step = it.next();
 
-			cost += evaluateSingleTransfer(edge, step);
+			cost += evaluateSingleTransfer(edge, (MediumRouteStep) step);
 		}
 
 		return cost;
@@ -107,8 +109,7 @@ public class RouteCalculator {
 			InitialEdgeProperty edgeprop = edge.getInitialEdgeProperty();
 			Integer datasize = edgeprop.getDataSize();
 
-			Float time = datasize.floatValue()
-					* def.getInvSpeed();
+			Float time = datasize.floatValue() * def.getInvSpeed();
 
 			return time.longValue();
 		} else {
@@ -123,7 +124,7 @@ public class RouteCalculator {
 	}
 
 	/**
-	 * Choosing the medium with best speed between 2 operators. 
+	 * Choosing the medium with best speed between 2 operators.
 	 */
 	public Medium getDirectRoute(Operator op1, Operator op2) {
 
@@ -160,11 +161,11 @@ public class RouteCalculator {
 	}
 
 	/**
-	 * Choosing a route between 2 operators and appending it 
-	 * to the list of already visited operators and to the route.
+	 * Choosing a route between 2 operators and appending it to the list of
+	 * already visited operators and to the route.
 	 */
-	public boolean appendRoute(List<Operator> alreadyVisited,
-			Route route, Operator op1, Operator op2) {
+	public boolean appendRoute(List<Operator> alreadyVisited, Route route,
+			Operator op1, Operator op2) {
 
 		// Gets the fastest medium directly connecting op1 and op2
 		Medium direct = getDirectRoute(op1, op2);
@@ -178,13 +179,14 @@ public class RouteCalculator {
 
 			// There is no best medium directly connecting op1 and op2
 			// Recursively appending best routes
-			Iterator<ArchitectureComponent> iterator = archi.getComponents(ArchitectureComponentType.operator).iterator();
+			Iterator<ArchitectureComponent> iterator = archi.getComponents(
+					ArchitectureComponentType.operator).iterator();
 			Route bestSubRoute = null;
 
 			// Iterating all operators
 			while (iterator.hasNext()) {
-				
-				Operator op = (Operator)iterator.next();
+
+				Operator op = (Operator) iterator.next();
 				Medium m = getDirectRoute(op1, op);
 
 				// If there is a direct route between op1 and the current op,
@@ -235,6 +237,17 @@ public class RouteCalculator {
 			return route;
 		else
 			return null;
+	}
+
+	/**
+	 * Choosing a route between 2 operators
+	 */
+	public Route getRoute(MapperDAGEdge edge) {
+		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+		return getRoute(source.getImplementationVertexProperty()
+				.getEffectiveOperator(), target
+				.getImplementationVertexProperty().getEffectiveOperator());
 	}
 
 }

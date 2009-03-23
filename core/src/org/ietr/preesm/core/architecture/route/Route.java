@@ -47,7 +47,7 @@ import java.util.ArrayList;
  * 
  * @author mpelcat
  */
-public class Route extends ArrayList<MediumRouteStep> {
+public class Route extends ArrayList<AbstractRouteStep> {
 
 	/**
 	 * ID used to reference the element in a property bean

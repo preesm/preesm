@@ -3,6 +3,11 @@
  */
 package org.ietr.preesm.plugin.abc.route;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+
 /**
  * Routes a communication and creates the necessary communication vertices
  * 
@@ -10,10 +15,18 @@ package org.ietr.preesm.plugin.abc.route;
  */
 public abstract class AbstractCommunicationRouter {
 
-	private CommunicationRouterImplementer implementer;
+	private Map<String,CommunicationRouterImplementer> implementers;
 
 	public AbstractCommunicationRouter() {
 		super();
-		this.implementer = null;
+		this.implementers = new HashMap<String, CommunicationRouterImplementer>();
+	}
+	
+	protected void addImplementer(String name,CommunicationRouterImplementer implementer){
+		implementers.put(name,implementer);
+	}
+	
+	protected CommunicationRouterImplementer getImplementer(String name){
+		return implementers.get(name);
 	}
 }

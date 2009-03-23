@@ -65,12 +65,15 @@ public class TransactionManager {
 		}
 	}
 	
-	public void add(Transaction transaction, MapperDAGVertex refVertex){
-		transaction.setRef(refVertex);
+	public void add(Transaction transaction){
 		transactionList.add(transaction);
 	}
 	
 	public void clear(){
 		transactionList.clear();
+	}
+	
+	public Transaction getLast(){
+		return transactionList.peekLast();
 	}
 }

@@ -141,7 +141,6 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;
 		this.implementation = implementation;
-		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
 		this.orderManager = orderManager;

@@ -82,7 +82,7 @@ public class PrecedenceEdgeAdder {
 		for (DAGEdge e : implementation.edgeSet()) {
 			if (e instanceof PrecedenceEdge) {
 				transactionManager.add(new RemoveEdgeTransaction(
-						(MapperDAGEdge) e, implementation), null);
+						(MapperDAGEdge) e, implementation));
 			}
 		}
 		transactionManager.execute();
@@ -121,7 +121,7 @@ public class PrecedenceEdgeAdder {
 						Transaction transaction = new AddPrecedenceEdgeTransaction(
 								orderManager, implementation, src, dst,
 								AddPrecedenceEdgeTransaction.simpleDelete);
-						localTransactionManager.add(transaction, null);
+						localTransactionManager.add(transaction);
 					}
 				}
 			}

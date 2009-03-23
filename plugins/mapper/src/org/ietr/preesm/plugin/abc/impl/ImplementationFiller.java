@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -156,7 +157,7 @@ public class ImplementationFiller {
 		for (DAGVertex tvertex : transfers) {
 			for(DAGEdge incomingEdge : implementation.incomingEdgesOf(tvertex)){
 				if(!(incomingEdge instanceof PrecedenceEdge)){
-					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), getOrderManager()),null);
+					localTransactionManager.add(new AddOverheadVertexTransaction((MapperDAGEdge)incomingEdge,implementation, ((TransferVertex)tvertex).getRouteStep(), getOrderManager()));
 				}
 			}
 		}
@@ -224,14 +225,14 @@ public class ImplementationFiller {
 							+ " and " + destOp);
 			return;
 		}
-		Iterator<MediumRouteStep> it = route.iterator();
+		Iterator<AbstractRouteStep> it = route.iterator();
 		int i = 1;
 		// Transactions need to be linked so that the communication vertices
 		// created are also linked
 		Transaction precedingTransaction = null;
 
 		while (it.hasNext()) {
-			MediumRouteStep step = it.next();
+			MediumRouteStep step = (MediumRouteStep)it.next();
 
 			Transaction transaction = null;
 
@@ -241,12 +242,12 @@ public class ImplementationFiller {
 					orderManager, i, step,
 					TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
 
-			transactionManager.add(transaction, refVertex);
+			transactionManager.add(transaction);
 			precedingTransaction = transaction;
 
 			if (rmvOrigEdge) {
 				transactionManager.add(new RemoveEdgeTransaction(edge,
-						implementation), refVertex);
+						implementation));
 			}
 
 			i++;
@@ -278,14 +279,14 @@ public class ImplementationFiller {
 							+ " and " + destOp);
 			return;
 		}
-		Iterator<MediumRouteStep> it = route.iterator();
+		Iterator<AbstractRouteStep> it = route.iterator();
 		int i = 1;
 		// Transactions need to be linked so that the communication vertices
 		// created are also linked
 		Transaction precedingTransaction = null;
 
 		while (it.hasNext()) {
-			MediumRouteStep step = it.next();
+			MediumRouteStep step = (MediumRouteStep)it.next();
 
 			Transaction transaction = null;
 
@@ -294,15 +295,15 @@ public class ImplementationFiller {
 
 			transaction = new AddTransferVertexTransaction(
 					precedingTransaction, edgeScheduler, edge,
-					implementation, orderManager, i, step, transferCost,
+					implementation, orderManager,i, step, transferCost,
 					scheduleVertex);
 
-			transactionManager.add(transaction, refVertex);
+			transactionManager.add(transaction);
 			precedingTransaction = transaction;
 
 			if (rmvOrigEdge) {
 				transactionManager.add(new RemoveEdgeTransaction(edge,
-						implementation), refVertex);
+						implementation));
 			}
 
 			i++;

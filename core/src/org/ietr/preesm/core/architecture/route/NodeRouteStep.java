@@ -21,13 +21,18 @@ public class NodeRouteStep extends AbstractRouteStep {
 	 */
 	List<AbstractNode> nodes;
 	
+	public static final String id = "NodeRouteStep";
+	
 	public NodeRouteStep(Operator sender, Operator receiver) {
 		super(sender, receiver);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void addNode(AbstractNode node){
 		nodes.add(node);
 	}
 
+	@Override
+	public String getId() {
+		return id;
+	}
 }

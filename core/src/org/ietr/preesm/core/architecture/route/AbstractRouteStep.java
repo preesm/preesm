@@ -38,4 +38,6 @@ public abstract class AbstractRouteStep {
 	public void setSender(Operator sender) {
 		this.sender = sender;
 	}
+	
+	public abstract String getId();
 }

@@ -15,11 +15,16 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 public class DmaRouteStep extends NodeRouteStep {
 
 	private Dma dma;
+
+	public static final String id = "NodeRouteStep";
 	
 	public DmaRouteStep(Operator sender, Operator receiver, Dma dma) {
 		super(sender, receiver);
 		this.dma = dma;
 	}
-	
-	
+
+	@Override
+	public String getId() {
+		return id;
+	}
 }

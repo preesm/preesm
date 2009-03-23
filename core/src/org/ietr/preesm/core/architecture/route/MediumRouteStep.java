@@ -52,6 +52,8 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 public class MediumRouteStep extends AbstractRouteStep {
 	
 	private Medium medium;
+	
+	public static final String id = "MediumRouteStep";
 
 	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {
 		super(sender,receiver);
@@ -70,5 +72,10 @@ public class MediumRouteStep extends AbstractRouteStep {
 	public String toString() {
 		return "{" + getSender().toString() + " -> " + medium.toString() + " -> "
 				+ getReceiver().toString() + "}";
+	}
+
+	@Override
+	public String getId() {
+		return id;
 	}
 }
