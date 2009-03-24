@@ -75,55 +75,6 @@ public class RouteCalculator {
 	}
 
 	/**
-	 * Evaluates the transfer between two operators
-	 */
-	public long evaluateTransfer(MapperDAGEdge edge, Operator op1, Operator op2) {
-
-		// Retrieving the route
-		Route route = getRoute(op1, op2);
-		long cost = 0;
-
-		Iterator<AbstractRouteStep> it = route.iterator();
-
-		// Iterating the route and incrementing transfer cost
-		while (it.hasNext()) {
-			AbstractRouteStep step = it.next();
-
-			cost += evaluateSingleTransfer(edge, (MediumRouteStep) step);
-		}
-
-		return cost;
-	}
-
-	/**
-	 * Evaluates the transfer between two operators
-	 */
-	public long evaluateSingleTransfer(MapperDAGEdge edge, MediumRouteStep step) {
-
-		Operator sender = step.getSender();
-		Operator receiver = step.getReceiver();
-		Medium medium = step.getMedium();
-
-		if (medium != null) {
-			MediumDefinition def = (MediumDefinition) medium.getDefinition();
-			InitialEdgeProperty edgeprop = edge.getInitialEdgeProperty();
-			Integer datasize = edgeprop.getDataSize();
-
-			Float time = datasize.floatValue() * def.getInvSpeed();
-
-			return time.longValue();
-		} else {
-
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"Data could not be correctly transfered from "
-							+ sender.getName() + " to " + receiver.getName());
-
-			return 0;
-		}
-	}
-
-	/**
 	 * Choosing the medium with best speed between 2 operators.
 	 */
 	public Medium getDirectRoute(Operator op1, Operator op2) {

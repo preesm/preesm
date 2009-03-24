@@ -81,14 +81,7 @@ public class InfiniteHomogeneousAbc extends
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
 	}
-
-	/**
-	 * Before implanting, resetting all managers
-	 */
-	@Override
-	protected void resetLocalManagers() {
-	}
-
+	
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
 

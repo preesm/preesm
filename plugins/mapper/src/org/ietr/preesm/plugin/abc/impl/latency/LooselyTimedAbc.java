@@ -40,6 +40,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.route.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -54,7 +55,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * @author mpelcat
  */
 public class LooselyTimedAbc extends LatencyAbc {
-
+	
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
@@ -62,13 +63,6 @@ public class LooselyTimedAbc extends LatencyAbc {
 	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
-	}
-
-	/**
-	 * Before implanting, resetting all managers
-	 */
-	@Override
-	protected void resetLocalManagers() {
 	}
 
 	@Override
@@ -108,7 +102,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 				// The transfer evaluation takes into account the route
 
 				edge.getTimingEdgeProperty().setCost(
-						router.evaluateTransfer(edge, sourceOp, destOp));
+						comRouter.evaluateTransfer(edge));
 			}
 		}
 

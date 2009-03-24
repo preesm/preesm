@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
@@ -16,6 +19,7 @@ import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
+import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -39,8 +43,9 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 			MapperDAGEdge edge, TransactionManager transactions, int type,
 			int routeStepIndex, Transaction lastTransaction) {
 
-		if (type == CommunicationRouter.transferType) {
-			long transferCost = 1000;
+		if (type == CommunicationRouter.transferType
+				&& routeStep instanceof MediumRouteStep) {
+			long transferCost = evaluateSingleTransfer(edge,routeStep);
 			MediumRouteStep mediumRouteStep = (MediumRouteStep) routeStep;
 
 			Transaction transaction = new AddTransferVertexTransaction(
@@ -52,9 +57,10 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 			return transaction;
 		} else if (type == CommunicationRouter.overheadType) {
-			MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge)getTransfer(
-					(MapperDAGVertex) edge.getSource(), (MapperDAGVertex) edge
-							.getTarget(), routeStepIndex).incomingEdges().toArray()[0];
+			MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
+					(MapperDAGVertex) edge.getSource(),
+					(MapperDAGVertex) edge.getTarget(), routeStepIndex)
+					.incomingEdges().toArray()[0];
 
 			if (firstTransferIncomingEdge != null) {
 				transactions.add(new AddOverheadVertexTransaction(
@@ -68,6 +74,42 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Evaluates the transfer along a route step
+	 */
+	@Override
+	protected long evaluateSingleTransfer(MapperDAGEdge edge,
+			AbstractRouteStep step) {
+
+		if (step instanceof MediumRouteStep) {
+			Operator sender = step.getSender();
+			Operator receiver = step.getReceiver();
+			Medium medium = ((MediumRouteStep)step).getMedium();
+
+			if (medium != null) {
+				MediumDefinition def = (MediumDefinition) medium
+						.getDefinition();
+				InitialEdgeProperty edgeprop = edge.getInitialEdgeProperty();
+				Integer datasize = edgeprop.getDataSize();
+
+				Float time = datasize.floatValue() * def.getInvSpeed();
+
+				return time.longValue();
+			} else {
+
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"Data could not be correctly transfered from "
+								+ sender.getName() + " to "
+								+ receiver.getName());
+
+				return 0;
+			}
+		}
+		
+		return 0;
 	}
 
 	private TransferVertex getTransfer(MapperDAGVertex source,

@@ -6,6 +6,7 @@ package org.ietr.preesm.plugin.abc.route;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
@@ -31,4 +32,5 @@ public abstract class AbstractCommunicationRouter {
 	}
 	
 	public abstract void routeNewVertex(MapperDAGVertex newVertex);
+	public abstract long evaluateTransfer(MapperDAGEdge edge);
 }

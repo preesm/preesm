@@ -35,4 +35,11 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer{
 		return null;
 	}
 
+	@Override
+	protected long evaluateSingleTransfer(MapperDAGEdge edge,
+			AbstractRouteStep step) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

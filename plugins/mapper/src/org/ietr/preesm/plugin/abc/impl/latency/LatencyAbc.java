@@ -14,9 +14,13 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
+import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
+import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.RouteCalculator;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -37,11 +41,6 @@ import org.sdf4j.model.dag.DAGVertex;
 public abstract class LatencyAbc extends AbstractAbc {
 
 	/**
-	 * simulator of the transfers
-	 */
-	protected RouteCalculator router;
-
-	/**
 	 * Current precedence edge adder: called exclusively by simulator to
 	 * schedule vertices on the different operators
 	 */
@@ -53,6 +52,14 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	protected GraphTimeKeeper timeKeeper;
 
+	protected AbstractCommunicationRouter comRouter = null;
+
+	/**
+	 * Scheduling the transfer vertices on the media
+	 */
+	protected IEdgeSched edgeScheduler;
+
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
@@ -60,13 +67,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public LatencyAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(dag, archi, abcType);
-
-		// The media simulator calculates the edges costs
-		router = new RouteCalculator(archi);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
+
+		// The media simulator calculates the edges costs
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
+				orderManager);
+		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
 	}
 
 	/**
@@ -99,7 +108,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 			;
 		}
 
-		resetLocalManagers();
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler.getEdgeSchedType(),orderManager);
+		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
 		
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
 				this.dag, this, true);
@@ -111,8 +121,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 			implant(vertex, operator, false);
 		}
 	}
-	
-	protected abstract void resetLocalManagers();
 
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,

@@ -55,18 +55,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * @author mpelcat
  */
 public class AccuratelyTimedAbc extends LatencyAbc {
-
-	private AbstractCommunicationRouter comRouter = null;
-	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected ImplementationFiller tvertexAdder;
-
-	/**
-	 * Scheduling the transfer vertices on the media
-	 */
-	protected IEdgeSched edgeScheduler;
-
+	
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
@@ -74,22 +63,6 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
-
-		// The media simulator calculates the edges costs
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
-				orderManager);
-		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
-				orderManager, false, true);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
-	}
-
-	/**
-	 * Before implanting, resetting all managers
-	 */
-	@Override
-	protected void resetLocalManagers() {
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler.getEdgeSchedType(),orderManager);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
 	}
 	
 	/**
@@ -106,8 +79,6 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
 			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
-
-			//tvertexAdder.addAndScheduleTransferVertices(implementation, vertex);
 			comRouter.routeNewVertex(vertex);
 
 		}

@@ -60,18 +60,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class ApproximatelyTimedAbc extends LatencyAbc {
 
-	private AbstractCommunicationRouter comRouter = null;
-	
-	/**
-	 * Transfer vertex adder for edge scheduling
-	 */
-	protected ImplementationFiller tvertexAdder;
-
-	/**
-	 * Scheduling the transfer vertices on the media
-	 */
-	protected IEdgeSched edgeScheduler;
-
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
@@ -83,18 +71,6 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
-		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
-				orderManager, false, false);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,false);
-	}
-
-	/**
-	 * Before implanting, resetting all managers
-	 */
-	@Override
-	protected void resetLocalManagers() {
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler.getEdgeSchedType(),orderManager);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,false);
 	}
 
 	/**
@@ -112,8 +88,6 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		if (effectiveOp != Operator.NO_COMPONENT) {
 
 			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
-
-			//tvertexAdder.addAndScheduleTransferVertices(implementation, vertex);
 			comRouter.routeNewVertex(vertex);
 
 		}

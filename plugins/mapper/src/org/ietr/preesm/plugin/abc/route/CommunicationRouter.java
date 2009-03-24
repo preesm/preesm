@@ -5,8 +5,10 @@ package org.ietr.preesm.plugin.abc.route;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -14,6 +16,10 @@ import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.route.NodeRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationTools;
@@ -22,6 +28,7 @@ import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
+import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -124,6 +131,36 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		}
 
 		localTransactionManager.execute();
+	}
+
+	/**
+	 * Evaluates the transfer between two operators
+	 */
+	public long evaluateTransfer(MapperDAGEdge edge) {
+
+		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
+				.getSource()).getImplementationVertexProperty();
+		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+				.getTarget()).getImplementationVertexProperty();
+
+		Operator sourceOp = sourceimp.getEffectiveOperator();
+		Operator destOp = destimp.getEffectiveOperator();
+
+		long cost = 1000000000;
+
+		// Retrieving the route
+		if (sourceOp != null && destOp != null) {
+			Route route = calculator.getRoute(sourceOp, destOp);
+			cost = 0;
+			// Iterating the route and incrementing transfer cost
+			for(AbstractRouteStep step : route) {
+				CommunicationRouterImplementer impl = getImplementer(step
+						.getId());
+				cost += impl.evaluateSingleTransfer(edge, (MediumRouteStep) step);
+			}
+		}
+
+		return cost;
 	}
 
 }
