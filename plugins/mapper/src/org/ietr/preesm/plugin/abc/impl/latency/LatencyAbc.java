@@ -162,17 +162,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 		cleaner.removeAllOverheads(vertex);
 		cleaner.removeAllTransfers(vertex);
 		cleaner.unscheduleVertex(vertex);
-		
-		
-		/*TransferVertexAdder adder = new TransferVertexAdder(null,null,orderManager,false,false,false);
-		TransactionManager mgr = new TransactionManager();
-		adder.removeAllOverheads(adder.getAllTransfers(vertex,
-				implementation, mgr),implementation, mgr);
-		adder.removeAllTransfers(vertex,implementation, mgr);
-		
-		SchedNewVertexTransaction sched = new SchedNewVertexTransaction(orderManager,implementation,vertex);
-		sched.undo();*/
-		//transactionManager.undoTransactions(vertex);
 	}
 	
 	
@@ -318,5 +307,9 @@ public abstract class LatencyAbc extends AbstractAbc {
 			updateTimings();
 			return new GanttPlotter("Solution gantt", implementation, this);
 		}
+	}
+
+	public AbstractCommunicationRouter getComRouter() {
+		return comRouter;
 	}
 }

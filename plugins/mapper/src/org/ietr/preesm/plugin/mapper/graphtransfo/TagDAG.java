@@ -50,7 +50,9 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -104,8 +106,8 @@ public class TagDAG {
 				edgeSchedType);
 		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag
 				.getReferenceSdfGraph());
-
-		addTransfers(dag, architecture);
+		
+		addSendReceive(dag, architecture,simu);
 		addProperties(dag);
 		addAllAggregates(dag, scenario);
 	}
@@ -113,16 +115,22 @@ public class TagDAG {
 	/**
 	 * Adds send and receive without scheduling them
 	 */
-	public void addTransfers(MapperDAG dag, MultiCoreArchitecture architecture) {
+	public void addSendReceive(MapperDAG dag, MultiCoreArchitecture architecture, IAbc simu) {
 
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		CommunicationRouter router = new CommunicationRouter(architecture, dag,
-				AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
-				orderMgr);
-		router.routeAll(dag, CommunicationRouter.sendReceive);
+
+		AbstractCommunicationRouter comRouter = null;
+		if(simu instanceof LatencyAbc){
+			comRouter = ((LatencyAbc)simu).getComRouter();
+			comRouter.setManagers(dag, AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
+		}
+		else{
+			comRouter = new CommunicationRouter(architecture,dag,AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),orderMgr);
+		}
+		comRouter.routeAll(dag, CommunicationRouter.sendReceive);
 		orderMgr.tagDAG(dag);
 	}
 
