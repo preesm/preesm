@@ -39,7 +39,9 @@ package org.ietr.preesm.plugin.abc.route.calcul;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
@@ -49,6 +51,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
@@ -60,14 +63,39 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class RouteCalculator {
 
+	private static RouteCalculator singleton = null;
+	
 	private MultiCoreArchitecture archi;
+	
+	private RoutingTable table = null;
 
+	static public RouteCalculator getInstance(MultiCoreArchitecture archi){
+		if(singleton == null){
+			singleton = new RouteCalculator(archi);
+		}
+		return singleton;
+	}
 	/**
 	 * Constructor from a given architecture
 	 */
-	public RouteCalculator(MultiCoreArchitecture archi) {
+	private RouteCalculator(MultiCoreArchitecture archi) {
 
 		this.archi = archi;
+		table = new RoutingTable();
+		createRouteSteps(table,archi);
+		initRoutingTable(table,archi);
+	}
+	
+	private void createRouteSteps(RoutingTable table, MultiCoreArchitecture archi){
+		PreesmLogger.getLogger().log(Level.INFO,"creating route steps.");
+		
+		
+	}
+	
+	private void initRoutingTable(RoutingTable table, MultiCoreArchitecture archi){
+		PreesmLogger.getLogger().log(Level.INFO,"Initializing routing table.");
+		
+		
 	}
 
 	/**
