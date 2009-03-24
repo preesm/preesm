@@ -56,12 +56,7 @@ public class TransactionManager {
 		
 		while(it.hasNext()){
 			Transaction currentT = it.next();
-			if(!currentT.isExecuted()){
-				currentT.execute();
-				if(currentT.getRef() == null){
-					it.remove();
-				}
-			}
+			currentT.execute();
 		}
 	}
 	
@@ -72,8 +67,20 @@ public class TransactionManager {
 	public void clear(){
 		transactionList.clear();
 	}
-	
-	public Transaction getLast(){
-		return transactionList.peekLast();
+
+	@Override
+	public String toString() {
+		String s = "{";
+
+		for(Transaction t : transactionList){
+			s += t.toString() + ",";
+		}
+		
+		s = s.substring(0, s.length()-1);
+		s += "}";
+		
+		return s;
 	}
+	
+	
 }

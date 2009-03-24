@@ -64,6 +64,13 @@ public class LooselyTimedAbc extends LatencyAbc {
 		super(edgeSchedType, dag, archi, abcType);
 	}
 
+	/**
+	 * Before implanting, resetting all managers
+	 */
+	@Override
+	protected void resetLocalManagers() {
+	}
+
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {

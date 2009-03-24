@@ -145,6 +145,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.transferCost = transferCost;
 		this.orderManager = orderManager;
 		this.scheduleVertex = scheduleVertex;
+		this.routeIndex = routeIndex;
 	}
 
 	@Override
@@ -179,7 +180,7 @@ public class AddTransferVertexTransaction extends Transaction {
 					.getDefinition();
 
 			if (def.getInvSpeed() != 0) {
-				tVertex = new TransferVertex(tvertexID, implementation);
+				tVertex = new TransferVertex(tvertexID, implementation, (MapperDAGVertex) edge.getSource(), (MapperDAGVertex) edge.getTarget(), routeIndex);
 
 				tVertex.setRouteStep(step);
 

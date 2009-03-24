@@ -49,8 +49,7 @@ import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
 public class SendVertex extends TransferVertex {
 
 	public SendVertex(String id, MapperDAG base) {
-		super(id, base);
-		// TODO Auto-generated constructor stub
+		super(id, base,null,null,0);
 	}
 	
 	public DAGDefaultVertexPropertyType getNbRepeat(){

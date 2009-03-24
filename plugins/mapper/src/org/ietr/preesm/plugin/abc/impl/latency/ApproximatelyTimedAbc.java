@@ -43,6 +43,8 @@ import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
+import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -58,6 +60,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class ApproximatelyTimedAbc extends LatencyAbc {
 
+	private AbstractCommunicationRouter comRouter = null;
+	
 	/**
 	 * Transfer vertex adder for edge scheduling
 	 */
@@ -81,6 +85,16 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 				orderManager);
 		tvertexAdder = new ImplementationFiller(edgeScheduler, router,
 				orderManager, false, false);
+		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,false);
+	}
+
+	/**
+	 * Before implanting, resetting all managers
+	 */
+	@Override
+	protected void resetLocalManagers() {
+		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler.getEdgeSchedType(),orderManager);
+		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,false);
 	}
 
 	/**
@@ -99,7 +113,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
 
-			tvertexAdder.addAndScheduleTransferVertices(implementation, vertex);
+			//tvertexAdder.addAndScheduleTransferVertices(implementation, vertex);
+			comRouter.routeNewVertex(vertex);
 
 		}
 	}

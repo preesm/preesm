@@ -43,6 +43,7 @@ import java.util.Set;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -72,16 +73,16 @@ public class MapperDAGVertex extends DAGVertex {
 
 		this("default", "default", null);
 	}
-	
+
 	public MapperDAGVertex(String id, MapperDAG base) {
 
 		this(id, id, base);
 	}
-	
+
 	public MapperDAGVertex(String id, String name, MapperDAG base) {
 
 		super();
-		
+
 		this.setName(name);
 		this.initialVertexProperty = new InitialVertexProperty();
 		this.initialVertexProperty.setParentVertex(this);
@@ -90,40 +91,43 @@ public class MapperDAGVertex extends DAGVertex {
 
 		this.setBase(base);
 	}
-	
+
 	@Override
 	public MapperDAGVertex clone() {
 
 		MapperDAGVertex result = null;
-			
-		if(this instanceof OverheadVertex){
-			result = new OverheadVertex(this.getId(), (MapperDAG)this.getBase());
+
+		if (this instanceof OverheadVertex) {
+			result = new OverheadVertex(this.getId(), (MapperDAG) this
+					.getBase());
+		} else if (this instanceof SendVertex) {
+			result = new SendVertex(this.getId(), (MapperDAG) this.getBase());
+		} else if (this instanceof ReceiveVertex) {
+			result = new ReceiveVertex(this.getId(), (MapperDAG) this.getBase());
+		} else if (this instanceof TransferVertex) {
+			TransferVertex t = (TransferVertex)this;
+			result = new TransferVertex(this.getId(), (MapperDAG) this
+					.getBase(), t.getSource(),
+					t.getTarget(), t.getRouteStepIndex());
+		} else {
+			result = new MapperDAGVertex(this.getId(), this.getName(),
+					(MapperDAG) this.getBase());
 		}
-		else if(this instanceof SendVertex){
-			result = new SendVertex(this.getId(), (MapperDAG)this.getBase());
-		}
-		else if(this instanceof ReceiveVertex){
-			result = new ReceiveVertex(this.getId(), (MapperDAG)this.getBase());
-		}
-		else{
-			result = new MapperDAGVertex(this.getId(), this
-					.getName(), (MapperDAG)this.getBase());
-		}
-		
-		
+
 		result.setImplantationVertexProperty(this
 				.getImplementationVertexProperty().clone());
-		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(result));
+		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(
+				result));
 		result.setTimingVertexProperty(this.getTimingVertexProperty().clone());
-		
-		for(String propertyKey : this.getPropertyBean().keys()){
+
+		for (String propertyKey : this.getPropertyBean().keys()) {
 			Object property = this.getPropertyBean().getValue(propertyKey);
 			result.getPropertyBean().setValue(propertyKey, property);
 		}
-		
+
 		return result;
 	}
-	
+
 	public ImplementationVertexProperty getImplementationVertexProperty() {
 		return implementationVertexProperty;
 	}
@@ -171,17 +175,16 @@ public class MapperDAGVertex extends DAGVertex {
 					+ "("
 					+ implementationVertexProperty.getEffectiveComponent()
 							.toString() + ","
-					+ implementationVertexProperty.getSchedTotalOrder()
-					+ ")";
+					+ implementationVertexProperty.getSchedTotalOrder() + ")";
 		} else {
 			// If the vertex is not implanted, displays its weight
 			toString = getName() + "(" + this.getNbRepeat() + ")";
 		}
-		
-		if(initialVertexProperty.getTopologicalLevel() != -1){
+
+		if (initialVertexProperty.getTopologicalLevel() != -1) {
 			toString += "[" + initialVertexProperty.getTopologicalLevel() + "]";
 		}
-		
+
 		return toString;
 	}
 
@@ -193,8 +196,8 @@ public class MapperDAGVertex extends DAGVertex {
 
 		while (iter.hasNext()) {
 
-			MapperDAGEdge edge = (MapperDAGEdge)iter.next();
-			temp.add((MapperDAGVertex)edge.getSource());
+			MapperDAGEdge edge = (MapperDAGEdge) iter.next();
+			temp.add((MapperDAGVertex) edge.getSource());
 
 		}
 		return temp;
@@ -208,8 +211,8 @@ public class MapperDAGVertex extends DAGVertex {
 
 		while (iter.hasNext()) {
 
-			MapperDAGEdge edge = (MapperDAGEdge)iter.next();
-			temp.add((MapperDAGVertex)edge.getTarget());
+			MapperDAGEdge edge = (MapperDAGEdge) iter.next();
+			temp.add((MapperDAGVertex) edge.getTarget());
 		}
 		return temp;
 	}

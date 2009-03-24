@@ -99,6 +99,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 			;
 		}
 
+		resetLocalManagers();
+		
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
 				this.dag, this, true);
 
@@ -109,6 +111,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 			implant(vertex, operator, false);
 		}
 	}
+	
+	protected abstract void resetLocalManagers();
 
 	@Override
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,

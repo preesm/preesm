@@ -50,31 +50,11 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public abstract class Transaction {
 
-	// true if this transaction has already been executed
-	private boolean isExecuted;
-	
-	// Vertex that fired the current transaction
-	private MapperDAGVertex ref;
-
 	public Transaction() {
 		super();
-		isExecuted = false;
-	}
-	
-	public boolean isExecuted() {
-		return isExecuted;
 	}
 	
 	public void execute(){
-		isExecuted = true;
-	}
-
-	public MapperDAGVertex getRef() {
-		return ref;
-	}
-
-	public void setRef(MapperDAGVertex ref) {
-		this.ref = ref;
 	}
 
 	@Override

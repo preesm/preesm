@@ -41,6 +41,7 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
+import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -79,6 +80,13 @@ public class InfiniteHomogeneousAbc extends
 		// to implant all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
+	}
+
+	/**
+	 * Before implanting, resetting all managers
+	 */
+	@Override
+	protected void resetLocalManagers() {
 	}
 
 	@Override

@@ -29,4 +29,6 @@ public abstract class AbstractCommunicationRouter {
 	protected CommunicationRouterImplementer getImplementer(String name){
 		return implementers.get(name);
 	}
+	
+	public abstract void routeNewVertex(MapperDAGVertex newVertex);
 }

@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -67,7 +68,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	/**
 	 * Route step corresponding to this overhead
 	 */
-	private MediumRouteStep step = null;
+	private AbstractRouteStep step = null;
 
 	/**
 	 * Original edge corresponding to this overhead
@@ -92,7 +93,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	private MapperDAGEdge newOutEdge = null;
 	
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, MediumRouteStep step,SchedOrderManager orderManager) {
+			MapperDAG implementation, AbstractRouteStep step,SchedOrderManager orderManager) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;
@@ -108,7 +109,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 		MapperDAGVertex currentSource = (MapperDAGVertex)edge.getSource();
 		MapperDAGVertex currentTarget = (MapperDAGVertex)edge.getTarget();
 
-		MediumDefinition mediumDef = (MediumDefinition) step.getMedium()
+		MediumDefinition mediumDef = (MediumDefinition) ((MediumRouteStep)step).getMedium()
 				.getDefinition();
 
 		if (edge instanceof PrecedenceEdge) {

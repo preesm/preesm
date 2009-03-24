@@ -51,10 +51,20 @@ public class TransferVertex extends MapperDAGVertex {
 	public static final long SEND_RECEIVE_COST = 100;
 	
 	private MediumRouteStep step;
+	
+	/**
+	 * Source and target of the vertex that originated this transfer
+	 */
+	private MapperDAGVertex source; 
+	private MapperDAGVertex target;
+	
+	private int routeStepIndex;
 
-	public TransferVertex(String id, MapperDAG base) {
+	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source, MapperDAGVertex target, int routeStepIndex) {
 		super(id, base);
-		// TODO Auto-generated constructor stub
+		this.source = source;
+		this.target = target;
+		this.routeStepIndex = routeStepIndex; 
 	}
 
 	public MediumRouteStep getRouteStep() {
@@ -80,4 +90,15 @@ public class TransferVertex extends MapperDAGVertex {
 		return null;
 	}
 
+	public MapperDAGVertex getSource() {
+		return source;
+	}
+
+	public MapperDAGVertex getTarget() {
+		return target;
+	}
+
+	public int getRouteStepIndex() {
+		return routeStepIndex;
+	}
 }
