@@ -10,9 +10,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 
 public class MessageComRouterImplementer extends CommunicationRouterImplementer {
 
-	public MessageComRouterImplementer(MapperDAG implementation,
-			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
-		super(implementation, edgeScheduler, orderManager);
+	public MessageComRouterImplementer(AbstractCommunicationRouter user) {
+		super(user);
 		// TODO Auto-generated constructor stub
 	}
 

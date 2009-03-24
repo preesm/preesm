@@ -71,7 +71,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
+		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		}
 
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler.getEdgeSchedType(),orderManager);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager,true);
+		comRouter.setManagers(implementation,edgeScheduler,orderManager);
 		
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(
 				this.dag, this, true);

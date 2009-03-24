@@ -36,10 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl.latency;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -51,6 +55,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class AccuratelyTimedAbc extends LatencyAbc {
 	
+	List<Integer> types = null;
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
@@ -58,6 +63,10 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType) {
 		super(edgeSchedType, dag, archi, abcType);
+		
+		types = new ArrayList<Integer>();
+		types.add(CommunicationRouter.transferType);
+		types.add(CommunicationRouter.overheadType);
 	}
 	
 	/**
@@ -74,7 +83,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
 			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
-			comRouter.routeNewVertex(vertex);
+			comRouter.routeNewVertex(vertex, types);
 
 		}
 	}

@@ -31,9 +31,8 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
-	public MediumRouterImplementer(MapperDAG implementation,
-			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
-		super(implementation, edgeScheduler, orderManager);
+	public MediumRouterImplementer(AbstractCommunicationRouter user) {
+		super(user);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -48,8 +47,8 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 			MediumRouteStep mediumRouteStep = (MediumRouteStep) routeStep;
 
 			Transaction transaction = new AddTransferVertexTransaction(
-					lastTransaction, edgeScheduler, edge, implementation,
-					orderManager, routeStepIndex, mediumRouteStep,
+					lastTransaction, getEdgeScheduler(), edge, getImplementation(),
+					getOrderManager(), routeStepIndex, mediumRouteStep,
 					transferCost, true);
 
 			transactions.add(transaction);
@@ -62,8 +61,8 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 			if (firstTransferIncomingEdge != null) {
 				transactions.add(new AddOverheadVertexTransaction(
-						firstTransferIncomingEdge, implementation, routeStep,
-						orderManager));
+						firstTransferIncomingEdge, getImplementation(), routeStep,
+						getOrderManager()));
 			} else {
 				PreesmLogger.getLogger().log(
 						Level.SEVERE,
@@ -74,8 +73,8 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 			// TODO: set a size to send and receive. From medium definition?
 			Transaction transaction = new AddSendReceiveTransaction(
-					lastTransaction, edge, implementation,
-					orderManager, routeStepIndex, routeStep,
+					lastTransaction, edge, getImplementation(),
+					getOrderManager(), routeStepIndex, routeStep,
 					TransferVertex.SEND_RECEIVE_COST);
 
 			transactions.add(transaction);

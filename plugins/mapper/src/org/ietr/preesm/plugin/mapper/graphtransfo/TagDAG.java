@@ -52,7 +52,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.route.RouteCalculator;
+import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -119,17 +119,10 @@ public class TagDAG {
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		/*
-		 * ImplementationFiller tvAdder = new
-		 * ImplementationFiller(AbstractEdgeSched
-		 * .getInstance(EdgeSchedType.Simple, orderMgr), new
-		 * RouteCalculator(architecture), orderMgr, false, false);
-		 * tvAdder.addAndScheduleAllSendReceiveVertices(dag, false);
-		 */
 		CommunicationRouter router = new CommunicationRouter(architecture, dag,
 				AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
-				orderMgr, false);
-		router.routeAll(dag);
+				orderMgr);
+		router.routeAll(dag, CommunicationRouter.sendReceive);
 		orderMgr.tagDAG(dag);
 	}
 

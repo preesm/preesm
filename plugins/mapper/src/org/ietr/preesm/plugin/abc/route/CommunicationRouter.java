@@ -6,6 +6,7 @@ package org.ietr.preesm.plugin.abc.route;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -40,27 +42,22 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	public static final int overheadType = 1;
 	public static final int sendReceive = 2;
 
-	private boolean handleOverheads = false;
 	private RouteCalculator calculator = null;
 
 	public CommunicationRouter(MultiCoreArchitecture archi,
 			MapperDAG implementation, IEdgeSched edgeScheduler,
-			SchedOrderManager orderManager, boolean handleOverheads) {
-		super();
-		this.handleOverheads = handleOverheads;
+			SchedOrderManager orderManager) {
+		super(implementation,edgeScheduler,orderManager);
 		this.calculator = new RouteCalculator(archi);
 
 		// Initializing the available router implementers
 
-		this.addImplementer(DmaRouteStep.id, new DmaComRouterImplementer(
-				implementation, edgeScheduler, orderManager));
-		this.addImplementer(MediumRouteStep.id, new MediumRouterImplementer(
-				implementation, edgeScheduler, orderManager));
-		this.addImplementer(NodeRouteStep.id, new MessageComRouterImplementer(
-				implementation, edgeScheduler, orderManager));
+		this.addImplementer(DmaRouteStep.id, new DmaComRouterImplementer(this));
+		this.addImplementer(MediumRouteStep.id, new MediumRouterImplementer(this));
+		this.addImplementer(NodeRouteStep.id, new MessageComRouterImplementer(this));
 	}
 
-	public void routeAll(MapperDAG implementation) {
+	public void routeAll(MapperDAG implementation, Integer type) {
 		TransactionManager localTransactionManager = new TransactionManager();
 
 		// We iterate the edges and process the ones with different allocations
@@ -89,7 +86,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 							CommunicationRouterImplementer impl = getImplementer(step
 									.getId());
 							lastTransaction = impl.addVertices(step, currentEdge,
-									localTransactionManager, sendReceive,
+									localTransactionManager, type,
 									routeStepIndex, lastTransaction);
 							routeStepIndex++;
 						}
@@ -101,15 +98,13 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		localTransactionManager.execute();
 	}
 
-	public void routeNewVertex(MapperDAGVertex newVertex) {
+	public void routeNewVertex(MapperDAGVertex newVertex, List<Integer> types) {
 
 		Map<MapperDAGEdge, Route> transferEdges = getRouteMap(newVertex);
 
 		if (!transferEdges.isEmpty()) {
-			// addVertices(transferEdges,"involvement");
-			addVertices(transferEdges, transferType);
-			if (handleOverheads) {
-				addVertices(transferEdges, overheadType);
+			for(Integer type:types){
+				addVertices(transferEdges, type);
 			}
 		}
 	}
