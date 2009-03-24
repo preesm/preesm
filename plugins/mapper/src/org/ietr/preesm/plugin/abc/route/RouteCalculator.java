@@ -40,19 +40,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 

@@ -4,15 +4,12 @@
 package org.ietr.preesm.plugin.abc.route;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * Routes a communication and creates the necessary communication vertices

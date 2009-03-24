@@ -52,7 +52,6 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.RouteCalculator;
-import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;

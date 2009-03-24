@@ -39,8 +39,6 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-
 /**
  * This is a transaction container that enables the consecutive
  * execution of several listed transactions.

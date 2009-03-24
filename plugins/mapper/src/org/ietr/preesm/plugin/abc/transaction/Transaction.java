@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * Transactions are used to modify a graph with the possibility to withdraw

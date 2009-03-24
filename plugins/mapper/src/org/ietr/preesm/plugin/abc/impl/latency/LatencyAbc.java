@@ -4,7 +4,6 @@
 package org.ietr.preesm.plugin.abc.impl.latency;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -18,11 +17,8 @@ import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
-import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.route.RouteCalculator;
-import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
