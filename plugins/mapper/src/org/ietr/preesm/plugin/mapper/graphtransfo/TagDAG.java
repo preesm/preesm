@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -51,6 +52,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.ImplementationFiller;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -97,9 +99,12 @@ public class TagDAG {
 			IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) {
 
 		PropertyBean bean = dag.getPropertyBean();
-		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
-		bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType, edgeSchedType);
-		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag.getReferenceSdfGraph());
+		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu
+				.getType());
+		bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType,
+				edgeSchedType);
+		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag
+				.getReferenceSdfGraph());
 
 		addTransfers(dag, architecture);
 		addProperties(dag);
@@ -115,10 +120,17 @@ public class TagDAG {
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
-		ImplementationFiller tvAdder = new ImplementationFiller(AbstractEdgeSched
-				.getInstance(EdgeSchedType.Simple, orderMgr),
-				new RouteCalculator(architecture), orderMgr, false, false);
-		tvAdder.addAndScheduleAllSendReceiveVertices(dag, false);
+		/*
+		 * ImplementationFiller tvAdder = new
+		 * ImplementationFiller(AbstractEdgeSched
+		 * .getInstance(EdgeSchedType.Simple, orderMgr), new
+		 * RouteCalculator(architecture), orderMgr, false, false);
+		 * tvAdder.addAndScheduleAllSendReceiveVertices(dag, false);
+		 */
+		CommunicationRouter router = new CommunicationRouter(architecture, dag,
+				AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),
+				orderMgr, false);
+		router.routeAll(dag);
 		orderMgr.tagDAG(dag);
 	}
 
@@ -149,29 +161,31 @@ public class TagDAG {
 										.getSender());
 
 				// Setting the medium transmitting the current data
-				bean
-						.setValue(ImplementationPropertyNames.SendReceive_medium,
-								((SendVertex) currentVertex).getRouteStep()
-										.getMedium());
-				
-				if(((SendVertex) currentVertex).getRouteStep()
-						.getMedium().getDefinition() == null){
+				MediumRouteStep sendRs = (MediumRouteStep) ((SendVertex) currentVertex)
+						.getRouteStep();
+				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
+						(sendRs.getMedium()));
+
+				if (sendRs.getMedium().getDefinition() == null) {
 					int i = 0;
 					i++;
 				}
 
 				// Setting the size of the transmitted data
-				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInitialEdgeProperty()
-						.getDataSize());
+				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
+						incomingEdge.getInitialEdgeProperty().getDataSize());
 
 				// Setting the name of the data sending vertex
-				bean.setValue(ImplementationPropertyNames.Send_senderGraphName, incomingEdge.getSource()
-						.getName());
+				bean.setValue(ImplementationPropertyNames.Send_senderGraphName,
+						incomingEdge.getSource().getName());
 
-				// Setting the address of the operator on which vertex is executed
-				bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address,
-						((SendVertex) currentVertex).getRouteStep().getSender()
-								.getBaseAddress());
+				// Setting the address of the operator on which vertex is
+				// executed
+				bean
+						.setValue(
+								ImplementationPropertyNames.SendReceive_Operator_address,
+								((SendVertex) currentVertex).getRouteStep()
+										.getSender().getBaseAddress());
 			} else if (currentVertex instanceof ReceiveVertex) {
 
 				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
@@ -187,28 +201,32 @@ public class TagDAG {
 								.getReceiver());
 
 				// Setting the medium transmitting the current data
+				MediumRouteStep rcvRs = (MediumRouteStep) ((ReceiveVertex) currentVertex)
+						.getRouteStep();
 				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
-						((ReceiveVertex) currentVertex).getRouteStep()
-								.getMedium());
-				
-				if(((ReceiveVertex) currentVertex).getRouteStep()
-								.getMedium().getDefinition() == null){
+						rcvRs.getMedium());
+
+				if (rcvRs.getMedium().getDefinition() == null) {
 					int i = 0;
 					i++;
 				}
 
 				// Setting the size of the transmitted data
-				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInitialEdgeProperty()
-						.getDataSize());
+				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
+						outgoingEdge.getInitialEdgeProperty().getDataSize());
 
 				// Setting the name of the data receiving vertex
-				bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName, outgoingEdge.getTarget()
-						.getName());
+				bean.setValue(
+						ImplementationPropertyNames.Receive_receiverGraphName,
+						outgoingEdge.getTarget().getName());
 
-				// Setting the address of the operator on which vertex is executed
-				bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address,
-						((ReceiveVertex) currentVertex).getRouteStep()
-								.getReceiver().getBaseAddress());
+				// Setting the address of the operator on which vertex is
+				// executed
+				bean
+						.setValue(
+								ImplementationPropertyNames.SendReceive_Operator_address,
+								((ReceiveVertex) currentVertex).getRouteStep()
+										.getReceiver().getBaseAddress());
 			} else {
 
 				// Setting the operator on which vertex is executed

@@ -66,68 +66,20 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class ImplementationFiller {
 
-	/**
-	 * True if we take into account the transfer overheads
-	 */
-	private boolean handleOverheads;
-
 	private RouteCalculator router;
 
 	private SchedOrderManager orderManager;
-
-	/**
-	 * True if we the edge that will go through transfers replaces the original
-	 * edge. False if both paths are kept
-	 */
-	private boolean rmvOrigEdge;
-
 	/**
 	 * Scheduling the transfer vertices on the media
 	 */
 	protected IEdgeSched edgeScheduler;
 
 	public ImplementationFiller(IEdgeSched edgeScheduler,
-			RouteCalculator router, SchedOrderManager orderManager, boolean rmvOrigEdge, boolean handleOverheads) {
+			RouteCalculator router, SchedOrderManager orderManager) {
 		super();
 		this.edgeScheduler = edgeScheduler;
 		this.router = router;
 		this.orderManager = orderManager;
-		this.rmvOrigEdge = rmvOrigEdge;
-		this.handleOverheads = handleOverheads;
-	}
-
-	/**
-	 * Adds all necessary transfer vertices for the whole implementation
-	 */
-	public void addAndScheduleAllSendReceiveVertices(MapperDAG implementation, boolean scheduleThem) {
-		TransactionManager localTransactionManager = new TransactionManager();
-
-		// We iterate the edges and process the ones with different allocations
-		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
-
-			if (!(currentEdge instanceof PrecedenceEdge)) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
-						.getTarget()).getImplementationVertexProperty();
-
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
-						// Adds several transfers for one edge depending on the
-						// route steps
-						addSendReceiveVertices(currentEdge, implementation,
-								localTransactionManager, null, scheduleThem);
-					}
-				}
-			}
-		}
-
-		localTransactionManager.execute();
 	}
 
 	/**
@@ -135,8 +87,7 @@ public class ImplementationFiller {
 	 * edge
 	 */
 	public void addSendReceiveVertices(MapperDAGEdge edge,
-			MapperDAG implementation, TransactionManager transactionManager,
-			MapperDAGVertex refVertex, boolean scheduleVertex) {
+			MapperDAG implementation, TransactionManager transactionManager) {
 
 		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex currentDest = (MapperDAGVertex) edge.getTarget();
@@ -170,15 +121,10 @@ public class ImplementationFiller {
 			transaction = new AddSendReceiveTransaction(
 					precedingTransaction, edge, implementation,
 					orderManager, i, step,
-					TransferVertex.SEND_RECEIVE_COST, scheduleVertex);
+					TransferVertex.SEND_RECEIVE_COST);
 
 			transactionManager.add(transaction);
 			precedingTransaction = transaction;
-
-			if (rmvOrigEdge) {
-				transactionManager.add(new RemoveEdgeTransaction(edge,
-						implementation));
-			}
 
 			i++;
 		}

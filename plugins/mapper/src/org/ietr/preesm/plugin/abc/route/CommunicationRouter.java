@@ -5,6 +5,7 @@ package org.ietr.preesm.plugin.abc.route;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +38,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	public static final int transferType = 0;
 	public static final int overheadType = 1;
+	public static final int sendReceive = 2;
 
 	private boolean handleOverheads = false;
 	private RouteCalculator calculator = null;
@@ -56,6 +58,47 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 				implementation, edgeScheduler, orderManager));
 		this.addImplementer(NodeRouteStep.id, new MessageComRouterImplementer(
 				implementation, edgeScheduler, orderManager));
+	}
+
+	public void routeAll(MapperDAG implementation) {
+		TransactionManager localTransactionManager = new TransactionManager();
+
+		// We iterate the edges and process the ones with different allocations
+		Iterator<DAGEdge> iterator = implementation.edgeSet().iterator();
+
+		while (iterator.hasNext()) {
+			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
+
+			if (!(currentEdge instanceof PrecedenceEdge)) {
+				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
+						.getSource()).getImplementationVertexProperty();
+				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
+						.getTarget()).getImplementationVertexProperty();
+
+				if (currentSourceProp.hasEffectiveOperator()
+						&& currentDestProp.hasEffectiveOperator()) {
+					if (currentSourceProp.getEffectiveOperator() != currentDestProp
+							.getEffectiveOperator()) {
+						// Adds several transfers for one edge depending on the
+						// route steps
+						Route route = calculator.getRoute(currentEdge);
+						int routeStepIndex = 0;
+						Transaction lastTransaction = null;
+
+						for (AbstractRouteStep step : route) {
+							CommunicationRouterImplementer impl = getImplementer(step
+									.getId());
+							lastTransaction = impl.addVertices(step, currentEdge,
+									localTransactionManager, sendReceive,
+									routeStepIndex, lastTransaction);
+							routeStepIndex++;
+						}
+					}
+				}
+			}
+		}
+
+		localTransactionManager.execute();
 	}
 
 	public void routeNewVertex(MapperDAGVertex newVertex) {
@@ -142,10 +185,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			Route route = calculator.getRoute(sourceOp, destOp);
 			cost = 0;
 			// Iterating the route and incrementing transfer cost
-			for(AbstractRouteStep step : route) {
+			for (AbstractRouteStep step : route) {
 				CommunicationRouterImplementer impl = getImplementer(step
 						.getId());
-				cost += impl.evaluateSingleTransfer(edge, (MediumRouteStep) step);
+				cost += impl.evaluateSingleTransfer(edge,
+						(MediumRouteStep) step);
 			}
 		}
 

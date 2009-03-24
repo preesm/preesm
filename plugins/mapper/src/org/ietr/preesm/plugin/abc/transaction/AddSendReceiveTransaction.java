@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -73,7 +74,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	/**
 	 * Route step corresponding to this overhead
 	 */
-	private MediumRouteStep step = null;
+	private AbstractRouteStep step = null;
 
 	/**
 	 * Original edge corresponding to this overhead
@@ -109,15 +110,9 @@ public class AddSendReceiveTransaction extends Transaction {
 	private MapperDAGEdge newEdge2 = null;
 	private MapperDAGEdge newEdge3 = null;
 
-	/**
-	 * true if the added vertex needs to be scheduled
-	 */
-	private boolean scheduleVertex = false;
-
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, MediumRouteStep step, long transferCost,
-			boolean scheduleVertex) {
+			int routeIndex, AbstractRouteStep step, long transferCost) {
 		super();
 		this.precedingTransaction = null;
 		this.edge = edge;
@@ -126,13 +121,12 @@ public class AddSendReceiveTransaction extends Transaction {
 		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
-		this.scheduleVertex = scheduleVertex;
 	}
 
 	public AddSendReceiveTransaction(Transaction precedingTransaction,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, MediumRouteStep step,
-			long transferCost, boolean scheduleVertex) {
+			SchedOrderManager orderManager, int routeIndex, AbstractRouteStep step,
+			long transferCost) {
 		super();
 		this.precedingTransaction = precedingTransaction;
 		this.edge = edge;
@@ -141,7 +135,6 @@ public class AddSendReceiveTransaction extends Transaction {
 		this.routeIndex = routeIndex;
 		this.step = step;
 		this.transferCost = transferCost;
-		this.scheduleVertex = scheduleVertex;
 	}
 
 	@Override
@@ -167,7 +160,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
 		String receiveVertexID = "r_" + nameRadix;
 
-		Medium currentMedium = step.getMedium();
+		Medium currentMedium = ((MediumRouteStep)step).getMedium();
 
 		if (edge instanceof PrecedenceEdge) {
 			PreesmLogger.getLogger().log(Level.INFO,
@@ -224,7 +217,7 @@ public class AddSendReceiveTransaction extends Transaction {
 				newEdge2.setAggregate(edge.getAggregate());
 				newEdge3.setAggregate(edge.getAggregate());
 
-				if (scheduleVertex) {
+				if (false) {
 					// Scheduling transfer vertex
 					PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 					precEdgeAdder.scheduleVertex(implementation, sendVertex);

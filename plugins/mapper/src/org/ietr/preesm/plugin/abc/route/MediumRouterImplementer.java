@@ -14,6 +14,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
@@ -52,7 +53,6 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 					transferCost, true);
 
 			transactions.add(transaction);
-
 			return transaction;
 		} else if (type == CommunicationRouter.overheadType) {
 			MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
@@ -70,6 +70,16 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 						"The transfer following vertex" + edge.getSource()
 								+ "was not found. We could not add overhead.");
 			}
+		} else if (type == CommunicationRouter.sendReceive) {
+
+			// TODO: set a size to send and receive. From medium definition?
+			Transaction transaction = new AddSendReceiveTransaction(
+					lastTransaction, edge, implementation,
+					orderManager, routeStepIndex, routeStep,
+					TransferVertex.SEND_RECEIVE_COST);
+
+			transactions.add(transaction);
+			return transaction;
 		}
 		return null;
 	}

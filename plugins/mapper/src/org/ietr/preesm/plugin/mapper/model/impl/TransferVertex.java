@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.impl;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -50,7 +51,7 @@ public class TransferVertex extends MapperDAGVertex {
 
 	public static final long SEND_RECEIVE_COST = 100;
 	
-	private MediumRouteStep step;
+	private AbstractRouteStep step;
 	
 	/**
 	 * Source and target of the vertex that originated this transfer
@@ -67,11 +68,11 @@ public class TransferVertex extends MapperDAGVertex {
 		this.routeStepIndex = routeStepIndex; 
 	}
 
-	public MediumRouteStep getRouteStep() {
+	public AbstractRouteStep getRouteStep() {
 		return step;
 	}
 
-	public void setRouteStep(MediumRouteStep step) {
+	public void setRouteStep(AbstractRouteStep step) {
 		this.step = step;
 	}
 
