@@ -448,7 +448,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(init);
 			
 			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
-			init.setAttribute("mediumId", domElt.getMediumId());
+			init.setAttribute("mediumDef", domElt.getMediumDef());
 			currentLocation = init;
 		} 
 		
@@ -462,8 +462,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element send = dom.createElement("send");
 			((Element)currentLocation).appendChild(send);
 			
-			send.setAttribute("medium", domElt.getMedium().getName());
-			send.setAttribute("mediumDef", domElt.getMedium().getDefinition().getId());
+			send.setAttribute("mediumDef", domElt.getRouteStep().getId());
 			send.setAttribute("target", domElt.getTarget().getName());
 			currentLocation = send;
 		} 
@@ -479,8 +478,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element receive = dom.createElement("receive");
 			((Element)currentLocation).appendChild(receive);
 			
-			receive.setAttribute("medium", domElt.getMedium().getName());
-			receive.setAttribute("mediumDef", domElt.getMedium().getDefinition().getId());
+			receive.setAttribute("mediumDef", domElt.getRouteStep().getId());
 			receive.setAttribute("source", domElt.getSource().getName());
 			currentLocation = receive;
 		} 

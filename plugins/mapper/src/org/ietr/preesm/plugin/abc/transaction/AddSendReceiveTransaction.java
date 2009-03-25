@@ -160,70 +160,59 @@ public class AddSendReceiveTransaction extends Transaction {
 
 		String receiveVertexID = "r_" + nameRadix;
 
-		Medium currentMedium = ((MediumRouteStep)step).getMedium();
-
 		if (edge instanceof PrecedenceEdge) {
 			PreesmLogger.getLogger().log(Level.INFO,
 					"no transfer vertex corresponding to a schedule edge");
 			return;
 		}
 
-		if (currentMedium != null) {
+		Operator senderOperator = step.getSender();
+		Operator receiverOperator = step.getReceiver();
 
-			MediumDefinition def = (MediumDefinition) currentMedium
-					.getDefinition();
+		sendVertex = new SendVertex(sendVertexID, implementation);
+		sendVertex.setRouteStep(step);
+		sendVertex.getTimingVertexProperty().setCost(transferCost);
+		sendVertex.getImplementationVertexProperty()
+				.setEffectiveOperator(senderOperator);
+		orderManager.insertVertexAfter(currentSource, sendVertex);
+		implementation.addVertex(sendVertex);
 
-			if (def.getInvSpeed() != 0) {
+		receiveVertex = new ReceiveVertex(receiveVertexID,
+				implementation);
+		receiveVertex.setRouteStep(step);
+		receiveVertex.getTimingVertexProperty().setCost(transferCost);
+		receiveVertex.getImplementationVertexProperty()
+				.setEffectiveOperator(receiverOperator);
+		orderManager.insertVertexAfter(sendVertex, receiveVertex);
+		implementation.addVertex(receiveVertex);
 
-				Operator senderOperator = step.getSender();
-				Operator receiverOperator = step.getReceiver();
+		newEdge1 = (MapperDAGEdge) implementation.addEdge(
+				currentSource, sendVertex);
+		newEdge2 = (MapperDAGEdge) implementation.addEdge(sendVertex,
+				receiveVertex);
+		newEdge3 = (MapperDAGEdge) implementation.addEdge(
+				receiveVertex, currentTarget);
 
-				sendVertex = new SendVertex(sendVertexID, implementation);
-				sendVertex.setRouteStep(step);
-				sendVertex.getTimingVertexProperty().setCost(transferCost);
-				sendVertex.getImplementationVertexProperty()
-						.setEffectiveOperator(senderOperator);
-				orderManager.insertVertexAfter(currentSource, sendVertex);
-				implementation.addVertex(sendVertex);
+		newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				.clone());
+		newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				.clone());
+		newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				.clone());
 
-				receiveVertex = new ReceiveVertex(receiveVertexID,
-						implementation);
-				receiveVertex.setRouteStep(step);
-				receiveVertex.getTimingVertexProperty().setCost(transferCost);
-				receiveVertex.getImplementationVertexProperty()
-						.setEffectiveOperator(receiverOperator);
-				orderManager.insertVertexAfter(sendVertex, receiveVertex);
-				implementation.addVertex(receiveVertex);
+		newEdge1.getTimingEdgeProperty().setCost(0);
+		newEdge2.getTimingEdgeProperty().setCost(0);
+		newEdge3.getTimingEdgeProperty().setCost(0);
 
-				newEdge1 = (MapperDAGEdge) implementation.addEdge(
-						currentSource, sendVertex);
-				newEdge2 = (MapperDAGEdge) implementation.addEdge(sendVertex,
-						receiveVertex);
-				newEdge3 = (MapperDAGEdge) implementation.addEdge(
-						receiveVertex, currentTarget);
+		newEdge1.setAggregate(edge.getAggregate());
+		newEdge2.setAggregate(edge.getAggregate());
+		newEdge3.setAggregate(edge.getAggregate());
 
-				newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-						.clone());
-				newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-						.clone());
-				newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-						.clone());
-
-				newEdge1.getTimingEdgeProperty().setCost(0);
-				newEdge2.getTimingEdgeProperty().setCost(0);
-				newEdge3.getTimingEdgeProperty().setCost(0);
-
-				newEdge1.setAggregate(edge.getAggregate());
-				newEdge2.setAggregate(edge.getAggregate());
-				newEdge3.setAggregate(edge.getAggregate());
-
-				if (false) {
-					// Scheduling transfer vertex
-					PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
-					precEdgeAdder.scheduleVertex(implementation, sendVertex);
-					precEdgeAdder.scheduleVertex(implementation, receiveVertex);
-				}
-			}
+		if (false) {
+			// Scheduling transfer vertex
+			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+			precEdgeAdder.scheduleVertex(implementation, sendVertex);
+			precEdgeAdder.scheduleVertex(implementation, receiveVertex);
 		}
 	}
 

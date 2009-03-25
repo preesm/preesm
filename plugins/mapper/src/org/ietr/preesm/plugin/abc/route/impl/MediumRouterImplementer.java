@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.plugin.abc.route;
+package org.ietr.preesm.plugin.abc.route.impl;
 
 import java.util.logging.Level;
 
@@ -11,6 +11,9 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;

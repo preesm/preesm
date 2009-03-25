@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import java.util.List;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -57,8 +58,8 @@ public class Receive extends CommunicationFunctionCall {
 	Operator source;
 
 	public Receive(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, Medium medium, Operator source) {
-		super("receive", parentContainer, bufferSet, medium, vertex);
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator source) {
+		super("receive", parentContainer, bufferSet, routeStep, vertex);
 
 		this.source = source;
 	}

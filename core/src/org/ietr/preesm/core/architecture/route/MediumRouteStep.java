@@ -53,7 +53,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 	
 	private Medium medium;
 	
-	public static final String id = "MediumRouteStep";
+	public static final String type = "MediumRouteStep";
 
 	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {
 		super(sender,receiver);
@@ -75,7 +75,12 @@ public class MediumRouteStep extends AbstractRouteStep {
 	}
 
 	@Override
+	public String getType() {
+		return type;
+	}
+
+	@Override
 	public String getId() {
-		return id;
+		return medium.getDefinition().getId();
 	}
 }

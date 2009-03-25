@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -67,13 +68,13 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
 				ImplementationPropertyNames.Vertex_vertexType);
 
-		Medium medium = (Medium) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.SendReceive_medium);
+		AbstractRouteStep rs = (AbstractRouteStep) vertex.getPropertyBean().getValue(
+				ImplementationPropertyNames.SendReceive_routeStep);
 
 		Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
 		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
 
-		if (type != null && medium != null) {
+		if (type != null && rs != null) {
 			if (type.isSend()) {
 
 				List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
@@ -92,7 +93,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				for(Buffer buf : bufferSet){
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
-					calls.add(new Send(parentContainer, vertex, singleBufferSet, medium,
+					calls.add(new Send(parentContainer, vertex, singleBufferSet, rs,
 							target));
 				}
 				
@@ -113,7 +114,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 				for(Buffer buf : bufferSet){
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
-					calls.add(new Receive(parentContainer, vertex, singleBufferSet, medium,
+					calls.add(new Receive(parentContainer, vertex, singleBufferSet, rs,
 							source));
 				}
 			}
@@ -130,17 +131,17 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	/**
 	 * Medium used
 	 */
-	private Medium medium;
+	private AbstractRouteStep routeStep;
 
 	public CommunicationFunctionCall(String name,
 			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
-			Medium medium, SDFAbstractVertex correspondingVertex) {
+			 AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex) {
 
 		super(name, parentContainer, correspondingVertex);
 
 		this.bufferSet = bufferSet;
 
-		this.medium = medium;
+		this.routeStep = routeStep;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -164,8 +165,8 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		return bufferSet;
 	}
 
-	public Medium getMedium() {
-		return medium;
+	public AbstractRouteStep getRouteStep() {
+		return routeStep;
 	}
 
 	@Override
@@ -173,7 +174,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 		String code = "";
 
-		code += medium.getName() + ",";
+		code += routeStep.toString() + ",";
 
 		if (bufferSet != null) {
 			Iterator<Buffer> iterator = bufferSet.iterator();

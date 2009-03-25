@@ -39,5 +39,11 @@ public abstract class AbstractRouteStep {
 		this.sender = sender;
 	}
 	
+	public abstract String getType();
+
+	/**
+	 * Identifier used in code generation to select the correct send or receive mode
+	 */
 	public abstract String getId();
+	
 }

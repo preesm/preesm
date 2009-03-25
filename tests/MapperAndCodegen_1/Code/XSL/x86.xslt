@@ -153,13 +153,13 @@
     
     <xsl:template match="sourceCode:sendInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_SEND,',@mediumId,',',$coreName,',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_SEND,',@mediumDef,',',$coreName,',',@connectedCoreId)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receiveInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_RCV,',@mediumId,',',@connectedCoreId,',',$coreName)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_RCV,',@mediumDef,',',@connectedCoreId,',',$coreName)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     

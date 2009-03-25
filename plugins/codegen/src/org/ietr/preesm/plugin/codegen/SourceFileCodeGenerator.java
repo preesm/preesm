@@ -247,15 +247,14 @@ public class SourceFileCodeGenerator {
 				Send send = (Send) elt;
 
 				init = new SendInit(file.getGlobalContainer(), send.getTarget()
-						.getName(), send.getMedium().getDefinition().getId());
+						.getName(), send.getRouteStep().getId());
 				wait = new WaitForCore(file.getGlobalContainer(), send
 						.getTarget().getName());
 			} else if (elt instanceof Receive) {
 				Receive receive = (Receive) elt;
 
 				init = new ReceiveInit(file.getGlobalContainer(), receive
-						.getSource().getName(), receive.getMedium()
-						.getDefinition().getId());
+						.getSource().getName(), receive.getRouteStep().getId());
 				wait = new WaitForCore(file.getGlobalContainer(), receive
 						.getSource().getName());
 			}
@@ -265,7 +264,7 @@ public class SourceFileCodeGenerator {
 				for (CommunicationFunctionInit oldInit : alreadyInits) {
 					if (oldInit.getConnectedCoreId().equals(
 							init.getConnectedCoreId())
-							&& oldInit.getMediumId().equals(init.getMediumId())) {
+							&& oldInit.getMediumDef().equals(init.getMediumDef())) {
 						// core wait has already been done
 						wait = null;
 

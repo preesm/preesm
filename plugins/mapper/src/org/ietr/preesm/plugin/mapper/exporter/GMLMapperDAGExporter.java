@@ -67,7 +67,7 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		addKey(ImplementationPropertyNames.Vertex_vertexType, ImplementationPropertyNames.Vertex_vertexType, "vertex", "string", String.class);
 		addKey(ImplementationPropertyNames.Vertex_Operator, ImplementationPropertyNames.Vertex_Operator, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_medium, ImplementationPropertyNames.SendReceive_medium, "vertex", "string",
+		addKey(ImplementationPropertyNames.SendReceive_routeStep, ImplementationPropertyNames.SendReceive_routeStep, "vertex", "string",
 				DAGDefaultEdgePropertyType.class);
 		addKey(ImplementationPropertyNames.Vertex_schedulingOrder, ImplementationPropertyNames.Vertex_schedulingOrder, "vertex", "int",
 				DAGDefaultEdgePropertyType.class);

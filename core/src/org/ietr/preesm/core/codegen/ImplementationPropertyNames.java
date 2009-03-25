@@ -86,9 +86,9 @@ public final class ImplementationPropertyNames {
 
 	// Vertex of type send or receive properties
 	/**
-	 * Medium transfering the data.
+	 * Route step transfering the data.
 	 */
-	public static final String SendReceive_medium = "medium";
+	public static final String SendReceive_routeStep = "routeStep";
 	
 	/**
 	 * integer with the data size.

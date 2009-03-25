@@ -6,7 +6,7 @@
    <spirit:componentInstances>
       <spirit:componentInstance>
          <spirit:instanceName>SCR1</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="tata" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="SRC" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">parallelNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -71,7 +71,7 @@
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>SCR2</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="SRC" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">parallelNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -87,8 +87,8 @@
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
-         <spirit:instanceName>RIO</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:instanceName>RIO1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="RIO" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">contentionNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -130,11 +130,11 @@
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="SCR2"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RIO"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RIO1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RIO"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="RIO1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="SCR1"/>
       </spirit:interconnection>
       <spirit:interconnection>

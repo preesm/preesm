@@ -20,6 +20,9 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
+import org.ietr.preesm.plugin.abc.route.impl.DmaComRouterImplementer;
+import org.ietr.preesm.plugin.abc.route.impl.MediumRouterImplementer;
+import org.ietr.preesm.plugin.abc.route.impl.MessageComRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -52,9 +55,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 		// Initializing the available router implementers
 
-		this.addImplementer(DmaRouteStep.id, new DmaComRouterImplementer(this));
-		this.addImplementer(MediumRouteStep.id, new MediumRouterImplementer(this));
-		this.addImplementer(NodeRouteStep.id, new MessageComRouterImplementer(this));
+		this.addImplementer(DmaRouteStep.type, new DmaComRouterImplementer(this));
+		this.addImplementer(MediumRouteStep.type, new MediumRouterImplementer(this));
+		this.addImplementer(NodeRouteStep.type, new MessageComRouterImplementer(this));
 	}
 
 	public void routeAll(MapperDAG implementation, Integer type) {
@@ -84,7 +87,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 						for (AbstractRouteStep step : route) {
 							CommunicationRouterImplementer impl = getImplementer(step
-									.getId());
+									.getType());
 							lastTransaction = impl.addVertices(step, currentEdge,
 									localTransactionManager, type,
 									routeStepIndex, lastTransaction);
@@ -148,7 +151,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			Transaction lastTransaction = null;
 			for (AbstractRouteStep step : transferEdges.get(edge)) {
 				CommunicationRouterImplementer impl = getImplementer(step
-						.getId());
+						.getType());
 				lastTransaction = impl.addVertices(step, edge,
 						localTransactionManager, type, routeStepIndex,
 						lastTransaction);
@@ -182,7 +185,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			// Iterating the route and incrementing transfer cost
 			for (AbstractRouteStep step : route) {
 				CommunicationRouterImplementer impl = getImplementer(step
-						.getId());
+						.getType());
 				cost += impl.evaluateSingleTransfer(edge,
 						(MediumRouteStep) step);
 			}

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
    <vertices>
-      <vertex id="SCR1" x="536" y="262"/>
+      <vertex id="SCR1" x="513" y="237"/>
       <vertex id="C64_1" x="612" y="77"/>
       <vertex id="C64_2" x="591" y="244"/>
       <vertex id="C64_3" x="642" y="325"/>
       <vertex id="C64_4" x="57" y="71"/>
-      <vertex id="edma3_1" x="730" y="142"/>
+      <vertex id="edma3_1" x="780" y="191"/>
       <vertex id="C64_5" x="56" y="255"/>
       <vertex id="C64_6" x="57" y="329"/>
-      <vertex id="SCR2" x="333" y="260"/>
-      <vertex id="edma3_2" x="166" y="212"/>
-      <vertex id="RIO" x="441" y="243"/>
+      <vertex id="SCR2" x="325" y="228"/>
+      <vertex id="edma3_2" x="201" y="114"/>
+      <vertex id="RIO1" x="424" y="217"/>
    </vertices>
 </layout>

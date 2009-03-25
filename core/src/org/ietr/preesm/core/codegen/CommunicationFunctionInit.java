@@ -52,22 +52,22 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 	/**
 	 * ID of the medium used to connect to the core
 	 */
-	private String mediumId;
+	private String mediumDef;
 
 	public CommunicationFunctionInit(String name,
 			AbstractBufferContainer parentContainer, String connectedCoreId,
-			String mediumId) {
+			String mediumDef) {
 		super(name, parentContainer, null);
 		this.connectedCoreId = connectedCoreId;
-		this.mediumId = mediumId;
+		this.mediumDef = mediumDef;
 	}
 
 	public String getConnectedCoreId() {
 		return connectedCoreId;
 	}
 
-	public String getMediumId() {
-		return mediumId;
+	public String getMediumDef() {
+		return mediumDef;
 	}
 	
 	

@@ -58,8 +58,8 @@ public class RouteStepFactory {
 			for (Interconnection i : archi.undirectedEdgesOf(node)) {
 				if (i.getSource() instanceof Dma)
 					dma = (Dma) i.getSource();
-				if (i.getSource() instanceof Dma)
-					dma = (Dma) i.getSource();
+				if (i.getTarget() instanceof Dma)
+					dma = (Dma) i.getTarget();
 
 				if (dma != null) {
 					if (existSetup(dma, dmaSetup)) {

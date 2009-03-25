@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 import java.util.Iterator;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
@@ -151,15 +152,10 @@ public class TagDAG {
 										.getSender());
 
 				// Setting the medium transmitting the current data
-				MediumRouteStep sendRs = (MediumRouteStep) ((SendVertex) currentVertex)
+				AbstractRouteStep sendRs = ((SendVertex) currentVertex)
 						.getRouteStep();
-				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
-						(sendRs.getMedium()));
-
-				if (sendRs.getMedium().getDefinition() == null) {
-					int i = 0;
-					i++;
-				}
+				bean.setValue(ImplementationPropertyNames.SendReceive_routeStep,
+						sendRs);
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
@@ -191,15 +187,10 @@ public class TagDAG {
 								.getReceiver());
 
 				// Setting the medium transmitting the current data
-				MediumRouteStep rcvRs = (MediumRouteStep) ((ReceiveVertex) currentVertex)
+				AbstractRouteStep rcvRs =  ((ReceiveVertex) currentVertex)
 						.getRouteStep();
-				bean.setValue(ImplementationPropertyNames.SendReceive_medium,
-						rcvRs.getMedium());
-
-				if (rcvRs.getMedium().getDefinition() == null) {
-					int i = 0;
-					i++;
-				}
+				bean.setValue(ImplementationPropertyNames.SendReceive_routeStep,
+						rcvRs);
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
