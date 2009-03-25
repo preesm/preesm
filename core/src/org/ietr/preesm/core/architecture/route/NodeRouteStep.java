@@ -92,7 +92,7 @@ public class NodeRouteStep extends AbstractRouteStep {
 		return id;
 	}
 	
-	protected List<AbstractNode> getNodes() {
+	public List<AbstractNode> getNodes() {
 		return nodes;
 	}
 

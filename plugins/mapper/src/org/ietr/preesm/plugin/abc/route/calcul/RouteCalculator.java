@@ -144,7 +144,7 @@ public class RouteCalculator {
 				if (!alreadyVisitedNodes.contains(newNode)) {
 					List<AbstractNode> newAlreadyVisitedNodes = new ArrayList<AbstractNode>(
 							alreadyVisitedNodes);
-					newAlreadyVisitedNodes.add(node);
+					newAlreadyVisitedNodes.add(newNode);
 					exploreRoute(source, node, newAlreadyVisitedNodes);
 				}
 			} else if (getOtherEnd(i,node) instanceof Operator && getOtherEnd(i,node) != source) {

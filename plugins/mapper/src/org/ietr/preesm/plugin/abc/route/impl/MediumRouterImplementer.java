@@ -45,43 +45,47 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 			MapperDAGEdge edge, TransactionManager transactions, int type,
 			int routeStepIndex, Transaction lastTransaction) {
 
-		if (type == CommunicationRouter.transferType
-				&& routeStep instanceof MediumRouteStep) {
-			long transferCost = evaluateSingleTransfer(edge,routeStep);
-			MediumRouteStep mediumRouteStep = (MediumRouteStep) routeStep;
+		if (routeStep instanceof MediumRouteStep) {
+			if (type == CommunicationRouter.transferType) {
+				long transferCost = evaluateSingleTransfer(edge, routeStep);
+				MediumRouteStep mediumRouteStep = (MediumRouteStep) routeStep;
 
-			Transaction transaction = new AddTransferVertexTransaction(
-					lastTransaction, getEdgeScheduler(), edge, getImplementation(),
-					getOrderManager(), routeStepIndex, mediumRouteStep,
-					transferCost, true);
+				Transaction transaction = new AddTransferVertexTransaction(
+						lastTransaction, getEdgeScheduler(), edge,
+						getImplementation(), getOrderManager(), routeStepIndex,
+						mediumRouteStep, mediumRouteStep.getMedium(), transferCost, true);
 
-			transactions.add(transaction);
-			return transaction;
-		} else if (type == CommunicationRouter.overheadType) {
-			MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
-					(MapperDAGVertex) edge.getSource(),
-					(MapperDAGVertex) edge.getTarget(), routeStepIndex)
-					.incomingEdges().toArray()[0];
+				transactions.add(transaction);
+				return transaction;
+			} else if (type == CommunicationRouter.overheadType) {
+				MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
+						(MapperDAGVertex) edge.getSource(),
+						(MapperDAGVertex) edge.getTarget(), routeStepIndex)
+						.incomingEdges().toArray()[0];
 
-			if (firstTransferIncomingEdge != null) {
-				transactions.add(new AddOverheadVertexTransaction(
-						firstTransferIncomingEdge, getImplementation(), routeStep,
-						getOrderManager()));
-			} else {
-				PreesmLogger.getLogger().log(
-						Level.SEVERE,
-						"The transfer following vertex" + edge.getSource()
-								+ "was not found. We could not add overhead.");
+				if (firstTransferIncomingEdge != null) {
+					transactions.add(new AddOverheadVertexTransaction(
+							firstTransferIncomingEdge, getImplementation(),
+							routeStep, getOrderManager()));
+				} else {
+					PreesmLogger
+							.getLogger()
+							.log(
+									Level.SEVERE,
+									"The transfer following vertex"
+											+ edge.getSource()
+											+ "was not found. We could not add overhead.");
+				}
+			} else if (type == CommunicationRouter.sendReceive) {
+
+				Transaction transaction = new AddSendReceiveTransaction(
+						lastTransaction, edge, getImplementation(),
+						getOrderManager(), routeStepIndex, routeStep,
+						TransferVertex.SEND_RECEIVE_COST);
+
+				transactions.add(transaction);
+				return transaction;
 			}
-		} else if (type == CommunicationRouter.sendReceive) {
-
-			Transaction transaction = new AddSendReceiveTransaction(
-					lastTransaction, edge, getImplementation(),
-					getOrderManager(), routeStepIndex, routeStep,
-					TransferVertex.SEND_RECEIVE_COST);
-
-			transactions.add(transaction);
-			return transaction;
 		}
 		return null;
 	}
@@ -96,7 +100,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 		if (step instanceof MediumRouteStep) {
 			Operator sender = step.getSender();
 			Operator receiver = step.getReceiver();
-			Medium medium = ((MediumRouteStep)step).getMedium();
+			Medium medium = ((MediumRouteStep) step).getMedium();
 
 			if (medium != null) {
 				MediumDefinition def = (MediumDefinition) medium
@@ -118,7 +122,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 				return 0;
 			}
 		}
-		
+
 		return 0;
 	}
 

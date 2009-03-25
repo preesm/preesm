@@ -93,24 +93,6 @@ public class ImplementationVertexProperty {
 	}
 
 	/**
-	 * A Communication vertex has an effective medium
-	 */
-	public Medium getEffectiveMedium() {
-		if (effectiveComponent instanceof Medium)
-			return (Medium) effectiveComponent;
-		else
-			return (Medium) Medium.NO_COMPONENT;
-	}
-
-	public boolean hasEffectiveMedium() {
-		return getEffectiveMedium() != Operator.NO_COMPONENT;
-	}
-
-	public void setEffectiveMedium(Medium effectiveMedium) {
-		this.effectiveComponent = effectiveMedium;
-	}
-
-	/**
 	 * Effective component is common to communication and computation vertices
 	 */
 	public ArchitectureComponent getEffectiveComponent() {

@@ -3,7 +3,10 @@ package org.ietr.preesm.plugin.abc.route.impl;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
@@ -34,7 +37,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 			TransactionManager transactions) {
 
 	}
-	
+
 	/**
 	 * Adds the simulation vertices
 	 */
@@ -43,15 +46,36 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 			MapperDAGEdge edge, TransactionManager transactions, int type,
 			int routeStepIndex, Transaction lastTransaction) {
 
-		if (type == CommunicationRouter.sendReceive) {
+		if (routeStep instanceof DmaRouteStep) {
+			DmaRouteStep dmaRouteStep = (DmaRouteStep)routeStep;
+			if (type == CommunicationRouter.transferType) {
+				long transferCost = evaluateSingleTransfer(edge, routeStep);
+				Transaction transaction = null;
+				
+				for(AbstractNode node : dmaRouteStep.getNodes()){
+					if(node instanceof ContentionNode){
+						transaction = new AddTransferVertexTransaction(
+								lastTransaction, getEdgeScheduler(), edge,
+								getImplementation(), getOrderManager(), routeStepIndex,
+								dmaRouteStep, node, transferCost, true);
 
-			Transaction transaction = new AddSendReceiveTransaction(
-					lastTransaction, edge, getImplementation(),
-					getOrderManager(), routeStepIndex, routeStep,
-					TransferVertex.SEND_RECEIVE_COST);
+						transactions.add(transaction);
+					}
+				}
+				
+				return transaction;
+			} else if (type == CommunicationRouter.overheadType) {
 
-			transactions.add(transaction);
-			return transaction;
+			} else if (type == CommunicationRouter.sendReceive) {
+
+				Transaction transaction = new AddSendReceiveTransaction(
+						lastTransaction, edge, getImplementation(),
+						getOrderManager(), routeStepIndex, routeStep,
+						TransferVertex.SEND_RECEIVE_COST);
+
+				transactions.add(transaction);
+				return transaction;
+			}
 		}
 		return null;
 	}
