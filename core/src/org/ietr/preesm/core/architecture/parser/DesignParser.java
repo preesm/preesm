@@ -64,7 +64,9 @@ import org.ietr.preesm.core.architecture.advancedmodel.ITerminal;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
 import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -376,6 +378,7 @@ public class DesignParser {
 		boolean isSetup = false;
 
 		Node node = callElt.getFirstChild();
+		String description = "";
 
 		while (node != null) {
 
@@ -394,6 +397,8 @@ public class DesignParser {
 							.equalsIgnoreCase("directed"));
 					isSetup = (elt.getTextContent()
 							.equalsIgnoreCase("setup"));
+				} else if (type.equals("spirit:description")) {
+					description = elt.getTextContent();
 				}
 			}
 
@@ -422,7 +427,23 @@ public class DesignParser {
 				((Communicator) cmp2).addSetupTime(cmp1.getName(),
 						((Processor) cmp1).getSetupTime(cmp2.getName()));
 			} else if (isSetup) {
+				// A setup is directed and its description gives the setup time
 				isDirected = true;
+				
+				if(cmp1 instanceof Operator && cmp2 instanceof Dma){
+					int setupTime = 0;
+					
+					try {
+						setupTime = Integer.valueOf(description);
+					} catch (NumberFormatException e) {
+						PreesmLogger.getLogger().log(Level.INFO,"No setup type entered for a setup link. 0 used.");
+					}
+					
+					((Dma)cmp2).addSetupTime((Operator)cmp1, setupTime);
+				}
+				else{
+					PreesmLogger.getLogger().log(Level.SEVERE,"a setup link must join an operator to a dma.");
+				}
 				archi.connect(cmp1, if1, cmp2, if2, isDirected);
 			} else {
 				archi.connect(cmp1, if1, cmp2, if2, isDirected);

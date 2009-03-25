@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.architecture.simplemodel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
@@ -46,9 +49,15 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class Dma extends ArchitectureComponent {
 
+	/**
+	 * The time needed to set-up a communication depending
+	 * on the operator doing the set-up
+	 */
+	Map<Operator,Integer> setupTimes = null;
+	
 	public Dma(String name, DmaDefinition type) {
 		super(name, type);
-
+		setupTimes = new HashMap<Operator,Integer>();
 	}
 	
 	public ArchitectureComponentType getType(){
@@ -62,5 +71,9 @@ public class Dma extends ArchitectureComponent {
 	
 	public boolean isNode(){
 		return false;
+	}
+	
+	public void addSetupTime(Operator o, int time){
+		setupTimes.put(o, time);
 	}
 }
