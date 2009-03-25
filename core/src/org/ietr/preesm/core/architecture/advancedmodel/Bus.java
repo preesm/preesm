@@ -74,4 +74,8 @@ public class Bus extends ArchitectureComponent implements ILink {
 	public ArchitectureComponent clone() {
 		return new Bus(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return true;
+	}
 }

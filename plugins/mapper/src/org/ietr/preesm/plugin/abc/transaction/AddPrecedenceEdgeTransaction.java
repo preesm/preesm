@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
@@ -49,10 +48,6 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 public class AddPrecedenceEdgeTransaction extends Transaction {
 
 	// Inputs
-	/**
-	 * The object handling the schedulings as well as the total order.
-	 */
-	private SchedOrderManager orderManager;
 	
 	/**
 	 * Implementation DAG to which the edge is added
@@ -78,7 +73,6 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 	// and adding a new edge between the target and its predecessor
 	public static final int compensateTargetRemoval = 2; // Removing the edge
 	// and adding a new edge between the source and its successor
-	private int undoType = simpleDelete;
 
 	// Generated objects
 	/**
@@ -86,14 +80,12 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 	 */
 	private PrecedenceEdge precedenceEdge = null;
 
-	public AddPrecedenceEdgeTransaction(SchedOrderManager orderManager, MapperDAG implementation,
-			MapperDAGVertex source, MapperDAGVertex destination, int undoType) {
+	public AddPrecedenceEdgeTransaction(MapperDAG implementation,
+			MapperDAGVertex source, MapperDAGVertex destination) {
 		super();
-		this.orderManager = orderManager;
 		this.destination = destination;
 		this.implementation = implementation;
 		this.source = source;
-		this.undoType = undoType;
 	}
 
 	@Override

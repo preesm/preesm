@@ -62,7 +62,7 @@ public class StatEditorInput implements IEditorInput {
 		this.params = params;
 		this.scenario = scenario;
 	}
-
+	
 	public IScenario getScenario() {
 		return scenario;
 	}

@@ -50,11 +50,8 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -122,14 +119,7 @@ public class TagDAG {
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 
-		AbstractCommunicationRouter comRouter = null;
-		if(simu instanceof LatencyAbc){
-			comRouter = ((LatencyAbc)simu).getComRouter();
-			comRouter.setManagers(dag, AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr), orderMgr);
-		}
-		else{
-			comRouter = new CommunicationRouter(architecture,dag,AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),orderMgr);
-		}
+		CommunicationRouter comRouter = new CommunicationRouter(architecture,dag,AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),orderMgr);
 		comRouter.routeAll(dag, CommunicationRouter.sendReceive);
 		orderMgr.tagDAG(dag);
 	}

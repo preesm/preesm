@@ -97,4 +97,8 @@ public class Communicator extends ArchitectureComponent implements
 		com.getSetupTimes().putAll(setupTimes);
 		return com;
 	}
+	
+	public boolean isNode(){
+		return false;
+	}
 }

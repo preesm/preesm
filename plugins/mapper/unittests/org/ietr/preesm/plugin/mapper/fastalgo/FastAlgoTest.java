@@ -103,7 +103,7 @@ public class FastAlgoTest extends TestCase {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, null);
 		simu.getFinalCost();
 		InitialLists initial = new InitialLists();
 

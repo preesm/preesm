@@ -111,4 +111,8 @@ public class Processor extends ArchitectureComponent implements IOperator,
 	public ArchitectureComponent clone() {
 		return new Processor(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return false;
+	}
 }

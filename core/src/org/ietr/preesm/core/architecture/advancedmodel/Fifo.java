@@ -189,4 +189,8 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	public ArchitectureComponent clone() {
 		return new Fifo(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return true;
+	}
 }

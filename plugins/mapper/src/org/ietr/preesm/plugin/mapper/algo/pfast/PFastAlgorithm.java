@@ -295,7 +295,7 @@ public class PFastAlgorithm extends Observable {
 	 * 
 	 * @return MapperDAG
 	 */
-
+	@SuppressWarnings("unchecked")
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
 			int margIn, AbcType simulatorType, EdgeSchedType edgeSchedType,
@@ -481,7 +481,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dag = new DAGCreator().dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, null);
 
 		InitialLists initial = new InitialLists();
 

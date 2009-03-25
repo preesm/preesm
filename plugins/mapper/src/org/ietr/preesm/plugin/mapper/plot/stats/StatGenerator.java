@@ -52,6 +52,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -95,7 +96,7 @@ public class StatGenerator {
 	 * infinity of cores of main type totally connected with perfect media. The
 	 * span complex because the DAG is not serial-parallel but can be any DAG.
 	 */
-	public long getDAGComplexSpanLength() {
+	public long getDAGComplexSpanLength(RouteCalculator routeCalculator) {
 
 		MapperDAG taskDag = abc.getDAG().clone();
 		removeSendReceive(taskDag);

@@ -59,4 +59,8 @@ public class Dma extends ArchitectureComponent {
 	public ArchitectureComponent clone() {
 		return new Dma(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return false;
+	}
 }

@@ -37,19 +37,19 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.route.calcul;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.route.RouteStepFactory;
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -64,132 +64,104 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 public class RouteCalculator {
 
 	private static RouteCalculator singleton = null;
-	
+
 	private MultiCoreArchitecture archi;
-	
+
 	private RoutingTable table = null;
 
-	static public RouteCalculator getInstance(MultiCoreArchitecture archi){
-		if(singleton == null){
+	private RouteStepFactory stepFactory = null;
+
+	static public RouteCalculator getInstance(MultiCoreArchitecture archi) {
+		if (singleton == null) {
 			singleton = new RouteCalculator(archi);
 		}
 		return singleton;
 	}
+
 	/**
 	 * Constructor from a given architecture
 	 */
-	private RouteCalculator(MultiCoreArchitecture archi) {
+	public RouteCalculator(MultiCoreArchitecture archi) {
 
 		this.archi = archi;
 		table = new RoutingTable();
-		createRouteSteps(table,archi);
-		initRoutingTable(table,archi);
-	}
-	
-	private void createRouteSteps(RoutingTable table, MultiCoreArchitecture archi){
-		PreesmLogger.getLogger().log(Level.INFO,"creating route steps.");
-		
-		
-	}
-	
-	private void initRoutingTable(RoutingTable table, MultiCoreArchitecture archi){
-		PreesmLogger.getLogger().log(Level.INFO,"Initializing routing table.");
-		
-		
+		stepFactory = new RouteStepFactory(archi);
+
+		createRouteSteps();
+		createRoutes();
 	}
 
 	/**
-	 * Choosing the medium with best speed between 2 operators.
+	 * Creating recursively the route steps from the architecture.
 	 */
-	public Medium getDirectRoute(Operator op1, Operator op2) {
+	private void createRouteSteps() {
+		PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
 
-		Medium bestMedium = null;
+		for (ArchitectureComponent c : archi
+				.getComponents(ArchitectureComponentType.operator)) {
+			Operator o = (Operator) c;
 
-		if (!op1.equals(op2)) {
-			// List of all media between op1 and op2
-			Set<Medium> media = archi.getMedia(op1, op2);
-			MediumDefinition bestprop = null;
-
-			if (!media.isEmpty()) {
-
-				Iterator<Medium> iterator = media.iterator();
-
-				// iterating media and choosing the one with best speed
-				while (iterator.hasNext()) {
-					Medium currentMedium = iterator.next();
-					MediumDefinition currentProp = (MediumDefinition) currentMedium
-							.getDefinition();
-
-					if (bestprop == null
-							|| bestprop.getInvSpeed() > currentProp
-									.getInvSpeed()) {
-						bestprop = currentProp;
-						bestMedium = currentMedium;
-					}
-				}
-
-			}
-
+			createRouteSteps(o);
 		}
+	}
+	
+	private ArchitectureComponent getOtherEnd(Interconnection i, ArchitectureComponent c){
+		if(i.getTarget() != c)
+			return i.getTarget();
+		else
+			return i.getSource();
+	}
 
-		return bestMedium;
+	private void createRouteSteps(Operator source) {
+
+		// Iterating on outgoing and undirected edges
+		Set<Interconnection> outgoingAndUndirected = new HashSet<Interconnection>();
+		outgoingAndUndirected.addAll(archi.undirectedEdgesOf(source));
+		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(source));
+
+		for (Interconnection i : outgoingAndUndirected) {
+			if (getOtherEnd(i,source).isNode()) {
+				AbstractNode node = (AbstractNode)getOtherEnd(i,source);
+
+				List<AbstractNode> alreadyVisitedNodes = new ArrayList<AbstractNode>();
+				alreadyVisitedNodes.add(node);
+				exploreRoute(source, node, alreadyVisitedNodes);
+			}
+		}
+	}
+
+	private void exploreRoute(Operator source, AbstractNode node,
+			List<AbstractNode> alreadyVisitedNodes) {
+
+		// Iterating on outgoing and undirected edges
+		Set<Interconnection> outgoingAndUndirected = new HashSet<Interconnection>();
+		outgoingAndUndirected.addAll(archi.undirectedEdgesOf(node));
+		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(node));
+
+		for (Interconnection i : outgoingAndUndirected) {
+			if (getOtherEnd(i,node).isNode()) {
+				AbstractNode newNode = (AbstractNode) getOtherEnd(i,node);
+				if (!alreadyVisitedNodes.contains(newNode)) {
+					List<AbstractNode> newAlreadyVisitedNodes = new ArrayList<AbstractNode>(
+							alreadyVisitedNodes);
+					newAlreadyVisitedNodes.add(node);
+					exploreRoute(source, node, newAlreadyVisitedNodes);
+				}
+			} else if (getOtherEnd(i,node) instanceof Operator && getOtherEnd(i,node) != source) {
+				Operator target = (Operator) getOtherEnd(i,node);
+				AbstractRouteStep step = stepFactory.getRouteStep(source,
+						alreadyVisitedNodes, target);
+				table.addRoute(source, target, new Route(step));
+			}
+		}
 	}
 
 	/**
-	 * Choosing a route between 2 operators and appending it to the list of
-	 * already visited operators and to the route.
+	 * Building recursively the routes between the cores.
 	 */
-	public boolean appendRoute(List<Operator> alreadyVisited, Route route,
-			Operator op1, Operator op2) {
+	private void createRoutes() {
+		PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
-		// Gets the fastest medium directly connecting op1 and op2
-		Medium direct = getDirectRoute(op1, op2);
-
-		if (direct != null) {
-			// There is a best medium directly connecting op1 and op2
-			// Adding it to the route
-			route.add(new MediumRouteStep(op1, direct, op2));
-			return true;
-		} else {
-
-			// There is no best medium directly connecting op1 and op2
-			// Recursively appending best routes
-			Iterator<ArchitectureComponent> iterator = archi.getComponents(
-					ArchitectureComponentType.operator).iterator();
-			Route bestSubRoute = null;
-
-			// Iterating all operators
-			while (iterator.hasNext()) {
-
-				Operator op = (Operator) iterator.next();
-				Medium m = getDirectRoute(op1, op);
-
-				// If there is a direct route between op1 and the current op,
-				// search a sub-route between op and op2
-				if (m != null && !alreadyVisited.contains(op)) {
-					alreadyVisited.add(op);
-
-					Route subRoute = new Route();
-					subRoute.add(new MediumRouteStep(op1, m, op));
-
-					if (appendRoute(new ArrayList<Operator>(alreadyVisited),
-							subRoute, op, op2)) {
-
-						if (bestSubRoute == null
-								|| compareRoutes(subRoute, bestSubRoute)) {
-							bestSubRoute = subRoute;
-						}
-					}
-				}
-			}
-
-			if (bestSubRoute != null) {
-				route.addAll(bestSubRoute);
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -204,14 +176,13 @@ public class RouteCalculator {
 	 * Choosing a route between 2 operators
 	 */
 	public Route getRoute(Operator op1, Operator op2) {
-		Route route = new Route();
-		List<Operator> alreadyVisited = new ArrayList<Operator>();
-
-		// appends the route between op1 and op2 to an empty route
-		if (appendRoute(alreadyVisited, route, op1, op2))
-			return route;
-		else
-			return null;
+		Route r = table.getRoute(op1, op2, 0);
+		
+		if(r==null){
+			PreesmLogger.getLogger().log(Level.SEVERE,"Did not find a route between " + op1 + " and " + op2 + ".");
+		}
+		
+		return r;
 	}
 
 	/**
@@ -220,9 +191,11 @@ public class RouteCalculator {
 	public Route getRoute(MapperDAGEdge edge) {
 		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-		return getRoute(source.getImplementationVertexProperty()
-				.getEffectiveOperator(), target
-				.getImplementationVertexProperty().getEffectiveOperator());
+		Operator sourceOp = source.getImplementationVertexProperty()
+				.getEffectiveOperator();
+		Operator targetOp = target.getImplementationVertexProperty()
+				.getEffectiveOperator();
+		return getRoute(sourceOp, targetOp);
 	}
 
 }

@@ -126,7 +126,7 @@ public class FastAlgorithm extends Observable {
 		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
 		MapperDAG dag = dagCreator.dagexample2(archi);
 
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag, archi);
+		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag, archi, null);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 

@@ -56,7 +56,6 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.ToHSDFVisitor;
-import org.sdf4j.model.sdf.visitors.TopologyVisitor;
 import org.sdf4j.model.visitors.SDF4JException;
 
 /**
@@ -223,7 +222,6 @@ public class AlgorithmTransformer {
 
 		// SDFtoDAGDemo applet = new SDFtoDAGDemo();
 		DirectedAcyclicGraphGenerator DAGG = new DirectedAcyclicGraphGenerator();
-		TopologyVisitor topo = new TopologyVisitor();
 
 		// Random dag
 		Random rand = new Random(System.nanoTime());

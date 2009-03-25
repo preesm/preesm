@@ -44,28 +44,13 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.scenario.Scenario;
-import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.core.scenario.TimingManager;
-import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
-import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
-import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Main class of genetic algorithms
@@ -251,64 +236,5 @@ public class StandardGeneticAlgorithm extends Observable {
 		}
 
 		return chromoSet;
-	}
-
-	/**
-	 * Main for example
-	 */
-	public static void main(String[] args) {
-
-		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
-		MultiCoreArchitecture archi = Examples.get2C64Archi();
-
-		// Generating random sdf dag
-		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 100,true);
-
-		// Generating constraints
-		IScenario scenario = new Scenario();
-		TimingManager tmgr = scenario.getTimingManager();
-		for (int i = 1; i <= nbVertex; i++) {
-			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
-					.getVertex(name), 50);
-			tmgr.addTiming(newt);
-		}
-
-		// Converting sdf dag in mapper dag
-		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
-		// MapperDAG dag = dagCreator.dagexample2(archi);
-
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
-		InitialLists initialLists = new InitialLists();
-		initialLists.constructInitialLists(dag, simu);
-		simu.resetDAG();
-
-		// Simulator Type
-		AbcType type = AbcType.AccuratelyTimed;
-		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
-
-		// create population using Pfast
-		PFastAlgorithm algorithm = new PFastAlgorithm();
-		List<MapperDAG> population = new ArrayList<MapperDAG>();
-		algorithm.map(dag, archi, 2, 2, initialLists, 10, 6, 3, type, edgeSchedType, true, 4, true,
-				population);
-
-		// Perform the StandardGeneticAlgo
-		ConcurrentSkipListSet<Chromosome> skipListSet;
-		skipListSet = geneticAlgorithm.runGeneticAlgo("test", population,
-				archi, type, edgeSchedType, 6, 25, false);
-
-		// best solution
-		Chromosome chromosome7 = skipListSet.first().clone();
-		chromosome7.evaluate(type, edgeSchedType);
-		IAbc simu2 = AbstractAbc
-				.getInstance(type, edgeSchedType,
-						chromosome7.getDag(), archi);
-		simu2.setDAG(chromosome7.getDag());
-		simu2.plotImplementation(false);
-
 	}
 }

@@ -139,7 +139,7 @@ public class FastArchiTester {
 		logger.setLevel(Level.FINE);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, null);
 		logger.log(Level.FINEST, "Initialization list scheduling");
 
 		InitialLists initial = new InitialLists();

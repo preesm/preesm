@@ -373,6 +373,7 @@ public class DesignParser {
 		boolean isAccess = false;
 		boolean isConfigure = false;
 		boolean isDirected = false;
+		boolean isSetup = false;
 
 		Node node = callElt.getFirstChild();
 
@@ -391,6 +392,8 @@ public class DesignParser {
 							.equalsIgnoreCase("configure"));
 					isDirected = (elt.getTextContent()
 							.equalsIgnoreCase("directed"));
+					isSetup = (elt.getTextContent()
+							.equalsIgnoreCase("setup"));
 				}
 			}
 
@@ -418,6 +421,9 @@ public class DesignParser {
 			} else if (isConfigure) {
 				((Communicator) cmp2).addSetupTime(cmp1.getName(),
 						((Processor) cmp1).getSetupTime(cmp2.getName()));
+			} else if (isSetup) {
+				isDirected = true;
+				archi.connect(cmp1, if1, cmp2, if2, isDirected);
 			} else {
 				archi.connect(cmp1, if1, cmp2, if2, isDirected);
 			}

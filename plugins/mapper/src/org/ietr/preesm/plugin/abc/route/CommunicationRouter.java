@@ -48,7 +48,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			MapperDAG implementation, IEdgeSched edgeScheduler,
 			SchedOrderManager orderManager) {
 		super(implementation,edgeScheduler,orderManager);
-		this.calculator = RouteCalculator.getInstance(archi);
+		this.calculator = new RouteCalculator(archi);
 
 		// Initializing the available router implementers
 
@@ -74,8 +74,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 				if (currentSourceProp.hasEffectiveOperator()
 						&& currentDestProp.hasEffectiveOperator()) {
-					if (currentSourceProp.getEffectiveOperator() != currentDestProp
-							.getEffectiveOperator()) {
+					if (!currentSourceProp.getEffectiveOperator().equals(currentDestProp
+							.getEffectiveOperator())) {
 						// Adds several transfers for one edge depending on the
 						// route steps
 						Route route = calculator.getRoute(currentEdge);

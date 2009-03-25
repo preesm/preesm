@@ -62,6 +62,8 @@ public class ListSchedTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters, IScenario scenario, IProgressMonitor monitor) {
+
+		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		// TODO Add here the calls to your task scheduling algorithm
 		// in which you ask communicationcontentiouslistschedulingdabc for
 		// implementation evaluations

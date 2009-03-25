@@ -119,8 +119,7 @@ public class PrecedenceEdgeAdder {
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
 						Transaction transaction = new AddPrecedenceEdgeTransaction(
-								orderManager, implementation, src, dst,
-								AddPrecedenceEdgeTransaction.simpleDelete);
+								implementation, src, dst);
 						localTransactionManager.add(transaction);
 					}
 				}

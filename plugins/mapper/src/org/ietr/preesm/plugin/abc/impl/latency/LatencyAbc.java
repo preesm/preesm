@@ -170,14 +170,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void implant(MapperDAGVertex dagvertex, Operator operator,
 			boolean updateRank) {
 		super.implant(dagvertex, operator, updateRank);
-		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 		timeKeeper.setAsDirty(dagvertex);
 	}
 	
 	@Override
 	public void unimplant(MapperDAGVertex dagvertex) {
 		super.unimplant(dagvertex);
-		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 		timeKeeper.setAsDirty(dagvertex);
 	}
 	

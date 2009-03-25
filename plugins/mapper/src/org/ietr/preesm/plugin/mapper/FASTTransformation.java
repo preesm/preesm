@@ -127,6 +127,7 @@ public class FASTTransformation extends AbstractMapping {
 			MultiCoreArchitecture architecture, TextParameters textParameters,
 			IScenario scenario, IProgressMonitor monitor) {
 
+		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		FastAlgoParameters parameters;
 		TaskResult result = new TaskResult();
 

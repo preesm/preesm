@@ -48,6 +48,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * Generic class representing the scheduling algorithm behaviour
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public abstract class AbstractMapping implements IMapping {
 	
@@ -56,10 +57,10 @@ public abstract class AbstractMapping implements IMapping {
 
 	
 	@Override
-	public abstract TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
+	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor);
-
-
-
+			IScenario scenario, IProgressMonitor monitor){
+		
+		return null;
+	}
 }

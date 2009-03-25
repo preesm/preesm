@@ -82,5 +82,9 @@ public class IpCoprocessor extends ArchitectureComponent implements IOperator,
 	public ArchitectureComponent clone() {
 		return new IpCoprocessor(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return false;
+	}
 
 }

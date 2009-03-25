@@ -220,4 +220,5 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 		}
 	}
 
+	public abstract boolean isNode();
 }

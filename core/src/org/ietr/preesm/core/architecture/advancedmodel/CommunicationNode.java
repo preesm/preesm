@@ -64,4 +64,8 @@ public class CommunicationNode extends ArchitectureComponent {
 	public ArchitectureComponent clone() {
 		return new CommunicationNode(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return true;
+	}
 }

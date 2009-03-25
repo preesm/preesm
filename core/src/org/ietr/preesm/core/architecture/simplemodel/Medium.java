@@ -48,7 +48,7 @@ import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
  *         
  * @author mpelcat
  */
-public class Medium extends ArchitectureComponent {
+public class Medium extends AbstractNode {
 	
 	public Medium(String name, MediumDefinition def) {
 		super(name, def);

@@ -151,7 +151,8 @@ public class MultiCoreArchitecture extends
 
 	@Override
 	public MultiCoreArchitecture clone() {
-
+		super.clone();
+		
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
 		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
@@ -237,6 +238,22 @@ public class MultiCoreArchitecture extends
 		}
 
 		return false;
+	}
+	
+	public Set<Interconnection> undirectedEdgesOf(ArchitectureComponent cmp){
+		Set<Interconnection> iSet = new HashSet<Interconnection>();
+		
+		for(Interconnection incoming : incomingEdgesOf(cmp)){
+			if (!incoming.isDirected())
+				iSet.add(incoming);
+		}
+		
+		for(Interconnection outgoing : outgoingEdgesOf(cmp)){
+			if (!outgoing.isDirected())
+				iSet.add(outgoing);
+		}
+		
+		return iSet;
 	}
 
 	private boolean existInterconnection(ArchitectureComponent cmp1,

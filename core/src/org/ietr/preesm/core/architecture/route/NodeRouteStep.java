@@ -3,6 +3,7 @@
  */
 package org.ietr.preesm.core.architecture.route;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
@@ -19,16 +20,13 @@ public class NodeRouteStep extends AbstractRouteStep {
 	/**
 	 * Communication nodes separating the sender and the receiver
 	 */
-	List<AbstractNode> nodes;
+	List<AbstractNode> nodes = null;
 	
 	public static final String id = "NodeRouteStep";
 	
-	public NodeRouteStep(Operator sender, Operator receiver) {
+	public NodeRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver) {
 		super(sender, receiver);
-	}
-	
-	public void addNode(AbstractNode node){
-		nodes.add(node);
+		nodes = new ArrayList<AbstractNode>(nodes);
 	}
 
 	@Override

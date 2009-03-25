@@ -313,7 +313,7 @@ public class ListScheduler {
 		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, null);
 
 		logger.log(Level.FINEST, "Evaluating DAG");
 

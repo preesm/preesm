@@ -333,7 +333,7 @@ public class PGeneticAlgo extends Observable {
 		// MapperDAG dag = dagCreator.dagexample2(archi);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi);
+				dag, archi, null);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(dag, simu);
 		simu.resetDAG();

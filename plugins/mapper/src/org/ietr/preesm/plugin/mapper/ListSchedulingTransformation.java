@@ -137,7 +137,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 			TextParameters textParameters,
 			IScenario scenario, IProgressMonitor monitor) {
 
-		
+		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		TaskResult result = new TaskResult();
 		ListSchedulingParameters parameters;
 		

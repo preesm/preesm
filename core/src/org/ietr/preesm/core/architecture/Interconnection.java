@@ -121,4 +121,9 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 	public void setDirected(boolean directed) {
 		this.directed = directed;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + cp1.toString() + "," + cp2.toString() + ")";
+	}
 }

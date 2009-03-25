@@ -81,4 +81,8 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 	public ArchitectureComponent clone() {
 		return new Memory(getName(),null);
 	}
+	
+	public boolean isNode(){
+		return false;
+	}
 }

@@ -136,7 +136,7 @@ public class PGeneticTransformation extends AbstractMapping {
 			TextParameters textParameters,
 			IScenario scenario, IProgressMonitor monitor) {
 
-		
+		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		TaskResult transfoResult = new TaskResult();
 		PGeneticAlgoParameters parameters;
 		

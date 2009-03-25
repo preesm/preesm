@@ -3,6 +3,9 @@
  */
 package org.ietr.preesm.core.architecture.route;
 
+import java.util.List;
+
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
@@ -18,8 +21,8 @@ public class DmaRouteStep extends NodeRouteStep {
 
 	public static final String id = "NodeRouteStep";
 	
-	public DmaRouteStep(Operator sender, Operator receiver, Dma dma) {
-		super(sender, receiver);
+	public DmaRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Dma dma) {
+		super(sender,nodes, receiver);
 		this.dma = dma;
 	}
 
