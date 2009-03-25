@@ -34,10 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
-/**
- * 
- */
 package org.ietr.preesm.core.architecture.route;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
@@ -50,9 +46,15 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
  * @author mpelcat
  */
 public class MediumRouteStep extends AbstractRouteStep {
-	
+
+	/**
+	 * Medium defining how to simulate the transfer
+	 */
 	private Medium medium;
-	
+
+	/**
+	 * The route step type determines how the communication will be simulated.
+	 */
 	public static final String type = "MediumRouteStep";
 
 	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {
@@ -74,11 +76,17 @@ public class MediumRouteStep extends AbstractRouteStep {
 				+ getReceiver().toString() + "}";
 	}
 
+	/**
+	 * The route step type determines how the communication will be simulated.
+	 */
 	@Override
 	public String getType() {
 		return type;
 	}
 
+	/**
+	 * The id is given to code generation. It selects the communication functions to use
+	 */
 	@Override
 	public String getId() {
 		return medium.getDefinition().getId();

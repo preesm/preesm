@@ -10,20 +10,27 @@ import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
+/**
+ * Class responsible to generate the suited vertices while simulating a message
+ * communication
+ * 
+ * @author mpelcat
+ */
 public class MessageComRouterImplementer extends CommunicationRouterImplementer {
 
 	public MessageComRouterImplementer(AbstractCommunicationRouter user) {
 		super(user);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void removeVertices(MapperDAGEdge edge,
 			TransactionManager transactions) {
-		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Adds the simulation vertices
+	 */
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
@@ -31,7 +38,6 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 
 		if (type == CommunicationRouter.sendReceive) {
 
-			// TODO: set a size to send and receive. From medium definition?
 			Transaction transaction = new AddSendReceiveTransaction(
 					lastTransaction, edge, getImplementation(),
 					getOrderManager(), routeStepIndex, routeStep,

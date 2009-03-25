@@ -26,16 +26,20 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * @author mpelcat
+ * Class responsible to generate the suited vertices while simulating a medium
+ * communication
  * 
+ * @author mpelcat
  */
 public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 	public MediumRouterImplementer(AbstractCommunicationRouter user) {
 		super(user);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Adds the simulation vertices
+	 */
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
@@ -71,7 +75,6 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 			}
 		} else if (type == CommunicationRouter.sendReceive) {
 
-			// TODO: set a size to send and receive. From medium definition?
 			Transaction transaction = new AddSendReceiveTransaction(
 					lastTransaction, edge, getImplementation(),
 					getOrderManager(), routeStepIndex, routeStep,

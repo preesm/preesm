@@ -34,10 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
-/**
- * 
- */
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
@@ -46,7 +42,8 @@ import java.util.Collection;
 import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 
 /**
- * A route contains several Route Steps. It links operators
+ * A route contains several Route Steps. It links operators.
+ * To operators directly connected have a route with one route step.
  * 
  * @author mpelcat
  */
@@ -57,9 +54,6 @@ public class Route extends ArrayList<AbstractRouteStep> {
 	 */
 	public static final String propertyBeanName = "route";
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public Route(AbstractRouteStep step) {

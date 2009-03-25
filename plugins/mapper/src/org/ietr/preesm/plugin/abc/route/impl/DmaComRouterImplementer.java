@@ -17,21 +17,27 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
-public class DmaComRouterImplementer extends CommunicationRouterImplementer{
-
+/**
+ * Class responsible to generate the suited vertices while simulating a dma
+ * communication
+ * 
+ * @author mpelcat
+ */
+public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 
 	public DmaComRouterImplementer(AbstractCommunicationRouter user) {
 		super(user);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void removeVertices(MapperDAGEdge edge,
 			TransactionManager transactions) {
-		// TODO Auto-generated method stub
-		
-	}
 
+	}
+	
+	/**
+	 * Adds the simulation vertices
+	 */
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
@@ -39,7 +45,6 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer{
 
 		if (type == CommunicationRouter.sendReceive) {
 
-			// TODO: set a size to send and receive. From medium definition?
 			Transaction transaction = new AddSendReceiveTransaction(
 					lastTransaction, edge, getImplementation(),
 					getOrderManager(), routeStepIndex, routeStep,
@@ -54,7 +59,6 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer{
 	@Override
 	protected long evaluateSingleTransfer(MapperDAGEdge edge,
 			AbstractRouteStep step) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
