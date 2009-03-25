@@ -68,9 +68,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Routes the communications coming from or going to
- * 
- * Based on bridge design pattern
+ * Routes the communications. Based on bridge design pattern. The processing
+ * is delegated to implementers
  * 
  * @author mpelcat
  */
