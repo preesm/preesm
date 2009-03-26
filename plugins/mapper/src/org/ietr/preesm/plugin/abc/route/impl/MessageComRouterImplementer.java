@@ -44,22 +44,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 		if (routeStep instanceof DmaRouteStep) {
 			NodeRouteStep nodeRouteStep = (NodeRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
-				long transferCost = 100;
-				Transaction transaction = null;
 
-				for (AbstractNode node : nodeRouteStep.getNodes()) {
-					if (node instanceof ContentionNode) {
-						transaction = new AddTransferVertexTransaction(
-								lastTransaction, getEdgeScheduler(), edge,
-								getImplementation(), getOrderManager(),
-								routeStepIndex, nodeRouteStep, node,
-								transferCost, true);
-
-						transactions.add(transaction);
-					}
-				}
-
-				return transaction;
 			} else if (type == CommunicationRouter.overheadType) {
 
 			} else if (type == CommunicationRouter.sendReceive) {
@@ -74,13 +59,6 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			}
 		}
 		return null;
-	}
-
-	@Override
-	protected long evaluateSingleTransfer(MapperDAGEdge edge,
-			AbstractRouteStep step) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

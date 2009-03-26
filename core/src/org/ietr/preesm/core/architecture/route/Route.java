@@ -38,8 +38,11 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * A route contains several Route Steps. It links operators.
@@ -63,5 +66,18 @@ public class Route extends ArrayList<AbstractRouteStep> {
 
 	public Route() {
 		super();
+	}
+
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize
+	 */
+	public long evaluateTransfer(long transferSize) {
+		long cost = 0;
+		// Iterating the route and incrementing transfer cost
+		for (AbstractRouteStep step : this) {
+			cost += step.getTransferCost(transferSize);
+		}
+		
+		return cost;
 	}
 }

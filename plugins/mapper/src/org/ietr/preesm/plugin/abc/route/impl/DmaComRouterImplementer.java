@@ -47,22 +47,24 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 			int routeStepIndex, Transaction lastTransaction) {
 
 		if (routeStep instanceof DmaRouteStep) {
-			DmaRouteStep dmaRouteStep = (DmaRouteStep)routeStep;
+			DmaRouteStep dmaRouteStep = (DmaRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
-				long transferCost = evaluateSingleTransfer(edge, routeStep);
+				long transferCost = routeStep.getTransferCost(edge
+						.getInitialEdgeProperty().getDataSize());
 				Transaction transaction = null;
-				
-				for(AbstractNode node : dmaRouteStep.getNodes()){
-					if(node instanceof ContentionNode){
+
+				for (AbstractNode node : dmaRouteStep.getNodes()) {
+					if (node instanceof ContentionNode) {
 						transaction = new AddTransferVertexTransaction(
 								lastTransaction, getEdgeScheduler(), edge,
-								getImplementation(), getOrderManager(), routeStepIndex,
-								dmaRouteStep, node, transferCost, true);
+								getImplementation(), getOrderManager(),
+								routeStepIndex, dmaRouteStep, node,
+								transferCost, true);
 
 						transactions.add(transaction);
 					}
 				}
-				
+
 				return transaction;
 			} else if (type == CommunicationRouter.overheadType) {
 
@@ -78,12 +80,6 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	protected long evaluateSingleTransfer(MapperDAGEdge edge,
-			AbstractRouteStep step) {
-		return 0;
 	}
 
 }

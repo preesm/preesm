@@ -74,4 +74,13 @@ public class DmaRouteStep extends NodeRouteStep {
 	private Dma getDma() {
 		return dma;
 	}
+
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize
+	 */
+	@Override
+	public long getTransferCost(long transfersSize) {
+		// TODO Auto-generated method stub
+		return super.getTransferCost(transfersSize);
+	}
 }

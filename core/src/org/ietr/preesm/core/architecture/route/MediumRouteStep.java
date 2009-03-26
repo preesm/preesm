@@ -36,8 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.route;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 
 /**
@@ -91,4 +95,31 @@ public class MediumRouteStep extends AbstractRouteStep {
 	public String getId() {
 		return medium.getDefinition().getId();
 	}
+
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize
+	 */
+	@Override
+	public long getTransferCost(long transfersSize) {
+		if (medium != null) {
+			MediumDefinition def = (MediumDefinition) medium
+					.getDefinition();
+			Long datasize = transfersSize;
+
+			Float time = datasize.floatValue() * def.getInvSpeed();
+
+			return time.longValue();
+		} else {
+
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"Data could not be correctly transfered from "
+							+ getSender().getName() + " to "
+							+ getReceiver().getName());
+
+			return 0;
+		}
+	}
+	
+	
 }

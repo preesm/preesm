@@ -68,8 +68,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Routes the communications. Based on bridge design pattern. The processing
- * is delegated to implementers
+ * Routes the communications. Based on bridge design pattern. The processing is
+ * delegated to implementers
  * 
  * @author mpelcat
  */
@@ -224,13 +224,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		// Retrieving the route
 		if (sourceOp != null && destOp != null) {
 			Route route = calculator.getRoute(sourceOp, destOp);
-			// Iterating the route and incrementing transfer cost
-			for (AbstractRouteStep step : route) {
-				CommunicationRouterImplementer impl = getImplementer(step
-						.getType());
-				cost += impl.evaluateSingleTransfer(edge,
-						(MediumRouteStep) step);
-			}
+			cost = route.evaluateTransfer(edge.getInitialEdgeProperty()
+					.getDataSize());
 		} else {
 			PreesmLogger
 					.getLogger()

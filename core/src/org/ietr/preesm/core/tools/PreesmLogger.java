@@ -50,6 +50,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.ui.Activator;
 
 /**
@@ -143,6 +144,10 @@ public class PreesmLogger extends Logger {
 					stream.println(time + record.getMessage());
 				}
 			}
+		}
+		
+		if(getLevel().intValue() >= Level.SEVERE.intValue()){
+			//throw (new PreesmException(record.getMessage()));
 		}
 	}
 

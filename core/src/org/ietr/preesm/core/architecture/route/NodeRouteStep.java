@@ -96,4 +96,13 @@ public class NodeRouteStep extends AbstractRouteStep {
 		return nodes;
 	}
 
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize
+	 */
+	@Override
+	public long getTransferCost(long transfersSize) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

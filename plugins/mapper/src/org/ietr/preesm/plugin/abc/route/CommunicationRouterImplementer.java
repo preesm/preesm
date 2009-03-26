@@ -72,5 +72,4 @@ public abstract class CommunicationRouterImplementer {
 
 	public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction);
 	public abstract void removeVertices(MapperDAGEdge edge, TransactionManager transactions);
-	protected abstract long evaluateSingleTransfer(MapperDAGEdge edge, AbstractRouteStep step);
 }

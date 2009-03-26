@@ -99,7 +99,6 @@ public class LooselyTimedAbc extends LatencyAbc {
 			} else {
 
 				// The transfer evaluation takes into account the route
-
 				edge.getTimingEdgeProperty().setCost(
 						comRouter.evaluateTransfer(edge));
 			}

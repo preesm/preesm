@@ -87,5 +87,9 @@ public abstract class AbstractRouteStep {
 	 * The id is given to code generation. It selects the communication functions to use
 	 */
 	public abstract String getId();
-	
+
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize
+	 */
+	public abstract long getTransferCost(long transfersSize);
 }
