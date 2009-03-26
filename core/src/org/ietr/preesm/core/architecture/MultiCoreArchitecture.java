@@ -370,7 +370,7 @@ public class MultiCoreArchitecture extends
 	}
 
 	/**
-	 * Returns all the components of type type
+	 * Returns all the components of type type in alphabetical order of their names
 	 */
 	public Set<ArchitectureComponent> getComponents(
 			ArchitectureComponentType type) {

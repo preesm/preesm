@@ -81,6 +81,21 @@ public class DmaRouteStep extends NodeRouteStep {
 	@Override
 	public long getTransferCost(long transfersSize) {
 		// TODO Auto-generated method stub
-		return super.getTransferCost(transfersSize);
+		return getNodes().size();
+	}
+
+	@Override
+	public String toString() {
+		String trace = super.toString();
+		trace = trace.substring(0,trace.length()-1);
+		trace += "[" + dma + "]}";
+		return trace;
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		Dma newDma = (Dma)dma.clone();
+		newDma.setDefinition(dma.getDefinition());
+		return new DmaRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newDma);
 	}
 }

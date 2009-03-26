@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
@@ -64,11 +65,11 @@ public class NodeRouteStep extends AbstractRouteStep {
 			Operator receiver) {
 		super(sender, receiver);
 		nodes = new ArrayList<AbstractNode>();
-		
+
 		for (AbstractNode node : inNodes) {
-			AbstractNode newNode = (AbstractNode)node.clone();
+			AbstractNode newNode = (AbstractNode) node.clone();
 			newNode.setDefinition(node.getDefinition());
-			 this.nodes.add(newNode);
+			this.nodes.add(newNode);
 		}
 	}
 
@@ -81,7 +82,8 @@ public class NodeRouteStep extends AbstractRouteStep {
 	}
 
 	/**
-	 * The id is given to code generation. It selects the communication functions to use
+	 * The id is given to code generation. It selects the communication
+	 * functions to use
 	 */
 	@Override
 	public String getId() {
@@ -91,7 +93,7 @@ public class NodeRouteStep extends AbstractRouteStep {
 		}
 		return id;
 	}
-	
+
 	public List<AbstractNode> getNodes() {
 		return nodes;
 	}
@@ -102,7 +104,21 @@ public class NodeRouteStep extends AbstractRouteStep {
 	@Override
 	public long getTransferCost(long transfersSize) {
 		// TODO Auto-generated method stub
-		return 0;
+		return nodes.size();
+	}
+
+	@Override
+	public String toString() {
+		String trace = "{" + getSender().toString() + " -> ";
+		for (AbstractNode node : nodes) {
+			trace += node + " ";
+		}
+		trace += "-> " + getReceiver().toString() + "}";
+		return trace;
+	}
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return new NodeRouteStep((Operator)getSender().clone(),nodes,(Operator)getReceiver().clone());
 	}
 
 }

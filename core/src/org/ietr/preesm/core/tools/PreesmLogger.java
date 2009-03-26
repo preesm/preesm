@@ -142,13 +142,14 @@ public class PreesmLogger extends Logger {
 							.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
 							.get(Calendar.SECOND));
 					stream.println(time + record.getMessage());
+
+					if(getLevel().intValue() >= Level.SEVERE.intValue()){
+						//throw (new PreesmException(record.getMessage()));
+					}
 				}
 			}
 		}
 		
-		if(getLevel().intValue() >= Level.SEVERE.intValue()){
-			//throw (new PreesmException(record.getMessage()));
-		}
 	}
 
 	public void createConsole() {

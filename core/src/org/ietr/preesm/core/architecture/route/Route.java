@@ -37,12 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
-
-import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * A route contains several Route Steps. It links operators.
@@ -64,6 +58,16 @@ public class Route extends ArrayList<AbstractRouteStep> {
 		this.add(step);
 	}
 
+	public Route(Route r1, Route r2) {
+		super();
+		for(AbstractRouteStep step : r1){
+			this.add(step);
+		}
+		for(AbstractRouteStep step : r2){
+			this.add(step);
+		}
+	}
+
 	public Route() {
 		super();
 	}
@@ -79,5 +83,14 @@ public class Route extends ArrayList<AbstractRouteStep> {
 		}
 		
 		return cost;
+	}
+
+	@Override
+	public String toString() {
+		String trace = "";
+		for (AbstractRouteStep step : this) {
+			trace += step + " ";
+		}
+		return trace;
 	}
 }

@@ -37,8 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.route.calcul;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -92,10 +94,45 @@ public class RoutingTable {
 	}
 
 	/**
-	 * A list of routes
+	 * A route transfer comparator that never returns 0.
 	 */
-	private class RouteList extends ArrayList<Route> {
+	private class RouteComparator implements Comparator<Route>{
+		private long transferSize = 0;
+		
+		public RouteComparator(long transferSize) {
+			super();
+			this.transferSize = transferSize;
+		}
+
+		@Override
+		public int compare(Route o1, Route o2) {
+			int difference = (int)(o1.evaluateTransfer(transferSize) - o2.evaluateTransfer(transferSize));
+			if(difference == 0){
+				difference = 1;
+			}
+			return difference;
+		}
+		
+	}
+	
+	/**
+	 * A list of routes ordered in inverse order of transfer cosr
+	 */
+	private class RouteList extends ConcurrentSkipListSet<Route> {
 		private static final long serialVersionUID = -851695207011182681L;
+
+		public RouteList(long transferSize) {
+			super(new RouteComparator(transferSize));
+		}
+
+		@Override
+		public String toString() {
+			String result = "|";
+			for (Route r : this) {
+				result += r.toString() + "|";
+			}
+			return result;
+		}
 	}
 
 	/**
@@ -111,10 +148,10 @@ public class RoutingTable {
 	/**
 	 * Gets a route with a given index
 	 */
-	public Route getRoute(Operator op1, Operator op2, int index) {
+	public Route getBestRoute(Operator op1, Operator op2) {
 		for (OperatorCouple c : table.keySet()) {
 			if (c.equals(new OperatorCouple(op1, op2))) {
-				return table.get(c).get(index);
+				return table.get(c).first();
 			}
 		}
 		return null;
@@ -124,15 +161,20 @@ public class RoutingTable {
 	 * Adds a new route
 	 */
 	public void addRoute(Operator op1, Operator op2, Route route) {
-		OperatorCouple key = new OperatorCouple(op1, op2);
-
-		if (table.containsKey(key)) {
-			table.get(key).add(route);
-		} else {
-			RouteList list = new RouteList();
-			list.add(route);
-			table.put(key, list);
+		OperatorCouple key = null;
+		for (OperatorCouple c : table.keySet()) {
+			if (c.equals(new OperatorCouple(op1, op2))) {
+				key = c;
+			}
 		}
+		RouteList list = null;
+		if (key != null) {
+			list = table.get(key);
+		} else {
+			list = new RouteList(RouteCalculator.averageTransfer);
+			table.put(new OperatorCouple(op1, op2), list);
+		}
+		list.add(route);
 	}
 
 	/**

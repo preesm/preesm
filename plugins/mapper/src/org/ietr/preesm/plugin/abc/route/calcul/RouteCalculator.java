@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -62,6 +63,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * @author mpelcat
  */
 public class RouteCalculator {
+
+	public static final int averageTransfer = 1000;
 
 	private static RouteCalculator singleton = null;
 
@@ -87,7 +90,10 @@ public class RouteCalculator {
 		table = new RoutingTable();
 		stepFactory = new RouteStepFactory(archi);
 
+		// Creating the route steps between directly connected operators
 		createRouteSteps();
+		// Concatenation of route steps to generate optimal routes using
+		// the Floyd Warshall algorithm
 		createRoutes();
 	}
 
@@ -104,9 +110,10 @@ public class RouteCalculator {
 			createRouteSteps(o);
 		}
 	}
-	
-	private ArchitectureComponent getOtherEnd(Interconnection i, ArchitectureComponent c){
-		if(i.getTarget() != c)
+
+	private ArchitectureComponent getOtherEnd(Interconnection i,
+			ArchitectureComponent c) {
+		if (i.getTarget() != c)
 			return i.getTarget();
 		else
 			return i.getSource();
@@ -120,8 +127,8 @@ public class RouteCalculator {
 		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(source));
 
 		for (Interconnection i : outgoingAndUndirected) {
-			if (getOtherEnd(i,source).isNode()) {
-				AbstractNode node = (AbstractNode)getOtherEnd(i,source);
+			if (getOtherEnd(i, source).isNode()) {
+				AbstractNode node = (AbstractNode) getOtherEnd(i, source);
 
 				List<AbstractNode> alreadyVisitedNodes = new ArrayList<AbstractNode>();
 				alreadyVisitedNodes.add(node);
@@ -139,16 +146,17 @@ public class RouteCalculator {
 		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(node));
 
 		for (Interconnection i : outgoingAndUndirected) {
-			if (getOtherEnd(i,node).isNode()) {
-				AbstractNode newNode = (AbstractNode) getOtherEnd(i,node);
+			if (getOtherEnd(i, node).isNode()) {
+				AbstractNode newNode = (AbstractNode) getOtherEnd(i, node);
 				if (!alreadyVisitedNodes.contains(newNode)) {
 					List<AbstractNode> newAlreadyVisitedNodes = new ArrayList<AbstractNode>(
 							alreadyVisitedNodes);
 					newAlreadyVisitedNodes.add(newNode);
-					exploreRoute(source, node, newAlreadyVisitedNodes);
+					exploreRoute(source, newNode, newAlreadyVisitedNodes);
 				}
-			} else if (getOtherEnd(i,node) instanceof Operator && getOtherEnd(i,node) != source) {
-				Operator target = (Operator) getOtherEnd(i,node);
+			} else if (getOtherEnd(i, node) instanceof Operator
+					&& getOtherEnd(i, node) != source) {
+				Operator target = (Operator) getOtherEnd(i, node);
 				AbstractRouteStep step = stepFactory.getRouteStep(source,
 						alreadyVisitedNodes, target);
 				table.addRoute(source, target, new Route(step));
@@ -162,6 +170,39 @@ public class RouteCalculator {
 	private void createRoutes() {
 		PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
+		floydWarshall(table, archi
+				.getComponents(ArchitectureComponentType.operator));
+	}
+
+	/**
+	 * The floydWarshall algorithm is used to add routes in the table in increasing order of cost.
+	 */
+	private static void floydWarshall(RoutingTable table,
+			Set<ArchitectureComponent> operators) {
+
+		for (ArchitectureComponent kC : operators) {
+			Operator k = (Operator) kC;
+
+			for (ArchitectureComponent srcC : operators) {
+				Operator src = (Operator) srcC;
+
+				for (ArchitectureComponent tgtC : operators) {
+					Operator tgt = (Operator) tgtC;
+
+					if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {
+						Route routeSrcK = table.getBestRoute(src, k);
+						Route routeKTgt = table.getBestRoute(k, tgt);
+
+						if (routeSrcK != null && routeKTgt != null) {
+							Route compoundRoute = new Route(routeSrcK,
+									routeKTgt);
+							//tester apparence unique de chaque vertex!!!
+							table.addRoute(src, tgt, compoundRoute);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -176,12 +217,16 @@ public class RouteCalculator {
 	 * Choosing a route between 2 operators
 	 */
 	public Route getRoute(Operator op1, Operator op2) {
-		Route r = table.getRoute(op1, op2, 0);
-		
-		if(r==null){
-			PreesmLogger.getLogger().log(Level.SEVERE,"Did not find a route between " + op1 + " and " + op2 + ".");
+		Route r = table.getBestRoute(op1, op2);
+
+		if (r == null) {
+			PreesmLogger.getLogger()
+					.log(
+							Level.SEVERE,
+							"Did not find a route between " + op1 + " and "
+									+ op2 + ".");
 		}
-		
+
 		return r;
 	}
 

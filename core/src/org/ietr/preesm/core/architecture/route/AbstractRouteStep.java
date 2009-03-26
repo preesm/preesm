@@ -92,4 +92,9 @@ public abstract class AbstractRouteStep {
 	 * Evaluates the cost of a data transfer with size transferSize
 	 */
 	public abstract long getTransferCost(long transfersSize);
+
+	@Override
+	protected abstract Object clone() throws CloneNotSupportedException;
+	
+	
 }

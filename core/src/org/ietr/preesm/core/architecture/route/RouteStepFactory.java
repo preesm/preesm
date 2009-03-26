@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -44,11 +45,12 @@ import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Depending on the architecture nodes separating two operators, generates a
- * suited route step. The route steps represents one type of connection
- * between two connected operators
+ * suited route step. The route steps represents one type of connection between
+ * two connected operators
  * 
  * @author mpelcat
  */
@@ -68,8 +70,14 @@ public class RouteStepFactory {
 			List<AbstractNode> nodes, Operator target) {
 		AbstractRouteStep step = null;
 
-		if (nodes.size() == 1 && nodes.get(0) instanceof Medium) {
-			return new MediumRouteStep(source, (Medium) nodes.get(0), target);
+		if (nodes.get(0) instanceof Medium) {
+			if (nodes.size() == 1) {
+				return new MediumRouteStep(source, (Medium) nodes.get(0),
+						target);
+			} else {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"A medium must be connected only to operators.");
+			}
 		} else {
 			Dma dma = getDma(nodes, source);
 			if (dma != null) {
@@ -83,8 +91,8 @@ public class RouteStepFactory {
 	}
 
 	/**
-	 * Gets the dma corresponding to the step if any exists.
-	 * The Dma must have a setup link with the source.
+	 * Gets the dma corresponding to the step if any exists. The Dma must have a
+	 * setup link with the source.
 	 */
 	private Dma getDma(List<AbstractNode> nodes, Operator dmaSetup) {
 		Dma dma = null;
@@ -104,7 +112,6 @@ public class RouteStepFactory {
 		}
 		return null;
 	}
-
 
 	/**
 	 * Checks if a setup link exists between dma and operator

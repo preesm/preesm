@@ -120,6 +120,11 @@ public class MediumRouteStep extends AbstractRouteStep {
 			return 0;
 		}
 	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return new MediumRouteStep((Operator)getSender().clone(),(Medium)medium.clone(),(Operator)getReceiver().clone());
+	}
 	
 	
 }
