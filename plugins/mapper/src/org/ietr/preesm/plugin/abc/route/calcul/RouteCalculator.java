@@ -175,7 +175,8 @@ public class RouteCalculator {
 	}
 
 	/**
-	 * The floydWarshall algorithm is used to add routes in the table in increasing order of cost.
+	 * The floydWarshall algorithm is used to add routes in the table in
+	 * increasing order of cost.
 	 */
 	private static void floydWarshall(RoutingTable table,
 			Set<ArchitectureComponent> operators) {
@@ -196,8 +197,9 @@ public class RouteCalculator {
 						if (routeSrcK != null && routeKTgt != null) {
 							Route compoundRoute = new Route(routeSrcK,
 									routeKTgt);
-							//tester apparence unique de chaque vertex!!!
-							table.addRoute(src, tgt, compoundRoute);
+							if (compoundRoute.isSingleAppearance()){
+								table.addRoute(src, tgt, compoundRoute);
+							}
 						}
 					}
 				}

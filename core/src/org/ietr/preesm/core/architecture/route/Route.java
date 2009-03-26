@@ -37,6 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
  * A route contains several Route Steps. It links operators.
@@ -83,6 +87,27 @@ public class Route extends ArrayList<AbstractRouteStep> {
 		}
 		
 		return cost;
+	}
+
+	/**
+	 * Returns true if each operato in the route appears only once
+	 */
+	public boolean isSingleAppearance() {
+		boolean isIt = true;
+		Set<Operator> opSet = new HashSet<Operator>();
+		// Iterating the route and testing number of occurences in sender
+		for (AbstractRouteStep step : this) {
+			if(opSet.contains(step.getSender())){
+				isIt = false;
+			}
+			opSet.add(step.getSender());
+		}
+		
+		// Testing last step receiver
+		if(opSet.contains(this.get(this.size()-1).getReceiver())){
+			isIt = false;
+		}
+		return isIt;
 	}
 
 	@Override
