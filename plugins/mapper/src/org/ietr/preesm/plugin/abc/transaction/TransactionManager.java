@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This is a transaction container that enables the consecutive
@@ -47,14 +48,25 @@ import java.util.LinkedList;
  */
 public class TransactionManager {
 	
-	LinkedList<Transaction> transactionList = new LinkedList<Transaction>();
+	LinkedList<Transaction> transactionList = null;
+	List<Object> resultList = null;
+
+	public TransactionManager() {
+		this(null);
+	}
 	
+	public TransactionManager(List<Object> resultList) {
+		super();
+		this.transactionList = new LinkedList<Transaction>();
+		this.resultList = resultList;
+	}
+
 	public void execute(){
 		Iterator<Transaction> it = transactionList.iterator();
 		
 		while(it.hasNext()){
 			Transaction currentT = it.next();
-			currentT.execute();
+			currentT.execute(resultList);
 		}
 	}
 	

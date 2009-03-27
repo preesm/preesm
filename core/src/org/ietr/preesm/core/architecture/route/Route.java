@@ -79,9 +79,9 @@ public class Route extends ArrayList<AbstractRouteStep> {
 	}
 
 	/**
-	 * Evaluates the cost of a data transfer with size transferSize
+	 * Evaluates the cost of a data transfer with size transferSize along the route
 	 */
-	public long evaluateTransfer(long transferSize) {
+	public long evaluateTransferCost(long transferSize) {
 		long cost = 0;
 		// Iterating the route and incrementing transfer cost
 		for (AbstractRouteStep step : this) {

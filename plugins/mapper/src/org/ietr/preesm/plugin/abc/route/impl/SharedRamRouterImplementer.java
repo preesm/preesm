@@ -1,5 +1,6 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -45,7 +46,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction) {
+			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof RamRouteStep) {
 			RamRouteStep ramRouteStep = (RamRouteStep) routeStep;

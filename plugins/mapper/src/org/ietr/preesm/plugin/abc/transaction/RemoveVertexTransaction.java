@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -76,8 +77,8 @@ public class RemoveVertexTransaction extends Transaction {
 	}
 
 	@Override
-	public void execute() {
-		super.execute();
+	public void execute(List<Object> resultList) {
+		super.execute(resultList);
 
 		//Unscheduling first
 		MapperDAGVertex prev = orderManager.getPreviousVertex(vertex);

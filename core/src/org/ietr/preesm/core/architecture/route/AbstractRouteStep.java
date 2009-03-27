@@ -89,7 +89,8 @@ public abstract class AbstractRouteStep {
 	public abstract String getId();
 
 	/**
-	 * Evaluates the cost of a data transfer with size transferSize
+	 * Evaluates the cost of a data transfer with size transferSize. This cost can include
+	 * overheads, involvements...
 	 */
 	public abstract long getTransferCost(long transfersSize);
 

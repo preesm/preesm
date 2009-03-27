@@ -112,4 +112,11 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	public void setOverhead(int overhead) {
 		this.overhead = overhead;
 	}
+	
+	public long getTransferTime(long transferSize){
+		Long datasize = transferSize;
+		Double time = datasize.doubleValue() * getInvSpeed();
+		time = Math.ceil(time);
+		return time.longValue();
+	}
 }

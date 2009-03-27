@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -58,7 +59,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
  * @author mpelcat
  */
 public class AddOverheadVertexTransaction extends Transaction {
-	
+
 	// Inputs
 	/**
 	 * Implementation DAG to which the vertex is added
@@ -71,6 +72,11 @@ public class AddOverheadVertexTransaction extends Transaction {
 	private AbstractRouteStep step = null;
 
 	/**
+	 * time of this overhead
+	 */
+	long overheadTime = 0;
+
+	/**
 	 * Original edge corresponding to this overhead
 	 */
 	private MapperDAGEdge edge = null;
@@ -79,38 +85,37 @@ public class AddOverheadVertexTransaction extends Transaction {
 	 * manager keeping scheduling orders
 	 */
 	private SchedOrderManager orderManager = null;
-	
+
 	// Generated objects
 	/**
 	 * overhead vertex added
 	 */
 	private OverheadVertex oVertex = null;
-	
+
 	/**
 	 * edges added
 	 */
 	private MapperDAGEdge newInEdge = null;
 	private MapperDAGEdge newOutEdge = null;
-	
+
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, AbstractRouteStep step,SchedOrderManager orderManager) {
+			MapperDAG implementation, AbstractRouteStep step,
+			long overheadTime, SchedOrderManager orderManager) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;
 		this.step = step;
 		this.orderManager = orderManager;
+		this.overheadTime = overheadTime;
 	}
 
 	@Override
-	public void execute() {
+	public void execute(List<Object> resultList) {
 
-		super.execute();
-		
-		MapperDAGVertex currentSource = (MapperDAGVertex)edge.getSource();
-		MapperDAGVertex currentTarget = (MapperDAGVertex)edge.getTarget();
+		super.execute(resultList);
 
-		MediumDefinition mediumDef = (MediumDefinition) ((MediumRouteStep)step).getMedium()
-				.getDefinition();
+		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
+		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
 		if (edge instanceof PrecedenceEdge) {
 			PreesmLogger.getLogger().log(Level.INFO,
@@ -121,30 +126,33 @@ public class AddOverheadVertexTransaction extends Transaction {
 		String overtexID = "__overhead (" + currentSource.getName() + ","
 				+ currentTarget.getName() + ")";
 
-		if (mediumDef.getInvSpeed() != 0) {
+		if (overheadTime > 0) {
 			oVertex = new OverheadVertex(overtexID, implementation);
 
-			oVertex.getTimingVertexProperty().setCost(
-					mediumDef.getOverhead());
+			oVertex.getTimingVertexProperty().setCost(overheadTime);
 
 			oVertex.getImplementationVertexProperty().setEffectiveOperator(
 					step.getSender());
 
-			if(!(currentTarget instanceof TransferVertex)){
-				PreesmLogger.getLogger().log(Level.SEVERE,"An overhead must be followed by a transfer");
+			if (!(currentTarget instanceof TransferVertex)) {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"An overhead must be followed by a transfer");
 			}
-			
-			implementation.addVertex(oVertex);
-			
-			newInEdge = (MapperDAGEdge)implementation.addEdge(currentSource, oVertex);
-			newOutEdge = (MapperDAGEdge)implementation.addEdge(oVertex, currentTarget);
 
-			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-			newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-			
+			implementation.addVertex(oVertex);
+
+			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
+					oVertex);
+			newOutEdge = (MapperDAGEdge) implementation.addEdge(oVertex,
+					currentTarget);
+
+			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+					.clone());
+			newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+					.clone());
+
 			newInEdge.getTimingEdgeProperty().setCost(0);
 			newOutEdge.getTimingEdgeProperty().setCost(0);
-
 
 			if (true) {
 				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
@@ -152,17 +160,25 @@ public class AddOverheadVertexTransaction extends Transaction {
 			} else {
 				orderManager.insertVertexBefore(currentTarget, oVertex);
 			}
-			
+
 			// Scheduling overhead vertex
-			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
+					orderManager);
 			precEdgeAdder.scheduleVertex(implementation, oVertex);
+			
+			if(resultList != null){
+				resultList.add(oVertex);
+			}
+		} else {
+			PreesmLogger.getLogger().log(Level.INFO,
+					"An overhead must have a strictly positive size: " + edge);
 		}
-		
+
 	}
 
 	@Override
 	public String toString() {
-		return("AddOverhead(" + oVertex.toString() +")");
+		return ("AddOverhead(" + oVertex.toString() + ")");
 	}
 
 }

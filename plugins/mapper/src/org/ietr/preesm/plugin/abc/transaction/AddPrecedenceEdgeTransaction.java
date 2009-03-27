@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
+
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
@@ -89,8 +91,8 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 	}
 
 	@Override
-	public void execute() {
-		super.execute();
+	public void execute(List<Object> resultList) {
+		super.execute(resultList);
 
 		precedenceEdge = new PrecedenceEdge();
 		precedenceEdge.getTimingEdgeProperty().setCost(0);

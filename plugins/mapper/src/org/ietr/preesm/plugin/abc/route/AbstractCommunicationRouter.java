@@ -124,5 +124,5 @@ public abstract class AbstractCommunicationRouter {
 	/**
 	 * Evaluates the cost of a routed edge
 	 */
-	public abstract long evaluateTransfer(MapperDAGEdge edge);
+	public abstract long evaluateTransferCost(MapperDAGEdge edge);
 }

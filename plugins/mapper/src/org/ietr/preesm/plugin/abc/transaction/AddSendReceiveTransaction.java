@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -138,8 +139,8 @@ public class AddSendReceiveTransaction extends Transaction {
 	}
 
 	@Override
-	public void execute() {
-		super.execute();
+	public void execute(List<Object> resultList) {
+		super.execute(resultList);
 
 		MapperDAGVertex currentSource = null;
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
@@ -213,6 +214,11 @@ public class AddSendReceiveTransaction extends Transaction {
 			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 			precEdgeAdder.scheduleVertex(implementation, sendVertex);
 			precEdgeAdder.scheduleVertex(implementation, receiveVertex);
+		}
+		
+		if(resultList != null){
+			resultList.add(sendVertex);
+			resultList.add(receiveVertex);
 		}
 	}
 

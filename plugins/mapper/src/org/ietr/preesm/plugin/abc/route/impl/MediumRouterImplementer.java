@@ -3,6 +3,7 @@
  */
 package org.ietr.preesm.plugin.abc.route.impl;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -43,31 +44,63 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction) {
+			int routeStepIndex, Transaction lastTransaction,
+			List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof MediumRouteStep) {
+			MediumRouteStep mediumRouteStep = ((MediumRouteStep) routeStep);
+			Medium medium = mediumRouteStep.getMedium();
+			MediumDefinition mediumDef = ((MediumDefinition) medium
+					.getDefinition());
 			if (type == CommunicationRouter.transferType) {
-				long transferCost = routeStep.getTransferCost(edge
+
+				long transferTime = mediumDef.getTransferTime(edge
 						.getInitialEdgeProperty().getDataSize());
-				MediumRouteStep mediumRouteStep = (MediumRouteStep) routeStep;
 
-				Transaction transaction = new AddTransferVertexTransaction(
-						lastTransaction, getEdgeScheduler(), edge,
-						getImplementation(), getOrderManager(), routeStepIndex,
-						mediumRouteStep, mediumRouteStep.getMedium(), transferCost, true);
-
-				transactions.add(transaction);
-				return transaction;
+				 if(transferTime > 0) {
+						Transaction transaction = new AddTransferVertexTransaction(
+								lastTransaction, getEdgeScheduler(), edge,
+								getImplementation(), getOrderManager(), routeStepIndex,
+								routeStep, transferTime, medium, true);
+						transactions.add(transaction);
+						return transaction;
+				 } else {
+						PreesmLogger.getLogger().log(
+								Level.INFO,
+								"A transfer vertex must have a strictly positive size: "
+										+ edge);
+						return null;
+					}
 			} else if (type == CommunicationRouter.overheadType) {
 				MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
 						(MapperDAGVertex) edge.getSource(),
 						(MapperDAGVertex) edge.getTarget(), routeStepIndex)
 						.incomingEdges().toArray()[0];
+				MapperDAGEdge incomingEdge = null;
+
+				for (Object o : alreadyCreatedVertices) {
+					if (o instanceof TransferVertex) {
+						TransferVertex v = (TransferVertex) o;
+						if (v.getSource().equals(edge.getSource())
+								&& v.getTarget().equals(edge.getTarget())
+								&& v.getRouteStep() == routeStep)
+							incomingEdge = (MapperDAGEdge) v.incomingEdges()
+									.toArray()[0];
+
+					}
+				}
+				
+				if(incomingEdge != firstTransferIncomingEdge){
+					int i=0;
+					i++;
+				}
+
+				long overheadTime = mediumDef.getOverhead();
 
 				if (firstTransferIncomingEdge != null) {
 					transactions.add(new AddOverheadVertexTransaction(
 							firstTransferIncomingEdge, getImplementation(),
-							routeStep, getOrderManager()));
+							routeStep, overheadTime, getOrderManager()));
 				} else {
 					PreesmLogger
 							.getLogger()

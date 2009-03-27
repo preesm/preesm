@@ -1,5 +1,6 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -44,22 +45,22 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction) {
+			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof DmaRouteStep) {
-			DmaRouteStep dmaRouteStep = (DmaRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
-				long transferCost = routeStep.getTransferCost(edge
-						.getInitialEdgeProperty().getDataSize());
-				Transaction transaction = null;
+				DmaRouteStep dmaStep = ((DmaRouteStep)routeStep);
+				
+				Transaction transaction = lastTransaction;
 
-				for (AbstractNode node : dmaRouteStep.getNodes()) {
+				for (AbstractNode node : dmaStep.getNodes()) {
 					if (node instanceof ContentionNode) {
+						long transferTime = 100;
 						transaction = new AddTransferVertexTransaction(
 								lastTransaction, getEdgeScheduler(), edge,
 								getImplementation(), getOrderManager(),
-								routeStepIndex, dmaRouteStep, node,
-								transferCost, true);
+								routeStepIndex, routeStep, transferTime, node
+								, true);
 
 						transactions.add(transaction);
 					}

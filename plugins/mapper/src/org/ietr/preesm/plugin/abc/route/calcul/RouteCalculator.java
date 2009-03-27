@@ -216,7 +216,7 @@ public class RouteCalculator {
 								if (table.getBestRoute(src, tgt) == null){
 									table.addRoute(src, tgt, compoundRoute);
 								}
-								else if(table.getBestRoute(src, tgt).evaluateTransfer(averageDataSize) > compoundRoute.evaluateTransfer(averageDataSize)){
+								else if(table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)){
 									table.removeRoutes(src, tgt);
 									table.addRoute(src, tgt, compoundRoute);
 								}

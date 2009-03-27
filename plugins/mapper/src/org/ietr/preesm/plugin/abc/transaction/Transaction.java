@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
+
 
 /**
  * Transactions are used to modify a graph with the possibility to withdraw
@@ -53,7 +55,7 @@ public abstract class Transaction {
 		super();
 	}
 	
-	public void execute(){
+	public void execute(List<Object> resultList){
 	}
 
 	@Override

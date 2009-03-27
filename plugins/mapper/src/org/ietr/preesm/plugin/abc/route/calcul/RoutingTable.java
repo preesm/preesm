@@ -107,7 +107,7 @@ public class RoutingTable {
 
 		@Override
 		public int compare(Route o1, Route o2) {
-			int difference = (int)(o1.evaluateTransfer(transferSize) - o2.evaluateTransfer(transferSize));
+			int difference = (int)(o1.evaluateTransferCost(transferSize) - o2.evaluateTransferCost(transferSize));
 			if(difference == 0){
 				difference = 1;
 			}

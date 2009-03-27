@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
+import java.util.List;
+
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 
@@ -65,8 +67,8 @@ public class RemoveEdgeTransaction extends Transaction {
 	}
 
 	@Override
-	public void execute() {
-		super.execute();
+	public void execute(List<Object> resultList) {
+		super.execute(resultList);
 
 		implementation.removeEdge(edge);
 	}

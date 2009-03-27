@@ -1,5 +1,7 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
+import java.util.List;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.NodeRouteStep;
@@ -39,7 +41,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction) {
+			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof NodeRouteStep) {
 			NodeRouteStep nodeRouteStep = (NodeRouteStep) routeStep;

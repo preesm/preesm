@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.route;
 
+import java.util.List;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -43,6 +45,7 @@ import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * Routes a communication and creates the necessary communication vertices
@@ -70,6 +73,6 @@ public abstract class CommunicationRouterImplementer {
 		return user.getOrderManager();
 	}
 
-	public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction);
+	public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices);
 	public abstract void removeVertices(MapperDAGEdge edge, TransactionManager transactions);
 }

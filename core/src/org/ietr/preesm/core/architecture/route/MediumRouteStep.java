@@ -104,11 +104,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 		if (medium != null) {
 			MediumDefinition def = (MediumDefinition) medium
 					.getDefinition();
-			Long datasize = transfersSize;
-
-			Float time = datasize.floatValue() * def.getInvSpeed();
-
-			return time.longValue();
+			return def.getTransferTime(transfersSize);
 		} else {
 
 			PreesmLogger.getLogger().log(

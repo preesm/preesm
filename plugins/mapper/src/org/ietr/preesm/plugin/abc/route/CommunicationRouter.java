@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.route;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -135,7 +136,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 									.getType());
 							lastTransaction = impl.addVertices(step,
 									currentEdge, localTransactionManager, type,
-									routeStepIndex, lastTransaction);
+									routeStepIndex, lastTransaction, null);
 							routeStepIndex++;
 						}
 					}
@@ -153,14 +154,18 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	public void routeNewVertex(MapperDAGVertex newVertex, List<Integer> types) {
 
 		Map<MapperDAGEdge, Route> transferEdges = getRouteMap(newVertex);
+		List<Object> createdVertices = new ArrayList<Object>();
 
 		if (!transferEdges.isEmpty()) {
 			for (Integer type : types) {
-				addVertices(transferEdges, type);
+				addVertices(transferEdges, type, createdVertices);
 			}
 		}
 	}
 
+	/**
+	 * Creates a map associating to each edge to be routed the corresponding route
+	 */
 	public Map<MapperDAGEdge, Route> getRouteMap(MapperDAGVertex newVertex) {
 		Map<MapperDAGEdge, Route> transferEdges = new HashMap<MapperDAGEdge, Route>();
 
@@ -192,8 +197,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		return transferEdges;
 	}
 
-	public void addVertices(Map<MapperDAGEdge, Route> transferEdges, int type) {
-		TransactionManager localTransactionManager = new TransactionManager();
+	/**
+	 * Adds the dynamic vertices to simulate the transfers of the given edges
+	 */
+	public void addVertices(Map<MapperDAGEdge, Route> transferEdges, int type, List<Object> createdVertices) {
+		TransactionManager localTransactionManager = new TransactionManager(createdVertices);
 
 		for (MapperDAGEdge edge : transferEdges.keySet()) {
 			int routeStepIndex = 0;
@@ -203,7 +211,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 						.getType());
 				lastTransaction = impl.addVertices(step, edge,
 						localTransactionManager, type, routeStepIndex,
-						lastTransaction);
+						lastTransaction, createdVertices);
 
 				routeStepIndex++;
 			}
@@ -215,7 +223,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	/**
 	 * Evaluates the transfer between two operators
 	 */
-	public long evaluateTransfer(MapperDAGEdge edge) {
+	public long evaluateTransferCost(MapperDAGEdge edge) {
 
 		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
 				.getSource()).getImplementationVertexProperty();
@@ -230,7 +238,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		// Retrieving the route
 		if (sourceOp != null && destOp != null) {
 			Route route = calculator.getRoute(sourceOp, destOp);
-			cost = route.evaluateTransfer(edge.getInitialEdgeProperty()
+			cost = route.evaluateTransferCost(edge.getInitialEdgeProperty()
 					.getDataSize());
 		} else {
 			PreesmLogger
