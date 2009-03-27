@@ -41,7 +41,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			MapperDAGEdge edge, TransactionManager transactions, int type,
 			int routeStepIndex, Transaction lastTransaction) {
 
-		if (routeStep instanceof DmaRouteStep) {
+		if (routeStep instanceof NodeRouteStep) {
 			NodeRouteStep nodeRouteStep = (NodeRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
 

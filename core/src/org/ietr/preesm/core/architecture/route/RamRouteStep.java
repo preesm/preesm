@@ -56,7 +56,7 @@ public class RamRouteStep extends NodeRouteStep {
 	/**
 	 * The route step type determines how the communication will be simulated.
 	 */
-	public static final String type = "NodeRouteStep";
+	public static final String type = "RamRouteStep";
 	
 	public RamRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Ram ram) {
 		super(sender,nodes, receiver);		

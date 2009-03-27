@@ -56,7 +56,7 @@ public class DmaRouteStep extends NodeRouteStep {
 	/**
 	 * The route step type determines how the communication will be simulated.
 	 */
-	public static final String type = "NodeRouteStep";
+	public static final String type = "DmaRouteStep";
 	
 	public DmaRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Dma dma) {
 		super(sender,nodes, receiver);		

@@ -129,6 +129,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 						int routeStepIndex = 0;
 						Transaction lastTransaction = null;
 
+						// Adds send and receive vertices and links them
 						for (AbstractRouteStep step : route) {
 							CommunicationRouterImplementer impl = getImplementer(step
 									.getType());
