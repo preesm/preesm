@@ -42,6 +42,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -61,6 +62,8 @@ public abstract class AbstractMapping implements IMapping {
 			TextParameters textParameters,
 			IScenario scenario, IProgressMonitor monitor){
 		
+		// Asking to recalculate routes
+		RouteCalculator.recalculate(architecture,scenario);
 		return null;
 	}
 }

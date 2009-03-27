@@ -37,8 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.route.calcul;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
@@ -65,6 +67,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class RouteCalculator {
 
+	private static Map<MultiCoreArchitecture,RouteCalculator> instances = new HashMap<MultiCoreArchitecture, RouteCalculator>();
+	
 	private MultiCoreArchitecture archi;
 
 	private RoutingTable table = null;
@@ -73,10 +77,21 @@ public class RouteCalculator {
 	
 	private IScenario scenario = null;
 
+	public static RouteCalculator getInstance(MultiCoreArchitecture archi, IScenario scenario){
+		if(instances.get(archi) == null){
+			instances.put(archi, new  RouteCalculator(archi, scenario));
+		}
+		return instances.get(archi);
+	}
+	
+	public static void recalculate(MultiCoreArchitecture archi, IScenario scenario){
+		instances.put(archi, new  RouteCalculator(archi, scenario));
+	}
+	
 	/**
 	 * Constructor from a given architecture
 	 */
-	public RouteCalculator(MultiCoreArchitecture archi, IScenario scenario) {
+	private RouteCalculator(MultiCoreArchitecture archi, IScenario scenario) {
 
 		this.archi = archi;
 		this.table = new RoutingTable(scenario);

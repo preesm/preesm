@@ -88,7 +88,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			MapperDAG implementation, IEdgeSched edgeScheduler,
 			SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
-		this.calculator = new RouteCalculator(archi, scenario);
+		this.calculator = RouteCalculator.getInstance(archi, scenario);
 
 		// Initializing the available router implementers
 		this.addImplementer(DmaRouteStep.type,
