@@ -73,49 +73,6 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author pmenuet
  */
 public class ListSchedulingTransformation extends AbstractMapping {
-
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-		// FASTTransformation transformation = new FASTTransformation();
-		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINEST);
-
-		// Generating archi
-		MultiCoreArchitecture architecture = Examples.get2C64Archi();
-
-		// Generating random sdf dag
-		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 50,true);
-		
-		
-		// Generating constraints
-		IScenario scenario = new Scenario();
-
-		TimingManager tmanager = scenario.getTimingManager();
-
-		Iterator<SDFAbstractVertex> it = graph.vertexSet().iterator();
-		
-		while(it.hasNext()){
-			SDFAbstractVertex vertex = it.next();
-			
-			Timing t = new Timing((IOperatorDefinition)architecture.getMainOperator().getDefinition(),vertex);
-			t.setTime(100);
-			tmanager.addTiming(t);
-		}
-
-		ListSchedulingTransformation transformation = new ListSchedulingTransformation();
-		ListSchedulingParameters parameters = new ListSchedulingParameters(AbcType.LooselyTimed, EdgeSchedType.Simple);
-
-		SDFAdapterDemo applet1 = new SDFAdapterDemo();
-		applet1.init(graph);
-		
-		transformation.transform(graph, architecture, parameters.textParameters(), scenario, null);
-
-		logger.log(Level.FINER, "Test list scheduling finished");
-	}
 	
 	/**
 	 * 
@@ -179,6 +136,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		result.setDAG(dag);
 		result.setAbc(simu2);
 
+		super.clean(architecture,scenario);
 		return result;
 	}
 

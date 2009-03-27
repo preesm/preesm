@@ -81,45 +81,6 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class StandardGeneticTransformation extends AbstractMapping {
 
 	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-		// FASTTransformation transformation = new FASTTransformation();
-		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINEST);
-
-		// PreesmLogger.getLogger().setLevel(Level.FINER);
-
-		// Generating archi
-		MultiCoreArchitecture archi = Examples.get2C64Archi();
-
-		// Generating random sdf dag
-		int nbVertex = 100, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 50,true);
-
-		// Generating constraints
-		IScenario scenario = new Scenario();
-
-		TimingManager tmgr = scenario.getTimingManager();
-
-		for (int i = 1; i <= nbVertex; i++) {
-			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
-					.getVertex(name), 100);
-			tmgr.addTiming(newt);
-		}
-
-		StandardGeneticTransformation transformation = new StandardGeneticTransformation();
-		GeneticAlgoParameters parameters = new GeneticAlgoParameters(100, 25,
-				AbcType.ApproximatelyTimed, EdgeSchedType.Simple, false);
-
-		transformation.transform(graph, archi, parameters.textParameters(), scenario, null);
-
-		logger.log(Level.FINER, "Test fast finished");
-	}
-
-	/**
 	 * 
 	 */
 	public StandardGeneticTransformation() {
@@ -206,6 +167,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		transfoResult.setDAG(dag);
 		transfoResult.setAbc(simu2);
 
+		super.clean(architecture,scenario);
 		return transfoResult;
 	}
 

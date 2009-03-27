@@ -66,4 +66,9 @@ public abstract class AbstractMapping implements IMapping {
 		RouteCalculator.recalculate(architecture,scenario);
 		return null;
 	}
+	
+	protected void clean(MultiCoreArchitecture architecture,IScenario scenario){
+		// Asking to delete route
+		RouteCalculator.deleteRoutes(architecture,scenario);
+	}
 }

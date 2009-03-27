@@ -82,6 +82,7 @@ public class ListSchedTransformation extends AbstractMapping {
 
 		// result.setDAG(algoTransformer.algorithm2DAG(scheduler
 		// .getBestScheduler()));
+		super.clean(architecture,scenario);
 		return result;
 	}
 

@@ -88,6 +88,10 @@ public class RouteCalculator {
 		instances.put(archi, new  RouteCalculator(archi, scenario));
 	}
 	
+	public static void deleteRoutes(MultiCoreArchitecture archi, IScenario scenario){
+		instances.remove(archi);
+	}
+	
 	/**
 	 * Constructor from a given architecture
 	 */
