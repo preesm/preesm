@@ -195,7 +195,7 @@ public class MultiCoreArchitecture extends
 	 */
 	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
 			ArchitectureComponent cmp2, ArchitectureInterface if2,
-			boolean isDirected) {
+			boolean isDirected, boolean isSetup) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
 			Interconnection itc = this.addEdge(cmp1, cmp2);
 			
@@ -203,6 +203,7 @@ public class MultiCoreArchitecture extends
 				itc.setIf1(if1);
 				itc.setIf2(if2);
 				itc.setDirected(isDirected);
+				itc.setSetup(isSetup);
 
 				if (isDirected) {
 					if (cmp1.getType() == ArchitectureComponentType.fifo) {

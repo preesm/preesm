@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -90,6 +91,8 @@ class PFastCallable implements Callable<MapperDAG> {
 
 	// Variables to know if we have to do the initial scheduling or not
 	private boolean alreadyImplanted;
+	
+	private IScenario scenario;
 
 	/**
 	 * Constructor
@@ -107,7 +110,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	public PFastCallable(String name, MapperDAG inputDAG,
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
 			int maxCount, int maxStep, int margIn, boolean isDisplaySolutions, boolean alreadyImplanted,
-			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+			AbcType simulatorType, EdgeSchedType edgeSchedType, IScenario scenario) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;
@@ -119,6 +122,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
 		this.isDisplaySolutions = isDisplaySolutions;
+		this.scenario = scenario;
 	}
 
 	/**
@@ -152,17 +156,17 @@ class PFastCallable implements Callable<MapperDAG> {
 
 		// Create the CPN Dominant Sequence
 		IAbc IHsimu = new InfiniteHomogeneousAbc(edgeSchedType, 
-				callableDAG.clone(), callableArchi);
+				callableDAG.clone(), callableArchi, scenario);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
 		IHsimu.resetDAG();
 
 		// performing the fast algorithm
-		FastAlgorithm algo = new FastAlgorithm();
+		FastAlgorithm algo = new FastAlgorithm(initialLists, scenario);
 		outputDAG = algo.map(threadName, simulatorType, edgeSchedType, callableDAG,
-				callableArchi, initialLists.getCpnDominant(),
-				callableBlockingNodes, initialLists.getCriticalpath(),
-				maxCount, maxStep, margIn, alreadyImplanted, true, null, isDisplaySolutions, null);
+				callableArchi,
+				maxCount, maxStep, margIn, alreadyImplanted, true, isDisplaySolutions, null, initialLists.getCpnDominant(),
+				callableBlockingNodes, initialLists.getCriticalpath());
 
 		// Saving best total order for future display
 		outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());

@@ -146,7 +146,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, AbcType type,EdgeSchedType edgeSchedType,
+			MultiCoreArchitecture archi, IScenario scenario, AbcType type,EdgeSchedType edgeSchedType,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
@@ -155,7 +155,7 @@ public class PGeneticAlgo extends Observable {
 		// Convert list of MapperDAG into a List of Chromosomes
 		StandardGeneticAlgorithm algorithm = new StandardGeneticAlgorithm();
 		List<Chromosome> population = algorithm.convertListDAGtoListChromo(
-				populationDAG, archi);
+				populationDAG, archi,scenario);
 
 		// List which allow to save all the population (of all Thread)
 		List<List<Chromosome>> listMap = new ArrayList<List<Chromosome>>();
@@ -170,7 +170,7 @@ public class PGeneticAlgo extends Observable {
 		if (processorNumber == 0) {
 			StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 			result = geneticAlgorithm.runGeneticAlgo("genetic algorithm",
-					populationDAG, archi, type,edgeSchedType, populationSize,
+					populationDAG, archi,scenario, type,edgeSchedType, populationSize,
 					generationNumber, false);
 			List<Chromosome> result2 = new ArrayList<Chromosome>();
 			result2.addAll(result);
@@ -243,7 +243,7 @@ public class PGeneticAlgo extends Observable {
 				String name = String.format("thread%d", i);
 
 				// step 9/11
-				PGeneticAlgoCallable thread = new PGeneticAlgoCallable(archi,
+				PGeneticAlgoCallable thread = new PGeneticAlgoCallable(archi,scenario,
 						generationNumberTemp, iter.next(), populationSize,
 						type, name);
 				// Add the thread in the pool for the executor
@@ -300,57 +300,6 @@ public class PGeneticAlgo extends Observable {
 		List<Chromosome> result2 = new ArrayList<Chromosome>();
 		result2.addAll(result);
 		return result2;
-	}
-
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-
-		PreesmLogger.getLogger().setLevel(Level.FINER);
-		Logger logger = PreesmLogger.getLogger();
-
-		MultiCoreArchitecture archi = Examples.get2C64Archi();
-		// Generating random sdf dag
-		int nbVertex = 15, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 100,true);
-
-		// Generating constraints
-		IScenario scenario = new Scenario();
-
-		TimingManager tmgr = scenario.getTimingManager();
-
-		for (int i = 1; i <= nbVertex; i++) {
-			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition)archi.getComponentDefinition(ArchitectureComponentType.operator,"c64x"), graph
-					.getVertex(name), 50);
-			tmgr.addTiming(newt);
-		}
-
-		// Converting sdf dag in mapper dag
-		MapperDAG dag = SdfToDagConverter.convert(graph, archi, scenario,false);
-		// MapperDAG dag = dagCreator.dagexample2(archi);
-
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, null);
-		InitialLists initialLists = new InitialLists();
-		initialLists.constructInitialLists(dag, simu);
-		simu.resetDAG();
-
-		AbcType simulatorType = AbcType.ApproximatelyTimed;
-		EdgeSchedType edgeSchedType = EdgeSchedType.Simple;
-
-		PFastAlgorithm fastAlgorithm = new PFastAlgorithm();
-
-		List<MapperDAG> popuList = new ArrayList<MapperDAG>();
-		fastAlgorithm.map(dag, archi, 2, 5, initialLists, 10, 6, 3,
-				simulatorType,edgeSchedType, true, 4, true, popuList);
-
-		PGeneticAlgo geneticAlgo = new PGeneticAlgo();
-
-		geneticAlgo.map(popuList, archi, simulatorType,edgeSchedType, 4, 5, 2);
-		logger.log(Level.FINE, "test finished");
 	}
 
 }

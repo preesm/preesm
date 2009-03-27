@@ -142,7 +142,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
@@ -159,7 +159,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, true, 5,
 					3, parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
-			dag = pfastAlgorithm.map(dag, architecture, parameter
+			dag = pfastAlgorithm.map(dag, architecture, scenario, parameter
 					.getProcNumber(), parameter.getNodesmin(), initial,
 					parameter.getMaxCount(), parameter.getMaxStep(), parameter
 							.getMargIn(), parameters.getSimulatorType(),parameters.getEdgeSchedType(), true,
@@ -175,17 +175,17 @@ public class StandardGeneticTransformation extends AbstractMapping {
 					parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 			population.constructPopulation(dag, parameter.getMaxCount(),
-					parameter.getMaxStep(), parameter.getMargIn());
+					parameter.getMaxStep(), parameter.getMargIn(), scenario);
 		}
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 
 		ConcurrentSkipListSet<Chromosome> result;
 		result = geneticAlgorithm.runGeneticAlgo("test", populationDAG,
-				architecture, parameters.getSimulatorType(),parameters.getEdgeSchedType(), parameters
+				architecture, scenario, parameters.getSimulatorType(),parameters.getEdgeSchedType(), parameters
 						.getPopulationSize(), parameters.getGenerationNumber(),
 				false);
 

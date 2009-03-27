@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.impl;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -53,8 +54,8 @@ import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
  */
 public class CommContenAbc extends AbstractAbc {
 
-	public CommContenAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType) {
-		super(dag, archi, abcType);
+	public CommContenAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+		super(dag, archi, abcType, scenario);
 		// TODO Auto-generated constructor stub
 	}
 

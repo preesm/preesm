@@ -47,6 +47,7 @@ import org.sdf4j.model.AbstractEdge;
 public class Interconnection extends AbstractEdge<MultiCoreArchitecture, ArchitectureComponent> {
 
 	private boolean directed = false;
+	private boolean setup = false;
 
 	private ArchitectureComponent cp1 = null;
 	private ArchitectureInterface if1 = null;
@@ -120,6 +121,14 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 
 	public void setDirected(boolean directed) {
 		this.directed = directed;
+	}
+
+	public boolean isSetup() {
+		return setup;
+	}
+
+	public void setSetup(boolean setup) {
+		this.setup = setup;
 	}
 
 	@Override

@@ -67,6 +67,7 @@ import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -420,17 +421,21 @@ public class DesignParser {
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
 			ArchitectureInterface if2 = cmp2
 					.addInterface(new ArchitectureInterface(busRef2, cmp2));
+			
+			// Advanced architecture
 			if (isAccess) {
 				((ITerminal) cmp2)
 						.addCommunicationPerformer((ICommunicationPerformer) cmp1);
 			} else if (isConfigure) {
 				((Communicator) cmp2).addSetupTime(cmp1.getName(),
 						((Processor) cmp1).getSetupTime(cmp2.getName()));
-			} else if (isSetup) {
+			} 
+
+			// Simple architecture
+			else if (isSetup) {
 				// A setup is directed and its description gives the setup time
 				isDirected = true;
-				
-				if(cmp1 instanceof Operator && cmp2 instanceof Dma){
+				if(cmp1 instanceof Operator && (cmp2 instanceof Dma || cmp2 instanceof Ram)){
 					int setupTime = 0;
 					
 					try {
@@ -439,14 +444,18 @@ public class DesignParser {
 						PreesmLogger.getLogger().log(Level.INFO,"No setup type entered for a setup link. 0 used.");
 					}
 					
-					((Dma)cmp2).addSetupTime((Operator)cmp1, setupTime);
+					if(cmp2 instanceof Dma){
+						((Dma)cmp2).addSetupTime((Operator)cmp1, setupTime);}
+					else{
+						((Ram)cmp2).addSetupTime((Operator)cmp1, setupTime);}
 				}
 				else{
-					PreesmLogger.getLogger().log(Level.SEVERE,"a setup link must join an operator to a dma.");
+					PreesmLogger.getLogger().log(Level.SEVERE,"a setup link must join an operator to a dma or a ram.");
 				}
-				archi.connect(cmp1, if1, cmp2, if2, isDirected);
+				
+				archi.connect(cmp1, if1, cmp2, if2, true, isSetup);
 			} else {
-				archi.connect(cmp1, if1, cmp2, if2, isDirected);
+				archi.connect(cmp1, if1, cmp2, if2, isDirected, false);
 			}
 		}
 

@@ -42,6 +42,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -72,6 +73,8 @@ public class Chromosome {
 	// and scheduling)
 	private MultiCoreArchitecture archi;
 
+	private IScenario scenario;
+
 	/**
 	 * Constructor
 	 */
@@ -80,23 +83,7 @@ public class Chromosome {
 		this.ChromoList = null;
 		this.evaluateCost = 0;
 		this.dirty = true;
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param chromoList
-	 * @param dag
-	 * @param architecture
-	 */
-	public Chromosome(List<Gene> chromoList, MapperDAG dag,
-			MultiCoreArchitecture architecture) {
-		super();
-		this.ChromoList = chromoList;
-		this.evaluateCost = 0;
-		this.dirty = true;
-		this.dag = dag;
-		this.archi = architecture;
+		this.scenario = null;
 	}
 
 	/**
@@ -105,7 +92,7 @@ public class Chromosome {
 	 * @param dag
 	 * @param architecture
 	 */
-	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture) {
+	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario) {
 		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList().listIterator();
 		MapperDAGVertex currentVertex = null;
 		this.dag = dag;
@@ -120,6 +107,7 @@ public class Chromosome {
 		this.evaluateCost = 0;
 		this.dirty = true;
 		this.archi = architecture;
+		this.scenario = scenario;
 
 	}
 
@@ -159,7 +147,7 @@ public class Chromosome {
 	public void evaluate(AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		this.updateDAG();
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi);
+				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi, scenario);
 		simulator.setDAG(this.getDag());
 		this.setEvaluateCost(simulator.getFinalCost());
 		this.setDirty(false);
@@ -175,6 +163,7 @@ public class Chromosome {
 	public Chromosome clone() {
 		Chromosome chromosome = new Chromosome();
 		chromosome.setArchi(this.archi.clone());
+		chromosome.setScenario(this.scenario);
 		chromosome.setDag(this.dag.clone());
 		chromosome.setDirty(this.dirty);
 		chromosome.setEvaluateCost(this.evaluateCost);
@@ -206,6 +195,10 @@ public class Chromosome {
 
 	public void setDag(MapperDAG dag) {
 		this.dag = dag;
+	}
+
+	public void setScenario(IScenario scenario) {
+		this.scenario = scenario;
 	}
 
 	public long getEvaluateCost() {

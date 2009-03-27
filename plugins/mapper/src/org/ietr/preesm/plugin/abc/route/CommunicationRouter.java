@@ -49,8 +49,10 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.route.NodeRouteStep;
+import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -58,6 +60,7 @@ import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.abc.route.impl.DmaComRouterImplementer;
 import org.ietr.preesm.plugin.abc.route.impl.MediumRouterImplementer;
 import org.ietr.preesm.plugin.abc.route.impl.MessageComRouterImplementer;
+import org.ietr.preesm.plugin.abc.route.impl.SharedRamRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -81,11 +84,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	private RouteCalculator calculator = null;
 
-	public CommunicationRouter(MultiCoreArchitecture archi,
+	public CommunicationRouter(MultiCoreArchitecture archi, IScenario scenario,
 			MapperDAG implementation, IEdgeSched edgeScheduler,
 			SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
-		this.calculator = new RouteCalculator(archi);
+		this.calculator = new RouteCalculator(archi, scenario);
 
 		// Initializing the available router implementers
 		this.addImplementer(DmaRouteStep.type,
@@ -94,6 +97,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 				this));
 		this.addImplementer(NodeRouteStep.type,
 				new MessageComRouterImplementer(this));
+		this.addImplementer(RamRouteStep.type,
+				new SharedRamRouterImplementer(this));
 	}
 
 	/**

@@ -45,6 +45,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -121,7 +122,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> convertListDAGtoListChromo(List<MapperDAG> list,
-			MultiCoreArchitecture archi) {
+			MultiCoreArchitecture archi, IScenario scenario) {
 
 		// create the list of chromosome
 		List<Chromosome> population3 = new ArrayList<Chromosome>();
@@ -129,7 +130,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		// transform the MapperDAG into chromosome
 		Iterator<MapperDAG> iterator = list.listIterator();
 		while (iterator.hasNext()) {
-			Chromosome chromosome11 = new Chromosome(iterator.next(), archi);
+			Chromosome chromosome11 = new Chromosome(iterator.next(), archi, scenario);
 			population3.add(chromosome11);
 		}
 
@@ -152,7 +153,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return ConcurrentSkipListSet<Chromosome>
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
-			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
+			List<MapperDAG> populationDAG, MultiCoreArchitecture archi, IScenario scenario,
 			AbcType type, EdgeSchedType edgeSchedType, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
@@ -169,7 +170,7 @@ public class StandardGeneticAlgorithm extends Observable {
 
 		// Convert MapperDAG in chromosome
 		List<Chromosome> population = this.convertListDAGtoListChromo(
-				populationDAG, archi);
+				populationDAG, archi, scenario);
 
 		// variables
 		int i = 0;

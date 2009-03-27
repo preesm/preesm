@@ -33,31 +33,35 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.architecture.simplemodel;
 
-package org.ietr.preesm.plugin.mapper;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.ietr.preesm.plugin.mapper.fastalgo.FastAlgoTest;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * @author mpelcat
+ * A Random Access memory
  * 
- *         Mapper plugin junit tester
+ * @author mpelcat
  */
-public class AllMapperTests {
+public class RamDefinition extends ArchitectureComponentDefinition {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(
-				"Test for org.ietr.preesm.plugin.mapper");
-		// $JUnit-BEGIN$
-		// suite.addTestSuite(GraphTimeKeeperTest.class);
-		// $JUnit-END$
-		// $JUnit-BEGIN$
-		suite.addTestSuite(FastAlgoTest.class);
-		// $JUnit-END$
-		return suite;
+	public RamDefinition(String id) {
+		super(id, "ram");
 	}
 
+	public ArchitectureComponentType getType() {
+		return ArchitectureComponentType.ram;
+	}
+
+	public RamDefinition clone() {
+
+		// A new OperatorDefinition is created with same id
+		RamDefinition newdef = new RamDefinition(this.getId());
+
+		return newdef;
+	}
+
+	public void fill(ArchitectureComponentDefinition origin) {
+	}
 }

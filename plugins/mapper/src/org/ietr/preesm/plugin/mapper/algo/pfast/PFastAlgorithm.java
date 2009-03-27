@@ -56,6 +56,7 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -122,10 +123,10 @@ public class PFastAlgorithm extends Observable {
 		 * 
 		 */
 		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
-				MapperDAG dag, MultiCoreArchitecture archi) {
+				MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario) {
 			super();
 			this.simulator = AbstractAbc.getInstance(type, edgeSchedType,
-					dag, archi);
+					dag, archi, scenario);
 		}
 
 	}
@@ -296,7 +297,7 @@ public class PFastAlgorithm extends Observable {
 	 * @return MapperDAG
 	 */
 	@SuppressWarnings("unchecked")
-	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, int nboperator,
+	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
 			int margIn, AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean population, int populationsize, boolean isDisplaySolutions, 
@@ -317,17 +318,17 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dagfinal;
 		ListScheduler scheduler = new ListScheduler();
 		IAbc archisimu = AbstractAbc
-				.getInstance(simulatorType, edgeSchedType, dag, archi);
+				.getInstance(simulatorType, edgeSchedType, dag, archi, scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 		Logger logger = PreesmLogger.getLogger();
 
 		// if only one operator the fast must be used
 		if (nboperator == 0) {
-			FastAlgorithm algorithm = new FastAlgorithm();
+			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-			dag = algorithm.map("Fast", simulatorType, edgeSchedType, dag, archi,
-					cpnDominantVector, blockingnodeVector, fcpVector, maxCount,
-					maxStep, margIn, false, false, null, false, null);
+			dag = algorithm.map("Fast", simulatorType, edgeSchedType, dag, archi, maxCount,
+					maxStep, margIn, false, false, false, null,
+					cpnDominantVector, blockingnodeVector, fcpVector);
 			return dag;
 		}
 
@@ -360,7 +361,7 @@ public class PFastAlgorithm extends Observable {
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
-				new FinalTimeComparator(simulatorType, edgeSchedType, dagfinal, archi));
+				new FinalTimeComparator(simulatorType, edgeSchedType, dagfinal, archi, scenario));
 
 		// step 5/7/8
 		for (int j = 2; totalsearchcount < maxCount; j++) {
@@ -390,7 +391,7 @@ public class PFastAlgorithm extends Observable {
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
 						subiter.next(), maxcounttemp, maxStep, margIn, isDisplaySolutions, true,
-						simulatorType, edgeSchedType);
+						simulatorType, edgeSchedType, scenario);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
 				futureTasks.add(task);
@@ -464,42 +465,5 @@ public class PFastAlgorithm extends Observable {
 
 	public Map<String, Integer> getBestTotalOrder() {
 		return bestTotalOrder;
-	}
-
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-
-		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
-
-		logger.log(Level.FINER, "Creating 4 cores archi");
-		MultiCoreArchitecture archi = Examples.get2C64Archi();
-
-		logger.log(Level.FINER, "Creating DAG");
-		MapperDAG dag = new DAGCreator().dagexample2(archi);
-
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, 
-				dag, archi, null);
-
-		InitialLists initial = new InitialLists();
-
-		logger.log(Level.FINER, "Evaluating constructInitialList ");
-		initial.constructInitialLists(dag, simu);
-		simu.resetImplementation();
-		simu.resetDAG();
-		logger.log(Level.FINER, "Evaluating set up pfast ");
-		// Set<Set<String>> subSet = new HashSet<Set<String>>();
-		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
-
-		// pfastAlgorithm.pFastAlgoSetUp(initial, 3, 3, subSet);
-
-		logger.log(Level.FINER, "Evaluating pfast algorithm ");
-		pfastAlgorithm.map(dag, archi, 1, 3, initial, 30, 30, 6,
-				AbcType.LooselyTimed, EdgeSchedType.Simple, true, 10, true, null);
-
-		logger.log(Level.FINER, "Test finished");
-
 	}
 }

@@ -39,6 +39,12 @@ package org.ietr.preesm.core.architecture.simplemodel;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
+/**
+ * A contention node is a communication node which contention
+ * is taken into account during the deployment simulation
+ * 
+ * @author mpelcat
+ */
 public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 
 

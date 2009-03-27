@@ -128,7 +128,7 @@ public class GanttEditor extends EditorPart {
 	public static void createEditor(IAbc abc, Map<String, Integer> bestTotalOrder, String name) {
 		
 		MapperDAG dag = abc.getDAG().clone();
-		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), dag, abc.getArchitecture());
+		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), dag, abc.getArchitecture(), abc.getScenario());
 		newAbc.setDAG(dag);
 		newAbc.reorder(bestTotalOrder);
 		

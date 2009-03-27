@@ -33,12 +33,13 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.codegen.DataType;
 
 /**
@@ -55,11 +56,17 @@ public class SimulationManager {
 	private String mainOperatorName = "";
 
 	/**
+	 * Average transfer size sizes in base unit (usually byte). This
+	 * size is used while calculating the routing table. The routes between
+	 * operators are static and will be optimized for the given data size.
+	 */
+	private long averageDataSize = Route.averageTransfer;
+
+	/**
 	 * Names of the data types with their size
 	 */
-	private Map<String,DataType> dataTypes;
-	
-	
+	private Map<String, DataType> dataTypes;
+
 	public SimulationManager() {
 		super();
 
@@ -81,29 +88,36 @@ public class SimulationManager {
 	public void setMainOperatorName(String mainOperatorName) {
 		this.mainOperatorName = mainOperatorName;
 	}
-	
+
 	public Map<String, DataType> getDataTypes() {
 		return dataTypes;
 	}
-	
+
 	public DataType getDataType(String name) {
 		return dataTypes.get(name);
 	}
-	
+
 	public int getDataTypeSizeOrDefault(String name) {
-		if(dataTypes.get(name) == null){
+		if (dataTypes.get(name) == null) {
 			return DataType.defaultDataTypeSize;
-		}
-		else{
+		} else {
 			return dataTypes.get(name).getSize();
 		}
 	}
-	
+
 	public void putDataType(DataType dataType) {
 		dataTypes.put(dataType.getTypeName(), dataType);
 	}
-	
+
 	public void removeDataType(String dataTypeName) {
 		dataTypes.remove(dataTypeName);
+	}
+
+	public void setAverageDataSize(long size) {
+		averageDataSize = size;
+	}	
+
+	public long getAverageDataSize() {
+		return averageDataSize;
 	}
 }

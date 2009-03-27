@@ -72,7 +72,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
-import org.ietr.preesm.plugin.mapper.test.BenchmarkWriter;
 import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -90,106 +89,48 @@ public class FastAlgorithm extends Observable {
 	 */
 	private Map<String, Integer> bestTotalOrder = null;
 
-	/**
-	 * Main for tests
-	 */
-	public static void main(String[] args) {
-
-		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
-
-		// PreesmLogger.getLogger().setLevel(Level.FINER);
-		DAGCreator dagCreator = new DAGCreator();
-
-		// Generating archi
-		MultiCoreArchitecture archi = Examples.get2C64Archi();
-
-		// Generating random sdf dag
-		int nbVertex = 50, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-		SDFGraph graph = AlgorithmRetriever.randomDAG(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, 100, true);
-
-		// Generating constraints
-		IScenario scenario = new Scenario();
-
-		TimingManager tmgr = scenario.getTimingManager();
-
-		for (int i = 1; i <= nbVertex; i++) {
-			String name = String.format("Vertex %d", i);
-			Timing newt = new Timing((OperatorDefinition) archi
-					.getComponentDefinition(ArchitectureComponentType.operator,
-							"c64x"), graph.getVertex(name), 50);
-			tmgr.addTiming(newt);
-		}
-
-		// Converting sdf dag in mapper dag
-		// MapperDAG dag = dagCreator.sdf2dag(graph, archi, constraints);
-		MapperDAG dag = dagCreator.dagexample2(archi);
-
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, dag, archi, null);
-
-		logger.log(Level.FINEST, "Evaluating DAG");
-
-		InitialLists initial = new InitialLists();
-
-		logger.log(Level.FINEST, "Evaluating constructInitialList ");
-		initial.constructInitialLists(dag, simu);
-
-		logger.log(Level.FINEST, "Displaying Cpndominantlist ");
-		initial.orderlistdisplay(initial.getCpnDominant());
-
-		logger.log(Level.FINEST, "Displaying blockingNodes ");
-		initial.orderlistdisplay(initial.getBlockingNodes());
-
-		logger.log(Level.FINEST, "Displaying fcp ");
-		initial.orderlistdisplay(initial.getCriticalpath());
-
-		ListScheduler scheduler = new ListScheduler();
-
-		simu.resetDAG();
-
-		logger.log(Level.FINEST, "Evaluating fast algo");
-		FastAlgorithm algorithm = new FastAlgorithm();
-
-		dag = algorithm.map("test", AbcType.LooselyTimed, EdgeSchedType.Simple,
-				dag, archi, initial.getCpnDominant(), initial
-						.getBlockingNodes(), initial.getCriticalpath(), 50, 50,
-				5, false, true, null, false, null);
-
-		IAbc simu2 = AbstractAbc.getInstance(AbcType.LooselyTimed,
-				EdgeSchedType.Simple, dag, archi);
-
-		simu2.setDAG(dag);
-		logger.log(Level.FINER, "Displaying dag implanted 2");
-		scheduler.dagimplanteddisplay(dag, simu2);
-
-		logger.log(Level.FINER, "SPlength " + dag.getScheduleLatency());
-
-		simu2.plotImplementation(false);
-
-		logger.log(Level.FINER, "Test finished");
-	}
+	private InitialLists initialLists = null;
+	private IScenario scenario = null;
 
 	/**
 	 * Constructor
 	 */
-	public FastAlgorithm() {
+	public FastAlgorithm(InitialLists initialLists, IScenario scenario) {
 		super();
+		this.initialLists = initialLists;
+		this.scenario = scenario;
+	}
+
+	public MapperDAG map(String threadName, AbcType simulatorType,
+			EdgeSchedType edgeSchedType, MapperDAG dag,
+			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
+			boolean alreadyimplanted, boolean pfastused,
+			boolean displaySolutions, IProgressMonitor monitor) {
+
+		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
+		List<MapperDAGVertex> blockingNodesList = initialLists
+				.getBlockingNodes();
+		List<MapperDAGVertex> finalcriticalpathList = initialLists
+				.getCriticalpath();
+
+		return map(threadName, simulatorType, edgeSchedType, dag, archi, maxcount,
+				maxstep, margin, alreadyimplanted, pfastused, displaySolutions,
+				monitor, cpnDominantList, blockingNodesList,
+				finalcriticalpathList);
 	}
 
 	/**
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
 	 */
-
 	public MapperDAG map(String threadName, AbcType simulatorType,
 			EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, List<MapperDAGVertex> CpnDominantList,
-			List<MapperDAGVertex> BlockingNodesList,
-			List<MapperDAGVertex> FinalcriticalpathList, int maxcount,
-			int maxstep, int margin, boolean alreadyimplanted,
-			boolean pfastused, BenchmarkWriter writer,
-			boolean displaySolutions, IProgressMonitor monitor) {
+			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
+			boolean alreadyimplanted, boolean pfastused,
+			boolean displaySolutions, IProgressMonitor monitor,
+			List<MapperDAGVertex> cpnDominantList,
+			List<MapperDAGVertex> blockingNodesList,
+			List<MapperDAGVertex> finalcriticalpathList) {
 
 		Semaphore pauseSemaphore = new Semaphore(1);
 		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter(
@@ -207,7 +148,7 @@ public class FastAlgorithm extends Observable {
 
 		// Variables
 		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
-				dag, archi);
+				dag, archi, scenario);
 		// A topological task scheduler is chosen for the list scheduling
 		simulator.resetTaskScheduler(TaskSchedType.Topological);
 
@@ -215,10 +156,10 @@ public class FastAlgorithm extends Observable {
 		Iterator<Operator> prociter;
 
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
-				BlockingNodesList, new Random());
+				blockingNodesList, new Random());
 
 		RandomIterator<MapperDAGVertex> iter = new RandomIterator<MapperDAGVertex>(
-				FinalcriticalpathList, new Random());
+				finalcriticalpathList, new Random());
 		MapperDAGVertex currentvertex = null;
 		MapperDAGVertex fcpvertex = null;
 		Operator operatortest;
@@ -236,7 +177,7 @@ public class FastAlgorithm extends Observable {
 
 		// step 1
 		if (!alreadyimplanted) {
-			listscheduler.schedule(dag, CpnDominantList, simulator, null, null);
+			listscheduler.schedule(dag, cpnDominantList, simulator, null, null);
 		} else {
 			simulator.setDAG(dag);
 		}
@@ -251,14 +192,9 @@ public class FastAlgorithm extends Observable {
 
 		logger.log(Level.FINE, "InitialSP " + initial);
 
-		// The writer allows textual logs
-		if (writer != null) {
-			writer.printLatency(initial);
-		}
-
 		long SL = initial;
 		dag.setScheduleLatency(initial);
-		if (BlockingNodesList.size() < 2)
+		if (blockingNodesList.size() < 2)
 			return simulator.getDAG().clone();
 		bestSL = initial;
 		Long iBest;
@@ -273,10 +209,6 @@ public class FastAlgorithm extends Observable {
 			iBest = (Long) bestSL;
 			setChanged();
 			notifyObservers(iBest);
-
-			if (writer != null) {
-				writer.printLatency(iBest);
-			}
 
 			if (!pfastused) {
 				// Mode Pause
@@ -386,7 +318,7 @@ public class FastAlgorithm extends Observable {
 
 				operatorfcp = prociter.next();
 			}
-			listscheduler.schedule(dag, CpnDominantList, simulator,
+			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);
 
 		}

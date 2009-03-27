@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -60,8 +61,8 @@ public class LooselyTimedAbc extends LatencyAbc {
 	 * vertex has not been implanted yet.
 	 */
 	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType) {
-		super(edgeSchedType, dag, archi, abcType);
+			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+		super(edgeSchedType, dag, archi, abcType, scenario);
 	}
 
 	@Override

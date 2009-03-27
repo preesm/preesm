@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.HashSet;
@@ -109,7 +109,7 @@ public class StatGenerator {
 		mainMediumDef.setOverhead(0);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
-				localArchi);
+				localArchi, scenario);
 		long span = simu.getFinalCost();
 
 		PreesmLogger.getLogger().log(Level.INFO,
@@ -138,7 +138,7 @@ public class StatGenerator {
 					.getValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType);
 
 			IAbc simu = AbstractAbc.getInstance(abctype, edgeSchedType,
-					localDag, archi);
+					localDag, archi,scenario);
 
 			simu.resetDAG();
 			simu.implantAllVerticesOnOperator(archi.getMainOperator());

@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
@@ -106,28 +107,30 @@ public abstract class AbstractAbc implements IAbc {
 	 * Task scheduler
 	 */
 	protected AbstractTaskSched taskScheduler = null;
+	
+	protected IScenario scenario;
 
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcType simulatorType,
 			EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi) {
+			MultiCoreArchitecture archi, IScenario scenario) {
 
 		AbstractAbc abc = null;
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi);
+			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi, scenario);
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType, scenario);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
 			abc = new ApproximatelyTimedAbc(edgeSchedType, dag, archi,
-					simulatorType);
+					simulatorType, scenario);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
 			abc = new AccuratelyTimedAbc(edgeSchedType, dag, archi,
-					simulatorType);
+					simulatorType, scenario);
 		} else if (simulatorType == AbcType.CommConten) {
-			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType);
+			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType, scenario);
 		}
 
 		return abc;
@@ -137,7 +140,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Architecture simulator constructor
 	 */
 	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
-			AbcType abcType) {
+			AbcType abcType, IScenario scenario) {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager();
@@ -147,6 +150,7 @@ public abstract class AbstractAbc implements IAbc {
 		this.implementation = dag.clone();
 
 		this.archi = archi;
+		this.scenario = scenario;
 		
 		resetTaskScheduler(TaskSchedType.Topological);
 	}
@@ -175,6 +179,10 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	public MultiCoreArchitecture getArchitecture() {
 		return this.archi;
+	}
+	
+	public IScenario getScenario() {
+		return scenario;
 	}
 
 	/**

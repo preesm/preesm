@@ -52,6 +52,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -64,31 +65,23 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class RouteCalculator {
 
-	public static final int averageTransfer = 1000;
-
-	private static RouteCalculator singleton = null;
-
 	private MultiCoreArchitecture archi;
 
 	private RoutingTable table = null;
 
 	private RouteStepFactory stepFactory = null;
-
-	static public RouteCalculator getInstance(MultiCoreArchitecture archi) {
-		if (singleton == null) {
-			singleton = new RouteCalculator(archi);
-		}
-		return singleton;
-	}
+	
+	private IScenario scenario = null;
 
 	/**
 	 * Constructor from a given architecture
 	 */
-	public RouteCalculator(MultiCoreArchitecture archi) {
+	public RouteCalculator(MultiCoreArchitecture archi, IScenario scenario) {
 
 		this.archi = archi;
-		table = new RoutingTable();
-		stepFactory = new RouteStepFactory(archi);
+		this.table = new RoutingTable(scenario);
+		this.stepFactory = new RouteStepFactory(archi);
+		this.scenario = scenario;
 
 		// Creating the route steps between directly connected operators
 		createRouteSteps();
@@ -178,7 +171,7 @@ public class RouteCalculator {
 	 * The floydWarshall algorithm is used to add routes in the table in
 	 * increasing order of cost.
 	 */
-	private static void floydWarshall(RoutingTable table,
+	private void floydWarshall(RoutingTable table,
 			Set<ArchitectureComponent> operators) {
 
 		for (ArchitectureComponent kC : operators) {
@@ -197,8 +190,17 @@ public class RouteCalculator {
 						if (routeSrcK != null && routeKTgt != null) {
 							Route compoundRoute = new Route(routeSrcK,
 									routeKTgt);
-							if (compoundRoute.isSingleAppearance()){
-								table.addRoute(src, tgt, compoundRoute);
+							if (compoundRoute.isSingleAppearance()) {
+								long averageDataSize = scenario.getSimulationManager().getAverageDataSize();
+								// If this if statement is removed, several
+								// routes become available
+								if (table.getBestRoute(src, tgt) == null){
+									table.addRoute(src, tgt, compoundRoute);
+								}
+								else if(table.getBestRoute(src, tgt).evaluateTransfer(averageDataSize) > compoundRoute.evaluateTransfer(averageDataSize)){
+									table.removeRoutes(src, tgt);
+									table.addRoute(src, tgt, compoundRoute);
+								}
 							}
 						}
 					}

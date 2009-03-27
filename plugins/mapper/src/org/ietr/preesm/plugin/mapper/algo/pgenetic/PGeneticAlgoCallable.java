@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
@@ -73,6 +74,8 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 
 	// number of tries to do locally probabilistic jump maximum authorized
 	private int populationSize;
+	
+	private IScenario scenario;
 
 	/**
 	 * Constructor
@@ -84,12 +87,13 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param simulatorType
 	 * @param threadName
 	 */
-	public PGeneticAlgoCallable(MultiCoreArchitecture architecture,
+	public PGeneticAlgoCallable(MultiCoreArchitecture architecture, IScenario scenario,
 			int generationNumber, List<Chromosome> population,
 			int populationSize, AbcType simulatorType,
 			String threadName) {
 		super();
 		this.architecture = architecture;
+		this.scenario = scenario;
 		this.generationNumber = generationNumber;
 		this.population = population;
 		this.populationSize = populationSize;
@@ -127,7 +131,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 		// perform the standard genetic algorithm
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 		outputChromosomeList.addAll(geneticAlgorithm.runGeneticAlgo(threadName,
-				callableMapperDAGList, architecture, simulatorType, edgeSchedType,
+				callableMapperDAGList, architecture,scenario, simulatorType, edgeSchedType,
 				populationSize, generationNumber, true));
 
 		return outputChromosomeList;

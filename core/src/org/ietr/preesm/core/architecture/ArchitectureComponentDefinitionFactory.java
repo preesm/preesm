@@ -51,6 +51,7 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 
 
 /**
@@ -81,6 +82,10 @@ public class ArchitectureComponentDefinitionFactory {
 			else if(type == ArchitectureComponentType.dma){
 				result = new DmaDefinition(name);
 			}
+			else if(type == ArchitectureComponentType.ram){
+				result = new RamDefinition(name);
+			}
+			
 			// Advanced model
 			else if(type == ArchitectureComponentType.processor){
 				result = new ProcessorDefinition(name);

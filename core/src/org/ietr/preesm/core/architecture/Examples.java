@@ -70,8 +70,8 @@ public class Examples {
 		((MediumDefinition)edma.getDefinition()).setOverhead(2);
 		ArchitectureInterface intfEdma = new ArchitectureInterface(edmaBusRef, edma);
 		
-		archi.connect(edma,intfEdma, op1,intf1, false);
-		archi.connect(edma,intfEdma, op2,intf2, false);
+		archi.connect(edma,intfEdma, op1,intf1, false,false);
+		archi.connect(edma,intfEdma, op2,intf2, false,false);
 
 		return archi;
 	}
@@ -157,17 +157,17 @@ public class Examples {
 		Medium m4 = (Medium) archi.addComponent(ArchitectureComponentType.medium,"opb_bus","bus_4");
 		ArchitectureInterface intfm4 = new ArchitectureInterface(busRef, m4);
 		
-		archi.connect(op1, intf1, m1, intfm1, false);
-		archi.connect(sw1, intfsw, m1, intfm1, false);
+		archi.connect(op1, intf1, m1, intfm1, false,false);
+		archi.connect(sw1, intfsw, m1, intfm1, false,false);
 
-		archi.connect(op2, intf2, m2, intfm2, false);
-		archi.connect(sw1, intfsw, m2, intfm2, false);
+		archi.connect(op2, intf2, m2, intfm2, false,false);
+		archi.connect(sw1, intfsw, m2, intfm2, false,false);
 
-		archi.connect(op3, intf3, m3, intfm3, false);
-		archi.connect(sw1, intfsw, m3, intfm3, false);
+		archi.connect(op3, intf3, m3, intfm3, false,false);
+		archi.connect(sw1, intfsw, m3, intfm3, false,false);
 
-		archi.connect(op4, intf4, m4, intfm4, false);
-		archi.connect(sw1, intfsw, m4, intfm4, false);
+		archi.connect(op4, intf4, m4, intfm4, false,false);
+		archi.connect(sw1, intfsw, m4, intfm4, false,false);
 
 		return archi;
 	}

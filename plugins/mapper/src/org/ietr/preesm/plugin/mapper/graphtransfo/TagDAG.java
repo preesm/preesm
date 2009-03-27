@@ -104,8 +104,8 @@ public class TagDAG {
 				edgeSchedType);
 		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag
 				.getReferenceSdfGraph());
-		
-		addSendReceive(dag, architecture,simu);
+
+		addSendReceive(dag, architecture, simu, scenario);
 		addProperties(dag);
 		addAllAggregates(dag, scenario);
 	}
@@ -113,14 +113,17 @@ public class TagDAG {
 	/**
 	 * Adds send and receive without scheduling them
 	 */
-	public void addSendReceive(MapperDAG dag, MultiCoreArchitecture architecture, IAbc simu) {
+	public void addSendReceive(MapperDAG dag,
+			MultiCoreArchitecture architecture, IAbc simu, IScenario scenario) {
 
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager();
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 
-		CommunicationRouter comRouter = new CommunicationRouter(architecture,dag,AbstractEdgeSched.getInstance(EdgeSchedType.Simple, orderMgr),orderMgr);
+		CommunicationRouter comRouter = new CommunicationRouter(architecture,
+				scenario, dag, AbstractEdgeSched.getInstance(
+						EdgeSchedType.Simple, orderMgr), orderMgr);
 		comRouter.routeAll(dag, CommunicationRouter.sendReceive);
 		orderMgr.tagDAG(dag);
 	}
@@ -154,7 +157,8 @@ public class TagDAG {
 				// Setting the medium transmitting the current data
 				AbstractRouteStep sendRs = ((SendVertex) currentVertex)
 						.getRouteStep();
-				bean.setValue(ImplementationPropertyNames.SendReceive_routeStep,
+				bean.setValue(
+						ImplementationPropertyNames.SendReceive_routeStep,
 						sendRs);
 
 				// Setting the size of the transmitted data
@@ -187,9 +191,10 @@ public class TagDAG {
 								.getReceiver());
 
 				// Setting the medium transmitting the current data
-				AbstractRouteStep rcvRs =  ((ReceiveVertex) currentVertex)
+				AbstractRouteStep rcvRs = ((ReceiveVertex) currentVertex)
 						.getRouteStep();
-				bean.setValue(ImplementationPropertyNames.SendReceive_routeStep,
+				bean.setValue(
+						ImplementationPropertyNames.SendReceive_routeStep,
 						rcvRs);
 
 				// Setting the size of the transmitted data

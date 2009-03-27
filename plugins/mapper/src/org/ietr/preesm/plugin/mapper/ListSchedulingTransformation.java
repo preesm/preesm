@@ -146,7 +146,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 		
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
@@ -158,7 +158,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 		
 		ListScheduler scheduler = new ListScheduler();
 

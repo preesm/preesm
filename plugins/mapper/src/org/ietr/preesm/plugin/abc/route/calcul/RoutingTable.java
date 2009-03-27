@@ -44,6 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 
 /**
  * Table representing the different routes available to go from one operator to
@@ -140,9 +141,15 @@ public class RoutingTable {
 	 */
 	private Map<OperatorCouple, RouteList> table;
 
-	public RoutingTable() {
+	/**
+	 * Scenario
+	 */
+	private IScenario scenario;
+
+	public RoutingTable(IScenario scenario) {
 		super();
 		table = new HashMap<OperatorCouple, RouteList>();
+		this.scenario = scenario;
 	}
 
 	/**
@@ -155,6 +162,22 @@ public class RoutingTable {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Removes all the routes corresponding to the operator couple
+	 */
+	public void removeRoutes(Operator op1, Operator op2) {
+		OperatorCouple key = null;
+		for (OperatorCouple c : table.keySet()) {
+			if (c.equals(new OperatorCouple(op1, op2))) {
+				key = c;
+			}
+		}
+
+		if (key != null){
+			table.get(key).clear();
+		}
 	}
 
 	/**
@@ -171,7 +194,7 @@ public class RoutingTable {
 		if (key != null) {
 			list = table.get(key);
 		} else {
-			list = new RouteList(RouteCalculator.averageTransfer);
+			list = new RouteList(scenario.getSimulationManager().getAverageDataSize());
 			table.put(new OperatorCouple(op1, op2), list);
 		}
 		list.add(route);

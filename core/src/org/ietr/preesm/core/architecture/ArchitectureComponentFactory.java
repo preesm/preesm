@@ -60,6 +60,8 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 
 /**
  * Factory able to create an architecture component of any type
@@ -88,6 +90,9 @@ public class ArchitectureComponentFactory {
 			}
 			else if(type instanceof ParallelNodeDefinition){
 				result = new ParallelNode(name,(ParallelNodeDefinition)type);
+			}
+			else if(type instanceof RamDefinition){
+				result = new Ram(name,(RamDefinition)type);
 			}
 			
 			// Advanced model

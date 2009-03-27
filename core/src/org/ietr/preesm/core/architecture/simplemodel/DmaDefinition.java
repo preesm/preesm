@@ -40,8 +40,9 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
+ * A Direct Memory Access is set up by an operator to transfer data
+ * 
  * @author mpelcat
- *
  */
 public class DmaDefinition extends ArchitectureComponentDefinition {
 

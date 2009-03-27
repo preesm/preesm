@@ -49,6 +49,7 @@ public class ArchitectureComponentType {
 	public static final ArchitectureComponentType dma = new ArchitectureComponentType("dma");
 	public static final ArchitectureComponentType parallelNode = new ArchitectureComponentType("parallelNode");
 	public static final ArchitectureComponentType contentionNode = new ArchitectureComponentType("contentionNode");
+	public static final ArchitectureComponentType ram = new ArchitectureComponentType("ram");
 	
 	// Advanced model
 	public static final ArchitectureComponentType communicationNode = new ArchitectureComponentType("communicationNode");
@@ -74,6 +75,7 @@ public class ArchitectureComponentType {
 		else if(name.equalsIgnoreCase("dma")) 				return dma;
 		else if(name.equalsIgnoreCase("parallelNode")) 		return parallelNode;
 		else if(name.equalsIgnoreCase("contentionNode")) 	return contentionNode;
+		else if(name.equalsIgnoreCase("ram")) 				return ram;
 
 		// Advanced model
 		else if(name.equalsIgnoreCase("communicationNode")) return communicationNode;

@@ -39,12 +39,14 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
@@ -80,8 +82,11 @@ public class RouteStepFactory {
 			}
 		} else {
 			Dma dma = getDma(nodes, source);
+			Ram ram = getRam(nodes, source);
 			if (dma != null) {
 				step = new DmaRouteStep(source, nodes, target, dma);
+			} else if (ram != null) {
+				step = new RamRouteStep(source, nodes, target, ram);
 			} else {
 				step = new NodeRouteStep(source, nodes, target);
 			}
@@ -114,12 +119,35 @@ public class RouteStepFactory {
 	}
 
 	/**
-	 * Checks if a setup link exists between dma and operator
+	 * Gets the ram corresponding to the step if any exists. The ram must have a
+	 * setup link with the source.
 	 */
-	private boolean existSetup(Dma dma, Operator op) {
+	private Ram getRam(List<AbstractNode> nodes, Operator ramSetup) {
+		Ram ram = null;
+		for (AbstractNode node : nodes) {
+			for (Interconnection i : archi.undirectedEdgesOf(node)) {
+				if (i.getSource() instanceof Ram)
+					ram = (Ram) i.getSource();
+				if (i.getTarget() instanceof Ram)
+					ram = (Ram) i.getTarget();
 
-		for (Interconnection i : archi.incomingEdgesOf(dma)) {
-			if (i.getSource().equals(op)) {
+				if (ram != null) {
+					if (existSetup(ram, ramSetup)) {
+						return ram;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if a setup link exists between cmp and operator
+	 */
+	private boolean existSetup(ArchitectureComponent cmp, Operator op) {
+
+		for (Interconnection i : archi.incomingEdgesOf(cmp)) {
+			if (i.getSource().equals(op) && i.isSetup()) {
 				return true;
 			}
 		}

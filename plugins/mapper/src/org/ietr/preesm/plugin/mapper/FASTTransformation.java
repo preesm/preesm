@@ -137,27 +137,25 @@ public class FASTTransformation extends AbstractMapping {
 				scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 		
-		InitialLists initial = new InitialLists();
+		InitialLists initialLists = new InitialLists();
 
-		if (!initial.constructInitialLists(dag, simu))
+		if (!initialLists.constructInitialLists(dag, simu))
 			return result;
 
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc.getInstance(parameters.getSimulatorType(),
-				parameters.getEdgeSchedType(), dag, architecture);
+				parameters.getEdgeSchedType(), dag, architecture, scenario);
 
-		FastAlgorithm fastAlgorithm = new FastAlgorithm();
+		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
 		dag = fastAlgorithm.map("test", parameters.getSimulatorType(),
-				parameters.getEdgeSchedType(), dag, architecture, initial
-						.getCpnDominant(), initial.getBlockingNodes(),
-				initial.getCriticalpath(), parameters.getMaxCount(),
-				parameters.getMaxStep(), parameters.getMargIn(), false, false,
-				null, parameters.isDisplaySolutions(), monitor);
+				parameters.getEdgeSchedType(), dag, architecture, parameters.getMaxCount(),
+				parameters.getMaxStep(), parameters.getMargIn(), false, false
+				, parameters.isDisplaySolutions(), monitor);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
 		

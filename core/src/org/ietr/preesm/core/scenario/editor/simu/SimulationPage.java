@@ -46,6 +46,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -60,6 +62,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
@@ -74,11 +77,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**
@@ -153,25 +158,64 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		ScrolledForm form = managedForm.getForm();
 		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Simulation.title"));
-		GridLayout layout = new GridLayout(2,true);
+		GridLayout layout = new GridLayout(2, true);
 		form.getBody().setLayout(layout);
-		
+
 		// Main operator chooser section
 		createComboBoxSection(managedForm, Messages
 				.getString("Simulation.mainOperator.title"), Messages
 				.getString("Simulation.mainOperator.description"), Messages
-				.getString("Simulation.mainOperatorSelectionTooltip"), "operator");
+				.getString("Simulation.mainOperatorSelectionTooltip"),
+				"operator");
 
 		// Main medium chooser section
 		createComboBoxSection(managedForm, Messages
 				.getString("Simulation.mainMedium.title"), Messages
 				.getString("Simulation.mainMedium.description"), Messages
 				.getString("Simulation.mainMediumSelectionTooltip"), "medium");
-		
-		createDataTypesSection(managedForm, Messages.getString("Simulation.DataTypes.title"),
-				Messages.getString("Simulation.DataTypes.description"));
+
+		// Data type section
+		createDataTypesSection(managedForm, Messages
+				.getString("Simulation.DataTypes.title"), Messages
+				.getString("Simulation.DataTypes.description"));
+
+		// Average data size section
+		createIntegerSection(managedForm, Messages
+				.getString("Simulation.DataAverageSize.title"), Messages
+				.getString("Simulation.DataAverageSize.description"));
 
 		managedForm.refresh();
+	}
+
+	/**
+	 * Creates the section editing the average data size
+	 */
+	private void createIntegerSection(IManagedForm managedForm, String title,
+			String desc) {
+		GridData gd = new GridData();
+		gd.widthHint =400;
+		Composite client = createSection(managedForm, title, desc, 2, gd);
+		
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		Text text = toolkit.createText(client, String.valueOf(scenario.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(new ModifyListener(){
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text)e.getSource();
+				int averageSize = 0;
+				try {
+					averageSize = Integer.valueOf(text.getText());
+					scenario.getSimulationManager().setAverageDataSize(averageSize);
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				} catch (NumberFormatException e1) {
+				}
+			}});
+		
+		text.setLayoutData(gd);
+		toolkit.paintBordersFor(client);
 	}
 
 	/**
@@ -180,7 +224,6 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	public Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns, GridData gridData) {
 
-		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -211,7 +254,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		// Creates the section
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 60;
-		Composite container = createSection(managedForm, title, desc, 2,gridData);
+		Composite container = createSection(managedForm, title, desc, 2,
+				gridData);
 
 		FormToolkit toolkit = managedForm.getToolkit();
 
@@ -239,14 +283,16 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				combo.add(((Operator) cmp).getName());
 			}
 
-			combo.select(combo.indexOf(scenario.getSimulationManager().getMainOperatorName()));
+			combo.select(combo.indexOf(scenario.getSimulationManager()
+					.getMainOperatorName()));
 		} else if (type.equals("medium")) {
 			for (ArchitectureComponent cmp : archi
 					.getComponents(ArchitectureComponentType.medium)) {
 				combo.add(((Medium) cmp).getName());
 			}
 
-			combo.select(combo.indexOf(scenario.getSimulationManager().getMainMediumName()));
+			combo.select(combo.indexOf(scenario.getSimulationManager()
+					.getMainMediumName()));
 		}
 
 		combo.setData(archi);
@@ -255,20 +301,19 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	}
 
 	/**
-	 * Creates the section editing timings
+	 * Creates the section editing data types
 	 */
 	private void createDataTypesSection(IManagedForm managedForm, String title,
 			String desc) {
-		
+
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		Composite container = createSection(managedForm, title, desc, 1,
+				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
-		
+
 		addTable(container, toolkit);
 	}
-	
 
 	/**
 	 * Adds a table to edit data types
@@ -277,43 +322,45 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
 		// Buttons to add and remove data types
 		Composite buttonscps = toolkit.createComposite(parent);
-		buttonscps.setLayout(new GridLayout(2,true));
-		final Button addButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.addType"), SWT.PUSH);
-		final Button removeButton = toolkit.createButton(buttonscps, Messages.getString("Simulation.DataTypes.removeType"), SWT.PUSH);
+		buttonscps.setLayout(new GridLayout(2, true));
+		final Button addButton = toolkit.createButton(buttonscps, Messages
+				.getString("Simulation.DataTypes.addType"), SWT.PUSH);
+		final Button removeButton = toolkit.createButton(buttonscps, Messages
+				.getString("Simulation.DataTypes.removeType"), SWT.PUSH);
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
 
 		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
-		
-		
+
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 		// table.setSize(100, 100);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		
+
 		tableViewer.setContentProvider(new DataTypesContentProvider());
 
 		final DataTypesLabelProvider labelProvider = new DataTypesLabelProvider(
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
-		
+
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
 		column1.setText(Messages.getString("Simulation.DataTypes.typeColumn"));
-		
+
 		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
 		column2.setText(Messages.getString("Simulation.DataTypes.sizeColumn"));
-		
+
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
-				labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection());
+				labelProvider.handleDoubleClick((IStructuredSelection) e
+						.getSelection());
 			}
 		});
-		
+
 		final Table tref = table;
 		final Composite comp = tablecps;
 
@@ -344,15 +391,16 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		tableViewer.setInput(scenario);
 		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL));
-		
 
 		// Adding the new data type on click on add button
-		addButton.addSelectionListener(new SelectionAdapter(){
+		addButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String dialogTitle = Messages.getString("Simulation.DataTypes.addType.dialog.title");
-				String dialogMessage = Messages.getString("Simulation.DataTypes.addType.dialog.message");
+				String dialogTitle = Messages
+						.getString("Simulation.DataTypes.addType.dialog.title");
+				String dialogMessage = Messages
+						.getString("Simulation.DataTypes.addType.dialog.message");
 				String init = "newType";
 
 				IInputValidator validator = new IInputValidator() {
@@ -363,10 +411,10 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 					}
 
 				};
-				
+
 				InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getShell(), dialogTitle, dialogMessage,
-						init, validator);
+						.getActiveWorkbenchWindow().getShell(), dialogTitle,
+						dialogMessage, init, validator);
 				if (dialog.open() == Window.OK) {
 					DataType dataType = new DataType(dialog.getValue());
 					scenario.getSimulationManager().putDataType(dataType);
@@ -374,18 +422,21 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 					propertyChanged(this, IEditorPart.PROP_DIRTY);
 				}
 			}
-			
+
 		});
 
 		// Removing a data type on click on remove button
-		removeButton.addSelectionListener(new SelectionAdapter(){
+		removeButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IStructuredSelection selection = (IStructuredSelection)tableViewer.getSelection();
-				if(selection != null && selection.getFirstElement() instanceof DataType){
-					DataType dataType = (DataType)selection.getFirstElement();
-					scenario.getSimulationManager().removeDataType(dataType.getTypeName());
+				IStructuredSelection selection = (IStructuredSelection) tableViewer
+						.getSelection();
+				if (selection != null
+						&& selection.getFirstElement() instanceof DataType) {
+					DataType dataType = (DataType) selection.getFirstElement();
+					scenario.getSimulationManager().removeDataType(
+							dataType.getTypeName());
 					tableViewer.refresh();
 					propertyChanged(this, IEditorPart.PROP_DIRTY);
 				}
@@ -398,8 +449,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if(propId == PROP_DIRTY)
+		if (propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
-		
+
 	}
 }

@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
@@ -66,8 +67,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 	 * vertex has not been implanted yet.
 	 */
 	public ApproximatelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType) {
-		super(edgeSchedType, dag, archi, abcType);
+			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+		super(edgeSchedType, dag, archi, abcType, scenario);
 
 		types = new ArrayList<Integer>();
 		types.add(CommunicationRouter.transferType);

@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -95,8 +96,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * vertex has not been implanted yet.
 	 */
 	public LatencyAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType) {
-		super(dag, archi, abcType);
+			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+		super(dag, archi, abcType, scenario);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);
@@ -105,7 +106,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
 				orderManager);
-		comRouter = new CommunicationRouter(archi,implementation,edgeScheduler,orderManager);
+		comRouter = new CommunicationRouter(archi,scenario,implementation,edgeScheduler,orderManager);
 	}
 
 	/**

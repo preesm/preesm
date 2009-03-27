@@ -146,7 +146,7 @@ public class PGeneticTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
@@ -164,7 +164,7 @@ public class PGeneticTransformation extends AbstractMapping {
 					parameters.getProcessorNumber(), parameters
 							.getSimulatorType(), parameters.getEdgeSchedType());
 
-			dag = pfastAlgorithm.map(dag, architecture, parameter
+			dag = pfastAlgorithm.map(dag, architecture, scenario, parameter
 					.getProcNumber(), parameter.getNodesmin(), initial,
 					parameter.getMaxCount(), parameter.getMaxStep(), parameter
 							.getMargIn(), parameters.getSimulatorType(),parameters.getEdgeSchedType(), true,
@@ -180,16 +180,16 @@ public class PGeneticTransformation extends AbstractMapping {
 					parameters.getSimulatorType(), parameters.getEdgeSchedType());
 
 			population.constructPopulation(dag, parameter.getMaxCount(),
-					parameter.getMaxStep(), parameter.getMargIn());
+					parameter.getMaxStep(), parameter.getMargIn(), scenario);
 		}
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 
 		PGeneticAlgo geneticAlgorithm = new PGeneticAlgo();
 
 		List<Chromosome> result;
-		result = geneticAlgorithm.map(populationDAG, architecture, parameters
+		result = geneticAlgorithm.map(populationDAG, architecture,scenario, parameters
 				.getSimulatorType(), parameters.getEdgeSchedType(), parameters.getPopulationSize(), parameters
 				.getGenerationNumber(), parameters.getProcessorNumber());
 

@@ -55,6 +55,8 @@ public class Route extends ArrayList<AbstractRouteStep> {
 	 */
 	public static final String propertyBeanName = "route";
 
+	public static final int averageTransfer = 1000;
+
 	private static final long serialVersionUID = 1L;
 
 	public Route(AbstractRouteStep step) {

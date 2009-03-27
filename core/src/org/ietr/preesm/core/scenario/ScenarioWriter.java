@@ -113,6 +113,13 @@ public class ScenarioWriter {
 		params.appendChild(medium);
 		medium.setTextContent(scenario.getSimulationManager()
 				.getMainMediumName());
+		
+		Element dataSize = dom.createElement("averageDataSize");
+		params.appendChild(dataSize);
+		dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
+			.getAverageDataSize()));
+		
+		
 
 		Element dataTypes = dom.createElement("dataTypes");
 		params.appendChild(dataTypes);

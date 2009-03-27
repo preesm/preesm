@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -62,8 +63,8 @@ public class InfiniteHomogeneousAbc extends
 	 * Constructor 
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi) {
-		this(edgeSchedType,dag,archi,TaskSchedType.Simple);
+			MultiCoreArchitecture archi, IScenario scenario) {
+		this(edgeSchedType,dag,archi,TaskSchedType.Simple, scenario);
 	}
 	
 	/**
@@ -71,8 +72,8 @@ public class InfiniteHomogeneousAbc extends
 	 * vertex has not been implanted yet.
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, TaskSchedType taskSchedType) {
-		super(null, dag, archi, AbcType.InfiniteHomogeneous);
+			MultiCoreArchitecture archi, TaskSchedType taskSchedType, IScenario scenario) {
+		super(null, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done

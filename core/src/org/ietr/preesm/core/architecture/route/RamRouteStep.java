@@ -34,75 +34,67 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.abc.impl.latency;
+package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
 
 /**
- * The accurately timed ABC schedules edges and set-up times
+ * Route step where the sender uses a shared RAM to send data
  * 
  * @author mpelcat
  */
-public class AccuratelyTimedAbc extends LatencyAbc {
+public class RamRouteStep extends NodeRouteStep {
+
+	private Ram ram;
+
+	/**
+	 * The route step type determines how the communication will be simulated.
+	 */
+	public static final String type = "NodeRouteStep";
 	
-	List<Integer> types = null;
+	public RamRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Ram ram) {
+		super(sender,nodes, receiver);		
+		this.ram = ram;
+	}
+
 	/**
-	 * Constructor of the simulator from a "blank" implementation where every
-	 * vertex has not been implanted yet.
+	 * The route step type determines how the communication will be simulated.
 	 */
-	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
-		super(edgeSchedType, dag, archi, abcType, scenario);
-		
-		types = new ArrayList<Integer>();
-		types.add(CommunicationRouter.transferType);
-		types.add(CommunicationRouter.overheadType);
+	@Override
+	public String getType() {
+		return type;
 	}
 	
-	/**
-	 * Called when a new vertex operator is set
-	 */
-	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex,
-			boolean updateRank) {
-
-		super.fireNewMappedVertex(vertex,updateRank);
-
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
-
-		if (effectiveOp != Operator.NO_COMPONENT) {
-			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
-			comRouter.routeNewVertex(vertex, types);
-
-		}
+	private Ram getRam() {
+		return ram;
 	}
 
 	/**
-	 * Edge scheduling vertices are added. Thus useless edge costs are removed
+	 * Evaluates the cost of a data transfer with size transferSize
 	 */
 	@Override
-	protected final void setEdgeCost(MapperDAGEdge edge) {
-
-		edge.getTimingEdgeProperty().setCost(0);
-
-		//Setting edge costs for special types
-		super.setEdgeCost(edge);
+	public long getTransferCost(long transfersSize) {
+		return getNodes().size();
 	}
 
 	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return edgeScheduler.getEdgeSchedType();
+	public String toString() {
+		String trace = super.toString();
+		trace = trace.substring(0,trace.length()-1);
+		trace += "[" + ram + "]}";
+		return trace;
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		Ram newRam = (Ram)ram.clone();
+		newRam.setDefinition(ram.getDefinition());
+		return new RamRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newRam);
 	}
 }

@@ -134,7 +134,7 @@ public class PFASTTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType());
+				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
@@ -144,11 +144,11 @@ public class PFASTTransformation extends AbstractMapping {
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture);
+				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 		
 		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-		dag = pfastAlgorithm.map(dag, architecture, parameters.getProcNumber(),
+		dag = pfastAlgorithm.map(dag, architecture, scenario, parameters.getProcNumber(),
 				parameters.getNodesmin(), initial, parameters.getMaxCount(),
 				parameters.getMaxStep(), parameters.getMargIn(), parameters
 						.getSimulatorType(),parameters.getEdgeSchedType(), false, 0, parameters.isDisplaySolutions(), null);

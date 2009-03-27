@@ -179,6 +179,8 @@ public class ScenarioParser {
 							.setMainOperatorName(content);
 				} else if (type.equals("mainMedium")) {
 					scenario.getSimulationManager().setMainMediumName(content);
+				} else if (type.equals("averageDataSize")) {
+					scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
 				} else if (type.equals("dataTypes")) {
 					parseDataTypes(elt);
 				}

@@ -41,6 +41,7 @@ import java.util.Map;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.Schedule;
@@ -58,9 +59,10 @@ import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 public interface IAbc extends IMapperAbc {
 
 	/**
-	 * Gets the architecture
+	 * Gets the architecture and scenario
 	 */
 	public MultiCoreArchitecture getArchitecture();
+	public IScenario getScenario();
 
 	public MapperDAG getDAG();
 
