@@ -62,13 +62,13 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 						long transferTime = nodeDef.getTransferTime(edge
 								.getInitialEdgeProperty().getDataSize());
 						int nodeIndex = dmaStep.getNodes().indexOf(node);
-						lastTransaction = new AddTransferVertexTransaction(
+						Transaction transaction = new AddTransferVertexTransaction(
 								lastTransaction, getEdgeScheduler(), edge,
 								getImplementation(), getOrderManager(),
 								routeStepIndex, nodeIndex, routeStep,
 								transferTime, node, true);
 
-						transactions.add(lastTransaction);
+						transactions.add(transaction);
 					}
 				}
 
