@@ -50,22 +50,32 @@ import org.sdf4j.model.dag.DAGEdge;
 public class TransferVertex extends MapperDAGVertex {
 
 	public static final long SEND_RECEIVE_COST = 100;
-	
+
 	private AbstractRouteStep step;
-	
+
 	/**
 	 * Source and target of the vertex that originated this transfer
 	 */
-	private MapperDAGVertex source; 
+	private MapperDAGVertex source;
 	private MapperDAGVertex target;
-	
+
+	/**
+	 * Index of the route step corresponding to this transfer in the route
+	 */
 	private int routeStepIndex;
 
-	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source, MapperDAGVertex target, int routeStepIndex) {
+	/**
+	 * Index of the node corresponding to this transfer in the route step
+	 */
+	private int nodeIndex;
+
+	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source,
+			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
 		super(id, base);
 		this.source = source;
 		this.target = target;
-		this.routeStepIndex = routeStepIndex; 
+		this.routeStepIndex = routeStepIndex;
+		this.nodeIndex = nodeIndex;
 	}
 
 	public AbstractRouteStep getRouteStep() {
@@ -80,14 +90,15 @@ public class TransferVertex extends MapperDAGVertex {
 	 * A transfer vertex follows only one vertex
 	 */
 	public OverheadVertex getPrecedingOverhead() {
-		for(DAGEdge incomingEdge : getBase().incomingEdgesOf(this)){
-			if(!(incomingEdge instanceof PrecedenceEdge)){
-				MapperDAGVertex precV = (MapperDAGVertex)incomingEdge.getSource();
-				if(precV instanceof OverheadVertex)
-				return (OverheadVertex)precV;
+		for (DAGEdge incomingEdge : getBase().incomingEdgesOf(this)) {
+			if (!(incomingEdge instanceof PrecedenceEdge)) {
+				MapperDAGVertex precV = (MapperDAGVertex) incomingEdge
+						.getSource();
+				if (precV instanceof OverheadVertex)
+					return (OverheadVertex) precV;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -101,5 +112,9 @@ public class TransferVertex extends MapperDAGVertex {
 
 	public int getRouteStepIndex() {
 		return routeStepIndex;
+	}
+
+	public int getNodeIndex() {
+		return nodeIndex;
 	}
 }

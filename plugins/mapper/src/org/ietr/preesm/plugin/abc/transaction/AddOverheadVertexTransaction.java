@@ -169,11 +169,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 			if(resultList != null){
 				resultList.add(oVertex);
 			}
-		} else {
-			PreesmLogger.getLogger().log(Level.INFO,
-					"An overhead must have a strictly positive size: " + edge);
 		}
-
 	}
 
 	@Override

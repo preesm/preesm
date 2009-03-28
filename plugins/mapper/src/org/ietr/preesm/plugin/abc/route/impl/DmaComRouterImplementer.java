@@ -8,6 +8,9 @@ import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
@@ -45,29 +48,63 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
+			int routeStepIndex, Transaction lastTransaction,
+			List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof DmaRouteStep) {
+			DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
 			if (type == CommunicationRouter.transferType) {
-				DmaRouteStep dmaStep = ((DmaRouteStep)routeStep);
-				
-				Transaction transaction = lastTransaction;
 
 				for (AbstractNode node : dmaStep.getNodes()) {
 					if (node instanceof ContentionNode) {
-						long transferTime = 100;
-						transaction = new AddTransferVertexTransaction(
+						ContentionNodeDefinition nodeDef = (ContentionNodeDefinition) ((ContentionNode) node)
+								.getDefinition();
+						long transferTime = nodeDef.getTransferTime(edge
+								.getInitialEdgeProperty().getDataSize());
+						int nodeIndex = dmaStep.getNodes().indexOf(node);
+						lastTransaction = new AddTransferVertexTransaction(
 								lastTransaction, getEdgeScheduler(), edge,
 								getImplementation(), getOrderManager(),
-								routeStepIndex, routeStep, transferTime, node
-								, true);
+								routeStepIndex, nodeIndex, routeStep,
+								transferTime, node, true);
 
-						transactions.add(transaction);
+						transactions.add(lastTransaction);
 					}
 				}
 
-				return transaction;
+				return lastTransaction;
 			} else if (type == CommunicationRouter.overheadType) {
+				MapperDAGEdge incomingEdge = null;
+
+				for (Object o : alreadyCreatedVertices) {
+					if (o instanceof TransferVertex) {
+						TransferVertex v = (TransferVertex) o;
+						if (v.getSource().equals(edge.getSource())
+								&& v.getTarget().equals(edge.getTarget())
+								&& v.getRouteStep() == routeStep
+								&& v.getNodeIndex() == 0)
+							incomingEdge = (MapperDAGEdge) v.incomingEdges()
+									.toArray()[0];
+
+					}
+				}
+
+				DmaDefinition dmaDef = (DmaDefinition) ((Dma) dmaStep.getDma())
+						.getDefinition();
+				long overheadTime = dmaDef.getSetupTime(dmaStep.getSender());
+				if (incomingEdge != null) {
+					transactions.add(new AddOverheadVertexTransaction(
+							incomingEdge, getImplementation(), routeStep,
+							overheadTime, getOrderManager()));
+				} else {
+					PreesmLogger
+							.getLogger()
+							.log(
+									Level.SEVERE,
+									"The transfer following vertex"
+											+ edge.getSource()
+											+ "was not found. We could not add overhead.");
+				}
 
 			} else if (type == CommunicationRouter.sendReceive) {
 

@@ -47,6 +47,13 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 
+	/**
+	 * Transfer speed in AU (Allocation Unit)/TU(Time Unit) The usual
+	 * utilization is with Bytes/cycle
+	 * 
+	 * The speed can depend on parameters like data size
+	 */
+	private float dataRate = 0f;
 
 	public ContentionNodeDefinition(String id) {
 		super(id, "contentionNode");
@@ -60,10 +67,26 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 
 		// A new OperatorDefinition is created with same id
 		ContentionNodeDefinition newdef = new ContentionNodeDefinition(this.getId());
-
+		newdef.setDataRate(this.getDataRate());
 		return newdef;
 	}
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ArchitectureComponentDefinition origin){
+		this.dataRate = ((ContentionNodeDefinition)origin).getDataRate();
+	}
+	
+	public float getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(float dataRate) {
+		this.dataRate = dataRate;
+	}
+	
+	public long getTransferTime(long transferSize){
+		Long datasize = transferSize;
+		Double time = datasize.doubleValue() / getDataRate();
+		time = Math.ceil(time);
+		return time.longValue();
 	}
 }

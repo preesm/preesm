@@ -105,7 +105,7 @@ public class StatGenerator {
 
 		MediumDefinition mainMediumDef = (MediumDefinition) localArchi
 				.getMainMedium().getDefinition();
-		mainMediumDef.setInvSpeed(0);
+		mainMediumDef.setDataRate(0);
 		mainMediumDef.setOverhead(0);
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,

@@ -66,7 +66,7 @@ public class Examples {
 		op2.addInterface(intf2);
 
 		Medium edma = (Medium) archi.addComponent(ArchitectureComponentType.medium,"edma","edma_1");
-		((MediumDefinition)edma.getDefinition()).setInvSpeed(1);
+		((MediumDefinition)edma.getDefinition()).setDataRate(1);
 		((MediumDefinition)edma.getDefinition()).setOverhead(2);
 		ArchitectureInterface intfEdma = new ArchitectureInterface(edmaBusRef, edma);
 		
@@ -127,7 +127,7 @@ public class Examples {
 
 		MediumDefinition bus = new MediumDefinition("opb_bus");
 		BusReference busRef = new BusReference("opb_busDef");
-		bus.setInvSpeed(1);
+		bus.setDataRate(1);
 		bus.setOverhead(100);
 
 		Operator op1 = (Operator)archi.addComponent(ArchitectureComponentType.operator,"microblaze","p_1");
@@ -144,7 +144,7 @@ public class Examples {
 
 		Medium m1 = (Medium) archi.addComponent(ArchitectureComponentType.medium,"opb_bus","bus_1");
 
-		((MediumDefinition)m1.getDefinition()).setInvSpeed(1);
+		((MediumDefinition)m1.getDefinition()).setDataRate(1);
 		((MediumDefinition)m1.getDefinition()).setOverhead(100);
 		ArchitectureInterface intfm1 = new ArchitectureInterface(busRef, m1);
 

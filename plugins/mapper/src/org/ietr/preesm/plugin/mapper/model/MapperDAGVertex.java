@@ -108,7 +108,7 @@ public class MapperDAGVertex extends DAGVertex {
 			TransferVertex t = (TransferVertex)this;
 			result = new TransferVertex(this.getId(), (MapperDAG) this
 					.getBase(), t.getSource(),
-					t.getTarget(), t.getRouteStepIndex());
+					t.getTarget(), t.getRouteStepIndex(), t.getNodeIndex());
 		} else {
 			result = new MapperDAGVertex(this.getId(), this.getName(),
 					(MapperDAG) this.getBase());

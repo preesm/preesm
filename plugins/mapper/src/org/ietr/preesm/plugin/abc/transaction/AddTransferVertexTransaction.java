@@ -107,6 +107,11 @@ public class AddTransferVertexTransaction extends Transaction {
 	 */
 	private int routeIndex = 0;
 
+	/**
+	 * Index of the node its route step
+	 */
+	private int nodeIndex = 0;
+
 	// Generated objects
 	/**
 	 * overhead vertex added
@@ -127,7 +132,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	public AddTransferVertexTransaction(Transaction precedingTransaction,
 			IEdgeSched edgeScheduler, MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, AbstractRouteStep step, long transferTime,
+			int routeIndex, int nodeIndex, AbstractRouteStep step, long transferTime,
 			ArchitectureComponent effectiveComponent, boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = precedingTransaction;
@@ -140,6 +145,8 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.scheduleVertex = scheduleVertex;
 		this.routeIndex = routeIndex;
 		this.transferTime = transferTime;
+		this.nodeIndex = nodeIndex;
+		
 	}
 
 	@Override
@@ -158,7 +165,7 @@ public class AddTransferVertexTransaction extends Transaction {
 			currentSource = (MapperDAGVertex) edge.getSource();
 		}
 
-		String tvertexID = "__transfer" + routeIndex + " ("
+		String tvertexID = "__transfer" + routeIndex + "_" + nodeIndex + " ("
 				+ ((MapperDAGVertex) edge.getSource()).getName() + ","
 				+ currentTarget.getName() + ")";
 
@@ -171,7 +178,7 @@ public class AddTransferVertexTransaction extends Transaction {
 		if (transferTime > 0) {
 			tVertex = new TransferVertex(tvertexID, implementation,
 					(MapperDAGVertex) edge.getSource(), (MapperDAGVertex) edge
-							.getTarget(), routeIndex);
+							.getTarget(), routeIndex, nodeIndex);
 
 			tVertex.setRouteStep(step);
 

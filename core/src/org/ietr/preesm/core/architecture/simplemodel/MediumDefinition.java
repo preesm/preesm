@@ -53,19 +53,19 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	 */
 
 	/**
-	 * Transfer inverse speed in TU(Time Unit)/AU (Allocation Unit) The usual
-	 * utilization is with cycles/Byte
+	 * Transfer speed in AU (Allocation Unit)/TU(Time Unit) The usual
+	 * utilization is with Bytes/cycle
 	 * 
 	 * The speed can depend on parameters like data size
 	 */
-	float invSpeed = 0f;
+	private float dataRate = 0f;
 
 
 	/**
 	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
 	 * with cycles
 	 */
-	int overhead = 0;
+	private int overhead = 0;
 
 	public MediumDefinition(MediumDefinition origin) {
 		super(origin.getId(), "medium");
@@ -79,7 +79,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	public MediumDefinition(String id,float invSpeed, int overhead) {
 		super(id, "medium");
-		setInvSpeed(invSpeed);
+		setDataRate(invSpeed);
 		setOverhead(overhead);
 	}
 	
@@ -89,33 +89,33 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	@Override
 	public MediumDefinition clone() {
-		return new MediumDefinition(this.getId(),this.getInvSpeed(), this.getOverhead());
+		return new MediumDefinition(this.getId(),this.getDataRate(), this.getOverheadTime());
 	}
 
 	public void fill(ArchitectureComponentDefinition origin){
-		this.invSpeed = ((MediumDefinition)origin).getInvSpeed();
-		this.overhead = ((MediumDefinition)origin).getOverhead();
-	}
-	
-	public float getInvSpeed() {
-		return invSpeed;
+		this.dataRate = ((MediumDefinition)origin).getDataRate();
+		this.overhead = ((MediumDefinition)origin).getOverheadTime();
 	}
 
-	public int getOverhead() {
+	public int getOverheadTime() {
 		return overhead;
-	}
-
-	public void setInvSpeed(float invSpeed) {
-		this.invSpeed = invSpeed;
 	}
 
 	public void setOverhead(int overhead) {
 		this.overhead = overhead;
 	}
 	
+	public float getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(float dataRate) {
+		this.dataRate = dataRate;
+	}
+	
 	public long getTransferTime(long transferSize){
 		Long datasize = transferSize;
-		Double time = datasize.doubleValue() * getInvSpeed();
+		Double time = datasize.doubleValue() / getDataRate();
 		time = Math.ceil(time);
 		return time.longValue();
 	}

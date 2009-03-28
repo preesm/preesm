@@ -106,8 +106,8 @@ public class ArchitectureTransformer {
 					indexMedium.getDefinition().getId(),
 					ComponentDescriptorBuffer);
 			bus
-					.setAverageClockCyclesPerTransfer(((MediumDefinition) ((Medium) indexMedium)
-							.getDefinition()).getInvSpeed());
+					.setAverageClockCyclesPerTransfer(1.0/((MediumDefinition) ((Medium) indexMedium)
+							.getDefinition()).getDataRate());
 		}
 		for (ArchitectureComponent indexMedium : archi
 				.getComponents(ArchitectureComponentType.bus)) {

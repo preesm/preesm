@@ -60,9 +60,9 @@ public class MediumParser {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
 				String configurableElementName = elt.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("medium_invDataRate")) {
+				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("medium_dataRate")) {
 					String value = elt.getTextContent();
-					def.setInvSpeed(Float.parseFloat(value));
+					def.setDataRate(Float.parseFloat(value));
 				} else if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("medium_overhead")) {
 					String value = elt.getTextContent();
 					def.setOverhead(Integer.parseInt(value));

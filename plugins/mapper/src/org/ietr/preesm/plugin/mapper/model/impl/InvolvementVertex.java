@@ -37,23 +37,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Vertex corresponding to sending a data.
- * This vertex is mapped on the sender of 
- * the corresponding route step.
+ * An involvement vertex represents a communication directly driven by a core
  * 
  * @author mpelcat
  */
-public class SendVertex extends TransferVertex {
+public class InvolvementVertex extends MapperDAGVertex {
 
-	public SendVertex(String id, MapperDAG base) {
-		super(id, base,null,null,0,0);
-	}
-	
-	public DAGDefaultVertexPropertyType getNbRepeat(){
-		return new DAGDefaultVertexPropertyType(1);
+	public InvolvementVertex(String id, MapperDAG base) {
+		super(id, base);
 	}
 
 }

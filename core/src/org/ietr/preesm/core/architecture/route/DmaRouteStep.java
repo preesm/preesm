@@ -71,7 +71,7 @@ public class DmaRouteStep extends NodeRouteStep {
 		return type;
 	}
 	
-	private Dma getDma() {
+	public Dma getDma() {
 		return dma;
 	}
 

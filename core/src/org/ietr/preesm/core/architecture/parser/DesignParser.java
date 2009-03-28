@@ -64,7 +64,9 @@ import org.ietr.preesm.core.architecture.advancedmodel.ITerminal;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
 import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
@@ -119,13 +121,13 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());
+			PreesmLogger.getLogger().log(Level.SEVERE, pce.getMessage());
 		} catch (SAXException se) {
-			PreesmLogger.getLogger().log(Level.SEVERE,se.getMessage());
+			PreesmLogger.getLogger().log(Level.SEVERE, se.getMessage());
 		} catch (IOException ioe) {
-			PreesmLogger.getLogger().log(Level.SEVERE,ioe.getMessage());
+			PreesmLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 
@@ -236,14 +238,19 @@ public class DesignParser {
 					ArchitectureComponentType.getType(cmpType), cmpDefId,
 					cmpName);
 
-			if (configElt != null && type == ArchitectureComponentType.medium) {
-				MediumParser.parse((MediumDefinition) cmp.getDefinition(),
-						configElt);
-			}
-
 			// parse components for advanced architecture
 			if (configElt != null) {
-				if (type == ArchitectureComponentType.processor) {
+				// Simple model
+				if (type == ArchitectureComponentType.medium) {
+					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
+							configElt);
+				} else if (type == ArchitectureComponentType.contentionNode) {
+					ContentionNodeParser.parse((ContentionNodeDefinition) cmp
+							.getDefinition(), configElt);
+				}
+
+				// Advanced model
+				else if (type == ArchitectureComponentType.processor) {
 					ProcessorParser.parse((Processor) cmp, configElt);
 				} else if (type == ArchitectureComponentType.ipCoprocessor) {
 					IpCoprocessorParser.parse((IpCoprocessor) cmp, configElt);
@@ -396,8 +403,7 @@ public class DesignParser {
 							.equalsIgnoreCase("configure"));
 					isDirected = (elt.getTextContent()
 							.equalsIgnoreCase("directed"));
-					isSetup = (elt.getTextContent()
-							.equalsIgnoreCase("setup"));
+					isSetup = (elt.getTextContent().equalsIgnoreCase("setup"));
 				} else if (type.equals("spirit:description")) {
 					description = elt.getTextContent();
 				}
@@ -410,8 +416,7 @@ public class DesignParser {
 
 			ArchitectureComponent cmp1 = archi.getComponent(componentRefList
 					.get(0));
-			cmp1 = archi.getComponent(componentRefList
-					.get(0));
+			cmp1 = archi.getComponent(componentRefList.get(0));
 			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
 			ArchitectureInterface if1 = cmp1
 					.addInterface(new ArchitectureInterface(busRef1, cmp1));
@@ -421,7 +426,7 @@ public class DesignParser {
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
 			ArchitectureInterface if2 = cmp2
 					.addInterface(new ArchitectureInterface(busRef2, cmp2));
-			
+
 			// Advanced architecture
 			if (isAccess) {
 				((ITerminal) cmp2)
@@ -429,30 +434,38 @@ public class DesignParser {
 			} else if (isConfigure) {
 				((Communicator) cmp2).addSetupTime(cmp1.getName(),
 						((Processor) cmp1).getSetupTime(cmp2.getName()));
-			} 
+			}
 
 			// Simple architecture
 			else if (isSetup) {
 				// A setup is directed and its description gives the setup time
 				isDirected = true;
-				if(cmp1 instanceof Operator && (cmp2 instanceof Dma || cmp2 instanceof Ram)){
+				if (cmp1 instanceof Operator
+						&& (cmp2 instanceof Dma || cmp2 instanceof Ram)) {
 					int setupTime = 0;
-					
+
 					try {
 						setupTime = Integer.valueOf(description);
 					} catch (NumberFormatException e) {
-						PreesmLogger.getLogger().log(Level.INFO,"No setup type entered for a setup link. 0 used.");
+						PreesmLogger.getLogger().log(
+								Level.INFO,
+								"No setup type entered for the setup link of "
+										+ cmp1 + " . 0 used.");
 					}
-					
-					if(cmp2 instanceof Dma){
-						((Dma)cmp2).addSetupTime((Operator)cmp1, setupTime);}
-					else{
-						((Ram)cmp2).addSetupTime((Operator)cmp1, setupTime);}
+
+					if (cmp2 instanceof Dma) {
+						((DmaDefinition) ((Dma) cmp2).getDefinition())
+								.addSetupTime((Operator) cmp1, setupTime);
+					} else {
+						((Ram) cmp2).addSetupTime((Operator) cmp1, setupTime);
+					}
+				} else {
+					PreesmLogger
+							.getLogger()
+							.log(Level.SEVERE,
+									"a setup link must join an operator to a dma or a ram.");
 				}
-				else{
-					PreesmLogger.getLogger().log(Level.SEVERE,"a setup link must join an operator to a dma or a ram.");
-				}
-				
+
 				archi.connect(cmp1, if1, cmp2, if2, true, isSetup);
 			} else {
 				archi.connect(cmp1, if1, cmp2, if2, isDirected, false);

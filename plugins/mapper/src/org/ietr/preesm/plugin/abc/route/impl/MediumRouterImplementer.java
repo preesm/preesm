@@ -57,25 +57,22 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 				long transferTime = mediumDef.getTransferTime(edge
 						.getInitialEdgeProperty().getDataSize());
 
-				 if(transferTime > 0) {
-						Transaction transaction = new AddTransferVertexTransaction(
-								lastTransaction, getEdgeScheduler(), edge,
-								getImplementation(), getOrderManager(), routeStepIndex,
-								routeStep, transferTime, medium, true);
-						transactions.add(transaction);
-						return transaction;
-				 } else {
-						PreesmLogger.getLogger().log(
-								Level.INFO,
-								"A transfer vertex must have a strictly positive size: "
-										+ edge);
-						return null;
-					}
+				if (transferTime > 0) {
+					Transaction transaction = new AddTransferVertexTransaction(
+							lastTransaction, getEdgeScheduler(), edge,
+							getImplementation(), getOrderManager(),
+							routeStepIndex, 0, routeStep, transferTime, medium,
+							true);
+					transactions.add(transaction);
+					return transaction;
+				} else {
+					PreesmLogger.getLogger().log(
+							Level.INFO,
+							"A transfer vertex must have a strictly positive size: "
+									+ edge);
+					return null;
+				}
 			} else if (type == CommunicationRouter.overheadType) {
-				MapperDAGEdge firstTransferIncomingEdge = (MapperDAGEdge) getTransfer(
-						(MapperDAGVertex) edge.getSource(),
-						(MapperDAGVertex) edge.getTarget(), routeStepIndex)
-						.incomingEdges().toArray()[0];
 				MapperDAGEdge incomingEdge = null;
 
 				for (Object o : alreadyCreatedVertices) {
@@ -89,18 +86,12 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 					}
 				}
-				
-				if(incomingEdge != firstTransferIncomingEdge){
-					int i=0;
-					i++;
-				}
 
-				long overheadTime = mediumDef.getOverhead();
-
-				if (firstTransferIncomingEdge != null) {
+				long overheadTime = mediumDef.getOverheadTime();
+				if (incomingEdge != null) {
 					transactions.add(new AddOverheadVertexTransaction(
-							firstTransferIncomingEdge, getImplementation(),
-							routeStep, overheadTime, getOrderManager()));
+							incomingEdge, getImplementation(), routeStep,
+							overheadTime, getOrderManager()));
 				} else {
 					PreesmLogger
 							.getLogger()
@@ -119,24 +110,6 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 				transactions.add(transaction);
 				return transaction;
-			}
-		}
-		return null;
-	}
-
-	private TransferVertex getTransfer(MapperDAGVertex source,
-			MapperDAGVertex target, int routeStepIndex) {
-
-		for (DAGEdge transferEdge : source.outgoingEdges()) {
-			if (transferEdge.getTarget() instanceof TransferVertex) {
-				TransferVertex v = (TransferVertex) transferEdge.getTarget();
-				if (v.getTarget().equals(target)) {
-					if (v.getRouteStepIndex() == routeStepIndex) {
-						return v;
-					} else {
-						return getTransfer(v, target, routeStepIndex);
-					}
-				}
 			}
 		}
 		return null;
