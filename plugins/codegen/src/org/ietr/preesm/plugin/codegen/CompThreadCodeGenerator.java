@@ -58,10 +58,9 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.parameters.ParameterSet;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 

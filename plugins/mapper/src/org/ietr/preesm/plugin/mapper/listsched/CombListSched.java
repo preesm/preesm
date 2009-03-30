@@ -63,6 +63,7 @@ import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSchedCcCd;
 import org.ietr.preesm.plugin.mapper.listsched.scheduler.CombCSListSchedCd;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jfree.ui.RefineryUtilities;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -77,8 +78,9 @@ public class CombListSched {
 
 	/**
 	 * @param args
+	 * @throws InvalidExpressionException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidExpressionException {
 		// TODO Auto-generated method stub
 		String architectureFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\architecture.xml";
 		String parameterFileName = "src\\org\\ietr\\preesm\\plugin\\mapper\\listsched\\parameter.xml";
@@ -243,8 +245,9 @@ public class CombListSched {
 
 	/**
 	 * Parse the algorithm, architecture and scenario
+	 * @throws InvalidExpressionException 
 	 */
-	private void parse() {
+	private void parse() throws InvalidExpressionException {
 		if (dag != null) {
 			System.out.println("Transform DAG to algorithm...");
 			algo = algoTransformer.dag2Algorithm(dag);
@@ -386,8 +389,9 @@ public class CombListSched {
 
 	/**
 	 * Use different list scheduling methods to schedule
+	 * @throws InvalidExpressionException 
 	 */
-	public void schedule() {
+	public void schedule() throws InvalidExpressionException {
 		System.out
 				.println("\n***** Combined List Scheduling With Static Order Begins! *****");
 		if ((architecture != null) && (scenario != null)) {

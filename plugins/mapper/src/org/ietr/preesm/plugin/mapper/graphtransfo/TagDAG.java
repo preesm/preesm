@@ -63,6 +63,7 @@ import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -93,9 +94,10 @@ public class TagDAG {
 	/**
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
+	 * @throws InvalidExpressionException 
 	 */
 	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
-			IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) {
+			IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) throws InvalidExpressionException{
 
 		PropertyBean bean = dag.getPropertyBean();
 		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu
@@ -246,8 +248,10 @@ public class TagDAG {
 
 	/**
 	 * Loop on the edges to add aggregates.
+	 * @throws InvalidExpressionException 
+	 * @throws InvalidExpressionException 
 	 */
-	public void addAllAggregates(MapperDAG dag, IScenario scenario) {
+	public void addAllAggregates(MapperDAG dag, IScenario scenario) throws InvalidExpressionException{
 
 		MapperDAGEdge edge;
 
@@ -269,8 +273,9 @@ public class TagDAG {
 	/**
 	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
 	 * sdf edges that were merged into one DAG edge.
+	 * @throws InvalidExpressionException 
 	 */
-	public void addAggregateFromSDF(MapperDAGEdge edge, IScenario scenario) {
+	public void addAggregateFromSDF(MapperDAGEdge edge, IScenario scenario) throws InvalidExpressionException {
 
 		BufferAggregate agg = new BufferAggregate();
 

@@ -65,9 +65,8 @@ import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.sdf4j.demo.SDFAdapterDemo;
-import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.iterators.SDFIterator;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -88,8 +87,9 @@ public class SourceFileCodeGenerator {
 
 	/**
 	 * Buffers belonging to SDF vertices in the given set are allocated here.
+	 * @throws InvalidExpressionException 
 	 */
-	public void allocateBuffers(SDFGraph algo) {
+	public void allocateBuffers(SDFGraph algo) throws InvalidExpressionException {
 		SDFIterator iterator = new SDFIterator(algo);
 		// Iteration on own buffers
 		while (iterator.hasNext()) {
@@ -177,7 +177,13 @@ public class SourceFileCodeGenerator {
 
 		// Buffers defined as global variables are retrieved here. They are
 		// added globally to the file
-		allocateBuffers(algorithm);
+		try {
+			allocateBuffers(algorithm);
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ;
+		}
 
 		// Allocation of route step buffers
 		allocateRouteSteps(ownCommunicationVertices);

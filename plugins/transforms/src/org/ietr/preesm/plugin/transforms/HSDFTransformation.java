@@ -58,6 +58,7 @@ public class HSDFTransformation implements IGraphTransformation {
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException {
+		try{
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
@@ -76,6 +77,9 @@ public class HSDFTransformation implements IGraphTransformation {
 			return result;
 		}else{
 			throw(new PreesmException("Graph not valid, not schedulable"));
+		}
+		}catch(SDF4JException e){
+			throw(new PreesmException(e.getMessage()));
 		}
 	}
 

@@ -4,12 +4,12 @@
       <vertex id="__algorithm" x="211" y="159"/>
       <vertex id="__architecture" x="529" y="116"/>
       <vertex id="__scenario" x="57" y="247"/>
-      <vertex id="HierarchyFlattening" x="288" y="95"/>
+      <vertex id="HierarchyFlattening" x="329" y="98"/>
       <vertex id="CodeGen" x="879" y="127"/>
       <vertex id="DAG Plotter" x="879" y="256"/>
       <vertex id="Exporter" x="679" y="70"/>
       <vertex id="Mapper" x="663" y="202"/>
-      <vertex id="HSDF" x="431" y="96"/>
+      <vertex id="HSDF" x="482" y="59"/>
       <vertex id="FAST scheduler" x="57" y="112"/>
    </vertices>
 </layout>

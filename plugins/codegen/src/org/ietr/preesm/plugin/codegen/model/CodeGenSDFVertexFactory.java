@@ -60,6 +60,7 @@ import org.sdf4j.model.CodeRefinement;
 import org.sdf4j.model.CodeRefinement.Language;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.Argument;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
@@ -69,6 +70,7 @@ import org.sdf4j.model.sdf.esdf.SDFJoinVertex;
 import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.sdf4j.model.visitors.SDF4JException;
 
 /**
  * @author jpiat
@@ -81,7 +83,7 @@ public class CodeGenSDFVertexFactory {
 		mainFile = parentAlgoFile;
 	}
 
-	public SDFAbstractVertex create(DAGVertex dagVertex) {
+	public SDFAbstractVertex create(DAGVertex dagVertex) throws InvalidExpressionException, SDF4JException {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
 		ICodeGenSDFVertex newVertex;
@@ -171,7 +173,7 @@ public class CodeGenSDFVertexFactory {
 		return ((SDFAbstractVertex) newVertex);
 	}
 
-	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) {
+	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) throws InvalidExpressionException, SDF4JException {
 		SDFAbstractVertex newVertex;
 		if (sdfVertex instanceof SDFSinkInterfaceVertex) {
 			newVertex = new CodeGenSDFSinkInterfaceVertex();

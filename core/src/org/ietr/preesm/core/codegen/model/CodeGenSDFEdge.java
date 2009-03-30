@@ -33,10 +33,11 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import org.sdf4j.model.AbstractEdgePropertyType;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFEdge;
 
 public class CodeGenSDFEdge extends SDFEdge {
@@ -49,18 +50,29 @@ public class CodeGenSDFEdge extends SDFEdge {
 	}
 
 	public int getSize() {
-		if (this.getSource() != this.getTarget()) {
-			return Math.max(this.getSource().getNbRepeat()
-					* getProd().intValue(), this.getTarget().getNbRepeat()
-					* getCons().intValue());
-		} else {
-			return getProd().intValue();
+		try {
+			if (this.getSource() != this.getTarget()) {
+				return Math.max(this.getSource().getNbRepeat()
+						* getProd().intValue(), this.getTarget().getNbRepeat()
+						* getCons().intValue());
+			} else {
+				return getProd().intValue();
+			}
+		} catch (InvalidExpressionException e) {
+			e.printStackTrace();
+			return 0;
 		}
 	}
 
 	public String toString() {
-		return getDataType().toString() + " " + getSource().getName() + "_"
-				+ getSourceInterface().getName() + " [" + getProd().intValue()
-				+ "];\n";
+		try {
+			return getDataType().toString() + " " + getSource().getName() + "_"
+					+ getSourceInterface().getName() + " ["
+					+ getProd().intValue() + "];\n";
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error";
+		}
 	}
 }

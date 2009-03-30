@@ -21,7 +21,7 @@
       <data key="name">IDCT2D</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="NbBlocks" value="1"/>
+         <variable name="NbBlocks" value="2"/>
       </data>
       <node id="Trigger" kind="vertex">
          <data key="graph_desc">IDL/trigger_bench.idl</data>
@@ -45,17 +45,17 @@
       <edge source="IDCT2D" sourceport="out" target="Group" targetport="MB">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
+         <data key="edge_cons">NbBlocks*64</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
-         <data key="edge_prod">64</data>
+         <data key="edge_prod">NbBlocks*64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">64</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="Trigger" sourceport="signed" target="IDCT2D" targetport="signed">
-         <data key="edge_prod">1</data>
+         <data key="edge_prod">NbBlocks*1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
          <data key="data_type">int</data>

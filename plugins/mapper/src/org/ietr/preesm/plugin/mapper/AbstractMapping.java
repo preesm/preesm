@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IMapping;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
@@ -54,20 +55,20 @@ import org.sdf4j.model.sdf.SDFGraph;
 public abstract class AbstractMapping implements IMapping {
 	
 	@Override
-	public abstract void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm);
+	public abstract void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) throws PreesmException;
 
 	
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor){
+			IScenario scenario, IProgressMonitor monitor)  throws PreesmException{
 		
 		// Asking to recalculate routes
 		RouteCalculator.recalculate(architecture,scenario);
 		return null;
 	}
 	
-	protected void clean(MultiCoreArchitecture architecture,IScenario scenario){
+	protected void clean(MultiCoreArchitecture architecture,IScenario scenario) throws PreesmException{
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture,scenario);
 	}

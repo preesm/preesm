@@ -40,10 +40,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.listsched.AlgorithmTransformer;
 import org.ietr.preesm.plugin.mapper.listsched.CombListSched;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -61,7 +63,7 @@ public class ListSchedTransformation extends AbstractMapping {
 
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters, IScenario scenario, IProgressMonitor monitor) {
+			TextParameters textParameters, IScenario scenario, IProgressMonitor monitor) throws PreesmException{
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		// TODO Add here the calls to your task scheduling algorithm
@@ -78,7 +80,12 @@ public class ListSchedTransformation extends AbstractMapping {
 		CombListSched scheduler = new CombListSched(algorithm, architecture,
 				scenario);
 
-		scheduler.schedule();
+		try {
+			scheduler.schedule();
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			throw(new PreesmException(e.getMessage()));
+		}
 
 		// result.setDAG(algoTransformer.algorithm2DAG(scheduler
 		// .getBestScheduler()));
@@ -95,6 +102,11 @@ public class ListSchedTransformation extends AbstractMapping {
 				maxInDegree, minOutDegree, maxOutDegree, 500, 1000);
 		MultiCoreArchitecture architecture = Examples.get4PArchi();
 		CombListSched scheduler = new CombListSched(sdf, architecture, null);
-		scheduler.schedule();
+		try {
+			scheduler.schedule();
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

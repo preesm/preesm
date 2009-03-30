@@ -14,24 +14,9 @@
             type="org.ietr.preesm.plugin.transforms.HierarchyFlattening">
       </task>
       <task
-            id="org.ietr.preesm.plugin.transforms.looppipelining"
-            name="graph clustering"
-            type="org.ietr.preesm.plugin.transforms.LoopPipelining">
-      </task>
-      <task
-            id="org.ietr.preesm.plugin.transforms.internalisation"
-            name="Internalisation (Vivek Sarkar)"
-            type="org.ietr.preesm.plugin.transforms.Internalisation">
-      </task>
-      <task
             id="org.ietr.preesm.plugin.transforms.graphlooping"
             name="Detecting loops in graph"
             type="org.ietr.preesm.plugin.transforms.GraphLooping">
-      </task>
-      <task
-            id="org.ietr.preesm.plugin.transforms.mfa"
-            name="Partitioning using Mean Field Algorithm"
-            type="org.ietr.preesm.plugin.transforms.MFAClustering">
       </task>
       <task
             id="org.ietr.preesm.plugin.exportXml.sdf4jgml"

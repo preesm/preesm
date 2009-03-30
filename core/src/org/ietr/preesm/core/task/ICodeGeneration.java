@@ -61,6 +61,6 @@ public interface ICodeGeneration extends ITransformation {
 	 * @param list
 	 *            A {@link SourceFileList}.
 	 */
-	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters);
+	public TaskResult transform(DirectedAcyclicGraph algorithm, MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) throws PreesmException;
 
 }

@@ -25,6 +25,8 @@
                     <constant name="size" type="int" value="4"/>
                 </userFunctionCall>
                 <CompoundCode name="prodMatMat">
+                    <subBufferAllocation index="0" name="out_matr_1"
+                        parentBuffer="generate_0" size="8" type="int"/>
                     <finiteForLoop domain="2" index="i">
                         <CompoundCode name="prodMatVect">
                             <subBufferAllocation index="i" modulo="4"
@@ -33,6 +35,9 @@
                             <subBufferAllocation index="i" modulo="4"
                                 name="outSub_i_0"
                                 parentBuffer="generate_1" size="2" type="int"/>
+                            <subBufferAllocation index="i" modulo="8"
+                                name="outSub_i_1"
+                                parentBuffer="out_matr_1" size="4" type="int"/>
                             <bufferAllocation name="accOut_a_0" size="2" type="int"/>
                             <userFunctionCall name="init_accIn">
                                 <buffer name="accOut_a_0" size="2" type="int"/>
@@ -42,7 +47,7 @@
                                 <CompoundCode name="prodScalVect">
                                     <subBufferAllocation index="j"
                                     modulo="4" name="outSub_j_0"
-                                    parentBuffer="generate_0"
+                                    parentBuffer="outSub_i_1"
                                     size="2" type="int"/>
                                     <subBufferAllocation index="j"
                                     modulo="2" name="outSub_j_1"
@@ -96,12 +101,12 @@
                                     <subBufferAllocation
                                     index="k" modulo="2"
                                     name="inSub_k__0"
-                                    parentBuffer="accOut_a_0"
+                                    parentBuffer="inSub_i__0"
                                     size="1" type="int"/>
                                     <subBufferAllocation
                                     index="k" modulo="2"
                                     name="inSub_k__1"
-                                    parentBuffer="inSub_i__0"
+                                    parentBuffer="accOut_a_0"
                                     size="1" type="int"/>
                                     <subBufferAllocation
                                     index="k" modulo="2"
@@ -113,10 +118,10 @@
                                     name="outSub_k_0"
                                     parentBuffer="scalOut__0" size="1"/>
                                     <subBuffer index="k"
-                                    name="inSub_k__0"
+                                    name="inSub_k__1"
                                     parentBuffer="accOut_a_0" size="1"/>
                                     <subBuffer index="k"
-                                    name="inSub_k__1"
+                                    name="inSub_k__0"
                                     parentBuffer="inSub_i__0" size="1"/>
                                     </userFunctionCall>
                                     </CompoundCode>

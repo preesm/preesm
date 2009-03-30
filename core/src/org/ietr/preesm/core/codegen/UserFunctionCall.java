@@ -50,6 +50,7 @@ import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -175,8 +176,13 @@ public class UserFunctionCall extends AbstractCodeElement {
 					if (currentParam == null
 							&& arg.getDirection() == CodeGenArgument.INPUT) {
 						if (vertex.getArgument(argName) != null) {
-							currentParam = new Constant(argName, vertex
-									.getArgument(argName).intValue());
+							try {
+								currentParam = new Constant(argName, vertex
+										.getArgument(argName).intValue());
+							} catch (InvalidExpressionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 
@@ -196,9 +202,15 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 				for (CodeGenParameter param : call.getParameters()) {
 					if (vertex.getArgument(param.getName()) != null) {
-						Parameter currentParam = new Constant(param.getName(),
-								vertex.getArgument(param.getName()).intValue());
-						addParameter(currentParam);
+						Parameter currentParam;
+						try {
+							currentParam = new Constant(param.getName(),
+									vertex.getArgument(param.getName()).intValue());
+							addParameter(currentParam);
+						} catch (InvalidExpressionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}

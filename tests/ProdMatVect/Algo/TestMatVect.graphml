@@ -21,7 +21,8 @@
       <data key="name">testMatVect</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="size" value="80"/>
+         <variable name="size" value="3"/>
+         <variable name="ysize" value="3"/>
       </data>
       <node id="outputMatrix" kind="vertex">
          <data key="graph_desc">../IDL/generateMatrix.idl</data>
@@ -48,7 +49,8 @@
          <data key="graph_desc">matVect.graphml</data>
          <data key="name">ProdMatVect</data>
          <data key="arguments">
-            <argument name="size" value="size"/>
+            <argument name="xsize" value="size"/>
+            <argument name="ysize" value="size"/>
          </data>
       </node>
       <edge source="outputMatrix" sourceport="outMat" target="ProdMatVect" targetport="matrixIn">

@@ -61,6 +61,7 @@ import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -120,7 +121,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public CodeGenSDFGraph create(DirectedAcyclicGraph dag){
+	public CodeGenSDFGraph create(DirectedAcyclicGraph dag) throws InvalidExpressionException, SDF4JException{
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
@@ -172,7 +173,7 @@ public class CodeGenSDFGraphFactory {
 		return output ;
 	}
 	
-	public CodeGenSDFGraph create(SDFGraph sdf){
+	public CodeGenSDFGraph create(SDFGraph sdf) throws InvalidExpressionException, SDF4JException{
 		clusterizeStronglyConnected(sdf);
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
@@ -218,7 +219,7 @@ public class CodeGenSDFGraphFactory {
 		return output ;
 	}
 	
-	public void clusterizeStronglyConnected(SDFGraph graph){
+	public void clusterizeStronglyConnected(SDFGraph graph) throws SDF4JException{
 		int i = 0 ;
 		StrongConnectivityInspector<SDFAbstractVertex, SDFEdge> inspector = new StrongConnectivityInspector<SDFAbstractVertex, SDFEdge>(graph) ;
 		for(Set<SDFAbstractVertex> strong : inspector.stronglyConnectedSets()){
@@ -227,7 +228,12 @@ public class CodeGenSDFGraphFactory {
 				noInterface &= !(vertex instanceof SDFInterfaceVertex) ;
 			}
 			if(noInterface && strong.size() > 1){
-				culsterizeLoopTest(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
+				try {
+					culsterizeLoopTest(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
+				} catch (InvalidExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				i ++ ;
 			}
 			
@@ -235,8 +241,14 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public static SDFAbstractVertex culsterizeLoopTest(SDFGraph graph,
-			List<SDFAbstractVertex> block, String name) {
-		graph.validateModel();
+			List<SDFAbstractVertex> block, String name) throws InvalidExpressionException, SDF4JException {
+		try {
+			graph.validateModel();
+		} catch (SDF4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 		
 		if (block.size() > 1) {
 			int pgcd = 0 ;
@@ -349,7 +361,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public static SDFAbstractVertex culsterizeLoop(SDFGraph graph,
-			List<SDFAbstractVertex> block, String name) {
+			List<SDFAbstractVertex> block, String name) throws InvalidExpressionException, SDF4JException {
 		
 		if (block.size() > 1) {
 			int pgcd = 0 ;
@@ -492,7 +504,7 @@ public class CodeGenSDFGraphFactory {
 	}
 
 	
-	protected void treatExplodeImplodePattern(CodeGenSDFGraph graph) {
+	protected void treatExplodeImplodePattern(CodeGenSDFGraph graph) throws InvalidExpressionException {
 		List<SDFAbstractVertex> vertices = new ArrayList<SDFAbstractVertex>(
 				graph.vertexSet());
 		while (vertices.size() > 0) {

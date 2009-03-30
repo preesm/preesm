@@ -66,7 +66,7 @@ public interface IMapping extends ITransformation {
 	 */
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters algorithmParameters,
-			IScenario scenario, IProgressMonitor monitor);
+			IScenario scenario, IProgressMonitor monitor) throws PreesmException;
 
 	/**
 	 * Transforms an algorithm.
@@ -76,6 +76,6 @@ public interface IMapping extends ITransformation {
 	 * @param transformedAlgorithm
 	 *            The transformed algorithm as a {@link SDFGraph} graph.
 	 */
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm);
+	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) throws PreesmException;
 
 }

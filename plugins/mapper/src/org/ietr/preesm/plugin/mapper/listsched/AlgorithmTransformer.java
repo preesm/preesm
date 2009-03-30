@@ -52,6 +52,7 @@ import org.sdf4j.factories.DAGEdgeFactory;
 import org.sdf4j.generator.DirectedAcyclicGraphGenerator;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -269,8 +270,9 @@ public class AlgorithmTransformer {
 	 * @param scenario
 	 *            A scenario associated to the SDFGraph
 	 * @return An AlgorithmDescriptor
+	 * @throws InvalidExpressionException 
 	 */
-	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) {
+	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) throws InvalidExpressionException {
 
 		// Construct AlgorithmDescriptor
 		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(

@@ -51,14 +51,16 @@ import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
-import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.parameters.InvalidExpressionException;
+import org.sdf4j.model.visitors.SDF4JException;
 
 /**
  * Code generation.
@@ -101,9 +103,11 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	/**
 	 * Generates the source files from an implementation and an architecture.
 	 * The implementation is a tagged SDF graph.
+	 * @throws SDF4JException 
+	 * @throws InvalidExpressionException 
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) {
+			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) throws InvalidExpressionException, SDF4JException {
 		CodeGenerator codegen = new CodeGenerator(list);
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(new Path(scenario.getAlgorithmURL()));
@@ -124,7 +128,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 */
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) {
+			MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) throws PreesmException{
 		
 		// Default source path is given in the workflow
 		String sourcePath = parameters.getVariable("sourcePath");

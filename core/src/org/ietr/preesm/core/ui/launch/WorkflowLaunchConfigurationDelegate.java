@@ -118,6 +118,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 						configEnv);
 			} catch (PreesmException e) {
 				e.printStackTrace();
+				PreesmLogger.getLogger().log(Level.WARNING, "workflow aborted :"+ e.getMessage());
 				monitor.setCanceled(true);
 			}
 		} else {

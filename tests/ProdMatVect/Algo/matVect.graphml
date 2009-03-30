@@ -34,6 +34,7 @@
             <argument name="size" value="ysize"/>
          </data>
       </node>
+      <node id="broadcastVertex" kind="Broadcast"/>
       <edge source="matrixIn" sourceport="in" target="prodScalVect" targetport="vector1In">
          <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
@@ -46,17 +47,23 @@
          <data key="edge_cons">1</data>
          <data key="data_type">int</data>
       </edge>
-      <edge source="prodScalVect" sourceport="vectorOut" target="vectorOut" targetport="out">
+      <edge source="broadcastVertex" sourceport="out" target="vectorOut" targetport="out">
          <data key="edge_prod">ysize</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">ysize</data>
-         <data key="data_type">int</data>
+         <data key="data_type">char</data>
       </edge>
-      <edge source="prodScalVect" sourceport="accOut" target="prodScalVect" targetport="accIn">
+      <edge source="broadcastVertex" sourceport="out" target="prodScalVect" targetport="accIn">
          <data key="edge_prod">ysize</data>
          <data key="edge_delay">ysize</data>
          <data key="edge_cons">ysize</data>
-         <data key="data_type">int</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="prodScalVect" sourceport="vectorOut" target="broadcastVertex" targetport="in">
+         <data key="edge_prod">ysize</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">ysize</data>
+         <data key="data_type">char</data>
       </edge>
    </graph>
 </graphml>

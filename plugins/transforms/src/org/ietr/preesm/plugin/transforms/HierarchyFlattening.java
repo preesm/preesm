@@ -77,20 +77,23 @@ public class HierarchyFlattening implements IGraphTransformation {
 					+ algorithm.getName() + " at level " + depth);
 			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
 			VisitorOutput.setLogger(logger);
-			if (algorithm.validateModel()) {
-				try {
-					flatHier.flattenGraph(algorithm, depth);
-				} catch (SDF4JException e) {
-					e.printStackTrace();
-					throw (new PreesmException(e.getMessage()));
+			try {
+				if (algorithm.validateModel()) {
+					try {
+						flatHier.flattenGraph(algorithm, depth);
+					} catch (SDF4JException e) {
+						throw (new PreesmException(e.getMessage()));
+					}
+					logger.log(Level.FINER, "flattening complete");
+					TaskResult result = new TaskResult();
+					SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
+					result.setSDF(resultGraph);
+					return result;
+				} else {
+					throw (new PreesmException("Graph not valid, not schedulable"));
 				}
-				logger.log(Level.FINER, "flattening complete");
-				TaskResult result = new TaskResult();
-				SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
-				result.setSDF(resultGraph);
-				return result;
-			} else {
-				throw (new PreesmException("Graph not valid, not schedulable"));
+			} catch (SDF4JException e) {
+				throw(new PreesmException("invalid expression :"+e.getMessage() ));
 			}
 		} else {
 			logger.log(Level.SEVERE,

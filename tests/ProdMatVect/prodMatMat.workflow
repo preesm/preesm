@@ -39,7 +39,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
       <data key="variables">
-         <variable name="depth" value="2"/>
+         <variable name="depth" value="3"/>
       </data>
    </preesm:task>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="__algorithm"/>
@@ -51,4 +51,6 @@
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
    <preesm:dataTransfer from="Mapper" sourceport="ABC" targetport="ABC" to="DAG Plotter"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
+   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
 </preesm:workflow>

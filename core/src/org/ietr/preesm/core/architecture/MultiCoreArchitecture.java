@@ -151,7 +151,7 @@ public class MultiCoreArchitecture extends
 
 	@Override
 	public MultiCoreArchitecture clone() {
-		super.clone();
+		//super.clone();
 		
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);

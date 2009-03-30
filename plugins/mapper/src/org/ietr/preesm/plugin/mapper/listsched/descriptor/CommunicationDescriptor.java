@@ -39,6 +39,7 @@ import java.util.HashMap;
 
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.types.DAGEdgePropertyType;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 
 /**
  * CommunicationDescriptor describes a communication edge
@@ -881,7 +882,13 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	 * @return Communication weight
 	 */
 	public int getWeight() {
-		return edge.getWeight().intValue();
+		try {
+			return edge.getWeight().intValue();
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 1 ;
+		}
 	}
 
 	/**
@@ -940,7 +947,13 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		if (sw != null) {
 			communicationDuration = communicationDurations.get(sw.getName());
 		} else {
-			communicationDuration = edge.getWeight().intValue();
+			try {
+				communicationDuration = edge.getWeight().intValue();
+			} catch (InvalidExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				communicationDuration = 1 ;
+			}
 		}
 	}
 

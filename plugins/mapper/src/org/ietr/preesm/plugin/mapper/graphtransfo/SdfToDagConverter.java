@@ -69,6 +69,7 @@ import org.sdf4j.generator.SDFRandomGraph;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -84,8 +85,9 @@ public class SdfToDagConverter {
 
 	/**
 	 * Main for test
+	 * @throws SDF4JException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SDF4JException {
 		int nbVertex = 10, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
 
 		// Creates a random SDF graph
@@ -261,7 +263,14 @@ public class SdfToDagConverter {
 			for (AbstractEdge<SDFGraph, SDFAbstractVertex> aggMember : currentEdge
 					.getAggregate()) {
 				SDFEdge sdfAggMember = (SDFEdge) aggMember;
-				int prod = sdfAggMember.getProd().intValue();
+				int prod;
+				try {
+					prod = sdfAggMember.getProd().intValue();
+				} catch (InvalidExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					prod = 1 ;
+				}
 				int nbRepeat = currentEdge.getSource().getNbRepeat().intValue();
 				int typeSize = scenario.getSimulationManager()
 						.getDataTypeSizeOrDefault(

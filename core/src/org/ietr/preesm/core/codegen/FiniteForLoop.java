@@ -42,6 +42,7 @@ import java.util.Iterator;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -91,6 +92,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				parentBufferContainer = parentBufferContainer
 						.getParentContainer();
 			}
+			try{
 			if (parentBufferContainer != null && allocatedBuffers.get(edge) == null) {
 				if (edge.getProd().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
@@ -108,6 +110,9 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			if(edge.getDelay().intValue() > 0 && parentBufferContainer instanceof  AbstractCodeContainer){
 				
 			}
+			}catch(InvalidExpressionException e){
+				e.printStackTrace();
+			}
 		}
 		for (SDFEdge edge : this.correspondingVertex.getBase().incomingEdgesOf(
 				this.correspondingVertex)) {
@@ -117,6 +122,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				parentBufferContainer = parentBufferContainer
 						.getParentContainer();
 			}
+			try{
 			if (parentBufferContainer != null && allocatedBuffers.get(edge) == null) {
 				if (edge.getCons().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
@@ -131,6 +137,9 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
 				}
 
+			}
+			}catch(InvalidExpressionException e){
+				e.printStackTrace();
 			}
 		}
 		content = new CompoundCodeElement(this.correspondingVertex.getName(), this,
@@ -148,7 +157,13 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	}
 
 	public int getNbIteration() {
-		return correspondingVertex.getNbRepeat();
+		try {
+			return correspondingVertex.getNbRepeat();
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0 ;
+		}
 	}
 
 	public Buffer getBuffer(SDFEdge edge) {

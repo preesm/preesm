@@ -48,6 +48,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -64,6 +65,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -81,11 +83,12 @@ public class FASTTransformation extends AbstractMapping {
 
 	/**
 	 * Function called while running the plugin
+	 * @throws PreesmException 
 	 */
 	@Override
 	public TaskResult transform(SDFGraph algorithm,
 			MultiCoreArchitecture architecture, TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor) {
+			IScenario scenario, IProgressMonitor monitor) throws PreesmException {
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		FastAlgoParameters parameters;
@@ -128,8 +131,12 @@ public class FASTTransformation extends AbstractMapping {
 		TagDAG tagSDF = new TagDAG();
 
 		// The mapper dag properties are put in the property bean to be transfered to code generation
-		tagSDF.tag(dag, architecture, scenario, simu2, parameters
-				.getEdgeSchedType());
+		try {
+			tagSDF.tag(dag, architecture, scenario, simu2, parameters
+					.getEdgeSchedType());
+		} catch (InvalidExpressionException e) {
+			throw(new PreesmException(e.getMessage()));
+		}
 		
 		result.setDAG(dag);
 		simu2.resetTaskScheduler(TaskSchedType.Simple);

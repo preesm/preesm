@@ -29,10 +29,6 @@
             <data key="graph_desc"/>
         </node>
         <node id="accIn" kind="port" port_direction="Input"/>
-        <node id="accOut" kind="port" port_direction="Output"/>
-        <node id="copyData" kind="vertex">
-            <data key="graph_desc">../IDL/copyData.idl</data>
-        </node>
         <edge source="vector1In" sourceport="in" target="productScal" targetport="scal1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
@@ -52,23 +48,11 @@
             <data key="data_type">int</data>
         </edge>
         <edge source="productScal" sourceport="scalOut"
-            target="copyData" targetport="inData">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">int</data>
-        </edge>
-        <edge source="copyData" sourceport="outData1" target="accOut" targetport="out">
+            target="vectorOut" targetport="out">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
-            <data key="data_type">int</data>
-        </edge>
-        <edge source="copyData" sourceport="outData2" target="vectorOut" targetport="out">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">size</data>
-            <data key="data_type">int</data>
+            <data key="data_type">char</data>
         </edge>
     </graph>
 </graphml>
