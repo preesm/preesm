@@ -82,7 +82,7 @@ public class PFastAlgorithm extends Observable {
 	/**
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
-	private Map<String, Integer> bestTotalOrder = null;
+	private List<String> bestTotalOrder = null;
 	
 	/**
 	 * FinalTimeComparator : comparator between two different implementation
@@ -348,7 +348,7 @@ public class PFastAlgorithm extends Observable {
 		// step 2
 		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
 
-		bestTotalOrder = archisimu.getTotalOrder().toMap();
+		bestTotalOrder = archisimu.getTotalOrder().toList();
 		long iBest = (Long) archisimu.getFinalCost();
 		
 		long initiale = iBest;
@@ -449,7 +449,7 @@ public class PFastAlgorithm extends Observable {
 
 		}
 		
-		bestTotalOrder = (Map<String,Integer>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
+		bestTotalOrder = (List<String>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
 		
 		long finale = dagfinal.getScheduleLatency();
@@ -463,7 +463,7 @@ public class PFastAlgorithm extends Observable {
 		return dagfinal;
 	}
 
-	public Map<String, Integer> getBestTotalOrder() {
+	public List<String> getBestTotalOrder() {
 		return bestTotalOrder;
 	}
 }

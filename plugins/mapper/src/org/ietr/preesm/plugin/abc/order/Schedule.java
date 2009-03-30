@@ -36,8 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -124,12 +126,12 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 		return "{" + super.toString() + "}";
 	}
 
-	public Map<String,Integer> toMap() {
+	public List<String> toList() {
 		
-		Map<String,Integer> order = new HashMap<String,Integer>();
+		List<String> order = new ArrayList<String>();
 		
 		for(MapperDAGVertex v : this){
-			order.put(v.getName(), this.indexOf(v));
+			order.add(v.getName());
 		}
 		
 		return order;

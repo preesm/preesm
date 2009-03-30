@@ -25,7 +25,7 @@
          <variable name="maxStep" value="200"/>
          <variable name="nodesMin" value="5"/>
          <variable name="procNumber" value="1"/>
-         <variable name="simulatorType" value="ApproximatelyTimed"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">

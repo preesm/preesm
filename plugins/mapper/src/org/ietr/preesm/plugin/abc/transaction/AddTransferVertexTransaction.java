@@ -187,8 +187,6 @@ public class AddTransferVertexTransaction extends Transaction {
 			tVertex.getImplementationVertexProperty().setEffectiveComponent(
 					effectiveComponent);
 
-			edgeScheduler.schedule(tVertex, currentSource, currentTarget);
-
 			implementation.addVertex(tVertex);
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
@@ -209,6 +207,8 @@ public class AddTransferVertexTransaction extends Transaction {
 
 			if (scheduleVertex) {
 				// Scheduling transfer vertex
+				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
+				
 				PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
 						orderManager);
 				precEdgeAdder.scheduleVertex(implementation, tVertex);

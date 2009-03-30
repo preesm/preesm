@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl;
 
+import java.util.List;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -112,6 +114,13 @@ public class CommContenAbc extends AbstractAbc {
 	@Override
 	public void setDAG(MapperDAG dag) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Reschedule all the transfers generated during mapping
+	 */
+	public void rescheduleTransfers(List<MapperDAGVertex> orderlist){
 		
 	}
 }

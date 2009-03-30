@@ -150,7 +150,7 @@ public class ImplementationCleaner {
 	/**
 	 * Gets all transfers preceding vertex. Recursive function
 	 */
-	private static Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex) {
+	public static Set<DAGVertex> getPrecedingTransfers(MapperDAGVertex vertex) {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
@@ -170,7 +170,7 @@ public class ImplementationCleaner {
 	/**
 	 * Gets all transfers following vertex. Recursive function
 	 */
-	private static Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex) {
+	public static Set<DAGVertex> getFollowingTransfers(MapperDAGVertex vertex) {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 

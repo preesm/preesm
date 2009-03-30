@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -70,7 +71,7 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * Architecture simulators common features An architecture simulator calculates
+ * An architecture simulator calculates
  * costs for a given partial or total implementation
  * 
  * @author mpelcat
@@ -263,22 +264,22 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Reorders the implementation using the given total order
 	 */
-	public void reorder(Map<String, Integer> totalOrder) {
+	public void reorder(List<String> totalOrder) {
 
 		if (implementation != null && dag != null) {
 
-			for (String vName : totalOrder.keySet()) {
+			for (String vName : totalOrder) {
 				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
 						.getVertex(vName);
 				if (ImplVertex != null)
 					ImplVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.get(vName));
+							.setSchedTotalOrder(totalOrder.indexOf(vName));
 
 				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
 						.getVertex(vName);
 				if (dagVertex != null)
 					dagVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.get(vName));
+							.setSchedTotalOrder(totalOrder.indexOf(vName));
 
 			}
 
@@ -604,6 +605,9 @@ public abstract class AbstractAbc implements IAbc {
 		return abcType;
 	}
 
+	/**
+	 * Prepares task rescheduling
+	 */
 	public void resetTaskScheduler(TaskSchedType taskSchedType){
 
 		taskScheduler = AbstractTaskSched.getInstance(taskSchedType, orderManager);

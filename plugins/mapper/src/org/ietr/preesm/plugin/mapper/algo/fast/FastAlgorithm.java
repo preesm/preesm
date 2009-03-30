@@ -87,7 +87,7 @@ public class FastAlgorithm extends Observable {
 	/**
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
-	private Map<String, Integer> bestTotalOrder = null;
+	private List<String> bestTotalOrder = null;
 
 	private InitialLists initialLists = null;
 	private IScenario scenario = null;
@@ -149,7 +149,9 @@ public class FastAlgorithm extends Observable {
 		// Variables
 		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
 				dag, archi, scenario);
-		// A topological task scheduler is chosen for the list scheduling
+		// A topological task scheduler is chosen for the list scheduling.
+		// It schedules the tasks in topological order and, if they are on
+		// the same level, in alphabetical name order
 		simulator.resetTaskScheduler(TaskSchedType.Topological);
 
 		ListScheduler listscheduler = new ListScheduler();
@@ -184,7 +186,7 @@ public class FastAlgorithm extends Observable {
 		// display initial time after the list scheduling
 		long initial = simulator.getFinalCost();
 
-		bestTotalOrder = simulator.getTotalOrder().toMap();
+		bestTotalOrder = simulator.getTotalOrder().toList();
 		if (displaySolutions) {
 			GanttEditor.createEditor(simulator, getBestTotalOrder(),
 					"List Solution: " + initial);
@@ -289,7 +291,7 @@ public class FastAlgorithm extends Observable {
 
 				bestSL = simulator.getFinalCost();
 
-				bestTotalOrder = simulator.getTotalOrder().toMap();
+				bestTotalOrder = simulator.getTotalOrder().toList();
 				if (displaySolutions) {
 					GanttEditor.createEditor(simulator, getBestTotalOrder(),
 							"FAST solution: " + bestSL);
@@ -334,7 +336,7 @@ public class FastAlgorithm extends Observable {
 		return dagfinal;
 	}
 
-	public Map<String, Integer> getBestTotalOrder() {
+	public List<String> getBestTotalOrder() {
 		return bestTotalOrder;
 	}
 

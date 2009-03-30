@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.List;
 import java.util.Map;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -116,7 +117,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Reorders the implementation using the given total order
 	 */
-	public void reorder(Map<String,Integer> totalOrder);
+	public void reorder(List<String> totalOrder);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation
@@ -180,7 +181,12 @@ public interface IAbc extends IMapperAbc {
 	public EdgeSchedType getEdgeSchedType();
 
 	/**
-	 * Sets the task sceduler of the current ABC
+	 * Sets the task scheduler of the current ABC
 	 */
 	public void resetTaskScheduler(TaskSchedType taskSchedType);
+
+	/**
+	 * Reschedule all the transfers generated during mapping
+	 */
+	public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
 }

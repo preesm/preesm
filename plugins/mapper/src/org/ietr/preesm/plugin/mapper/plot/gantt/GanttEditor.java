@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -125,7 +126,7 @@ public class GanttEditor extends EditorPart {
 		
 	}
 
-	public static void createEditor(IAbc abc, Map<String, Integer> bestTotalOrder, String name) {
+	public static void createEditor(IAbc abc, List<String> bestTotalOrder, String name) {
 		
 		MapperDAG dag = abc.getDAG().clone();
 		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), dag, abc.getArchitecture(), abc.getScenario());

@@ -40,10 +40,7 @@ import java.util.List;
 
 
 /**
- * Transactions are used to modify a graph with the possibility to withdraw
- * actions at any time. They may be complex because the undo process must 
- * work in any order. Local transactions are sometimes used, not for their
- * undoing capabilities but because these actions can be created and stored
+ * Transactions are used because these actions can be created and stored
  * while going through a graph and then executed altogether afterwards in the
  * right order.
  * 
