@@ -94,6 +94,11 @@ public abstract class AbstractRouteStep {
 	 */
 	public abstract long getTransferCost(long transfersSize);
 
+	/**
+	 * Returns the longest time a contention node needs to transfer the data
+	 */
+	public abstract long getWorstTransferTime(long transfersSize);
+
 	@Override
 	protected abstract Object clone() throws CloneNotSupportedException;
 	

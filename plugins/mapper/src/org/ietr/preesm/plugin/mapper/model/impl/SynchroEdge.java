@@ -34,67 +34,44 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.architecture.route;
+package org.ietr.preesm.plugin.mapper.model.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Route step where the sender uses a dma to send data in
- * parallel with its processing
+ * A synchro edge is equivalent to a precedence edge but can be inter-component
+ * in the Gantt chart
  * 
  * @author mpelcat
  */
-public class DmaRouteStep extends NodeRouteStep {
-
-	private Dma dma;
-
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	public static final String type = "DmaRouteStep";
-	
-	public DmaRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Dma dma) {
-		super(sender,nodes, receiver);		
-		this.dma = dma;
-	}
-
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	@Override
-	public String getType() {
-		return type;
-	}
-	
-	public Dma getDma() {
-		return dma;
-	}
-
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize
-	 */
-	@Override
-	public long getTransferCost(long transfersSize) {
-		return getContentionNodes().size();
-	}
+public class SynchroEdge extends MapperDAGEdge {
 
 	@Override
 	public String toString() {
-		String trace = super.toString();
-		trace = trace.substring(0,trace.length()-1);
-		trace += "[" + dma + "]}";
-		return trace;
+
+		String sourceName = "null", destName = "null";
+
+		if (getSource() != null)
+			sourceName = getSource().getName();
+		if (getSource() != null)
+			destName = getTarget().getName();
+
+		return "synchro(" + sourceName + "," + destName + ")";
 	}
-	
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		Dma newDma = (Dma)dma.clone();
-		newDma.setDefinition(dma.getDefinition());
-		return new DmaRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newDma);
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public SynchroEdge() {
+		this(null, null);
+	}
+
+	public SynchroEdge(MapperDAGVertex source, MapperDAGVertex destination) {
+		super(source, destination);
+
+		getTimingEdgeProperty().setCost(0);
 	}
 }

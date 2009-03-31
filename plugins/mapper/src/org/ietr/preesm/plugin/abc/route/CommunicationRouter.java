@@ -81,7 +81,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	public static final int transferType = 0;
 	public static final int overheadType = 1;
-	public static final int sendReceive = 2;
+	public static final int sendReceiveType = 2;
+	public static final int synchroType = 3;
 
 	private RouteCalculator calculator = null;
 

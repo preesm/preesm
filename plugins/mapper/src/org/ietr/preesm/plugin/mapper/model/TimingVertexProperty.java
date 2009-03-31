@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * Property added to a DAG vertex to give its timing properties
@@ -62,6 +65,11 @@ public class TimingVertexProperty {
 	 * time to execute the vertex
 	 */
 	private long cost;
+
+	/**
+	 * time to execute the vertex
+	 */
+	private List<MapperDAGVertex> synchronizedVertices = null;
 
 	public TimingVertexProperty() {
 		super();
@@ -131,4 +139,14 @@ public class TimingVertexProperty {
 	public void resetCost() {
 		setCost(UNAVAILABLE);
 	}
+
+	public List<MapperDAGVertex> getSynchronizedVertices() {
+		return synchronizedVertices;
+	}
+
+	public void setSynchronizedVertices(List<MapperDAGVertex> synchronizedVertices) {
+		this.synchronizedVertices = synchronizedVertices;
+	}
+	
+	
 }

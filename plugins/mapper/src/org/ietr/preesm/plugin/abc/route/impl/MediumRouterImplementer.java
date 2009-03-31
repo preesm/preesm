@@ -58,10 +58,11 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 						.getInitialEdgeProperty().getDataSize());
 
 				if (transferTime > 0) {
+					int nodeIndex = 0;// a medium route step has only one node with index 0
 					Transaction transaction = new AddTransferVertexTransaction(
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
-							routeStepIndex, 0, routeStep, transferTime, medium,
+							routeStepIndex, nodeIndex, routeStep, transferTime, medium,
 							true);
 					transactions.add(transaction);
 					return transaction;
@@ -101,7 +102,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");
 				}
-			} else if (type == CommunicationRouter.sendReceive) {
+			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(
 						lastTransaction, edge, getImplementation(),

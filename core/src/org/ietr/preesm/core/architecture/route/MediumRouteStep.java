@@ -121,6 +121,11 @@ public class MediumRouteStep extends AbstractRouteStep {
 	protected Object clone() throws CloneNotSupportedException {
 		return new MediumRouteStep((Operator)getSender().clone(),(Medium)medium.clone(),(Operator)getReceiver().clone());
 	}
+
+	@Override
+	public long getWorstTransferTime(long transfersSize) {
+		return getTransferCost(transfersSize);
+	}
 	
 	
 }

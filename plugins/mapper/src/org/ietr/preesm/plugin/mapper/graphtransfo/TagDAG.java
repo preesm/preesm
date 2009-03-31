@@ -126,7 +126,7 @@ public class TagDAG {
 		CommunicationRouter comRouter = new CommunicationRouter(architecture,
 				scenario, dag, AbstractEdgeSched.getInstance(
 						EdgeSchedType.Simple, orderMgr), orderMgr);
-		comRouter.routeAll(dag, CommunicationRouter.sendReceive);
+		comRouter.routeAll(dag, CommunicationRouter.sendReceiveType);
 		orderMgr.tagDAG(dag);
 	}
 

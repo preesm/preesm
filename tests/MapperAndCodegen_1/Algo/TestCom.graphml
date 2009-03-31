@@ -61,6 +61,11 @@
          <data key="name">ParallelTest3</data>
          <data key="arguments"/>
       </node>
+      <node id="Sensor2" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">Sensor2</data>
+         <data key="arguments"/>
+      </node>
       <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
          <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
@@ -70,11 +75,11 @@
       <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
          <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size</data>
+         <data key="edge_cons">size/10</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
-         <data key="edge_prod">size</data>
+         <data key="edge_prod">size/10</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">size</data>
          <data key="data_type">char</data>
@@ -113,6 +118,12 @@
          <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">size</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="Sensor2" sourceport="o1" target="ParallelTest" targetport="i2">
+         <data key="edge_prod">1500</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1500</data>
          <data key="data_type">char</data>
       </edge>
    </graph>

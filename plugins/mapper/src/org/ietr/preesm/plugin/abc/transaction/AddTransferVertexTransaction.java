@@ -70,12 +70,12 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Scheduling the transfer vertices on the media
 	 */
-	protected IEdgeSched edgeScheduler = null;
+	private IEdgeSched edgeScheduler = null;
 
 	/**
 	 * Vertices order manager
 	 */
-	protected SchedOrderManager orderManager;
+	private SchedOrderManager orderManager;
 
 	/**
 	 * Implementation DAG to which the vertex is added
@@ -85,12 +85,12 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Route step corresponding to this transfer
 	 */
-	AbstractRouteStep step = null;
+	private AbstractRouteStep step = null;
 
 	/**
 	 * time of this transfer
 	 */
-	long transferTime = 0;
+	private long transferTime = 0;
 
 	/**
 	 * Component corresponding to this transfer vertex
@@ -104,12 +104,9 @@ public class AddTransferVertexTransaction extends Transaction {
 
 	/**
 	 * Index of the route step within its route
+	 * and of the node within its route step
 	 */
 	private int routeIndex = 0;
-
-	/**
-	 * Index of the node its route step
-	 */
 	private int nodeIndex = 0;
 
 	// Generated objects
@@ -129,10 +126,22 @@ public class AddTransferVertexTransaction extends Transaction {
 	private MapperDAGEdge newInEdge = null;
 	private MapperDAGEdge newOutEdge = null;
 
+	/**
+	 * Vertex preceding the transfer. It can be the transfer source or an overhead
+	 * or a preceding transfer
+	 */
+	private MapperDAGVertex currentSource = null;
+
+	/**
+	 * Vertex following the transfer. At the time we add the transfer, can be only the
+	 * transfer receiver.
+	 */
+	private MapperDAGVertex currentTarget = null;
+
 	public AddTransferVertexTransaction(Transaction precedingTransaction,
 			IEdgeSched edgeScheduler, MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
-			int routeIndex, int nodeIndex, AbstractRouteStep step, long transferTime,
+			int routeIndex,int nodeIndex, AbstractRouteStep step, long transferTime,
 			ArchitectureComponent effectiveComponent, boolean scheduleVertex) {
 		super();
 		this.precedingTransaction = precedingTransaction;
@@ -144,23 +153,26 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.orderManager = orderManager;
 		this.scheduleVertex = scheduleVertex;
 		this.routeIndex = routeIndex;
-		this.transferTime = transferTime;
 		this.nodeIndex = nodeIndex;
-		
+		this.transferTime = transferTime;
+
 	}
 
 	@Override
 	public void execute(List<Object> resultList) {
 		super.execute(resultList);
-
-		MapperDAGVertex currentSource = null;
+		
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
-		if (precedingTransaction != null
-				&& precedingTransaction instanceof AddTransferVertexTransaction) {
-			currentSource = ((AddTransferVertexTransaction) precedingTransaction).tVertex;
-			currentSource.getBase()
-					.removeAllEdges(currentSource, currentTarget);
+		// Linking with previous transaction consists in chaining the new transfers with 
+		// the ones from previous transaction
+		if (precedingTransaction != null) {
+			if (precedingTransaction instanceof AddTransferVertexTransaction) {
+				currentSource = ((AddTransferVertexTransaction) precedingTransaction)
+						.getTransfer();
+				currentSource.getBase().removeAllEdges(currentSource,
+						currentTarget);
+			}
 		} else {
 			currentSource = (MapperDAGVertex) edge.getSource();
 		}
@@ -204,7 +216,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 			newInEdge.setAggregate(edge.getAggregate());
 			newOutEdge.setAggregate(edge.getAggregate());
-
+			
 			if (scheduleVertex) {
 				// Scheduling transfer vertex
 				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
@@ -213,8 +225,8 @@ public class AddTransferVertexTransaction extends Transaction {
 						orderManager);
 				precEdgeAdder.scheduleVertex(implementation, tVertex);
 			}
-			
-			if(resultList != null){
+
+			if (resultList != null) {
 				resultList.add(tVertex);
 			}
 		}
@@ -224,5 +236,16 @@ public class AddTransferVertexTransaction extends Transaction {
 	public String toString() {
 		return ("AddTransfer(" + tVertex.toString() + ")");
 	}
-
+	
+	public TransferVertex getTransfer(){
+		return tVertex;
+	}
+	
+	public MapperDAGVertex getSource(){
+		return currentSource;
+	}
+	
+	public MapperDAGVertex getTarget(){
+		return currentTarget;
+	}
 }

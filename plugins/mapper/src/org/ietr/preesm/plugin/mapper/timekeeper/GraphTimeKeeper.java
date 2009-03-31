@@ -58,6 +58,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
 import org.jgrapht.DirectedGraph;
@@ -148,8 +149,6 @@ public class GraphTimeKeeper {
 
 		it = implementation.vertexSet().iterator();
 
-		// We iterate the dag tree in topological order to calculate t-level
-
 		while (it.hasNext()) {
 			currentvertex = (MapperDAGVertex) it.next();
 
@@ -188,8 +187,29 @@ public class GraphTimeKeeper {
 				currenttimingproperty.setTlevel(0);
 			} else {
 				// The T level is the time of the longest preceding path
-				currenttimingproperty.setTlevel(getLongestPrecedingPath(
-						predset, modifiedvertex));
+				long l = getLongestPrecedingPath(
+						predset, modifiedvertex);
+				currenttimingproperty.setTlevel(l);
+			}
+
+			dirtyVertices.remove(modifiedvertex);
+			
+			if(modifiedvertex.getTimingVertexProperty().getSynchronizedVertices() != null){
+				List<MapperDAGVertex> synchronizedVertices = modifiedvertex.getTimingVertexProperty().getSynchronizedVertices();
+				if(!synchronizedVertices.isEmpty()){
+					long maxTLevel = -1;
+					for(MapperDAGVertex v : synchronizedVertices){
+						if(!v.getTimingVertexProperty().hasTlevel()){
+							calculateTLevel(v);
+						}
+						long tLevel = v.getTimingVertexProperty().getTlevel();
+						maxTLevel = Math.max(maxTLevel, tLevel);
+					}
+					
+					for(MapperDAGVertex v : synchronizedVertices){
+						v.getTimingVertexProperty().setTlevel(maxTLevel);
+					}
+				}
 			}
 
 		} else {
@@ -200,8 +220,6 @@ public class GraphTimeKeeper {
 							+ ". No effective component.");
 			currenttimingproperty.setTlevel(TimingVertexProperty.UNAVAILABLE);
 		}
-
-		dirtyVertices.remove(modifiedvertex);
 	}
 
 	/**

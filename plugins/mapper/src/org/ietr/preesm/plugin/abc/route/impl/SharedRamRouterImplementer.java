@@ -52,7 +52,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 			RamRouteStep ramRouteStep = (RamRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
 			} else if (type == CommunicationRouter.overheadType) {
-			} else if (type == CommunicationRouter.sendReceive) {
+			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(
 						lastTransaction, edge, getImplementation(),

@@ -42,6 +42,8 @@ import java.util.List;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 
 /**
  * Represents a single step in a route between two operators separated by
@@ -94,12 +96,37 @@ public class NodeRouteStep extends AbstractRouteStep {
 		return id;
 	}
 
+	public List<ContentionNode> getContentionNodes() {
+		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
+		for(AbstractNode node : nodes){
+			if(node instanceof ContentionNode){
+				contentionNodes.add((ContentionNode)node);
+			}
+		}
+		return contentionNodes;
+	}
+	
 	public List<AbstractNode> getNodes() {
 		return nodes;
 	}
 
 	/**
-	 * Evaluates the cost of a data transfer with size transferSize
+	 * Returns the longest time a contention node needs to transfer the data
+	 */
+	@Override
+	public long getWorstTransferTime(long transfersSize) {
+		long time = 0;
+		
+		for(ContentionNode node: getContentionNodes()){
+			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
+			time = Math.max(time,def.getTransferTime(transfersSize));
+		}
+		return time;
+	}
+
+	/**
+	 * Evaluates the cost of a data transfer with size transferSize.
+	 * Can include overheads, additional cost...
 	 */
 	@Override
 	public long getTransferCost(long transfersSize) {

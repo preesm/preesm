@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
+        <architecture url="/MapperAndCodegen_1/Archi/4C64.design"/>
+        <timingfile url=""/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="ParallelTest3"/>
+            <task name="ParallelTest2"/>
+            <task name="Copy"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_4"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_5"/>
+            <task name="Sensor2"/>
+            <task name="Actuator"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Sensor"/>
+            <task name="Copy"/>
+        </constraintGroup>
+    </constraints>
+    <timings/>
+    <simuParams>
+        <mainCore/>
+        <mainMedium/>
+        <averageDataSize>1021</averageDataSize>
+        <dataTypes/>
+    </simuParams>
+</scenario>

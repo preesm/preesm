@@ -72,6 +72,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 		types = new ArrayList<Integer>();
 		types.add(CommunicationRouter.transferType);
+		types.add(CommunicationRouter.synchroType);
 	}
 
 	/**

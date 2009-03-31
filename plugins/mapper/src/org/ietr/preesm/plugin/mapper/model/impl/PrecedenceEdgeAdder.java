@@ -216,7 +216,6 @@ public class PrecedenceEdgeAdder {
 		}
 		
 		if(prevAndNewLinked && newAndNextLinked){
-			//TODO: Understand why this does not work
 			removePrecedenceEdge(implementation, prev, next);
 		}
 	}

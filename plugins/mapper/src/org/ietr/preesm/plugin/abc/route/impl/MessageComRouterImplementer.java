@@ -49,7 +49,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 
 			} else if (type == CommunicationRouter.overheadType) {
 
-			} else if (type == CommunicationRouter.sendReceive) {
+			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(
 						lastTransaction, edge, getImplementation(),
