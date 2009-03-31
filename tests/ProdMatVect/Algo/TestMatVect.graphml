@@ -22,7 +22,6 @@
       <data key="parameters"/>
       <data key="variables">
          <variable name="size" value="3"/>
-         <variable name="ysize" value="3"/>
       </data>
       <node id="outputMatrix" kind="vertex">
          <data key="graph_desc">../IDL/generateMatrix.idl</data>
