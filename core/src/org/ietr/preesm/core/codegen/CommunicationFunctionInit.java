@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
  * Function initializing a point to point communication system
@@ -50,24 +51,24 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 	private String connectedCoreId;
 
 	/**
-	 * ID of the medium used to connect to the core
+	 * Route step
 	 */
-	private String mediumDef;
+	private AbstractRouteStep step;
 
 	public CommunicationFunctionInit(String name,
 			AbstractBufferContainer parentContainer, String connectedCoreId,
-			String mediumDef) {
+			AbstractRouteStep rs) {
 		super(name, parentContainer, null);
 		this.connectedCoreId = connectedCoreId;
-		this.mediumDef = mediumDef;
+		this.step = rs;
 	}
 
 	public String getConnectedCoreId() {
 		return connectedCoreId;
 	}
 
-	public String getMediumDef() {
-		return mediumDef;
+	public AbstractRouteStep getRouteStep() {
+		return step;
 	}
 	
 	

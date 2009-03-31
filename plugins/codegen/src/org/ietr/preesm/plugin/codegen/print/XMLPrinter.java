@@ -79,6 +79,12 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.DmaRouteStep;
+import org.ietr.preesm.core.architecture.route.NodeRouteStep;
+import org.ietr.preesm.core.architecture.route.RamRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 
 /**
  * Visitor that generates XML code from source files. This code will be transformed
@@ -448,21 +454,60 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(init);
 			
 			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
-			init.setAttribute("mediumDef", domElt.getMediumDef());
+			appendRouteStep(init, domElt.getRouteStep());
 			currentLocation = init;
 		} 
 		
 		return currentLocation;
 	}
 
+	private void appendRouteStep(Element comFct, AbstractRouteStep step){
+		
+		Element routeStep = dom.createElement("routeStep");
+		comFct.appendChild(routeStep);
+		if(step.getType() == MediumRouteStep.type){
+			MediumRouteStep mStep = (MediumRouteStep)step;
+			routeStep.setAttribute("type", "med");
+			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getId());
+		}
+		else if(step.getType() == DmaRouteStep.type){
+			routeStep.setAttribute("type", "dma");
+			DmaRouteStep dStep = (DmaRouteStep)step;
+			routeStep.setAttribute("dmaDef", dStep.getDma().getDefinition().getId());
+			
+			for(AbstractNode node : dStep.getNodes()){
+				Element eNode = dom.createElement("node");
+				eNode.setAttribute("name", node.getName());
+				eNode.setAttribute("def", node.getDefinition().getId());
+				routeStep.appendChild(eNode);
+			}
+		}
+		else if(step.getType() == NodeRouteStep.type){
+			routeStep.setAttribute("type", "msg");
+			NodeRouteStep nStep = (NodeRouteStep)step;
+			
+			for(AbstractNode node : nStep.getNodes()){
+				Element eNode = dom.createElement("node");
+				eNode.setAttribute("name", node.getName());
+				eNode.setAttribute("def", node.getDefinition().getId());
+				routeStep.appendChild(eNode);
+			}	
+		}
+		else if(step.getType() == RamRouteStep.type){
+			routeStep.setAttribute("type", "ram");
+			RamRouteStep rStep = (RamRouteStep)step;
+			routeStep.setAttribute("ramDef", rStep.getRam().getDefinition().getId());
+		}
+	}
+	
 	@Override
 	public Object visit(Send domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("send");
 			((Element)currentLocation).appendChild(send);
+			appendRouteStep(send,domElt.getRouteStep());
 			
-			send.setAttribute("mediumDef", domElt.getRouteStep().getId());
 			send.setAttribute("target", domElt.getTarget().getName());
 			currentLocation = send;
 		} 
@@ -477,8 +522,8 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receive");
 			((Element)currentLocation).appendChild(receive);
+			appendRouteStep(receive,domElt.getRouteStep());
 			
-			receive.setAttribute("mediumDef", domElt.getRouteStep().getId());
 			receive.setAttribute("source", domElt.getSource().getName());
 			currentLocation = receive;
 		} 

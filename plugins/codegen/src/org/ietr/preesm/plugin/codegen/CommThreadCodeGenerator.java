@@ -36,11 +36,14 @@ knowledge of the CeCILL-B license and that you accept its terms.
  
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
@@ -49,9 +52,11 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
+import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
+import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -148,8 +153,7 @@ public class CommThreadCodeGenerator {
 	 */
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices) {
 		for (SDFAbstractVertex vertex : vertices) {
-			List<CommunicationFunctionCall> coms = CommunicationFunctionCall
-					.createCalls(thread, vertex);
+			List<CommunicationFunctionCall> coms = createCalls(thread, vertex);
 			if (!coms.isEmpty()) {
 				for(CommunicationFunctionCall call : coms){
 					thread.getLoopCode().addCodeElement(call);
@@ -159,5 +163,72 @@ public class CommThreadCodeGenerator {
 				PreesmLogger.getLogger().log(Level.SEVERE,"problem creating a send or receive function call: " + vertex.getName());
 			}
 		}
+	}
+
+	/**
+	 * creates a send or a receive depending on the vertex type
+	 */
+	public List<CommunicationFunctionCall> createCalls(
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
+
+		List<CommunicationFunctionCall> calls = new ArrayList<CommunicationFunctionCall>();
+
+		// retrieving the vertex type
+		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
+				ImplementationPropertyNames.Vertex_vertexType);
+
+		AbstractRouteStep rs = (AbstractRouteStep) vertex.getPropertyBean().getValue(
+				ImplementationPropertyNames.SendReceive_routeStep);
+
+		Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
+		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
+
+		if (type != null && rs != null) {
+			if (type.isSend()) {
+
+				List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
+
+				// The target is the operator on which the corresponding receive
+				// operation is mapped
+				SDFAbstractVertex receive = ((SDFEdge) outEdges.toArray()[0]).getTarget();
+				Operator target = (Operator) receive.getPropertyBean()
+						.getValue(ImplementationPropertyNames.Vertex_Operator);
+				
+				// Case of one send for multiple buffers
+				//calls.add(new Send(parentContainer, vertex, bufferSet, medium,
+				//		target));
+
+				// Case of one send per buffer
+				for(Buffer buf : bufferSet){
+					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+					singleBufferSet.add(buf);
+					calls.add(new Send(parentContainer, vertex, singleBufferSet, rs,
+							target));
+				}
+				
+			} else if (type.isReceive()) {
+				List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
+
+				// The source is the operator on which the corresponding send
+				// operation is allocated
+				SDFAbstractVertex send = ((SDFEdge) inEdges.toArray()[0]).getSource();
+				Operator source = (Operator) send.getPropertyBean().getValue(
+						ImplementationPropertyNames.Vertex_Operator);
+				
+				// Case of one receive for multiple buffers
+				//calls.add(new Receive(parentContainer, vertex, bufferSet, medium,
+				//		source));
+
+				// Case of one receive per buffer
+				for(Buffer buf : bufferSet){
+					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+					singleBufferSet.add(buf);
+					calls.add(new Receive(parentContainer, vertex, singleBufferSet, rs,
+							source));
+				}
+			}
+		}
+
+		return calls;
 	}
 }

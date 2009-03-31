@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
@@ -47,9 +48,9 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 public class SendInit extends CommunicationFunctionInit {
 
 	public SendInit(AbstractBufferContainer parentContainer, String connectedCoreId,
-			String mediumId) {
+			AbstractRouteStep rs) {
 		super("sendInit", parentContainer, connectedCoreId,
-				mediumId);
+				rs);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

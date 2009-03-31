@@ -133,14 +133,14 @@
     
     <xsl:template match="sourceCode:send">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sendData(',@mediumDef,',',$coreName,',',@target,',')"/>
+        <xsl:value-of select="concat($curIndent,'sendData(',sourceCode:routeStep/@mediumDef,',',$coreName,',',@target,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receive">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'receiveData(',@mediumDef,',',@source,',',$coreName,',')"/>
+        <xsl:value-of select="concat($curIndent,'receiveData(',sourceCode:routeStep/@mediumDef,',',@source,',',$coreName,',')"/>
         <!-- adding buffer -->
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
@@ -153,13 +153,13 @@
     
     <xsl:template match="sourceCode:sendInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_SEND,',@mediumDef,',',$coreName,',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_SEND,',sourceCode:routeStep/@mediumDef,',',$coreName,',',@connectedCoreId)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:receiveInit">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_RCV,',@mediumDef,',',@connectedCoreId,',',$coreName)"/>       
+        <xsl:value-of select="concat($curIndent,'Com_Init(MEDIUM_RCV,',sourceCode:routeStep/@mediumDef,',',@connectedCoreId,',',$coreName)"/>       
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     

@@ -21,7 +21,6 @@
       <data key="name"/>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="comment" value="&quot;this is a test&quot;"/>
          <variable name="size" value="1000"/>
       </data>
       <node id="Sensor" kind="vertex">
@@ -62,7 +61,7 @@
          <data key="arguments"/>
       </node>
       <node id="Sensor2" kind="vertex">
-         <data key="graph_desc"/>
+         <data key="graph_desc">../Code/IDL/Sensor2.idl</data>
          <data key="name">Sensor2</data>
          <data key="arguments"/>
       </node>
@@ -75,11 +74,11 @@
       <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
          <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">size/10</data>
+         <data key="edge_cons">size</data>
          <data key="data_type">char</data>
       </edge>
       <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
-         <data key="edge_prod">size/10</data>
+         <data key="edge_prod">size</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">size</data>
          <data key="data_type">char</data>

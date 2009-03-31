@@ -206,18 +206,28 @@ public class SourceFileCodeGenerator {
 			CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
 					file);
 			file.addThread(communicationThread);
+			
+			// Launching the communication thread in the computation thread
+			LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
+					communicationThread.getName(), 8000, 1);
+			computationThread.getBeginningCode().addCodeElementFirst(launchThread);
 
 			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
 					communicationThread);
 			commCodeGen.addSendsAndReceives(ownCommunicationVertices);
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
 
+			// Calls the semaphore initialization function and launch com thread
+			// at the beginning of computation thread
+			initialization(communicationThread);
+
 			// Allocates the semaphores globally
 			Buffer semBuf = file.getSemaphoreContainer().allocateSemaphores();
 
-			// Calls the semaphore initialization function and launch com thread
-			// at the beginning of computation thread
-			initialization(computationThread, communicationThread, semBuf);
+			// Initializing the semaphores
+			SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
+					semBuf);
+			computationThread.getBeginningCode().addCodeElementFirst(semInit);
 		}
 	}
 
@@ -225,18 +235,8 @@ public class SourceFileCodeGenerator {
 	 * Calls the initialization functions at the beginning of computation and
 	 * communication thread executions
 	 */
-	public void initialization(ComputationThreadDeclaration computationThread,
-			CommunicationThreadDeclaration communicationThread, Buffer semBuf) {
-
-		// Launching the communication thread in the computation thread
-		LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
-				communicationThread.getName(), 8000, 1);
-		computationThread.getBeginningCode().addCodeElementFirst(launchThread);
-
-		// Initializing the semaphores
-		SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
-				semBuf);
-		computationThread.getBeginningCode().addCodeElementFirst(semInit);
+	public void initialization(
+			CommunicationThreadDeclaration communicationThread) {
 
 		// Initializing the Send and Receive channels only for the channels
 		// really used and only once per channel
@@ -253,14 +253,14 @@ public class SourceFileCodeGenerator {
 				Send send = (Send) elt;
 
 				init = new SendInit(file.getGlobalContainer(), send.getTarget()
-						.getName(), send.getRouteStep().getId());
+						.getName(), send.getRouteStep());
 				wait = new WaitForCore(file.getGlobalContainer(), send
 						.getTarget().getName());
 			} else if (elt instanceof Receive) {
 				Receive receive = (Receive) elt;
 
 				init = new ReceiveInit(file.getGlobalContainer(), receive
-						.getSource().getName(), receive.getRouteStep().getId());
+						.getSource().getName(), receive.getRouteStep());
 				wait = new WaitForCore(file.getGlobalContainer(), receive
 						.getSource().getName());
 			}
@@ -270,7 +270,7 @@ public class SourceFileCodeGenerator {
 				for (CommunicationFunctionInit oldInit : alreadyInits) {
 					if (oldInit.getConnectedCoreId().equals(
 							init.getConnectedCoreId())
-							&& oldInit.getMediumDef().equals(init.getMediumDef())) {
+							&& oldInit.getRouteStep().equals(init.getRouteStep())) {
 						// core wait has already been done
 						wait = null;
 

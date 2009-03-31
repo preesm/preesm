@@ -18,7 +18,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
       <data key="variables">
-         <variable name="displaySolutions" value="true"/>
+         <variable name="displaySolutions" value="false"/>
          <variable name="edgeSchedType" value="Switcher"/>
          <variable name="margIn" value="100"/>
          <variable name="maxCount" value="200"/>

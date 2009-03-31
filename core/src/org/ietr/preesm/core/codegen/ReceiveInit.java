@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
  * Initializing a point to point communication channel to receive data
@@ -47,9 +48,9 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 public class ReceiveInit extends CommunicationFunctionInit {
 
 	public ReceiveInit(AbstractBufferContainer parentContainer, String connectedCoreId,
-			String mediumId) {
+			AbstractRouteStep rs) {
 		super("receiveInit", parentContainer, connectedCoreId,
-				mediumId);
+				rs);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

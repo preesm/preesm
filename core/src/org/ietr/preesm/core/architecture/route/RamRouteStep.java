@@ -71,7 +71,7 @@ public class RamRouteStep extends NodeRouteStep {
 		return type;
 	}
 	
-	private Ram getRam() {
+	public Ram getRam() {
 		return ram;
 	}
 

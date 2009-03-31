@@ -11,40 +11,41 @@
             <operator name="Core6"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core4"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="ParallelTest"/>
-            <task name="Copy"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <task name="ParallelTest"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core3"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="Sensor"/>
+            <operator name="Core1"/>
+            <task name="Copy"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
             <task name="Gen_int"/>
             <task name="Actuator"/>
+            <task name="Copy"/>
+            <task name="ParallelTest"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Gen_int"/>
+            <task name="Actuator"/>
+            <task name="Sensor"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
             <task name="ParallelTest3"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core5"/>
+            <operator name="Core4"/>
         </constraintGroup>
     </constraints>
     <timings>
@@ -58,6 +59,7 @@
     <simuParams>
         <mainCore>Core1</mainCore>
         <mainMedium>Shared_Ram</mainMedium>
+        <averageDataSize>1000</averageDataSize>
         <dataTypes/>
     </simuParams>
 </scenario>
