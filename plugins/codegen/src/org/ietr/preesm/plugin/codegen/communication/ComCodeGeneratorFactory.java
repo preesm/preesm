@@ -45,7 +45,8 @@ public class ComCodeGeneratorFactory {
 		IComCodeGenerator generator = null;
 		
 		if(step.getType() == MediumRouteStep.type){
-			generator = new MediumComCodeGenerator(thread);
+			generator = new MessageComCodeGenerator(thread);
+			PreesmLogger.getLogger().log(Level.INFO,"A route step with type medium correspond to a message passing code generation: " + step);
 		}else if(step.getType() == DmaRouteStep.type){
 			generator = new DmaComCodeGenerator(thread);
 		}else if(step.getType() == MessageRouteStep.type){
