@@ -34,35 +34,91 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.semaphore;
+
+import java.util.List;
+
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
- * A semaphore can be the signal of a full buffer or the signal of an empty
- * buffer.
+ * Class representing a semaphore in the code. A semaphore protects a buffer
+ * from being read while empty or written while full.
  * 
  * @author mpelcat
  */
-public enum SemaphoreType {
+public class Semaphore {
 
 	/**
-	 * the signal of an empty buffer
+	 * Semaphore container.
 	 */
-	empty,
+	private SemaphoreContainer container;
 
 	/**
-	 * the signal of a full buffer
+	 * The buffers protected by the current semaphore.
 	 */
-	full;
+	private List<Buffer> protectedBuffers;
 
-	@Override
-	public String toString() {
+	/**
+	 * A semaphore can be the signal of a full buffer aggregate or the signal of
+	 * an empty buffer aggregate.
+	 */
+	private SemaphoreType semaphoreType;
 
-		if (this == full)
-			return "full";
-		else if (this == empty)
-			return "empty";
+	public Semaphore(SemaphoreContainer container,
+			List<Buffer> protectedBuffers, SemaphoreType semaphoreType) {
 
-		return "";
+		this.semaphoreType = semaphoreType;
+
+		this.protectedBuffers = protectedBuffers;
+
+		this.container = container;
 	}
 
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Semaphore)
+			for(Buffer buff : protectedBuffers){
+				if(!((Semaphore) obj).protectedBuffers.contains(buff)){
+					return false ;
+				}
+			}
+				if (((Semaphore) obj).semaphoreType == semaphoreType)
+					return true;
+		return false;
+	}
+
+	public List<Buffer> getProtectedBuffers() {
+		return protectedBuffers;
+	}
+
+	/**
+	 * A semaphore is determined by its number.
+	 */
+	public int getSemaphoreNumber() {
+		return container.indexOf(this);
+	}
+
+	public SemaphoreType getSemaphoreType() {
+		return semaphoreType;
+	}
+
+	/**
+	 * Displays pseudo-code for test
+	 */
+	public String toString() {
+
+		String code = "";
+
+		code += "sem[" + getSemaphoreNumber() + ","
+				+ semaphoreType.toString() + "]";
+
+		return code;
+	}
 }

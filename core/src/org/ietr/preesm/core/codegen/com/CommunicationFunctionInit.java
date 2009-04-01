@@ -34,19 +34,45 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.com;
 
-import org.ietr.preesm.core.codegen.printer.CodeZoneId;
-import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 
-public class SubBufferAllocation extends BufferAllocation{
+/**
+ * Function initializing a point to point communication system
+ * 
+ * @author mpelcat
+ */
+public class CommunicationFunctionInit extends AbstractCodeElement {
 
-	public SubBufferAllocation(Buffer buffer) {
-		super(buffer);
+	/**
+	 * ID of the core to connect during this initialization function call
+	 */
+	private String connectedCoreId;
+
+	/**
+	 * Route step
+	 */
+	private AbstractRouteStep step;
+
+	public CommunicationFunctionInit(String name,
+			AbstractBufferContainer parentContainer, String connectedCoreId,
+			AbstractRouteStep rs) {
+		super(name, parentContainer, null);
+		this.connectedCoreId = connectedCoreId;
+		this.step = rs;
+	}
+
+	public String getConnectedCoreId() {
+		return connectedCoreId;
+	}
+
+	public AbstractRouteStep getRouteStep() {
+		return step;
 	}
 	
-	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
-	}
+	
 
 }

@@ -33,91 +33,57 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.codegen.buffer;
 
-package org.ietr.preesm.core.codegen;
-
-import java.util.List;
-
+import org.ietr.preesm.core.codegen.Variable;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.sdf4j.model.sdf.SDFEdge;
 
-/**
- * Class representing a semaphore in the code. A semaphore protects a buffer
- * from being read while empty or written while full.
- * 
- * @author mpelcat
- */
-public class Semaphore {
 
-	/**
-	 * Semaphore container.
-	 */
-	private SemaphoreContainer container;
+public class SubBuffer extends Buffer {
 
-	/**
-	 * The buffers protected by the current semaphore.
-	 */
-	private List<Buffer> protectedBuffers;
+	private Variable index;
+	private int modulo ;
+	private Buffer parentBuffer;
 
-	/**
-	 * A semaphore can be the signal of a full buffer aggregate or the signal of
-	 * an empty buffer aggregate.
-	 */
-	private SemaphoreType semaphoreType;
+	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, AbstractBufferContainer container) {
+		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
+		this.parentBuffer = parentBuffer;
+		this.index = index ;
+		modulo = parentBuffer.getSize();
+	}
+	
+	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+		super(name, size, parentBuffer.getType(), edge, container);
+		this.parentBuffer = parentBuffer;
+		this.index = index ;
+		modulo = parentBuffer.getSize();
+	}
 
-	public Semaphore(SemaphoreContainer container,
-			List<Buffer> protectedBuffers, SemaphoreType semaphoreType) {
+	public Variable getIndex() {
+		return index;
+	}
 
-		this.semaphoreType = semaphoreType;
+	public Buffer getParentBuffer() {
+		return parentBuffer;
+	}
+	
+	public int getModulo(){
+		return modulo ;
+	}
 
-		this.protectedBuffers = protectedBuffers;
-
-		this.container = container;
+	public void setIndex(Variable index) {
+		this.index = index;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-
-		if (obj instanceof Semaphore)
-			for(Buffer buff : protectedBuffers){
-				if(!((Semaphore) obj).protectedBuffers.contains(buff)){
-					return false ;
-				}
-			}
-				if (((Semaphore) obj).semaphoreType == semaphoreType)
-					return true;
-		return false;
+	
+	public void setParentBuffer(Buffer parentBuffer) {
+		this.parentBuffer = parentBuffer;
 	}
 
-	public List<Buffer> getProtectedBuffers() {
-		return protectedBuffers;
-	}
-
-	/**
-	 * A semaphore is determined by its number.
-	 */
-	public int getSemaphoreNumber() {
-		return container.indexOf(this);
-	}
-
-	public SemaphoreType getSemaphoreType() {
-		return semaphoreType;
-	}
-
-	/**
-	 * Displays pseudo-code for test
-	 */
-	public String toString() {
-
-		String code = "";
-
-		code += "sem[" + getSemaphoreNumber() + ","
-				+ semaphoreType.toString() + "]";
-
-		return code;
-	}
 }

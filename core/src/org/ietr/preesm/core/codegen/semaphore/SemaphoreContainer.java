@@ -34,11 +34,16 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.semaphore;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 
 /**
  * Container that handles the semaphores

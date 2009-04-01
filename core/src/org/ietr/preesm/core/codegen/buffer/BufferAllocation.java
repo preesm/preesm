@@ -34,52 +34,52 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.buffer;
 
-import java.util.List;
-
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * A send function transfers a data to another core
+ * A buffer allocation is necessary for every input and output of the SDF
+ * description.
  * 
+ * @author mwipliez
  * @author mpelcat
  */
-public class Send extends CommunicationFunctionCall {
+public class BufferAllocation {
 
 	/**
-	 * Target of the currently sent communication
+	 * Buffer to allocate
 	 */
-	Operator target;
+	private Buffer buffer;
 
-	public Send(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target) {
-		super("send", parentContainer, bufferSet, routeStep, vertex);
-
-		this.target = target;
+	/**
+	 * Constructor
+	 */
+	public BufferAllocation(Buffer buffer) {
+		this.buffer = buffer;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
-		super.accept(printer, currentLocation);
 	}
 
-	public Operator getTarget() {
-		return target;
+	public Buffer getBuffer() {
+		return buffer;
 	}
 
 	@Override
 	public String toString() {
+		String code = "";
 
-		String code = super.toString();
-
-		code = getName() + "(" + target.getName() + "," + code + ");";
+		code += buffer.getType().getTypeName();
+		code += "[";
+		code += buffer.getSize().toString();
+		code += "] ";
+		code += buffer.toString();
+		code += ";";
 
 		return code;
 	}
+
 }

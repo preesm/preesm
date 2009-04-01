@@ -39,6 +39,10 @@ package org.ietr.preesm.core.codegen;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.buffer.SubBuffer;
+import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;

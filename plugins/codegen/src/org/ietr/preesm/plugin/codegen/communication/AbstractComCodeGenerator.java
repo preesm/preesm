@@ -6,12 +6,14 @@ package org.ietr.preesm.plugin.codegen.communication;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.codegen.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
-import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
+import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -27,12 +29,18 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator{
 
 	// Initializing the Send and Receive channels only for the channels
 	// really used and only once per channel
-	Set<CommunicationFunctionInit> alreadyInits = null;
+	protected Set<CommunicationFunctionInit> alreadyInits = null;
+	
+	protected SortedSet<SDFAbstractVertex> vertices = null;
+	
+	protected AbstractRouteStep step = null;
 
-	public AbstractComCodeGenerator(CommunicationThreadDeclaration comThread) {
+	public AbstractComCodeGenerator(CommunicationThreadDeclaration comThread, SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super();
 		this.comThread = comThread;
-		alreadyInits = new HashSet<CommunicationFunctionInit>();
+		this.alreadyInits = new HashSet<CommunicationFunctionInit>();
+		this.vertices = vertices;
+		this.step = step;
 	}
 
 	@Override

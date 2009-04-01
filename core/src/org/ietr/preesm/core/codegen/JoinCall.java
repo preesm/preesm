@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 public class JoinCall extends SpecialBehaviorCall {

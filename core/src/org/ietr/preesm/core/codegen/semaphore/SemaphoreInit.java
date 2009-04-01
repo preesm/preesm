@@ -34,19 +34,51 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.semaphore;
+
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.Constant;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
- * Declaration of a communication thread for code generation. A communication
- * thread launches communication operations
+ * Special function call making the initialization of the semaphores. 
+ * It receives the number of semaphores to initialize and the buffer
+ * containing the semaphores
  * 
  * @author mpelcat
  */
-public class CommunicationThreadDeclaration extends ThreadDeclaration {
+public class SemaphoreInit extends AbstractCodeElement {
 
-	public CommunicationThreadDeclaration(
-			AbstractBufferContainer parentContainer) {
-		super("communicationThread", parentContainer);
+	private Buffer semaphoreBuffer;
+	private Constant semaphoreNumber;
+
+	public SemaphoreInit(AbstractBufferContainer globalContainer,
+			Buffer semaphoreBuffer) {
+		super("semaphoreInit", globalContainer, null);
+
+		this.semaphoreBuffer = semaphoreBuffer;
+		this.semaphoreNumber = new Constant("semNumber",semaphoreBuffer.getSize());
 	}
 
+	public void accept(IAbstractPrinter printer, Object currentLocation) {
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
+		semaphoreBuffer.accept(printer, currentLocation); // Accept the semaphore buffer
+		semaphoreNumber.accept(printer, currentLocation); // Accept the semaphore number constant
+	}
+
+	/**
+	 * Displays pseudo-code for test
+	 */
+	public String toString() {
+
+		String code = super.getName();
+
+		code += "(" + semaphoreBuffer.toString() + ");";
+
+		return code;
+	}
 }

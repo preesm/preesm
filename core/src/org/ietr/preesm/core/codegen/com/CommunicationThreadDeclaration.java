@@ -33,28 +33,23 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.printer.CodeZoneId;
-import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+package org.ietr.preesm.core.codegen.com;
+
+import org.ietr.preesm.core.codegen.ThreadDeclaration;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 
 /**
- * Initializing a point to point communication channel to receive data
+ * Declaration of a communication thread for code generation. A communication
+ * thread launches communication operations
  * 
  * @author mpelcat
  */
-public class ReceiveInit extends CommunicationFunctionInit {
+public class CommunicationThreadDeclaration extends ThreadDeclaration {
 
-	public ReceiveInit(AbstractBufferContainer parentContainer, String connectedCoreId,
-			AbstractRouteStep rs) {
-		super("receiveInit", parentContainer, connectedCoreId,
-				rs);
-	}
-
-	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+	public CommunicationThreadDeclaration(
+			AbstractBufferContainer parentContainer) {
+		super("communicationThread", parentContainer);
 	}
 
 }

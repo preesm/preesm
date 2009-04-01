@@ -3,21 +3,22 @@ package org.ietr.preesm.plugin.codegen.communication;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.Buffer;
-import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
-import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.Receive;
-import org.ietr.preesm.core.codegen.ReceiveInit;
-import org.ietr.preesm.core.codegen.Send;
-import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.WaitForCore;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
+import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
+import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.ReceiveInit;
+import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.com.SendInit;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -28,8 +29,8 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class RamComCodeGenerator extends AbstractComCodeGenerator {
 
-	public RamComCodeGenerator(CommunicationThreadDeclaration comThread) {
-		super(comThread);
+	public RamComCodeGenerator(CommunicationThreadDeclaration comThread, SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
+		super(comThread,vertices, step);
 	}
 
 

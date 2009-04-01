@@ -33,61 +33,29 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.codegen.com;
 
-package org.ietr.preesm.core.codegen;
-
-import java.util.List;
-
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
- * Special function call posting a semaphore
+ * Initializing a point to point communication channel to receive data
  * 
  * @author mpelcat
  */
-public class SemaphorePost extends AbstractCodeElement {
+public class ReceiveInit extends CommunicationFunctionInit {
 
-	private Semaphore semaphore;
-	private SemaphoreContainer semContainer;
-
-	/**
-	 * Creates a semaphore post function to protect the data transmitted by a
-	 * communication vertex. protectCom = true means that the pending function
-	 * is being put in the communication thread. protectCom = false means that
-	 * the pending function is being put in the computation thread to protect
-	 * the sender and receiver function calls
-	 */
-	public SemaphorePost(AbstractBufferContainer globalContainer,
-			List<Buffer> protectedBuffers, 
-			SDFAbstractVertex vertex, SemaphoreType semType) {
-		super("semaphorePost", globalContainer, vertex);
-
-		semContainer = globalContainer.getSemaphoreContainer();
-
-		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
+	public ReceiveInit(AbstractBufferContainer parentContainer, String connectedCoreId,
+			AbstractRouteStep rs) {
+		super("receiveInit", parentContainer, connectedCoreId,
+				rs);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
-		semaphore.accept(printer, currentLocation); // Accept the semaphore
-		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
 	}
 
-	public Semaphore getSemaphore() {
-		return semaphore;
-	}
-
-	/**
-	 * Displays pseudo-code for test
-	 */
-	public String toString() {
-
-		String code = super.getName();
-
-		code += "(" + semaphore.toString() + ");";
-
-		return code;
-	}
 }

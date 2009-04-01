@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
 import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;

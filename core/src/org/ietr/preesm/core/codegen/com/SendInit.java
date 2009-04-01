@@ -34,55 +34,28 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.com;
 
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFEdge;
 
+/**
+ * Initializing a point to point communication channel to send data
+ * 
+ * @author mpelcat
+ */
+public class SendInit extends CommunicationFunctionInit {
 
-public class SubBuffer extends Buffer {
-
-	private Variable index;
-	private int modulo ;
-	private Buffer parentBuffer;
-
-	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, AbstractBufferContainer container) {
-		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
-		this.parentBuffer = parentBuffer;
-		this.index = index ;
-		modulo = parentBuffer.getSize();
-	}
-	
-	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
-		super(name, size, parentBuffer.getType(), edge, container);
-		this.parentBuffer = parentBuffer;
-		this.index = index ;
-		modulo = parentBuffer.getSize();
-	}
-
-	public Variable getIndex() {
-		return index;
-	}
-
-	public Buffer getParentBuffer() {
-		return parentBuffer;
-	}
-	
-	public int getModulo(){
-		return modulo ;
-	}
-
-	public void setIndex(Variable index) {
-		this.index = index;
+	public SendInit(AbstractBufferContainer parentContainer, String connectedCoreId,
+			AbstractRouteStep rs) {
+		super("sendInit", parentContainer, connectedCoreId,
+				rs);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
-	}
-	
-	public void setParentBuffer(Buffer parentBuffer) {
-		this.parentBuffer = parentBuffer;
 	}
 
 }

@@ -33,44 +33,36 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+package org.ietr.preesm.core.codegen.semaphore;
 
 /**
- * Function initializing a point to point communication system
+ * A semaphore can be the signal of a full buffer or the signal of an empty
+ * buffer.
  * 
  * @author mpelcat
  */
-public class CommunicationFunctionInit extends AbstractCodeElement {
+public enum SemaphoreType {
 
 	/**
-	 * ID of the core to connect during this initialization function call
+	 * the signal of an empty buffer
 	 */
-	private String connectedCoreId;
+	empty,
 
 	/**
-	 * Route step
+	 * the signal of a full buffer
 	 */
-	private AbstractRouteStep step;
+	full;
 
-	public CommunicationFunctionInit(String name,
-			AbstractBufferContainer parentContainer, String connectedCoreId,
-			AbstractRouteStep rs) {
-		super(name, parentContainer, null);
-		this.connectedCoreId = connectedCoreId;
-		this.step = rs;
-	}
+	@Override
+	public String toString() {
 
-	public String getConnectedCoreId() {
-		return connectedCoreId;
-	}
+		if (this == full)
+			return "full";
+		else if (this == empty)
+			return "empty";
 
-	public AbstractRouteStep getRouteStep() {
-		return step;
+		return "";
 	}
-	
-	
 
 }

@@ -34,36 +34,52 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.semaphore;
 
+import java.util.List;
+
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * Special function call making the initialization of the semaphores. 
- * It receives the number of semaphores to initialize and the buffer
- * containing the semaphores
+ * Special function call posting a semaphore
  * 
  * @author mpelcat
  */
-public class SemaphoreInit extends AbstractCodeElement {
+public class SemaphorePost extends AbstractCodeElement {
 
-	private Buffer semaphoreBuffer;
-	private Constant semaphoreNumber;
+	private Semaphore semaphore;
+	private SemaphoreContainer semContainer;
 
-	public SemaphoreInit(AbstractBufferContainer globalContainer,
-			Buffer semaphoreBuffer) {
-		super("semaphoreInit", globalContainer, null);
+	/**
+	 * Creates a semaphore post function to protect the data transmitted by a
+	 * communication vertex. protectCom = true means that the pending function
+	 * is being put in the communication thread. protectCom = false means that
+	 * the pending function is being put in the computation thread to protect
+	 * the sender and receiver function calls
+	 */
+	public SemaphorePost(AbstractBufferContainer globalContainer,
+			List<Buffer> protectedBuffers, 
+			SDFAbstractVertex vertex, SemaphoreType semType) {
+		super("semaphorePost", globalContainer, vertex);
 
-		this.semaphoreBuffer = semaphoreBuffer;
-		this.semaphoreNumber = new Constant("semNumber",semaphoreBuffer.getSize());
+		semContainer = globalContainer.getSemaphoreContainer();
+
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
-																					// self
-		semaphoreBuffer.accept(printer, currentLocation); // Accept the semaphore buffer
-		semaphoreNumber.accept(printer, currentLocation); // Accept the semaphore number constant
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		semaphore.accept(printer, currentLocation); // Accept the semaphore
+		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
+	}
+
+	public Semaphore getSemaphore() {
+		return semaphore;
 	}
 
 	/**
@@ -73,7 +89,7 @@ public class SemaphoreInit extends AbstractCodeElement {
 
 		String code = super.getName();
 
-		code += "(" + semaphoreBuffer.toString() + ");";
+		code += "(" + semaphore.toString() + ");";
 
 		return code;
 	}

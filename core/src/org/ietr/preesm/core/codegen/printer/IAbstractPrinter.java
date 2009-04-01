@@ -36,33 +36,33 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.printer;
 
-import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
-import org.ietr.preesm.core.codegen.Buffer;
-import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
-import org.ietr.preesm.core.codegen.Receive;
-import org.ietr.preesm.core.codegen.Semaphore;
-import org.ietr.preesm.core.codegen.SemaphoreInit;
-import org.ietr.preesm.core.codegen.SemaphorePend;
-import org.ietr.preesm.core.codegen.SemaphorePost;
-import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SpecialBehaviorCall;
-import org.ietr.preesm.core.codegen.SubBuffer;
-import org.ietr.preesm.core.codegen.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
 import org.ietr.preesm.core.codegen.WaitForCore;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
+import org.ietr.preesm.core.codegen.buffer.SubBuffer;
+import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
+import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
+import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.semaphore.Semaphore;
+import org.ietr.preesm.core.codegen.semaphore.SemaphoreInit;
+import org.ietr.preesm.core.codegen.semaphore.SemaphorePend;
+import org.ietr.preesm.core.codegen.semaphore.SemaphorePost;
 
 
 /**

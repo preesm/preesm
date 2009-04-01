@@ -1,5 +1,6 @@
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 public class BroadcastCall extends SpecialBehaviorCall {

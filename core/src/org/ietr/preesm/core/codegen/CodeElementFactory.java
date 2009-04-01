@@ -37,6 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.buffer.SubBuffer;
+import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;

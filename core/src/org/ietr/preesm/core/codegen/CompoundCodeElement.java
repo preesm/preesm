@@ -43,6 +43,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
+import org.ietr.preesm.core.codegen.buffer.SubBuffer;
+import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;

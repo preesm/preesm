@@ -34,57 +34,53 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.com;
 
 import java.util.List;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * Special function call pending a semaphore
+ * A send function transfers a data to another core
  * 
  * @author mpelcat
  */
-public class SemaphorePend extends AbstractCodeElement {
+public class Send extends CommunicationFunctionCall {
 
-	private Semaphore semaphore;
-	private SemaphoreContainer semContainer;
 	/**
-	 * Creates a semaphore pend function to protect the data transmitted by a
-	 * communication vertex.
+	 * Target of the currently sent communication
 	 */
-	public SemaphorePend(AbstractBufferContainer globalContainer,
-			List<Buffer> protectedBuffers, SDFAbstractVertex vertex,
-			SemaphoreType semType) {
-		super("semaphorePend", globalContainer, vertex);
+	Operator target;
 
-		semContainer = globalContainer.getSemaphoreContainer();
+	public Send(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target) {
+		super("send", parentContainer, bufferSet, routeStep, vertex);
 
-		// The pending semaphore of a full buffer will be put before the send
-		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
+		this.target = target;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
-																					// self
-		semaphore.accept(printer, currentLocation); // Accept the code container
-		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
+		super.accept(printer, currentLocation);
 	}
 
-	public Semaphore getSemaphore() {
-		return semaphore;
+	public Operator getTarget() {
+		return target;
 	}
 
-	/**
-	 * Displays pseudo-code for test
-	 */
+	@Override
 	public String toString() {
 
-		String code = super.getName();
+		String code = super.toString();
 
-		code += "(" + semaphore.toString() + ");";
+		code = getName() + "(" + target.getName() + "," + code + ");";
 
 		return code;
 	}

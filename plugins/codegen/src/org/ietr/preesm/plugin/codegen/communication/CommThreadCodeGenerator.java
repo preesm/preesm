@@ -42,17 +42,17 @@ import java.util.SortedSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.Buffer;
-import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
-import org.ietr.preesm.core.codegen.SemaphorePend;
-import org.ietr.preesm.core.codegen.SemaphorePost;
-import org.ietr.preesm.core.codegen.SemaphoreType;
 import org.ietr.preesm.core.codegen.VertexType;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
+import org.ietr.preesm.core.codegen.semaphore.SemaphorePend;
+import org.ietr.preesm.core.codegen.semaphore.SemaphorePost;
+import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -154,12 +154,14 @@ public class CommThreadCodeGenerator {
 			AbstractBufferContainer bufferContainer) {
 
 		// a code generator factory always outputs the same generator for a given route step
-		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(comThread);
+		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(comThread, vertices);
 		for (SDFAbstractVertex vertex : vertices) {
 			AbstractRouteStep step = (AbstractRouteStep)vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep);
 			
 			// Delegates the com creation to the appropriate generator
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
+			
+			// Creates all functions and buffers related to the given vertex
 			generator.createComs(vertex);
 		}
 	}

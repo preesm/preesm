@@ -34,93 +34,61 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.semaphore;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
- * code Element used to launch inter-core communication send or receive
+ * Special function call pending a semaphore
  * 
  * @author mpelcat
  */
-public class CommunicationFunctionCall extends AbstractCodeElement {
+public class SemaphorePend extends AbstractCodeElement {
 
-
+	private Semaphore semaphore;
+	private SemaphoreContainer semContainer;
 	/**
-	 * Transmitted buffers
+	 * Creates a semaphore pend function to protect the data transmitted by a
+	 * communication vertex.
 	 */
-	private List<Buffer> bufferSet;
+	public SemaphorePend(AbstractBufferContainer globalContainer,
+			List<Buffer> protectedBuffers, SDFAbstractVertex vertex,
+			SemaphoreType semType) {
+		super("semaphorePend", globalContainer, vertex);
 
-	/**
-	 * Medium used
-	 */
-	private AbstractRouteStep routeStep;
+		semContainer = globalContainer.getSemaphoreContainer();
 
-	public CommunicationFunctionCall(String name,
-			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
-			 AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex) {
-
-		super(name, parentContainer, correspondingVertex);
-
-		this.bufferSet = bufferSet;
-
-		this.routeStep = routeStep;
+		// The pending semaphore of a full buffer will be put before the send
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-
-		currentLocation = printer
-				.visit(this, CodeZoneId.body, currentLocation); // Visit self
-
-		if (bufferSet != null) {
-			Iterator<Buffer> iterator = bufferSet.iterator();
-
-			while (iterator.hasNext()) {
-				Buffer buf = iterator.next();
-
-				buf.accept(printer, currentLocation); // Accept the code
-														// container
-			}
-		}
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
+		semaphore.accept(printer, currentLocation); // Accept the code container
+		semContainer.getSemaphoreBuffer().accept(printer, currentLocation);
 	}
 
-	public List<Buffer> getBufferSet() {
-		return bufferSet;
+	public Semaphore getSemaphore() {
+		return semaphore;
 	}
 
-	public AbstractRouteStep getRouteStep() {
-		return routeStep;
-	}
-
-	@Override
+	/**
+	 * Displays pseudo-code for test
+	 */
 	public String toString() {
 
-		String code = "";
+		String code = super.getName();
 
-		code += routeStep.toString() + ",";
-
-		if (bufferSet != null) {
-			Iterator<Buffer> iterator = bufferSet.iterator();
-
-			while (iterator.hasNext()) {
-				Buffer buf = iterator.next();
-
-				code += buf.toString();
-			}
-		}
+		code += "(" + semaphore.toString() + ");";
 
 		return code;
 	}
-
 }
