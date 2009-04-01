@@ -33,30 +33,25 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.plugin.codegen;
 
-import java.util.ArrayList;
+package org.ietr.preesm.plugin.codegen.communication;
+
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.Buffer;
-import org.ietr.preesm.core.codegen.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
-import org.ietr.preesm.core.codegen.Receive;
 import org.ietr.preesm.core.codegen.SemaphorePend;
 import org.ietr.preesm.core.codegen.SemaphorePost;
 import org.ietr.preesm.core.codegen.SemaphoreType;
-import org.ietr.preesm.core.codegen.Send;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -70,23 +65,23 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class CommThreadCodeGenerator {
 
-	private CommunicationThreadDeclaration thread;
+	private CommunicationThreadDeclaration comThread;
 
 	public CommThreadCodeGenerator(CommunicationThreadDeclaration thread) {
-		this.thread = thread;
+		this.comThread = thread;
 	}
 
 	/**
 	 * Adds semaphores to protect the data transmitted in this thread
 	 */
 	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> comVertices) {
-		LinearCodeContainer beginningCode = thread.getBeginningCode();
-		ForLoop loopCode = thread.getLoopCode();
+		LinearCodeContainer beginningCode = comThread.getBeginningCode();
+		ForLoop loopCode = comThread.getLoopCode();
 
 		for (SDFAbstractVertex vertex : comVertices) {
 			List<ICodeElement> coms = loopCode.getCodeElements(vertex);
 
-			AbstractBufferContainer container = thread.getGlobalContainer();
+			AbstractBufferContainer container = comThread.getGlobalContainer();
 			List<Buffer> buffers = null;
 
 			// First test on the type of vertex that will be protected by a
@@ -105,25 +100,28 @@ public class CommThreadCodeGenerator {
 
 			if (vType.isSend()) {
 				sType = SemaphoreType.full;
-				Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
+				Set<SDFEdge> inEdges = (vertex.getBase()
+						.incomingEdgesOf(vertex));
 				buffers = container.getBuffers(inEdges);
 			} else if (vType.isReceive()) {
 				sType = SemaphoreType.empty;
-				Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
+				Set<SDFEdge> outEdges = (vertex.getBase()
+						.outgoingEdgesOf(vertex));
 				buffers = container.getBuffers(outEdges);
 			}
 
 			// A first token must initialize the empty buffer semaphores before
 			// receive operations
 			if (vType.isReceive()) {
-				SemaphorePost init = new SemaphorePost(container,buffers, vertex,
-						SemaphoreType.empty);
+				SemaphorePost init = new SemaphorePost(container, buffers,
+						vertex, SemaphoreType.empty);
 				beginningCode.addCodeElement(init);
 			}
 
 			// Creates the semaphore if necessary ; retrieves it otherwise
 			// from global declaration and creates the pending function
-			SemaphorePend pend = new SemaphorePend(container, buffers, vertex, sType);
+			SemaphorePend pend = new SemaphorePend(container, buffers, vertex,
+					sType);
 
 			if (vType.isSend()) {
 				sType = SemaphoreType.empty;
@@ -133,13 +131,14 @@ public class CommThreadCodeGenerator {
 
 			// Creates the semaphore if necessary and creates the posting
 			// function
-			SemaphorePost post = new SemaphorePost(container, buffers, vertex, sType);
+			SemaphorePost post = new SemaphorePost(container, buffers, vertex,
+					sType);
 
 			if (pend != null && post != null) {
 				// Adding a semaphore pend before the communication calls and
 				// a semaphore post after them
 				loopCode.addCodeElementBefore(coms.get(0), pend);
-				loopCode.addCodeElementAfter(coms.get(coms.size()-1), post);
+				loopCode.addCodeElementAfter(coms.get(coms.size() - 1), post);
 			} else {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"semaphore creation failed");
@@ -151,84 +150,17 @@ public class CommThreadCodeGenerator {
 	 * Adds send and receive functions from vertices allocated on the current
 	 * core. Vertices are already in the correct order.
 	 */
-	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices) {
+	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
+			AbstractBufferContainer bufferContainer) {
+
+		// a code generator factory always outputs the same generator for a given route step
+		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(comThread);
 		for (SDFAbstractVertex vertex : vertices) {
-			List<CommunicationFunctionCall> coms = createCalls(thread, vertex);
-			if (!coms.isEmpty()) {
-				for(CommunicationFunctionCall call : coms){
-					thread.getLoopCode().addCodeElement(call);
-				}
-			}
-			else{
-				PreesmLogger.getLogger().log(Level.SEVERE,"problem creating a send or receive function call: " + vertex.getName());
-			}
+			AbstractRouteStep step = (AbstractRouteStep)vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep);
+			
+			// Delegates the com creation to the appropriate generator
+			IComCodeGenerator generator = factory.getCodeGenerator(step);
+			generator.createComs(vertex);
 		}
-	}
-
-	/**
-	 * creates a send or a receive depending on the vertex type
-	 */
-	public List<CommunicationFunctionCall> createCalls(
-			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
-
-		List<CommunicationFunctionCall> calls = new ArrayList<CommunicationFunctionCall>();
-
-		// retrieving the vertex type
-		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_vertexType);
-
-		AbstractRouteStep rs = (AbstractRouteStep) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.SendReceive_routeStep);
-
-		Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
-		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
-
-		if (type != null && rs != null) {
-			if (type.isSend()) {
-
-				List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
-
-				// The target is the operator on which the corresponding receive
-				// operation is mapped
-				SDFAbstractVertex receive = ((SDFEdge) outEdges.toArray()[0]).getTarget();
-				Operator target = (Operator) receive.getPropertyBean()
-						.getValue(ImplementationPropertyNames.Vertex_Operator);
-				
-				// Case of one send for multiple buffers
-				//calls.add(new Send(parentContainer, vertex, bufferSet, medium,
-				//		target));
-
-				// Case of one send per buffer
-				for(Buffer buf : bufferSet){
-					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-					singleBufferSet.add(buf);
-					calls.add(new Send(parentContainer, vertex, singleBufferSet, rs,
-							target));
-				}
-				
-			} else if (type.isReceive()) {
-				List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
-
-				// The source is the operator on which the corresponding send
-				// operation is allocated
-				SDFAbstractVertex send = ((SDFEdge) inEdges.toArray()[0]).getSource();
-				Operator source = (Operator) send.getPropertyBean().getValue(
-						ImplementationPropertyNames.Vertex_Operator);
-				
-				// Case of one receive for multiple buffers
-				//calls.add(new Receive(parentContainer, vertex, bufferSet, medium,
-				//		source));
-
-				// Case of one receive per buffer
-				for(Buffer buf : bufferSet){
-					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-					singleBufferSet.add(buf);
-					calls.add(new Receive(parentContainer, vertex, singleBufferSet, rs,
-							source));
-				}
-			}
-		}
-
-		return calls;
 	}
 }

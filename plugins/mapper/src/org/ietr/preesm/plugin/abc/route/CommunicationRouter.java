@@ -49,7 +49,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.route.NodeRouteStep;
+import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -97,7 +97,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 				new DmaComRouterImplementer(this));
 		this.addImplementer(MediumRouteStep.type, new MediumRouterImplementer(
 				this));
-		this.addImplementer(NodeRouteStep.type,
+		this.addImplementer(MessageRouteStep.type,
 				new MessageComRouterImplementer(this));
 		this.addImplementer(RamRouteStep.type,
 				new SharedRamRouterImplementer(this));

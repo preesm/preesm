@@ -46,25 +46,19 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.Buffer;
 import org.ietr.preesm.core.codegen.BufferAllocation;
-import org.ietr.preesm.core.codegen.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
-import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LaunchThread;
-import org.ietr.preesm.core.codegen.Receive;
-import org.ietr.preesm.core.codegen.ReceiveInit;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SemaphoreInit;
-import org.ietr.preesm.core.codegen.Send;
-import org.ietr.preesm.core.codegen.SendInit;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.plugin.codegen.communication.CommThreadCodeGenerator;
 import org.sdf4j.iterators.SDFIterator;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -214,12 +208,11 @@ public class SourceFileCodeGenerator {
 
 			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
 					communicationThread);
-			commCodeGen.addSendsAndReceives(ownCommunicationVertices);
+			
+			// Inserts the communication function calls, the communication
+			// thread semaphore post and pends and the communication initializations
+			commCodeGen.addSendsAndReceives(ownCommunicationVertices,file.getGlobalContainer());
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
-
-			// Calls the semaphore initialization function and launch com thread
-			// at the beginning of computation thread
-			initialization(communicationThread);
 
 			// Allocates the semaphores globally
 			Buffer semBuf = file.getSemaphoreContainer().allocateSemaphores();
@@ -228,72 +221,6 @@ public class SourceFileCodeGenerator {
 			SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
 					semBuf);
 			computationThread.getBeginningCode().addCodeElementFirst(semInit);
-		}
-	}
-
-	/**
-	 * Calls the initialization functions at the beginning of computation and
-	 * communication thread executions
-	 */
-	public void initialization(
-			CommunicationThreadDeclaration communicationThread) {
-
-		// Initializing the Send and Receive channels only for the channels
-		// really used and only once per channel
-		Set<CommunicationFunctionInit> alreadyInits = new HashSet<CommunicationFunctionInit>();
-
-		for (ICodeElement elt : communicationThread.getLoopCode()
-				.getCodeElements()) {
-
-			CommunicationFunctionInit init = null;
-			WaitForCore wait = null;
-
-			// Creating Send and Receive initialization calls
-			if (elt instanceof Send) {
-				Send send = (Send) elt;
-
-				init = new SendInit(file.getGlobalContainer(), send.getTarget()
-						.getName(), send.getRouteStep());
-				wait = new WaitForCore(file.getGlobalContainer(), send
-						.getTarget().getName());
-			} else if (elt instanceof Receive) {
-				Receive receive = (Receive) elt;
-
-				init = new ReceiveInit(file.getGlobalContainer(), receive
-						.getSource().getName(), receive.getRouteStep());
-				wait = new WaitForCore(file.getGlobalContainer(), receive
-						.getSource().getName());
-			}
-
-			// Checking that the initialization has not already been done
-			if (init != null) {
-				for (CommunicationFunctionInit oldInit : alreadyInits) {
-					if (oldInit.getConnectedCoreId().equals(
-							init.getConnectedCoreId())
-							&& oldInit.getRouteStep().equals(init.getRouteStep())) {
-						// core wait has already been done
-						wait = null;
-
-						if (oldInit.getName().equals(init.getName())) {
-							// init has already been done with same direction
-							init = null;
-						}
-						break;
-					}
-				}
-			}
-
-			// Adding Send and Receive initialization calls
-			if (init != null) {
-				communicationThread.getBeginningCode()
-						.addCodeElementFirst(init);
-				alreadyInits.add(init);
-			}
-			
-			// Adding other cores wait
-			if (wait != null) {
-				communicationThread.getBeginningCode().addCodeElement(wait);
-			}
 		}
 	}
 

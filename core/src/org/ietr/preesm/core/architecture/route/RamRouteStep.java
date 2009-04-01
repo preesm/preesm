@@ -49,7 +49,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Ram;
  * 
  * @author mpelcat
  */
-public class RamRouteStep extends NodeRouteStep {
+public class RamRouteStep extends MessageRouteStep {
 
 	private Ram ram;
 

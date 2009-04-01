@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.NodeRouteStep;
+import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
@@ -43,8 +43,8 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			MapperDAGEdge edge, TransactionManager transactions, int type,
 			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
 
-		if (routeStep instanceof NodeRouteStep) {
-			NodeRouteStep nodeRouteStep = (NodeRouteStep) routeStep;
+		if (routeStep instanceof MessageRouteStep) {
+			MessageRouteStep nodeRouteStep = (MessageRouteStep) routeStep;
 			if (type == CommunicationRouter.transferType) {
 
 			} else if (type == CommunicationRouter.overheadType) {

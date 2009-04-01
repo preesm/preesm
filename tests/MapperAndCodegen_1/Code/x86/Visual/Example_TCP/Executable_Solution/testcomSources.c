@@ -15,6 +15,9 @@ void sensor_init(char* o1, char* o2, char* o3){
 
 }
 
+void sensor2_init(char* o1){
+}
+
 void parallel_init(char* i1, char* o1){
 
 }
@@ -37,12 +40,23 @@ void circular_init(char* i1,char* o1){
 void circular6_init(char* i1,char* o1){
 
 }
+
 void sensor(char* o1, char* o2, char* o3){
 	//printf("sensor");
 	int i = 0;
 
 	for(i=0;i<1000;i++){
 		o3[i] = o2[i] = o1[i] = TESTVALUE;
+		//o4[i] = 12;
+	}
+}
+
+void sensor2(char* o1){
+	//printf("sensor");
+	int i = 0;
+
+	for(i=0;i<1000;i++){
+		o1[i] = TESTVALUE;
 		//o4[i] = 12;
 	}
 }

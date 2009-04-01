@@ -42,6 +42,12 @@ import java.util.Comparator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.route.DmaRouteStep;
+import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.MessageRouteStep;
+import org.ietr.preesm.core.architecture.route.RamRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.codegen.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
@@ -79,12 +85,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.NodeRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 
 /**
  * Visitor that generates XML code from source files. This code will be transformed
@@ -482,9 +482,9 @@ public class XMLPrinter implements IAbstractPrinter {
 				routeStep.appendChild(eNode);
 			}
 		}
-		else if(step.getType() == NodeRouteStep.type){
+		else if(step.getType() == MessageRouteStep.type){
 			routeStep.setAttribute("type", "msg");
-			NodeRouteStep nStep = (NodeRouteStep)step;
+			MessageRouteStep nStep = (MessageRouteStep)step;
 			
 			for(AbstractNode node : nStep.getNodes()){
 				Element eNode = dom.createElement("node");

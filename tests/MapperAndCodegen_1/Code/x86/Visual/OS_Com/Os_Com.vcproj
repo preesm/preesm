@@ -120,7 +120,7 @@
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(BIB_m4)\lib_view\include&quot;;&quot;$(BIB_m4)\AAA\Librairies\PC\include_PC&quot;"
+				AdditionalIncludeDirectories="D:\Projets\Preesm\trunk\tests\MapperAndCodegen_1\Code\Lib_com\include;D:\Projets\archi_test\Projet_visual\OS_Com;D:\Projets\archi_test\Projet_visual\Projet_lib_com_multi_platform\include;&quot;$(BIB_m4)\lib_view\include&quot;;&quot;$(BIB_m4)\AAA\Librairies\PC\include_PC&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN_TCP;VP3"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

@@ -49,7 +49,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
  * 
  * @author mpelcat
  */
-public class DmaRouteStep extends NodeRouteStep {
+public class DmaRouteStep extends MessageRouteStep {
 
 	private Dma dma;
 

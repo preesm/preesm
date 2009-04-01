@@ -51,7 +51,7 @@ import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
  * 
  * @author mpelcat
  */
-public class NodeRouteStep extends AbstractRouteStep {
+public class MessageRouteStep extends AbstractRouteStep {
 
 	/**
 	 * Communication nodes separating the sender and the receiver
@@ -63,7 +63,7 @@ public class NodeRouteStep extends AbstractRouteStep {
 	 */
 	public static final String type = "NodeRouteStep";
 
-	public NodeRouteStep(Operator sender, List<AbstractNode> inNodes,
+	public MessageRouteStep(Operator sender, List<AbstractNode> inNodes,
 			Operator receiver) {
 		super(sender, receiver);
 		nodes = new ArrayList<AbstractNode>();
@@ -145,7 +145,7 @@ public class NodeRouteStep extends AbstractRouteStep {
 	}
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new NodeRouteStep((Operator)getSender().clone(),nodes,(Operator)getReceiver().clone());
+		return new MessageRouteStep((Operator)getSender().clone(),nodes,(Operator)getReceiver().clone());
 	}
 
 }

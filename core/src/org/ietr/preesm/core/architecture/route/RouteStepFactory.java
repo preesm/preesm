@@ -88,7 +88,7 @@ public class RouteStepFactory {
 			} else if (ram != null) {
 				step = new RamRouteStep(source, nodes, target, ram);
 			} else {
-				step = new NodeRouteStep(source, nodes, target);
+				step = new MessageRouteStep(source, nodes, target);
 			}
 		}
 

@@ -166,6 +166,8 @@ public class CompThreadCodeGenerator {
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
 		
+		// Filtering special vertices (Fork , Broadcast...) from regular tasks
+		// 
 		List<SDFAbstractVertex> specialVertices = new ArrayList<SDFAbstractVertex>(vertices);
 		List<SDFAbstractVertex> treatedVertices  = new ArrayList<SDFAbstractVertex>();
 		while(specialVertices.size() > 0){
@@ -205,12 +207,15 @@ public class CompThreadCodeGenerator {
 				specialVertices.remove(origin);
 			}
 		}
+		
 		for (SDFAbstractVertex vertex : vertices) {
 			if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex || vertex instanceof CodeGenSDFRoundBufferVertex){
 				CodeElementFactory.treatSpecialBehaviorVertex(vertex
 						.getName(), loopCode, vertex);
 			}
 		}
+		
+		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
 			if(vertex instanceof ICodeGenSDFVertex && vertex.getGraphDescription() == null){
 					FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
