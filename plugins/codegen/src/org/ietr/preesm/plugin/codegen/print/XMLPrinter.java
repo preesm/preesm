@@ -62,7 +62,6 @@ import org.ietr.preesm.core.codegen.SpecialBehaviorCall;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.VariableAllocation;
-import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
@@ -71,7 +70,9 @@ import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.ReceiveAddress;
 import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.com.WaitForCore;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.semaphore.Semaphore;
@@ -454,6 +455,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(init);
 			
 			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
+			int callIndex = domElt.getCallIndex();
+			if(callIndex!=-1) init.setAttribute("index", String.valueOf(callIndex));
 			appendRouteStep(init, domElt.getRouteStep());
 			currentLocation = init;
 		} 
@@ -509,6 +512,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			appendRouteStep(send,domElt.getRouteStep());
 			
 			send.setAttribute("target", domElt.getTarget().getName());
+			int callIndex = domElt.getCallIndex();
+			if(callIndex!=-1) send.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = send;
 		} 
 		
@@ -525,6 +530,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			appendRouteStep(receive,domElt.getRouteStep());
 			
 			receive.setAttribute("source", domElt.getSource().getName());
+			int callIndex = domElt.getCallIndex();
+			if(callIndex!=-1) receive.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = receive;
 		} 
 		
@@ -598,7 +605,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element wait = dom.createElement(domElt.getName());
 			((Element)currentLocation).appendChild(wait);
 			
-			wait.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
+			appendRouteStep(wait, domElt.getRouteStep());
 			currentLocation = wait;
 		} 
 		

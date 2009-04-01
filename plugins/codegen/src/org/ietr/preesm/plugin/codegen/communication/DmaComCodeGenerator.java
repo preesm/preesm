@@ -12,7 +12,6 @@ import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
@@ -20,9 +19,12 @@ import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.ReceiveAddress;
 import org.ietr.preesm.core.codegen.com.ReceiveInit;
 import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.com.SendAddress;
 import org.ietr.preesm.core.codegen.com.SendInit;
+import org.ietr.preesm.core.codegen.com.WaitForCore;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -35,34 +37,48 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 
 	/**
-	 * Buffer containing all the addresses of the distant core where to send the data
+	 * Buffer containing all the addresses of the distant core where to send the
+	 * data
 	 */
 	private Buffer addressBuffer = null;
-	
-	private AbstractCodeContainer dmaInitCodeContainer = null;
-	
-	public DmaComCodeGenerator(CommunicationThreadDeclaration comThread,SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
-		super(comThread,vertices, step);
-		
-		dmaInitCodeContainer = new LinearCodeContainer(this.comThread.getBeginningCode());
-		
+
+	private LinearCodeContainer dmaInitCodeContainer = null;
+
+	/**
+	 * Index of the communication call among the communication calls with same
+	 * route step and direction
+	 */
+	int sendNextCallIndex = 0;
+	int receiveNextCallIndex = 0;
+
+	public DmaComCodeGenerator(CommunicationThreadDeclaration comThread,
+			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
+		super(comThread, vertices, step);
+
+		dmaInitCodeContainer = new LinearCodeContainer(this.comThread
+				.getBeginningCode());
+		this.comThread.getBeginningCode().addCodeElement(dmaInitCodeContainer);
+
 		// Testing the number of send functions with the given route step
 		int addressBufferSize = 0;
-		for(SDFAbstractVertex v : vertices){
-			AbstractRouteStep vStep = (AbstractRouteStep)v.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep);
-			if(vStep.equals(step) && v instanceof CodeGenSDFSendVertex){
+		for (SDFAbstractVertex v : vertices) {
+			AbstractRouteStep vStep = (AbstractRouteStep) v
+					.getPropertyBean()
+					.getValue(ImplementationPropertyNames.SendReceive_routeStep);
+			if (vStep.equals(step) && v instanceof CodeGenSDFSendVertex) {
 				addressBufferSize++;
 			}
 		}
-		
+
 		// Adding the address buffer
-		if(addressBufferSize!=0){
-			addressBuffer = new Buffer("addressBuffer",addressBufferSize,new DataType("void *",4),null,comThread.getGlobalContainer());
+		if (addressBufferSize != 0) {
+			addressBuffer = new Buffer("addressBuffer", addressBufferSize,
+					new DataType("void *", 4), null, comThread
+							.getGlobalContainer());
 			BufferAllocation alloc = new BufferAllocation(addressBuffer);
 			comThread.getGlobalContainer().addBuffer(alloc);
 		}
 	}
-
 
 	/**
 	 * Calls the initialization functions at the beginning of computation and
@@ -74,22 +90,30 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 
 		CommunicationFunctionInit initCom = null;
 		WaitForCore wait = null;
+		CommunicationFunctionInit initAddress = null;
 
 		// Creating Send and Receive initialization calls
 		if (call instanceof Send) {
 			Send send = (Send) call;
 
 			initCom = new SendInit(bufferContainer, send.getTarget().getName(),
-					send.getRouteStep());
-			wait = new WaitForCore(bufferContainer, send.getTarget().getName());
-			
+					send.getRouteStep(), send.getCallIndex());
+			wait = new WaitForCore(bufferContainer, send.getRouteStep());
+
+			initAddress = new ReceiveAddress(bufferContainer, send
+					.getRouteStep().getReceiver().getName(), send
+					.getRouteStep(), send.getCallIndex(), addressBuffer);
+
 		} else if (call instanceof Receive) {
 			Receive receive = (Receive) call;
 
 			initCom = new ReceiveInit(bufferContainer, receive.getSource()
-					.getName(), receive.getRouteStep());
-			wait = new WaitForCore(bufferContainer, receive.getSource()
-					.getName());
+					.getName(), receive.getRouteStep(), receive.getCallIndex());
+			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
+
+			initAddress = new SendAddress(bufferContainer, receive
+					.getRouteStep().getSender().getName(), receive
+					.getRouteStep(), receive.getCallIndex(),receive.getBufferSet().get(0));
 		}
 
 		// Checking that the initialization has not already been done
@@ -97,7 +121,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			for (CommunicationFunctionInit oldInit : alreadyInits) {
 				if (oldInit.getConnectedCoreId().equals(
 						initCom.getConnectedCoreId())
-						&& oldInit.getRouteStep().equals(initCom.getRouteStep())) {
+						&& oldInit.getRouteStep()
+								.equals(initCom.getRouteStep())) {
 					// core wait has already been done
 					wait = null;
 
@@ -120,6 +145,12 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		if (wait != null) {
 			dmaInitCodeContainer.addCodeElement(wait);
 		}
+
+		// Adding other cores wait
+		if (initAddress != null) {
+			dmaInitCodeContainer.addCodeElement(initAddress);
+		}
+
 	}
 
 	/**
@@ -162,7 +193,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
 					calls.add(new Send(parentContainer, vertex,
-							singleBufferSet, rs, target));
+							singleBufferSet, rs, target, sendNextCallIndex));
+					sendNextCallIndex++;
 				}
 
 			} else if (type.isReceive()) {
@@ -185,7 +217,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
 					calls.add(new Receive(parentContainer, vertex,
-							singleBufferSet, rs, source));
+							singleBufferSet, rs, source, receiveNextCallIndex));
+					receiveNextCallIndex++;
 				}
 			}
 		}

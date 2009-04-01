@@ -48,7 +48,7 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * A send function transfers a data to another core
+ * A send function transfers a message to another core
  * 
  * @author mpelcat
  */
@@ -60,8 +60,8 @@ public class Send extends CommunicationFunctionCall {
 	Operator target;
 
 	public Send(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target) {
-		super("send", parentContainer, bufferSet, routeStep, vertex);
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target, int callIndex) {
+		super("send", parentContainer, bufferSet, routeStep, vertex,callIndex);
 
 		this.target = target;
 	}

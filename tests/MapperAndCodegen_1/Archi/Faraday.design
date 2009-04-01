@@ -38,7 +38,7 @@
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>edma3_1</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="edma3_1" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">dma</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -62,7 +62,7 @@
       </spirit:componentInstance>
       <spirit:componentInstance>
          <spirit:instanceName>edma3_2</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="" spirit:vendor="" spirit:version=""/>
+         <spirit:componentRef spirit:library="" spirit:name="edma3_2" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">dma</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>

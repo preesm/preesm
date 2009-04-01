@@ -49,9 +49,9 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 public class SendInit extends CommunicationFunctionInit {
 
 	public SendInit(AbstractBufferContainer parentContainer, String connectedCoreId,
-			AbstractRouteStep rs) {
+			AbstractRouteStep rs, int callIndex) {
 		super("sendInit", parentContainer, connectedCoreId,
-				rs);
+				rs,callIndex);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

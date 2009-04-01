@@ -57,12 +57,18 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 	 */
 	private AbstractRouteStep step;
 
+	/**
+	 * index of the function call  within the calls of same type and route step
+	 */
+	private int callIndex = -1;
+
 	public CommunicationFunctionInit(String name,
 			AbstractBufferContainer parentContainer, String connectedCoreId,
-			AbstractRouteStep rs) {
+			AbstractRouteStep rs, int callIndex) {
 		super(name, parentContainer, null);
 		this.connectedCoreId = connectedCoreId;
 		this.step = rs;
+		this.callIndex = callIndex;
 	}
 
 	public String getConnectedCoreId() {
@@ -73,6 +79,8 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 		return step;
 	}
 	
-	
+	public int getCallIndex() {
+		return callIndex;
+	}
 
 }

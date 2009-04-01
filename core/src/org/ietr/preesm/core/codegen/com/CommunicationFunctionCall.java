@@ -70,15 +70,21 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	 */
 	private AbstractRouteStep routeStep;
 
+	/**
+	 * index of the function call  within the calls of same type and route step
+	 */
+	private int callIndex = -1;
+
 	public CommunicationFunctionCall(String name,
 			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
-			 AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex) {
+			 AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex, int callIndex) {
 
 		super(name, parentContainer, correspondingVertex);
 
 		this.bufferSet = bufferSet;
 
 		this.routeStep = routeStep;
+		this.callIndex = callIndex;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -104,6 +110,10 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 	public AbstractRouteStep getRouteStep() {
 		return routeStep;
+	}
+
+	public int getCallIndex() {
+		return callIndex;
 	}
 
 	@Override

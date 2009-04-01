@@ -48,7 +48,7 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * A receive function receives a data from another core
+ * A receive function receives a message from another core
  * 
  * @author mpelcat
  */
@@ -60,8 +60,8 @@ public class Receive extends CommunicationFunctionCall {
 	Operator source;
 
 	public Receive(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator source) {
-		super("receive", parentContainer, bufferSet, routeStep, vertex);
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator source, int callIndex) {
+		super("receive", parentContainer, bufferSet, routeStep, vertex,callIndex);
 
 		this.source = source;
 	}

@@ -9,7 +9,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
-import org.ietr.preesm.core.codegen.WaitForCore;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
@@ -19,6 +18,7 @@ import org.ietr.preesm.core.codegen.com.Receive;
 import org.ietr.preesm.core.codegen.com.ReceiveInit;
 import org.ietr.preesm.core.codegen.com.Send;
 import org.ietr.preesm.core.codegen.com.SendInit;
+import org.ietr.preesm.core.codegen.com.WaitForCore;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -28,11 +28,10 @@ import org.sdf4j.model.sdf.SDFEdge;
  * @author mpelcat
  */
 public class RamComCodeGenerator extends AbstractComCodeGenerator {
-
+	
 	public RamComCodeGenerator(CommunicationThreadDeclaration comThread, SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super(comThread,vertices, step);
 	}
-
 
 	/**
 	 * Calls the initialization functions at the beginning of computation and
@@ -50,15 +49,14 @@ public class RamComCodeGenerator extends AbstractComCodeGenerator {
 			Send send = (Send) call;
 
 			init = new SendInit(bufferContainer, send.getTarget().getName(),
-					send.getRouteStep());
-			wait = new WaitForCore(bufferContainer, send.getTarget().getName());
+					send.getRouteStep(), -1);
+			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 		} else if (call instanceof Receive) {
 			Receive receive = (Receive) call;
 
 			init = new ReceiveInit(bufferContainer, receive.getSource()
-					.getName(), receive.getRouteStep());
-			wait = new WaitForCore(bufferContainer, receive.getSource()
-					.getName());
+					.getName(), receive.getRouteStep(), -1);
+			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 		}
 
 		// Checking that the initialization has not already been done
@@ -131,7 +129,7 @@ public class RamComCodeGenerator extends AbstractComCodeGenerator {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
 					calls.add(new Send(parentContainer, vertex,
-							singleBufferSet, rs, target));
+							singleBufferSet, rs, target, -1));
 				}
 
 			} else if (type.isReceive()) {
@@ -154,7 +152,7 @@ public class RamComCodeGenerator extends AbstractComCodeGenerator {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
 					calls.add(new Receive(parentContainer, vertex,
-							singleBufferSet, rs, source));
+							singleBufferSet, rs, source, -1));
 				}
 			}
 		}

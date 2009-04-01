@@ -34,8 +34,10 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.com;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -51,15 +53,15 @@ public class WaitForCore extends AbstractCodeElement {
 	/**
 	 * ID of the core to wait for
 	 */
-	private String connectedCoreId;
+	private AbstractRouteStep step;
 
-	public WaitForCore(AbstractBufferContainer parentContainer, String connectedCoreId) {
+	public WaitForCore(AbstractBufferContainer parentContainer, AbstractRouteStep step) {
 		super("waitForCore", parentContainer, null);
-		this.connectedCoreId = connectedCoreId;
+		this.step = step;
 	}
 
-	public String getConnectedCoreId() {
-		return connectedCoreId;
+	public AbstractRouteStep getRouteStep() {
+		return step;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

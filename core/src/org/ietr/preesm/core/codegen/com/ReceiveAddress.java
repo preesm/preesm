@@ -33,56 +33,42 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-package org.ietr.preesm.core.codegen;
+ 
+package org.ietr.preesm.core.codegen.com;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
- * Code container executed once (no loop)
+ * Receiving an address for a direct memory access
  * 
  * @author mpelcat
  */
-public class LinearCodeContainer extends AbstractCodeContainer implements ICodeElement {
+public class ReceiveAddress extends CommunicationFunctionInit {
 
-	public LinearCodeContainer(AbstractBufferContainer parentContainer) {
-		super(parentContainer);
-		// TODO Auto-generated constructor stub
+	/**
+	 * Buffer to store the received addresses
+	 */
+	private Buffer addressBuffer = null;
+	
+	public ReceiveAddress(AbstractBufferContainer parentContainer, String connectedCoreId,
+			AbstractRouteStep rs, int callIndex, Buffer addressBuffer) {
+		super("receiveAddress", parentContainer, connectedCoreId,
+				rs,callIndex);
+		this.addressBuffer = addressBuffer;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
-		super.accept(printer, currentLocation); // Accept the code container
+
+		addressBuffer.accept(printer, currentLocation); // Accept the code
+														// container
 	}
 
-	/**
-	 * Displays pseudo-code for test
-	 */
-	public String toString() {
-
-		String code = "";
-
-		code += "\n{\n";
-
-		code += super.toString();
-
-		code += "\n}\n";
-
-		return code;
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return toString();
-	}
-
-	@Override
-	public SDFAbstractVertex getCorrespondingVertex() {
-		return null;
+	public Buffer getAddressBuffer() {
+		return addressBuffer;
 	}
 }
