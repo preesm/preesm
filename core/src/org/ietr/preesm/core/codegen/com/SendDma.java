@@ -48,22 +48,29 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * A receive function receives a message from another core
+ * A send function transfers a message to another core
  * 
  * @author mpelcat
  */
-public class Receive extends CommunicationFunctionCall {
+public class SendDma extends CommunicationFunctionCall {
 
 	/**
-	 * Source of the currently received communication
+	 * Target of the currently sent communication
 	 */
-	Operator source;
+	private Operator target;
 
-	public Receive(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator source, int callIndex) {
-		super("receive", parentContainer, bufferSet, routeStep, vertex,callIndex);
+	/**
+	 * Buffer containing the distant location where to store the data.
+	 * Ther index to use in the buffer is given by callIndex
+	 */
+	private Buffer addressBuffer = null;
 
-		this.source = source;
+	public SendDma(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target, int callIndex, Buffer addressBuffer) {
+		super("send", parentContainer, bufferSet, routeStep, vertex,callIndex);
+
+		this.target = target;
+		this.addressBuffer = addressBuffer;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -71,8 +78,12 @@ public class Receive extends CommunicationFunctionCall {
 		super.accept(printer, currentLocation);
 	}
 
-	public Operator getSource() {
-		return source;
+	public Operator getTarget() {
+		return target;
+	}
+
+	public Buffer getAddressBuffer() {
+		return addressBuffer;
 	}
 
 	@Override
@@ -80,7 +91,7 @@ public class Receive extends CommunicationFunctionCall {
 
 		String code = super.toString();
 
-		code = getName() + "(" + source.getName() + "," + code + ");";
+		code = getName() + "(" + target.getName() + "," + code + ");";
 
 		return code;
 	}

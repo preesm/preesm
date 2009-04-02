@@ -69,9 +69,11 @@ import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
-import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.ReceiveMsg;
+import org.ietr.preesm.core.codegen.com.ReceiveDma;
 import org.ietr.preesm.core.codegen.com.ReceiveAddress;
-import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.com.SendMsg;
+import org.ietr.preesm.core.codegen.com.SendDma;
 import org.ietr.preesm.core.codegen.com.WaitForCore;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -468,6 +470,17 @@ public class XMLPrinter implements IAbstractPrinter {
 		
 		Element routeStep = dom.createElement("routeStep");
 		comFct.appendChild(routeStep);
+
+		Element sender = dom.createElement("sender");
+		sender.setAttribute("name", step.getSender().getName());
+		sender.setAttribute("def", step.getSender().getDefinition().getId());
+		routeStep.appendChild(sender);
+
+		Element receiver = dom.createElement("receiver");
+		receiver.setAttribute("name", step.getReceiver().getName());
+		receiver.setAttribute("def", step.getReceiver().getDefinition().getId());
+		routeStep.appendChild(receiver);
+		
 		if(step.getType() == MediumRouteStep.type){
 			MediumRouteStep mStep = (MediumRouteStep)step;
 			routeStep.setAttribute("type", "med");
@@ -504,16 +517,14 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 	
 	@Override
-	public Object visit(Send domElt, CodeZoneId index, Object currentLocation) {
+	public Object visit(SendMsg domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element send = dom.createElement("send");
+			Element send = dom.createElement("sendMsg");
 			((Element)currentLocation).appendChild(send);
 			appendRouteStep(send,domElt.getRouteStep());
 			
 			send.setAttribute("target", domElt.getTarget().getName());
-			int callIndex = domElt.getCallIndex();
-			if(callIndex!=-1) send.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = send;
 		} 
 		
@@ -521,17 +532,55 @@ public class XMLPrinter implements IAbstractPrinter {
 	}
 
 	@Override
-	public Object visit(Receive domElt, CodeZoneId index,
+	public Object visit(ReceiveMsg domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element receive = dom.createElement("receive");
+			Element receive = dom.createElement("receiveMsg");
+			((Element)currentLocation).appendChild(receive);
+			appendRouteStep(receive,domElt.getRouteStep());
+			
+			receive.setAttribute("source", domElt.getSource().getName());
+			currentLocation = receive;
+		} 
+		
+		return currentLocation;
+	}
+	
+	@Override
+	public Object visit(SendDma domElt, CodeZoneId index, Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element send = dom.createElement("sendDma");
+			((Element)currentLocation).appendChild(send);
+			appendRouteStep(send,domElt.getRouteStep());
+			
+			send.setAttribute("target", domElt.getTarget().getName());
+			
+			Element addressBuffer = dom.createElement("addressBuffer");
+			send.appendChild(addressBuffer);
+			this.visit(domElt.getAddressBuffer(), CodeZoneId.body, addressBuffer);
+			
+			int callIndex = domElt.getCallIndex();
+			send.setAttribute("index", String.valueOf(callIndex));
+			currentLocation = send;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(ReceiveDma domElt, CodeZoneId index,
+			Object currentLocation) {
+
+		if (index == CodeZoneId.body) {
+			Element receive = dom.createElement("receiveDma");
 			((Element)currentLocation).appendChild(receive);
 			appendRouteStep(receive,domElt.getRouteStep());
 			
 			receive.setAttribute("source", domElt.getSource().getName());
 			int callIndex = domElt.getCallIndex();
-			if(callIndex!=-1) receive.setAttribute("index", String.valueOf(callIndex));
+			receive.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = receive;
 		} 
 		
@@ -604,7 +653,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element wait = dom.createElement(domElt.getName());
 			((Element)currentLocation).appendChild(wait);
-			
+
 			appendRouteStep(wait, domElt.getRouteStep());
 			currentLocation = wait;
 		} 

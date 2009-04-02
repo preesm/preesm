@@ -14,9 +14,9 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.com.Receive;
+import org.ietr.preesm.core.codegen.com.ReceiveMsg;
 import org.ietr.preesm.core.codegen.com.ReceiveInit;
-import org.ietr.preesm.core.codegen.com.Send;
+import org.ietr.preesm.core.codegen.com.SendMsg;
 import org.ietr.preesm.core.codegen.com.SendInit;
 import org.ietr.preesm.core.codegen.com.WaitForCore;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -47,14 +47,14 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		WaitForCore wait = null;
 
 		// Creating Send and Receive initialization calls
-		if (call instanceof Send) {
-			Send send = (Send) call;
+		if (call instanceof SendMsg) {
+			SendMsg send = (SendMsg) call;
 
 			init = new SendInit(bufferContainer, send.getTarget().getName(),
 					send.getRouteStep(), -1);
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
-		} else if (call instanceof Receive) {
-			Receive receive = (Receive) call;
+		} else if (call instanceof ReceiveMsg) {
+			ReceiveMsg receive = (ReceiveMsg) call;
 
 			init = new ReceiveInit(bufferContainer, receive.getSource()
 					.getName(), receive.getRouteStep(), -1);
@@ -131,8 +131,8 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 				for (Buffer buf : bufferSet) {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
-					calls.add(new Send(parentContainer, vertex,
-							singleBufferSet, rs, target, -1));
+					calls.add(new SendMsg(parentContainer, vertex,
+							singleBufferSet, rs, target));
 				}
 
 			} else if (type.isReceive()) {
@@ -154,8 +154,8 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 				for (Buffer buf : bufferSet) {
 					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 					singleBufferSet.add(buf);
-					calls.add(new Receive(parentContainer, vertex,
-							singleBufferSet, rs, source, -1));
+					calls.add(new ReceiveMsg(parentContainer, vertex,
+							singleBufferSet, rs, source));
 				}
 			}
 		}
