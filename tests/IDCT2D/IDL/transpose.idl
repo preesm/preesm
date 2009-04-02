@@ -1,5 +1,5 @@
 module transpose {
 	interface loop {
-		 void transpose(in char blockIn, out char blockOut, out char blockOutLoop);
+		 void transpose(in char blockIn, out char blockOut);
 	};
 };

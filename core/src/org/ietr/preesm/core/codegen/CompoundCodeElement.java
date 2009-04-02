@@ -154,27 +154,48 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 	}
 
 	private void treatCalls(Set<SDFAbstractVertex> vertices) {
+		List<SDFAbstractVertex> treated = new ArrayList<SDFAbstractVertex>();
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof CodeGenSDFForkVertex
 					|| vertex instanceof CodeGenSDFJoinVertex
 					|| vertex instanceof CodeGenSDFBroadcastVertex
 					|| vertex instanceof CodeGenSDFRoundBufferVertex) {
-				treatSpecialBehaviorVertex(vertex.getName(), this, vertex);
+				if (treatSpecialBehaviorVertex(vertex.getName(), this, vertex)) {
+					treated.add(vertex);
+				}
 			}
 		}
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof ICodeGenSDFVertex
-					&& !(vertex instanceof SDFInterfaceVertex)) {
+					&& !(vertex instanceof SDFInterfaceVertex) && !(vertex instanceof CodeGenSDFBroadcastVertex)) {
 				ICodeElement loopCall = CodeElementFactory.createElement(vertex
 						.getName(), this, vertex);
 				if (loopCall != null) {
 					this.addCall(loopCall);
 				}
+			} else if (vertex instanceof CodeGenSDFBroadcastVertex
+					&& !treated.contains(vertex)) {
+				SDFEdge incomingEdge = null;
+				for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
+					incomingEdge = inEdge;
+				}
+				for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+					UserFunctionCall copyCall = new UserFunctionCall("memcpy",
+							this);
+					copyCall.addParameter(this.getBuffer(outEdge));
+					copyCall.addParameter(this.getBuffer(incomingEdge));
+					try {
+						copyCall.addParameter(new Constant("size", incomingEdge.getCons().intValue()+"*sizeof("+incomingEdge.getDataType().toString()+")"));
+					} catch (InvalidExpressionException e) {
+						copyCall.addParameter(new Constant("size", 0));
+					}
+					this.addCall(copyCall);
+				}
 			}
 		}
 	}
 
-	public void treatSpecialBehaviorVertex(String name,
+	public boolean treatSpecialBehaviorVertex(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		try {
 			if (vertex instanceof CodeGenSDFForkVertex) {
@@ -232,6 +253,11 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				}
 				Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
 				for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
+					if (outEdge.getTarget() instanceof SDFInterfaceVertex) {
+						return false;
+					}
+				}
+				for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
 					ConstantValue index = new ConstantValue("", new DataType(
 							"int"), 0);
 					String buffName = parentContainer.getBuffer(outEdge)
@@ -272,6 +298,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	public Buffer getBuffer(SDFEdge edge) {

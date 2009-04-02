@@ -4,9 +4,9 @@
     <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="TriggerM_0" size="128" type="int"/>
-            <bufferAllocation name="Triggers_0" size="2" type="int"/>
-            <bufferAllocation name="IDCT2Dou_0" size="128" type="int"/>
+            <bufferAllocation name="Triggers_0" size="4" type="int"/>
+            <bufferAllocation name="TriggerM_0" size="256" type="int"/>
+            <bufferAllocation name="IDCT2Dou_0" size="256" type="int"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer>
@@ -17,18 +17,18 @@
             <linearCodeContainer/>
             <forLoop>
                 <userFunctionCall name="trigger_bench">
-                    <buffer name="TriggerM_0" size="128" type="int"/>
-                    <buffer name="Triggers_0" size="2" type="int"/>
+                    <buffer name="TriggerM_0" size="256" type="int"/>
+                    <buffer name="Triggers_0" size="4" type="int"/>
                 </userFunctionCall>
-                <finiteForLoop domain="2" index="i">
+                <finiteForLoop domain="4" index="i">
                     <CompoundCode name="IDCT2D">
-                        <subBufferAllocation index="i" modulo="128"
+                        <subBufferAllocation index="i" modulo="256"
                             name="inSub_i__0" parentBuffer="IDCT2Dou_0"
                             size="64" type="int"/>
-                        <subBufferAllocation index="i" modulo="128"
+                        <subBufferAllocation index="i" modulo="256"
                             name="outSub_i_0" parentBuffer="TriggerM_0"
                             size="64" type="int"/>
-                        <subBufferAllocation index="i" modulo="2"
+                        <subBufferAllocation index="i" modulo="4"
                             name="outSub_i_1" parentBuffer="Triggers_0"
                             size="1" type="int"/>
                         <bufferAllocation name="block_ou_0" size="64" type="int"/>
@@ -52,6 +52,8 @@
                                     <bufferAllocation name="out_1_li_0"
                                     size="64" type="int"/>
                                     <bufferAllocation name="lineOut__0"
+                                    size="64" type="int"/>
+                                    <bufferAllocation name="blockOut_0"
                                     size="64" type="int"/>
                                     <userFunctionCall name="readBlock">
                                     <subBuffer index="i"
@@ -90,10 +92,24 @@
                                     <userFunctionCall name="transpose">
                                     <buffer name="lineOut__0"
                                     size="64" type="int"/>
+                                    <buffer name="blockOut_0"
+                                    size="64" type="int"/>
+                                    </userFunctionCall>
+                                    <userFunctionCall name="memcpy">
                                     <buffer name="block_ou_0"
                                     size="64" type="int"/>
+                                    <buffer name="blockOut_0"
+                                    size="64" type="int"/>
+                                    <constant name="size"
+                                    type="string" value="64*sizeof(int)"/>
+                                    </userFunctionCall>
+                                    <userFunctionCall name="memcpy">
                                     <buffer name="outLoopP_0"
                                     size="64" type="int"/>
+                                    <buffer name="blockOut_0"
+                                    size="64" type="int"/>
+                                    <constant name="size"
+                                    type="string" value="64*sizeof(int)"/>
                                     </userFunctionCall>
                                 </CompoundCode>
                             </finiteForLoop>
@@ -108,7 +124,7 @@
                     </CompoundCode>
                 </finiteForLoop>
                 <userFunctionCall name="group_bench">
-                    <buffer name="IDCT2Dou_0" size="128" type="int"/>
+                    <buffer name="IDCT2Dou_0" size="256" type="int"/>
                 </userFunctionCall>
             </forLoop>
             <linearCodeContainer/>

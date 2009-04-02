@@ -24,3 +24,6 @@ void group_bench(int * values )
   }
 }
 }
+
+init_inLoopPort_0(int * pt,int nb){
+}

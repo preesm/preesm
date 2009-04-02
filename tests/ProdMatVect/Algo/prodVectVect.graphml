@@ -54,7 +54,7 @@
          <data key="edge_prod">1</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">size</data>
-         <data key="data_type">char</data>
+         <data key="data_type">int</data>
       </edge>
    </graph>
 </graphml>

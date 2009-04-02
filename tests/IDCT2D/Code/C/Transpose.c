@@ -2,8 +2,8 @@
 /* print_CIL_Input is false */
 
 
-void transpose(int * x ,int * Out, int * OutLoop) ;
-void transpose(int * x ,int * Out, int * OutLoop) 
+void transpose(int * x ,int * Out) ;
+void transpose(int * x ,int * Out) 
 { int r ;
   int c ;
 
@@ -13,7 +13,6 @@ void transpose(int * x ,int * Out, int * OutLoop)
     c = 0;
     while (c < 8) {
       Out[8 * r + c] = x[8 * c + r];
-	  OutLoop[8 * r + c] = x[8 * c + r];
       c ++;
     }
     r ++;

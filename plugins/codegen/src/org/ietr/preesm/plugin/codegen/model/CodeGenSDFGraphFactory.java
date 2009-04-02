@@ -49,6 +49,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.core.task.PreesmException;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.demo.SDFAdapterDemo;
@@ -121,7 +122,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public CodeGenSDFGraph create(DirectedAcyclicGraph dag) throws InvalidExpressionException, SDF4JException{
+	public CodeGenSDFGraph create(DirectedAcyclicGraph dag) throws InvalidExpressionException, SDF4JException, PreesmException{
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
@@ -173,7 +174,7 @@ public class CodeGenSDFGraphFactory {
 		return output ;
 	}
 	
-	public CodeGenSDFGraph create(SDFGraph sdf) throws InvalidExpressionException, SDF4JException{
+	public CodeGenSDFGraph create(SDFGraph sdf) throws InvalidExpressionException, SDF4JException, PreesmException{
 		clusterizeStronglyConnected(sdf);
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
@@ -219,7 +220,7 @@ public class CodeGenSDFGraphFactory {
 		return output ;
 	}
 	
-	public void clusterizeStronglyConnected(SDFGraph graph) throws SDF4JException{
+	public void clusterizeStronglyConnected(SDFGraph graph) throws SDF4JException, PreesmException{
 		int i = 0 ;
 		StrongConnectivityInspector<SDFAbstractVertex, SDFEdge> inspector = new StrongConnectivityInspector<SDFAbstractVertex, SDFEdge>(graph) ;
 		for(Set<SDFAbstractVertex> strong : inspector.stronglyConnectedSets()){
@@ -231,7 +232,6 @@ public class CodeGenSDFGraphFactory {
 				try {
 					culsterizeLoopTest(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
 				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				i ++ ;
@@ -241,7 +241,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public static SDFAbstractVertex culsterizeLoopTest(SDFGraph graph,
-			List<SDFAbstractVertex> block, String name) throws InvalidExpressionException, SDF4JException {
+			List<SDFAbstractVertex> block, String name) throws InvalidExpressionException, SDF4JException, PreesmException {
 		try {
 			graph.validateModel();
 		} catch (SDF4JException e) {
@@ -253,6 +253,7 @@ public class CodeGenSDFGraphFactory {
 		if (block.size() > 1) {
 			int pgcd = 0 ;
 			int nbLoopPort = 0 ;
+			boolean hasDelay = false ;
 			SDFGraph clusterGraph = graph.clone();
 			clusterGraph.setName(name);
 			SDFVertex cluster = new SDFVertex();
@@ -288,7 +289,12 @@ public class CodeGenSDFGraphFactory {
 						SDFInterfaceVertex targetPort = new SDFSinkInterfaceVertex();
 						targetPort.setName(cluster.getName() + "_"
 								+ edge.getTargetInterface().getName());
-						cluster.addSink(targetPort);
+						int i = 0 ;
+						String portName = targetPort.getName();
+						while(!cluster.addSink(targetPort)){
+							targetPort.setName(portName+"_"+i);
+							i ++ ;
+						}
 						SDFEdge extEdge = graph.addEdge(cluster, target);
 						extEdge.copyProperties(edge);
 						extEdge.setSourceInterface(targetPort);
@@ -311,8 +317,19 @@ public class CodeGenSDFGraphFactory {
 						SDFInterfaceVertex sourcePort = new SDFSourceInterfaceVertex();
 						sourcePort.setName("inLoopPort_"+nbLoopPort);
 						nbLoopPort ++ ;
-						cluster.addSink(targetPort);
-						cluster.addSource(sourcePort);
+						int i = 0 ;
+						String portName = targetPort.getName();
+						while(!cluster.addSink(targetPort)){
+							targetPort.setName(portName+"_"+i);
+							i ++ ;
+						}
+						
+						i = 0 ;
+						portName = sourcePort.getName();
+						while(!cluster.addSource(sourcePort)){
+							sourcePort.setName(portName+"_"+i);
+							i ++ ;
+						}
 						
 						SDFEdge loopEdge = graph.addEdge(cluster, cluster);
 						loopEdge.copyProperties(edge);
@@ -332,11 +349,18 @@ public class CodeGenSDFGraphFactory {
 							clusterGraph.removeEdge(inLoopEdge);
 						}
 						graph.removeEdge(edge);
+						hasDelay = true ;
 					}else if (!block.contains(source)) {
 						SDFInterfaceVertex sourcePort = new SDFSourceInterfaceVertex();
 						sourcePort.setName(cluster.getName() + "_"
-								+ edge.getSourceInterface().getName());
-						cluster.addSource(sourcePort);
+								+ edge.getSource().getName());
+						
+						int i = 0 ;
+						String portName = sourcePort.getName();
+						while(!cluster.addSource(sourcePort)){
+							sourcePort.setName(portName+"_"+i);
+							i ++ ;
+						}
 						SDFEdge extEdge = graph.addEdge(source, cluster);
 						extEdge.copyProperties(edge);
 						extEdge.setTargetInterface(sourcePort);
@@ -354,6 +378,9 @@ public class CodeGenSDFGraphFactory {
 			}
 			clusterGraph.validateModel();	
 			cluster.setNbRepeat(pgcd);
+			if(!hasDelay){
+				throw(new PreesmException("Cycle with no delay in "+graph));
+			}
 			return cluster;
 		}else{
 			return null ;

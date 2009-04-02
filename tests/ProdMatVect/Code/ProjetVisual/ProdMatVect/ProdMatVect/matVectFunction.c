@@ -28,10 +28,10 @@ void display(int * input, int size){
 void generateMatrix(int * matOut, int size){
 	int i, j ;
 	srand(time(NULL)); 
-	for(i = 0 ; i < size*size ; i ++){
+	for(i = 0 ; i < size ; i ++){
 			matOut[i] = 5 ;//rand();
 	}
-	display(matOut, size*size);
+	display(matOut, size);
 }
 
 void generateVect(int * matVect, int size){
@@ -50,7 +50,7 @@ void init_accIn(int * data, int size){
 	}
 }
 
-void init_in(int * data, int size){
+void init_inLoopPort_0(int * data, int size){
 	int i;
 	for(i = 0 ; i < size ; i ++){
 			data[i] = 0;

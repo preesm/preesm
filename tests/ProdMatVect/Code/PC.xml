@@ -4,90 +4,123 @@
     <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="outputMa_0" size="9" type="int"/>
-            <bufferAllocation name="outputVe_0" size="3" type="int"/>
-            <bufferAllocation name="ProdMatV_0" size="3" type="int"/>
+            <bufferAllocation name="generate_0" size="4" type="int"/>
+            <bufferAllocation name="generate_1" size="4" type="int"/>
+            <bufferAllocation name="prodMatM_0" size="4" type="int"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer>
                 <variableAllocation name="i" type="long"/>
                 <variableAllocation name="j" type="long"/>
+                <variableAllocation name="k" type="long"/>
             </bufferContainer>
             <linearCodeContainer/>
             <forLoop>
                 <userFunctionCall name="generateMatrix">
-                    <buffer name="outputMa_0" size="9" type="int"/>
-                    <constant name="size" type="int" value="3"/>
+                    <buffer name="generate_0" size="4" type="int"/>
+                    <constant name="size" type="int" value="4"/>
                 </userFunctionCall>
-                <userFunctionCall name="generateVect">
-                    <buffer name="outputVe_0" size="3" type="int"/>
-                    <constant name="size" type="int" value="3"/>
+                <userFunctionCall name="generateMatrix">
+                    <buffer name="generate_1" size="4" type="int"/>
+                    <constant name="size" type="int" value="4"/>
                 </userFunctionCall>
-                <CompoundCode name="ProdMatVect">
-                    <bufferAllocation name="outLoopP_0" size="3" type="char"/>
-                    <bufferAllocation name="cluster__0" size="9" type="char"/>
-                    <userFunctionCall name="init_inLoopPort_0">
-                        <buffer name="outLoopP_0" size="3" type="char"/>
-                        <constant name="init_size" type="int" value="3"/>
-                    </userFunctionCall>
-                    <finiteForLoop domain="3" index="i">
-                        <CompoundCode name="cluster_0">
-                            <subBufferAllocation index="i" modulo="9"
+                <CompoundCode name="prodMatMat">
+                    <finiteForLoop domain="2" index="i">
+                        <CompoundCode name="prodMatVect">
+                            <subBufferAllocation index="i" modulo="4"
                                 name="inSub_i__0"
-                                parentBuffer="cluster__0" size="3" type="char"/>
-                            <subBufferAllocation index="i" modulo="9"
+                                parentBuffer="prodMatM_0" size="2" type="int"/>
+                            <subBufferAllocation index="i" modulo="4"
                                 name="outSub_i_0"
-                                parentBuffer="outputMa_0" size="3" type="int"/>
-                            <subBufferAllocation index="i" modulo="3"
-                                name="outSub_i_1"
-                                parentBuffer="outputVe_0" size="1" type="int"/>
-                            <bufferAllocation name="vectorOu_0" size="3" type="char"/>
-                            <CompoundCode name="prodScalVect">
-                                <finiteForLoop domain="3" index="j">
-                                    <CompoundCode name="productScal">
+                                parentBuffer="generate_1" size="2" type="int"/>
+                            <bufferAllocation name="outLoopP_0" size="2" type="int"/>
+                            <userFunctionCall name="init_inLoopPort_0">
+                                <buffer name="outLoopP_0" size="2" type="int"/>
+                                <constant name="init_size" type="int" value="2"/>
+                            </userFunctionCall>
+                            <finiteForLoop domain="2" index="j">
+                                <CompoundCode name="cluster_0">
                                     <subBufferAllocation index="j"
-                                    modulo="3" name="inSub_j__0"
-                                    parentBuffer="vectorOu_0"
-                                    size="1" type="char"/>
+                                    modulo="4" name="outSub_j_0"
+                                    parentBuffer="generate_0"
+                                    size="2" type="int"/>
                                     <subBufferAllocation index="j"
-                                    modulo="3" name="outSub_j_0"
+                                    modulo="2" name="outSub_j_1"
                                     parentBuffer="outSub_i_0"
                                     size="1" type="int"/>
-                                    <subBufferAllocation index="j"
-                                    modulo="3" name="outSub_j_1"
+                                    <bufferAllocation name="vectorOu_0"
+                                    size="2" type="int"/>
+                                    <CompoundCode name="prodScalVect">
+                                    <finiteForLoop domain="2" index="k">
+                                    <CompoundCode name="productScal">
+                                    <subBufferAllocation
+                                    index="k" modulo="2"
+                                    name="inSub_k__0"
+                                    parentBuffer="vectorOu_0"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation
+                                    index="k" modulo="2"
+                                    name="outSub_k_0"
+                                    parentBuffer="outSub_j_0"
+                                    size="1" type="int"/>
+                                    <subBufferAllocation
+                                    index="k" modulo="2"
+                                    name="outSub_k_1"
                                     parentBuffer="outLoopP_0"
-                                    size="1" type="char"/>
-                                    <bufferAllocation name="res_op1"
+                                    size="1" type="int"/>
+                                    <bufferAllocation
+                                    name="res_op1"
                                     size="1" type="int"/>
                                     <userFunctionCall name="mult">
+                                    <subBuffer index="k"
+                                    name="outSub_k_0"
+                                    parentBuffer="outSub_j_0" size="1"/>
                                     <subBuffer index="j"
-                                    name="outSub_j_0"
+                                    name="outSub_j_1"
                                     parentBuffer="outSub_i_0" size="1"/>
-                                    <subBuffer index="i"
-                                    name="outSub_i_1"
-                                    parentBuffer="outputVe_0" size="1"/>
-                                    <buffer name="res_op1"
+                                    <buffer
+                                    name="res_op1"
                                     size="1" type="int"/>
                                     </userFunctionCall>
                                     <userFunctionCall name="add">
-                                    <buffer name="res_op1"
+                                    <buffer
+                                    name="res_op1"
                                     size="1" type="int"/>
-                                    <subBuffer index="j"
-                                    name="outSub_j_1"
+                                    <subBuffer index="k"
+                                    name="outSub_k_1"
                                     parentBuffer="outLoopP_0" size="1"/>
-                                    <subBuffer index="j"
-                                    name="inSub_j__0"
+                                    <subBuffer index="k"
+                                    name="inSub_k__0"
                                     parentBuffer="vectorOu_0" size="1"/>
                                     </userFunctionCall>
                                     </CompoundCode>
-                                </finiteForLoop>
-                            </CompoundCode>
+                                    </finiteForLoop>
+                                    </CompoundCode>
+                                    <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0"
+                                    size="2" type="int"/>
+                                    <buffer name="vectorOu_0"
+                                    size="2" type="int"/>
+                                    <constant name="size"
+                                    type="string" value="2*sizeof(int)"/>
+                                    </userFunctionCall>
+                                    <userFunctionCall name="memcpy">
+                                    <subBuffer index="i"
+                                    name="inSub_i__0"
+                                    parentBuffer="prodMatM_0" size="2"/>
+                                    <buffer name="vectorOu_0"
+                                    size="2" type="int"/>
+                                    <constant name="size"
+                                    type="string" value="2*sizeof(int)"/>
+                                    </userFunctionCall>
+                                </CompoundCode>
+                            </finiteForLoop>
                         </CompoundCode>
                     </finiteForLoop>
                 </CompoundCode>
                 <userFunctionCall name="display">
-                    <buffer name="ProdMatV_0" size="3" type="int"/>
-                    <constant name="size" type="int" value="3"/>
+                    <buffer name="prodMatM_0" size="4" type="int"/>
+                    <constant name="size" type="int" value="4"/>
                 </userFunctionCall>
             </forLoop>
             <linearCodeContainer/>

@@ -54,6 +54,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSourceInterfaceVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.plugin.codegen.model.cal.CALFunctionFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
@@ -83,7 +84,7 @@ public class CodeGenSDFVertexFactory {
 		mainFile = parentAlgoFile;
 	}
 
-	public SDFAbstractVertex create(DAGVertex dagVertex) throws InvalidExpressionException, SDF4JException {
+	public SDFAbstractVertex create(DAGVertex dagVertex) throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
 		ICodeGenSDFVertex newVertex;
@@ -173,7 +174,7 @@ public class CodeGenSDFVertexFactory {
 		return ((SDFAbstractVertex) newVertex);
 	}
 
-	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) throws InvalidExpressionException, SDF4JException {
+	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) throws InvalidExpressionException, SDF4JException, PreesmException {
 		SDFAbstractVertex newVertex;
 		if (sdfVertex instanceof SDFSinkInterfaceVertex) {
 			newVertex = new CodeGenSDFSinkInterfaceVertex();

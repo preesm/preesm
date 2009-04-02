@@ -7,5 +7,6 @@
       <vertex id="Transpose" x="448" y="154"/>
       <vertex id="readBlock" x="213" y="119"/>
       <vertex id="trigger" x="57" y="181"/>
+      <vertex id="broadcast_block" x="542" y="232"/>
    </vertices>
 </layout>

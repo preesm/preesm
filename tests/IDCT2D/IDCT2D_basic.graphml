@@ -43,6 +43,7 @@
          <data key="name">trigger</data>
          <data key="arguments"/>
       </node>
+      <node id="broadcast_block" kind="Broadcast"/>
       <edge source="blockIn" sourceport="block_in" target="readBlock" targetport="in_1">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
@@ -55,18 +56,6 @@
          <data key="edge_cons">1</data>
          <data key="data_type">int</data>
       </edge>
-      <edge source="Transpose" sourceport="blockOutLoop" target="readBlock" targetport="in_2">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">64</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type">int</data>
-      </edge>
-      <edge source="Transpose" sourceport="blockOut" target="block_out" targetport="out">
-         <data key="edge_prod">64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
-         <data key="data_type">int</data>
-      </edge>
       <edge source="readBlock" sourceport="out_1" target="IDCT1D" targetport="lineIn">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
@@ -76,6 +65,24 @@
       <edge source="IDCT1D" sourceport="lineOut" target="Transpose" targetport="blockIn">
          <data key="edge_prod">8</data>
          <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="Transpose" sourceport="blockOut" target="broadcast_block" targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="broadcast_block" sourceport="out" target="block_out" targetport="out">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="broadcast_block" sourceport="out" target="readBlock" targetport="in_2">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">64</data>
          <data key="edge_cons">64</data>
          <data key="data_type">int</data>
       </edge>

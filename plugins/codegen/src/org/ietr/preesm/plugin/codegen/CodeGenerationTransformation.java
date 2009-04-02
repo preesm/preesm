@@ -105,9 +105,10 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 * The implementation is a tagged SDF graph.
 	 * @throws SDF4JException 
 	 * @throws InvalidExpressionException 
+	 * @throws PreesmException 
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) throws InvalidExpressionException, SDF4JException {
+			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenerator codegen = new CodeGenerator(list);
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(new Path(scenario.getAlgorithmURL()));
