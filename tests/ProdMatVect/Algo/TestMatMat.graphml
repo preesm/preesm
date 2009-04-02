@@ -21,6 +21,7 @@
       <data key="name">testMatMat</data>
       <data key="parameters"/>
       <data key="variables">
+         <variable name="nbMat" value="1"/>
          <variable name="xsize" value="2"/>
          <variable name="ysize" value="2"/>
       </data>
@@ -54,13 +55,13 @@
          </data>
       </node>
       <edge source="generateMat1" sourceport="outMat" target="prodMatMat" targetport="Mat1">
-         <data key="edge_prod">xsize*ysize</data>
+         <data key="edge_prod">xsize*ysize*nbMat</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">xsize*ysize</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="generateMat2" sourceport="outMat" target="prodMatMat" targetport="Mat2">
-         <data key="edge_prod">xsize*ysize</data>
+         <data key="edge_prod">xsize*ysize*nbMat</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">xsize*ysize</data>
          <data key="data_type">int</data>
@@ -68,7 +69,7 @@
       <edge source="prodMatMat" sourceport="MatOut" target="viewMatOut" targetport="inResult">
          <data key="edge_prod">xsize*ysize</data>
          <data key="edge_delay">0</data>
-         <data key="edge_cons">xsize*ysize</data>
+         <data key="edge_cons">xsize*ysize*nbMat</data>
          <data key="data_type">int</data>
       </edge>
    </graph>

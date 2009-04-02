@@ -8,40 +8,66 @@
     </files>
     <constraints>
         <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="PC"/>
             <task name="viewMatOut"/>
             <task name="prodMatMat/prodMatVect/prodScalVect/productScal"/>
-            <task name="displayResult"/>
-            <task name="generateMat1"/>
-            <task name="prodMatMat/prodMatVect/prodScalVect/copyData"/>
-            <task name="prodMatMat/prodMatVect"/>
-            <task name="outputMatrix"/>
-            <task name="prodMatMat/prodMatVect/prodScalVect"/>
-            <task name="prodMatMat"/>
-            <task name="ProdMatVect/prodScalVect"/>
-            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/add"/>
-            <task name="ProdMatVect"/>
-            <task name="ProdMatVect/prodScalVect/copyData"/>
-            <task name="outputVector"/>
-            <task name="ProdMatVect/prodScalVect/productScal"/>
             <task name="prodMatMat/prodMatVect/prodScalVect/productScal/mult"/>
+            <task name="generateMat1"/>
+            <task name="prodMatMat"/>
             <task name="generateMat2"/>
-            <task name="ProdMatVect/prodScalVect/productScal/mult"/>
-            <task name="ProdMatVect/prodScalVect/productScal/add"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect"/>
+            <task name="prodMatMat/prodMatVect"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/add"/>
         </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/add"/>
+            <task name="viewMatOut"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/mult"/>
+            <task name="prodMatMat"/>
+            <task name="generateMat2"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect"/>
+            <task name="prodMatMat/prodMatVect"/>
+            <task name="generateMat1"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/add"/>
+            <task name="viewMatOut"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/mult"/>
+            <task name="prodMatMat"/>
+            <task name="generateMat2"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect"/>
+            <task name="prodMatMat/prodMatVect"/>
+            <task name="generateMat1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/add"/>
+            <task name="viewMatOut"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal/mult"/>
+            <task name="prodMatMat"/>
+            <task name="generateMat2"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect/productScal"/>
+            <task name="prodMatMat/prodMatVect/prodScalVect"/>
+            <task name="prodMatMat/prodMatVect"/>
+            <task name="generateMat1"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
     </constraints>
     <timings/>
     <simuParams>
-        <mainCore>PC</mainCore>
+        <mainCore>C64_2</mainCore>
         <mainMedium>EDMA3_1</mainMedium>
+        <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="char" size="1"/>
         </dataTypes>

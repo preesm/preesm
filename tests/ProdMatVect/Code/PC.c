@@ -1,9 +1,13 @@
+    #include "../src/x86.h"
+
     // Buffer declarations
     int generate_0[4];
     int generate_1[4];
     int prodMatM_0[4];
 
-    void main(void){
+    void computationThread_PC(void);
+
+    void computationThread_PC(void){
         // Buffer declarations
         long i ;
         long j ;
@@ -35,8 +39,8 @@
                                 add(res_op1, outSub_k_1, inSub_k__0);
                             }
                         }
-                        memcpy(outLoopP_0, vectorOu_0, 2*sizeof(int)/*size*/);
                         memcpy(inSub_i__0, vectorOu_0, 2*sizeof(int)/*size*/);
+                        memcpy(outLoopP_0, vectorOu_0, 2*sizeof(int)/*size*/);
                     }
                 }
             }

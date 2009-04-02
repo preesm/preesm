@@ -97,17 +97,17 @@
                                     </finiteForLoop>
                                     </CompoundCode>
                                     <userFunctionCall name="memcpy">
-                                    <buffer name="outLoopP_0"
-                                    size="2" type="int"/>
+                                    <subBuffer index="i"
+                                    name="inSub_i__0"
+                                    parentBuffer="prodMatM_0" size="2"/>
                                     <buffer name="vectorOu_0"
                                     size="2" type="int"/>
                                     <constant name="size"
                                     type="string" value="2*sizeof(int)"/>
                                     </userFunctionCall>
                                     <userFunctionCall name="memcpy">
-                                    <subBuffer index="i"
-                                    name="inSub_i__0"
-                                    parentBuffer="prodMatM_0" size="2"/>
+                                    <buffer name="outLoopP_0"
+                                    size="2" type="int"/>
                                     <buffer name="vectorOu_0"
                                     size="2" type="int"/>
                                     <constant name="size"

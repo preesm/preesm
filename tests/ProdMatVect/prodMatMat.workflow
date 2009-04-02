@@ -50,6 +50,5 @@
    <preesm:dataTransfer from="__architecture" sourceport="architecture" targetport="architecture" to="CodeGen"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
    <preesm:dataTransfer from="Mapper" sourceport="ABC" targetport="ABC" to="DAG Plotter"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HSDF"/>
-   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Mapper"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
 </preesm:workflow>
