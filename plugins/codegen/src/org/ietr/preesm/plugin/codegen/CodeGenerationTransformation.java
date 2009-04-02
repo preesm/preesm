@@ -120,7 +120,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
 
 		// Displays the DAG
-		if (true) {
+		if (false) {
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(algorithm);
 		}
