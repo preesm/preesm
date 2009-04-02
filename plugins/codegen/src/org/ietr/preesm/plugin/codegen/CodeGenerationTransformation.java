@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen;
 
 import java.util.HashMap;
@@ -95,7 +95,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		@SuppressWarnings("unused")
 		TextParameters params = new TextParameters(map);
 
-		//gen.transform(algorithm, architecture, params);
+		// gen.transform(algorithm, architecture, params);
 
 		logger.log(Level.FINER, "Code generated");
 	}
@@ -103,24 +103,28 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	/**
 	 * Generates the source files from an implementation and an architecture.
 	 * The implementation is a tagged SDF graph.
-	 * @throws SDF4JException 
-	 * @throws InvalidExpressionException 
-	 * @throws PreesmException 
+	 * 
+	 * @throws SDF4JException
+	 * @throws InvalidExpressionException
+	 * @throws PreesmException
 	 */
 	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario, SourceFileList list) throws InvalidExpressionException, SDF4JException, PreesmException {
+			MultiCoreArchitecture architecture, IScenario scenario,
+			SourceFileList list) throws InvalidExpressionException,
+			SDF4JException, PreesmException {
 		CodeGenerator codegen = new CodeGenerator(list);
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile iFile = workspace.getRoot().getFile(new Path(scenario.getAlgorithmURL()));
+		IFile iFile = workspace.getRoot().getFile(
+				new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
-		
+
 		// Displays the DAG
 		if (true) {
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(algorithm);
 		}
-		
+
 		codegen.generateSourceFiles(sdfGraph, architecture);
 	}
 
@@ -129,30 +133,32 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 */
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario, TextParameters parameters) throws PreesmException{
-		
+			MultiCoreArchitecture architecture, IScenario scenario,
+			TextParameters parameters) throws PreesmException {
+
 		// Default source path is given in the workflow
 		String sourcePath = parameters.getVariable("sourcePath");
-		
-		// If a source path is defined in the scenario, it overrides the one from the workflow
-		if(!scenario.getCodegenManager().getCodegenDirectory().isEmpty()){
+
+		// If a source path is defined in the scenario, it overrides the one
+		// from the workflow
+		if (!scenario.getCodegenManager().getCodegenDirectory().isEmpty()) {
 			sourcePath = scenario.getCodegenManager().getCodegenDirectory();
 		}
-		
-		
-		
+
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		SourceFileList list = new SourceFileList();
-		
-		try{
-		// Generate source file class
+
+		try {
+			// Generate source file class
 			generateSourceFiles(algorithm, architecture, scenario, list);
-		}catch(Exception e){
+		} catch (PreesmException e) {
+			throw(e);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		// Generates the code
-		GenericPrinter printerChooser = new GenericPrinter(sourcePath,xslPath);
+		GenericPrinter printerChooser = new GenericPrinter(sourcePath, xslPath);
 		printerChooser.printList(list);
 
 		result.setSourcefilelist(list);
