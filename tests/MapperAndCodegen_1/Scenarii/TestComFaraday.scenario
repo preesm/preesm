@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
+        <architecture url="/MapperAndCodegen_1/Archi/Faraday.design"/>
+        <timingfile url="/MapperAndCodegen_1/Scenarii/Faraday.xls"/>
+        <codegenDirectory url="/MapperAndCodegen_1/Code/c64"/>
+    </files>
+    <constraints>
+        <constraintGroup>
+            <operator name="C64_5"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="Sensor2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_3"/>
+            <task name="Copy"/>
+            <task name="Gen_int"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_4"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Sensor"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="Copy"/>
+            <task name="ParallelTest3"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+    </constraints>
+    <timings>
+        <timing opname="C64x" time="1500" vertexname="Sensor"/>
+        <timing opname="C64x" time="1500" vertexname="Gen_int"/>
+        <timing opname="C64x" time="1500" vertexname="Copy"/>
+        <timing opname="C64x" time="1500" vertexname="Actuator"/>
+        <timing opname="C64x" time="1500" vertexname="ParallelTest"/>
+        <timing opname="C64x" time="1500" vertexname="ParallelTest2"/>
+        <timing opname="C64x" time="1500" vertexname="ParallelTest3"/>
+        <timing opname="C64x" time="1500" vertexname="Sensor2"/>
+    </timings>
+    <simuParams>
+        <mainCore/>
+        <mainMedium/>
+        <averageDataSize>1021</averageDataSize>
+        <dataTypes/>
+    </simuParams>
+</scenario>
