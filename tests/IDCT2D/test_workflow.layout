@@ -7,9 +7,9 @@
       <vertex id="HierarchyFlattening" x="329" y="98"/>
       <vertex id="CodeGen" x="879" y="127"/>
       <vertex id="DAG Plotter" x="879" y="256"/>
-      <vertex id="Exporter" x="679" y="70"/>
+      <vertex id="Exporter" x="559" y="52"/>
       <vertex id="Mapper" x="663" y="202"/>
-      <vertex id="HSDF" x="482" y="59"/>
+      <vertex id="HSDF" x="399" y="138"/>
       <vertex id="FAST scheduler" x="57" y="112"/>
    </vertices>
 </layout>

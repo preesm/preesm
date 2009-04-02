@@ -4,15 +4,26 @@
     <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="Triggers_0" size="4" type="int"/>
             <bufferAllocation name="TriggerM_0" size="256" type="int"/>
-            <bufferAllocation name="IDCT2Dou_0" size="256" type="int"/>
+            <bufferAllocation name="Triggers_0" size="4" type="int"/>
+            <bufferAllocation name="explode__0" size="64" type="int"/>
+            <bufferAllocation name="explode__1" size="64" type="int"/>
+            <bufferAllocation name="explode__2" size="64" type="int"/>
+            <bufferAllocation name="explode__3" size="64" type="int"/>
+            <bufferAllocation name="explode__4" size="1" type="int"/>
+            <bufferAllocation name="explode__5" size="1" type="int"/>
+            <bufferAllocation name="explode__6" size="1" type="int"/>
+            <bufferAllocation name="explode__7" size="1" type="int"/>
+            <bufferAllocation name="IDCT2D_0_0" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_1_0" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_2_0" size="64" type="int"/>
+            <bufferAllocation name="IDCT2D_3_0" size="64" type="int"/>
+            <bufferAllocation name="implode__0" size="256" type="int"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer>
                 <variableAllocation name="i" type="long"/>
                 <variableAllocation name="j" type="long"/>
-                <variableAllocation name="k" type="long"/>
             </bufferContainer>
             <linearCodeContainer/>
             <forLoop>
@@ -20,111 +31,378 @@
                     <buffer name="TriggerM_0" size="256" type="int"/>
                     <buffer name="Triggers_0" size="4" type="int"/>
                 </userFunctionCall>
-                <finiteForLoop domain="4" index="i">
-                    <CompoundCode name="IDCT2D">
-                        <subBufferAllocation index="i" modulo="256"
-                            name="inSub_i__0" parentBuffer="IDCT2Dou_0"
-                            size="64" type="int"/>
-                        <subBufferAllocation index="i" modulo="256"
-                            name="outSub_i_0" parentBuffer="TriggerM_0"
-                            size="64" type="int"/>
-                        <subBufferAllocation index="i" modulo="4"
-                            name="outSub_i_1" parentBuffer="Triggers_0"
-                            size="1" type="int"/>
-                        <bufferAllocation name="block_ou_0" size="64" type="int"/>
-                        <CompoundCode name="IDCT2D_basic">
-                            <bufferAllocation name="trig_clu_0" size="2" type="int"/>
-                            <bufferAllocation name="outLoopP_0"
-                                size="64" type="int"/>
-                            <userFunctionCall name="init_inLoopPort_0">
-                                <buffer name="outLoopP_0" size="64" type="int"/>
-                                <constant name="init_size" type="int" value="64"/>
-                            </userFunctionCall>
-                            <userFunctionCall name="trigger">
-                                <buffer name="trig_clu_0" size="2" type="int"/>
-                            </userFunctionCall>
-                            <finiteForLoop domain="2" index="j">
-                                <CompoundCode name="cluster_0">
-                                    <subBufferAllocation index="j"
-                                    modulo="2" name="outSub_j_0"
-                                    parentBuffer="trig_clu_0"
-                                    size="1" type="int"/>
-                                    <bufferAllocation name="out_1_li_0"
+                <CompoundCode name="explode_Trigger_MB">
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__0" size="64" type="int"/>
+                        <bufferAtIndex index="0" name="TriggerM_0"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__1" size="64" type="int"/>
+                        <bufferAtIndex index="64" name="TriggerM_0"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__2" size="64" type="int"/>
+                        <bufferAtIndex index="128" name="TriggerM_0"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__3" size="64" type="int"/>
+                        <bufferAtIndex index="192" name="TriggerM_0"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="explode_Trigger_signed">
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__5" size="1" type="int"/>
+                        <bufferAtIndex index="0" name="Triggers_0"/>
+                        <constant name="size" type="string" value="1*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__4" size="1" type="int"/>
+                        <bufferAtIndex index="1" name="Triggers_0"/>
+                        <constant name="size" type="string" value="1*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__7" size="1" type="int"/>
+                        <bufferAtIndex index="2" name="Triggers_0"/>
+                        <constant name="size" type="string" value="1*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <buffer name="explode__6" size="1" type="int"/>
+                        <bufferAtIndex index="3" name="Triggers_0"/>
+                        <constant name="size" type="string" value="1*sizeof(int)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="IDCT2D_0">
+                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
+                    <CompoundCode name="IDCT2D_basic">
+                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
+                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
+                        <userFunctionCall name="init_inLoopPort_0">
+                            <buffer name="outLoopP_0" size="64" type="int"/>
+                            <constant name="init_size" type="int" value="64"/>
+                        </userFunctionCall>
+                        <userFunctionCall name="trigger">
+                            <buffer name="trig_clu_0" size="2" type="int"/>
+                        </userFunctionCall>
+                        <finiteForLoop domain="2" index="i">
+                            <CompoundCode name="cluster_0">
+                                <subBufferAllocation index="i"
+                                    modulo="2" name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1" type="int"/>
+                                <bufferAllocation name="out_1_li_0"
                                     size="64" type="int"/>
-                                    <bufferAllocation name="lineOut__0"
+                                <bufferAllocation name="lineOut__0"
                                     size="64" type="int"/>
-                                    <bufferAllocation name="blockOut_0"
+                                <bufferAllocation name="blockOut_0"
                                     size="64" type="int"/>
-                                    <userFunctionCall name="readBlock">
+                                <userFunctionCall name="readBlock">
+                                    <buffer name="explode__0" size="64" type="int"/>
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
                                     <subBuffer index="i"
                                     name="outSub_i_0"
-                                    parentBuffer="TriggerM_0" size="64"/>
-                                    <buffer name="outLoopP_0"
-                                    size="64" type="int"/>
-                                    <subBuffer index="j"
-                                    name="outSub_j_0"
                                     parentBuffer="trig_clu_0" size="1"/>
-                                    <buffer name="out_1_li_0"
-                                    size="64" type="int"/>
-                                    </userFunctionCall>
-                                    <finiteForLoop domain="8" index="k">
+                                    <buffer name="out_1_li_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <finiteForLoop domain="8" index="j">
                                     <CompoundCode name="IDCT1D">
-                                    <subBufferAllocation
-                                    index="k" modulo="64"
-                                    name="inSub_k__0"
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="inSub_j__0"
                                     parentBuffer="lineOut__0"
                                     size="8" type="int"/>
-                                    <subBufferAllocation
-                                    index="k" modulo="64"
-                                    name="outSub_k_0"
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="outSub_j_0"
                                     parentBuffer="out_1_li_0"
                                     size="8" type="int"/>
                                     <userFunctionCall name="idct1d">
-                                    <subBuffer index="k"
-                                    name="outSub_k_0"
+                                    <subBuffer index="j"
+                                    name="outSub_j_0"
                                     parentBuffer="out_1_li_0" size="8"/>
-                                    <subBuffer index="k"
-                                    name="inSub_k__0"
+                                    <subBuffer index="j"
+                                    name="inSub_j__0"
                                     parentBuffer="lineOut__0" size="8"/>
                                     </userFunctionCall>
                                     </CompoundCode>
-                                    </finiteForLoop>
-                                    <userFunctionCall name="transpose">
-                                    <buffer name="lineOut__0"
-                                    size="64" type="int"/>
-                                    <buffer name="blockOut_0"
-                                    size="64" type="int"/>
-                                    </userFunctionCall>
-                                    <userFunctionCall name="memcpy">
-                                    <buffer name="block_ou_0"
-                                    size="64" type="int"/>
-                                    <buffer name="blockOut_0"
-                                    size="64" type="int"/>
-                                    <constant name="size"
-                                    type="string" value="64*sizeof(int)"/>
-                                    </userFunctionCall>
-                                    <userFunctionCall name="memcpy">
-                                    <buffer name="outLoopP_0"
-                                    size="64" type="int"/>
-                                    <buffer name="blockOut_0"
-                                    size="64" type="int"/>
-                                    <constant name="size"
-                                    type="string" value="64*sizeof(int)"/>
-                                    </userFunctionCall>
-                                </CompoundCode>
-                            </finiteForLoop>
-                        </CompoundCode>
-                        <userFunctionCall name="clip">
-                            <buffer name="block_ou_0" size="64" type="int"/>
-                            <subBuffer index="i" name="outSub_i_1"
-                                parentBuffer="Triggers_0" size="1"/>
-                            <subBuffer index="i" name="inSub_i__0"
-                                parentBuffer="IDCT2Dou_0" size="64"/>
-                        </userFunctionCall>
+                                </finiteForLoop>
+                                <userFunctionCall name="transpose">
+                                    <buffer name="lineOut__0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="block_ou_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
                     </CompoundCode>
-                </finiteForLoop>
+                    <userFunctionCall name="clip">
+                        <buffer name="block_ou_0" size="64" type="int"/>
+                        <buffer name="explode__5" size="1" type="int"/>
+                        <buffer name="IDCT2D_0_0" size="64" type="int"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="IDCT2D_1">
+                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
+                    <CompoundCode name="IDCT2D_basic">
+                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
+                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
+                        <userFunctionCall name="init_inLoopPort_0">
+                            <buffer name="outLoopP_0" size="64" type="int"/>
+                            <constant name="init_size" type="int" value="64"/>
+                        </userFunctionCall>
+                        <userFunctionCall name="trigger">
+                            <buffer name="trig_clu_0" size="2" type="int"/>
+                        </userFunctionCall>
+                        <finiteForLoop domain="2" index="i">
+                            <CompoundCode name="cluster_0">
+                                <subBufferAllocation index="i"
+                                    modulo="2" name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1" type="int"/>
+                                <bufferAllocation name="out_1_li_0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="lineOut__0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="blockOut_0"
+                                    size="64" type="int"/>
+                                <userFunctionCall name="readBlock">
+                                    <buffer name="explode__1" size="64" type="int"/>
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <subBuffer index="i"
+                                    name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1"/>
+                                    <buffer name="out_1_li_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <finiteForLoop domain="8" index="j">
+                                    <CompoundCode name="IDCT1D">
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0"
+                                    size="8" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0"
+                                    size="8" type="int"/>
+                                    <userFunctionCall name="idct1d">
+                                    <subBuffer index="j"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0" size="8"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0" size="8"/>
+                                    </userFunctionCall>
+                                    </CompoundCode>
+                                </finiteForLoop>
+                                <userFunctionCall name="transpose">
+                                    <buffer name="lineOut__0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="block_ou_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
+                    </CompoundCode>
+                    <userFunctionCall name="clip">
+                        <buffer name="block_ou_0" size="64" type="int"/>
+                        <buffer name="explode__4" size="1" type="int"/>
+                        <buffer name="IDCT2D_1_0" size="64" type="int"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="IDCT2D_2">
+                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
+                    <CompoundCode name="IDCT2D_basic">
+                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
+                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
+                        <userFunctionCall name="init_inLoopPort_0">
+                            <buffer name="outLoopP_0" size="64" type="int"/>
+                            <constant name="init_size" type="int" value="64"/>
+                        </userFunctionCall>
+                        <userFunctionCall name="trigger">
+                            <buffer name="trig_clu_0" size="2" type="int"/>
+                        </userFunctionCall>
+                        <finiteForLoop domain="2" index="i">
+                            <CompoundCode name="cluster_0">
+                                <subBufferAllocation index="i"
+                                    modulo="2" name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1" type="int"/>
+                                <bufferAllocation name="out_1_li_0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="lineOut__0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="blockOut_0"
+                                    size="64" type="int"/>
+                                <userFunctionCall name="readBlock">
+                                    <buffer name="explode__2" size="64" type="int"/>
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <subBuffer index="i"
+                                    name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1"/>
+                                    <buffer name="out_1_li_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <finiteForLoop domain="8" index="j">
+                                    <CompoundCode name="IDCT1D">
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0"
+                                    size="8" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0"
+                                    size="8" type="int"/>
+                                    <userFunctionCall name="idct1d">
+                                    <subBuffer index="j"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0" size="8"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0" size="8"/>
+                                    </userFunctionCall>
+                                    </CompoundCode>
+                                </finiteForLoop>
+                                <userFunctionCall name="transpose">
+                                    <buffer name="lineOut__0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="block_ou_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
+                    </CompoundCode>
+                    <userFunctionCall name="clip">
+                        <buffer name="block_ou_0" size="64" type="int"/>
+                        <buffer name="explode__7" size="1" type="int"/>
+                        <buffer name="IDCT2D_2_0" size="64" type="int"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="IDCT2D_3">
+                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
+                    <CompoundCode name="IDCT2D_basic">
+                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
+                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
+                        <userFunctionCall name="init_inLoopPort_0">
+                            <buffer name="outLoopP_0" size="64" type="int"/>
+                            <constant name="init_size" type="int" value="64"/>
+                        </userFunctionCall>
+                        <userFunctionCall name="trigger">
+                            <buffer name="trig_clu_0" size="2" type="int"/>
+                        </userFunctionCall>
+                        <finiteForLoop domain="2" index="i">
+                            <CompoundCode name="cluster_0">
+                                <subBufferAllocation index="i"
+                                    modulo="2" name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1" type="int"/>
+                                <bufferAllocation name="out_1_li_0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="lineOut__0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="blockOut_0"
+                                    size="64" type="int"/>
+                                <userFunctionCall name="readBlock">
+                                    <buffer name="explode__3" size="64" type="int"/>
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <subBuffer index="i"
+                                    name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1"/>
+                                    <buffer name="out_1_li_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <finiteForLoop domain="8" index="j">
+                                    <CompoundCode name="IDCT1D">
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0"
+                                    size="8" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0"
+                                    size="8" type="int"/>
+                                    <userFunctionCall name="idct1d">
+                                    <subBuffer index="j"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0" size="8"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0" size="8"/>
+                                    </userFunctionCall>
+                                    </CompoundCode>
+                                </finiteForLoop>
+                                <userFunctionCall name="transpose">
+                                    <buffer name="lineOut__0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="block_ou_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
+                    </CompoundCode>
+                    <userFunctionCall name="clip">
+                        <buffer name="block_ou_0" size="64" type="int"/>
+                        <buffer name="explode__6" size="1" type="int"/>
+                        <buffer name="IDCT2D_3_0" size="64" type="int"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <CompoundCode name="implode_Group_MB">
+                    <userFunctionCall name="memcpy">
+                        <bufferAtIndex index="0" name="implode__0"/>
+                        <buffer name="IDCT2D_0_0" size="64" type="int"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <bufferAtIndex index="64" name="implode__0"/>
+                        <buffer name="IDCT2D_1_0" size="64" type="int"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <bufferAtIndex index="128" name="implode__0"/>
+                        <buffer name="IDCT2D_2_0" size="64" type="int"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                    <userFunctionCall name="memcpy">
+                        <bufferAtIndex index="192" name="implode__0"/>
+                        <buffer name="IDCT2D_3_0" size="64" type="int"/>
+                        <constant name="size" type="string" value="64*sizeof(int)"/>
+                    </userFunctionCall>
+                </CompoundCode>
                 <userFunctionCall name="group_bench">
-                    <buffer name="IDCT2Dou_0" size="256" type="int"/>
+                    <buffer name="implode__0" size="256" type="int"/>
                 </userFunctionCall>
             </forLoop>
             <linearCodeContainer/>

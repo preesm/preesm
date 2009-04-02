@@ -147,6 +147,15 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		}
 	}
 
+	public CompoundCodeElement(String name,
+			AbstractBufferContainer parentContainer) {
+		super(parentContainer);
+		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
+		this.name = name;
+		this.parentContainer = parentContainer;
+		calls = new ArrayList<ICodeElement>();
+	}
+	
 	public void addBuffer(Buffer buff, SDFEdge edge) {
 		if (allocatedBuffers.get(edge) == null) {
 			allocatedBuffers.put(edge, buff);

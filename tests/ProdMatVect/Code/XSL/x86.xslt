@@ -123,7 +123,7 @@
         <xsl:value-of select="concat($curIndent,@name,'(')"/>
         <!-- adding buffers -->
         <xsl:variable name="buffers">
-            <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant"/>
+            <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant | sourceCode:bufferAtIndex"/>
         </xsl:variable>
         <!-- removing last coma -->
         <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
@@ -188,6 +188,10 @@
     
     <xsl:template match="sourceCode:subBuffer">
         <xsl:value-of select="concat(@name,', ')"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:bufferAtIndex">
+        <xsl:value-of select="concat('&amp;',@name,'[',@index,']',', ')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:constant">

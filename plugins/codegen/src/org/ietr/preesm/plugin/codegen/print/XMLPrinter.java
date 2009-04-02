@@ -65,6 +65,7 @@ import org.ietr.preesm.core.codegen.VariableAllocation;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
+import org.ietr.preesm.core.codegen.buffer.BufferAtIndex;
 import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
@@ -237,6 +238,17 @@ public class XMLPrinter implements IAbstractPrinter {
 		return currentLocation;
 	}
 
+	
+	public Object visit(BufferAtIndex domElt, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element buffer = dom.createElement("bufferAtIndex");
+			((Element)currentLocation).appendChild(buffer);
+			buffer.setAttribute("name", domElt.getParentBuffer().getName());
+			buffer.setAttribute("index", domElt.getIndex().getName());
+		} 
+		return currentLocation;
+	}
 	@Override
 	public Object visit(BufferAllocation domElt, CodeZoneId index,
 			Object currentLocation) {

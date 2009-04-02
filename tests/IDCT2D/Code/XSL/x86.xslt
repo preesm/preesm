@@ -123,10 +123,10 @@
         <xsl:value-of select="concat($curIndent,@name,'(')"/>
         <!-- adding buffers -->
         <xsl:variable name="buffers">
-            <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant"/>
+            <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant | sourceCode:bufferAtIndex"/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
+        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
         <xsl:value-of select="concat($buffers,');',$new_line)"/>
     </xsl:template>
     
@@ -183,15 +183,19 @@
     <!-- Units level -->
     
     <xsl:template match="sourceCode:buffer">
-        <xsl:value-of select="concat(@name,',')"/>
+        <xsl:value-of select="concat(@name,', ')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:subBuffer">
-        <xsl:value-of select="concat(@name,',')"/>
+        <xsl:value-of select="concat(@name,', ')"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:bufferAtIndex">
+        <xsl:value-of select="concat('&amp;',@name,'[',@index,']',', ')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:constant">
-        <xsl:value-of select="concat(@value,'/*',@name,'*/',',')"/>
+        <xsl:value-of select="concat(@value,'/*',@name,'*/',', ')"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:bufferAllocation">
@@ -203,10 +207,10 @@
         <xsl:param name="curIndent"/>
         <xsl:choose>
             <xsl:when test="@modulo">
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' =&amp;',@parentBuffer,'[','(',@index,'*',@size,')','%',@modulo,'];',$new_line)"/>  
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')',' % ',@modulo,'];',$new_line)"/>  
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' =&amp;',@parentBuffer,'[','(',@index,'*',@size,')','];',$new_line)"/>  
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')','];',$new_line)"/>  
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
