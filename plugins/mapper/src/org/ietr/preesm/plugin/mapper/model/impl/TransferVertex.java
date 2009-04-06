@@ -69,6 +69,11 @@ public class TransferVertex extends MapperDAGVertex {
 	 */
 	private int nodeIndex;
 
+	/**
+	 * Sets the involvement (if any) corresponding to this transfer
+	 */
+	private InvolvementVertex involvementVertex = null;
+
 	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source,
 			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
 		super(id, base);
@@ -103,23 +108,6 @@ public class TransferVertex extends MapperDAGVertex {
 		return null;
 	}
 
-	/**
-	 * A transfer vertex follows only one vertex. Returning the transfer
-	 * predecessor if it is an involvement vertex
-	 */
-	public InvolvementVertex getPrecedingInvolvement() {
-		for (DAGEdge incomingEdge : getBase().incomingEdgesOf(this)) {
-			if (!(incomingEdge instanceof PrecedenceEdge)) {
-				MapperDAGVertex precV = (MapperDAGVertex) incomingEdge
-						.getSource();
-				if (precV instanceof InvolvementVertex)
-					return (InvolvementVertex) precV;
-			}
-		}
-
-		return null;
-	}
-
 	public MapperDAGVertex getSource() {
 		return source;
 	}
@@ -135,4 +123,14 @@ public class TransferVertex extends MapperDAGVertex {
 	public int getNodeIndex() {
 		return nodeIndex;
 	}
+
+	public InvolvementVertex getInvolvementVertex() {
+		return involvementVertex;
+	}
+
+	public void setInvolvementVertex(InvolvementVertex involvementVertex) {
+		this.involvementVertex = involvementVertex;
+	}
+	
+	
 }

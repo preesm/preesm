@@ -74,7 +74,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -84,7 +84,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -94,7 +94,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -104,7 +104,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -114,7 +114,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -124,7 +124,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -134,7 +134,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
@@ -144,7 +144,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_invDataRate">1</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>

@@ -80,6 +80,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			} else if (type == CommunicationRouter.involvementType) {
 				// Adding the involvement
 				MapperDAGEdge incomingEdge = null;
+				TransferVertex correspondingTransfer = null;
 
 				for (Object o : alreadyCreatedVertices) {
 					if (o instanceof TransferVertex) {
@@ -90,6 +91,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 								// Finding the edge where to add an overhead
 								incomingEdge = (MapperDAGEdge) v
 										.incomingEdges().toArray()[0];
+								correspondingTransfer = v;
 						}
 
 					}
@@ -122,8 +124,8 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 								&& v.getRouteStep() == routeStep) {
 							toSynchronize.add(v);
 							
-							if(v.getPrecedingInvolvement() != null)
-								toSynchronize.add(v.getPrecedingInvolvement());
+							if(v.getInvolvementVertex() != null)
+								toSynchronize.add(v.getInvolvementVertex());
 						}
 
 					}

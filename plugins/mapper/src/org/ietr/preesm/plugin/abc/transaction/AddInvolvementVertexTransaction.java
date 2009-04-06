@@ -78,7 +78,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	long involvementTime = 0;
 
 	/**
-	 * Original edge corresponding to this involvement
+	 * Original edge and transfer corresponding to this involvement
 	 */
 	private MapperDAGEdge edge = null;
 
@@ -97,7 +97,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	 * edges added
 	 */
 	private MapperDAGEdge newInEdge = null;
-	private MapperDAGEdge newOutEdge = null;
+	//private MapperDAGEdge newOutEdge = null;
 
 	public AddInvolvementVertexTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, AbstractRouteStep step,
@@ -139,21 +139,22 @@ public class AddInvolvementVertexTransaction extends Transaction {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"An involvement must be followed by a transfer");
 			}
+			((TransferVertex)currentTarget).setInvolvementVertex(iVertex);
 
 			implementation.addVertex(iVertex);
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
 					iVertex);
-			newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
-					currentTarget);
+			//newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
+			//		currentTarget);
 
 			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
 					.clone());
-			newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-					.clone());
+			//newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+			//		.clone());
 
 			newInEdge.getTimingEdgeProperty().setCost(0);
-			newOutEdge.getTimingEdgeProperty().setCost(0);
+			//newOutEdge.getTimingEdgeProperty().setCost(0);
 
 			if (true) {
 				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);

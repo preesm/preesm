@@ -220,8 +220,8 @@
                 <xsl:otherwise>EDMA3</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            <xsl:when test="@type=msg">msg</xsl:when>
-            <xsl:when test="@type=medium">
+            <xsl:when test="@type='msg'">msg</xsl:when>
+            <xsl:when test="@type='medium'">
                 <xsl:value-of select="@mediumDef"/>
             </xsl:when>
         </xsl:choose>

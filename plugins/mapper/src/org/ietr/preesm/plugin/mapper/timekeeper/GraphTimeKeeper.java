@@ -194,6 +194,7 @@ public class GraphTimeKeeper {
 
 			dirtyVertices.remove(modifiedvertex);
 			
+			// Handling synchronized vertices
 			if(modifiedvertex.getTimingVertexProperty().getSynchronizedVertices() != null){
 				List<MapperDAGVertex> synchronizedVertices = modifiedvertex.getTimingVertexProperty().getSynchronizedVertices();
 				if(!synchronizedVertices.isEmpty()){

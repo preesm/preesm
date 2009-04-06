@@ -69,13 +69,12 @@
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
-         <spirit:instanceName>TCP_1</spirit:instanceName>
+         <spirit:instanceName>TCP_2</spirit:instanceName>
          <spirit:componentRef spirit:library="" spirit:name="TCP" spirit:vendor="" spirit:version=""/>
          <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">medium</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="componentType">contentionNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="medium_dataRate">1</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="node_dataRate">1</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>
@@ -83,41 +82,41 @@
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core2"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core3"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core4"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core5"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core6"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core7"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core5"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core6"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_2"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core0"/>
       </spirit:interconnection>
    </spirit:interconnections>

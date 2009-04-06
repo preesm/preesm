@@ -116,7 +116,7 @@ public class ImplementationCleaner {
 
 		for (DAGVertex v : getAllTransfers(vertex)) {
 			if (v instanceof TransferVertex) {
-				MapperDAGVertex o = ((TransferVertex) v).getPrecedingInvolvement();
+				MapperDAGVertex o = ((TransferVertex) v).getInvolvementVertex();
 				if (o != null && o instanceof InvolvementVertex) {
 					transactionManager.add(new RemoveVertexTransaction(o,
 							implementation, orderManager));
