@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Trigger" x="57" y="70"/>
+      <vertex id="IDCT2D" x="171" y="70"/>
+      <vertex id="Group" x="306" y="79"/>
+   </vertices>
+</layout>

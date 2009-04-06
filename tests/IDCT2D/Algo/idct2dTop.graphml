@@ -21,7 +21,7 @@
       <data key="name">IDCT2D</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="NbBlocks" value="1"/>
+         <variable name="NbBlocks" value="10"/>
       </data>
       <node id="Trigger" kind="vertex">
          <data key="graph_desc">IDL/trigger_bench.idl</data>
