@@ -3,6 +3,183 @@
     <coreType>C64x</coreType>
     <coreName>C64_2</coreName>
     <SourceFile>
-        <bufferContainer/>
+        <bufferContainer>
+            <bufferAllocation name="r_Trigge_0" size="64" type="int"/>
+            <bufferAllocation name="r_Trigge_1" size="1" type="int"/>
+            <bufferAllocation name="IDCT2Dou_0" size="64" type="int"/>
+            <bufferAllocation name="sem_0" size="4" type="semaphore"/>
+        </bufferContainer>
+        <threadDeclaration name="computationThread">
+            <bufferContainer>
+                <variableAllocation name="i" type="long"/>
+                <variableAllocation name="j" type="long"/>
+            </bufferContainer>
+            <linearCodeContainer>
+                <semaphoreInit>
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                    <constant name="semNumber" type="int" value="4"/>
+                </semaphoreInit>
+                <launchThread priority="1" stackSize="8000" threadName="communicationThread"/>
+                <semaphorePost number="2" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+            </linearCodeContainer>
+            <forLoop>
+                <semaphorePend number="0" type="full">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePend>
+                <semaphorePend number="2" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePend>
+                <CompoundCode name="IDCT2D">
+                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
+                    <CompoundCode name="IDCT2D_basic">
+                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
+                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
+                        <userFunctionCall name="init_inLoopPort_0">
+                            <buffer name="outLoopP_0" size="64" type="int"/>
+                            <constant name="init_size" type="int" value="64"/>
+                        </userFunctionCall>
+                        <userFunctionCall name="trigger">
+                            <buffer name="trig_clu_0" size="2" type="int"/>
+                        </userFunctionCall>
+                        <finiteForLoop domain="2" index="i">
+                            <CompoundCode name="cluster_0">
+                                <subBufferAllocation index="i"
+                                    modulo="2" name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1" type="int"/>
+                                <bufferAllocation name="out_1_li_0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="lineOut__0"
+                                    size="64" type="int"/>
+                                <bufferAllocation name="blockOut_0"
+                                    size="64" type="int"/>
+                                <userFunctionCall name="readBlock">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <subBuffer index="i"
+                                    name="outSub_i_0"
+                                    parentBuffer="trig_clu_0" size="1"/>
+                                    <buffer name="out_1_li_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <finiteForLoop domain="8" index="j">
+                                    <CompoundCode name="IDCT1D">
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0"
+                                    size="8" type="int"/>
+                                    <subBufferAllocation index="j"
+                                    modulo="64"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0"
+                                    size="8" type="int"/>
+                                    <userFunctionCall name="idct1d">
+                                    <subBuffer index="j"
+                                    name="outSub_j_0"
+                                    parentBuffer="out_1_li_0" size="8"/>
+                                    <subBuffer index="j"
+                                    name="inSub_j__0"
+                                    parentBuffer="lineOut__0" size="8"/>
+                                    </userFunctionCall>
+                                    </CompoundCode>
+                                </finiteForLoop>
+                                <userFunctionCall name="transpose">
+                                    <buffer name="lineOut__0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="outLoopP_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                                <userFunctionCall name="memcpy">
+                                    <buffer name="block_ou_0" size="64" type="int"/>
+                                    <buffer name="blockOut_0" size="64" type="int"/>
+                                    <constant name="size" type="string" value="64*sizeof(int)"/>
+                                </userFunctionCall>
+                            </CompoundCode>
+                        </finiteForLoop>
+                    </CompoundCode>
+                    <userFunctionCall name="clip">
+                        <buffer name="block_ou_0" size="64" type="int"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <semaphorePost number="3" type="full">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="1" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+            </forLoop>
+            <linearCodeContainer/>
+        </threadDeclaration>
+        <threadDeclaration name="communicationThread">
+            <bufferContainer/>
+            <linearCodeContainer>
+                <sendInit connectedCoreId="C64_1">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                </sendInit>
+                <receiveInit connectedCoreId="C64_1">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                </receiveInit>
+                <waitForCore>
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                </waitForCore>
+                <waitForCore>
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                </waitForCore>
+                <semaphorePost number="1" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+            </linearCodeContainer>
+            <forLoop>
+                <semaphorePend number="1" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePend>
+                <receiveMsg source="C64_1">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                    <buffer name="r_Trigge_0" size="64" type="int"/>
+                </receiveMsg>
+                <receiveMsg source="C64_1">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                    <buffer name="r_Trigge_1" size="1" type="int"/>
+                </receiveMsg>
+                <semaphorePost number="0" type="full">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePend number="3" type="full">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePend>
+                <sendMsg target="C64_1">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                    <buffer name="IDCT2Dou_0" size="64" type="int"/>
+                </sendMsg>
+                <semaphorePost number="2" type="empty">
+                    <buffer name="sem_0" size="4" type="semaphore"/>
+                </semaphorePost>
+            </forLoop>
+            <linearCodeContainer/>
+        </threadDeclaration>
     </SourceFile>
 </sourceCode>

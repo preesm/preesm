@@ -4,443 +4,113 @@
     <coreName>C64_1</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation
-                name="TriggerMBs_Triggerexplode_Trigger_MB_1blockIn"
-                size="128" type="char"/>
-            <bufferAllocation
-                name="Triggersigneds_Triggerbroadcast_signed_1in"
-                size="1" type="char"/>
-            <bufferAllocation name="TriggerMBexplode_Trigger_MBblockIn"
-                size="128" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_readBlock_0_init_in_2blockOuts_IDCT2D_1_IDCT2D_basic_0_readBlock_0_init_in_2IDCT2D_1_IDCT2D_basic_0_readBlock_0_1in_2"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_readBlock_0_init_in_2blockOutIDCT2D_1_IDCT2D_basic_0_readBlock_0in_2"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_Triggerexplode_Trigger_MB_2MBexplode_Trigger_MBblockIn"
-                size="128" type="char"/>
-            <bufferAllocation
-                name="explode_Trigger_MBMBIDCT2D_0_IDCT2D_basic_0_broadcast_blockInin_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="explode_Trigger_MBMBIDCT2D_1_IDCT2D_basic_0_broadcast_blockInin_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_broadcast_blockInouts_IDCT2D_0_IDCT2D_basic_0_broadcast_blockInIDCT2D_0_IDCT2D_basic_0_readBlock_1_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_broadcast_blockInouts_IDCT2D_0_IDCT2D_basic_0_broadcast_blockInIDCT2D_0_IDCT2D_basic_0_readBlock_0_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_broadcast_blockInoutIDCT2D_0_IDCT2D_basic_0_readBlock_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_broadcast_blockInoutIDCT2D_0_IDCT2D_basic_0_readBlock_0in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_broadcast_blockInouts_IDCT2D_1_IDCT2D_basic_0_broadcast_blockInIDCT2D_1_IDCT2D_basic_0_readBlock_1_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_broadcast_blockInouts_IDCT2D_1_IDCT2D_basic_0_broadcast_blockInIDCT2D_1_IDCT2D_basic_0_readBlock_0_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_broadcast_blockInoutIDCT2D_1_IDCT2D_basic_0_readBlock_0in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_trigger_trigIDCT2D_0_IDCT2D_basic_0_readBlock_0_1trigIDCT2D_0_IDCT2D_basic_0_readBlock_0trig"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_readBlock_0_init_in_2IDCT2D_0_IDCT2D_basic_0_readBlock_0_1blockOutIDCT2D_0_IDCT2D_basic_0_readBlock_0in_2"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_broadcast_blockInIDCT2D_0_IDCT2D_basic_0_readBlock_0_2outIDCT2D_0_IDCT2D_basic_0_readBlock_0in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_readBlock_0out_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_readBlock_0out_1s_IDCT2D_0_IDCT2D_basic_0_readBlock_0explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_1_IDCT2D_basic_0_broadcast_blockInIDCT2D_1_IDCT2D_basic_0_readBlock_0_2outIDCT2D_1_IDCT2D_basic_0_readBlock_0in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_1_IDCT2D_basic_0_readBlock_0_init_in_2IDCT2D_1_IDCT2D_basic_0_readBlock_0_2blockOutIDCT2D_1_IDCT2D_basic_0_readBlock_0in_2"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_trigger_trigIDCT2D_1_IDCT2D_basic_0_readBlock_0_1trigIDCT2D_1_IDCT2D_basic_0_readBlock_0trig"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_readBlock_0out_1explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_readBlock_0out_1s_IDCT2D_1_IDCT2D_basic_0_readBlock_0explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_readBlock_0explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1_2out_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_4_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_6lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_0lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_5_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_1_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_0_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_6_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_2lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_2_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_3_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_4lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_7_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_1_IDCT2D_basic_0_readBlock_0explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1_2out_1explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_0_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_7_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_2_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_3_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_0lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_6_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_1_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_4lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_2lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_6lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_4_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1out_1s_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_5_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_0_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_0lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_0lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_0implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_0lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_2_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_2lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_2lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_2implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_4_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_4lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_4lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_4implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_4lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_6_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_6lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_6lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_6implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_6lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_0_2out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_0lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_0lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_0implode_IDCT2D_1_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_2_2out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_2lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_2lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_2implode_IDCT2D_1_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_4_2out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_4lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_4lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_4implode_IDCT2D_1_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_0_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_6_2out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_6lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_6lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_6implode_IDCT2D_1_IDCT2D_basic_0_Transpose_0_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_3implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_1implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_6implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_2implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_7implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_0implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_4implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_5implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInlineOuts_implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInIDCT2D_0_IDCT2D_basic_0_Transpose_0_1blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInlineOutIDCT2D_0_IDCT2D_basic_0_Transpose_0blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_implode_IDCT2D_0_IDCT2D_basic_0_Transpose_0_blockInIDCT2D_0_IDCT2D_basic_0_Transpose_0_2lineOutIDCT2D_0_IDCT2D_basic_0_Transpose_0blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_Transpose_0blockOutimplode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inin"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_Transpose_0blockOuts_IDCT2D_0_IDCT2D_basic_0_Transpose_0implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_in_1in"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_Transpose_0blockOutIDCT2D_0_IDCT2D_basic_0_readBlock_1in_2"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_broadcast_blockInIDCT2D_0_IDCT2D_basic_0_readBlock_1_2outIDCT2D_0_IDCT2D_basic_0_readBlock_1in_1"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_trigger_trigIDCT2D_0_IDCT2D_basic_0_readBlock_1_1trigIDCT2D_0_IDCT2D_basic_0_readBlock_1trig"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_readBlock_1out_1s_IDCT2D_0_IDCT2D_basic_0_readBlock_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_readBlock_1out_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_readBlock_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1_2out_1explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1lineIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_12lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_10lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_9_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_8lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_8_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_13_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_14lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_10_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_11_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_12_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_14_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1out_1s_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_15_1lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_8_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_8lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_8lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_8implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_8lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_10_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_10lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_10lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_10lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_10implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_12_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_12lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_12lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_12implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_12lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_0_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_14_2out_1IDCT2D_0_IDCT2D_basic_0_IDCT1D_14lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_14lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_IDCT1D_14lineOuts_IDCT2D_0_IDCT2D_basic_0_IDCT1D_14implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_8_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_8lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_8lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_8implode_IDCT2D_1_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_10_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_10lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_10lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_10implode_IDCT2D_1_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_12_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_12lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_12lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_12implode_IDCT2D_1_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_explode_IDCT2D_1_IDCT2D_basic_0_readBlock_1_out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_14_1out_1IDCT2D_1_IDCT2D_basic_0_IDCT1D_14lineIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_1_IDCT2D_basic_0_IDCT1D_14lineOuts_IDCT2D_1_IDCT2D_basic_0_IDCT1D_14implode_IDCT2D_1_IDCT2D_basic_0_Transpose_1_blockIn_1blockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_13implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_11implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_9implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_10implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_12implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_14implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_15implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_1lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_IDCT1D_8implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockIn_2lineOutimplode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInblockIn"
-                size="8" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInlineOutIDCT2D_0_IDCT2D_basic_0_Transpose_1blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInlineOuts_implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInIDCT2D_0_IDCT2D_basic_0_Transpose_1_1blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_implode_IDCT2D_0_IDCT2D_basic_0_Transpose_1_blockInIDCT2D_0_IDCT2D_basic_0_Transpose_1_2lineOutIDCT2D_0_IDCT2D_basic_0_Transpose_1blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_Transpose_1blockOuts_IDCT2D_0_IDCT2D_basic_0_Transpose_1implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_in_1in"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_IDCT2D_basic_0_Transpose_1blockOutimplode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inin"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_Transpose_0implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_in_2blockOutimplode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inin"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_IDCT2D_0_IDCT2D_basic_0_Transpose_1implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_in_2blockOutimplode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inin"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inblockOutIDCT2D_0_clipblockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inblockOuts_implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inIDCT2D_0_clip_1blockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="r_broadcast_signedIDCT2D_0_clip_1outIDCT2D_0_clipsigned"
-                size="1" type="char"/>
-            <bufferAllocation
-                name="r_implode_IDCT2D_0_IDCT2D_basic_0_roundBuffer_block_out_inIDCT2D_0_clip_2blockOutIDCT2D_0_clipblockIn"
-                size="64" type="char"/>
-            <bufferAllocation
-                name="IDCT2D_0_clipclip_outs_IDCT2D_0_clipimplode_Group_MB_1MB"
-                size="64" type="char"/>
+            <bufferAllocation name="TriggerM_0" size="64" type="int"/>
+            <bufferAllocation name="Triggers_0" size="1" type="int"/>
+            <bufferAllocation name="r_IDCT2D_0" size="64" type="int"/>
+            <bufferAllocation name="r_IDCT2D_1" size="64" type="int"/>
+            <bufferAllocation name="sem" size="2" type="semaphore"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer/>
-            <linearCodeContainer/>
+            <linearCodeContainer>
+                <semaphoreInit>
+                    <buffer name="sem" size="2" type="semaphore"/>
+                    <constant name="semNumber" type="int" value="2"/>
+                </semaphoreInit>
+                <launchThread priority="1" stackSize="8000" threadName="communicationThread"/>
+                <semaphorePost number="0" type="empty">
+                    <buffer name="sem" size="2" type="semaphore"/>
+                </semaphorePost>
+            </linearCodeContainer>
             <forLoop>
+                <semaphorePend number="0" type="empty">
+                    <buffer name="sem" size="2" type="semaphore"/>
+                </semaphorePend>
                 <userFunctionCall name="trigger_bench">
-                    <buffer name="TriggerMBexplode_Trigger_MBblockIn"
-                        size="128" type="char"/>
-                    <buffer
-                        name="Triggersigneds_Triggerbroadcast_signed_1in"
-                        size="1" type="char"/>
+                    <buffer name="TriggerM_0" size="64" type="int"/>
+                    <buffer name="Triggers_0" size="1" type="int"/>
                 </userFunctionCall>
+                <semaphorePost number="1" type="full">
+                    <buffer name="sem" size="2" type="semaphore"/>
+                </semaphorePost>
+            </forLoop>
+            <linearCodeContainer/>
+        </threadDeclaration>
+        <threadDeclaration name="communicationThread">
+            <bufferContainer/>
+            <linearCodeContainer>
+                <sendInit connectedCoreId="C64_3">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_3"/>
+                    </routeStep>
+                </sendInit>
+                <receiveInit connectedCoreId="C64_2">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                </receiveInit>
+                <sendInit connectedCoreId="C64_2">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                </sendInit>
+                <waitForCore>
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                </waitForCore>
+                <waitForCore>
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                </waitForCore>
+                <waitForCore>
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_3"/>
+                    </routeStep>
+                </waitForCore>
+            </linearCodeContainer>
+            <forLoop>
+                <semaphorePend number="1" type="full">
+                    <buffer name="sem" size="2" type="semaphore"/>
+                </semaphorePend>
+                <sendMsg target="C64_2">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                    <buffer name="TriggerM_0" size="64" type="int"/>
+                </sendMsg>
+                <sendMsg target="C64_2">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_2"/>
+                    </routeStep>
+                    <buffer name="Triggers_0" size="1" type="int"/>
+                </sendMsg>
+                <semaphorePost number="0" type="empty">
+                    <buffer name="sem" size="2" type="semaphore"/>
+                </semaphorePost>
+                <receiveMsg source="C64_2">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_2"/>
+                        <receiver def="C64x" name="C64_1"/>
+                    </routeStep>
+                    <buffer name="r_IDCT2D_0" size="64" type="int"/>
+                </receiveMsg>
+                <sendMsg target="C64_3">
+                    <routeStep mediumDef="EDMA3" type="med">
+                        <sender def="C64x" name="C64_1"/>
+                        <receiver def="C64x" name="C64_3"/>
+                    </routeStep>
+                    <buffer name="r_IDCT2D_0" size="64" type="int"/>
+                </sendMsg>
             </forLoop>
             <linearCodeContainer/>
         </threadDeclaration>

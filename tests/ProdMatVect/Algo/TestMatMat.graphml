@@ -21,7 +21,7 @@
       <data key="name">testMatMat</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="nbMat" value="1"/>
+         <variable name="nbMat" value="2"/>
          <variable name="xsize" value="2"/>
          <variable name="ysize" value="2"/>
       </data>

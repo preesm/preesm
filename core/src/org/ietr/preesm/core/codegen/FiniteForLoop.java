@@ -50,6 +50,12 @@ import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
+
+/**
+ * A FInite for loop is a loop with a given and limited iteration domain
+ * @author jpiat
+ *
+ */
 public class FiniteForLoop extends AbstractBufferContainer implements
 		ICodeElement {
 
@@ -63,6 +69,12 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 
 	private AbstractBufferContainer parentContainer;
 
+	
+	/**
+	 * Creates a Finite For Loop
+	 * @param parentContainer The parent container of the loop
+	 * @param correspondingVertex The vertex corresponding to this loop
+	 */
 	public FiniteForLoop(AbstractBufferContainer parentContainer,
 			ICodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);

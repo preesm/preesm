@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen;
 
 import java.util.List;
@@ -85,33 +85,37 @@ public class CompThreadCodeGenerator {
 		AbstractBufferContainer container = thread.getGlobalContainer();
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
-		
+
 		for (SDFAbstractVertex task : taskVertices) {
 			// Getting incoming receive operations
-			SortedSet<SDFAbstractVertex> ownComVertices = thread.getComVertices(task,
-					true);
+			SortedSet<SDFAbstractVertex> ownComVertices = thread
+					.getComVertices(task, true);
 
 			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> taskElements = loopCode.getCodeElements(task);
-				if(taskElements.size() != 1){
-					PreesmLogger.getLogger().log(Level.SEVERE,"Not one single function call for function: " + task.getName());
+				List<ICodeElement> taskElements = loopCode
+						.getCodeElements(task);
+				if (taskElements.size() != 1) {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"Not one single function call for function: "
+									+ task.getName());
 				}
 				ICodeElement taskElement = taskElements.get(0);
-				
+
 				for (SDFAbstractVertex com : ownComVertices) {
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
 					// function
 					Set<SDFEdge> outEdges = (com.getBase().outgoingEdgesOf(com));
 					List<Buffer> buffers = container.getBuffers(outEdges);
-					
-					SemaphorePend pend = new SemaphorePend(container, buffers, com,
-							SemaphoreType.full);
+
+					SemaphorePend pend = new SemaphorePend(container, buffers,
+							com, SemaphoreType.full);
 
 					// Creates the semaphore if necessary and creates the
 					// posting function
-					SemaphorePost post = new SemaphorePost(container, buffers, com,
-							SemaphoreType.empty);
+					SemaphorePost post = new SemaphorePost(container, buffers,
+							com, SemaphoreType.empty);
 
 					loopCode.addCodeElementBefore(taskElement, pend);
 					loopCode.addCodeElementAfter(taskElement, post);
@@ -122,33 +126,37 @@ public class CompThreadCodeGenerator {
 			ownComVertices = thread.getComVertices(task, false);
 
 			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> taskElements = loopCode.getCodeElements(task);
-				if(taskElements.size() != 1){
-					PreesmLogger.getLogger().log(Level.SEVERE,"Not one single function call for function: " + task.getName());
+				List<ICodeElement> taskElements = loopCode
+						.getCodeElements(task);
+				if (taskElements.size() != 1) {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"Not one single function call for function: "
+									+ task.getName());
 				}
 				ICodeElement taskElement = taskElements.get(0);
-				
+
 				for (SDFAbstractVertex com : ownComVertices) {
 					// A first token must initialize the semaphore pend due to
 					// a sending operation
 					Set<SDFEdge> inEdges = (com.getBase().incomingEdgesOf(com));
 					List<Buffer> buffers = container.getBuffers(inEdges);
-					
-					SemaphorePost init = new SemaphorePost(container, buffers, com,
-							SemaphoreType.empty);
+
+					SemaphorePost init = new SemaphorePost(container, buffers,
+							com, SemaphoreType.empty);
 
 					beginningCode.addCodeElementBefore(taskElement, init);
 
 					// Creates the semaphore if necessary ; retrieves it
 					// otherwise from global declaration and creates the pending
 					// function
-					SemaphorePend pend = new SemaphorePend(container, buffers, com,
-							SemaphoreType.empty);
+					SemaphorePend pend = new SemaphorePend(container, buffers,
+							com, SemaphoreType.empty);
 
 					// Creates the semaphore if necessary and creates the
 					// posting function
-					SemaphorePost post = new SemaphorePost(container, buffers, com,
-							SemaphoreType.full);
+					SemaphorePost post = new SemaphorePost(container, buffers,
+							com, SemaphoreType.full);
 
 					loopCode.addCodeElementBefore(taskElement, pend);
 					loopCode.addCodeElementAfter(taskElement, post);
@@ -164,74 +172,92 @@ public class CompThreadCodeGenerator {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
-		
+
+		// next section will need to be tested for multi-processor code
+		// generation. As communication involve protecting buffers, allocation
+		// explode, implode broadcast and roundBuffer as sub-buffers is not
+		// possible at this time to ensure buffers reliability
+
 		// Filtering special vertices (Fork , Broadcast...) from regular tasks
 		// 
-//		List<SDFAbstractVertex> specialVertices = new ArrayList<SDFAbstractVertex>(vertices);
-//		List<SDFAbstractVertex> treatedVertices  = new ArrayList<SDFAbstractVertex>();
-//		while(specialVertices.size() > 0){
-//			SDFAbstractVertex origin = specialVertices.get(0);
-//			if(origin instanceof CodeGenSDFForkVertex || origin instanceof CodeGenSDFBroadcastVertex ){
-//				boolean toBeTreated = true ;
-//				for(SDFEdge inEdge : origin.getBase().incomingEdgesOf(origin)){
-//					if(!treatedVertices.contains(inEdge.getSource()) && (inEdge.getSource() instanceof CodeGenSDFJoinVertex || inEdge.getSource() instanceof CodeGenSDFRoundBufferVertex)){
-//						specialVertices.remove(inEdge.getSource());
-//						specialVertices.add(0, inEdge.getSource());
-//						toBeTreated = false ;
-//					}
-//				}
-//				if(toBeTreated){
-//					CodeElementFactory.treatSpecialBehaviorVertex(origin
-//							.getName(), loopCode, origin);
-//					treatedVertices.add(origin);
-//					specialVertices.remove(origin);
-//				}
-//			}
-//			else if(origin instanceof CodeGenSDFJoinVertex || origin instanceof CodeGenSDFRoundBufferVertex){
-//				boolean toBeTreated = true ;
-//				for(SDFEdge outEdge : origin.getBase().outgoingEdgesOf(origin)){
-//					if(!treatedVertices.contains(outEdge.getTarget()) && (outEdge.getTarget() instanceof CodeGenSDFJoinVertex || outEdge.getTarget() instanceof CodeGenSDFRoundBufferVertex)){
-//						specialVertices.remove(outEdge.getTarget());
-//						specialVertices.add(0, outEdge.getTarget());
-//						toBeTreated = false ;
-//					}
-//				}
-//				if(toBeTreated){
-//					CodeElementFactory.treatSpecialBehaviorVertex(origin
-//							.getName(), loopCode, origin);
-//					treatedVertices.add(origin);
-//					specialVertices.remove(origin);
-//				}
-//			}else{
-//				specialVertices.remove(origin);
-//			}
-//		}
-//		
-//		for (SDFAbstractVertex vertex : vertices) {
-//			if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex || vertex instanceof CodeGenSDFRoundBufferVertex){
-//				CodeElementFactory.treatSpecialBehaviorVertex(vertex
-//						.getName(), loopCode, vertex);
-//			}
-//		}
-		
+		// List<SDFAbstractVertex> specialVertices = new
+		// ArrayList<SDFAbstractVertex>(vertices);
+		// List<SDFAbstractVertex> treatedVertices = new
+		// ArrayList<SDFAbstractVertex>();
+		// while(specialVertices.size() > 0){
+		// SDFAbstractVertex origin = specialVertices.get(0);
+		// if(origin instanceof CodeGenSDFForkVertex || origin instanceof
+		// CodeGenSDFBroadcastVertex ){
+		// boolean toBeTreated = true ;
+		// for(SDFEdge inEdge : origin.getBase().incomingEdgesOf(origin)){
+		// if(!treatedVertices.contains(inEdge.getSource()) &&
+		// (inEdge.getSource() instanceof CodeGenSDFJoinVertex ||
+		// inEdge.getSource() instanceof CodeGenSDFRoundBufferVertex)){
+		// specialVertices.remove(inEdge.getSource());
+		// specialVertices.add(0, inEdge.getSource());
+		// toBeTreated = false ;
+		// }
+		// }
+		// if(toBeTreated){
+		// CodeElementFactory.treatSpecialBehaviorVertex(origin
+		// .getName(), loopCode, origin);
+		// treatedVertices.add(origin);
+		// specialVertices.remove(origin);
+		// }
+		// }
+		// else if(origin instanceof CodeGenSDFJoinVertex || origin instanceof
+		// CodeGenSDFRoundBufferVertex){
+		// boolean toBeTreated = true ;
+		// for(SDFEdge outEdge : origin.getBase().outgoingEdgesOf(origin)){
+		// if(!treatedVertices.contains(outEdge.getTarget()) &&
+		// (outEdge.getTarget() instanceof CodeGenSDFJoinVertex ||
+		// outEdge.getTarget() instanceof CodeGenSDFRoundBufferVertex)){
+		// specialVertices.remove(outEdge.getTarget());
+		// specialVertices.add(0, outEdge.getTarget());
+		// toBeTreated = false ;
+		// }
+		// }
+		// if(toBeTreated){
+		// CodeElementFactory.treatSpecialBehaviorVertex(origin
+		// .getName(), loopCode, origin);
+		// treatedVertices.add(origin);
+		// specialVertices.remove(origin);
+		// }
+		// }else{
+		// specialVertices.remove(origin);
+		// }
+		// }
+		//		
+		// for (SDFAbstractVertex vertex : vertices) {
+		// if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof
+		// CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex
+		// || vertex instanceof CodeGenSDFRoundBufferVertex){
+		// CodeElementFactory.treatSpecialBehaviorVertex(vertex
+		// .getName(), loopCode, vertex);
+		// }
+		// }
+
 		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
-			if(vertex instanceof ICodeGenSDFVertex && vertex.getGraphDescription() == null){
-					FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
-					if(vertexCall != null && vertexCall.getInitCall() != null){
-						ICodeElement beginningCall = new UserFunctionCall(vertex, thread, CodeSection.INIT);
-						beginningCode.addCodeElement(beginningCall);
-					}
-					if(vertexCall != null && vertexCall.getEndCall() != null){
-						ICodeElement endCall = new UserFunctionCall(vertex, thread, CodeSection.END);
-						endCode.addCodeElement(endCall);
-					}
-					
+			if (vertex instanceof ICodeGenSDFVertex
+					&& vertex.getGraphDescription() == null) {
+				FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
+				if (vertexCall != null && vertexCall.getInitCall() != null) {
+					ICodeElement beginningCall = new UserFunctionCall(vertex,
+							thread, CodeSection.INIT);
+					beginningCode.addCodeElement(beginningCall);
+				}
+				if (vertexCall != null && vertexCall.getEndCall() != null) {
+					ICodeElement endCall = new UserFunctionCall(vertex, thread,
+							CodeSection.END);
+					endCode.addCodeElement(endCall);
+				}
+
 			}
-			if(vertex instanceof ICodeGenSDFVertex){
+			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement loopCall = CodeElementFactory.createElement(vertex
 						.getName(), loopCode, vertex);
-				if(loopCall != null){
+				if (loopCall != null) {
 					loopCode.addCodeElement(loopCall);
 				}
 			}

@@ -63,6 +63,14 @@ import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
+/**
+ * A compound element is a code element containing multiple call or code
+ * elements limited by closure. All buffer defined in this elemen have a local
+ * scope
+ * 
+ * @author jpiat
+ * 
+ */
 public class CompoundCodeElement extends AbstractBufferContainer implements
 		ICodeElement {
 
@@ -76,6 +84,12 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 
 	private AbstractBufferContainer parentContainer;
 
+	/**
+	 * Creates a Compound Element
+	 * @param name The name of the code element 
+	 * @param parentContainer The parent container of this element
+	 * @param correspondingVertex The vertex from which to create the element
+	 */
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
 			ICodeGenSDFVertex correspondingVertex) {
@@ -86,10 +100,18 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		this.correspondingVertex = (SDFAbstractVertex) correspondingVertex;
 		calls = new ArrayList<ICodeElement>();
 		try {
-			if (correspondingVertex.getGraphDescription() != null) {
+			if (correspondingVertex.getGraphDescription() != null) { // gets the
+																		// hierarchy
+																		// of
+																		// the
+																		// vertex
 				CodeGenSDFGraph graph = (CodeGenSDFGraph) correspondingVertex
 						.getGraphDescription();
-				for (SDFEdge edge : graph.edgeSet()) {
+				for (SDFEdge edge : graph.edgeSet()) { // allocate local
+														// buffers, or get the
+														// buffer from the upper
+														// hierarchy that feed
+														// the interfaces
 					if (edge.getSource() instanceof SDFSourceInterfaceVertex) {
 						SDFEdge outEdge = this.correspondingVertex
 								.getAssociatedEdge((SDFSourceInterfaceVertex) edge
@@ -147,6 +169,12 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		}
 	}
 
+	
+	/**
+	 * Creates a compound element that is not associated to a vertex
+	 * @param name The name of teh compound element
+	 * @param parentContainer The parent container of this element
+	 */
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer) {
 		super(parentContainer);
@@ -155,15 +183,25 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		this.parentContainer = parentContainer;
 		calls = new ArrayList<ICodeElement>();
 	}
-	
+
+	/**
+	 * Add a local buffer, and set the edge this buffer is associated to 
+	 * @param buff The buffer to add
+	 * @param edge The edge this buffer is associated to
+	 */
 	public void addBuffer(Buffer buff, SDFEdge edge) {
 		if (allocatedBuffers.get(edge) == null) {
 			allocatedBuffers.put(edge, buff);
 		}
 	}
 
+	/**
+	 * Treat teh calls of this compound element
+	 * @param vertices
+	 */
 	private void treatCalls(Set<SDFAbstractVertex> vertices) {
 		List<SDFAbstractVertex> treated = new ArrayList<SDFAbstractVertex>();
+		// treat  special calls which are mainly related to buffer splitting/grouping or copying
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof CodeGenSDFForkVertex
 					|| vertex instanceof CodeGenSDFJoinVertex
@@ -174,9 +212,11 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				}
 			}
 		}
+		// treat other vertices
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof ICodeGenSDFVertex
-					&& !(vertex instanceof SDFInterfaceVertex) && !(vertex instanceof CodeGenSDFBroadcastVertex)) {
+					&& !(vertex instanceof SDFInterfaceVertex)
+					&& !(vertex instanceof CodeGenSDFBroadcastVertex)) {
 				ICodeElement loopCall = CodeElementFactory.createElement(vertex
 						.getName(), this, vertex);
 				if (loopCall != null) {
@@ -194,7 +234,10 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 					copyCall.addParameter(this.getBuffer(outEdge));
 					copyCall.addParameter(this.getBuffer(incomingEdge));
 					try {
-						copyCall.addParameter(new Constant("size", incomingEdge.getCons().intValue()+"*sizeof("+incomingEdge.getDataType().toString()+")"));
+						copyCall.addParameter(new Constant("size", incomingEdge
+								.getCons().intValue()
+								+ "*sizeof("
+								+ incomingEdge.getDataType().toString() + ")"));
 					} catch (InvalidExpressionException e) {
 						copyCall.addParameter(new Constant("size", 0));
 					}
@@ -204,6 +247,13 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		}
 	}
 
+	/**
+	 * Treats special behavior vertices 
+	 * @param name The name of the call
+	 * @param parentContainer The parent container
+	 * @param vertex The vertex from which to create the call
+	 * @return True if the creation succeed, false otherwise
+	 */
 	public boolean treatSpecialBehaviorVertex(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		try {

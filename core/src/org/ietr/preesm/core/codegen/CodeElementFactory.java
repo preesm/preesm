@@ -60,6 +60,13 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class CodeElementFactory {
 
+	/**
+	 * Create an element considering its type
+	 * @param name The name of the code element to be created
+	 * @param parentContainer The parent container of the code element
+	 * @param vertex The vertex corresponding to the code element
+	 * @return The created code element, null if failed to create the code element
+	 */
 	public static ICodeElement createElement(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		try {

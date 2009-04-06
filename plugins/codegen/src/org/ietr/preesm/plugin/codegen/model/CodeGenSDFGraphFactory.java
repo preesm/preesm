@@ -52,7 +52,6 @@ import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.task.PreesmException;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
-import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.factories.DAGVertexFactory;
 import org.sdf4j.importer.GMLSDFImporter;
@@ -89,7 +88,6 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public static void main(String [] args){
-		SDFAdapterDemo applet1 = new SDFAdapterDemo();
 		SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 		GMLSDFImporter importer = new GMLSDFImporter();
 		// SDFGraph demoGraph = createTestComGraph();
@@ -123,6 +121,8 @@ public class CodeGenSDFGraphFactory {
 	
 	@SuppressWarnings("unchecked")
 	public CodeGenSDFGraph create(DirectedAcyclicGraph dag) throws InvalidExpressionException, SDF4JException, PreesmException{
+//		SDFtoDAGDemo demo = new SDFtoDAGDemo();
+//		demo.init(dag);
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;
@@ -175,7 +175,7 @@ public class CodeGenSDFGraphFactory {
 	}
 	
 	public CodeGenSDFGraph create(SDFGraph sdf) throws InvalidExpressionException, SDF4JException, PreesmException{
-		clusterizeStronglyConnected(sdf);
+		clusterizeStronglyConnected(sdf); // Clusterize strongly connected components, as code generation only treats cycles on single vertices 
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<SDFAbstractVertex, SDFAbstractVertex> aliases = new  HashMap<SDFAbstractVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(sdf.getName()) ;
@@ -223,12 +223,13 @@ public class CodeGenSDFGraphFactory {
 	public void clusterizeStronglyConnected(SDFGraph graph) throws SDF4JException, PreesmException{
 		int i = 0 ;
 		StrongConnectivityInspector<SDFAbstractVertex, SDFEdge> inspector = new StrongConnectivityInspector<SDFAbstractVertex, SDFEdge>(graph) ;
+		// runs through th detected cycles
 		for(Set<SDFAbstractVertex> strong : inspector.stronglyConnectedSets()){
 			boolean noInterface = true ;
-			for(SDFAbstractVertex vertex :strong){
+			for(SDFAbstractVertex vertex :strong){ // test whether or not the cycle contains an interface
 				noInterface &= !(vertex instanceof SDFInterfaceVertex) ;
 			}
-			if(noInterface && strong.size() > 1){
+			if(noInterface && strong.size() > 1){ // if the cycle has no interface and has a size greater tha on, perform the clustering
 				try {
 					culsterizeLoopTest(graph, new ArrayList<SDFAbstractVertex>(strong), "cluster_"+i);
 				} catch (InvalidExpressionException e) {

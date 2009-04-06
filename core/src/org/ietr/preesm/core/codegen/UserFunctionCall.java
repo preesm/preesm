@@ -58,7 +58,7 @@ import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * Generated code consists primarily in a succession of code elements. A User
- * Function Call is a call corresponding to a vertex in the graph
+ * Function Call is a call corresponding to an atomic vertex in the graph
  * 
  * @author mpelcat
  * @author jpiat
