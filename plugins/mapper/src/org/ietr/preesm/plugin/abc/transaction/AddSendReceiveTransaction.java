@@ -54,6 +54,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
@@ -208,7 +209,12 @@ public class AddSendReceiveTransaction extends Transaction {
 		newEdge1.setAggregate(edge.getAggregate());
 		newEdge2.setAggregate(edge.getAggregate());
 		newEdge3.setAggregate(edge.getAggregate());
-
+		
+		if (true) {
+			// Remove original edges
+			implementation.removeAllEdges(currentSource, currentTarget);
+		}
+		
 		if (false) {
 			// Scheduling transfer vertex
 			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
