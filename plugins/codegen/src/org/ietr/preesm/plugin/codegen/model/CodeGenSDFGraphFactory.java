@@ -121,8 +121,8 @@ public class CodeGenSDFGraphFactory {
 	
 	@SuppressWarnings("unchecked")
 	public CodeGenSDFGraph create(DirectedAcyclicGraph dag) throws InvalidExpressionException, SDF4JException, PreesmException{
-//		SDFtoDAGDemo demo = new SDFtoDAGDemo();
-//		demo.init(dag);
+		SDFtoDAGDemo demo = new SDFtoDAGDemo();
+		demo.init(dag);
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(mainFile) ;
 		HashMap<DAGVertex, SDFAbstractVertex> aliases = new  HashMap<DAGVertex, SDFAbstractVertex>() ;
 		CodeGenSDFGraph output = new CodeGenSDFGraph(dag.getName()) ;

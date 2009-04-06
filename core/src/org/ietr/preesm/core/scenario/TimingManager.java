@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.SDFVertex;
@@ -128,7 +129,7 @@ public class TimingManager {
 			// from underlying vertices
 			for (ArchitectureComponentDefinition opDef : architecture
 					.getComponentDefinitions(ArchitectureComponentType.operator)) {
-				Timing t = generateVertexTimingFromHierarchy(dagVertex, (IOperatorDefinition) opDef);
+				Timing t = generateVertexTimingFromHierarchy(dagVertex.getCorrespondingSDFVertex(), (IOperatorDefinition) opDef);
 				if(t!=null)
 					vals.add(t);
 			}
@@ -137,15 +138,40 @@ public class TimingManager {
 		return vals;
 	}
 
+	private Timing getVertexTiming(SDFAbstractVertex sdfVertex, IOperatorDefinition opDef){
+		for (Timing timing : timings) {
+			if (timing.getVertex().getName().equals(sdfVertex.getId()) && timing.getOperatorDefinition().equals(opDef)) {
+				return timing;
+			}
+		}
+		return null; 
+	}
+	
 	/**
 	 * Calculates a vertex timing from its underlying vertices
 	 */
-	public Timing generateVertexTimingFromHierarchy(DAGVertex dagVertex, IOperatorDefinition opDef) {
-
-		SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
+	public Timing generateVertexTimingFromHierarchy(SDFAbstractVertex sdfVertex, IOperatorDefinition opDef) {
+		int maxTime = 0 ;
+		SDFGraph graphDescription  = (SDFGraph) sdfVertex.getGraphDescription();
 		
+		for(SDFAbstractVertex vertex : graphDescription.vertexSet()){
+			Timing vertexTiming ;
+			if(vertex.getGraphDescription() != null){
+				maxTime += generateVertexTimingFromHierarchy(vertex, opDef).getTime();
+			}else if((vertexTiming = getVertexTiming(vertex, opDef)) != null){
+				try {
+					maxTime += vertexTiming.getTime()*vertex.getNbRepeat();
+				} catch (InvalidExpressionException e) {
+					maxTime += vertexTiming.getTime();
+				}
+			}
+			if(maxTime < 0){
+				maxTime = Integer.MAX_VALUE ;
+				break ;
+			}
+		}
 		//TODO: time calculation for underlying tasks not ready
-		return(new Timing(opDef,sdfVertex,100));
+		return(new Timing(opDef,sdfVertex,maxTime));
 		
 		
 		/*

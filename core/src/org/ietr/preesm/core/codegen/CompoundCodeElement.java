@@ -171,8 +171,8 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 
 	
 	/**
-	 * Creates a compound element that is not associated to a vertex
-	 * @param name The name of teh compound element
+	 * Creates a compound element which content is not directly associated to a vertex
+	 * @param name The name of the compound element
 	 * @param parentContainer The parent container of this element
 	 */
 	public CompoundCodeElement(String name,
@@ -182,6 +182,10 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 		this.name = name;
 		this.parentContainer = parentContainer;
 		calls = new ArrayList<ICodeElement>();
+	}
+	
+	public void setCorrespondingVertex(SDFAbstractVertex vertex){
+		this.correspondingVertex = vertex ;
 	}
 
 	/**

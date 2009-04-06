@@ -125,6 +125,7 @@ public class CodeElementFactory {
 		SDFEdge incomingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(vertex
 				.getName(), parentContainer);
+		container.setCorrespondingVertex(vertex);
 		for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
 			incomingEdge = inEdge;
 		}
@@ -152,6 +153,7 @@ public class CodeElementFactory {
 		SDFEdge incomingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(vertex
 				.getName(), parentContainer);
+		container.setCorrespondingVertex(vertex);
 		for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
 			incomingEdge = inEdge;
 		}
@@ -182,6 +184,7 @@ public class CodeElementFactory {
 		SDFEdge outgoingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(vertex
 				.getName(), parentContainer);
+		container.setCorrespondingVertex(vertex);
 		for (SDFEdge outedge : vertex.getBase().outgoingEdgesOf(vertex)) {
 			outgoingEdge = outedge;
 		}
