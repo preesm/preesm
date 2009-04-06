@@ -236,13 +236,17 @@ public class MyGanttRenderer extends GanttRenderer {
 			Double r, g, b;
 
 			if (name.indexOf("__transfer") == 0) {
-				r = Math.random() * (255 - 160) + 160;
+				r = Math.random() * (255 - 190) + 190;
 				g = 100.0;
 				b = 130.0;
 			} else if (name.indexOf("__overhead") == 0) {
 				r = 130.0;
 				g = Math.random() * (255 - 160) + 160;
 				b = 100.0;
+			} else if (name.indexOf("__involvement") == 0) {
+				r = Math.random() * (255 - 210) + 210;
+				g = 150.0;
+				b = 50.0;
 			} else if (name.indexOf("__send") == 0 || name.indexOf("__receive") == 0) {
 				r = Math.random() * (255 - 160) + 160;
 				g = 130.0;

@@ -203,6 +203,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		ImplementationCleaner cleaner = new ImplementationCleaner(orderManager,
 				implementation);
 		cleaner.removeAllOverheads(vertex);
+		cleaner.removeAllInvolvements(vertex);
 		cleaner.removeAllTransfers(vertex);
 		cleaner.unscheduleVertex(vertex);
 	}

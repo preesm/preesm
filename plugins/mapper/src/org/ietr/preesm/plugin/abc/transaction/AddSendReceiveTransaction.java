@@ -212,7 +212,7 @@ public class AddSendReceiveTransaction extends Transaction {
 		
 		if (true) {
 			// Remove original edges
-			implementation.removeAllEdges(currentSource, currentTarget);
+			//implementation.removeAllEdges(currentSource, currentTarget);
 		}
 		
 		if (false) {

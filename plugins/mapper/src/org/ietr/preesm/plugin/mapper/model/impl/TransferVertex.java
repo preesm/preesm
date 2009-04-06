@@ -87,7 +87,8 @@ public class TransferVertex extends MapperDAGVertex {
 	}
 
 	/**
-	 * A transfer vertex follows only one vertex
+	 * A transfer vertex follows only one vertex. Returning the transfer
+	 * predecessor if it is an overhead vertex
 	 */
 	public OverheadVertex getPrecedingOverhead() {
 		for (DAGEdge incomingEdge : getBase().incomingEdgesOf(this)) {
@@ -96,6 +97,23 @@ public class TransferVertex extends MapperDAGVertex {
 						.getSource();
 				if (precV instanceof OverheadVertex)
 					return (OverheadVertex) precV;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * A transfer vertex follows only one vertex. Returning the transfer
+	 * predecessor if it is an involvement vertex
+	 */
+	public InvolvementVertex getPrecedingInvolvement() {
+		for (DAGEdge incomingEdge : getBase().incomingEdgesOf(this)) {
+			if (!(incomingEdge instanceof PrecedenceEdge)) {
+				MapperDAGVertex precV = (MapperDAGVertex) incomingEdge
+						.getSource();
+				if (precV instanceof InvolvementVertex)
+					return (InvolvementVertex) precV;
 			}
 		}
 

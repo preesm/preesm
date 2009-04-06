@@ -56,9 +56,10 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 			List<Object> alreadyCreatedVertices) {
 
 		if (routeStep instanceof DmaRouteStep) {
+			// Adding the transfers
 			DmaRouteStep dmaStep = ((DmaRouteStep) routeStep);
 
-			// Adding the transfers of a dma route step and synchronizing them
+			// Adding the transfers of a dma route step
 			if (type == CommunicationRouter.transferType) {
 				// All the transfers along the path have the same time: the time
 				// to transfer the data on the slowest contention node
@@ -79,7 +80,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 
 				return transaction;
 			} else if (type == CommunicationRouter.overheadType) {
-
+				// Adding the overhead
 				MapperDAGEdge incomingEdge = null;
 
 				for (Object o : alreadyCreatedVertices) {
@@ -115,6 +116,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 
 			} else if (type == CommunicationRouter.synchroType) {
 
+				// Synchronizing the previously created transfers
 				List<MapperDAGVertex> toSynchronize = new ArrayList<MapperDAGVertex>();
 
 				for (Object o : alreadyCreatedVertices) {

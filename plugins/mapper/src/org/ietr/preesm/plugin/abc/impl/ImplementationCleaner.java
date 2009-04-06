@@ -44,6 +44,7 @@ import org.ietr.preesm.plugin.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.InvolvementVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
@@ -91,11 +92,32 @@ public class ImplementationCleaner {
 	 * Removes all overheads from routes coming from or going to vertex
 	 */
 	public void removeAllOverheads(MapperDAGVertex vertex) {
+		transactionManager.clear();
 
 		for (DAGVertex v : getAllTransfers(vertex)) {
 			if (v instanceof TransferVertex) {
 				MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
 				if (o != null && o instanceof OverheadVertex) {
+					transactionManager.add(new RemoveVertexTransaction(o,
+							implementation, orderManager));
+				}
+			}
+		}
+
+		transactionManager.execute();
+		transactionManager.clear();
+	}
+
+	/**
+	 * Removes all overheads from routes coming from or going to vertex
+	 */
+	public void removeAllInvolvements(MapperDAGVertex vertex) {
+		transactionManager.clear();
+
+		for (DAGVertex v : getAllTransfers(vertex)) {
+			if (v instanceof TransferVertex) {
+				MapperDAGVertex o = ((TransferVertex) v).getPrecedingInvolvement();
+				if (o != null && o instanceof InvolvementVertex) {
 					transactionManager.add(new RemoveVertexTransaction(o,
 							implementation, orderManager));
 				}
