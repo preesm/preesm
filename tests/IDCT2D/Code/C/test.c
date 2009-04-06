@@ -28,8 +28,7 @@ int idct2d_data_generate_S[1];
 
 
 
-void idct2d_print_untagged_action_0(struct idct2d_print_variables *_actor_variables ,
-									int values[64] ) ;
+void idct2d_print_untagged_action_0(struct idct2d_print_variables *_actor_variables ,			int values[64] ) ;
 struct idct2d_print_variables {
 	int dummy;
 };
@@ -226,7 +225,6 @@ DWORD WINAPI Thread1 (LPVOID lpParam){
 				Clip_limit( Clip , (RightShift_Out[j]) ,&(Clip_O[j]) ) ;
 			}}
 
-			idct2d_print_untagged_action_0(idct2d_print, Clip_O);
 		}
 
 	}} 

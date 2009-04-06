@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Core1" x="57" y="71"/>
+      <vertex id="Core0" x="277" y="71"/>
+      <vertex id="TCP_1" x="166" y="118"/>
+   </vertices>
+</layout>

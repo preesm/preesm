@@ -30,22 +30,6 @@
             <spirit:configurableElementValue spirit:referenceId="medium_overhead">100</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>Core2</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="x86" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="refinement"/>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
-      <spirit:componentInstance>
-         <spirit:instanceName>Core3</spirit:instanceName>
-         <spirit:componentRef spirit:library="" spirit:name="x86" spirit:vendor="" spirit:version=""/>
-         <spirit:configurableElementValues>
-            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
-            <spirit:configurableElementValue spirit:referenceId="refinement"/>
-         </spirit:configurableElementValues>
-      </spirit:componentInstance>
    </spirit:componentInstances>
    <spirit:interconnections>
       <spirit:interconnection>
@@ -57,16 +41,6 @@
          <spirit:name/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
          <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core0"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core2"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
-      </spirit:interconnection>
-      <spirit:interconnection>
-         <spirit:name/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP_1"/>
-         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Core3"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>
