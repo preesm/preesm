@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.route;
 
+import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Represents a single step in a route between two operators
@@ -101,6 +104,59 @@ public abstract class AbstractRouteStep {
 
 	@Override
 	protected abstract Object clone() throws CloneNotSupportedException;
-	
+
+	/**
+	 * Appends the route step informations to a dom3 xml file
+	 */
+	public void appendRouteStep(Document dom, Element comFct){
+
+		
+		Element routeStep = dom.createElement("routeStep");
+		comFct.appendChild(routeStep);
+
+		Element sender = dom.createElement("sender");
+		sender.setAttribute("name", this.getSender().getName());
+		sender.setAttribute("def", this.getSender().getDefinition().getId());
+		routeStep.appendChild(sender);
+
+		Element receiver = dom.createElement("receiver");
+		receiver.setAttribute("name", this.getReceiver().getName());
+		receiver.setAttribute("def", this.getReceiver().getDefinition().getId());
+		routeStep.appendChild(receiver);
+		
+		if(this.getType() == MediumRouteStep.type){
+			MediumRouteStep mStep = (MediumRouteStep)this;
+			routeStep.setAttribute("type", "med");
+			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getId());
+		}
+		else if(this.getType() == DmaRouteStep.type){
+			routeStep.setAttribute("type", "dma");
+			DmaRouteStep dStep = (DmaRouteStep)this;
+			routeStep.setAttribute("dmaDef", dStep.getDma().getDefinition().getId());
+			
+			for(AbstractNode node : dStep.getNodes()){
+				Element eNode = dom.createElement("node");
+				eNode.setAttribute("name", node.getName());
+				eNode.setAttribute("def", node.getDefinition().getId());
+				routeStep.appendChild(eNode);
+			}
+		}
+		else if(this.getType() == MessageRouteStep.type){
+			routeStep.setAttribute("type", "msg");
+			MessageRouteStep nStep = (MessageRouteStep)this;
+			
+			for(AbstractNode node : nStep.getNodes()){
+				Element eNode = dom.createElement("node");
+				eNode.setAttribute("name", node.getName());
+				eNode.setAttribute("def", node.getDefinition().getId());
+				routeStep.appendChild(eNode);
+			}	
+		}
+		else if(this.getType() == RamRouteStep.type){
+			routeStep.setAttribute("type", "ram");
+			RamRouteStep rStep = (RamRouteStep)this;
+			routeStep.setAttribute("ramDef", rStep.getRam().getDefinition().getId());
+		}
+	}
 	
 }

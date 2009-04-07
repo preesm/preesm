@@ -470,61 +470,11 @@ public class XMLPrinter implements IAbstractPrinter {
 			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
 			int callIndex = domElt.getCallIndex();
 			if(callIndex!=-1) init.setAttribute("index", String.valueOf(callIndex));
-			appendRouteStep(init, domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,init);
 			currentLocation = init;
 		} 
 		
 		return currentLocation;
-	}
-
-	private void appendRouteStep(Element comFct, AbstractRouteStep step){
-		
-		Element routeStep = dom.createElement("routeStep");
-		comFct.appendChild(routeStep);
-
-		Element sender = dom.createElement("sender");
-		sender.setAttribute("name", step.getSender().getName());
-		sender.setAttribute("def", step.getSender().getDefinition().getId());
-		routeStep.appendChild(sender);
-
-		Element receiver = dom.createElement("receiver");
-		receiver.setAttribute("name", step.getReceiver().getName());
-		receiver.setAttribute("def", step.getReceiver().getDefinition().getId());
-		routeStep.appendChild(receiver);
-		
-		if(step.getType() == MediumRouteStep.type){
-			MediumRouteStep mStep = (MediumRouteStep)step;
-			routeStep.setAttribute("type", "med");
-			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getId());
-		}
-		else if(step.getType() == DmaRouteStep.type){
-			routeStep.setAttribute("type", "dma");
-			DmaRouteStep dStep = (DmaRouteStep)step;
-			routeStep.setAttribute("dmaDef", dStep.getDma().getDefinition().getId());
-			
-			for(AbstractNode node : dStep.getNodes()){
-				Element eNode = dom.createElement("node");
-				eNode.setAttribute("name", node.getName());
-				eNode.setAttribute("def", node.getDefinition().getId());
-				routeStep.appendChild(eNode);
-			}
-		}
-		else if(step.getType() == MessageRouteStep.type){
-			routeStep.setAttribute("type", "msg");
-			MessageRouteStep nStep = (MessageRouteStep)step;
-			
-			for(AbstractNode node : nStep.getNodes()){
-				Element eNode = dom.createElement("node");
-				eNode.setAttribute("name", node.getName());
-				eNode.setAttribute("def", node.getDefinition().getId());
-				routeStep.appendChild(eNode);
-			}	
-		}
-		else if(step.getType() == RamRouteStep.type){
-			routeStep.setAttribute("type", "ram");
-			RamRouteStep rStep = (RamRouteStep)step;
-			routeStep.setAttribute("ramDef", rStep.getRam().getDefinition().getId());
-		}
 	}
 	
 	@Override
@@ -533,7 +483,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("sendMsg");
 			((Element)currentLocation).appendChild(send);
-			appendRouteStep(send,domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,send);
 			
 			send.setAttribute("target", domElt.getTarget().getName());
 			currentLocation = send;
@@ -549,7 +499,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receiveMsg");
 			((Element)currentLocation).appendChild(receive);
-			appendRouteStep(receive,domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,receive);
 			
 			receive.setAttribute("source", domElt.getSource().getName());
 			currentLocation = receive;
@@ -564,7 +514,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("sendDma");
 			((Element)currentLocation).appendChild(send);
-			appendRouteStep(send,domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,send);
 			
 			send.setAttribute("target", domElt.getTarget().getName());
 			
@@ -587,7 +537,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receiveDma");
 			((Element)currentLocation).appendChild(receive);
-			appendRouteStep(receive,domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,receive);
 			
 			receive.setAttribute("source", domElt.getSource().getName());
 			int callIndex = domElt.getCallIndex();
@@ -665,7 +615,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element wait = dom.createElement(domElt.getName());
 			((Element)currentLocation).appendChild(wait);
 
-			appendRouteStep(wait, domElt.getRouteStep());
+			domElt.getRouteStep().appendRouteStep(dom,wait);
 			currentLocation = wait;
 		} 
 		

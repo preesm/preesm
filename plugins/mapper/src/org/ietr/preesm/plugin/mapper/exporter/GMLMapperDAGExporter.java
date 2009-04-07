@@ -33,20 +33,23 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.jgrapht.Graph;
 import org.sdf4j.exporter.GMLExporter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
+import org.sdf4j.model.parameters.Variable;
 import org.w3c.dom.Element;
 
 /**
@@ -63,24 +66,31 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	public GMLMapperDAGExporter() {
 		super();
 		addKey(DAGVertex.NAME, DAGVertex.NAME, "vertex", "string", String.class);
-		
-		addKey(ImplementationPropertyNames.Vertex_vertexType, ImplementationPropertyNames.Vertex_vertexType, "vertex", "string", String.class);
-		addKey(ImplementationPropertyNames.Vertex_Operator, ImplementationPropertyNames.Vertex_Operator, "vertex", "string",
+
+		addKey(ImplementationPropertyNames.Vertex_vertexType,
+				ImplementationPropertyNames.Vertex_vertexType, "vertex",
+				"string", String.class);
+		addKey(ImplementationPropertyNames.Vertex_Operator,
+				ImplementationPropertyNames.Vertex_Operator, "vertex",
+				"string", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.Vertex_schedulingOrder,
+				ImplementationPropertyNames.Vertex_schedulingOrder, "vertex",
+				"int", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.SendReceive_dataSize,
+				ImplementationPropertyNames.SendReceive_dataSize, "vertex",
+				"int", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.Task_duration,
+				ImplementationPropertyNames.Task_duration, "vertex", "int",
 				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_routeStep, ImplementationPropertyNames.SendReceive_routeStep, "vertex", "string",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Vertex_schedulingOrder, ImplementationPropertyNames.Vertex_schedulingOrder, "vertex", "int",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_dataSize, ImplementationPropertyNames.SendReceive_dataSize, "vertex", "int",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Task_duration, ImplementationPropertyNames.Task_duration, "vertex", "int",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Send_senderGraphName, ImplementationPropertyNames.Send_senderGraphName, "vertex", "string",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Receive_receiverGraphName, ImplementationPropertyNames.Receive_receiverGraphName, "vertex", "string",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_Operator_address, ImplementationPropertyNames.SendReceive_Operator_address, "vertex", "string",
-				DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.Send_senderGraphName,
+				ImplementationPropertyNames.Send_senderGraphName, "vertex",
+				"string", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.Receive_receiverGraphName,
+				ImplementationPropertyNames.Receive_receiverGraphName,
+				"vertex", "string", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.SendReceive_Operator_address,
+				ImplementationPropertyNames.SendReceive_Operator_address,
+				"vertex", "string", DAGDefaultEdgePropertyType.class);
 	}
 
 	@Override
@@ -117,6 +127,20 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	protected void exportNode(DAGVertex vertex, Element parentELement) {
 		Element vertexElt = createNode(parentELement, vertex.getId());
 		exportKeys("vertex", vertexElt, vertex.getPropertyBean());
+
+		if (vertex instanceof TransferVertex) {
+			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.SendReceive_routeStep);
+			if (routeStep != null) {
+				exportRouteStep(routeStep,
+						vertexElt);
+			}
+		}
+	}
+
+	private void exportRouteStep(AbstractRouteStep step, Element vertexElt) {
+		step.appendRouteStep(this.domDocument, vertexElt);
 	}
 
 	@Override
@@ -126,7 +150,7 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 	@Override
 	public void export(Graph<DAGVertex, DAGEdge> graph, String path) {
-		this.path = path ;
+		this.path = path;
 		try {
 			exportGraph(graph, new FileOutputStream(path));
 		} catch (FileNotFoundException e) {
