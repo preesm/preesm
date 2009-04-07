@@ -150,6 +150,24 @@
         <xsl:value-of select="concat(sourceCode:buffer/@name,',',@index,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
     </xsl:template>
     
+    <xsl:template match="sourceCode:sendMsg">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'sendData(')"/>
+        <xsl:apply-templates select="sourceCode:routeStep"/>
+        <xsl:value-of select="concat(',',$coreName,',',@target,',')"/>
+        <!-- adding buffer -->
+        <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:receiveMsg">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'receiveData(')"/>
+        <xsl:apply-templates select="sourceCode:routeStep"/>
+        <xsl:value-of select="concat(',',@source,',',$coreName,',')"/>
+        <!-- adding buffer -->
+        <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
+    </xsl:template>
+    
     <xsl:template match="sourceCode:launchThread">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'createThread(',@stackSize,',',@threadName,',&quot;',@threadName,'&quot;')"/>       
@@ -184,7 +202,7 @@
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,sourceCode:buffer/@name,'[',@index,'] = (void *)','receiveAddress(')"/>
         <xsl:apply-templates select="sourceCode:routeStep"/>
-        <xsl:value-of select="concat(',',@connectedCoreId,',',$coreName)"/>         
+        <xsl:value-of select="concat(',',@index,',',@connectedCoreId,',',$coreName)"/>         
         <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
@@ -217,10 +235,15 @@
             <xsl:when test="@type='dma'">
                 <xsl:choose>
                     <xsl:when test="sourceCode:node/@def='RIO'">RIO</xsl:when>
-                <xsl:otherwise>EDMA3</xsl:otherwise>
+                    <xsl:otherwise>EDMA3</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            <xsl:when test="@type='msg'">msg</xsl:when>
+            <xsl:when test="@type='msg'">
+                <xsl:choose>
+                    <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>
+                    <xsl:otherwise>msg</xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
             <xsl:when test="@type='medium'">
                 <xsl:value-of select="@mediumDef"/>
             </xsl:when>
