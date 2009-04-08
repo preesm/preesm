@@ -10,7 +10,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">parallelNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="node_dataRate">789</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="node_dataRate">2</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -75,7 +75,7 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">parallelNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="node_dataRate">456</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="node_dataRate">2</spirit:configurableElementValue>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
       <spirit:componentInstance>
@@ -92,7 +92,31 @@
          <spirit:configurableElementValues>
             <spirit:configurableElementValue spirit:referenceId="componentType">contentionNode</spirit:configurableElementValue>
             <spirit:configurableElementValue spirit:referenceId="refinement"/>
-            <spirit:configurableElementValue spirit:referenceId="node_dataRate">123</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="node_dataRate">0.29</spirit:configurableElementValue>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>TCP2_1</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="TCP2" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>TCP2_2</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="TCP2" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
+         </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+         <spirit:instanceName>Source</spirit:instanceName>
+         <spirit:componentRef spirit:library="" spirit:name="aif" spirit:vendor="" spirit:version=""/>
+         <spirit:configurableElementValues>
+            <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+            <spirit:configurableElementValue spirit:referenceId="refinement"/>
          </spirit:configurableElementValues>
       </spirit:componentInstance>
    </spirit:componentInstances>
@@ -150,44 +174,75 @@
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description/>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_4"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description>712</spirit:description>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_5"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description/>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_6"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_2"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description/>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_1"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description/>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_2"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_1"/>
       </spirit:interconnection>
       <spirit:interconnection>
          <spirit:name/>
          <spirit:displayName>setup</spirit:displayName>
-         <spirit:description/>
+         <spirit:description>1000</spirit:description>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="C64_3"/>
          <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP2_1"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="SCR2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>setup</spirit:displayName>
+         <spirit:description>1</spirit:description>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP2_1"/>
+         <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>setup</spirit:displayName>
+         <spirit:description>1</spirit:description>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="TCP2_2"/>
+         <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_1"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Source"/>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="SCR2"/>
+      </spirit:interconnection>
+      <spirit:interconnection>
+         <spirit:name/>
+         <spirit:displayName>setup</spirit:displayName>
+         <spirit:description>1</spirit:description>
+         <spirit:activeInterface spirit:busRef="" spirit:componentRef="Source"/>
+         <spirit:activeInterface spirit:busRef="config" spirit:componentRef="edma3_2"/>
       </spirit:interconnection>
    </spirit:interconnections>
    <spirit:hierConnections/>

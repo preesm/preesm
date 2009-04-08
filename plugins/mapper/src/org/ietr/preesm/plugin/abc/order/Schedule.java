@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 /**
  * A schedule represents the consecutive tasks mapped on a single
  * {@link ArchitectureComponent}
+ * 
  * @author mpelcat
  */
 public class Schedule extends LinkedList<MapperDAGVertex> {
@@ -58,7 +59,7 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 
 		super();
 	}
-	
+
 	/**
 	 * Gets the previous vertex in the current schedule
 	 */
@@ -67,7 +68,7 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 			return null;
 		return (get(indexOf(vertex) - 1));
 	}
-	
+
 	/**
 	 * Gets the next vertex in the current schedule
 	 */
@@ -102,23 +103,46 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 
 		if (!contains(vertex))
 			if (indexOf(previous) >= 0) {
-				if (indexOf(previous) + 1 < size())
-					add(indexOf(previous) + 1, vertex);
-				else
+				if (indexOf(previous) + 1 < size()) {
+					MapperDAGVertex next = get(indexOf(previous) + 1);
+					if(!areSynchronized(previous,next)){
+						add(indexOf(next), vertex);
+					}
+					else{
+						insertVertexAfter(next,vertex);
+					}
+				} else{
 					addLast(vertex);
+				}
 			}
 	}
 
 	/**
 	 * Inserts a vertex before the given one
 	 */
-	public void insertVertexBefore(MapperDAGVertex next,
-			MapperDAGVertex vertex) {
+	public void insertVertexBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
 
 		if (!contains(vertex))
 			if (indexOf(next) >= 0) {
-				add(indexOf(next),vertex);
+				MapperDAGVertex previous = get(indexOf(next) - 1);
+				if(!areSynchronized(previous,next)){
+					add(indexOf(next), vertex);
+				}
+				else{
+					insertVertexAfter(next,vertex);
+				}
 			}
+	}
+	
+	private boolean areSynchronized(MapperDAGVertex previous, MapperDAGVertex next){
+		boolean areSynchronized = false;
+		List<MapperDAGVertex> synchros = previous.getTimingVertexProperty().getSynchronizedVertices();
+		
+		if(synchros != null && synchros.contains(next)){
+			areSynchronized = true;
+		}
+		
+		return areSynchronized;
 	}
 
 	@Override
@@ -127,14 +151,14 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 	}
 
 	public List<String> toList() {
-		
+
 		List<String> order = new ArrayList<String>();
-		
-		for(MapperDAGVertex v : this){
+
+		for (MapperDAGVertex v : this) {
 			order.add(v.getName());
 		}
-		
+
 		return order;
 	}
-	
+
 }

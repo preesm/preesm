@@ -86,7 +86,7 @@ public class RouteStepFactory {
 			if (dma != null) {
 				step = new DmaRouteStep(source, nodes, target, dma);
 			} else if (ram != null) {
-				step = new RamRouteStep(source, nodes, target, ram);
+				step = new RamRouteStep(source, nodes, target, ram, getRamNodeIndex(nodes));
 			} else {
 				step = new MessageRouteStep(source, nodes, target);
 			}
@@ -139,6 +139,27 @@ public class RouteStepFactory {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the ram corresponding to the step if any exists. The ram must have a
+	 * setup link with the source.
+	 */
+	private int getRamNodeIndex(List<AbstractNode> nodes) {
+		Ram ram = null;
+		for (AbstractNode node : nodes) {
+			for (Interconnection i : archi.undirectedEdgesOf(node)) {
+				if (i.getSource() instanceof Ram)
+					ram = (Ram) i.getSource();
+				if (i.getTarget() instanceof Ram)
+					ram = (Ram) i.getTarget();
+
+				if (ram != null) {
+					return nodes.indexOf(node);
+				}
+			}
+		}
+		return -1;
 	}
 
 	/**

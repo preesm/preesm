@@ -6,11 +6,14 @@
       <vertex id="C64_2" x="591" y="244"/>
       <vertex id="C64_3" x="642" y="325"/>
       <vertex id="C64_4" x="57" y="71"/>
-      <vertex id="edma3_1" x="780" y="191"/>
+      <vertex id="edma3_1" x="784" y="209"/>
       <vertex id="C64_5" x="56" y="255"/>
       <vertex id="C64_6" x="57" y="329"/>
       <vertex id="SCR2" x="325" y="228"/>
-      <vertex id="edma3_2" x="201" y="114"/>
+      <vertex id="edma3_2" x="151" y="179"/>
       <vertex id="RIO1" x="424" y="217"/>
+      <vertex id="TCP2_1" x="219" y="399"/>
+      <vertex id="TCP2_2" x="505" y="415"/>
+      <vertex id="Source" x="221" y="78"/>
    </vertices>
 </layout>

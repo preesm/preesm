@@ -56,7 +56,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 	/**
 	 * Communication nodes separating the sender and the receiver
 	 */
-	private List<AbstractNode> nodes = null;
+	protected List<AbstractNode> nodes = null;
 
 	/**
 	 * The route step type determines how the communication will be simulated.

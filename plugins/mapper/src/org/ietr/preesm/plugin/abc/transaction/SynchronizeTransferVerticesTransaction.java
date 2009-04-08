@@ -121,20 +121,9 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 	public void execute(List<Object> resultList) {
 		super.execute(resultList);
 
-		//MapperDAGVertex precedingVertex = getLatestPredecessor(verticesToSynchronize.get(0));
-		
-		//MapperDAGVertex tempVertex = precedingVertex;
 		for (MapperDAGVertex v : verticesToSynchronize){
 			v.getTimingVertexProperty().setSynchronizedVertices(verticesToSynchronize);
-			//orderManager.insertVertexAfter(tempVertex, v);
-			//tempVertex = v;
 		}
-
-		/*for (MapperDAGVertex v : verticesToSynchronize) {
-			SynchroEdge synchroEdge = new SynchroEdge();
-			synchroEdge.getTimingEdgeProperty().setCost(0);
-			implementation.addEdge(precedingVertex, v, synchroEdge);
-		}*/
 	}
 
 	@Override

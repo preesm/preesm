@@ -406,14 +406,14 @@ public abstract class AbstractAbc implements IAbc {
 					if (isImplantable(currentvertex, op)) {
 						adequateOp = op;
 
-						PreesmLogger
+						/*PreesmLogger
 								.getLogger()
 								.info(
 										"The vertex: "
 												+ currentvertex.getName()
 												+ " could not be mapped on main operator "
 												+ preferedOperator.getName()
-												+ ". An alternative with same definition was found.");
+												+ ". An alternative with same definition was found.");*/
 					}
 				}
 			}
@@ -426,14 +426,14 @@ public abstract class AbstractAbc implements IAbc {
 					if (isImplantable(currentvertex, op)) {
 						adequateOp = op;
 
-						PreesmLogger
+						/*PreesmLogger
 								.getLogger()
 								.info(
 										"The vertex: "
 												+ currentvertex.getName()
 												+ " could not be mapped on main operator "
 												+ preferedOperator.getName()
-												+ ". An alternative with another definition was found.");
+												+ ". An alternative with another definition was found.");*/
 					}
 				}
 			}

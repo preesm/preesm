@@ -12,6 +12,8 @@ import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
@@ -42,6 +44,14 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 	public void removeVertices(MapperDAGEdge edge,
 			TransactionManager transactions) {
 
+	}
+
+	/**
+	 * Careful!!! Only simple edge scheduler allowed for synchronized edges
+	 */
+	@Override
+	public IEdgeSched getEdgeScheduler() {
+		return new SimpleEdgeSched(getOrderManager());
 	}
 
 	/**
@@ -88,7 +98,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 						if (v.getSource().equals(edge.getSource())
 								&& v.getTarget().equals(edge.getTarget())
 								&& v.getRouteStep() == routeStep && v.getNodeIndex() == 0) {
-								// Finding the edge where to add an overhead
+								// Finding the edge where to add an involvement
 								incomingEdge = (MapperDAGEdge) v
 										.incomingEdges().toArray()[0];
 								correspondingTransfer = v;

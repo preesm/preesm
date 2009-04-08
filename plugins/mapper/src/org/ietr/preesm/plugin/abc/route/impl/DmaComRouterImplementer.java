@@ -15,6 +15,8 @@ import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
@@ -44,6 +46,14 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 	public void removeVertices(MapperDAGEdge edge,
 			TransactionManager transactions) {
 
+	}
+
+	/**
+	 * Careful!!! Only simple edge scheduler allowed for synchronized edges
+	 */
+	@Override
+	public IEdgeSched getEdgeScheduler() {
+		return new SimpleEdgeSched(getOrderManager());
 	}
 
 	/**

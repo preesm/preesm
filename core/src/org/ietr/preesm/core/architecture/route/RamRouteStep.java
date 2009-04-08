@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
@@ -52,15 +54,21 @@ import org.ietr.preesm.core.architecture.simplemodel.Ram;
 public class RamRouteStep extends MessageRouteStep {
 
 	private Ram ram;
+	
+	/**
+	 * Index of the communication node connected to the shared ram
+	 */
+	private int ramNodeIndex = -1;
 
 	/**
 	 * The route step type determines how the communication will be simulated.
 	 */
 	public static final String type = "RamRouteStep";
 	
-	public RamRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Ram ram) {
+	public RamRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Ram ram, int ramNodeIndex) {
 		super(sender,nodes, receiver);		
 		this.ram = ram;
+		this.ramNodeIndex = ramNodeIndex;
 	}
 
 	/**
@@ -95,6 +103,54 @@ public class RamRouteStep extends MessageRouteStep {
 	protected Object clone() throws CloneNotSupportedException {
 		Ram newRam = (Ram)ram.clone();
 		newRam.setDefinition(ram.getDefinition());
-		return new RamRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newRam);
+		return new RamRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newRam, ramNodeIndex);
+	}
+
+	/**
+	 * Returns the longest time a contention node needs to transfer the data before the RAM in the route steps
+	 */
+	public long getSenderSideWorstTransferTime(long transfersSize) {
+		long time = 0;
+		
+		for(ContentionNode node: getSenderSideContentionNodes()){
+			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
+			time = Math.max(time,def.getTransferTime(transfersSize));
+		}
+		return time;
+	}
+
+	/**
+	 * Returns the longest time a contention node needs to transfer the data after the RAM in the route steps
+	 */
+	public long getReceiverSideWorstTransferTime(long transfersSize) {
+		long time = 0;
+		
+		for(ContentionNode node: getReceiverSideContentionNodes()){
+			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
+			time = Math.max(time,def.getTransferTime(transfersSize));
+		}
+		return time;
+	}
+
+	public List<ContentionNode> getSenderSideContentionNodes() {
+		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
+		for(int i=0; i<=ramNodeIndex;i++){
+			AbstractNode node = nodes.get(i);
+			if(node instanceof ContentionNode){
+				contentionNodes.add((ContentionNode)node);
+			}
+		}
+		return contentionNodes;
+	}
+
+	public List<ContentionNode> getReceiverSideContentionNodes() {
+		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
+		for(int i=ramNodeIndex; i<nodes.size();i++){
+			AbstractNode node = nodes.get(i);
+			if(node instanceof ContentionNode){
+				contentionNodes.add((ContentionNode)node);
+			}
+		}
+		return contentionNodes;
 	}
 }
