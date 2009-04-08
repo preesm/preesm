@@ -172,16 +172,6 @@ public class GraphTimeKeeper {
 			modifiedvertex.getTimingVertexProperty().setTlevel(newTLevel);
 			Set<DAGVertex> sucSet = neighborindex.successorsOf(modifiedvertex);
 			for (DAGVertex v : sucSet) {
-				List<MapperDAGVertex> synchros = modifiedvertex
-						.getTimingVertexProperty().getSynchronizedVertices();
-				if (synchros != null) {
-					for (MapperDAGVertex s : synchros) {
-						if (s.equals(v)) {
-							int i = 0;
-							i++;
-						}
-					}
-				}
 				updateTLevel((MapperDAGVertex) v,
 						getVertexTLevelFromPredecessorNoEdge(modifiedvertex,
 								(MapperDAGVertex) v));
@@ -199,7 +189,6 @@ public class GraphTimeKeeper {
 
 		long newPathLength = -1;
 		if (predTProperty.getTlevel() >= 0 && predTProperty.getCost() >= 0 && edgeCost >= 0) {
-
 			newPathLength = predTProperty.getTlevel()
 					+ predTProperty.getCost();
 		}

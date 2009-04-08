@@ -37,12 +37,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.impl.latency;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -53,6 +56,7 @@ import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
@@ -418,7 +422,38 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Reschedule all the transfers generated during mapping
 	 */
 	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
-		Schedule totalOrder = this.getTotalOrder();
+		
+		ImplementationCleaner cleaner = new ImplementationCleaner(orderManager,
+				implementation);
+		
+		for(ArchitectureComponent cmp : archi.getComponents(ArchitectureComponentType.contentionNode)){
+			for(MapperDAGVertex v : this.orderManager.getSchedule(cmp)){
+				cleaner.unscheduleVertex(v);
+			}
+		}
+		
+		updateTimings();
+		
+		for(ArchitectureComponent cmp : archi.getComponents(ArchitectureComponentType.contentionNode)){
+			ConcurrentSkipListSet<MapperDAGVertex> list = new ConcurrentSkipListSet<MapperDAGVertex>(new Comparator<MapperDAGVertex>(){
+				@Override
+				public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
+					long TLevelDifference = (getTLevel(arg0) - getTLevel(arg1));
+					if (TLevelDifference == 0)
+						TLevelDifference = (arg0.getName().compareTo(arg1.getName()));
+					return (int)TLevelDifference;
+				}
+			});
+			list.addAll(this.orderManager.getSchedule(cmp));
+
+			for(MapperDAGVertex v : list){
+				TransferVertex tv = (TransferVertex)v;
+				orderManager.insertVertexBefore(tv, tv.getTarget());
+			}
+		}
+		
+		
+		/*Schedule totalOrder = this.getTotalOrder();
 		List<String> orderedNames = new ArrayList<String>();
 
 		for (MapperDAGVertex v : totalOrder) {
@@ -438,7 +473,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 					addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames);
 				}
 			}
-		}
+		}*/
 		/*
 		for (MapperDAGVertex v : cpnDominantList) {
 			for (DAGVertex t : ImplementationCleaner.getPrecedingTransfers(this.translateInImplementationVertex(v))) {
