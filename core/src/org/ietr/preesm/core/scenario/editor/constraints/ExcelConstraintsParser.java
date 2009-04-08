@@ -103,41 +103,19 @@ public class ExcelConstraintsParser {
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
-			for (ArchitectureComponentDefinition operatorDef : currentArchi
-					.getComponentDefinitions(ArchitectureComponentType.operator)) {
-				for (SDFAbstractVertex vertex : currentGraph.getHierarchicalVertexSet()) {
+			for (SDFAbstractVertex vertex : currentGraph
+					.getHierarchicalVertexSet()) {
+				
+				/*for (ArchitectureComponentDefinition operatorDef : currentArchi
+						.getComponentDefinitions(ArchitectureComponentType.operator)) {
+					checkOpDefConstraint(w, (OperatorDefinition) operatorDef,
+							currentArchi, vertex);
+				}*/
 
-					String operatorDefId = ((OperatorDefinition) operatorDef)
-							.getId();
-					String vertexName = vertex.getName();
-
-					if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
-						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(
-								operatorDefId);
-
-						if (vertexCell != null && operatorCell != null) {
-							Cell timingCell = w.getSheet(0).getCell(
-									operatorCell.getColumn(),
-									vertexCell.getRow());
-
-							if (timingCell.getType().equals(CellType.NUMBER)
-									|| timingCell.getType().equals(
-											CellType.NUMBER_FORMULA)) {
-								Set<ArchitectureComponent> operators = currentArchi
-										.getComponents(ArchitectureComponentType.operator);
-
-								for (ArchitectureComponent operator : operators) {
-									if (operator.getDefinition().getId()
-											.equalsIgnoreCase(operatorDefId))
-										scenario.getConstraintGroupManager()
-												.addConstraint(
-														(Operator) operator,
-														vertex);
-								}
-							}
-						}
-					}
+				for (ArchitectureComponent operator : currentArchi
+						.getComponents(ArchitectureComponentType.operator)) {
+					checkOpConstraint(w, (Operator) operator, currentArchi,
+							vertex);
 				}
 			}
 
@@ -150,6 +128,65 @@ public class ExcelConstraintsParser {
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Importing constraints from component definition ids
+	 */
+	private void checkOpDefConstraint(Workbook w,
+			OperatorDefinition operatorDef, MultiCoreArchitecture archi,
+			SDFAbstractVertex vertex) {
+		String operatorDefId = operatorDef.getId();
+		String vertexName = vertex.getName();
+
+		if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
+			Cell vertexCell = w.getSheet(0).findCell(vertexName);
+			Cell operatorCell = w.getSheet(0).findCell(operatorDefId);
+
+			if (vertexCell != null && operatorCell != null) {
+				Cell timingCell = w.getSheet(0).getCell(
+						operatorCell.getColumn(), vertexCell.getRow());
+
+				if (timingCell.getType().equals(CellType.NUMBER)
+						|| timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
+					Set<ArchitectureComponent> operators = archi
+							.getComponents(ArchitectureComponentType.operator);
+
+					for (ArchitectureComponent operator : operators) {
+						if (operator.getDefinition().getId().equalsIgnoreCase(
+								operatorDefId))
+							scenario.getConstraintGroupManager().addConstraint(
+									(Operator) operator, vertex);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Importing constraints from component names
+	 */
+	private void checkOpConstraint(Workbook w, Operator operator,
+			MultiCoreArchitecture archi, SDFAbstractVertex vertex) {
+		String operatorName = operator.getName();
+		String vertexName = vertex.getName();
+
+		if (!operatorName.isEmpty() && !vertexName.isEmpty()) {
+			Cell vertexCell = w.getSheet(0).findCell(vertexName);
+			Cell operatorCell = w.getSheet(0).findCell(operatorName);
+
+			if (vertexCell != null && operatorCell != null) {
+				Cell timingCell = w.getSheet(0).getCell(
+						operatorCell.getColumn(), vertexCell.getRow());
+
+				if (timingCell.getType().equals(CellType.NUMBER)
+						|| timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
+
+					scenario.getConstraintGroupManager().addConstraint(
+							(Operator) operator, vertex);
+				}
+			}
 		}
 	}
 }
