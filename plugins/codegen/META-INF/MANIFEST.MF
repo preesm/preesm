@@ -12,3 +12,4 @@ Bundle-ClassPath: lib/idl.jar,
  lib/JFlex.jar,
  lib/logkit-1.2.jar,
  .
+Bundle-Vendor: IETR/INSA of Rennes

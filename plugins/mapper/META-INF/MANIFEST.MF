@@ -19,3 +19,4 @@ Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  lib/junit-4.5.jar
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: IETR/INSA of Rennes
