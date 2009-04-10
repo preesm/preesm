@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -48,6 +49,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -191,6 +194,18 @@ public class OverviewPage extends FormPage {
 		
 		final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
 		column3.setText(Messages.getString("Overview.properties.memColumn"));
+		
+	    Listener charSortListener = new Listener() {
+	      public void handleEvent(Event e) {
+	        TableColumn column = (TableColumn) e.widget;
+	        props.setColumnOrder(column.getText());
+	        tableViewer.refresh();
+	      }
+	    };
+	    
+	    column1.addListener(SWT.Selection, charSortListener);
+	    column2.addListener(SWT.Selection, charSortListener);
+	    column3.addListener(SWT.Selection, charSortListener);
 		
 		final Table tref = table;
 		final Composite comp = tablecps;

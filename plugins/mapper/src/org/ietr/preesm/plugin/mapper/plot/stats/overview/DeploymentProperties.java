@@ -33,10 +33,15 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats.overview;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,6 +53,7 @@ import org.eclipse.swt.graphics.Image;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.plugin.mapper.plot.stats.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 
 /**
@@ -59,12 +65,18 @@ import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 public class DeploymentProperties implements IStructuredContentProvider,
 		ITableLabelProvider {
 
+	private String columnOrder;
+
 	private StatGenerator statGen;
 
 	private Map<Operator, Long> loads;
 	private Map<Operator, Integer> memoryNeeds;
-	
+
 	private long repetitionPeriod;
+
+	public void setColumnOrder(String columnOrder) {
+		this.columnOrder = columnOrder;
+	}
 
 	public DeploymentProperties(StatGenerator statGen) {
 		super();
@@ -74,13 +86,15 @@ public class DeploymentProperties implements IStructuredContentProvider,
 		memoryNeeds = new HashMap<Operator, Integer>();
 
 		repetitionPeriod = statGen.getFinalTime();
-			
+		columnOrder = Messages
+		.getString("Overview.properties.opColumn");
+
 		initData();
 	}
 
 	private void initData() {
-		Set<ArchitectureComponent> opSet = statGen.getAbc().getArchitecture().getComponents(
-				ArchitectureComponentType.operator);
+		Set<ArchitectureComponent> opSet = statGen.getAbc().getArchitecture()
+				.getComponents(ArchitectureComponentType.operator);
 
 		for (ArchitectureComponent cmp : opSet) {
 			Operator op = (Operator) cmp;
@@ -92,7 +106,38 @@ public class DeploymentProperties implements IStructuredContentProvider,
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		return loads.keySet().toArray();
+		List<Operator> elements = new ArrayList<Operator>(loads.keySet());
+
+		Comparator<Operator> comparator = null;
+
+		if (columnOrder.equals(Messages
+				.getString("Overview.properties.opColumn"))) {
+			comparator = new Comparator<Operator>() {
+				@Override
+				public int compare(Operator o1, Operator o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			};
+		} else if (columnOrder.equals(Messages
+				.getString("Overview.properties.loadColumn"))) {
+			comparator = new Comparator<Operator>() {
+				@Override
+				public int compare(Operator o1, Operator o2) {
+					return (int)(loads.get(o1)-loads.get(o2));
+				}
+			};
+		} else if (columnOrder.equals(Messages
+				.getString("Overview.properties.memColumn"))) {
+			comparator = new Comparator<Operator>() {
+				@Override
+				public int compare(Operator o1, Operator o2) {
+					return (int)(memoryNeeds.get(o1)-memoryNeeds.get(o2));
+				}
+			};
+		}
+
+		Collections.sort(elements, comparator);
+		return elements.toArray();
 	}
 
 	@Override
@@ -127,9 +172,9 @@ public class DeploymentProperties implements IStructuredContentProvider,
 				d = d * 10000;
 				d = d / repetitionPeriod;
 				d = Math.ceil(d);
-				d = d/100;
+				d = d / 100;
 
-				text =String.valueOf(d);
+				text = String.valueOf(d);
 			} else if (columnIndex == 2) {
 				text = memoryNeeds.get(op).toString();
 			}
@@ -157,10 +202,9 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 	public void setRepetitionPeriod(Integer repetitionPeriod) {
-		if(repetitionPeriod != 0)
+		if (repetitionPeriod != 0)
 			this.repetitionPeriod = repetitionPeriod;
 	}
-
 
 	public long getRepetitionPeriod() {
 		return repetitionPeriod;

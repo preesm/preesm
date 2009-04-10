@@ -130,8 +130,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 	 */
 	@Override
 	public long getTransferCost(long transfersSize) {
-		// TODO Auto-generated method stub
-		return nodes.size();
+		return getWorstTransferTime(transfersSize);
 	}
 
 	@Override

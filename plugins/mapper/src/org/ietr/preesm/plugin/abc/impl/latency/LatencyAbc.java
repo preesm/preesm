@@ -422,66 +422,68 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Reschedule all the transfers generated during mapping
 	 */
 	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
-		
-		ImplementationCleaner cleaner = new ImplementationCleaner(orderManager,
-				implementation);
-		
-		for(ArchitectureComponent cmp : archi.getComponents(ArchitectureComponentType.contentionNode)){
-			for(MapperDAGVertex v : this.orderManager.getSchedule(cmp)){
-				cleaner.unscheduleVertex(v);
-			}
-		}
-		
-		updateTimings();
-		
-		for(ArchitectureComponent cmp : archi.getComponents(ArchitectureComponentType.contentionNode)){
-			ConcurrentSkipListSet<MapperDAGVertex> list = new ConcurrentSkipListSet<MapperDAGVertex>(new Comparator<MapperDAGVertex>(){
-				@Override
-				public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
-					long TLevelDifference = (getTLevel(arg0) - getTLevel(arg1));
-					if (TLevelDifference == 0)
-						TLevelDifference = (arg0.getName().compareTo(arg1.getName()));
-					return (int)TLevelDifference;
-				}
-			});
-			list.addAll(this.orderManager.getSchedule(cmp));
 
-			for(MapperDAGVertex v : list){
-				TransferVertex tv = (TransferVertex)v;
-				orderManager.insertVertexBefore(tv, tv.getTarget());
-			}
-		}
-		
-		
-		/*Schedule totalOrder = this.getTotalOrder();
-		List<String> orderedNames = new ArrayList<String>();
+		if (this.orderManager != null) {
+			ImplementationCleaner cleaner = new ImplementationCleaner(
+					orderManager, implementation);
 
-		for (MapperDAGVertex v : totalOrder) {
-			if (v instanceof TransferVertex) {
-				// addVertexAfterSourceLastTransfer(v, orderedNames);
-			} else if (v instanceof OverheadVertex) {
-				addVertexAfterSourceLastOverhead(v, orderedNames);
-			} else {
-				orderedNames.add(v.getName());
-			}
-		}
-
-		for(int index = cpnDominantList.size()-1;index >= 0 ; index--){
-			MapperDAGVertex v = cpnDominantList.get(index);
-			for (DAGVertex t : ImplementationCleaner.getFollowingTransfers(this.translateInImplementationVertex(v))) {
-				if (!orderedNames.contains(t.getName())) {
-					addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames);
+			for (ArchitectureComponent cmp : archi
+					.getComponents(ArchitectureComponentType.contentionNode)) {
+				for (MapperDAGVertex v : this.orderManager.getSchedule(cmp)) {
+					cleaner.unscheduleVertex(v);
 				}
 			}
-		}*/
+
+			updateTimings();
+
+			for (ArchitectureComponent cmp : archi
+					.getComponents(ArchitectureComponentType.contentionNode)) {
+				ConcurrentSkipListSet<MapperDAGVertex> list = new ConcurrentSkipListSet<MapperDAGVertex>(
+						new Comparator<MapperDAGVertex>() {
+							@Override
+							public int compare(MapperDAGVertex arg0,
+									MapperDAGVertex arg1) {
+								long TLevelDifference = (getTLevel(arg0) - getTLevel(arg1));
+								if (TLevelDifference == 0)
+									TLevelDifference = (arg0.getName()
+											.compareTo(arg1.getName()));
+								return (int) TLevelDifference;
+							}
+						});
+				list.addAll(this.orderManager.getSchedule(cmp));
+
+				for (MapperDAGVertex v : list) {
+					TransferVertex tv = (TransferVertex) v;
+					orderManager.insertVertexBefore(tv, tv.getTarget());
+				}
+			}
+		}
+
 		/*
-		for (MapperDAGVertex v : cpnDominantList) {
-			for (DAGVertex t : ImplementationCleaner.getPrecedingTransfers(this.translateInImplementationVertex(v))) {
-				if (!orderedNames.contains(t.getName())) {
-					addVertexBeforeTarget((MapperDAGVertex)t, orderedNames);
-				}
-			}
-		}*/
+		 * Schedule totalOrder = this.getTotalOrder(); List<String> orderedNames
+		 * = new ArrayList<String>();
+		 * 
+		 * for (MapperDAGVertex v : totalOrder) { if (v instanceof
+		 * TransferVertex) { // addVertexAfterSourceLastTransfer(v,
+		 * orderedNames); } else if (v instanceof OverheadVertex) {
+		 * addVertexAfterSourceLastOverhead(v, orderedNames); } else {
+		 * orderedNames.add(v.getName()); } }
+		 * 
+		 * for(int index = cpnDominantList.size()-1;index >= 0 ; index--){
+		 * MapperDAGVertex v = cpnDominantList.get(index); for (DAGVertex t :
+		 * ImplementationCleaner
+		 * .getFollowingTransfers(this.translateInImplementationVertex(v))) { if
+		 * (!orderedNames.contains(t.getName())) {
+		 * addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames); }
+		 * } }
+		 */
+		/*
+		 * for (MapperDAGVertex v : cpnDominantList) { for (DAGVertex t :
+		 * ImplementationCleaner
+		 * .getPrecedingTransfers(this.translateInImplementationVertex(v))) { if
+		 * (!orderedNames.contains(t.getName())) {
+		 * addVertexBeforeTarget((MapperDAGVertex)t, orderedNames); } } }
+		 */
 
 		/*
 		 * MapperDAGVertex v = totalOrder.getLast();
@@ -492,6 +494,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 		 * orderedNames); } else { //orderedNames.add(v.getName()); } v =
 		 * totalOrder.getPreviousVertex(v); }
 		 */
-		//reorder(orderedNames);
+		// reorder(orderedNames);
 	}
 }
