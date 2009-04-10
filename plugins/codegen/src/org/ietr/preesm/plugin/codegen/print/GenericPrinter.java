@@ -94,9 +94,27 @@ public class GenericPrinter {
 
 	}
 
+	public static IFile createFile(String fileName, String pathName){
+		// Creating a file if necessary
+		IPath path = new Path(pathName);
+		path = path.append(fileName);
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile iFile = workspace.getRoot().getFile(path);
+		try {
+			if (!iFile.exists()) {
+				iFile.create(null, false, new NullProgressMonitor());
+			}
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+		
+		return iFile;
+	}
+	
 	/**
-	 * Generates an XML source file and converts it into a target source file thanks
-	 * to an xslt sheet
+	 * Generates an XML source file and converts it into a target source file with
+	 * an xslt sheet
 	 */
 	public void print(SourceFile srcFile) {
 
@@ -106,24 +124,12 @@ public class GenericPrinter {
 		String fileName = operator.getName();
 		IPath xmlPath = new Path(outputPath);
 		xmlPath = xmlPath.append(fileName + ".xml");
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
+		
+		IFile iFile = createFile(fileName + ".xml", outputPath);
+		
 		XMLPrinter printer = getPrinter(operator);
-
-
-		IFile iFile = workspace.getRoot().getFile(xmlPath);
-		try {
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-
-			srcFile.accept(printer, printer.getRoot());
-			printer.writeDom(iFile);
-
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
+		srcFile.accept(printer, printer.getRoot());
+		printer.writeDom(iFile);
 
 		if(!xslPath.isEmpty()){
 			IPath specificPath = new Path(outputPath);
@@ -138,7 +144,6 @@ public class GenericPrinter {
 				xsltTransfo.transformFileToFile(xmlPath.toOSString(), specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
 				PreesmLogger.getLogger().log(Level.INFO, e.getMessage());
 			}
 		}

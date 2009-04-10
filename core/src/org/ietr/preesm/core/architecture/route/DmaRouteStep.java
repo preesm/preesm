@@ -75,14 +75,6 @@ public class DmaRouteStep extends MessageRouteStep {
 		return dma;
 	}
 
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize
-	 */
-	@Override
-	public long getTransferCost(long transfersSize) {
-		return getContentionNodes().size();
-	}
-
 	@Override
 	public String toString() {
 		String trace = super.toString();

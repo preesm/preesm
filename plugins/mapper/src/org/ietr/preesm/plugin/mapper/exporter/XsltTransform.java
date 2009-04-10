@@ -45,7 +45,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
- * This class provides methods to transform an XML file or a DOM element to a string
+ * This class provides methods to transform an XML file or a DOM element to a string in a workflow
  * 
  * @author Matthieu Wipliez
  * @author mpelcat

@@ -55,6 +55,9 @@ import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
+import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
+import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.demo.SDFtoDAGDemo;
@@ -108,11 +111,9 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 * @throws InvalidExpressionException
 	 * @throws PreesmException
 	 */
-	private void generateSourceFiles(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario,
-			SourceFileList list) throws InvalidExpressionException,
+	private CodeGenSDFGraph generateCodegenGraph(DirectedAcyclicGraph algorithm, IScenario scenario) throws InvalidExpressionException,
 			SDF4JException, PreesmException {
-		CodeGenerator codegen = new CodeGenerator(list);
+		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(
 				new Path(scenario.getAlgorithmURL()));
@@ -124,8 +125,8 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(algorithm);
 		}
-
-		codegen.generateSourceFiles(sdfGraph, architecture);
+		
+		return sdfGraph;
 	}
 
 	/**
@@ -147,21 +148,38 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
-		SourceFileList list = new SourceFileList();
-
+		
+		// Generating the code generation specific graph
+		CodeGenSDFGraph codeGenSDFGraph = null;
 		try {
-			// Generate source file class
-			generateSourceFiles(algorithm, architecture, scenario, list);
+			codeGenSDFGraph = generateCodegenGraph(algorithm, scenario);
 		} catch (PreesmException e) {
-			throw(e);
+			throw (e);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// Generates the code
-		GenericPrinter printerChooser = new GenericPrinter(sourcePath, xslPath);
-		printerChooser.printList(list);
 
-		result.setSourcefilelist(list);
+		if (!parameters.getBooleanVariable("jobPosting")) {
+			// Classical static code generation
+			SourceFileList list = new SourceFileList();
+			CodeGenerator codegen = new CodeGenerator(list);
+			// Generate source files
+			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
+			
+			// Generates the code in xml and translates it to c
+			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
+					xslPath);
+			printerChooser.printList(list);
+
+			result.setSourcefilelist(list);
+		} else{
+			// Job posting code generation
+			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(codeGenSDFGraph, scenario);
+			JobPostingSource source = jobGen.generate();
+			JobPostingPrinter printer = new JobPostingPrinter();
+			printer.addData(source);
+			printer.writeDom(GenericPrinter.createFile("jobList.xml", sourcePath));
+		}
 
 		return result;
 	}

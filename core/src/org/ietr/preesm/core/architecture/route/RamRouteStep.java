@@ -83,14 +83,6 @@ public class RamRouteStep extends MessageRouteStep {
 		return ram;
 	}
 
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize
-	 */
-	@Override
-	public long getTransferCost(long transfersSize) {
-		return getNodes().size();
-	}
-
 	@Override
 	public String toString() {
 		String trace = super.toString();
