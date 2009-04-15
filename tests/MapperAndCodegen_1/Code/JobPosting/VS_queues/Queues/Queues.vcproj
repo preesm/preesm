@@ -184,10 +184,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\stdafx.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\testcomSources.cpp"
 				>
 			</File>
@@ -210,11 +206,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\testcomSources.h"
+				RelativePath=".\include\testcomSources.h"
 				>
 			</File>
 		</Filter>

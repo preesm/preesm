@@ -8,10 +8,15 @@
     <xsl:variable name="sglIndent" select="'    '" />
     <xsl:variable name="curIndent" select="$sglIndent" />
     
-    <xsl:template match="jobPostingCode:BufferContainer"/>
+    <xsl:template match="jobPostingCode:jobPostingCode">
+        <xsl:value-of select="concat('#ifndef JOB_LIST',$new_line)"/>
+        <xsl:value-of select="concat('#define JOB_LIST',$new_line,$new_line)"/>
+        <xsl:apply-templates select="jobPostingCode:jobs"/>
+        <xsl:value-of select="concat($new_line,'#endif',$new_line)"/>
+    </xsl:template>
     
     <xsl:template match="jobPostingCode:jobs">   
-        <xsl:value-of select="concat($new_line,'job_descriptor jobs[JOB_NUMBER] = {',$new_line)"/>
+        <xsl:value-of select="concat('job_descriptor jobs[JOB_NUMBER] = {',$new_line)"/>
         <xsl:variable name="jobs">
         <xsl:apply-templates select="jobPostingCode:job"/>
         </xsl:variable>
