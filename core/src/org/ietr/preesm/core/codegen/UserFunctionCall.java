@@ -271,6 +271,10 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
+	public List<Parameter> getCallParameters() {
+		return callParameters;
+	}
+
 	/**
 	 * Displays pseudo-code for test
 	 */

@@ -136,6 +136,9 @@ public class JobPostingPrinter {
 		functionName.setTextContent(desc.getFunctionName());
 
 		addPredecessors(job, desc.getPrededessors());
+
+		addBuffers(job, desc.getBuffers());
+		addConstants(job, desc.getConstants());
 	}
 
 	public void addPredecessors(Element elt, List<JobDescriptor> preds) {
@@ -153,6 +156,43 @@ public class JobPostingPrinter {
 		Element predElt = dom.createElement("pred");
 		elt.appendChild(predElt);
 		predElt.setAttribute("id", String.valueOf(pred.getId()));
+	}
+
+	public void addBuffers(Element elt, List<Buffer> bufs) {
+
+		Element buffers = dom.createElement("buffers");
+		elt.appendChild(buffers);
+
+		for (Buffer buf : bufs) {
+			addBuffer(buffers, buf);
+		}
+	}
+
+	public void addBuffer(Element elt, Buffer buf) {
+
+		Element predElt = dom.createElement("buffer");
+		elt.appendChild(predElt);
+		predElt.setAttribute("name", String.valueOf(buf.getName()));
+		predElt.setAttribute("type", String.valueOf(buf.getType().getTypeName()));
+		predElt.setAttribute("size", String.valueOf(buf.getSize()));
+	}
+
+	public void addConstants(Element elt, List<Constant> consts) {
+
+		Element constants = dom.createElement("constants");
+		elt.appendChild(constants);
+
+		for (Constant cst : consts) {
+			addConstant(constants, cst);
+		}
+	}
+
+	public void addConstant(Element elt, Constant cst) {
+
+		Element cstElt = dom.createElement("constant");
+		elt.appendChild(cstElt);
+		cstElt.setAttribute("name", String.valueOf(cst.getName()));
+		cstElt.setAttribute("value", String.valueOf(cst.getValue()));
 	}
 
 }

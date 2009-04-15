@@ -188,7 +188,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\testcomSources.c"
+				RelativePath=".\src\testcomSources.cpp"
 				>
 			</File>
 		</Filter>

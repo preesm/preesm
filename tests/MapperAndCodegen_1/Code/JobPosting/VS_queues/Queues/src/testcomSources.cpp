@@ -8,10 +8,11 @@
  ============================================================================
  */
 #include "testcomSources.h"
+#include <stdio.h>
 
 #define TESTVALUE 10
 
-void sensor(void* buffers[], int params[]){
+void sensor( void* buffers[], int params[]){
 
 	char* o1 = (char*)buffers[0];
 	char* o2 = (char*)buffers[1];

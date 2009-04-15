@@ -6,6 +6,9 @@ package org.ietr.preesm.plugin.codegen.jobposting;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.Constant;
+import org.ietr.preesm.core.codegen.buffer.Buffer;
+
 /**
  * Every data necessary to launch a job
  * 
@@ -18,11 +21,13 @@ public class JobDescriptor {
 	private int id = 0;
 	private int time = 0;
 	private String functionName = "";
-	private List<String> bufferNames = null;
+	private List<Buffer> buffers = null;
+	private List<Constant> constants = null;
 	private List<JobDescriptor> prededessors = null;
 
 	public JobDescriptor() {
-		bufferNames = new ArrayList<String>();
+		buffers = new ArrayList<Buffer>();
+		constants = new ArrayList<Constant>();
 		prededessors = new ArrayList<JobDescriptor>();
 	}
 
@@ -77,4 +82,21 @@ public class JobDescriptor {
 		return prededessors;
 	}
 
+	public void addBuffer(Buffer b){
+		buffers.add(b);
+	}
+
+	public void addConstant(Constant c){
+		constants.add(c);
+	}
+
+	public List<Buffer> getBuffers() {
+		return buffers;
+	}
+
+	public List<Constant> getConstants() {
+		return constants;
+	}
+	
+	
 }

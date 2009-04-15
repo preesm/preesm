@@ -10,8 +10,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.Parameter;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
 import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -113,7 +115,17 @@ public class JobPostingCodeGenerator {
 				// Adding function parameters
 				UserFunctionCall userCall = new UserFunctionCall(vertex,
 						sourceFile.getGlobalContainer(), CodeSection.LOOP);
+				List<Parameter> params = userCall.getCallParameters();
 
+				for(Parameter param : params){
+					if(param instanceof Constant) 
+						desc.addConstant((Constant)param);
+				}
+				for(Parameter param : params){
+					if(param instanceof Buffer) 
+						desc.addBuffer((Buffer)param);
+				}
+				
 				// Setting job names
 				desc.setFunctionName(call.getFunctionName());
 				desc.setVertexName(vertex.getName());
