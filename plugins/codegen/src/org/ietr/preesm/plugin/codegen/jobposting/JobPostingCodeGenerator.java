@@ -76,31 +76,27 @@ public class JobPostingCodeGenerator {
 		DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighIndex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
 				codeGenSDFGraph);
 
-		// Generating buffers from the edges
+		// Generating buffers from the edges. Send and Receive buffers are
+		// ignored as we consider a shared memory job posting system
 		for (SDFEdge edge : codeGenSDFGraph.edgeSet()) {
 			SDFAbstractVertex source = edge.getSource();
 			SDFAbstractVertex target = edge.getTarget();
 
 			if (source instanceof CodeGenSDFSendVertex
-					|| target instanceof CodeGenSDFSendVertex) {
+					|| target instanceof CodeGenSDFSendVertex || source instanceof CodeGenSDFReceiveVertex
+					|| target instanceof CodeGenSDFReceiveVertex) {
 				continue;
 			}
 
-			if (source instanceof CodeGenSDFReceiveVertex) {
-				while(! (source instanceof CodeGenSDFTaskVertex)){
-					source = neighIndex.predecessorListOf(source).get(0);
-				}
-			}
+			Buffer buf = new Buffer(source.getName(), target.getName(), edge
+					.getSourceInterface().getName(), edge.getTargetInterface()
+					.getName(), ((CodeGenSDFEdge) edge).getSize(),
+					new DataType(edge.getDataType().toString()), edge,
+					sourceFile.getGlobalContainer());
 
-				Buffer buf = new Buffer(source.getName(), target.getName(), edge.getSourceInterface()
-						.getName(), edge.getTargetInterface().getName(),
-						((CodeGenSDFEdge) edge).getSize(), new DataType(edge
-								.getDataType().toString()), edge, sourceFile
-								.getGlobalContainer());
+			BufferAllocation allocation = new BufferAllocation(buf);
+			sourceFile.addBuffer(allocation);
 
-				BufferAllocation allocation = new BufferAllocation(buf);
-				sourceFile.addBuffer(allocation);
-			
 		}
 
 		// Generating the job descriptors
@@ -117,15 +113,15 @@ public class JobPostingCodeGenerator {
 						sourceFile.getGlobalContainer(), CodeSection.LOOP);
 				List<Parameter> params = userCall.getCallParameters();
 
-				for(Parameter param : params){
-					if(param instanceof Constant) 
-						desc.addConstant((Constant)param);
+				for (Parameter param : params) {
+					if (param instanceof Constant)
+						desc.addConstant((Constant) param);
 				}
-				for(Parameter param : params){
-					if(param instanceof Buffer) 
-						desc.addBuffer((Buffer)param);
+				for (Parameter param : params) {
+					if (param instanceof Buffer)
+						desc.addBuffer((Buffer) param);
 				}
-				
+
 				// Setting job names
 				desc.setFunctionName(call.getFunctionName());
 				desc.setVertexName(vertex.getName());

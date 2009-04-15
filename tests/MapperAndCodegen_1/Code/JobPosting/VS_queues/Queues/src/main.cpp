@@ -3,15 +3,13 @@
 
 #include "stdafx.h"
 
-int buf1[712];
-int buf2[712];
-
+// Code prototypes
 #include "testComSources.h"
+
+// Buffer declarations
+#include "jobBuffers.h"
+// useful macro defines
 #include "jobDefines.h"
-/*
-#define MAX_PRED 4
-#define JOB_NUMBER 2
-*/
 
 typedef struct job_descriptor_st{
 
@@ -23,27 +21,18 @@ typedef struct job_descriptor_st{
 	int params[MAX_PARAM];
 } job_descriptor;
 
-/*
-void test1(void* buffers[], int params[]){
-}
-
-void test2(void* buffers[], int params[]){
-}
-
-job_descriptor jobs[JOB_NUMBER] = {
-	{0,10000,sensor,{},{},{}}
-};*/
-
+// table with the job descriptors
 #include "jobList.h"
-#include "testcomSources.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int i = 0;
 
-	for(i = 0;i<JOB_NUMBER;i++){
-		job_descriptor job = jobs[i];
-		job.fct_pointer(job.buf_pointers,job.params);
+	while(1){
+		for(i = 0;i<JOB_NUMBER;i++){
+			job_descriptor job = jobs[i];
+			job.fct_pointer(job.buf_pointers,job.params);
+		}
 	}
 }
 

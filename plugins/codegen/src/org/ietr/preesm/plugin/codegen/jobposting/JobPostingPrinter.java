@@ -104,7 +104,32 @@ public class JobPostingPrinter {
 
 		Element root = dom.getDocumentElement();
 
+		addBuffers(root, source);
+
 		addDescriptors(root, source);
+	}
+
+	/**
+	 * Adds in xml structure every data from the job posting source
+	 */
+	public void addBuffers(Element elt, JobPostingSource source) {
+
+		Element buffers = dom.createElement("BufferContainer");
+		elt.appendChild(buffers);
+
+		for (BufferAllocation alloc : source.getBufferAllocations()) {
+			addBufferAllocation(buffers, alloc);
+		}
+	}
+
+	public void addBufferAllocation(Element elt, BufferAllocation alloc) {
+		
+		Element allocElt = dom.createElement("BufferAllocation");
+		elt.appendChild(allocElt);
+		
+		allocElt.setAttribute("name", alloc.getBuffer().getName());
+		allocElt.setAttribute("size", alloc.getBuffer().getSize().toString());
+		allocElt.setAttribute("type", alloc.getBuffer().getType().getTypeName());
 	}
 
 	/**
@@ -121,7 +146,7 @@ public class JobPostingPrinter {
 	}
 
 	public void addDescriptor(Element elt, JobDescriptor desc) {
-
+		
 		Element job = dom.createElement("job");
 		elt.appendChild(job);
 		job.setAttribute("id", String.valueOf(desc.getId()));
