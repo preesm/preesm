@@ -150,6 +150,8 @@ public class Workflow {
 		SourceFileList sourceFiles = null;
 		IMapperAbc abc = null; // This input type is known from the sender and the receiver
 
+		PreesmLogger.getLogger().log(Level.INFO,"Starting workflow execution");
+		
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
 		while (it.hasNext()) {
@@ -295,6 +297,7 @@ public class Workflow {
 			}
 		}
 
+		PreesmLogger.getLogger().log(Level.INFO,"End of workflow execution");
 		// Workflow completed
 		monitor.done();
 	}

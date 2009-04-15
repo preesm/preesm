@@ -128,6 +128,7 @@ public abstract class AbstractRouteStep {
 			MediumRouteStep mStep = (MediumRouteStep)this;
 			routeStep.setAttribute("type", "med");
 			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getId());
+			routeStep.setAttribute("mediumName", mStep.getMedium().getName());
 		}
 		else if(this.getType() == DmaRouteStep.type){
 			routeStep.setAttribute("type", "dma");
