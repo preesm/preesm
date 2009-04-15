@@ -199,8 +199,8 @@ public class InitialLists {
 		// if they have the same with the smallest t-level
 		while (iter.hasNext()) {
 			currentvertex = (MapperDAGVertex) iter.next();
-			long bLevel = archi.getBLevel(currentvertex);
-			long tLevel = archi.getTLevel(currentvertex);
+			long bLevel = archi.getBLevel(currentvertex, false);
+			long tLevel = archi.getTLevel(currentvertex, false);
 
 			if (bLevel == blevelmax && !(orderlist.contains(currentvertex))) {
 				if (tLevel < tlevelmax) {
@@ -239,6 +239,9 @@ public class InitialLists {
 		MapperDAGVertex cpnvertex = null;
 		MapperDAGVertex tempvertex = null;
 		long commax = 0;
+		
+		// Sets the t and b levels
+		abc.updateTimings();
 
 		// This step takes time because the whole graph b levels are calculated.
 		BLevelIterator iterator = new BLevelIterator(dag, abc, false);
@@ -285,8 +288,8 @@ public class InitialLists {
 					commax = edgeCost;
 					tempvertex = currentvertex;
 				} else if (edgeCost == commax) {
-					if (abc.getTLevel(currentvertex) < abc
-							.getTLevel(tempvertex)) {
+					if (abc.getTLevel(currentvertex,false) < abc
+							.getTLevel(tempvertex,false)) {
 						tempvertex = currentvertex;
 					}
 				}

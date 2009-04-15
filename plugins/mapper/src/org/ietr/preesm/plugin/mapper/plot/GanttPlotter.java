@@ -205,6 +205,7 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		// Populating the Operator lines
 		TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
+		simulator.updateTimings();
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
@@ -212,7 +213,7 @@ public class GanttPlotter extends ApplicationFrame implements
 					.getEffectiveComponent(currentVertex);
 
 			if (cmp != ArchitectureComponent.NO_COMPONENT) {
-				long start = simulator.getTLevel(currentVertex);
+				long start = simulator.getTLevel(currentVertex,false);
 				long end = simulator.getFinalCost(currentVertex);
 				String taskName = currentVertex.getName()
 						+ " (x"

@@ -12,13 +12,20 @@ import java.util.List;
 
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.UserFunctionCall;
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
+import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.scenario.IScenario;
+import org.jgrapht.alg.DirectedNeighborIndex;
+import org.jgrapht.alg.NeighborIndex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -62,24 +69,37 @@ public class JobPostingCodeGenerator {
 			}
 
 		});
-		JobPostingSource source = new JobPostingSource();
+		JobPostingSource sourceFile = new JobPostingSource();
+
+		DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighIndex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
+				codeGenSDFGraph);
 
 		// Generating buffers from the edges
-		/*
-		 * for (SDFEdge edge : codeGenSDFGraph.edgeSet()) {
-		 * 
-		 * if (!(edge.getSource() instanceof CodeGenSDFSendVertex) &&
-		 * !(edge.getTarget() instanceof CodeGenSDFSendVertex)) {
-		 * 
-		 * Buffer buf = new Buffer(edge.getSource().getName(), edge
-		 * .getTarget().getName(), edge.getSourceInterface() .getName(),
-		 * edge.getTargetInterface().getName(), ((CodeGenSDFEdge)
-		 * edge).getSize(), new DataType(edge .getDataType().toString()), edge,
-		 * source .getGlobalContainer());
-		 * 
-		 * BufferAllocation allocation = new BufferAllocation(buf);
-		 * source.addBuffer(allocation); } }
-		 */
+		for (SDFEdge edge : codeGenSDFGraph.edgeSet()) {
+			SDFAbstractVertex source = edge.getSource();
+			SDFAbstractVertex target = edge.getTarget();
+
+			if (source instanceof CodeGenSDFSendVertex
+					|| target instanceof CodeGenSDFSendVertex) {
+				continue;
+			}
+
+			if (source instanceof CodeGenSDFReceiveVertex) {
+				while(! (source instanceof CodeGenSDFTaskVertex)){
+					source = neighIndex.predecessorListOf(source).get(0);
+				}
+			}
+
+				Buffer buf = new Buffer(source.getName(), target.getName(), edge.getSourceInterface()
+						.getName(), edge.getTargetInterface().getName(),
+						((CodeGenSDFEdge) edge).getSize(), new DataType(edge
+								.getDataType().toString()), edge, sourceFile
+								.getGlobalContainer());
+
+				BufferAllocation allocation = new BufferAllocation(buf);
+				sourceFile.addBuffer(allocation);
+			
+		}
 
 		// Generating the job descriptors
 		for (SDFAbstractVertex vertex : list) {
@@ -89,6 +109,12 @@ public class JobPostingCodeGenerator {
 				desc = new JobDescriptor();
 
 				FunctionCall call = (FunctionCall) vertex.getRefinement();
+
+				// Adding function parameters
+				UserFunctionCall userCall = new UserFunctionCall(vertex,
+						sourceFile.getGlobalContainer(), CodeSection.LOOP);
+
+				// Setting job names
 				desc.setFunctionName(call.getFunctionName());
 				desc.setVertexName(vertex.getName());
 
@@ -96,16 +122,35 @@ public class JobPostingCodeGenerator {
 						.getPropertyBean()
 						.getValue(
 								ImplementationPropertyNames.Vertex_schedulingOrder);
+
+				// Setting job id
 				if (totalOrder != null) {
 					desc.setId(totalOrder);
+				}
+
+				int taskTime = (Integer) vertex.getPropertyBean().getValue(
+						ImplementationPropertyNames.Task_duration);
+				desc.setTime(taskTime);
+
+				// Adding predecessors
+				for (SDFAbstractVertex pred : neighIndex.predecessorsOf(vertex)) {
+					// If the vertex is a receive, go to the source.
+					SDFAbstractVertex predecessorToAdd = pred;
+					while (!(predecessorToAdd.getRefinement() instanceof FunctionCall)) {
+						predecessorToAdd = neighIndex.predecessorListOf(
+								predecessorToAdd).get(0);
+					}
+					desc.addPredecessor(sourceFile
+							.getJobDescriptorByVertexName(predecessorToAdd
+									.getName()));
 				}
 			}
 
 			if (desc != null) {
-				source.addDescriptor(desc);
+				sourceFile.addDescriptor(desc);
 			}
 		}
 
-		return source;
+		return sourceFile;
 	}
 }

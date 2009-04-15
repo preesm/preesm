@@ -36,5 +36,14 @@ public class JobPostingSource extends AbstractBufferContainer {
 		return descriptors;
 	}
 
+	public JobDescriptor getJobDescriptorByVertexName(String name){
+		for(JobDescriptor desc : descriptors){
+			if(desc.getVertexName().equals(name)){
+				return desc;
+			}
+		}
+		
+		return null;
+	}
 
 }

@@ -138,7 +138,7 @@ public class InfiniteHomogeneousAbc extends
 	 * Depending on the king of timings we want, calls the necessary updates.
 	 */
 	@Override
-	protected final void updateTimings() {
+	public final void updateTimings() {
 		timeKeeper.updateTandBLevels();
 	}
 

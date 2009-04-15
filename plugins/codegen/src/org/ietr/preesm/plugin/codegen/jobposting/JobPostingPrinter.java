@@ -6,6 +6,7 @@ package org.ietr.preesm.plugin.codegen.jobposting;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -60,20 +61,21 @@ public class JobPostingPrinter {
 	 * Current document
 	 */
 	private Document dom;
-	
+
 	public JobPostingPrinter() {
 		super();
 
-        try {
+		try {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("http://org.ietr.preesm.jobPostingCode", "jobPostingCode",null);
+			dom = impl.createDocument("http://org.ietr.preesm.jobPostingCode",
+					"jobPostingCode", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
+
 	public void writeDom(IFile file) {
 
 		try {
@@ -88,49 +90,69 @@ public class JobPostingPrinter {
 			LSSerializer serializer = implLS.createLSSerializer();
 			serializer.getDomConfig().setParameter("format-pretty-print", true);
 			serializer.write(dom, output);
-			
+
 			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
 					false, new NullProgressMonitor());
 			out.close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void addData(JobPostingSource source){
-		
+
+	public void addData(JobPostingSource source) {
+
 		Element root = dom.getDocumentElement();
-		
-		addDescriptors(root,source);
+
+		addDescriptors(root, source);
 	}
 
 	/**
 	 * Adds in xml structure every data from the job posting source
 	 */
-	public void addDescriptors(Element elt,JobPostingSource source){
-		
+	public void addDescriptors(Element elt, JobPostingSource source) {
+
 		Element jobs = dom.createElement("jobs");
 		elt.appendChild(jobs);
-		
-		for(JobDescriptor desc : source.getDescriptors()){
-			addDescriptor(jobs,desc);
+
+		for (JobDescriptor desc : source.getDescriptors()) {
+			addDescriptor(jobs, desc);
 		}
 	}
-	
-	public void addDescriptor(Element elt,JobDescriptor desc){
-		
+
+	public void addDescriptor(Element elt, JobDescriptor desc) {
+
 		Element job = dom.createElement("job");
 		elt.appendChild(job);
 		job.setAttribute("id", String.valueOf(desc.getId()));
-		
+		job.setAttribute("time", String.valueOf(desc.getTime()));
+
 		Element callName = dom.createElement("callName");
 		job.appendChild(callName);
 		callName.setTextContent(desc.getVertexName());
-		
+
 		Element functionName = dom.createElement("functionName");
 		job.appendChild(functionName);
 		functionName.setTextContent(desc.getFunctionName());
+
+		addPredecessors(job, desc.getPrededessors());
+	}
+
+	public void addPredecessors(Element elt, List<JobDescriptor> preds) {
+
+		Element predecessors = dom.createElement("predecessors");
+		elt.appendChild(predecessors);
+
+		for (JobDescriptor pred : preds) {
+			addPredecessor(predecessors, pred);
+		}
+	}
+
+	public void addPredecessor(Element elt, JobDescriptor pred) {
+
+		Element predElt = dom.createElement("pred");
+		elt.appendChild(predElt);
+		predElt.setAttribute("id", String.valueOf(pred.getId()));
 	}
 
 }

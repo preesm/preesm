@@ -249,6 +249,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		} 
 		return currentLocation;
 	}
+	
 	@Override
 	public Object visit(BufferAllocation domElt, CodeZoneId index,
 			Object currentLocation) {

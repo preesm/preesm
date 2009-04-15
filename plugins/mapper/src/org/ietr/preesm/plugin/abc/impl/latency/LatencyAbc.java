@@ -229,7 +229,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Asks the time keeper to update timings. Crucial and costly operation.
 	 * Depending on the king of timings we want, calls the necessary updates.
 	 */
-	protected void updateTimings() {
+	public void updateTimings() {
 
 		timeKeeper.updateTLevels();
 	}
@@ -325,17 +325,19 @@ public abstract class LatencyAbc extends AbstractAbc {
 		return finalTime;
 	}
 
-	public final long getTLevel(MapperDAGVertex vertex) {
+	public final long getTLevel(MapperDAGVertex vertex, boolean update) {
 		vertex = translateInImplementationVertex(vertex);
 
-		updateTimings();
+		if(update)
+			updateTimings();
 		return vertex.getTimingVertexProperty().getTlevel();
 	}
 
-	public final long getBLevel(MapperDAGVertex vertex) {
+	public final long getBLevel(MapperDAGVertex vertex, boolean update) {
 		vertex = translateInImplementationVertex(vertex);
 
-		updateTimings();
+		if(update)
+			updateTimings();
 		return vertex.getTimingVertexProperty().getBlevel();
 	}
 
@@ -443,7 +445,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 							@Override
 							public int compare(MapperDAGVertex arg0,
 									MapperDAGVertex arg1) {
-								long TLevelDifference = (getTLevel(arg0) - getTLevel(arg1));
+								long TLevelDifference = (getTLevel(arg0,false) - getTLevel(arg1,false));
 								if (TLevelDifference == 0)
 									TLevelDifference = (arg0.getName()
 											.compareTo(arg1.getName()));
