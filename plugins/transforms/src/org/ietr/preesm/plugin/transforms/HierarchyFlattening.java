@@ -93,7 +93,7 @@ public class HierarchyFlattening implements IGraphTransformation {
 					throw (new PreesmException("Graph not valid, not schedulable"));
 				}
 			} catch (SDF4JException e) {
-				throw(new PreesmException("invalid expression :"+e.getMessage() ));
+				throw(new PreesmException(e.getMessage() ));
 			}
 		} else {
 			logger.log(Level.SEVERE,
