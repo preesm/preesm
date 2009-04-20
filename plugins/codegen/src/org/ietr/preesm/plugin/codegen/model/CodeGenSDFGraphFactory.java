@@ -46,6 +46,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
@@ -148,38 +151,52 @@ public class CodeGenSDFGraphFactory {
 		for (DAGEdge edge : dag.edgeSet()) {
 			DAGVertex source = edge.getSource();
 			DAGVertex target = edge.getTarget();
-			SDFAbstractVertex newSource = aliases.get(source);
-			SDFAbstractVertex newTarget = aliases.get(target);
-			for (AbstractEdge subEdge : edge.getAggregate()) {
-				if (subEdge instanceof SDFEdge) {
-					SDFEdge sdfSubEdge = (SDFEdge) subEdge;
-					CodeGenSDFEdge newEdge = (CodeGenSDFEdge) output.addEdge(
-							newSource, newTarget);
-					SDFInterfaceVertex sourceInterface = null;
-					SDFInterfaceVertex targetInterface = null;
-					if ((sourceInterface = newSource.getInterface(sdfSubEdge
-							.getSourceInterface().getName())) == null) {
-						sourceInterface = new SDFSinkInterfaceVertex();
-						sourceInterface.setName(sdfSubEdge.getSourceInterface()
-								.getName());
-						newSource.addSink(sourceInterface);
+			VertexType sourceType = (VertexType) source.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_vertexType);
+			VertexType targetType = (VertexType) target.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_vertexType);
+			Operator operatorSource = (Operator) source.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_Operator);
+			Operator operatorTarget = (Operator) target.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_Operator);
+			if ((sourceType.equals(VertexType.send) && targetType
+					.equals(VertexType.receive))
+					|| operatorSource.equals(operatorTarget)) {
+				SDFAbstractVertex newSource = aliases.get(source);
+				SDFAbstractVertex newTarget = aliases.get(target);
+				for (AbstractEdge subEdge : edge.getAggregate()) {
+					if (subEdge instanceof SDFEdge) {
+						SDFEdge sdfSubEdge = (SDFEdge) subEdge;
+						CodeGenSDFEdge newEdge = (CodeGenSDFEdge) output
+								.addEdge(newSource, newTarget);
+						SDFInterfaceVertex sourceInterface = null;
+						SDFInterfaceVertex targetInterface = null;
+						if ((sourceInterface = newSource
+								.getInterface(sdfSubEdge.getSourceInterface()
+										.getName())) == null) {
+							sourceInterface = new SDFSinkInterfaceVertex();
+							sourceInterface.setName(sdfSubEdge
+									.getSourceInterface().getName());
+							newSource.addSink(sourceInterface);
+						}
+						if ((targetInterface = newSource
+								.getInterface(sdfSubEdge.getTargetInterface()
+										.getName())) == null) {
+							targetInterface = new SDFSourceInterfaceVertex();
+							targetInterface.setName(sdfSubEdge
+									.getTargetInterface().getName());
+							newTarget.addSource(targetInterface);
+						}
+						newEdge.setSourceInterface(sourceInterface);
+						newEdge.setTargetInterface(targetInterface);
+						newEdge.setCons(new SDFIntEdgePropertyType(sdfSubEdge
+								.getCons().intValue()));
+						newEdge.setProd(new SDFIntEdgePropertyType(sdfSubEdge
+								.getProd().intValue()));
+						newEdge.setDelay(new SDFIntEdgePropertyType(sdfSubEdge
+								.getDelay().intValue()));
+						newEdge.setDataType(sdfSubEdge.getDataType());
 					}
-					if ((targetInterface = newSource.getInterface(sdfSubEdge
-							.getTargetInterface().getName())) == null) {
-						targetInterface = new SDFSourceInterfaceVertex();
-						targetInterface.setName(sdfSubEdge.getTargetInterface()
-								.getName());
-						newTarget.addSource(targetInterface);
-					}
-					newEdge.setSourceInterface(sourceInterface);
-					newEdge.setTargetInterface(targetInterface);
-					newEdge.setCons(new SDFIntEdgePropertyType(sdfSubEdge
-							.getCons().intValue()));
-					newEdge.setProd(new SDFIntEdgePropertyType(sdfSubEdge
-							.getProd().intValue()));
-					newEdge.setDelay(new SDFIntEdgePropertyType(sdfSubEdge
-							.getDelay().intValue()));
-					newEdge.setDataType(sdfSubEdge.getDataType());
 				}
 			}
 		}
@@ -436,7 +453,6 @@ public class CodeGenSDFGraphFactory {
 		}
 	}
 
-
 	protected void treatDummyImplode(CodeGenSDFGraph graph) {
 		List<SDFAbstractVertex> vertices = new ArrayList<SDFAbstractVertex>(
 				graph.vertexSet());
@@ -682,8 +698,9 @@ public class CodeGenSDFGraphFactory {
 						.outgoingEdgesOf(port));
 				for (SDFEdge outEdge : outEdges) {
 					if (outEdge.getCons().intValue() > (outEdge.getProd()
-							.intValue()) || SDFMath.gcd(outEdge.getCons().intValue(), outEdge.getProd()
-									.intValue()) == 1) {
+							.intValue())
+							|| SDFMath.gcd(outEdge.getCons().intValue(),
+									outEdge.getProd().intValue()) == 1) {
 						SDFBroadcastVertex broadcast = new SDFBroadcastVertex();
 						SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
 						input.setName("in");

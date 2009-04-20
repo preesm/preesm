@@ -133,33 +133,41 @@ public class CompThreadCodeGenerator {
 							Level.SEVERE,
 							"Not one single function call for function: "
 									+ task.getName());
-				}
-				ICodeElement taskElement = taskElements.get(0);
+				} else {
+					ICodeElement taskElement = taskElements.get(0); // error if
+																	// the array
+																	// size is
+																	// equal to
+																	// 0
 
-				for (SDFAbstractVertex com : ownComVertices) {
-					// A first token must initialize the semaphore pend due to
-					// a sending operation
-					Set<SDFEdge> inEdges = (com.getBase().incomingEdgesOf(com));
-					List<Buffer> buffers = container.getBuffers(inEdges);
+					for (SDFAbstractVertex com : ownComVertices) {
+						// A first token must initialize the semaphore pend due
+						// to
+						// a sending operation
+						Set<SDFEdge> inEdges = (com.getBase()
+								.incomingEdgesOf(com));
+						List<Buffer> buffers = container.getBuffers(inEdges);
 
-					SemaphorePost init = new SemaphorePost(container, buffers,
-							com, SemaphoreType.empty);
+						SemaphorePost init = new SemaphorePost(container,
+								buffers, com, SemaphoreType.empty);
 
-					beginningCode.addCodeElementBefore(taskElement, init);
+						beginningCode.addCodeElementBefore(taskElement, init);
 
-					// Creates the semaphore if necessary ; retrieves it
-					// otherwise from global declaration and creates the pending
-					// function
-					SemaphorePend pend = new SemaphorePend(container, buffers,
-							com, SemaphoreType.empty);
+						// Creates the semaphore if necessary ; retrieves it
+						// otherwise from global declaration and creates the
+						// pending
+						// function
+						SemaphorePend pend = new SemaphorePend(container,
+								buffers, com, SemaphoreType.empty);
 
-					// Creates the semaphore if necessary and creates the
-					// posting function
-					SemaphorePost post = new SemaphorePost(container, buffers,
-							com, SemaphoreType.full);
+						// Creates the semaphore if necessary and creates the
+						// posting function
+						SemaphorePost post = new SemaphorePost(container,
+								buffers, com, SemaphoreType.full);
 
-					loopCode.addCodeElementBefore(taskElement, pend);
-					loopCode.addCodeElementAfter(taskElement, post);
+						loopCode.addCodeElementBefore(taskElement, pend);
+						loopCode.addCodeElementAfter(taskElement, post);
+					}
 				}
 			}
 		}

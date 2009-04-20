@@ -60,6 +60,7 @@ import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
+import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -121,9 +122,9 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
 
 		// Displays the DAG
-		if (false) {
-			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
-			applet2.init(algorithm);
+		if(false) {
+			SDFAdapterDemo applet2 = new SDFAdapterDemo();
+			applet2.init(sdfGraph);
 		}
 		
 		return sdfGraph;
