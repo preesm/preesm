@@ -4,5 +4,6 @@
       <vertex id="Trigger" x="57" y="70"/>
       <vertex id="IDCT2D" x="171" y="70"/>
       <vertex id="Group" x="306" y="79"/>
+      <vertex id="broadcast_signed" x="95" y="197"/>
    </vertices>
 </layout>

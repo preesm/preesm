@@ -10,7 +10,7 @@ typedef struct {
 	void* medium;
 }Medium;
 
-#define MEDIA_NR 8
+#define MEDIA_NR 4
 Medium Media[MEDIA_NR][MEDIA_NR];
 semaphore sem_init[MEDIA_NR][MEDIA_NR];
 

@@ -4,5 +4,7 @@
       <vertex id="Core1" x="57" y="71"/>
       <vertex id="Core0" x="277" y="71"/>
       <vertex id="TCP_1" x="166" y="118"/>
+      <vertex id="Core2" x="299" y="175"/>
+      <vertex id="Core3" x="67" y="168"/>
    </vertices>
 </layout>

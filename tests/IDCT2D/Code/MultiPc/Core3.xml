@@ -4,220 +4,101 @@
     <coreName>Core3</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="r_explo_12" size="64" type="int"/>
-            <bufferAllocation name="r_explo_13" size="64" type="int"/>
-            <bufferAllocation name="r_explo_14" size="1" type="int"/>
-            <bufferAllocation name="r_explo_15" size="1" type="int"/>
-            <bufferAllocation name="IDCT2D_0_0" size="64" type="int"/>
-            <bufferAllocation name="IDCT2D_4_0" size="64" type="int"/>
-            <bufferAllocation name="sem_2" size="12" type="semaphore"/>
+            <bufferAllocation name="r_explo_10" size="8" type="int"/>
+            <bufferAllocation name="r_explo_11" size="8" type="int"/>
+            <bufferAllocation name="IDCT2D__26" size="8" type="int"/>
+            <bufferAllocation name="IDCT2D__27" size="8" type="int"/>
+            <bufferAllocation name="r_explo_12" size="8" type="int"/>
+            <bufferAllocation name="r_explo_13" size="8" type="int"/>
+            <bufferAllocation name="IDCT2D__28" size="8" type="int"/>
+            <bufferAllocation name="IDCT2D__29" size="8" type="int"/>
+            <bufferAllocation name="sem_2" size="16" type="semaphore"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
-            <bufferContainer>
-                <variableAllocation name="i" type="long"/>
-                <variableAllocation name="j" type="long"/>
-            </bufferContainer>
+            <bufferContainer/>
             <linearCodeContainer>
                 <semaphoreInit>
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                    <constant name="semNumber" type="int" value="12"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                    <constant name="semNumber" type="int" value="16"/>
                 </semaphoreInit>
                 <launchThread priority="1" stackSize="8000" threadName="communicationThread"/>
-                <semaphorePost number="4" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePost number="2" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="6" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePost number="10" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="14" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
             </linearCodeContainer>
             <forLoop>
                 <semaphorePend number="0" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <semaphorePend number="2" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePend number="2" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <semaphorePend number="4" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePend>
-                <CompoundCode name="IDCT2D_0">
-                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
-                    <CompoundCode name="IDCT2D_basic">
-                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
-                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
-                        <userFunctionCall name="init_inLoopPort_0">
-                            <buffer name="outLoopP_0" size="64" type="int"/>
-                            <constant name="init_size" type="int" value="64"/>
-                        </userFunctionCall>
-                        <userFunctionCall name="trigger">
-                            <buffer name="trig_clu_0" size="2" type="int"/>
-                        </userFunctionCall>
-                        <finiteForLoop domain="2" index="i">
-                            <CompoundCode name="cluster_0">
-                                <subBufferAllocation index="i"
-                                    modulo="2" name="outSub_i_0"
-                                    parentBuffer="trig_clu_0" size="1" type="int"/>
-                                <bufferAllocation name="out_1_li_0"
-                                    size="64" type="int"/>
-                                <bufferAllocation name="lineOut__0"
-                                    size="64" type="int"/>
-                                <bufferAllocation name="blockOut_0"
-                                    size="64" type="int"/>
-                                <userFunctionCall name="readBlock">
-                                    <buffer name="r_explo_12" size="64" type="int"/>
-                                    <buffer name="outLoopP_0" size="64" type="int"/>
-                                    <subBuffer index="i"
-                                    name="outSub_i_0"
-                                    parentBuffer="trig_clu_0" size="1"/>
-                                    <buffer name="out_1_li_0" size="64" type="int"/>
-                                </userFunctionCall>
-                                <finiteForLoop domain="8" index="j">
-                                    <CompoundCode name="IDCT1D">
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="inSub_j__0"
-                                    parentBuffer="lineOut__0"
-                                    size="8" type="int"/>
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="outSub_j_0"
-                                    parentBuffer="out_1_li_0"
-                                    size="8" type="int"/>
-                                    <userFunctionCall name="idct1d">
-                                    <subBuffer index="j"
-                                    name="outSub_j_0"
-                                    parentBuffer="out_1_li_0" size="8"/>
-                                    <subBuffer index="j"
-                                    name="inSub_j__0"
-                                    parentBuffer="lineOut__0" size="8"/>
-                                    </userFunctionCall>
-                                    </CompoundCode>
-                                </finiteForLoop>
-                                <userFunctionCall name="transpose">
-                                    <buffer name="lineOut__0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                </userFunctionCall>
-                                <userFunctionCall name="memcpy">
-                                    <buffer name="block_ou_0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                    <constant name="size" type="string" value="64*sizeof(int)"/>
-                                </userFunctionCall>
-                                <userFunctionCall name="memcpy">
-                                    <buffer name="outLoopP_0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                    <constant name="size" type="string" value="64*sizeof(int)"/>
-                                </userFunctionCall>
-                            </CompoundCode>
-                        </finiteForLoop>
-                    </CompoundCode>
-                    <userFunctionCall name="clip">
-                        <buffer name="block_ou_0" size="64" type="int"/>
-                        <buffer name="r_explo_14" size="1" type="int"/>
-                        <buffer name="IDCT2D_0_0" size="64" type="int"/>
-                    </userFunctionCall>
-                </CompoundCode>
-                <semaphorePost number="5" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePost>
-                <semaphorePost number="3" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <userFunctionCall name="idct1d">
+                    <buffer name="r_explo_10" size="8" type="int"/>
+                    <buffer name="IDCT2D__26" size="8" type="int"/>
+                </userFunctionCall>
+                <semaphorePost number="3" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePost number="1" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
-                <semaphorePend number="6" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePend number="4" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
+                <semaphorePend number="6" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <userFunctionCall name="idct1d">
+                    <buffer name="r_explo_11" size="8" type="int"/>
+                    <buffer name="IDCT2D__27" size="8" type="int"/>
+                </userFunctionCall>
+                <semaphorePost number="7" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="5" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
                 <semaphorePend number="8" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
                 <semaphorePend number="10" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <CompoundCode name="IDCT2D_4">
-                    <bufferAllocation name="block_ou_0" size="64" type="int"/>
-                    <CompoundCode name="IDCT2D_basic">
-                        <bufferAllocation name="trig_clu_0" size="2" type="int"/>
-                        <bufferAllocation name="outLoopP_0" size="64" type="int"/>
-                        <userFunctionCall name="init_inLoopPort_0">
-                            <buffer name="outLoopP_0" size="64" type="int"/>
-                            <constant name="init_size" type="int" value="64"/>
-                        </userFunctionCall>
-                        <userFunctionCall name="trigger">
-                            <buffer name="trig_clu_0" size="2" type="int"/>
-                        </userFunctionCall>
-                        <finiteForLoop domain="2" index="i">
-                            <CompoundCode name="cluster_0">
-                                <subBufferAllocation index="i"
-                                    modulo="2" name="outSub_i_0"
-                                    parentBuffer="trig_clu_0" size="1" type="int"/>
-                                <bufferAllocation name="out_1_li_0"
-                                    size="64" type="int"/>
-                                <bufferAllocation name="lineOut__0"
-                                    size="64" type="int"/>
-                                <bufferAllocation name="blockOut_0"
-                                    size="64" type="int"/>
-                                <userFunctionCall name="readBlock">
-                                    <buffer name="r_explo_13" size="64" type="int"/>
-                                    <buffer name="outLoopP_0" size="64" type="int"/>
-                                    <subBuffer index="i"
-                                    name="outSub_i_0"
-                                    parentBuffer="trig_clu_0" size="1"/>
-                                    <buffer name="out_1_li_0" size="64" type="int"/>
-                                </userFunctionCall>
-                                <finiteForLoop domain="8" index="j">
-                                    <CompoundCode name="IDCT1D">
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="inSub_j__0"
-                                    parentBuffer="lineOut__0"
-                                    size="8" type="int"/>
-                                    <subBufferAllocation index="j"
-                                    modulo="64"
-                                    name="outSub_j_0"
-                                    parentBuffer="out_1_li_0"
-                                    size="8" type="int"/>
-                                    <userFunctionCall name="idct1d">
-                                    <subBuffer index="j"
-                                    name="outSub_j_0"
-                                    parentBuffer="out_1_li_0" size="8"/>
-                                    <subBuffer index="j"
-                                    name="inSub_j__0"
-                                    parentBuffer="lineOut__0" size="8"/>
-                                    </userFunctionCall>
-                                    </CompoundCode>
-                                </finiteForLoop>
-                                <userFunctionCall name="transpose">
-                                    <buffer name="lineOut__0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                </userFunctionCall>
-                                <userFunctionCall name="memcpy">
-                                    <buffer name="block_ou_0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                    <constant name="size" type="string" value="64*sizeof(int)"/>
-                                </userFunctionCall>
-                                <userFunctionCall name="memcpy">
-                                    <buffer name="outLoopP_0" size="64" type="int"/>
-                                    <buffer name="blockOut_0" size="64" type="int"/>
-                                    <constant name="size" type="string" value="64*sizeof(int)"/>
-                                </userFunctionCall>
-                            </CompoundCode>
-                        </finiteForLoop>
-                    </CompoundCode>
-                    <userFunctionCall name="clip">
-                        <buffer name="block_ou_0" size="64" type="int"/>
-                        <buffer name="r_explo_15" size="1" type="int"/>
-                        <buffer name="IDCT2D_4_0" size="64" type="int"/>
-                    </userFunctionCall>
-                </CompoundCode>
+                <userFunctionCall name="idct1d">
+                    <buffer name="r_explo_12" size="8" type="int"/>
+                    <buffer name="IDCT2D__28" size="8" type="int"/>
+                </userFunctionCall>
                 <semaphorePost number="11" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePost number="9" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
-                <semaphorePost number="7" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePend number="12" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <semaphorePend number="14" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <userFunctionCall name="idct1d">
+                    <buffer name="r_explo_13" size="8" type="int"/>
+                    <buffer name="IDCT2D__29" size="8" type="int"/>
+                </userFunctionCall>
+                <semaphorePost number="15" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="13" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
             </forLoop>
             <linearCodeContainer/>
@@ -225,121 +106,147 @@
         <threadDeclaration name="communicationThread">
             <bufferContainer/>
             <linearCodeContainer>
-                <sendInit connectedCoreId="Core2">
-                    <routeStep mediumDef="TCP" type="med">
+                <sendInit connectedCoreId="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
                         <sender def="x86" name="Core3"/>
-                        <receiver def="x86" name="Core2"/>
+                        <receiver def="x86" name="Core0"/>
                     </routeStep>
                 </sendInit>
-                <receiveInit connectedCoreId="Core1">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
+                <receiveInit connectedCoreId="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
                         <receiver def="x86" name="Core3"/>
                     </routeStep>
                 </receiveInit>
                 <waitForCore>
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
                         <receiver def="x86" name="Core3"/>
                     </routeStep>
                 </waitForCore>
                 <waitForCore>
-                    <routeStep mediumDef="TCP" type="med">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
                         <sender def="x86" name="Core3"/>
-                        <receiver def="x86" name="Core2"/>
+                        <receiver def="x86" name="Core0"/>
                     </routeStep>
                 </waitForCore>
-                <semaphorePost number="7" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePost number="5" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePost number="1" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePost number="13" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePost number="9" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePost>
-                <semaphorePost number="3" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
             </linearCodeContainer>
             <forLoop>
-                <semaphorePend number="7" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePend number="5" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <receiveMsg source="Core1">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
+                <receiveMsg source="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
                         <receiver def="x86" name="Core3"/>
                     </routeStep>
-                    <buffer name="r_explo_15" size="1" type="int"/>
+                    <buffer name="r_explo_11" size="8" type="int"/>
                 </receiveMsg>
-                <semaphorePost number="6" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                <semaphorePost number="4" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePend number="1" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <receiveMsg source="Core1">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
+                <receiveMsg source="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
                         <receiver def="x86" name="Core3"/>
                     </routeStep>
-                    <buffer name="r_explo_14" size="1" type="int"/>
+                    <buffer name="r_explo_10" size="8" type="int"/>
                 </receiveMsg>
                 <semaphorePost number="0" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePend number="3" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <sendMsg target="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core3"/>
+                        <receiver def="x86" name="Core0"/>
+                    </routeStep>
+                    <buffer name="IDCT2D__26" size="8" type="int"/>
+                </sendMsg>
+                <semaphorePost number="2" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePend number="7" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <sendMsg target="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core3"/>
+                        <receiver def="x86" name="Core0"/>
+                    </routeStep>
+                    <buffer name="IDCT2D__27" size="8" type="int"/>
+                </sendMsg>
+                <semaphorePost number="6" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePend number="13" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <receiveMsg source="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
+                        <receiver def="x86" name="Core3"/>
+                    </routeStep>
+                    <buffer name="r_explo_13" size="8" type="int"/>
+                </receiveMsg>
+                <semaphorePost number="12" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePend number="9" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <receiveMsg source="Core1">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
+                <receiveMsg source="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core0"/>
                         <receiver def="x86" name="Core3"/>
                     </routeStep>
-                    <buffer name="r_explo_13" size="64" type="int"/>
+                    <buffer name="r_explo_12" size="8" type="int"/>
                 </receiveMsg>
                 <semaphorePost number="8" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePost>
-                <semaphorePend number="3" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePend>
-                <receiveMsg source="Core1">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core1"/>
-                        <receiver def="x86" name="Core3"/>
-                    </routeStep>
-                    <buffer name="r_explo_12" size="64" type="int"/>
-                </receiveMsg>
-                <semaphorePost number="2" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePost>
-                <semaphorePend number="5" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
-                </semaphorePend>
-                <sendMsg target="Core2">
-                    <routeStep mediumDef="TCP" type="med">
-                        <sender def="x86" name="Core3"/>
-                        <receiver def="x86" name="Core2"/>
-                    </routeStep>
-                    <buffer name="IDCT2D_0_0" size="64" type="int"/>
-                </sendMsg>
-                <semaphorePost number="4" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
                 <semaphorePend number="11" type="full">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePend>
-                <sendMsg target="Core2">
-                    <routeStep mediumDef="TCP" type="med">
+                <sendMsg target="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
                         <sender def="x86" name="Core3"/>
-                        <receiver def="x86" name="Core2"/>
+                        <receiver def="x86" name="Core0"/>
                     </routeStep>
-                    <buffer name="IDCT2D_4_0" size="64" type="int"/>
+                    <buffer name="IDCT2D__28" size="8" type="int"/>
                 </sendMsg>
                 <semaphorePost number="10" type="empty">
-                    <buffer name="sem_2" size="12" type="semaphore"/>
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePost>
+                <semaphorePend number="15" type="full">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
+                </semaphorePend>
+                <sendMsg target="Core0">
+                    <routeStep mediumDef="TCP" mediumName="TCP_1" type="med">
+                        <sender def="x86" name="Core3"/>
+                        <receiver def="x86" name="Core0"/>
+                    </routeStep>
+                    <buffer name="IDCT2D__29" size="8" type="int"/>
+                </sendMsg>
+                <semaphorePost number="14" type="empty">
+                    <buffer name="sem_2" size="16" type="semaphore"/>
                 </semaphorePost>
             </forLoop>
             <linearCodeContainer/>

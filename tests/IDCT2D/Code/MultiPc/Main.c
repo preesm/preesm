@@ -1,8 +1,12 @@
 #include "x86.h"
 
 
+#define CORE_NUMBER 4
+
 extern DWORD WINAPI computationThread_Core0( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core1( LPVOID lpParam );
+extern DWORD WINAPI computationThread_Core2( LPVOID lpParam );
+extern DWORD WINAPI computationThread_Core3( LPVOID lpParam );
 
 
 int main(void)
@@ -14,6 +18,8 @@ int main(void)
 
   routine[0] = computationThread_Core0;
   routine[1] = computationThread_Core1;
+  routine[2] = computationThread_Core2;
+  routine[3] = computationThread_Core3;
 
 
   for(i=0;i<MEDIA_NR;i++){

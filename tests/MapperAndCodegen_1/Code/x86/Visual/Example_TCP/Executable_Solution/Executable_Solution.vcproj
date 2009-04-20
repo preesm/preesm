@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Executable_Solution"
 	ProjectGUID="{26B76651-195D-48C2-86D6-E5265CDC66DA}"
 	RootNamespace="Executable_Solution"
@@ -40,13 +40,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\Projets\archi_test\Projet_visual\OS_Com"
+				AdditionalIncludeDirectories="D:\Projets\archi_test\Projet_visual\OS_Com;D:\Preesm\trunk\tests\MapperAndCodegen_1\Code\Lib_com\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				WarnAsError="false"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>

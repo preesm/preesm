@@ -30,7 +30,7 @@
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
       <data key="variables">
-         <variable name="path" value="/MapperAndCodegen_1/flatten.graphml"/>
+         <variable name="path" value="/IDCT2D/Generated/MultiProcflatten.graphml"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
@@ -52,7 +52,8 @@
    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG" targetport="DAG" to="ImplementationExporter"/>
    <preesm:dataTransfer from="FAST scheduler" sourceport="ABC" targetport="ABC" to="DAG Plotter"/>
    <preesm:dataTransfer from="__architecture" sourceport="" targetport="architecture" to="FAST scheduler"/>
+   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
+   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
    <preesm:dataTransfer from="__scenario" sourceport="" targetport="scenario" to="FAST scheduler"/>
    <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HSDF"/>
-   <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="FAST scheduler"/>
 </preesm:workflow>

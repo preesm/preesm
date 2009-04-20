@@ -18,7 +18,7 @@
 #define MEDIUM_RCV 1
 #define TCP 100
 
-#define CORE_NUMBER 8
+
 
 #define Core0 0
 #define Core1 1

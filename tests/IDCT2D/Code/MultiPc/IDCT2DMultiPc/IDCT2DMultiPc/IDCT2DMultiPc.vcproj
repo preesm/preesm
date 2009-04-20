@@ -180,6 +180,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Core2.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Core3.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\C\group_bench.c"
 				>
 			</File>
