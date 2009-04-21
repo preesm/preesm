@@ -58,7 +58,5 @@
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="CodeGen"/>
    <preesm:dataTransfer from="Mapper" sourceport="ABC" targetport="ABC" to="Plotter"/>
    <preesm:dataTransfer from="__scenario" sourceport="scenario" targetport="scenario" to="Plotter"/>
-   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="HierarchyFlattening"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Exporter"/>
-   <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Mapper"/>
+   <preesm:dataTransfer from="__algorithm" sourceport="SDF" targetport="SDF" to="Mapper"/>
 </preesm:workflow>

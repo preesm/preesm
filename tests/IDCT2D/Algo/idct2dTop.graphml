@@ -43,16 +43,11 @@
          </data>
       </node>
       <node id="broadcast_signed" kind="Broadcast"/>
+      <node id="broadcastBlock" kind="Broadcast"/>
       <edge source="IDCT2D" sourceport="out" target="Group" targetport="MB">
          <data key="edge_prod">64</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">NbBlocks*64</data>
-         <data key="data_type">int</data>
-      </edge>
-      <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
-         <data key="edge_prod">NbBlocks*64</data>
-         <data key="edge_delay">0</data>
-         <data key="edge_cons">64</data>
          <data key="data_type">int</data>
       </edge>
       <edge source="Trigger" sourceport="signed" target="broadcast_signed" targetport="in">
@@ -65,6 +60,18 @@
          <data key="edge_prod">NbBlocks</data>
          <data key="edge_delay">0</data>
          <data key="edge_cons">1</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="Trigger" sourceport="MB" target="broadcastBlock" targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="broadcastBlock" sourceport="out" target="IDCT2D" targetport="blockIn">
+         <data key="edge_prod">NbBlocks*64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
          <data key="data_type">int</data>
       </edge>
    </graph>

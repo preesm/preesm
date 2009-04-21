@@ -1,7 +1,7 @@
 #include "x86.h"
 
 
-#define CORE_NUMBER 4
+#define CORE_NUMBER 2
 
 extern DWORD WINAPI computationThread_Core0( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core1( LPVOID lpParam );
