@@ -184,6 +184,7 @@ public class FastAlgorithm extends Observable {
 			simulator.setDAG(dag);
 		}
 		// display initial time after the list scheduling
+		simulator.updateFinalCosts();
 		long initial = simulator.getFinalCost();
 
 		bestTotalOrder = simulator.getTotalOrder().toList();
@@ -245,6 +246,7 @@ public class FastAlgorithm extends Observable {
 			do {
 				// step 7
 				currentvertex = (MapperDAGVertex) vertexiter.next();
+				simulator.updateFinalCosts();
 				SL = simulator.getFinalCost();
 
 				// step 8
@@ -265,6 +267,7 @@ public class FastAlgorithm extends Observable {
 				simulator.implant(currentvertex, operatortest, false);
 
 				// step 10
+				simulator.updateFinalCosts();
 				long newSL = simulator.getFinalCost();
 				if (newSL >= SL) {
 
@@ -283,12 +286,14 @@ public class FastAlgorithm extends Observable {
 			} while (searchstep++ < maxstep && counter < margin);
 
 			// step 12
+			simulator.updateFinalCosts();
 			if (bestSL > simulator.getFinalCost()) {
 
 				// step 13
 				dagfinal = simulator.getDAG().clone();
 				// step 14
 
+				simulator.updateFinalCosts();
 				bestSL = simulator.getFinalCost();
 
 				bestTotalOrder = simulator.getTotalOrder().toList();

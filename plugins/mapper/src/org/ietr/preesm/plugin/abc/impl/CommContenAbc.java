@@ -123,4 +123,8 @@ public class CommContenAbc extends AbstractAbc {
 	public void rescheduleTransfers(List<MapperDAGVertex> orderlist){
 		
 	}
+	
+	@Override
+	public void updateFinalCosts(){
+	}
 }

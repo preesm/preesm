@@ -187,6 +187,8 @@ public class GanttPlotter extends ApplicationFrame implements
 	private static IntervalCategoryDataset createDataset(MapperDAG dag,
 			LatencyAbc simulator) {
 
+		simulator.updateFinalCosts();
+		
 		TaskSeries series = new TaskSeries("Scheduled");
 		Task currenttask;
 
@@ -205,7 +207,6 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		// Populating the Operator lines
 		TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
-		simulator.updateTimings();
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
@@ -252,6 +253,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	 */
 	public static void plot(MapperDAG dag, IAbc simulator) {
 
+		simulator.updateFinalCosts();
 		GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
 				+ simulator.getFinalCost(), dag, simulator);
 

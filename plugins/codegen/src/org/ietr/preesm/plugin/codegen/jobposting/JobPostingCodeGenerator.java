@@ -43,11 +43,18 @@ public class JobPostingCodeGenerator {
 	private CodeGenSDFGraph codeGenSDFGraph;
 	private IScenario scenario;
 
+	/**
+	 * If true, the functions that are called are just simulation functions and not the real functional code.
+	 * Every job executes then a function named "simulation".
+	 */
+	boolean timedSimulation;
+
 	public JobPostingCodeGenerator(CodeGenSDFGraph codeGenSDFGraph,
-			IScenario scenario) {
+			IScenario scenario, boolean timedSimulation) {
 		super();
 		this.codeGenSDFGraph = codeGenSDFGraph;
 		this.scenario = scenario;
+		this.timedSimulation = timedSimulation;
 	}
 
 	public JobPostingSource generate() {
@@ -123,7 +130,12 @@ public class JobPostingCodeGenerator {
 				}
 
 				// Setting job names
-				desc.setFunctionName(call.getFunctionName());
+				if(timedSimulation){
+					desc.setFunctionName("simulation");
+				}
+				else{
+					desc.setFunctionName(call.getFunctionName());
+				}
 				desc.setVertexName(vertex.getName());
 
 				Integer totalOrder = (Integer) vertex

@@ -82,6 +82,7 @@ public class StatGenerator {
 		this.scenario = scenario;
 		this.abc = abc;
 
+		abc.updateFinalCosts();
 		this.finalTime = abc.getFinalCost();
 
 		// getDAGComplexSpanLength();
@@ -110,6 +111,7 @@ public class StatGenerator {
 
 		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
 				localArchi, scenario);
+		simu.updateFinalCosts();
 		long span = simu.getFinalCost();
 
 		PreesmLogger.getLogger().log(Level.INFO,
@@ -143,6 +145,7 @@ public class StatGenerator {
 			simu.resetDAG();
 			simu.implantAllVerticesOnOperator(archi.getMainOperator());
 
+			simu.updateFinalCosts();
 			work = simu.getFinalCost();
 
 			PreesmLogger.getLogger().log(Level.INFO,

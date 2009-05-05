@@ -230,7 +230,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void addParameter(Parameter param) {
 
 		if (param == null)
-			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
+			PreesmLogger.getLogger().log(Level.SEVERE, "buffer or parameter was not found");
 		else
 			callParameters.add(param);
 	}

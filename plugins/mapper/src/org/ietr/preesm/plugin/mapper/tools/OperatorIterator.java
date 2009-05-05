@@ -66,7 +66,8 @@ public class OperatorIterator implements Iterator<Operator> {
 	}
 	
 	/**
-	 * Constructor from an architecture and a reference vertex
+	 * Constructor from an architecture and a reference vertex. Iterates the operators
+	 * able to execute vertex.
 	 */
 	public OperatorIterator(MapperDAGVertex vertex, MultiCoreArchitecture archi) {
 		super();

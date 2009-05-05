@@ -149,6 +149,7 @@ public class Chromosome {
 		IAbc simulator = AbstractAbc
 				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi, scenario);
 		simulator.setDAG(this.getDag());
+		simulator.updateFinalCosts();
 		this.setEvaluateCost(simulator.getFinalCost());
 		this.setDirty(false);
 	}

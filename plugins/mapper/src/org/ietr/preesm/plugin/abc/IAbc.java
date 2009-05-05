@@ -73,6 +73,11 @@ public interface IAbc extends IMapperAbc {
 	public ArchitectureComponent getEffectiveComponent(MapperDAGVertex vertex);
 
 	/**
+	 * Updates the internal state so as to allow final cost processing
+	 */
+	public void updateFinalCosts();
+	
+	/**
 	 * Gives the implementation time of the implementation if possible. If current
 	 * implementation information is not enough to calculate this timing, returns
 	 * TIME_UNKNOWN

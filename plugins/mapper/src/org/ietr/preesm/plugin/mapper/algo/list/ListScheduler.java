@@ -59,6 +59,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -157,12 +158,14 @@ public class ListScheduler {
 
 		logger.log(Level.FINEST, " entering operator/vertex start time ");
 		
-		// implant the vertex with the operator
+		// implant the vertex on the operator
 		simu.implant(vertex, operator, true);
+		simu.updateFinalCosts();
 		
 		logger
 				.log(Level.FINEST, " implant the vertex on "
 						+ operator.getName());
+		
 
 		// check if the vertex is a source vertex with no predecessors
 		if (predset.isEmpty())
@@ -186,6 +189,7 @@ public class ListScheduler {
 			} else {
 				temptime = Math.max(temptime, simu.getFinalCost(operator));
 			}
+			
 			logger.log(Level.FINEST, " time with edge " + temptime);
 			if (temptime > starttime) {
 				starttime = temptime;
@@ -194,6 +198,8 @@ public class ListScheduler {
 
 		}
 
+		//PreesmLogger.getLogger().log(Level.INFO,"tps: " + starttime + "end: " + (((LatencyAbc)simu).getTLevel(vertex, true) + ((LatencyAbc)simu).getCost(vertex)));
+			
 		return starttime;
 	}
 
@@ -214,19 +220,15 @@ public class ListScheduler {
 			Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
 		// Variables
-
-		MapperDAGVertex currentvertex = null;
 		Operator currentoperator = null;
 		Operator chosenoperator = null;
-		Iterator<MapperDAGVertex> iter = orderlist.iterator();
 		List<Operator> operatorlist = new ArrayList<Operator>();
 		Logger logger = PreesmLogger.getLogger();
 
 		// Implant the fastest one to be ready among the operators in the vertex
 		// check the vertex by priority in the CPN-Dominant list
 		logger.log(Level.FINEST, " entering schedule ");
-		while (iter.hasNext()) {
-			currentvertex = iter.next();
+		for (MapperDAGVertex currentvertex : orderlist) {
 			logger.log(Level.FINEST, " vertex to implant "
 					+ currentvertex.getName());
 
@@ -246,9 +248,9 @@ public class ListScheduler {
 				while (iterop.hasNext()) {
 
 					currentoperator = iterop.next();
-					logger.log(Level.FINEST, " Considering operator "
-							+ currentoperator.getName() + " on the vertex "
-							+ currentvertex.getName());
+					logger.log(Level.FINEST, " Considering vertex "
+							+ currentvertex.getName() + " on the operator "
+							+ currentoperator.getName());
 
 					long test = operatorvertexstarttime(dag, currentvertex,
 							currentoperator, archisimu);

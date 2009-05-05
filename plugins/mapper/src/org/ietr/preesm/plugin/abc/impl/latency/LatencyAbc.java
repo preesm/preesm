@@ -278,7 +278,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	public final long getFinalCost() {
 
-		updateTimings();
+		//updateTimings();
 
 		// visualize results
 		// monitor.render(new SimpleTextRenderer());
@@ -297,7 +297,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public final long getFinalCost(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
-		updateTimings();
+		//updateTimings();
 
 		long finalTime = timeKeeper.getFinalTime(vertex);
 
@@ -313,7 +313,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	public final long getFinalCost(ArchitectureComponent component) {
 
-		updateTimings();
+		//updateTimings();
 
 		long finalTime = timeKeeper.getFinalTime(component);
 
@@ -497,5 +497,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 		 * totalOrder.getPreviousVertex(v); }
 		 */
 		// reorder(orderedNames);
+	}
+	
+	@Override
+	public void updateFinalCosts(){
+		updateTimings();
 	}
 }

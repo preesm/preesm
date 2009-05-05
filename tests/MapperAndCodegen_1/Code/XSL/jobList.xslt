@@ -25,7 +25,7 @@
     </xsl:template>
     
     <xsl:template match="jobPostingCode:job">  
-        <xsl:value-of select="concat($sglIndent,'{',@id,',',@time,',',./jobPostingCode:functionName,',')"/>
+        <xsl:value-of select="concat($sglIndent,'/*',jobPostingCode:callName,'*/','{',@id,',',@time,',',./jobPostingCode:functionName,',')"/>
         <xsl:value-of select="'{'"/>
         <xsl:variable name="preds">
             <xsl:apply-templates select="jobPostingCode:predecessors/jobPostingCode:pred"/>

@@ -44,10 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -108,6 +110,11 @@ public class MultiCoreArchitecture extends
 	 */
 	public ArchitectureComponentDefinition addComponentDefinition(
 			ArchitectureComponentType type, String id) {
+		
+		if(id.isEmpty()){
+			PreesmLogger.getLogger().log(Level.SEVERE,"careful: at least one component has no definition in the architecture");
+		}
+		
 		if (architectureComponentDefinitions.containsKey(id)) {
 			return architectureComponentDefinitions.get(id);
 		} else {

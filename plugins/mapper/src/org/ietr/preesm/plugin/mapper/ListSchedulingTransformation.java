@@ -114,23 +114,16 @@ public class ListSchedulingTransformation extends AbstractMapping {
 			return null;
 		}
 
+		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
 		simu.resetDAG();
-
 		IAbc simu2 = AbstractAbc
 				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 		
 		ListScheduler scheduler = new ListScheduler();
-
 		scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
-		PreesmLogger.getLogger().log(Level.FINER, "Plotting");
-		//Date date = new Date(1221555438562L);
-		//Calendar cal = Calendar.getInstance();
-		//DateFormat f = DateFormat.getDateInstance();
+		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
 		
-		//simu2.plotImplementation();
-		PreesmLogger.getLogger().log(Level.FINER, "Plot finished");
-
 		TagDAG tagSDF = new TagDAG();
 
 		try {

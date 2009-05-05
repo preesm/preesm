@@ -175,7 +175,8 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 			result.setSourcefilelist(list);
 		} else{
 			// Job posting code generation
-			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(codeGenSDFGraph, scenario);
+			boolean timedSimulation = parameters.getBooleanVariable("timedSimulation");
+			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(codeGenSDFGraph, scenario, timedSimulation);
 			JobPostingSource source = jobGen.generate();
 			JobPostingPrinter printer = new JobPostingPrinter();
 			printer.addData(source);
