@@ -266,6 +266,12 @@ public class ListScheduler {
 				// Implant the chosen operator in the CPN-Dominant list
 				archisimu.implant(currentvertex, chosenoperator, true);
 				
+				int currentVertexTotalOrder = orderlist.indexOf(currentvertex);
+				if(currentVertexTotalOrder != 0 && currentVertexTotalOrder % 100 == 0){
+					logger.log(Level.INFO, "list scheduling: "
+							+ currentVertexTotalOrder + " vertices mapped ");
+				}
+				
 				if(chosenoperator != null)
 					logger.log(Level.FINEST, " Chosen operator "
 							+ chosenoperator.getName() + " is implanted ");

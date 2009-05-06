@@ -188,7 +188,7 @@ public class GanttPlotter extends ApplicationFrame implements
 			LatencyAbc simulator) {
 
 		simulator.updateFinalCosts();
-		
+
 		TaskSeries series = new TaskSeries("Scheduled");
 		Task currenttask;
 
@@ -199,9 +199,12 @@ public class GanttPlotter extends ApplicationFrame implements
 				new ArchitectureComponent.ArchitectureComponentComparator());
 
 		for (ArchitectureComponent c : cmps) {
-			currenttask = new Task(c.getName(), new SimpleTimePeriod(0,
-					simulator.getFinalCost(c)));
-			series.add(currenttask);
+			long finalCost = simulator.getFinalCost(c);
+			if (finalCost > 0) {
+				currenttask = new Task(c.getName(), new SimpleTimePeriod(0,
+						finalCost));
+				series.add(currenttask);
+			}
 
 		}
 
@@ -214,7 +217,7 @@ public class GanttPlotter extends ApplicationFrame implements
 					.getEffectiveComponent(currentVertex);
 
 			if (cmp != ArchitectureComponent.NO_COMPONENT) {
-				long start = simulator.getTLevel(currentVertex,false);
+				long start = simulator.getTLevel(currentVertex, false);
 				long end = simulator.getFinalCost(currentVertex);
 				String taskName = currentVertex.getName()
 						+ " (x"
@@ -223,19 +226,6 @@ public class GanttPlotter extends ApplicationFrame implements
 				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
 				series.get(cmp.getName()).addSubtask(t);
 			}
-		}
-
-		// Removing the empty lines
-		Set<Task> TasksToRemove = new HashSet<Task>();
-		for (Object currentObject : series.getTasks()) {
-			Task currentTask = (Task) currentObject;
-			if (currentTask.getSubtaskCount() == 0) {
-				TasksToRemove.add(currentTask);
-			}
-		}
-
-		for (Task currentTask : TasksToRemove) {
-			series.remove(currentTask);
 		}
 
 		TaskSeriesCollection collection = new TaskSeriesCollection();
