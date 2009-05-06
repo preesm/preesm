@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.sdf4j.model.IRefinement;
 
@@ -46,24 +47,20 @@ public class FunctionCall implements IRefinement {
 	private String functionName;
 	public FunctionCall initCall = null;
 	public FunctionCall endCall = null;
-	private int nbArgs ; 
+	private int nbElts ; 
 
-	private Map<CodeGenArgument, Integer> arguments;
-
-	private Map<CodeGenParameter, Integer> parameters;
+	private Map<CodeGenCallElement, Integer> elements;
 
 	public FunctionCall(){
 		functionName = "";
-		arguments = new HashMap<CodeGenArgument, Integer>();
-		parameters = new HashMap<CodeGenParameter, Integer>();
-		nbArgs = 0 ;
+		elements = new HashMap<CodeGenCallElement, Integer>();
+		nbElts = 0 ;
 	}
 	
 	public FunctionCall(String name) {
 		functionName = name;
-		arguments = new HashMap<CodeGenArgument, Integer>();
-		parameters = new HashMap<CodeGenParameter, Integer>();
-		nbArgs = 0 ;
+		elements = new HashMap<CodeGenCallElement, Integer>();
+		nbElts = 0 ;
 	}
 
 	public String getFunctionName() {
@@ -75,13 +72,13 @@ public class FunctionCall implements IRefinement {
 	}
 
 	public void addArgument(CodeGenArgument arg) {
-		arguments.put(arg, nbArgs);
-		nbArgs ++ ;
+		elements.put(arg, nbElts);
+		nbElts ++ ;
 	}
 
 	public void addParameter(CodeGenParameter parameterName) {
-		parameters.put(parameterName, nbArgs);
-		nbArgs ++ ;
+		elements.put(parameterName, nbElts);
+		nbElts ++ ;
 	}
 
 	public FunctionCall getInitCall() {
@@ -100,16 +97,16 @@ public class FunctionCall implements IRefinement {
 		endCall = end;
 	}
 	
-	public Map<CodeGenArgument, Integer> getArguments() {
-		return arguments;
+	public int getNbElts(){
+		return nbElts ;
 	}
 	
-	public Map<CodeGenParameter, Integer> getParameters() {
-		return parameters;
+	public int indexOf(CodeGenCallElement elt){
+		return elements.get(elt);
 	}
 	
-	public int getNbArgs(){
-		return nbArgs ;
+	public Set<CodeGenCallElement> getElements(){
+		return elements.keySet();
 	}
 
 }

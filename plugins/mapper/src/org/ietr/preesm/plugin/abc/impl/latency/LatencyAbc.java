@@ -317,11 +317,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		long finalTime = timeKeeper.getFinalTime(component);
 
-		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"negative component final time");
-		}
-
 		return finalTime;
 	}
 

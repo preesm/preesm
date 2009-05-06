@@ -1,108 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/mapperAndCodegen/Algo/TestCom.graphml"/>
-        <architecture url="/mapperAndCodegen/Archi/8CoreX86.design"/>
+        <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
+        <architecture url="/MapperAndCodegen_1/Archi/8CoreX86.design"/>
         <timingfile url="/MapperAndCodegen_1/Scenarii/TestComPC.xls"/>
-        <codegenDirectory url="/mapperAndCodegen/Code/x86/generatedSrc"/>
+        <codegenDirectory url="/MapperAndCodegen_1/Code/x86/generatedSrc"/>
     </files>
     <constraints>
-        <constraintGroup>
-            <operator name="Core4"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core6"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
         <constraintGroup/>
         <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
             <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+            <task name="Actuator"/>
             <task name="Sensor"/>
             <task name="Gen_int"/>
             <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
             <task name="ParallelTest3"/>
             <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
         </constraintGroup>
         <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup/>
     </constraints>
     <timings/>

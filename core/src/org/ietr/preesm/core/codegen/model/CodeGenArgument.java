@@ -42,10 +42,9 @@ package org.ietr.preesm.core.codegen.model;
  * @author jpiat
  * @author mpelcat
  */
-public class CodeGenArgument {
+public class CodeGenArgument extends CodeGenCallElement {
 	
 	private String type ;
-	private String name ;
 	
 	public static final String INPUT = "INPUT";
 	public static final String OUTPUT = "OUTPUT";
@@ -53,16 +52,12 @@ public class CodeGenArgument {
 	private String direction ;
 	
 	public CodeGenArgument(String name, String direction){
-		this.name = name ;
+		super(name);
 		this.direction = direction;
 	}
 	
 	public void setType(String type){
 		this.type = type ;
-	}
-	
-	public String getName(){
-		return name ;
 	}
 	
 	public String getType(){

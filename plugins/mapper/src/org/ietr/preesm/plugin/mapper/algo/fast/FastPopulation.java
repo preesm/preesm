@@ -190,31 +190,4 @@ public class FastPopulation {
 		}
 		this.population.addAll(temp);
 	}
-
-	/**
-	 * Display the population found with the preceding function
-	 */
-	public void populationDisplay() {
-
-		// variables
-		//Logger logger = PreesmLogger.getLogger();
-		//logger.setLevel(Level.FINEST);
-		ListScheduler scheduler = new ListScheduler();
-		Iterator<MapperDAG> iterator = this.getPopulation().iterator();
-		MapperDAG temp;
-
-		// implant the DAG in a simulator and then display it
-		while (iterator.hasNext()) {
-			temp = iterator.next().clone();
-			IAbc simu2 = AbstractAbc
-					.getInstance(this.getSimulatorType(), edgeSchedType, temp, this.getArchi(), scenario);
-
-			scheduler.dagimplanteddisplay(temp, simu2);
-			simu2.setDAG(temp);
-			simu2.plotImplementation(false);
-			simu2.resetDAG();
-
-		}
-
-	}
 }

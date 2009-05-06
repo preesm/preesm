@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,7 +73,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
-import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -167,7 +167,6 @@ public class FastAlgorithm extends Observable {
 		Operator operatortest;
 		Operator operatorfcp;
 		Operator operatorprec;
-		List<Operator> operatorlist = new ArrayList<Operator>();
 		Logger logger = PreesmLogger.getLogger();
 
 		// these steps are linked to the description of the FAST algorithm to
@@ -250,11 +249,10 @@ public class FastAlgorithm extends Observable {
 				SL = simulator.getFinalCost();
 
 				// step 8
-				OperatorIterator iteratorop = new OperatorIterator(
-						currentvertex, simulator.getArchitecture());
-				operatorlist = iteratorop.getOperatorList();
+				Set<Operator> operatorSet = currentvertex.getInitialVertexProperty()
+				.getOperatorSet();
 
-				prociter = new RandomIterator<Operator>(operatorlist,
+				prociter = new RandomIterator<Operator>(operatorSet,
 						new Random());
 
 				// The mapping can reaffect the same operator as before,
@@ -312,11 +310,10 @@ public class FastAlgorithm extends Observable {
 
 			// step 16
 			fcpvertex = (MapperDAGVertex) iter.next();
-			OperatorIterator iteratorop = new OperatorIterator(fcpvertex,
-					simulator.getArchitecture());
-			operatorlist = iteratorop.getOperatorList();
+			Set<Operator> operatorSet = fcpvertex.getInitialVertexProperty()
+					.getOperatorSet();
 
-			prociter = new RandomIterator<Operator>(operatorlist, new Random());
+			prociter = new RandomIterator<Operator>(operatorSet, new Random());
 
 			operatorfcp = prociter.next();
 			if (operatorfcp.equals(dagfinal.getMapperDAGVertex(

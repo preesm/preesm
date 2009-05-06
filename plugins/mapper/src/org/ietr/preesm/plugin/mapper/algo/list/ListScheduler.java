@@ -65,7 +65,6 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.tools.OperatorIterator;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
@@ -85,48 +84,6 @@ public class ListScheduler {
 	 */
 	public ListScheduler() {
 		super();
-	}
-
-	/**
-	 * dagimplanteddisplay: Display the DAG with the vertex name and the
-	 * operator of this vertex
-	 * 
-	 * @param : threadName
-	 * @param : MapperDAG
-	 * @param : simu
-	 * 
-	 * @return : void
-	 */
-	public void dagimplanteddisplay(String threadName, MapperDAG dag,
-			IAbc simu) {
-
-		// Variables
-		TopologicalDAGIterator iter = new TopologicalDAGIterator(dag);
-		MapperDAGVertex currentvertex;
-		Logger logger = PreesmLogger.getLogger();
-		// check all the DAG
-		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex)iter.next();
-
-			logger.log(Level.FINER, threadName + "Vertex "
-					+ currentvertex.getName() + " operator "
-					+ simu.getEffectiveComponent(currentvertex).getName());
-
-		}
-	}
-
-	/**
-	 * dagimplanteddisplay: Display the DAG with the vertex name and the
-	 * operator of this vertex
-	 * 
-	 * @param : MapperDAG
-	 * @param : simu
-	 * 
-	 * @return : void
-	 */
-	public void dagimplanteddisplay(MapperDAG dag, IAbc simu) {
-
-		dagimplanteddisplay("", dag, simu);
 	}
 
 	/**
@@ -220,7 +177,6 @@ public class ListScheduler {
 			Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
 		// Variables
-		Operator currentoperator = null;
 		Operator chosenoperator = null;
 		List<Operator> operatorlist = new ArrayList<Operator>();
 		Logger logger = PreesmLogger.getLogger();
@@ -242,23 +198,15 @@ public class ListScheduler {
 
 				long time = Long.MAX_VALUE;
 				// Choose the operator
-				OperatorIterator iterop = new OperatorIterator(currentvertex,
-						archisimu.getArchitecture());
 
-				while (iterop.hasNext()) {
-
-					currentoperator = iterop.next();
-					logger.log(Level.FINEST, " Considering vertex "
-							+ currentvertex.getName() + " on the operator "
-							+ currentoperator.getName());
+				for (Operator currentoperator : currentvertex.getInitialVertexProperty()
+						.getOperatorSet()) {
 
 					long test = operatorvertexstarttime(dag, currentvertex,
 							currentoperator, archisimu);
 					// test the earliest ready operator
 					if (test < time) {
 						chosenoperator = currentoperator;
-						logger.log(Level.FINEST, " Chosen operator is : "
-								+ chosenoperator.getName());
 						time = test;
 					}
 
@@ -282,7 +230,7 @@ public class ListScheduler {
 			}
 		}
 		
-		archisimu.rescheduleTransfers(orderlist);
+		//archisimu.rescheduleTransfers(orderlist);
 		archisimu.retrieveTotalOrder();
 
 		return dag;

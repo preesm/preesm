@@ -36,9 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.tools;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * This iterator iterates any list of objects with type E
@@ -58,11 +60,11 @@ public class RandomIterator<E> implements Iterator<E> {
 	// the index of the chosen element
 	private int index;
 
-	// the list where the iterator is set
-	private final List<E> list;
+	// the list which is iterated
+	private List<E> list = null;
 
 	// size of the list where the iterator is set
-	private final int LIST_SIZE;
+	private final int listSize;
 
 	// random
 	private final Random rand;
@@ -76,13 +78,25 @@ public class RandomIterator<E> implements Iterator<E> {
 	public RandomIterator(List<E> list, Random rand) {
 
 		this.list = list;
-
-		this.LIST_SIZE = list.size();
-
+		this.listSize = list.size();
 		long seed = System.nanoTime();
 		rand.setSeed(seed);
 		this.rand = rand;
+	}
+	
+	/**
+	 * RandomIterator constructor
+	 * 
+	 * @param list
+	 * @param rand
+	 */
+	public RandomIterator(Set<E> set, Random rand) {
 
+		this.list = new ArrayList<E>(set);
+		this.listSize = set.size();
+		long seed = System.nanoTime();
+		rand.setSeed(seed);
+		this.rand = rand;
 	}
 
 	/**
@@ -99,7 +113,7 @@ public class RandomIterator<E> implements Iterator<E> {
 	@Override
 	public E next() {
 
-		index = rand.nextInt(LIST_SIZE);
+		index = rand.nextInt(listSize);
 
 		return list.get(index);
 	}
