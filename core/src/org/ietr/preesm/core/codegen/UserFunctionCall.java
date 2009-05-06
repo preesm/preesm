@@ -36,11 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -72,11 +72,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
-	private List<Parameter> callParameters;
+	private Vector<Parameter> callParameters;
 
 	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
 		super(name,parentContainer, null);
-		callParameters = new ArrayList<Parameter>();
+		callParameters = new Vector<Parameter>();
 	}
 
 	public UserFunctionCall(SDFAbstractVertex vertex,
@@ -84,7 +84,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		super(vertex.getName(), parentContainer, vertex);
 
 		// Buffers associated to the function call
-		callParameters = new ArrayList<Parameter>();
+		callParameters = new Vector<Parameter>();
 		// Candidate buffers that will be added if present in prototype
 		HashMap<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
 
@@ -152,9 +152,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 			// Filters and orders the buffers to fit the prototype
 			// Adds parameters if no buffer fits the prototype name
 			if (call != null) {
-				for (CodeGenArgument arg : call.getArguments()) {
+				callParameters = new Vector<Parameter>(call.getNbArgs());
+				for (CodeGenArgument arg : call.getArguments().keySet()) {
 					Parameter currentParam = null;
-
 					String argName = arg.getName();
 					if (arg.getDirection() == CodeGenArgument.INPUT) {
 						for (SDFEdge link : candidateBuffers.keySet()) {
@@ -189,7 +189,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 					}
 
 					if (currentParam != null) {
-						addParameter(currentParam);
+						addParameter(currentParam, call.getArguments().get(arg));
 					} else {
 						PreesmLogger
 								.getLogger()
@@ -202,13 +202,13 @@ public class UserFunctionCall extends AbstractCodeElement {
 					}
 				}
 
-				for (CodeGenParameter param : call.getParameters()) {
+				for (CodeGenParameter param : call.getParameters().keySet()) {
 					if (vertex.getArgument(param.getName()) != null) {
 						Parameter currentParam;
 						try {
 							currentParam = new Constant(param.getName(),
 									vertex.getArgument(param.getName()).intValue());
-							addParameter(currentParam);
+							addParameter(currentParam, call.getParameters().get(param));
 						} catch (InvalidExpressionException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -223,10 +223,28 @@ public class UserFunctionCall extends AbstractCodeElement {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
 		for (Parameter param : callParameters) {
-			param.accept(printer, currentLocation);
+			if(param != null){
+				param.accept(printer, currentLocation);
+			}
 		}
 	}
 
+	public void addParameter(Parameter param, int pos) {
+
+		if (param == null)
+			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
+		else{
+			if(pos == callParameters.size()){
+				callParameters.add(param);
+			}else if(pos > callParameters.size()){
+				callParameters.setSize(pos);
+				callParameters.insertElementAt(param, pos);
+			}else{
+				callParameters.setElementAt(param, pos);
+			}
+		}
+	}
+	
 	public void addParameter(Parameter param) {
 
 		if (param == null)
@@ -237,8 +255,10 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 	public void addBuffers(Set<Buffer> buffers) {
 		if (buffers != null) {
+			int i = 0;
 			for (Buffer buffer : buffers) {
-				addParameter(buffer);
+				addParameter(buffer, i);
+				i ++ ;
 			}
 		}
 	}

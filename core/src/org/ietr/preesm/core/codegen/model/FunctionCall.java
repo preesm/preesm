@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sdf4j.model.IRefinement;
 
@@ -46,21 +46,24 @@ public class FunctionCall implements IRefinement {
 	private String functionName;
 	public FunctionCall initCall = null;
 	public FunctionCall endCall = null;
+	private int nbArgs ; 
 
-	private List<CodeGenArgument> arguments;
+	private Map<CodeGenArgument, Integer> arguments;
 
-	private List<CodeGenParameter> parameters;
+	private Map<CodeGenParameter, Integer> parameters;
 
 	public FunctionCall(){
 		functionName = "";
-		arguments = new ArrayList<CodeGenArgument>();
-		parameters = new ArrayList<CodeGenParameter>();
+		arguments = new HashMap<CodeGenArgument, Integer>();
+		parameters = new HashMap<CodeGenParameter, Integer>();
+		nbArgs = 0 ;
 	}
 	
 	public FunctionCall(String name) {
 		functionName = name;
-		arguments = new ArrayList<CodeGenArgument>();
-		parameters = new ArrayList<CodeGenParameter>();
+		arguments = new HashMap<CodeGenArgument, Integer>();
+		parameters = new HashMap<CodeGenParameter, Integer>();
+		nbArgs = 0 ;
 	}
 
 	public String getFunctionName() {
@@ -72,11 +75,13 @@ public class FunctionCall implements IRefinement {
 	}
 
 	public void addArgument(CodeGenArgument arg) {
-		arguments.add(arg);
+		arguments.put(arg, nbArgs);
+		nbArgs ++ ;
 	}
 
 	public void addParameter(CodeGenParameter parameterName) {
-		parameters.add(parameterName);
+		parameters.put(parameterName, nbArgs);
+		nbArgs ++ ;
 	}
 
 	public FunctionCall getInitCall() {
@@ -95,12 +100,16 @@ public class FunctionCall implements IRefinement {
 		endCall = end;
 	}
 	
-	public List<CodeGenArgument> getArguments() {
+	public Map<CodeGenArgument, Integer> getArguments() {
 		return arguments;
 	}
 	
-	public List<CodeGenParameter> getParameters() {
+	public Map<CodeGenParameter, Integer> getParameters() {
 		return parameters;
+	}
+	
+	public int getNbArgs(){
+		return nbArgs ;
 	}
 
 }
