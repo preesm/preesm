@@ -37,9 +37,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.timekeeper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,7 +88,13 @@ public class GraphTimeKeeper {
 	 * Current implementation: the same as in the ABC
 	 */
 	protected MapperDAG implementation;
+
+	/**
+	 * Helper to scan the neighbors of a vertex
+	 */
 	private DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex;
+	
+	private Map<ArchitectureComponent,Long> componentFinalTimes;
 
 	/**
 	 * Constructor
@@ -97,6 +105,7 @@ public class GraphTimeKeeper {
 		this.implementation = implementation;
 
 		neighborindex = null;
+		componentFinalTimes = new HashMap<ArchitectureComponent,Long>();
 	}
 
 	/**
@@ -131,11 +140,13 @@ public class GraphTimeKeeper {
 			currentvertex.getTimingVertexProperty().resetTlevel();
 		}
 
+		// We iterate the dirty vertices to set their t-levels
 		for (DAGVertex dagV : implementation.vertexSet()) {
 			currentvertex = (MapperDAGVertex) dagV;
 			calculateTLevel(currentvertex);
 		}
 
+		// We handle synchronized vertices
 		for (DAGVertex dagV : implementation.vertexSet()) {
 			currentvertex = (MapperDAGVertex) dagV;
 			handleSynchros(currentvertex);
@@ -147,7 +158,7 @@ public class GraphTimeKeeper {
 	 * Handling synchronized vertices.
 	 */
 	private void handleSynchros(MapperDAGVertex modifiedvertex) {
-		// Handling synchronized vertices
+		// Handling synchronized vertices: Setting all the t-levels of synchronized vertices at the same value.
 		if (modifiedvertex.getTimingVertexProperty().getSynchronizedVertices() != null) {
 			List<MapperDAGVertex> synchronizedVertices = modifiedvertex
 					.getTimingVertexProperty().getSynchronizedVertices();
@@ -235,6 +246,23 @@ public class GraphTimeKeeper {
 				// The T level is the time of the longest preceding path
 				long l = getLongestPrecedingPath(predset, modifiedvertex);
 				currenttimingproperty.setTlevel(l);
+			}
+			
+			// Updating the operator final time
+			ArchitectureComponent c = modifiedvertex.getImplementationVertexProperty().getEffectiveComponent();
+			ArchitectureComponent finalTimeRefCmp = c;
+			long currentCmpFinalTime = TimingVertexProperty.UNAVAILABLE;
+			for(ArchitectureComponent o : componentFinalTimes.keySet()){
+				if(o.equals(c)){
+					currentCmpFinalTime = componentFinalTimes.get(o);
+					finalTimeRefCmp = o;
+				}
+			}
+
+			long newFinalTime = getFinalTime(modifiedvertex);
+			
+			if(newFinalTime > currentCmpFinalTime){
+				componentFinalTimes.put(finalTimeRefCmp, newFinalTime);
 			}
 
 		} else {
@@ -451,13 +479,9 @@ public class GraphTimeKeeper {
 	public long getFinalTime() {
 
 		long finaltime = TimingVertexProperty.UNAVAILABLE;
-
-		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGVertex next = (MapperDAGVertex) iterator.next();
-			long nextFinalTime = getFinalTime(next);
-
+		
+		for(ArchitectureComponent o : componentFinalTimes.keySet()){
+			long nextFinalTime = componentFinalTimes.get(o);
 			// Returns TimingVertexProperty.UNAVAILABLE if at least one
 			// vertex has no final time. Otherwise returns the highest final
 			// time
@@ -465,10 +489,6 @@ public class GraphTimeKeeper {
 				return TimingVertexProperty.UNAVAILABLE;
 			} else
 				finaltime = Math.max(finaltime, nextFinalTime);
-		}
-
-		if (finaltime == 0) {
-			finaltime = 0;
 		}
 
 		return finaltime;
@@ -480,36 +500,24 @@ public class GraphTimeKeeper {
 	 * vertices
 	 */
 	public long getFinalTime(ArchitectureComponent component) {
-		long finaltime = 0;
-
-		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
-
-		while (iterator.hasNext()) {
-			MapperDAGVertex next = (MapperDAGVertex) iterator.next();
-
-			if (component.equals(next.getImplementationVertexProperty()
-					.getEffectiveComponent())) {
-				long nextFinalTime = getFinalTime(next);
-
-				// Returns TimingVertexProperty.UNAVAILABLE if at least one
-				// vertex has no final time. Otherwise returns the highest final
-				// time
-				if (nextFinalTime == TimingVertexProperty.UNAVAILABLE) {
-					return TimingVertexProperty.UNAVAILABLE;
-				} else
-					finaltime = Math.max(finaltime, nextFinalTime);
+		
+		ArchitectureComponent finalTimeRefCmp = null;
+		for(ArchitectureComponent o : componentFinalTimes.keySet()){
+			if(o.equals(component)){
+				finalTimeRefCmp = o;
 			}
 		}
-
-		return finaltime;
+		
+		if(finalTimeRefCmp != null){
+			return componentFinalTimes.get(finalTimeRefCmp);
+		}
+		
+		return TimingVertexProperty.UNAVAILABLE;
 	}
 
 	public void updateTLevels() {
 
-		// if (!implementation.isDAG())
-		// PreesmLogger.getLogger().log(Level.SEVERE,
-		// "The mapper implementation breaks the dag rules");
-
+		componentFinalTimes.clear();
 		calculateTLevel();
 		setAsClean();
 
@@ -517,10 +525,7 @@ public class GraphTimeKeeper {
 
 	public void updateTandBLevels() {
 
-		// if (!implementation.isDAG())
-		// PreesmLogger.getLogger().log(Level.SEVERE,
-		// "The mapper implementation breaks the dag rules");
-
+		componentFinalTimes.clear();
 		calculateTLevel();
 		calculateBLevel();
 		setAsClean();
