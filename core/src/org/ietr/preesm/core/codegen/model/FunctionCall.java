@@ -38,7 +38,6 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.sdf4j.model.IRefinement;
 
@@ -47,20 +46,24 @@ public class FunctionCall implements IRefinement {
 	private String functionName;
 	public FunctionCall initCall = null;
 	public FunctionCall endCall = null;
-	private int nbElts ; 
+	private int nbArgs ; 
 
-	private Map<CodeGenCallElement, Integer> elements;
+	private Map<CodeGenArgument, Integer> arguments;
+
+	private Map<CodeGenParameter, Integer> parameters;
 
 	public FunctionCall(){
 		functionName = "";
-		elements = new HashMap<CodeGenCallElement, Integer>();
-		nbElts = 0 ;
+		arguments = new HashMap<CodeGenArgument, Integer>();
+		parameters = new HashMap<CodeGenParameter, Integer>();
+		nbArgs = 0 ;
 	}
 	
 	public FunctionCall(String name) {
 		functionName = name;
-		elements = new HashMap<CodeGenCallElement, Integer>();
-		nbElts = 0 ;
+		arguments = new HashMap<CodeGenArgument, Integer>();
+		parameters = new HashMap<CodeGenParameter, Integer>();
+		nbArgs = 0 ;
 	}
 
 	public String getFunctionName() {
@@ -72,13 +75,13 @@ public class FunctionCall implements IRefinement {
 	}
 
 	public void addArgument(CodeGenArgument arg) {
-		elements.put(arg, nbElts);
-		nbElts ++ ;
+		arguments.put(arg, nbArgs);
+		nbArgs ++ ;
 	}
 
 	public void addParameter(CodeGenParameter parameterName) {
-		elements.put(parameterName, nbElts);
-		nbElts ++ ;
+		parameters.put(parameterName, nbArgs);
+		nbArgs ++ ;
 	}
 
 	public FunctionCall getInitCall() {
@@ -97,16 +100,16 @@ public class FunctionCall implements IRefinement {
 		endCall = end;
 	}
 	
-	public int getNbElts(){
-		return nbElts ;
+	public Map<CodeGenArgument, Integer> getArguments() {
+		return arguments;
 	}
 	
-	public int indexOf(CodeGenCallElement elt){
-		return elements.get(elt);
+	public Map<CodeGenParameter, Integer> getParameters() {
+		return parameters;
 	}
 	
-	public Set<CodeGenCallElement> getElements(){
-		return elements.keySet();
+	public int getNbArgs(){
+		return nbArgs ;
 	}
 
 }
