@@ -77,6 +77,10 @@ public abstract class Parameter {
 	public DataType getType() {
 		return type;
 	}
+	
+	public void setType(DataType type){
+		this.type = type ; 
+	}
 
 	public abstract void accept(IAbstractPrinter printer, Object currentLocation);
 }

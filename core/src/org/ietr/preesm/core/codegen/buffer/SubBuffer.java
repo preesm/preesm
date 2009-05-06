@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen.buffer;
 
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.Variable;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -76,6 +77,10 @@ public class SubBuffer extends Buffer {
 
 	public void setIndex(Variable index) {
 		this.index = index;
+	}
+	
+	public void setType(DataType type){
+		this.getParentBuffer().setType(type);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

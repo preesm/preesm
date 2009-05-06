@@ -129,8 +129,12 @@ public class CodeElementFactory {
 						parentContainer);
 			} else if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
-				return new UserFunctionCall(vertex, parentContainer,
+				UserFunctionCall call = new UserFunctionCall(vertex, parentContainer,
 						CodeSection.LOOP);
+				if(call.getName() == null){
+					return null ;
+				}
+				return call ;
 			} else {
 				CompoundCodeElement compound = new CompoundCodeElement(name,
 						parentContainer, (ICodeGenSDFVertex) vertex);

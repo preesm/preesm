@@ -59,6 +59,7 @@ public class Buffer extends Parameter {
 	/**
 	 * destination name of the corresponding edge
 	 */
+	@SuppressWarnings("unused")
 	private String destID;
 
 	/**
@@ -74,6 +75,7 @@ public class Buffer extends Parameter {
 	/**
 	 * source name of the corresponding edge
 	 */
+	@SuppressWarnings("unused")
 	private String sourceID;
 
 	/**

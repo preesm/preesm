@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
-import org.ietr.preesm.core.codegen.model.CodeGenCallElement;
 import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
@@ -76,7 +75,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	private Vector<Parameter> callParameters;
 
 	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
-		super(name, parentContainer, null);
+		super(name,parentContainer, null);
 		callParameters = new Vector<Parameter>();
 	}
 
@@ -108,6 +107,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 								Level.INFO,
 								"Name not found in the IDL for function: "
 										+ vertex.getName());
+						this.setName(null);
+						return ;
 					} else {
 						this.setName(call.getFunctionName());
 					}
@@ -153,69 +154,65 @@ public class UserFunctionCall extends AbstractCodeElement {
 			// Filters and orders the buffers to fit the prototype
 			// Adds parameters if no buffer fits the prototype name
 			if (call != null) {
-				callParameters = new Vector<Parameter>(call.getNbElts());
-				for (CodeGenCallElement elt : call.getElements()) {
-					if (elt instanceof CodeGenArgument) {
-						CodeGenArgument arg = (CodeGenArgument) elt;
-						Parameter currentParam = null;
-						String argName = arg.getName();
-						if (arg.getDirection() == CodeGenArgument.INPUT) {
-							for (SDFEdge link : candidateBuffers.keySet()) {
-								if (link.getTargetInterface().getName().equals(
-										arg.getName())
-										&& link.getTarget().equals(vertex))
-									currentParam = candidateBuffers.get(link);
-							}
-						} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
-							for (SDFEdge link : candidateBuffers.keySet()) {
-								if (link.getSourceInterface().getName().equals(
-										arg.getName())
-										&& link.getSource().equals(vertex))
-									currentParam = candidateBuffers.get(link);
-
-							}
+				callParameters = new Vector<Parameter>(call.getNbArgs());
+				for (CodeGenArgument arg : call.getArguments().keySet()) {
+					Parameter currentParam = null;
+					String argName = arg.getName();
+					if (arg.getDirection() == CodeGenArgument.INPUT) {
+						for (SDFEdge link : candidateBuffers.keySet()) {
+							if (link.getTargetInterface().getName().equals(
+									arg.getName())
+									&& link.getTarget().equals(vertex))
+								currentParam = candidateBuffers.get(link);
 						}
-
-						// If no buffer was found with the given port name, a
-						// parameter is sought
-						if (currentParam == null
-								&& arg.getDirection() == CodeGenArgument.INPUT) {
-							if (vertex.getArgument(argName) != null) {
-								try {
-									currentParam = new Constant(argName, vertex
-											.getArgument(argName).intValue());
-								} catch (InvalidExpressionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
+					} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
+						for (SDFEdge link : candidateBuffers.keySet()) {
+							if (link.getSourceInterface().getName().equals(
+									arg.getName())
+									&& link.getSource().equals(vertex))
+								currentParam = candidateBuffers.get(link);
 						}
+					}
 
-						if (currentParam != null) {
-							addParameter(currentParam, call.indexOf(arg));
-						} else {
-							PreesmLogger
-									.getLogger()
-									.log(
-											Level.SEVERE,
-											"Vertex: "
-													+ vertex.getName()
-													+ ". Error interpreting the prototype: no port found with name: "
-													+ argName);
-						}
-					} else if (elt instanceof CodeGenParameter) {
-						CodeGenParameter param = (CodeGenParameter) elt;
-						if (vertex.getArgument(param.getName()) != null) {
-							Parameter currentParam;
+					// If no buffer was found with the given port name, a
+					// parameter is sought
+					if (currentParam == null
+							&& arg.getDirection() == CodeGenArgument.INPUT) {
+						if (vertex.getArgument(argName) != null) {
 							try {
-								currentParam = new Constant(param.getName(),
-										vertex.getArgument(param.getName())
-												.intValue());
-								addParameter(currentParam, call.indexOf(param));
+								currentParam = new Constant(argName, vertex
+										.getArgument(argName).intValue());
 							} catch (InvalidExpressionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
+						}
+					}
+
+					if (currentParam != null) {
+						addParameter(currentParam, call.getArguments().get(arg));
+					} else {
+						PreesmLogger
+								.getLogger()
+								.log(
+										Level.SEVERE,
+										"Vertex: "
+												+ vertex.getName()
+												+ ". Error interpreting the prototype: no port found with name: "
+												+ argName);
+					}
+				}
+
+				for (CodeGenParameter param : call.getParameters().keySet()) {
+					if (vertex.getArgument(param.getName()) != null) {
+						Parameter currentParam;
+						try {
+							currentParam = new Constant(param.getName(),
+									vertex.getArgument(param.getName()).intValue());
+							addParameter(currentParam, call.getParameters().get(param));
+						} catch (InvalidExpressionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
 				}
@@ -227,7 +224,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
 		for (Parameter param : callParameters) {
-			if (param != null) {
+			if(param != null){
 				param.accept(printer, currentLocation);
 			}
 		}
@@ -237,23 +234,22 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		if (param == null)
 			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
-		else {
-			if (pos == callParameters.size()) {
+		else{
+			if(pos == callParameters.size()){
 				callParameters.add(param);
-			} else if (pos > callParameters.size()) {
+			}else if(pos > callParameters.size()){
 				callParameters.setSize(pos);
 				callParameters.insertElementAt(param, pos);
-			} else {
+			}else{
 				callParameters.setElementAt(param, pos);
 			}
 		}
 	}
-
+	
 	public void addParameter(Parameter param) {
 
 		if (param == null)
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"buffer or parameter was not found");
+			PreesmLogger.getLogger().log(Level.SEVERE, "buffer or parameter was not found");
 		else
 			callParameters.add(param);
 	}
@@ -263,7 +259,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 			int i = 0;
 			for (Buffer buffer : buffers) {
 				addParameter(buffer, i);
-				i++;
+				i ++ ;
 			}
 		}
 	}

@@ -171,6 +171,7 @@ public abstract class AbstractBufferContainer {
 		// Looks for the buffer in the current container
 		while (iterator.hasNext()) {
 			BufferAllocation alloc = iterator.next();
+			@SuppressWarnings("unused")
 			Buffer buffer = alloc.getBuffer();
 
 			if (alloc.getBuffer().getName().equalsIgnoreCase(name)) {
