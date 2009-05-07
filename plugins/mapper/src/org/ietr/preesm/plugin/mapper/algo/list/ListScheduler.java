@@ -99,8 +99,6 @@ public class ListScheduler {
 		// Variables
 		long temptime;
 		long starttime = 0;
-		MapperDAGVertex preccurrentvertex;
-		Set<DAGVertex> predset = new HashSet<DAGVertex>();
 
 		// check the vertex is into the DAG
 		vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -109,8 +107,7 @@ public class ListScheduler {
 		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
 				castDag);
 
-		predset.addAll(neighborindex.predecessorListOf(vertex));
-		Iterator<DAGVertex> iter = predset.iterator();
+		List<DAGVertex> predList = neighborindex.predecessorListOf(vertex);
 		Logger logger = PreesmLogger.getLogger();
 
 		logger.log(Level.FINEST, " entering operator/vertex start time ");
@@ -125,20 +122,15 @@ public class ListScheduler {
 		
 
 		// check if the vertex is a source vertex with no predecessors
-		if (predset.isEmpty())
+		if (predList.isEmpty())
 			return simu.getFinalCost(operator);
 
 		// Search the predecessors to find when the data will be available
-		while (iter.hasNext()) {
-			preccurrentvertex = (MapperDAGVertex)iter.next();
-			logger.log(Level.FINEST, " test parent time ");
-			temptime = 0;
-			simu.retrieveTotalOrder();
-			temptime = simu.getFinalCost(preccurrentvertex);
-			logger.log(Level.FINEST, " time parent " + temptime);
+		for (DAGVertex preccurrentvertex : predList) {
+			temptime = simu.getFinalCost((MapperDAGVertex)preccurrentvertex);
 
 			// test if the data are already available in this operator
-			if (!(simu.getEffectiveComponent(preccurrentvertex)
+			if (!(simu.getEffectiveComponent((MapperDAGVertex)preccurrentvertex)
 					.equals(operator))) {
 				temptime = Math.max(temptime
 						+ simu.getCost((MapperDAGEdge)dag.getEdge(preccurrentvertex, vertex)),
@@ -147,16 +139,12 @@ public class ListScheduler {
 				temptime = Math.max(temptime, simu.getFinalCost(operator));
 			}
 			
-			logger.log(Level.FINEST, " time with edge " + temptime);
-			if (temptime > starttime) {
-				starttime = temptime;
-				logger.log(Level.FINEST, " start time " + starttime);
-			}
+			starttime = Math.max(temptime, starttime);
 
 		}
-
-		//PreesmLogger.getLogger().log(Level.INFO,"tps: " + starttime + "end: " + (((LatencyAbc)simu).getTLevel(vertex, true) + ((LatencyAbc)simu).getCost(vertex)));
-			
+		
+		//simu.retrieveTotalOrder();
+	
 		return starttime;
 	}
 
@@ -178,27 +166,19 @@ public class ListScheduler {
 
 		// Variables
 		Operator chosenoperator = null;
-		List<Operator> operatorlist = new ArrayList<Operator>();
 		Logger logger = PreesmLogger.getLogger();
 
 		// Implant the fastest one to be ready among the operators in the vertex
 		// check the vertex by priority in the CPN-Dominant list
 		logger.log(Level.FINEST, " entering schedule ");
 		for (MapperDAGVertex currentvertex : orderlist) {
-			logger.log(Level.FINEST, " vertex to implant "
-					+ currentvertex.getName());
 
 			// Implanting forced by the user or the Fast algorithm
 			if (currentvertex.equals(fcpvertex)) {
 				archisimu.implant(currentvertex, operatorfcp, true);
-				logger.log(Level.FINEST, " vertex " + currentvertex.getName()
-						+ " already implanted ");
-
 			} else {
-
 				long time = Long.MAX_VALUE;
 				// Choose the operator
-
 				for (Operator currentoperator : currentvertex.getInitialVertexProperty()
 						.getOperatorSet()) {
 
@@ -215,22 +195,17 @@ public class ListScheduler {
 				archisimu.implant(currentvertex, chosenoperator, true);
 				
 				int currentVertexTotalOrder = orderlist.indexOf(currentvertex);
-				if(currentVertexTotalOrder != 0 && currentVertexTotalOrder % 100 == 0){
+				if((currentVertexTotalOrder % 100) == 0 && (fcpvertex == null) && (currentVertexTotalOrder != 0)){
 					logger.log(Level.INFO, "list scheduling: "
 							+ currentVertexTotalOrder + " vertices mapped ");
 				}
-				
-				if(chosenoperator != null)
-					logger.log(Level.FINEST, " Chosen operator "
-							+ chosenoperator.getName() + " is implanted ");
 
 				chosenoperator = null;
-				operatorlist.clear();
 
 			}
 		}
 		
-		//archisimu.rescheduleTransfers(orderlist);
+		archisimu.rescheduleTransfers(orderlist);
 		archisimu.retrieveTotalOrder();
 
 		return dag;
