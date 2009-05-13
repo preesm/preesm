@@ -7,36 +7,94 @@
         <codegenDirectory url="/MapperAndCodegen_1/Code/x86/generatedSrc"/>
     </files>
     <constraints>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest"/>
+            <operator name="Core4"/>
             <task name="Actuator"/>
-            <task name="Sensor"/>
+            <task name="ParallelTest3"/>
             <task name="Gen_int"/>
             <task name="Copy"/>
-            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
             <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
         </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest3"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
     </constraints>
-    <timings/>
+    <timings>
+        <timing opname="x86" time="10000" vertexname="Sensor"/>
+        <timing opname="x86" time="10000" vertexname="Gen_int"/>
+        <timing opname="x86" time="10000" vertexname="Copy"/>
+        <timing opname="x86" time="10000" vertexname="Actuator"/>
+        <timing opname="x86" time="10000" vertexname="ParallelTest"/>
+        <timing opname="x86" time="10000" vertexname="ParallelTest2"/>
+        <timing opname="x86" time="10000" vertexname="ParallelTest3"/>
+        <timing opname="x86" time="10000" vertexname="Sensor2"/>
+    </timings>
     <simuParams>
         <mainCore>Core1</mainCore>
         <mainMedium>Shared_Ram</mainMedium>

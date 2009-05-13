@@ -3,6 +3,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding=".svn/|org/.svn/|org/ietr/.svn/|org/ietr/preesm/.svn/|org/ietr/preesm/plugin/.svn/|org/ietr/preesm/plugin/abc/.svn/|org/ietr/preesm/plugin/abc/accuratelytimed/.svn/|org/ietr/preesm/plugin/abc/approximatelytimed/.svn/|org/ietr/preesm/plugin/abc/infinitehomogeneous/.svn/|org/ietr/preesm/plugin/abc/looselytimed/.svn/|org/ietr/preesm/plugin/architecturesimulator/.svn/|org/ietr/preesm/plugin/mapper/.svn/|org/ietr/preesm/plugin/mapper/fastalgo/.svn/|org/ietr/preesm/plugin/mapper/geneticalgo/.svn/|org/ietr/preesm/plugin/mapper/graphconversion/.svn/|org/ietr/preesm/plugin/mapper/model/.svn/|org/ietr/preesm/plugin/mapper/pfastalgo/.svn/|org/ietr/preesm/plugin/mapper/pgeneticalgo/.svn/|org/ietr/preesm/plugin/mapper/plot/.svn/|org/ietr/preesm/plugin/mapper/sdf2dag/.svn/|org/ietr/preesm/plugin/mapper/test/.svn/|org/ietr/preesm/plugin/mapper/timekeeper/.svn/|org/ietr/preesm/plugin/mapper/tools/.svn/" kind="src" path="src"/>
+	<classpathentry kind="src" path="unittests"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.13.jar" sourcepath="Preesm mapper plug-insrc.zip"/>
 	<classpathentry kind="lib" path="lib/jfreechart.jar" sourcepath="/jfree"/>
 	<classpathentry exported="true" kind="lib" path="lib/jetm.jar" sourcepath="Preesm mapper plug-insrc.zip"/>

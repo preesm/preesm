@@ -32,6 +32,7 @@
 #include "OS_Com.h"
 #include "PC_x86_SEM.h"
 
+#define CORE_NUMBER 8
 
 
 #endif /* X86_H_ */
