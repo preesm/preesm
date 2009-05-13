@@ -180,7 +180,7 @@
                 <xsl:otherwise>msg</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            <xsl:when test="@type='medium'">
+            <xsl:when test="@type='med'">
                 <xsl:value-of select="@mediumDef"/>
             </xsl:when>
         </xsl:choose>
