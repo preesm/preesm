@@ -42,14 +42,9 @@ import java.util.Comparator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.Assignment;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
@@ -618,6 +613,20 @@ public class XMLPrinter implements IAbstractPrinter {
 
 			domElt.getRouteStep().appendRouteStep(dom,wait);
 			currentLocation = wait;
+		} 
+		
+		return currentLocation;
+	}
+
+	@Override
+	public Object visit(Assignment element, CodeZoneId index,
+			Object currentLocation) {
+		if (index == CodeZoneId.body) {
+			Element assignment = dom.createElement("Assignment");
+			((Element)currentLocation).appendChild(assignment);
+			assignment.setAttribute("var", element.getVar().getName());
+			assignment.setTextContent(element.getValue());
+			currentLocation = assignment;
 		} 
 		
 		return currentLocation;

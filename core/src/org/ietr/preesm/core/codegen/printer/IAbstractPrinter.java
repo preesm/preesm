@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen.printer;
 
 import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.Assignment;
 import org.ietr.preesm.core.codegen.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.FiniteForLoop;
@@ -105,4 +106,5 @@ public interface IAbstractPrinter {
 	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
 	public Object visit(SpecialBehaviorCall element, CodeZoneId index, Object currentLocation);
 	public Object visit(WaitForCore element, CodeZoneId index, Object currentLocation);
+	public Object visit(Assignment element, CodeZoneId index, Object currentLocation);
 }

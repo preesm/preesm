@@ -78,7 +78,7 @@ public class HierarchyFlattening implements IGraphTransformation {
 			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
 			VisitorOutput.setLogger(logger);
 			try {
-				if (algorithm.validateModel()) {
+				if (algorithm.validateModel(PreesmLogger.getLogger())) {
 					try {
 						flatHier.flattenGraph(algorithm, depth);
 					} catch (SDF4JException e) {

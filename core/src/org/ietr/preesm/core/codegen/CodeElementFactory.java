@@ -47,6 +47,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.sdf4j.SDFMath;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -129,12 +130,12 @@ public class CodeElementFactory {
 						parentContainer);
 			} else if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
-				UserFunctionCall call = new UserFunctionCall(vertex, parentContainer,
-						CodeSection.LOOP);
-				if(call.getName() == null){
-					return null ;
+				UserFunctionCall call = new UserFunctionCall(vertex,
+						parentContainer, CodeSection.LOOP);
+				if (call.getName() == null) {
+					return null;
 				}
-				return call ;
+				return call;
 			} else {
 				CompoundCodeElement compound = new CompoundCodeElement(name,
 						parentContainer, (ICodeGenSDFVertex) vertex);
@@ -161,20 +162,32 @@ public class CodeElementFactory {
 			try {
 				if (outEdge.getProd().intValue() == incomingEdge.getCons()
 						.intValue()) {
-					UserFunctionCall copyCall = new UserFunctionCall("memcpy",
-							parentContainer);
-					copyCall.addParameter(parentContainer.getBuffer(outEdge));
-					copyCall.addParameter(parentContainer
-							.getBuffer(incomingEdge));
-					try {
-						copyCall.addParameter(new Constant("size", incomingEdge
-								.getCons().intValue()
-								+ "*sizeof("
-								+ incomingEdge.getDataType().toString() + ")"));
-					} catch (InvalidExpressionException e) {
-						copyCall.addParameter(new Constant("size", 0));
+					if (outEdge.getTarget() instanceof CodeGenSDFSendVertex) {
+						UserFunctionCall copyCall = new UserFunctionCall(
+								"memcpy", parentContainer);
+						copyCall.addParameter(parentContainer
+								.getBuffer(outEdge));
+						copyCall.addParameter(parentContainer
+								.getBuffer(incomingEdge));
+						try {
+							copyCall.addParameter(new Constant("size",
+									incomingEdge.getCons().intValue()
+											+ "*sizeof("
+											+ incomingEdge.getDataType()
+													.toString() + ")"));
+						} catch (InvalidExpressionException e) {
+							copyCall.addParameter(new Constant("size", 0));
+						}
+						container.addCall(copyCall);
+					} else {
+						Buffer outBuff = parentContainer.getBuffer(outEdge);
+						outBuff.setSize(0);
+						Assignment ass = new Assignment(outBuff, "&"
+								+ parentContainer.getBuffer(incomingEdge)
+										.getName() + "[0]");
+						container.addCall(ass);
+
 					}
-					container.addCall(copyCall);
 				} else if (outEdge.getProd().intValue() > incomingEdge
 						.getCons().intValue()) {
 					int minToken = SDFMath.gcd(outEdge.getProd().intValue(),
@@ -210,23 +223,40 @@ public class CodeElementFactory {
 			incomingEdge = inEdge;
 		}
 		for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
-			UserFunctionCall copyCall = new UserFunctionCall("memcpy",
-					parentContainer);
-			try {
-				copyCall.addParameter(parentContainer.getBuffer(outEdge));
-				copyCall.addParameter(new BufferAtIndex(new ConstantValue("",
-						new DataType("int"), vertex.getEdgeIndex(outEdge)
-								* outEdge.getProd().intValue()),
-						parentContainer.getBuffer(incomingEdge)));
-				copyCall.addParameter(new Constant("size", outEdge.getProd()
-						.intValue()
-						+ "*sizeof("
-						+ incomingEdge.getDataType().toString()
-						+ ")"));
-			} catch (InvalidExpressionException e) {
-				copyCall.addParameter(new Constant("size", 0));
+			if (outEdge.getTarget() instanceof CodeGenSDFSendVertex) {
+				UserFunctionCall copyCall = new UserFunctionCall("memcpy",
+						parentContainer);
+				try {
+					copyCall.addParameter(parentContainer.getBuffer(outEdge));
+					copyCall.addParameter(new BufferAtIndex(new ConstantValue(
+							"", new DataType("int"), vertex
+									.getEdgeIndex(outEdge)
+									* outEdge.getProd().intValue()),
+							parentContainer.getBuffer(incomingEdge)));
+					copyCall.addParameter(new Constant("size", outEdge
+							.getProd().intValue()
+							+ "*sizeof("
+							+ incomingEdge.getDataType().toString() + ")"));
+				} catch (InvalidExpressionException e) {
+					copyCall.addParameter(new Constant("size", 0));
+				}
+				container.addCall(copyCall);
+			} else {
+				Buffer outBuff = parentContainer.getBuffer(outEdge);
+				outBuff.setSize(0);
+				Assignment ass;
+				try {
+					ass = new Assignment(outBuff, "&"
+							+ parentContainer.getBuffer(incomingEdge).getName()
+							+ "[" + vertex.getEdgeIndex(outEdge)
+							* outEdge.getProd().intValue() + "]");
+					container.addCall(ass);
+				} catch (InvalidExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
-			container.addCall(copyCall);
 		}
 		return container;
 	}

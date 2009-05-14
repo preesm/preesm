@@ -63,7 +63,7 @@ public class HSDFTransformation implements IGraphTransformation {
 		logger.setLevel(Level.FINEST);
 		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
 		VisitorOutput.setLogger(logger);
-		if(algorithm.validateModel()){
+		if(algorithm.validateModel(PreesmLogger.getLogger())){
 			org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 			try {
 				algorithm.accept(toHsdf);

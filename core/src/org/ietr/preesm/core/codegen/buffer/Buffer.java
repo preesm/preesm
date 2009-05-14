@@ -134,6 +134,10 @@ public class Buffer extends Parameter {
 	public Integer getSize() {
 		return size;
 	}
+	
+	public void setSize(int size){
+		this.size = size ;
+	}
 
 	public String getDestInputPortID() {
 		return destInputPortID;

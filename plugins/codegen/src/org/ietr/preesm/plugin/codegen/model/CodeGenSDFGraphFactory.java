@@ -54,6 +54,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.demo.SDFtoDAGDemo;
@@ -301,7 +302,7 @@ public class CodeGenSDFGraphFactory {
 			List<SDFAbstractVertex> block, String name)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		try {
-			graph.validateModel();
+			graph.validateModel(PreesmLogger.getLogger());
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -442,7 +443,7 @@ public class CodeGenSDFGraphFactory {
 			for (int r = 0; r < block.size(); r++) {
 				graph.removeVertex(block.get(r));
 			}
-			clusterGraph.validateModel();
+			clusterGraph.validateModel(PreesmLogger.getLogger());
 			cluster.setNbRepeat(pgcd);
 			if (!hasDelay) {
 				throw (new PreesmException("Cycle with no delay in " + graph));
