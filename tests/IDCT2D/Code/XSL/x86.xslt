@@ -108,9 +108,9 @@
     <!-- compound code -->
     <xsl:template match="sourceCode:CompoundCode">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'{','//',@name,$new_line)"/>
-            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:bufferAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:bufferAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             <xsl:value-of select="concat($curIndent,'}',$new_line)"/>
@@ -129,6 +129,12 @@
         <!-- removing last coma -->
         <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
         <xsl:value-of select="concat($buffers,');',$new_line)"/>
+    </xsl:template>
+    
+    <!-- Small blocks for special assignment, assign a variable a value -->
+    <xsl:template match="sourceCode:Assignment">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,@var,' = ', text(),';',$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special call like broadcast, fork and join -->
@@ -232,14 +238,28 @@
     
     <xsl:template match="sourceCode:bufferAllocation">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
+        <xsl:choose>
+            <xsl:when test="@size = '0' ">
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,';',$new_line)"/>
+            </xsl:when>
+            <xsl:otherwise>   
+                <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template match="sourceCode:subBufferAllocation">
         <xsl:param name="curIndent"/>
         <xsl:choose>
             <xsl:when test="@modulo">
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')',' % ',@modulo,'];',$new_line)"/>  
+                <xsl:choose>
+                    <xsl:when test="@modulo = '0'">
+                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')','];',$new_line)"/>  
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')',' % ',@modulo,'];',$new_line)"/>  
+                    </xsl:otherwise>    
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')','];',$new_line)"/>  
