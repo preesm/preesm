@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
@@ -161,7 +162,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				treatCalls(graph.vertexSet());
 			} else {
 				this.addCall(new UserFunctionCall(this.correspondingVertex,
-						this, CodeSectionType.loop));
+						this, CodeSection.LOOP));
 			}
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
