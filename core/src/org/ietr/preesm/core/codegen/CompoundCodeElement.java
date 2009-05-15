@@ -129,14 +129,14 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 						String bufferName = edge.getSourceInterface().getName()
 								+ "_" + edge.getTargetInterface().getName();
 						if (edge.getTarget() == edge.getSource()) {
-							this.addBuffer(new BufferAllocation(new Buffer(
+							this.addGlobalBuffer(new BufferAllocation(new Buffer(
 									bufferName, Math.max(edge.getProd()
 											.intValue(), edge.getCons()
 											.intValue()), new DataType(edge
 											.getDataType().toString()), edge,
 									parentContainer)));
 						} else {
-							this.addBuffer(new BufferAllocation(
+							this.addGlobalBuffer(new BufferAllocation(
 									new Buffer(bufferName, Math.max(edge
 											.getProd().intValue()
 											* edge.getSource().getNbRepeat(),
