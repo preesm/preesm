@@ -40,10 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
  * Represents a single step in a route between two operators separated by

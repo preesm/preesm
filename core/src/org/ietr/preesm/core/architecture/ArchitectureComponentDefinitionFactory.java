@@ -43,13 +43,10 @@ import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 

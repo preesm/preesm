@@ -13,6 +13,7 @@ import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.RamRouteStep;
+import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -25,15 +26,17 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class ComCodeGeneratorFactory {
 
 	private Map<AbstractRouteStep,IComCodeGenerator> generators = null;
-	private CommunicationThreadDeclaration thread;
+	private CommunicationThreadDeclaration comThread;
+	private ComputationThreadDeclaration compThread;
 	private SortedSet<SDFAbstractVertex> vertices;
 	
 	
-	public ComCodeGeneratorFactory(CommunicationThreadDeclaration thread, SortedSet<SDFAbstractVertex> vertices) {
+	public ComCodeGeneratorFactory(ComputationThreadDeclaration compThread,CommunicationThreadDeclaration thread, SortedSet<SDFAbstractVertex> vertices) {
 		super();
 		this.generators = new HashMap<AbstractRouteStep,IComCodeGenerator>();
-		this.thread = thread;
+		this.comThread = thread;
 		this.vertices = vertices;
+		this.compThread = compThread;
 	}
 
 	public IComCodeGenerator getCodeGenerator(AbstractRouteStep step){
@@ -49,14 +52,14 @@ public class ComCodeGeneratorFactory {
 		IComCodeGenerator generator = null;
 		
 		if(step.getType() == MediumRouteStep.type){
-			generator = new MessageComCodeGenerator(thread,vertices, step);
+			generator = new MessageComCodeGenerator(compThread,comThread,vertices, step);
 			PreesmLogger.getLogger().log(Level.INFO,"A route step with type medium correspond to a message passing code generation: " + step);
 		}else if(step.getType() == DmaRouteStep.type){
-			generator = new DmaComCodeGenerator(thread,vertices, step);
+			generator = new DmaComCodeGenerator(compThread,comThread,vertices, step);
 		}else if(step.getType() == MessageRouteStep.type){
-			generator = new MessageComCodeGenerator(thread,vertices, step);
+			generator = new MessageComCodeGenerator(compThread,comThread,vertices, step);
 		}else if(step.getType() == RamRouteStep.type){
-			generator = new RamComCodeGenerator(thread,vertices, step);
+			generator = new RamComCodeGenerator(compThread,comThread,vertices, step);
 		}else{
 			PreesmLogger.getLogger().log(Level.SEVERE,"A route step with unknown type was found during code generation: " + step);
 		}

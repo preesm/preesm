@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen;
 
-import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAtIndex;
@@ -131,7 +130,7 @@ public class CodeElementFactory {
 			} else if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
 				UserFunctionCall call = new UserFunctionCall(vertex,
-						parentContainer, CodeSection.LOOP);
+						parentContainer, CodeSectionType.loop);
 				if (call.getName() == null) {
 					return null;
 				}

@@ -38,12 +38,14 @@ package org.ietr.preesm.plugin.codegen;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -54,8 +56,10 @@ import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
+import org.ietr.preesm.core.codegen.model.CodeGenArgument;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreInit;
 import org.ietr.preesm.plugin.codegen.communication.CommThreadCodeGenerator;
@@ -81,9 +85,11 @@ public class SourceFileCodeGenerator {
 
 	/**
 	 * Buffers belonging to SDF vertices in the given set are allocated here.
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
 	 */
-	public void allocateBuffers(SDFGraph algo) throws InvalidExpressionException {
+	public void allocateBuffers(SDFGraph algo)
+			throws InvalidExpressionException {
 		SDFIterator iterator = new SDFIterator(algo);
 		// Iteration on own buffers
 		while (iterator.hasNext()) {
@@ -176,7 +182,7 @@ public class SourceFileCodeGenerator {
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return ;
+			return;
 		}
 
 		// Allocation of route step buffers
@@ -193,33 +199,46 @@ public class SourceFileCodeGenerator {
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
-		compCodegen.addSemaphoreFunctions(ownTaskVertices);
+		compCodegen.addSemaphoreFunctions(ownTaskVertices,
+				CodeSectionType.beginning);
+		compCodegen.addSemaphoreFunctions(ownTaskVertices, CodeSectionType.end);
+		compCodegen
+				.addSemaphoreFunctions(ownTaskVertices, CodeSectionType.loop);
 
 		// Creating communication where communication processes are launched
 		if (!ownCommunicationVertices.isEmpty()) {
 			CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
 					file);
 			file.addThread(communicationThread);
-			
+
 			// Launching the communication thread in the computation thread
-			LaunchThread launchThread = new LaunchThread(file.getGlobalContainer(),
-					communicationThread.getName(), 8000, 1);
-			computationThread.getBeginningCode().addCodeElementFirst(launchThread);
+			LaunchThread launchThread = new LaunchThread(file
+					.getGlobalContainer(), communicationThread.getName(), 8000,
+					1);
+			computationThread.getBeginningCode().addCodeElementFirst(
+					launchThread);
 
 			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
-					communicationThread);
-			
+					computationThread, communicationThread);
+
 			// Inserts the communication function calls, the communication
-			// thread semaphore post and pends and the communication initializations
-			commCodeGen.addSendsAndReceives(ownCommunicationVertices,file.getGlobalContainer());
-			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices);
+			// thread semaphore post and pends and the communication
+			// initializations
+			commCodeGen.addSendsAndReceives(ownCommunicationVertices, file
+					.getGlobalContainer());
+			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
+					CodeSectionType.beginning);
+			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
+					CodeSectionType.end);
+			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
+					CodeSectionType.loop);
 
 			// Allocates the semaphores globally
 			Buffer semBuf = file.getSemaphoreContainer().allocateSemaphores();
 
 			// Initializing the semaphores
-			SemaphoreInit semInit = new SemaphoreInit(file.getGlobalContainer(),
-					semBuf);
+			SemaphoreInit semInit = new SemaphoreInit(
+					file.getGlobalContainer(), semBuf);
 			computationThread.getBeginningCode().addCodeElementFirst(semInit);
 		}
 	}
@@ -271,6 +290,71 @@ public class SourceFileCodeGenerator {
 				eIterator.remove();
 			}
 		}
+	}
+
+	/**
+	 * Returns true if the vertex function prototype of the given
+	 * codeContainerType uses buf
+	 */
+	public static boolean usesBufferInCodeContainerType(SDFAbstractVertex vertex,
+			CodeSectionType codeContainerType, Buffer buf, String direction) {
+
+		FunctionCall call = ((FunctionCall) vertex.getRefinement());
+		if (call != null) {
+
+			switch (codeContainerType) {
+			case beginning:
+				call = call.getInitCall();
+				break;
+			case loop:
+				break;
+			case end:
+				call = call.getEndCall();
+				break;
+			}
+		}
+
+		if (call != null) {
+			Set<CodeGenArgument> argSet = call.getArguments().keySet();
+
+			for (CodeGenArgument arg : argSet) {
+				if (direction.equals("output")) {
+					if (((arg.getDirection().equals(CodeGenArgument.OUTPUT)) || (arg
+							.getDirection().equals(CodeGenArgument.INOUT)))
+							&& arg.getName()
+									.equals(buf.getSourceOutputPortID())) {
+						return true;
+					}
+				} else {
+					if (((arg.getDirection().equals(CodeGenArgument.INPUT)) || (arg
+							.getDirection().equals(CodeGenArgument.INOUT)))
+							&& arg.getName().equals(buf.getDestInputPortID())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		// return true;
+		return false;
+	}
+
+	/**
+	 * Returns true if the vertex function prototype of the given
+	 * codeContainerType uses at least one of the buffers in bufs
+	 */
+	public static boolean usesBuffersInCodeContainerType(SDFAbstractVertex vertex,
+			CodeSectionType codeContainerType, List<Buffer> bufs,
+			String direction) {
+
+		for (Buffer buf : bufs) {
+			if (usesBufferInCodeContainerType(vertex, codeContainerType, buf,
+					direction)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

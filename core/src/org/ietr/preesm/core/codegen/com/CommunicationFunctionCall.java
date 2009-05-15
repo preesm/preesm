@@ -36,21 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.com;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
 
 /**
  * code Element used to launch inter-core communication send or receive

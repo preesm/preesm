@@ -118,6 +118,17 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	public ForLoop getLoopCode() {
 		return loopCode;
 	}
+	
+	public AbstractCodeContainer getCodeContainer(CodeSectionType type){
+		if(type.equals(CodeSectionType.beginning)){
+			return beginningCode;
+		}else if(type.equals(CodeSectionType.loop)){
+			return loopCode;
+		}else if(type.equals(CodeSectionType.end)){
+			return endCode;
+		}
+		return null;
+	}
 
 	public String getName() {
 		return name;

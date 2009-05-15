@@ -33,59 +33,17 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
-package org.ietr.preesm.core.architecture.route;
-
-import java.util.List;
-
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+ 
+package org.ietr.preesm.core.codegen;
 
 /**
- * Route step where the sender uses a dma to send data in
- * parallel with its processing
+ * Defining a type of section in a thread
  * 
  * @author mpelcat
  */
-public class DmaRouteStep extends MessageRouteStep {
+public enum CodeSectionType {
 
-	private Dma dma;
-
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	public static final String type = "DmaRouteStep";
-	
-	public DmaRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Dma dma) {
-		super(sender,nodes, receiver);		
-		this.dma = dma;
-	}
-
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	@Override
-	public String getType() {
-		return type;
-	}
-	
-	public Dma getDma() {
-		return dma;
-	}
-
-	@Override
-	public String toString() {
-		String trace = super.toString();
-		trace = trace.substring(0,trace.length()-1);
-		trace += "[" + dma + "]}";
-		return trace;
-	}
-	
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		Dma newDma = (Dma)dma.clone();
-		newDma.setDefinition(dma.getDefinition());
-		return new DmaRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newDma);
-	}
+	beginning,
+	loop,
+	end,
 }

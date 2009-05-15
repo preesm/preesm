@@ -50,7 +50,6 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.ui.Activator;
 
 /**
@@ -137,11 +136,7 @@ public class PreesmLogger extends Logger {
 								}
 							});
 
-					Calendar cal = Calendar.getInstance();
-					String time = String.format("%2d:%2d:%2d ", cal
-							.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
-							.get(Calendar.SECOND));
-					stream.println(time + record.getMessage());
+					stream.println(getFormattedTime() + record.getMessage());
 
 					if(getLevel().intValue() >= Level.SEVERE.intValue()){
 						//throw (new PreesmException(record.getMessage()));
@@ -150,6 +145,15 @@ public class PreesmLogger extends Logger {
 			}
 		}
 		
+	}
+	
+	public static String getFormattedTime(){
+		Calendar cal = Calendar.getInstance();
+		
+		String time = String.format("%2d:%2d:%2d ", cal
+				.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
+				.get(Calendar.SECOND));
+		return time;
 	}
 
 	public void createConsole() {

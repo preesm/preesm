@@ -42,10 +42,11 @@ import java.util.SortedSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.ForLoop;
+import org.ietr.preesm.core.codegen.AbstractCodeContainer;
+import org.ietr.preesm.core.codegen.CodeSectionType;
+import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
@@ -66,82 +67,104 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class CommThreadCodeGenerator {
 
 	private CommunicationThreadDeclaration comThread;
+	private ComputationThreadDeclaration compThread;
 
-	public CommThreadCodeGenerator(CommunicationThreadDeclaration thread) {
-		this.comThread = thread;
+	public CommThreadCodeGenerator(ComputationThreadDeclaration compThread, CommunicationThreadDeclaration comThread) {
+		this.comThread = comThread;
+		this.compThread = compThread;
 	}
 
 	/**
 	 * Adds semaphores to protect the data transmitted in this thread
 	 */
-	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> comVertices) {
-		LinearCodeContainer beginningCode = comThread.getBeginningCode();
-		ForLoop loopCode = comThread.getLoopCode();
+	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> comVertices,
+			CodeSectionType codeContainerType) {
+
+		AbstractCodeContainer codeContainer = null;
+
+		if (codeContainerType.equals(CodeSectionType.beginning)) {
+			codeContainer = comThread.getBeginningCode();
+		} else if (codeContainerType.equals(CodeSectionType.loop)) {
+			codeContainer = comThread.getLoopCode();
+		} else if (codeContainerType.equals(CodeSectionType.end)) {
+			codeContainer = comThread.getEndCode();
+		}
 
 		for (SDFAbstractVertex vertex : comVertices) {
-			List<ICodeElement> coms = loopCode.getCodeElements(vertex);
+			List<ICodeElement> coms = codeContainer.getCodeElements(vertex);
 
-			AbstractBufferContainer container = comThread.getGlobalContainer();
-			List<Buffer> buffers = null;
+			if (!coms.isEmpty()) {
+				AbstractBufferContainer container = comThread
+						.getGlobalContainer();
+				List<Buffer> buffers = null;
 
-			// First test on the type of vertex that will be protected by a
-			// semaphore
-			VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-					ImplementationPropertyNames.Vertex_vertexType);
+				// First test on the type of vertex that will be protected by a
+				// semaphore
+				VertexType vType = (VertexType) vertex
+						.getPropertyBean()
+						.getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-			SemaphoreType sType = null;
+				SemaphoreType sType = null;
 
-			// If the communication operation is an intermediate step of a
-			// route, no semaphore is generated
-			if (VertexType.isIntermediateReceive(vertex)
-					|| VertexType.isIntermediateSend(vertex)) {
-				continue;
-			}
+				// If the communication operation is an intermediate step of a
+				// route, no semaphore is generated
+				if (VertexType.isIntermediateReceive(vertex)
+						|| VertexType.isIntermediateSend(vertex)) {
+					continue;
+				}
 
-			if (vType.isSend()) {
-				sType = SemaphoreType.full;
-				Set<SDFEdge> inEdges = (vertex.getBase()
-						.incomingEdgesOf(vertex));
-				buffers = container.getBuffers(inEdges);
-			} else if (vType.isReceive()) {
-				sType = SemaphoreType.empty;
-				Set<SDFEdge> outEdges = (vertex.getBase()
-						.outgoingEdgesOf(vertex));
-				buffers = container.getBuffers(outEdges);
-			}
+				if (vType.isSend()) {
+					sType = SemaphoreType.full;
+					Set<SDFEdge> inEdges = (vertex.getBase()
+							.incomingEdgesOf(vertex));
+					buffers = container.getBuffers(inEdges);
+				} else if (vType.isReceive()) {
+					sType = SemaphoreType.empty;
+					Set<SDFEdge> outEdges = (vertex.getBase()
+							.outgoingEdgesOf(vertex));
+					buffers = container.getBuffers(outEdges);
+				}
 
-			// A first token must initialize the empty buffer semaphores before
-			// receive operations
-			if (vType.isReceive()) {
-				SemaphorePost init = new SemaphorePost(container, buffers,
-						vertex, SemaphoreType.empty);
-				beginningCode.addCodeElement(init);
-			}
+				// A first token must initialize the empty buffer semaphores
+				// before
+				// receive operations if we deal with the communication loop
+				if (vType.isReceive()
+						&& codeContainerType.equals(CodeSectionType.loop)) {
+					SemaphorePost init = new SemaphorePost(container, buffers,
+							vertex, SemaphoreType.empty, codeContainerType);
+					comThread.getBeginningCode().addCodeElement(init);
+				}
 
-			// Creates the semaphore if necessary ; retrieves it otherwise
-			// from global declaration and creates the pending function
-			SemaphorePend pend = new SemaphorePend(container, buffers, vertex,
-					sType);
+				// Creates the semaphore if necessary ; retrieves it otherwise
+				// from global declaration and creates the pending function
+				SemaphorePend pend = new SemaphorePend(container, buffers,
+						vertex, sType, codeContainerType);
 
-			if (vType.isSend()) {
-				sType = SemaphoreType.empty;
-			} else if (vType.isReceive()) {
-				sType = SemaphoreType.full;
-			}
+				if (vType.isSend()) {
+					sType = SemaphoreType.empty;
+				} else if (vType.isReceive()) {
+					sType = SemaphoreType.full;
+				}
 
-			// Creates the semaphore if necessary and creates the posting
-			// function
-			SemaphorePost post = new SemaphorePost(container, buffers, vertex,
-					sType);
+				// Creates the semaphore if necessary and creates the posting
+				// function
+				SemaphorePost post = new SemaphorePost(container, buffers,
+						vertex, sType, codeContainerType);
 
-			if (pend != null && post != null) {
-				// Adding a semaphore pend before the communication calls and
-				// a semaphore post after them
-				loopCode.addCodeElementBefore(coms.get(0), pend);
-				loopCode.addCodeElementAfter(coms.get(coms.size() - 1), post);
-			} else {
-				PreesmLogger.getLogger().log(Level.SEVERE,
-						"semaphore creation failed");
+				if (pend != null && post != null) {
+					// Adding a semaphore pend before the communication calls
+					// and
+					// a semaphore post after them
+					codeContainer.addCodeElementBefore(coms.get(0), pend);
+
+					if (codeContainerType.equals(CodeSectionType.loop)) {
+						codeContainer.addCodeElementAfter(coms
+								.get(coms.size() - 1), post);
+					}
+				} else {
+					PreesmLogger.getLogger().log(Level.SEVERE,
+							"semaphore creation failed");
+				}
 			}
 		}
 	}
@@ -153,14 +176,18 @@ public class CommThreadCodeGenerator {
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
 			AbstractBufferContainer bufferContainer) {
 
-		// a code generator factory always outputs the same generator for a given route step
-		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(comThread, vertices);
+		// a code generator factory always outputs the same generator for a
+		// given route step
+		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(compThread,
+				comThread, vertices);
 		for (SDFAbstractVertex vertex : vertices) {
-			AbstractRouteStep step = (AbstractRouteStep)vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_routeStep);
-			
+			AbstractRouteStep step = (AbstractRouteStep) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.SendReceive_routeStep);
+
 			// Delegates the com creation to the appropriate generator
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
-			
+
 			// Creates all functions and buffers related to the given vertex
 			generator.createComs(vertex);
 		}

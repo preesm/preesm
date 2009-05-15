@@ -6,28 +6,23 @@ package org.ietr.preesm.plugin.codegen.jobposting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.Constant;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.Parameter;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
-import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
-import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.jgrapht.alg.NeighborIndex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -117,7 +112,7 @@ public class JobPostingCodeGenerator {
 
 				// Adding function parameters
 				UserFunctionCall userCall = new UserFunctionCall(vertex,
-						sourceFile.getGlobalContainer(), CodeSection.LOOP);
+						sourceFile.getGlobalContainer(), CodeSectionType.loop);
 				List<Parameter> params = userCall.getCallParameters();
 
 				for (Parameter param : params) {

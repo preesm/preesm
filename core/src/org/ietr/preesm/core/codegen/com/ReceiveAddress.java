@@ -36,11 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen.com;
 
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
  * Receiving an address for a direct memory access

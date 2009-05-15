@@ -90,7 +90,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	protected void addPages() {
 		//this.activateSite();
 		IFormPage ganttPage = new GanttPage(statGen,this, "Gantt","Gantt");
-		IFormPage overviewPage = new OverviewPage(statGen,this, "Overview","Overview");
+		IFormPage overviewPage = new OverviewPage(statGen,this, "Loads","Loads");
 		overviewPage.addPropertyListener(this);
 		PerformancePage performancePage = new PerformancePage(statGen,this, "Performance","Performance");
 		performancePage.addPropertyListener(this);

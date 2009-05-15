@@ -38,8 +38,6 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
 
 /**
  * A contention node is a communication node which contention

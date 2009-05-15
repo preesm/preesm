@@ -41,6 +41,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
 
@@ -93,7 +94,7 @@ public class StatEditorInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return "Statistics";
+		return PreesmLogger.getFormattedTime() + " Stats";
 	}
 
 	@Override

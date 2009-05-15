@@ -43,8 +43,6 @@ import java.util.Set;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 
 /**
  * A processor is a hardware entity used to execute computations and perform

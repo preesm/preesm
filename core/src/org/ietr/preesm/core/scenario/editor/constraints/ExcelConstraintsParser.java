@@ -52,7 +52,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;

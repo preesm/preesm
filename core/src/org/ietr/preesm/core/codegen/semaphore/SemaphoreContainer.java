@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
@@ -75,18 +76,19 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	}
 
 	public Buffer allocateSemaphores() {
-		semaphoreBuffer = new Buffer(semaphoreBufferName, this.size(), new DataType("semaphore"),
-				null, parentContainer);
+		semaphoreBuffer = new Buffer(semaphoreBufferName, this.size(),
+				new DataType("semaphore"), null, parentContainer);
 
 		parentContainer.addBuffer(new BufferAllocation(semaphoreBuffer));
 		return semaphoreBuffer;
 	}
 
-	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType type) {
-		Semaphore sem = getSemaphore(agg, type);
+	public Semaphore createSemaphore(List<Buffer> agg, SemaphoreType semType,
+			CodeSectionType codeContainerType) {
+		Semaphore sem = getSemaphore(agg, semType, codeContainerType);
 
 		if (sem == null) {
-			sem = new Semaphore(this, agg, type);
+			sem = new Semaphore(this, agg, semType, codeContainerType);
 			add(sem);
 			return sem;
 		} else {
@@ -94,7 +96,12 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		}
 	}
 
-	public Semaphore getSemaphore(List<Buffer> bufList, SemaphoreType type) {
+	/**
+	 * Returns a semaphore if it exists (with same protected buffers and type)
+	 * or null
+	 */
+	public Semaphore getSemaphore(List<Buffer> bufList, SemaphoreType semType,
+			CodeSectionType codeContainerType) {
 		Semaphore sem = null;
 
 		Iterator<Semaphore> currentIt = iterator();
@@ -116,7 +123,8 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 				}
 			}
 
-			if (sameBuffers && sem.getSemaphoreType() == type) {
+			if (sameBuffers && sem.getSemaphoreType().equals(semType)
+					&& sem.getCodeContainerType().equals(codeContainerType)) {
 				return sem;
 			}
 		}
@@ -127,6 +135,5 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 	public Buffer getSemaphoreBuffer() {
 		return semaphoreBuffer;
 	}
-	
-	
+
 }

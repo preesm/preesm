@@ -65,10 +65,6 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class UserFunctionCall extends AbstractCodeElement {
 
-	public enum CodeSection {
-		INIT, LOOP, END;
-	}
-
 	/**
 	 * The buffer set contains all the buffers usable by the user function
 	 */
@@ -80,7 +76,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 
 	public UserFunctionCall(SDFAbstractVertex vertex,
-			AbstractBufferContainer parentContainer, CodeSection section) {
+			AbstractBufferContainer parentContainer, CodeSectionType section) {
 		super(vertex.getName(), parentContainer, vertex);
 
 		// Buffers associated to the function call
@@ -95,13 +91,13 @@ public class UserFunctionCall extends AbstractCodeElement {
 			if (call != null) {
 
 				switch (section) {
-				case INIT:
+				case beginning:
 					if (call.getInitCall() != null) {
 						call = call.getInitCall();
 						this.setName(call.getFunctionName());
 					}
 					break;
-				case LOOP:
+				case loop:
 					if (call.getFunctionName().isEmpty()) {
 						PreesmLogger.getLogger().log(
 								Level.INFO,
@@ -114,13 +110,18 @@ public class UserFunctionCall extends AbstractCodeElement {
 					}
 
 					break;
-				case END:
+				case end:
 					if (call.getEndCall() != null) {
 						call = call.getEndCall();
 						this.setName(call.getFunctionName());
 					}
 					break;
 				}
+			}
+			
+			if(getName().contains("while")){
+				int tutu = 0;
+				tutu++;
 			}
 
 			// Adding output buffers

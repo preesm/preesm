@@ -37,7 +37,6 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.sdf4j.model.AbstractVertex;
 
 /**
  * a communication node (exemple: a switch)

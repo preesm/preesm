@@ -39,6 +39,7 @@ package org.ietr.preesm.core.codegen.semaphore;
 import java.util.List;
 
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -60,13 +61,13 @@ public class SemaphorePend extends AbstractCodeElement {
 	 */
 	public SemaphorePend(AbstractBufferContainer globalContainer,
 			List<Buffer> protectedBuffers, SDFAbstractVertex vertex,
-			SemaphoreType semType) {
+			SemaphoreType semType, CodeSectionType codeContainerType) {
 		super("semaphorePend", globalContainer, vertex);
 
 		semContainer = globalContainer.getSemaphoreContainer();
 
 		// The pending semaphore of a full buffer will be put before the send
-		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType, codeContainerType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

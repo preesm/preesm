@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen.semaphore;
 
 import java.util.List;
 
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -66,14 +67,20 @@ public class Semaphore {
 	 */
 	private SemaphoreType semaphoreType;
 
+	/**
+	 * A semaphore is either created for beginning, loop or end code protection
+	 */
+	private CodeSectionType codeContainerType;
+
 	public Semaphore(SemaphoreContainer container,
-			List<Buffer> protectedBuffers, SemaphoreType semaphoreType) {
+			List<Buffer> protectedBuffers, SemaphoreType semaphoreType, CodeSectionType codeContainerType) {
 
 		this.semaphoreType = semaphoreType;
 
 		this.protectedBuffers = protectedBuffers;
 
 		this.container = container;
+		this.codeContainerType = codeContainerType;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -107,6 +114,10 @@ public class Semaphore {
 
 	public SemaphoreType getSemaphoreType() {
 		return semaphoreType;
+	}
+
+	public CodeSectionType getCodeContainerType() {
+		return codeContainerType;
 	}
 
 	/**

@@ -3,7 +3,6 @@
  */
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
 import org.jgrapht.EdgeFactory;
 
 /**

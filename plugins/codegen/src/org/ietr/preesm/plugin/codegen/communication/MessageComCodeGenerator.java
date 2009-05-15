@@ -7,6 +7,8 @@ import java.util.SortedSet;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.CodeSectionType;
+import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -19,21 +21,24 @@ import org.ietr.preesm.core.codegen.com.ReceiveMsg;
 import org.ietr.preesm.core.codegen.com.SendInit;
 import org.ietr.preesm.core.codegen.com.SendMsg;
 import org.ietr.preesm.core.codegen.com.WaitForCore;
+import org.ietr.preesm.plugin.codegen.SourceFileCodeGenerator;
+import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
 /**
- * Generating communication code (initialization and calls) for a message Route Step
+ * Generating communication code (initialization and calls) for a message Route
+ * Step
  * 
  * @author mpelcat
  */
 public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 
-	
-	public MessageComCodeGenerator(CommunicationThreadDeclaration comThread,SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
-		super(comThread,vertices, step);
+	public MessageComCodeGenerator(ComputationThreadDeclaration compThread,
+			CommunicationThreadDeclaration comThread,
+			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
+		super(compThread, comThread, vertices, step);
 	}
-
 
 	/**
 	 * Calls the initialization functions at the beginning of computation and
@@ -89,14 +94,19 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		if (wait != null) {
 			comThread.getBeginningCode().addCodeElement(wait);
 		}
-		
+
 	}
 
 	/**
 	 * creates a send or a receive depending on the vertex type
+	 * 
+	 * Such a call makes sense if the sender vertex has a function call in the
+	 * current code container and if the sender and function call uses
+	 * the data
 	 */
 	protected List<CommunicationFunctionCall> createCalls(
-			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
+			CodeSectionType codeContainerType) {
 
 		List<CommunicationFunctionCall> calls = new ArrayList<CommunicationFunctionCall>();
 
@@ -107,55 +117,83 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		AbstractRouteStep rs = (AbstractRouteStep) vertex.getPropertyBean()
 				.getValue(ImplementationPropertyNames.SendReceive_routeStep);
 
+		DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighborindex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
+				vertex.getBase());
+
 		Set<SDFEdge> inEdges = (vertex.getBase().incomingEdgesOf(vertex));
 		Set<SDFEdge> outEdges = (vertex.getBase().outgoingEdgesOf(vertex));
+		List<SDFAbstractVertex> predList = neighborindex
+				.predecessorListOf(vertex);
+		List<SDFAbstractVertex> succList = neighborindex
+				.successorListOf(vertex);
 
 		if (type != null && rs != null) {
 			if (type.isSend()) {
+				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (predList
+						.get(0));
+				if (hasCallForCodeContainerType(senderVertex, codeContainerType)) {
+					List<Buffer> bufferSet = parentContainer
+							.getBuffers(inEdges);
 
-				List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
+					// The target is the operator on which the corresponding
+					// receive
+					// operation is mapped
+					SDFAbstractVertex receive = (SDFAbstractVertex) (succList
+							.get(0));
+					Operator target = (Operator) receive
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_Operator);
 
-				// The target is the operator on which the corresponding receive
-				// operation is mapped
-				SDFAbstractVertex receive = ((SDFEdge) outEdges.toArray()[0])
-						.getTarget();
-				Operator target = (Operator) receive.getPropertyBean()
-						.getValue(ImplementationPropertyNames.Vertex_Operator);
+					// Case of one send for multiple buffers
+					// calls.add(new Send(parentContainer, vertex, bufferSet,
+					// medium,
+					// target));
 
-				// Case of one send for multiple buffers
-				// calls.add(new Send(parentContainer, vertex, bufferSet,
-				// medium,
-				// target));
-
-				// Case of one send per buffer
-				for (Buffer buf : bufferSet) {
-					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-					singleBufferSet.add(buf);
-					calls.add(new SendMsg(parentContainer, vertex,
-							singleBufferSet, rs, target));
+					// Case of one send per buffer
+					for (Buffer buf : bufferSet) {
+						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
+								codeContainerType, buf,"output")) {
+							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+							singleBufferSet.add(buf);
+							calls.add(new SendMsg(parentContainer, vertex,
+									singleBufferSet, rs, target));
+						}
+					}
 				}
-
 			} else if (type.isReceive()) {
-				List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
+				SDFAbstractVertex send = (SDFAbstractVertex) (predList
+						.get(0));
+				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
+						.predecessorListOf(send).get(0));
+				if (hasCallForCodeContainerType(senderVertex,
+						codeContainerType)) {
+					List<Buffer> bufferSet = parentContainer
+							.getBuffers(outEdges);
 
-				// The source is the operator on which the corresponding send
-				// operation is allocated
-				SDFAbstractVertex send = ((SDFEdge) inEdges.toArray()[0])
-						.getSource();
-				Operator source = (Operator) send.getPropertyBean().getValue(
-						ImplementationPropertyNames.Vertex_Operator);
+					// The source is the operator on which the corresponding
+					// send
+					// operation is allocated
+					Operator source = (Operator) send
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_Operator);
 
-				// Case of one receive for multiple buffers
-				// calls.add(new Receive(parentContainer, vertex, bufferSet,
-				// medium,
-				// source));
+					// Case of one receive for multiple buffers
+					// calls.add(new Receive(parentContainer, vertex, bufferSet,
+					// medium,
+					// source));
 
-				// Case of one receive per buffer
-				for (Buffer buf : bufferSet) {
-					List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-					singleBufferSet.add(buf);
-					calls.add(new ReceiveMsg(parentContainer, vertex,
-							singleBufferSet, rs, source));
+					// Case of one receive per buffer
+					for (Buffer buf : bufferSet) {
+						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
+								codeContainerType, buf,"output")) {
+							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+							singleBufferSet.add(buf);
+							calls.add(new ReceiveMsg(parentContainer, vertex,
+									singleBufferSet, rs, source));
+						}
+					}
 				}
 			}
 		}

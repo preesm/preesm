@@ -38,8 +38,6 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 
 /**
  * A fifo is a directed edge used to connect two nodes and transfer data from

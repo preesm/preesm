@@ -77,13 +77,11 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**

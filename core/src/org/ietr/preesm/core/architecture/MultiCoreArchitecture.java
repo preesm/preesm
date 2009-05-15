@@ -51,9 +51,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
 
 /**
  * Architecture based on a fixed number of cores

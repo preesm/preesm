@@ -39,6 +39,7 @@ package org.ietr.preesm.core.codegen.semaphore;
 import java.util.List;
 
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -64,12 +65,12 @@ public class SemaphorePost extends AbstractCodeElement {
 	 */
 	public SemaphorePost(AbstractBufferContainer globalContainer,
 			List<Buffer> protectedBuffers, 
-			SDFAbstractVertex vertex, SemaphoreType semType) {
+			SDFAbstractVertex vertex, SemaphoreType semType, CodeSectionType codeContainerType) {
 		super("semaphorePost", globalContainer, vertex);
 
 		semContainer = globalContainer.getSemaphoreContainer();
 
-		semaphore = semContainer.createSemaphore(protectedBuffers, semType);
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType, codeContainerType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

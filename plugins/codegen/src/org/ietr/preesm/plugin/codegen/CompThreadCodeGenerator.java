@@ -41,25 +41,23 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.codegen.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.CodeElementFactory;
+import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
-import org.ietr.preesm.core.codegen.UserFunctionCall.CodeSection;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.semaphore.SemaphorePend;
 import org.ietr.preesm.core.codegen.semaphore.SemaphorePost;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -81,10 +79,19 @@ public class CompThreadCodeGenerator {
 	 * Adds semaphores to protect the data transmitted in this thread. Iterates
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
-	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> taskVertices) {
+	public void addSemaphoreFunctions(
+			SortedSet<SDFAbstractVertex> taskVertices,
+			CodeSectionType codeContainerType) {
 		AbstractBufferContainer container = thread.getGlobalContainer();
-		LinearCodeContainer beginningCode = thread.getBeginningCode();
-		ForLoop loopCode = thread.getLoopCode();
+		AbstractCodeContainer codeContainer = null;
+
+		if (codeContainerType.equals(CodeSectionType.beginning)) {
+			codeContainer = thread.getBeginningCode();
+		} else if (codeContainerType.equals(CodeSectionType.loop)) {
+			codeContainer = thread.getLoopCode();
+		} else if (codeContainerType.equals(CodeSectionType.end)) {
+			codeContainer = thread.getEndCode();
+		}
 
 		for (SDFAbstractVertex task : taskVertices) {
 			// Getting incoming receive operations
@@ -92,33 +99,54 @@ public class CompThreadCodeGenerator {
 					.getComVertices(task, true);
 
 			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> taskElements = loopCode
+				List<ICodeElement> taskElements = codeContainer
 						.getCodeElements(task);
 				if (taskElements.size() != 1) {
 					PreesmLogger.getLogger().log(
-							Level.SEVERE,
+							Level.INFO,
 							"Not one single function call for function: "
 									+ task.getName());
-				}
-				ICodeElement taskElement = taskElements.get(0);
+				} else {
+					ICodeElement taskElement = taskElements.get(0);
 
-				for (SDFAbstractVertex com : ownComVertices) {
-					// Creates the semaphore if necessary ; retrieves it
-					// otherwise from global declaration and creates the pending
-					// function
-					Set<SDFEdge> outEdges = (com.getBase().outgoingEdgesOf(com));
-					List<Buffer> buffers = container.getBuffers(outEdges);
+					for (SDFAbstractVertex com : ownComVertices) {
+						// Creates the semaphore if necessary ; retrieves it
+						// otherwise from global declaration and creates the
+						// pending
+						// function
+						Set<SDFEdge> outEdges = (com.getBase()
+								.outgoingEdgesOf(com));
+						List<Buffer> buffers = container.getBuffers(outEdges);
 
-					SemaphorePend pend = new SemaphorePend(container, buffers,
-							com, SemaphoreType.full);
+						DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighborindex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
+								task.getBase());
+						
+						SDFAbstractVertex send = (SDFAbstractVertex) (neighborindex
+								.predecessorListOf(com).get(0));
+						SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
+								.predecessorListOf(send).get(0));
+						
+						if (SourceFileCodeGenerator
+								.usesBuffersInCodeContainerType(senderVertex,codeContainerType,buffers,"output")) {
+							SemaphorePend pend = new SemaphorePend(container,
+									buffers, com, SemaphoreType.full,
+									codeContainerType);
+							codeContainer.addCodeElementBefore(taskElement,
+									pend);
 
-					// Creates the semaphore if necessary and creates the
-					// posting function
-					SemaphorePost post = new SemaphorePost(container, buffers,
-							com, SemaphoreType.empty);
-
-					loopCode.addCodeElementBefore(taskElement, pend);
-					loopCode.addCodeElementAfter(taskElement, post);
+							if (codeContainerType.equals(CodeSectionType.loop)) {
+								// Creates the semaphore if necessary and
+								// creates
+								// the
+								// posting function
+								SemaphorePost post = new SemaphorePost(
+										container, buffers, com,
+										SemaphoreType.empty, codeContainerType);
+								codeContainer.addCodeElementAfter(taskElement,
+										post);
+							}
+						}
+					}
 				}
 			}
 
@@ -126,19 +154,20 @@ public class CompThreadCodeGenerator {
 			ownComVertices = thread.getComVertices(task, false);
 
 			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> taskElements = loopCode
+				List<ICodeElement> loopElements = codeContainer
 						.getCodeElements(task);
-				if (taskElements.size() != 1) {
+				if (loopElements.size() != 1) {
 					PreesmLogger.getLogger().log(
-							Level.SEVERE,
+							Level.INFO,
 							"Not one single function call for function: "
-									+ task.getName());
+									+ task.getName() + " in section "
+									+ codeContainerType.toString());
 				} else {
-					ICodeElement taskElement = taskElements.get(0); // error if
-																	// the array
-																	// size is
-																	// equal to
-																	// 0
+					ICodeElement taskElement = loopElements.get(0); // error if
+					// the array
+					// size is
+					// equal to
+					// 0
 
 					for (SDFAbstractVertex com : ownComVertices) {
 						// A first token must initialize the semaphore pend due
@@ -147,27 +176,40 @@ public class CompThreadCodeGenerator {
 						Set<SDFEdge> inEdges = (com.getBase()
 								.incomingEdgesOf(com));
 						List<Buffer> buffers = container.getBuffers(inEdges);
+						
+						if (SourceFileCodeGenerator
+								.usesBuffersInCodeContainerType(task,codeContainerType,buffers,"output")) {
+						// If the semaphore is generated for the loop, a first
+						// post is done in initialization and then a loop
+						// pending and posting. In beginning and end cases, only
+						// a post is generated when the send is ready to be
+						// called.
+						if (codeContainerType.equals(CodeSectionType.loop)) {
+							SemaphorePost initPost = new SemaphorePost(
+									container, buffers, com,
+									SemaphoreType.empty, codeContainerType);
 
-						SemaphorePost init = new SemaphorePost(container,
-								buffers, com, SemaphoreType.empty);
+							thread.getBeginningCode().addCodeElementBefore(
+									taskElement, initPost);
 
-						beginningCode.addCodeElementBefore(taskElement, init);
-
-						// Creates the semaphore if necessary ; retrieves it
-						// otherwise from global declaration and creates the
-						// pending
-						// function
-						SemaphorePend pend = new SemaphorePend(container,
-								buffers, com, SemaphoreType.empty);
+							// Creates the semaphore if necessary ; retrieves it
+							// otherwise from global declaration and creates the
+							// pending function
+							SemaphorePend pend = new SemaphorePend(container,
+									buffers, com, SemaphoreType.empty,
+									codeContainerType);
+							codeContainer.addCodeElementBefore(taskElement,
+									pend);
+						}
 
 						// Creates the semaphore if necessary and creates the
 						// posting function
 						SemaphorePost post = new SemaphorePost(container,
-								buffers, com, SemaphoreType.full);
+								buffers, com, SemaphoreType.full,
+								codeContainerType);
 
-						loopCode.addCodeElementBefore(taskElement, pend);
-						loopCode.addCodeElementAfter(taskElement, post);
-					}
+						codeContainer.addCodeElementAfter(taskElement, post);
+					}}
 				}
 			}
 		}
@@ -252,20 +294,24 @@ public class CompThreadCodeGenerator {
 				FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
 				if (vertexCall != null && vertexCall.getInitCall() != null) {
 					ICodeElement beginningCall = new UserFunctionCall(vertex,
-							thread, CodeSection.INIT);
+							thread, CodeSectionType.beginning);
+					// Adding init call if any
 					beginningCode.addCodeElement(beginningCall);
 				}
 				if (vertexCall != null && vertexCall.getEndCall() != null) {
 					ICodeElement endCall = new UserFunctionCall(vertex, thread,
-							CodeSection.END);
+							CodeSectionType.end);
+					// Adding end call if any
 					endCode.addCodeElement(endCall);
 				}
 
 			}
+
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement loopCall = CodeElementFactory.createElement(vertex
 						.getName(), loopCode, vertex);
 				if (loopCall != null) {
+					// Adding loop call if any
 					loopCode.addCodeElement(loopCall);
 				}
 			}

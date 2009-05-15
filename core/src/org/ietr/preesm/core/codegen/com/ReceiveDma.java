@@ -39,7 +39,6 @@ package org.ietr.preesm.core.codegen.com;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
