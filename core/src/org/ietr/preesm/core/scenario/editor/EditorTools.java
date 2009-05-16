@@ -41,10 +41,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.internal.resources.Folder;
-import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.window.Window;
@@ -113,9 +112,9 @@ public class EditorTools {
 			Object[] children = super.getChildren(element);
 			List<Object> list = new ArrayList<Object>();
 			for (Object o : children) {
-				if (o instanceof Project) {
+				if (o instanceof IProject) {
 					list.add(o);
-				} else if (o instanceof Folder) {
+				} else if (o instanceof IFolder) {
 					list.add(o);
 				}
 			}
