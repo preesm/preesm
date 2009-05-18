@@ -129,6 +129,15 @@ public class SdfToDagConverter {
 		
 		PreesmLogger.getLogger().log(Level.INFO,"Converting from SDF to DAG.");
 		
+		try{
+			
+			if(! sdfIn.validateModel(PreesmLogger.getLogger())){
+				return null ;
+			}
+		}catch(SDF4JException e){
+			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+			return null ;
+		}
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
 		MapperDAG dag = new MapperDAG(new MapperEdgeFactory(), sdf);

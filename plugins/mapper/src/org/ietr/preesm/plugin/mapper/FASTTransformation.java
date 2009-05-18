@@ -100,6 +100,10 @@ public class FASTTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
 		
+		if(dag == null){
+			throw(new PreesmException(" graph can't be scheduled, check console messages"));
+		}
+		
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
 				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
