@@ -190,9 +190,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	 */
 	private void createIntegerSection(IManagedForm managedForm, String title,
 			String desc) {
-		GridData gd = new GridData();
-		gd.widthHint =400;
-		Composite client = createSection(managedForm, title, desc, 2, gd);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+		Composite client = createSection(managedForm, title, desc, 2, gridData);
 		
 		FormToolkit toolkit = managedForm.getToolkit();
 
@@ -212,7 +211,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				}
 			}});
 		
-		text.setLayoutData(gd);
+		text.setLayoutData(gridData);
 		toolkit.paintBordersFor(client);
 	}
 
@@ -235,11 +234,6 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		layout.numColumns = numColumns;
 		client.setLayout(layout);
 		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
 		section.setLayoutData(gridData);
 		return client;
 	}
@@ -250,8 +244,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	private void createComboBoxSection(IManagedForm managedForm, String title,
 			String desc, String tooltip, String type) {
 		// Creates the section
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 60;
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
 		Composite container = createSection(managedForm, title, desc, 2,
 				gridData);
 
