@@ -105,7 +105,8 @@ public class CompThreadCodeGenerator {
 					PreesmLogger.getLogger().log(
 							Level.INFO,
 							"Not one single function call for function: "
-									+ task.getName());
+									+ task.getName() + " in section "
+									+ codeContainerType.toString());
 				} else {
 					ICodeElement taskElement = taskElements.get(0);
 
@@ -294,13 +295,13 @@ public class CompThreadCodeGenerator {
 				FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
 				if (vertexCall != null && vertexCall.getInitCall() != null) {
 					ICodeElement beginningCall = new UserFunctionCall(vertex,
-							thread, CodeSectionType.beginning);
+							thread, CodeSectionType.beginning, false);
 					// Adding init call if any
 					beginningCode.addCodeElement(beginningCall);
 				}
 				if (vertexCall != null && vertexCall.getEndCall() != null) {
 					ICodeElement endCall = new UserFunctionCall(vertex, thread,
-							CodeSectionType.end);
+							CodeSectionType.end, false);
 					// Adding end call if any
 					endCode.addCodeElement(endCall);
 				}

@@ -161,7 +161,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				treatCalls(graph.vertexSet());
 			} else {
 				this.addCall(new UserFunctionCall(this.correspondingVertex,
-						this, CodeSectionType.loop));
+						this, CodeSectionType.loop, false));
 			}
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();

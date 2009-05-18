@@ -39,19 +39,25 @@ package org.ietr.preesm.core.codegen;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import net.sf.saxon.expr.CodeGeneratorService;
+
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -71,149 +77,113 @@ public class UserFunctionCall extends AbstractCodeElement {
 	private Vector<Parameter> callParameters;
 
 	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
-		super(name,parentContainer, null);
+		super(name, parentContainer, null);
 		callParameters = new Vector<Parameter>();
 	}
 
+	/**
+	 * The prototype IDL is parsed, buffer allocations are retrieved from their
+	 * buffer container when they correspond to input or output edges of the
+	 * current vertex. The buffers are then chosen and ordered depending on the
+	 * prototype. There is a possibility to ignore the send and receive vertices
+	 * while retrieving the buffers.
+	 */
 	public UserFunctionCall(SDFAbstractVertex vertex,
-			AbstractBufferContainer parentContainer, CodeSectionType section) {
+			AbstractBufferContainer parentContainer, CodeSectionType section,
+			boolean ignoreSendReceive) {
 		super(vertex.getName(), parentContainer, vertex);
 
 		// Buffers associated to the function call
 		callParameters = new Vector<Parameter>();
-		// Candidate buffers that will be added if present in prototype
-		HashMap<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
 
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			FunctionCall call = ((FunctionCall) vertex.getRefinement());
+			FunctionCall call = getFunctionCall(vertex, section);
 			if (call != null) {
 
-				switch (section) {
-				case beginning:
-					if (call.getInitCall() != null) {
-						call = call.getInitCall();
-						this.setName(call.getFunctionName());
-					}
-					break;
-				case loop:
-					if (call.getFunctionName().isEmpty()) {
-						PreesmLogger.getLogger().log(
-								Level.INFO,
-								"Name not found in the IDL for function: "
-										+ vertex.getName());
-						this.setName(null);
-						return ;
-					} else {
-						this.setName(call.getFunctionName());
-					}
+				// Candidate buffers that will be added if present in prototype
+				Map<SDFEdge, Buffer> candidateBuffers = retrieveBuffersFromEdges(
+						vertex, parentContainer, ignoreSendReceive);
 
-					break;
-				case end:
-					if (call.getEndCall() != null) {
-						call = call.getEndCall();
-						this.setName(call.getFunctionName());
-					}
-					break;
-				}
-			}
-			
-			if(getName().contains("while")){
-				int tutu = 0;
-				tutu++;
-			}
-
-			// Adding output buffers
-			for (SDFEdge edge : vertex.getBase().outgoingEdgesOf(vertex)) {
-				AbstractBufferContainer parentBufferContainer = parentContainer;
-				while (parentBufferContainer != null
-						&& parentBufferContainer.getBuffer(edge) == null) {
-					parentBufferContainer = parentBufferContainer
-							.getParentContainer();
-				}
-				if (parentBufferContainer != null) {
-					candidateBuffers.put(edge, parentBufferContainer
-							.getBuffer(edge));
-				}
-			}
-
-			// Adding input buffers
-			for (SDFEdge edge : vertex.getBase().incomingEdgesOf(vertex)) {
-				AbstractBufferContainer parentBufferContainer = parentContainer;
-				while (parentBufferContainer != null
-						&& parentBufferContainer.getBuffer(edge) == null) {
-					parentBufferContainer = parentBufferContainer
-							.getParentContainer();
-				}
-				if (parentBufferContainer != null) {
-					candidateBuffers.put(edge, parentBufferContainer
-							.getBuffer(edge));
-				}
-			}
-
-			// Filters and orders the buffers to fit the prototype
-			// Adds parameters if no buffer fits the prototype name
-			if (call != null) {
-				callParameters = new Vector<Parameter>(call.getNbArgs());
-				for (CodeGenArgument arg : call.getArguments().keySet()) {
-					Parameter currentParam = null;
-					String argName = arg.getName();
-					if (arg.getDirection() == CodeGenArgument.INPUT) {
-						for (SDFEdge link : candidateBuffers.keySet()) {
-							if (link.getTargetInterface().getName().equals(
-									arg.getName())
-									&& link.getTarget().equals(vertex))
-								currentParam = candidateBuffers.get(link);
+				// Filters and orders the buffers to fit the prototype
+				// Adds parameters if no buffer fits the prototype name
+				if (call != null) {
+					callParameters = new Vector<Parameter>(call.getNbArgs());
+					for (CodeGenArgument arg : call.getArguments().keySet()) {
+						Parameter currentParam = null;
+						String argName = arg.getName();
+						if (arg.getDirection() == CodeGenArgument.INPUT) {
+							for (SDFEdge link : candidateBuffers.keySet()) {
+								String port = link.getTargetInterface().getName();
+								
+								if(port.equals(arg.getName())){
+									if(link.getTarget().equals(vertex)){
+										currentParam = candidateBuffers.get(link);
+									}
+									else if(ignoreSendReceive && (link.getTarget() instanceof CodeGenSDFSendVertex)){
+										DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighIndex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(vertex.getBase());
+										SDFAbstractVertex receive = neighIndex.successorListOf(link.getTarget()).get(0);
+										SDFAbstractVertex receiver = neighIndex.successorListOf(receive).get(0);
+										if(receiver.equals(vertex)){
+											currentParam = candidateBuffers.get(link);
+										}
+									}
+								}
+							}
+						} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
+							for (SDFEdge link : candidateBuffers.keySet()) {
+								String port = link.getSourceInterface().getName();
+								if (port.equals(arg.getName())
+										&& link.getSource().equals(vertex)){
+									currentParam = candidateBuffers.get(link);
+								}
+							}
 						}
-					} else if (arg.getDirection() == CodeGenArgument.OUTPUT) {
-						for (SDFEdge link : candidateBuffers.keySet()) {
-							if (link.getSourceInterface().getName().equals(
-									arg.getName())
-									&& link.getSource().equals(vertex))
-								currentParam = candidateBuffers.get(link);
+
+						// If no buffer was found with the given port name, a
+						// parameter is sought
+						if (currentParam == null
+								&& arg.getDirection() == CodeGenArgument.INPUT) {
+							if (vertex.getArgument(argName) != null) {
+								try {
+									currentParam = new Constant(argName, vertex
+											.getArgument(argName).intValue());
+								} catch (InvalidExpressionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+
+						if (currentParam != null) {
+							addParameter(currentParam, call.getArguments().get(
+									arg));
+						} else {
+							PreesmLogger
+									.getLogger()
+									.log(
+											Level.SEVERE,
+											"Vertex: "
+													+ vertex.getName()
+													+ ". Error interpreting the prototype: no port found with name: "
+													+ argName);
 						}
 					}
 
-					// If no buffer was found with the given port name, a
-					// parameter is sought
-					if (currentParam == null
-							&& arg.getDirection() == CodeGenArgument.INPUT) {
-						if (vertex.getArgument(argName) != null) {
+					for (CodeGenParameter param : call.getParameters().keySet()) {
+						if (vertex.getArgument(param.getName()) != null) {
+							Parameter currentParam;
 							try {
-								currentParam = new Constant(argName, vertex
-										.getArgument(argName).intValue());
+								currentParam = new Constant(param.getName(),
+										vertex.getArgument(param.getName())
+												.intValue());
+								addParameter(currentParam, call.getParameters()
+										.get(param));
 							} catch (InvalidExpressionException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						}
-					}
-
-					if (currentParam != null) {
-						addParameter(currentParam, call.getArguments().get(arg));
-					} else {
-						PreesmLogger
-								.getLogger()
-								.log(
-										Level.SEVERE,
-										"Vertex: "
-												+ vertex.getName()
-												+ ". Error interpreting the prototype: no port found with name: "
-												+ argName);
-					}
-				}
-
-				for (CodeGenParameter param : call.getParameters().keySet()) {
-					if (vertex.getArgument(param.getName()) != null) {
-						Parameter currentParam;
-						try {
-							currentParam = new Constant(param.getName(),
-									vertex.getArgument(param.getName()).intValue());
-							addParameter(currentParam, call.getParameters().get(param));
-						} catch (InvalidExpressionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 					}
 				}
@@ -221,11 +191,97 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
+	/**
+	 * Retrieves the buffers possibly used by the function call from the buffer
+	 * container. If send and receive are ignored, we consider the input edge of
+	 * the send vertex to be the one used as a reference for the buffer.
+	 */
+	private Map<SDFEdge, Buffer> retrieveBuffersFromEdges(
+			SDFAbstractVertex vertex, AbstractBufferContainer parentContainer,
+			boolean ignoreSendReceive) {
+
+		Map<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
+		// Adding output buffers
+		for (SDFEdge edge : vertex.getBase().outgoingEdgesOf(vertex)) {
+			AbstractBufferContainer parentBufferContainer = parentContainer;
+			while (parentBufferContainer != null
+					&& parentBufferContainer.getBuffer(edge) == null) {
+				parentBufferContainer = parentBufferContainer
+						.getParentContainer();
+			}
+			if (parentBufferContainer != null) {
+				candidateBuffers.put(edge, parentBufferContainer
+						.getBuffer(edge));
+			}
+		}
+
+		// Adding input buffers
+		for (SDFEdge edge : vertex.getBase().incomingEdgesOf(vertex)) {
+			
+			if(ignoreSendReceive && edge.getSource() instanceof CodeGenSDFReceiveVertex){
+				
+				DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighIndex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(vertex.getBase());
+				SDFAbstractVertex send = neighIndex.predecessorListOf(edge.getSource()).get(0);
+				edge = (SDFEdge)vertex.getBase().incomingEdgesOf(send).toArray()[0];
+			}
+			
+			AbstractBufferContainer parentBufferContainer = parentContainer;
+			while (parentBufferContainer != null
+					&& parentBufferContainer.getBuffer(edge) == null) {
+				parentBufferContainer = parentBufferContainer
+						.getParentContainer();
+			}
+			if (parentBufferContainer != null) {
+				candidateBuffers.put(edge, parentBufferContainer
+						.getBuffer(edge));
+			}
+		}
+
+		return candidateBuffers;
+	}
+
+	private FunctionCall getFunctionCall(SDFAbstractVertex vertex,
+			CodeSectionType section) {
+		FunctionCall call = ((FunctionCall) vertex.getRefinement());
+		if (call != null) {
+
+			switch (section) {
+			case beginning:
+				if (call.getInitCall() != null) {
+					call = call.getInitCall();
+					this.setName(call.getFunctionName());
+				}
+				break;
+			case loop:
+				if (call.getFunctionName().isEmpty()) {
+					PreesmLogger.getLogger().log(
+							Level.INFO,
+							"Name not found in the IDL for function: "
+									+ vertex.getName());
+					this.setName(null);
+					return null;
+				} else {
+					this.setName(call.getFunctionName());
+				}
+
+				break;
+			case end:
+				if (call.getEndCall() != null) {
+					call = call.getEndCall();
+					this.setName(call.getFunctionName());
+				}
+				break;
+			}
+		}
+
+		return call;
+	}
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
 		for (Parameter param : callParameters) {
-			if(param != null){
+			if (param != null) {
 				param.accept(printer, currentLocation);
 			}
 		}
@@ -235,22 +291,23 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		if (param == null)
 			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
-		else{
-			if(pos == callParameters.size()){
+		else {
+			if (pos == callParameters.size()) {
 				callParameters.add(param);
-			}else if(pos > callParameters.size()){
+			} else if (pos > callParameters.size()) {
 				callParameters.setSize(pos);
 				callParameters.insertElementAt(param, pos);
-			}else{
+			} else {
 				callParameters.setElementAt(param, pos);
 			}
 		}
 	}
-	
+
 	public void addParameter(Parameter param) {
 
 		if (param == null)
-			PreesmLogger.getLogger().log(Level.SEVERE, "buffer or parameter was not found");
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"buffer or parameter was not found");
 		else
 			callParameters.add(param);
 	}
@@ -260,7 +317,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 			int i = 0;
 			for (Buffer buffer : buffers) {
 				addParameter(buffer, i);
-				i ++ ;
+				i++;
 			}
 		}
 	}

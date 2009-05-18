@@ -23,8 +23,10 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
+import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
+import org.sdf4j.model.sdf.SDFInterfaceVertex;
 
 /**
  * Generating code to address a job posting runtime system. It generates xml
@@ -39,8 +41,9 @@ public class JobPostingCodeGenerator {
 	private IScenario scenario;
 
 	/**
-	 * If true, the functions that are called are just simulation functions and not the real functional code.
-	 * Every job executes then a function named "simulation".
+	 * If true, the functions that are called are just simulation functions and
+	 * not the real functional code. Every job executes then a function named
+	 * "simulation".
 	 */
 	boolean timedSimulation;
 
@@ -50,6 +53,12 @@ public class JobPostingCodeGenerator {
 		this.codeGenSDFGraph = codeGenSDFGraph;
 		this.scenario = scenario;
 		this.timedSimulation = timedSimulation;
+
+		// Displays the DAG
+		if (true) {
+			SDFAdapterDemo applet2 = new SDFAdapterDemo();
+			applet2.init(this.codeGenSDFGraph);
+		}
 	}
 
 	public JobPostingSource generate() {
@@ -84,8 +93,7 @@ public class JobPostingCodeGenerator {
 			SDFAbstractVertex source = edge.getSource();
 			SDFAbstractVertex target = edge.getTarget();
 
-			if (source instanceof CodeGenSDFSendVertex
-					|| target instanceof CodeGenSDFSendVertex || source instanceof CodeGenSDFReceiveVertex
+			if (source instanceof CodeGenSDFReceiveVertex
 					|| target instanceof CodeGenSDFReceiveVertex) {
 				continue;
 			}
@@ -112,7 +120,7 @@ public class JobPostingCodeGenerator {
 
 				// Adding function parameters
 				UserFunctionCall userCall = new UserFunctionCall(vertex,
-						sourceFile.getGlobalContainer(), CodeSectionType.loop);
+						sourceFile.getGlobalContainer(), CodeSectionType.loop, true);
 				List<Parameter> params = userCall.getCallParameters();
 
 				for (Parameter param : params) {

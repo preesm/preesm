@@ -210,9 +210,9 @@ public class AddSendReceiveTransaction extends Transaction {
 		newEdge2.setAggregate(edge.getAggregate());
 		newEdge3.setAggregate(edge.getAggregate());
 		
-		if (true) {
+		if (false) {
 			// Remove original edges
-			//implementation.removeAllEdges(currentSource, currentTarget);
+			implementation.removeAllEdges(currentSource, currentTarget);
 		}
 		
 		if (false) {

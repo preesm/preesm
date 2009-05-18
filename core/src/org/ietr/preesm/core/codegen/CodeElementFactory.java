@@ -130,7 +130,7 @@ public class CodeElementFactory {
 			} else if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
 				UserFunctionCall call = new UserFunctionCall(vertex,
-						parentContainer, CodeSectionType.loop);
+						parentContainer, CodeSectionType.loop, false);
 				if (call.getName() == null) {
 					return null;
 				}
