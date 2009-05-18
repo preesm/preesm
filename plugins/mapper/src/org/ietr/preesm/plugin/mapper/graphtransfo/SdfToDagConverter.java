@@ -143,6 +143,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
