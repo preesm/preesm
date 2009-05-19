@@ -21,9 +21,9 @@
       <data key="name">testMatMat</data>
       <data key="parameters"/>
       <data key="variables">
-         <variable name="nbMat" value="2"/>
-         <variable name="xsize" value="2"/>
-         <variable name="ysize" value="2"/>
+         <variable name="nbMat" value="1"/>
+         <variable name="xsize" value="8"/>
+         <variable name="ysize" value="8"/>
       </data>
       <node id="prodMatMat" kind="vertex">
          <data key="graph_desc">ProdMatMat.graphml</data>

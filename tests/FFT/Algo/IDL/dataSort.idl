@@ -1,0 +1,6 @@
+module dataSort {
+	typedef long parameter;
+	interface loop{
+		void sortData( in char dataIn, out char dataOut, in parameter size);
+	};
+};

@@ -1,5 +1,5 @@
 module trigger_bench {
-	interface loop {
+	interface init {
 		 void trigger_bench(out char MB, out boolean signed);
 	};
 };

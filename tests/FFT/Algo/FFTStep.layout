@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="fftData" x="675" y="79"/>
+      <vertex id="timeData" x="35" y="70"/>
+      <vertex id="butterflyStep" x="307" y="58"/>
+      <vertex id="dataSort" x="135" y="68"/>
+      <vertex id="dataCollect" x="425" y="58"/>
+      <vertex id="brSamples" x="562" y="70"/>
+   </vertices>
+</layout>

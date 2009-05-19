@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="dataIn1" x="42" y="74"/>
+      <vertex id="dataIn2" x="46" y="214"/>
+      <vertex id="W" x="63" y="288"/>
+      <vertex id="dataOut1" x="566" y="90"/>
+      <vertex id="dataOut2" x="564" y="261"/>
+      <vertex id="ParamMult" x="151" y="239"/>
+      <vertex id="Add" x="443" y="70"/>
+      <vertex id="Sub" x="449" y="246"/>
+      <vertex id="br" x="269" y="238"/>
+   </vertices>
+</layout>

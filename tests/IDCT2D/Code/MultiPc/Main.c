@@ -1,7 +1,7 @@
 #include "x86.h"
 
 
-#define CORE_NUMBER 2
+#define CORE_NUMBER 4
 
 extern DWORD WINAPI computationThread_Core0( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core1( LPVOID lpParam );
@@ -44,8 +44,6 @@ int main(void)
   for(i=0;i<CORE_NUMBER;i++){
     HANDLE thread = CreateThread(NULL,stacksize,routine[i],NULL,0,NULL);
     SetThreadAffinityMask(thread,1<<i);
-
-
   }
 
 
