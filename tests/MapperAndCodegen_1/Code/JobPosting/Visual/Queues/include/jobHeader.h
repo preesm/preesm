@@ -4,6 +4,10 @@
 #define JOB_HEADER
 
 #include "stdafx.h"
+#include <iostream>
+#include <string>
+#include <windows.h>
+using namespace std;
 
 // useful macro defines
 #include "jobDefines.h"

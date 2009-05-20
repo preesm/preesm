@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="-master"
+				CommandArguments="-master -id 2"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

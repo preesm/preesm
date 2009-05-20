@@ -66,11 +66,22 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		// Testing the number of send functions with the given route step
 		int addressBufferSize = 0;
 		for (SDFAbstractVertex v : vertices) {
-			AbstractRouteStep vStep = (AbstractRouteStep) v
-					.getPropertyBean()
-					.getValue(ImplementationPropertyNames.SendReceive_routeStep);
-			if (vStep.equals(step) && v instanceof CodeGenSDFSendVertex) {
-				addressBufferSize++;
+			if (v instanceof CodeGenSDFSendVertex) {
+
+				CodeGenSDFSendVertex send = (CodeGenSDFSendVertex) v;
+				AbstractRouteStep vStep = (AbstractRouteStep) send
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.SendReceive_routeStep);
+
+				if (vStep.equals(step)) {
+
+					Set<SDFEdge> inEdges = send.getBase().incomingEdgesOf(send);
+					List<Buffer> bufferSet = comThread.getGlobalContainer()
+							.getBuffers(inEdges);
+
+					addressBufferSize += bufferSet.size();
+				}
 			}
 		}
 
@@ -162,8 +173,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 	 * Creates a send or a receive call depending on the vertex type
 	 * 
 	 * Such a call makes sense if the sender vertex has a function call in the
-	 * current code container and if the sender and function call uses
-	 * the data
+	 * current code container and if the sender and function call uses the data
 	 */
 	protected List<CommunicationFunctionCall> createCalls(
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
@@ -214,8 +224,9 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 
 					// Case of one send per buffer
 					for (Buffer buf : bufferSet) {
-						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
-								codeContainerType, buf,"output")) {
+						if (SourceFileCodeGenerator
+								.usesBufferInCodeContainerType(senderVertex,
+										codeContainerType, buf, "output")) {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new SendDma(parentContainer, vertex,
@@ -226,12 +237,10 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					}
 				}
 			} else if (type.isReceive()) {
-				SDFAbstractVertex send = (SDFAbstractVertex) (predList
-						.get(0));
+				SDFAbstractVertex send = (SDFAbstractVertex) (predList.get(0));
 				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
 						.predecessorListOf(send).get(0));
-				if (hasCallForCodeContainerType(senderVertex,
-						codeContainerType)) {
+				if (hasCallForCodeContainerType(senderVertex, codeContainerType)) {
 					List<Buffer> bufferSet = parentContainer
 							.getBuffers(outEdges);
 
@@ -250,8 +259,9 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 
 					// Case of one receive per buffer
 					for (Buffer buf : bufferSet) {
-						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
-								codeContainerType, buf,"output")) {
+						if (SourceFileCodeGenerator
+								.usesBufferInCodeContainerType(senderVertex,
+										codeContainerType, buf, "output")) {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new ReceiveDma(parentContainer, vertex,

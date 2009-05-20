@@ -1,14 +1,10 @@
 // main.cpp: calls the Scheduler to dispatch the jobs corresponding to the application
 //
-#include <iostream>
-#include <string>
-#include <windows.h>
-using namespace std;
+#include "jobHeader.h"
 
 #include "Master.h"
 #include "Slave.h"
 
-#include "jobHeader.h"
 
 // Code prototypes
 #include "timedSimulation.h"
@@ -22,20 +18,35 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+	Master* master = NULL;
+	Slave* slave = NULL;
+
 	for(int i = 0;i<argc;i++){
 		string option (argv[i]);
 		// The master distributes the jobs to the slaves 
 		if(option.compare("-master") == 0){
-			Master* master = new Master(jobs);
-			master->launch();
-			break;
+			printf("Started master\n");
+			master = new Master(jobs);
 		}
 		// The slave executes the jobs 
 		else if(option.compare("-slave") == 0){
-			Slave* slave = new Slave();
-			slave->launch();
-			break;
+			slave = new Slave();
 		}
+		// retrieving the number of the executable
+		else if(option.compare("-id") == 0){
+			int processId = atoi(argv[i+1]);
+
+			if(slave != NULL){
+				slave->setId(processId);
+			}
+		}
+	}
+
+	if(slave != NULL){
+		slave->launch();
+	}
+	else if(master != NULL){
+		master->launch();
 	}
 }
 

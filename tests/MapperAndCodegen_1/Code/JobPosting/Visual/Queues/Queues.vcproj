@@ -223,6 +223,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\Jobqueue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\Master.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\Slave.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\testcomSources.h"
 				>
 			</File>
