@@ -1,0 +1,5 @@
+module Circular6 {
+    interface loop{
+         void circular6(in char i1,out char o1);
+    };
+}; 
