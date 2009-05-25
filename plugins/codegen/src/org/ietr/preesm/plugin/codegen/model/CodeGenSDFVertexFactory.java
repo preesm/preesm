@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen.model;
 
 import org.eclipse.core.resources.IFile;
@@ -55,7 +55,6 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFSourceInterfaceVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.plugin.codegen.model.cal.CALFunctionFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
 import org.sdf4j.model.CodeRefinement.Language;
@@ -84,7 +83,8 @@ public class CodeGenSDFVertexFactory {
 		mainFile = parentAlgoFile;
 	}
 
-	public SDFAbstractVertex create(DAGVertex dagVertex) throws InvalidExpressionException, SDF4JException, PreesmException {
+	public SDFAbstractVertex create(DAGVertex dagVertex)
+			throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
 		ICodeGenSDFVertex newVertex;
@@ -92,7 +92,8 @@ public class CodeGenSDFVertexFactory {
 				.getValue(ImplementationPropertyNames.Vertex_vertexType);
 		if (vertexType != null && vertexType.equals(VertexType.task)) {
 			SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
-			if (sdfVertex instanceof SDFBroadcastVertex && !(sdfVertex instanceof SDFRoundBufferVertex)) {
+			if (sdfVertex instanceof SDFBroadcastVertex
+					&& !(sdfVertex instanceof SDFRoundBufferVertex)) {
 				newVertex = new CodeGenSDFBroadcastVertex();
 			} else if (sdfVertex instanceof SDFForkVertex) {
 				newVertex = new CodeGenSDFForkVertex();
@@ -122,12 +123,16 @@ public class CodeGenSDFVertexFactory {
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {
 					((SDFAbstractVertex) newVertex).getSinks().remove(
-							(((SDFAbstractVertex) newVertex).getInterface(child.getName())));
-					((SDFAbstractVertex) newVertex).addSink((SDFSinkInterfaceVertex) child);
+							(((SDFAbstractVertex) newVertex).getInterface(child
+									.getName())));
+					((SDFAbstractVertex) newVertex)
+							.addSink((SDFSinkInterfaceVertex) child);
 				} else if (child instanceof SDFSourceInterfaceVertex) {
 					((SDFAbstractVertex) newVertex).getSources().remove(
-							(((SDFAbstractVertex) newVertex).getInterface(child.getName())));
-					((SDFAbstractVertex) newVertex).addSource((SDFSourceInterfaceVertex) child);
+							(((SDFAbstractVertex) newVertex).getInterface(child
+									.getName())));
+					((SDFAbstractVertex) newVertex)
+							.addSource((SDFSourceInterfaceVertex) child);
 				}
 			}
 		} else if (dagVertex.getCorrespondingSDFVertex() != null
@@ -143,19 +148,18 @@ public class CodeGenSDFVertexFactory {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-			if (codeRef.getLanguage() == Language.CAL) {
-				CALFunctionFactory factory = CALFunctionFactory.getInstance();
-				((SDFAbstractVertex) newVertex).setRefinement(factory.create(iFile.getRawLocation()
-						.toOSString()));
-			} else if (codeRef.getLanguage() == Language.IDL) {
+
+			if (codeRef.getLanguage() == Language.IDL) {
 				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
-				((SDFAbstractVertex) newVertex).setRefinement(factory.create(iFile.getRawLocation()
-						.toOSString()));
+				((SDFAbstractVertex) newVertex).setRefinement(factory
+						.create(iFile.getRawLocation().toOSString()));
 			}
 		}
 		((SDFAbstractVertex) newVertex).copyProperties(dagVertex);
-		if(dagVertex.getCorrespondingSDFVertex() != null && dagVertex.getCorrespondingSDFVertex().getArguments() != null){
-			for(Argument arg : dagVertex.getCorrespondingSDFVertex().getArguments().values()){
+		if (dagVertex.getCorrespondingSDFVertex() != null
+				&& dagVertex.getCorrespondingSDFVertex().getArguments() != null) {
+			for (Argument arg : dagVertex.getCorrespondingSDFVertex()
+					.getArguments().values()) {
 				((SDFAbstractVertex) newVertex).addArgument(arg);
 			}
 		}
@@ -174,7 +178,8 @@ public class CodeGenSDFVertexFactory {
 		return ((SDFAbstractVertex) newVertex);
 	}
 
-	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex) throws InvalidExpressionException, SDF4JException, PreesmException {
+	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex)
+			throws InvalidExpressionException, SDF4JException, PreesmException {
 		SDFAbstractVertex newVertex;
 		if (sdfVertex instanceof SDFSinkInterfaceVertex) {
 			newVertex = new CodeGenSDFSinkInterfaceVertex();
@@ -189,7 +194,7 @@ public class CodeGenSDFVertexFactory {
 				newVertex = new CodeGenSDFJoinVertex();
 			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
 				newVertex = new CodeGenSDFRoundBufferVertex();
-			}  else if (sdfVertex instanceof SDFInitVertex) {
+			} else if (sdfVertex instanceof SDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
 			} else {
 				newVertex = new CodeGenSDFTaskVertex();
@@ -224,11 +229,8 @@ public class CodeGenSDFVertexFactory {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
-			if (codeRef.getLanguage() == Language.CAL) {
-				CALFunctionFactory factory = CALFunctionFactory.getInstance();
-				newVertex.setRefinement(factory.create(iFile.getRawLocation()
-						.toOSString()));
-			} else if (codeRef.getLanguage() == Language.IDL) {
+
+			if (codeRef.getLanguage() == Language.IDL) {
 				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
 				newVertex.setRefinement(factory.create(iFile.getRawLocation()
 						.toOSString()));
