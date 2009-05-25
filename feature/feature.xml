@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.0.7"
+      version="0.0.8"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">
@@ -12,14 +12,14 @@ Method. It generates a simulation and an optimized multiprocessor
 code from graph descriptions of algorithm and architecture.
    </description>
 
-   <copyright url="http://www.cecill.info">
+   <copyright>
       Copyright or © or Copr. 
 IETR/INSA: Matthieu Wipliez, Jonathan Piat, Maxime Pelcat, Peng
 Cheng Mu, Jean-François Nezan, Mickaël Raulet
 [mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
    </copyright>
 
-   <license url="http://www.cecill.info">
+   <license>
       This software is a computer program whose purpose is to prototype
 parallel applications.
 This software is governed by the CeCILL-C license under French
@@ -49,8 +49,7 @@ terms.
    </license>
 
    <url>
-      <update label="PREESM" url="http://preesm.sourceforge.net/eclipse/site.xml"/>
-      <discovery label="Preesm Sourceforge" url="http://preesm.sf.net"/>
+      <update label="PREESM" url="http://preesm.sourceforge.net/eclipse/"/>
    </url>
 
    <plugin
