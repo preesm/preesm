@@ -18,21 +18,27 @@
 #define MEDIUM_RCV 1
 #define TCP 100
 
+/* ID of the core for DSP */
+#define C64_1 	0
+#define C64_2 	1
+#define C64_3	2
+#define C64_4 	3
+#define C64_5 	4
+#define C64_6 	5
+#define C64_7 	6
+#define C64_8 	7
+/* ID of the core for PC */
+#define x86 	0
 
+#define NbCore 	3	// Nb of core by dsp
+#define MEDIA_NR 	10
 
-#define Core0 0
-#define Core1 1
-#define Core2 2
-#define Core3 3
-#define Core4 4
-#define Core5 5
-#define Core6 6
-#define Core7 7
+#define CORE_NUMBER 1
 
 #include "OS_Com.h"
 #include "PC_x86_SEM.h"
 
-#define CORE_NUMBER 8
+#define CORE_NUMBER 1
 
 
 #endif /* X86_H_ */

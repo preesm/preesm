@@ -112,16 +112,16 @@ unsigned int init_TCP_client ( Media_TCP MediaName, char *processor_name )
 	//
 	// Attempt to detect if we should call gethostbyname() or
 	// gethostbyaddr()
-	if ( isalpha(server_name [0]) ) 
+	/*if ( isalpha(server_name [0]) ) 
 	/* server address is a name */
 		hp = gethostbyname(server_name);
-	else 
+	/*else 
 	{
 
-		/* Convert nnn.nnn address to a usable one */
+		/* Convert nnn.nnn address to a usable one 
 		addr = inet_addr(server_name);
 		hp = gethostbyaddr((char *)&addr, 4, AF_INET);
-	}
+	}*/
 	if ( hp == NULL ) 
 	{
 		fprintf(stderr, "Client: Cannot resolve address [%s]: Error %d\n" , server_name, WSAGetLastError());
@@ -163,9 +163,8 @@ unsigned int init_TCP_client ( Media_TCP MediaName, char *processor_name )
 
 void Receive_TCP ( Media_TCP MediaName, unsigned int *Buffer, const int NB_bytes )
 {
-	int retval ;
+	int retval = 0 ;
 
-	retval = 0 ;
 	while ( retval != NB_bytes ) 
 	{
 		retval += recv(MediaName.socket, (char *)Buffer + retval, NB_bytes - retval , 0);

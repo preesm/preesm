@@ -29,7 +29,7 @@ printf("finished\n");
 }*/
 
 
-extern DWORD WINAPI computationThread_Core0( LPVOID lpParam );
+extern DWORD WINAPI computationThread_x86( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core1( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core2( LPVOID lpParam );
 extern DWORD WINAPI computationThread_Core3( LPVOID lpParam );
@@ -45,14 +45,14 @@ int main(void)
 	int i,j;
 	int stacksize = 8000;
 
-	routine[0] = computationThread_Core0;
-	routine[1] = computationThread_Core1;
+	routine[0] = computationThread_x86;
+	/*routine[1] = computationThread_Core1;
 	routine[2] = computationThread_Core2;
 	routine[3] = computationThread_Core3;
 	routine[4] = computationThread_Core4;
 	routine[5] = computationThread_Core5;
 	routine[6] = computationThread_Core6;
-	routine[7] = computationThread_Core7;
+	routine[7] = computationThread_Core7;*/
 
 	for(i=0;i<MEDIA_NR;i++){
 		for(j=0;j<MEDIA_NR;j++){

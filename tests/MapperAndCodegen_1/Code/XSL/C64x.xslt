@@ -173,7 +173,7 @@
             <xsl:apply-templates select="sourceCode:buffer | sourceCode:constant"/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
+        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
         <xsl:value-of select="concat($buffers,');',$new_line)"/>
     </xsl:template>
     
