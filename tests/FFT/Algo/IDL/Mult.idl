@@ -1,0 +1,6 @@
+module Mul {
+	interface loop{
+		void mult(in char op1, in char op2, out char res);
+	};
+	
+};

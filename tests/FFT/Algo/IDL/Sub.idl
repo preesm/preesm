@@ -1,0 +1,6 @@
+module Sub {
+	interface loop{
+		void sub(in char op1, in char op2, out char res);
+	};
+	
+};
