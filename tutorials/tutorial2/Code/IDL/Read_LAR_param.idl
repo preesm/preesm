@@ -1,0 +1,7 @@
+module Read_LAR_param {
+	interface init {
+		void Read_LAR_Param_no_args(out any Global);
+	};
+	interface loop{
+	};
+};

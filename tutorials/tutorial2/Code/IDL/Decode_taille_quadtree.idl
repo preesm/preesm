@@ -1,0 +1,11 @@
+module Decode_taille_quadtree {
+	typedef long parameter ;
+	interface loop{						
+    void Decode_taille_quadtree_16 ( in any Global,  in parameter ratio
+								, in char buffer_bin1
+								, in char buffer_bin2
+								, in char buffer_bin3
+								, out char im_tailles_reconst_o);
+	};
+	
+};

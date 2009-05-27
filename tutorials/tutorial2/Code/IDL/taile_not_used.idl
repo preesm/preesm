@@ -1,0 +1,7 @@
+module taile_not_used {
+	typedef long parameter ;
+	interface loop { 
+		void while(in parameter NULL);
+	};	
+	
+};

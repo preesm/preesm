@@ -1,0 +1,8 @@
+module Code_rice_buff_error {
+	interface loop{
+	void Encode_Rice_Code ( in char TabUchar  , in long  TailleTab , out char   TabRice, out long  TailleTabRice);
+	
+	};
+
+	
+};

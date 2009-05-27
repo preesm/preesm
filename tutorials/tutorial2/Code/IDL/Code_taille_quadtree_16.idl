@@ -1,0 +1,12 @@
+module Code_taille_quadtree_16 {
+	typedef long parameter ;
+	interface loop{
+	void Code_taille_quadtree_16 (  in any Global, in parameter ratio
+								  , in char im_tailles_i
+								  , out char buffer_level1, out long indice_level1
+								  , out char buffer_level2, out long indice_level2
+								  , out char buffer_level3, out long indice_level3);
+	};
+	
+	
+};

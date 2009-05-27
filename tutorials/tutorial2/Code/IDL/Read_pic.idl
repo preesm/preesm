@@ -1,0 +1,10 @@
+module Read_pic {
+	typedef long parameter ;
+	interface init {
+		void read_Y_init_no_args (in parameter xsize, in parameter ysize);
+	};
+	interface loop {
+		void Read_Y ( out char Y );
+		
+	};
+};

@@ -1,0 +1,8 @@
+module DCPM_simple_code {
+	typedef long parameter ;
+	interface loop {
+		  void DPCM_simple_decode (in any Global, in parameter ratio, in short im_Error_Pred, in  char im_tailles_i ,  out char im_Quant_bord_o );
+	 
+	};
+	
+};

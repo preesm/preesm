@@ -1,0 +1,6 @@
+module Gray_Step_k{
+	typedef long parameter ;
+	interface loop{
+		void Gray_Step_k ( in any Global, in parameter k, in parameter decal, in parameter ratio, in char im_max_kxk, in char im_min_kxk, in char im_tailles_i , in long taille_max_i, out long taille_max_o,out char im_tailles_o );
+    };
+};
