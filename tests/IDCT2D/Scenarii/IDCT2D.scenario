@@ -9,15 +9,15 @@
     <constraints>
         <constraintGroup>
             <operator name="PC"/>
-            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
-            <task name="IDCT2D"/>
-            <task name="IDCT2D/IDCT2D_basic"/>
-            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
             <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
-            <task name="Group"/>
-            <task name="IDCT2D/IDCT2D_basic/trigger"/>
-            <task name="IDCT2D/clip"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
             <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D"/>
+            <task name="Group"/>
+            <task name="IDCT2D/clip"/>
         </constraintGroup>
     </constraints>
     <timings/>
@@ -27,6 +27,7 @@
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="char" size="1"/>
+            <dataType name="int" size="4"/>
         </dataTypes>
     </simuParams>
 </scenario>

@@ -1,51 +1,46 @@
-    #include "../src/x86.h"
 
     // Buffer declarations
-    int generate_0[4];
-    int generate_1[4];
-    int prodMatM_0[4];
+    char virtual_heap[22];
+    char *outVect_vectorIn = &virtual_heap [9];
+    char *outMat_matrixIn = &virtual_heap [0];
+    char *vectorOut_inResult = &virtual_heap [12];
 
-    void computationThread_PC(void);
-
-    void computationThread_PC(void){
+    void main(void){
         // Buffer declarations
         long i ;
         long j ;
-        long k ;
 
         for(;;){
-            generateMatrix(generate_0, 4/*size*/);
-            generateMatrix(generate_1, 4/*size*/);
-            {//prodMatMat
-                for(i = 0; i<2 ; i ++)
-                {//prodMatVect
-                    int *inSub_i__0 = &prodMatM_0 [(i * 2) % 4];
-                    int *outSub_i_0 = &generate_1 [(i * 2) % 4];
-                    int outLoopP_0[2];
-                    init_inLoopPort_0(outLoopP_0, 2/*init_size*/);
-                    for(j = 0; j<2 ; j ++)
-                    {//cluster_0
-                        int *outSub_j_0 = &generate_0 [(j * 2) % 4];
-                        int *outSub_j_1 = &outSub_i_0 [(j * 1) % 2];
-                        int vectorOu_0[2];
-                        {//prodScalVect
-                            for(k = 0; k<2 ; k ++)
-                            {//productScal
-                                int *inSub_k__0 = &vectorOu_0 [(k * 1) % 2];
-                                int *outSub_k_0 = &outSub_j_0 [(k * 1) % 2];
-                                int *outSub_k_1 = &outLoopP_0 [(k * 1) % 2];
-                                int res_op1[1];
-                                mult(outSub_k_0, outSub_j_1, res_op1);
-                                add(res_op1, outSub_k_1, inSub_k__0);
-                            }
+            generateMatrix(outMat_matrixIn, 9/*size*/);
+            generateVect(outVect_vectorIn, 3/*size*/);
+            {//ProdMatVect
+                char *outLoopPort_0_inLo_0 = &virtual_heap [15];
+                init_inLoopPort_0(outLoopPort_0_inLo_0, 3/*init_size*/);
+                for(i = 0; i<3 ; i ++)
+                {//cluster_0
+                    char *outSub_i_outMat_ma_0 = &outMat_matrixIn [((i*3)%9)];
+                    char *outSub_i_outVect_v_0 = &outVect_vectorIn [((i*1)%3)];
+                    char *vectorOut_in = &virtual_heap [18];
+                    {//prodScalVect
+                        for(j = 0; j<3 ; j ++)
+                        {//productScal
+                            char *inSub_j_vectorOut__0 = &vectorOut_in [((j*1)%3)];
+                            char *outSub_j_outSub_i__0 = &outSub_i_outMat_ma_0 [((j*1)%3)];
+                            char *outSub_j_outLoopPo_0 = &outLoopPort_0_inLo_0 [((j*1)%3)];
+                            char *res_op1 = &virtual_heap [21];
+                            mult(outSub_j_outSub_i__0, outSub_i_outVect_v_0, res_op1);
+                            add(res_op1, outSub_j_outLoopPo_0, inSub_j_vectorOut__0);
                         }
-                        memcpy(inSub_i__0, vectorOu_0, 2*sizeof(int)/*size*/);
-                        memcpy(outLoopP_0, vectorOu_0, 2*sizeof(int)/*size*/);
+                    }
+                    {//broadcastVertex
+                        outLoopPort_0_inLo_0 = &vectorOut_in[0];
+                        vectorOut_inResult = &vectorOut_in[0];
                     }
                 }
             }
-            display(prodMatM_0, 4/*size*/);
+            display(vectorOut_inResult, 3/*size*/);
         }
 
+        return 0;
     }//computationThread
 

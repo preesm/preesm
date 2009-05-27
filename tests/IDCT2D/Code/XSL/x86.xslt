@@ -60,7 +60,7 @@
     <xsl:template match="sourceCode:bufferContainer">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'// Buffer declarations',$new_line)"/>
-        <xsl:apply-templates select="sourceCode:bufferAllocation | sourceCode:variableAllocation">
+        <xsl:apply-templates select="sourceCode:bufferAllocation | sourceCode:variableAllocation | sourceCode:subBufferAllocation">
             <xsl:with-param name="curIndent" select="$curIndent"/> 
         </xsl:apply-templates>
         <xsl:value-of select="$new_line"/>
@@ -248,23 +248,31 @@
         </xsl:choose>
     </xsl:template>
     
+    
     <xsl:template match="sourceCode:subBufferAllocation">
         <xsl:param name="curIndent"/>
-        <xsl:choose>
+        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [',@index,'];',$new_line)"/>  
+ <!--       <xsl:choose>
             <xsl:when test="@modulo">
                 <xsl:choose>
+                    <xsl:when test="offset = '0'">
+                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
+                    </xsl:when>
                     <xsl:when test="@modulo = '0'">
-                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')','];',$new_line)"/>  
+                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')',' % ',@modulo,'];',$new_line)"/>  
+                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')',' % ',@modulo,'];',$new_line)"/>  
                     </xsl:otherwise>    
                 </xsl:choose>
             </xsl:when>
+            <xsl:when test="@offset = '0'">
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
+            </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@size,')','];',$new_line)"/>  
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
             </xsl:otherwise>
-        </xsl:choose>
+        </xsl:choose> -->
     </xsl:template>
     
     <xsl:template match="sourceCode:variableAllocation">

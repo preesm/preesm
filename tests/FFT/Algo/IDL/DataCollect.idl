@@ -1,7 +1,7 @@
 module DataCollect {
 	typedef long parameter ;
 	interface loop{
-		void collectData(in char dataIn, out char dataOut, in parameter size);
+		void collectData(in char data1In, in char data2In,out char dataOut, in parameter size);
 	};
 	
 };

@@ -2,7 +2,7 @@
 <scenario>
     <files>
         <algorithm url="/MatVectProduct/Algo/TestMatVect.graphml"/>
-        <architecture url="/MatVectProduct/Archi/simplex86.ipxactds"/>
+        <architecture url="/MatVectProduct/Archi/simplex86.design"/>
         <timingfile url=""/>
         <codegenDirectory url="/MatVectProduct/Code"/>
     </files>
@@ -10,19 +10,19 @@
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="PC"/>
+            <task name="ProdMatVect/prodScalVect/productScal/add"/>
             <task name="displayResult"/>
+            <task name="outputVector"/>
             <task name="ProdMatVect/prodScalVect"/>
             <task name="outputMatrix"/>
             <task name="ProdMatVect/prodScalVect/productScal"/>
-            <task name="ProdMatVect/prodScalVect/copyData"/>
-            <task name="ProdMatVect"/>
-            <task name="outputVector"/>
-            <task name="ProdMatVect/prodScalVect/productScal/add"/>
             <task name="ProdMatVect/prodScalVect/productScal/mult"/>
+            <task name="ProdMatVect"/>
         </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
@@ -32,6 +32,7 @@
     <simuParams>
         <mainCore>PC</mainCore>
         <mainMedium>EDMA3_1</mainMedium>
+        <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="char" size="1"/>
         </dataTypes>

@@ -27,19 +27,19 @@
         <node id="fftData" kind="port" port_direction="Output"/>
         <node id="timeData" kind="port" port_direction="Input"/>
         <node id="butterflyStep" kind="vertex">
-            <data key="graph_desc">Butterfly.graphml</data>
+            <data key="graph_desc">Butterflyl.graphml</data>
             <data key="name">butterflyStep</data>
             <data key="arguments"/>
         </node>
         <node id="dataSort" kind="vertex">
-            <data key="graph_desc"/>
+            <data key="graph_desc">IDL/dataSort.idl</data>
             <data key="name">dataSort</data>
             <data key="arguments">
                 <argument name="size" value="fftSize"/>
             </data>
         </node>
         <node id="dataCollect" kind="vertex">
-            <data key="graph_desc"/>
+            <data key="graph_desc">IDL/dataCollect.idl</data>
             <data key="name">dataCollect</data>
             <data key="arguments">
                 <argument name="size" value="fftSize"/>
@@ -87,16 +87,16 @@
         </edge>
         <edge source="dataSort" sourceport="weights"
             target="butterflyStep" targetport="W">
-            <data key="edge_prod">1</data>
+            <data key="edge_prod">fftSize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
         </edge>
         <edge source="dataCollect" sourceport="dataOut"
             target="brSamples" targetport="in">
-            <data key="edge_prod">1</data>
+            <data key="edge_prod">fftSize</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
+            <data key="edge_cons">fftSize</data>
             <data key="data_type">char</data>
         </edge>
         <edge source="brSamples" sourceport="out" target="fftData" targetport="in">
@@ -112,7 +112,7 @@
             <data key="data_type">char</data>
         </edge>
         <edge source="trigger" sourceport="out" target="dataSort" targetport="trig">
-            <data key="edge_prod">fftSize</data>
+            <data key="edge_prod">fftSize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>

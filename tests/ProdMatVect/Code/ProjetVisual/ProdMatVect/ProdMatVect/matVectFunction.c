@@ -2,21 +2,21 @@
 #include<time.h>
 
 
-void mult(int * op1, int * op2, int * result){
+void mult(char * op1, char * op2, char * result){
 	*result = (*op1) * (*op2) ;
 	//printf("%d x %d = %d \n", (*op1), (*op2), (*result));
 }
 
-void add(int * op1, int * op2, int * result){
+void add(char * op1, char * op2, char * result){
 	*result = (*op1) + (*op2) ;
 	//printf("%d + %d = %d \n", (*op1), (*op2), (*result));
 }
 
-void copyData(int * in, int * out1, int * out2){
+void copyData(char * in, char * out1, char * out2){
 	*out1 = *in ;
 	*out2 = *in ;
 }
-void display(int * input, int size){
+void display(char * input, char size){
 	int i, j ;
 	printf("[");
 	for(j=0; j < size ; j ++){
@@ -25,7 +25,7 @@ void display(int * input, int size){
 	printf("] \n");
 }
 
-void generateMatrix(int * matOut, int size){
+void generateMatrix(char * matOut, char size){
 	int i, j ;
 	srand(time(NULL)); 
 	for(i = 0 ; i < size ; i ++){
@@ -34,7 +34,7 @@ void generateMatrix(int * matOut, int size){
 	display(matOut, size);
 }
 
-void generateVect(int * matVect, int size){
+void generateVect(char * matVect, char size){
 	int i;
 	srand(time(NULL)); 
 	for(i = 0 ; i < size ; i ++){
@@ -43,14 +43,14 @@ void generateVect(int * matVect, int size){
 	display(matVect, size);
 }
 
-void init_accIn(int * data, int size){
+void init_accIn(char * data, char size){
 	int i;
 	for(i = 0 ; i < size ; i ++){
 			data[i] = 0;
 	}
 }
 
-void init_inLoopPort_0(int * data, int size){
+void init_inLoopPort_0(char * data, char size){
 	int i;
 	for(i = 0 ; i < size ; i ++){
 			data[i] = 0;
