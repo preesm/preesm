@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Read_pic" x="50" y="288"/>
+      <vertex id="ReadParam" x="65" y="130"/>
+      <vertex id="Disp_pic_1" x="380" y="363"/>
+      <vertex id="Disp_pic_Quant" x="503" y="200"/>
+      <vertex id="Codeur_Y" x="333" y="225"/>
+      <vertex id="bro_0" x="186" y="312"/>
+      <vertex id="Decodeur_Y" x="690" y="190"/>
+      <vertex id="Disp_Decodeur_Y" x="862" y="196"/>
+      <vertex id="bro_01" x="206" y="129"/>
+   </vertices>
+</layout>

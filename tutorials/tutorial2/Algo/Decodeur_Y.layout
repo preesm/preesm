@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Decodage_DPCM_Y" x="786" y="160"/>
+      <vertex id="Decodage_entrop_err_Y" x="556" y="291"/>
+      <vertex id="Decodage_Entrop_Quadtree_Y" x="208" y="164"/>
+      <vertex id="stream_quad" x="57" y="164"/>
+      <vertex id="Global" x="57" y="257"/>
+      <vertex id="stream_ErPred" x="57" y="350"/>
+      <vertex id="Y" x="930" y="154"/>
+      <vertex id="Bro" x="438" y="182"/>
+      <vertex id="bidon7" x="588" y="82"/>
+   </vertices>
+</layout>

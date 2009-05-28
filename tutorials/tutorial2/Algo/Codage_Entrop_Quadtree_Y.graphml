@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name">CodeurEntroQuadY</data>
+        <data key="parameters">
+            <parameter name="xsizeDiv2"/>
+            <parameter name="ysizeDiv2"/>
+        </data>
+        <data key="variables"/>
+        <node id="im_tailles_i" kind="port" port_direction="Input"/>
+        <node id="Global" kind="port" port_direction="Input"/>
+        <node id="stream_quad" kind="port" port_direction="Output"/>
+        <node id="Taille_fluxquad_o" kind="port" port_direction="Output"/>
+        <node id="Code_taille_quadtree" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Code_taille_quadtree_16.idl</data>
+            <data key="name">Code_taille_quadtree</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Bin_to_uchar_L1" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+            <data key="name">Bin_to_uchar_L1</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Bin_to_uchar_L2" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+            <data key="name">Bin_to_uchar_L2</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Bin_to_uchar_L3" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+            <data key="name">Bin_to_uchar_L3</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Concat_stream_quad" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Concate_stream_quad.idl</data>
+            <data key="name">Concat_stream_quad</data>
+            <data key="arguments"/>
+        </node>
+        <edge source="Global" sourceport=""
+            target="Code_taille_quadtree" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="im_tailles_i" sourceport=""
+            target="Code_taille_quadtree" targetport="im_tailles_i">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="buffer_level1"
+            target="Bin_to_uchar_L1" targetport="Tab_bin">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="buffer_level2"
+            target="Bin_to_uchar_L2" targetport="Tab_bin">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="buffer_level3"
+            target="Bin_to_uchar_L3" targetport="Tab_bin">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="indice_level1"
+            target="Bin_to_uchar_L1" targetport="Taille_buffer_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="indice_level2"
+            target="Bin_to_uchar_L2" targetport="Taille_buffer_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Code_taille_quadtree" sourceport="indice_level3"
+            target="Bin_to_uchar_L3" targetport="Taille_buffer_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Bin_to_uchar_L1" sourceport="Tab_Uchar"
+            target="Concat_stream_quad" targetport="buffer_bin1">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Bin_to_uchar_L2" sourceport="Tab_Uchar"
+            target="Concat_stream_quad" targetport="buffer_bin2">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Bin_to_uchar_L3" sourceport="Tab_Uchar"
+            target="Concat_stream_quad" targetport="buffer_bin3">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2/8</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Bin_to_uchar_L1" sourceport="Taille_buffer_o"
+            target="Concat_stream_quad" targetport="Taille_buffer_bin1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Bin_to_uchar_L2" sourceport="Taille_buffer_o"
+            target="Concat_stream_quad" targetport="Taille_buffer_bin2">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Bin_to_uchar_L3" sourceport="Taille_buffer_o"
+            target="Concat_stream_quad" targetport="Taille_buffer_bin3">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="Concat_stream_quad" sourceport="stream_quad"
+            target="stream_quad" targetport="">
+            <data key="edge_prod">1040</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1040</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Concat_stream_quad" sourceport="Taille_flux_quad"
+            target="Taille_fluxquad_o" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

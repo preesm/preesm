@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="im_tailles_i" x="48" y="239"/>
+      <vertex id="Global" x="53" y="157"/>
+      <vertex id="stream_quad" x="862" y="191"/>
+      <vertex id="Taille_fluxquad_o" x="848" y="150"/>
+      <vertex id="Code_taille_quadtree" x="188" y="163"/>
+      <vertex id="Bin_to_uchar_L1" x="387" y="59"/>
+      <vertex id="Bin_to_uchar_L2" x="388" y="199"/>
+      <vertex id="Bin_to_uchar_L3" x="388" y="328"/>
+      <vertex id="Concat_stream_quad" x="613" y="163"/>
+   </vertices>
+</layout>
