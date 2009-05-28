@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobPostingCode xmlns="http://org.ietr.preesm.jobPostingCode">
+    <BufferContainer>
+        <BufferAllocation name="Sensoro1Gen_inti1" size="1000" type="char"/>
+        <BufferAllocation name="Sensoro2Gen_inti2" size="1000" type="char"/>
+        <BufferAllocation name="Gen_into1Copyi1" size="1000" type="char"/>
+        <BufferAllocation name="ParallelTesto1Para_0" size="1000" type="char"/>
+        <BufferAllocation name="ParallelTest3o1Act_0" size="1000" type="char"/>
+        <BufferAllocation name="ParallelTest2o1Par_0" size="1000" type="char"/>
+        <BufferAllocation name="Sensor2o1ParallelT_0" size="1000" type="char"/>
+        <BufferAllocation name="Copyo1s_CopyActuat_0" size="1000" type="char"/>
+        <BufferAllocation name="Gen_into2s_Gen_int_0" size="1000" type="char"/>
+        <BufferAllocation name="Sensoro3s_SensorPa_0" size="1000" type="char"/>
+    </BufferContainer>
+    <jobs>
+        <job id="0" time="10000">
+            <callName>Sensor</callName>
+            <functionName>sensor</functionName>
+            <predecessors/>
+            <buffers>
+                <buffer name="Sensoro1Gen_inti1" size="1000" type="char"/>
+                <buffer name="Sensoro2Gen_inti2" size="1000" type="char"/>
+                <buffer name="Sensoro3s_SensorPa_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="3" time="100">
+            <callName>Sensor2</callName>
+            <functionName>sensor2</functionName>
+            <predecessors/>
+            <buffers>
+                <buffer name="Sensor2o1ParallelT_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="4" time="10000">
+            <callName>Gen_int</callName>
+            <functionName>gen_int</functionName>
+            <predecessors>
+                <pred id="0"/>
+            </predecessors>
+            <buffers>
+                <buffer name="Sensoro1Gen_inti1" size="1000" type="char"/>
+                <buffer name="Sensoro2Gen_inti2" size="1000" type="char"/>
+                <buffer name="Gen_into1Copyi1" size="1000" type="char"/>
+                <buffer name="Gen_into2s_Gen_int_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="7" time="10000">
+            <callName>ParallelTest</callName>
+            <functionName>parallel</functionName>
+            <predecessors>
+                <pred id="3"/>
+                <pred id="0"/>
+            </predecessors>
+            <buffers>
+                <buffer name="Sensoro3s_SensorPa_0" size="1000" type="char"/>
+                <buffer name="ParallelTesto1Para_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="8" time="10000">
+            <callName>Copy</callName>
+            <functionName>copy</functionName>
+            <predecessors>
+                <pred id="4"/>
+            </predecessors>
+            <buffers>
+                <buffer name="Gen_into1Copyi1" size="1000" type="char"/>
+                <buffer name="Copyo1s_CopyActuat_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="11" time="10000">
+            <callName>ParallelTest2</callName>
+            <functionName>parallel</functionName>
+            <predecessors>
+                <pred id="7"/>
+            </predecessors>
+            <buffers>
+                <buffer name="ParallelTesto1Para_0" size="1000" type="char"/>
+                <buffer name="ParallelTest2o1Par_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="12" time="100">
+            <callName>ParallelTest3</callName>
+            <functionName>parallel</functionName>
+            <predecessors>
+                <pred id="11"/>
+            </predecessors>
+            <buffers>
+                <buffer name="ParallelTest2o1Par_0" size="1000" type="char"/>
+                <buffer name="ParallelTest3o1Act_0" size="1000" type="char"/>
+            </buffers>
+            <constants/>
+        </job>
+        <job id="13" time="10000">
+            <callName>Actuator</callName>
+            <functionName>actuator</functionName>
+            <predecessors>
+                <pred id="12"/>
+                <pred id="8"/>
+                <pred id="4"/>
+            </predecessors>
+            <buffers>
+                <buffer name="Copyo1s_CopyActuat_0" size="1000" type="char"/>
+                <buffer name="Gen_into2s_Gen_int_0" size="1000" type="char"/>
+                <buffer name="ParallelTest3o1Act_0" size="1000" type="char"/>
+            </buffers>
+            <constants>
+                <constant name="size" value="1000"/>
+            </constants>
+        </job>
+    </jobs>
+</jobPostingCode>
