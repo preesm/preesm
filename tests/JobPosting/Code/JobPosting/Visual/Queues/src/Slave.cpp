@@ -1,20 +1,31 @@
 #include "Slave.h"
 
-Slave::Slave(){
-	string type = "slave";
-	jobQueue = new JobQueue(type);
-}
+/**
+ Constructor
 
-void Slave::launch(){
-}
-
-void Slave::setId(int inputId){
-
+ @param inputId: Id of the slave
+*/
+Slave::Slave(int inputId){
 	this->id = inputId;
-	printf("Started slave number %d\n",this->id);
-
+	jobQueue = new JobQueue(0,inputId);
 }
 
+/**
+ Destructor
+*/
 Slave::~Slave(){
 	//delete jobQueue;
+}
+
+/**
+ Launches the slave. Runs until ESC is pressed
+*/
+void Slave::launch(){
+	job_descriptor job;
+
+	while( GetAsyncKeyState(VK_ESCAPE) == 0){
+		if(jobQueue->popJob(&job)){
+			job.fct_pointer(&job);
+		}
+	}
 }

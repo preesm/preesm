@@ -17,6 +17,7 @@ typedef struct job_descriptor_st{
 	unsigned short id;
 	unsigned int time;
 	void (*fct_pointer)(job_descriptor_st* job);
+	unsigned short nb_preds;
 	unsigned short pred_ids[MAX_PRED];
 	void* buffers[MAX_BUF];
 	int params[MAX_PARAM];

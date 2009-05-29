@@ -20,26 +20,36 @@ int main(int argc, char* argv[])
 {
 	Master* master = NULL;
 	Slave* slave = NULL;
+	int isMaster = 0;
+	int slaveId = 0;
+	int nbSlaves = 1;
 
 	for(int i = 0;i<argc;i++){
 		string option (argv[i]);
 		// The master distributes the jobs to the slaves 
 		if(option.compare("-master") == 0){
-			printf("Started master\n");
-			master = new Master(jobs);
+			isMaster = 1;
 		}
 		// The slave executes the jobs 
 		else if(option.compare("-slave") == 0){
-			slave = new Slave();
+			isMaster = 0;
 		}
 		// retrieving the number of the executable
 		else if(option.compare("-id") == 0){
-			int processId = atoi(argv[i+1]);
-
-			if(slave != NULL){
-				slave->setId(processId);
-			}
+			slaveId = atoi(argv[i+1]);
 		}
+		// retrieving the number of the executable
+		else if(option.compare("-nbSlaves") == 0){
+			nbSlaves = atoi(argv[i+1]);
+		}
+	}
+
+	if(isMaster){
+		printf("Started master\n");
+		master = new Master(nbSlaves, jobs);
+	}
+	else{
+		slave = new Slave(slaveId);
 	}
 
 	if(slave != NULL){
