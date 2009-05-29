@@ -1,4 +1,5 @@
 #include "jobheader.h"
+#include "ProtectedSharedMemory.h"
 
 #ifndef JOBQUEUE
 #define JOBQUEUE
@@ -9,9 +10,11 @@
 class JobQueue {
 	private:
 		HANDLE namedPipe;
+		ProtectedSharedMemory* memory;
 	public:
 		JobQueue();
 		JobQueue(string type);
+		~JobQueue();
 	
 };
 

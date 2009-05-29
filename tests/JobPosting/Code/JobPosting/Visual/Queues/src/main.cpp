@@ -44,9 +44,11 @@ int main(int argc, char* argv[])
 
 	if(slave != NULL){
 		slave->launch();
+		delete slave;
 	}
 	else if(master != NULL){
 		master->launch();
+		delete master;
 	}
 }
 

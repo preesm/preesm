@@ -14,3 +14,7 @@ void Slave::setId(int inputId){
 	printf("Started slave number %d\n",this->id);
 
 }
+
+Slave::~Slave(){
+	//delete jobQueue;
+}

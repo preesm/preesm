@@ -12,6 +12,7 @@ class Slave {
 		Slave();
 		void launch(void);
 		void setId(int inputId);
+		~Slave();
 
 };
 

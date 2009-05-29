@@ -181,11 +181,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\main.cpp"
+				RelativePath=".\src\Master.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\Master.cpp"
+				RelativePath=".\src\ProtectedSharedMemory.cpp"
 				>
 			</File>
 			<File
@@ -227,7 +227,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\include\Master.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\ProtectedSharedMemory.h"
 				>
 			</File>
 			<File

@@ -6,6 +6,7 @@ Master::Master(job_descriptor input_jobs[])
 	string type = "master";
 	this->jobQueue = new JobQueue(type);
 
+	
 	for(int i=0;i<JOB_NUMBER;i++){
 		job_descriptor job = input_jobs[i];
 		jobs[i] = job;
@@ -15,7 +16,8 @@ Master::Master(job_descriptor input_jobs[])
 
 Master::~Master()
 {
-	delete[](&jobs);
+	//delete[] jobs;
+	//delete jobQueue;
 }
 
 void Master::launch(){
