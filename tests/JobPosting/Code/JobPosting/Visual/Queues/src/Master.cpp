@@ -22,7 +22,7 @@ Master::~Master()
 
 void Master::launch(){
 
-	while(1){
+	while( GetAsyncKeyState(VK_ESCAPE) == 0){
 		for(int i=0;i<JOB_NUMBER;i++){
 			job_descriptor job = jobs[i];
 			job.fct_pointer(&job);

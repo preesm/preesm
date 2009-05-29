@@ -11,15 +11,16 @@ class ProtectedSharedMemory {
 		HANDLE namedPipe;
 		HANDLE hMapFile;
 		void* memoryPointer;
+		HANDLE hMutex; 
 
 		void createMutex();
 		void connectMutex();
-		int createMem();
+		int createMem(int size));
 		int connectMem();
 	public:
-		ProtectedSharedMemory(int create);
+		ProtectedSharedMemory(int size);
 		~ProtectedSharedMemory();
-		void read(void* buffer, int offset, int size);
+		int read(void* buffer, int offset, int size);
 		void write(void* buffer, int offset, int size);
 	
 };

@@ -5,9 +5,6 @@
 #include <conio.h>
 #include <tchar.h>
 
-#define BUF_SIZE 100000
-#define PIPE_TIMEOUT 5000
-
 TCHAR szFileName[]=TEXT("Global\\MyFileMappingObject");
 TCHAR szMsg[]=TEXT("Message from first process.");
 TCHAR szMutexName[]=TEXT("NameOfMutexObject");
@@ -15,12 +12,10 @@ TCHAR szMutexName[]=TEXT("NameOfMutexObject");
 
 void ProtectedSharedMemory::createMutex()
 {
-    HANDLE hMutex; 
-
     hMutex = CreateMutex( 
         NULL,                        // default security descriptor
         FALSE,                       // mutex not owned
-        TEXT("NameOfMutexObject"));  // object name
+        TEXT("IETRJobPosting"));  // object name
 
     if (hMutex == NULL) 
         printf("CreateMutex error: %d\n", GetLastError() ); 
@@ -32,28 +27,26 @@ void ProtectedSharedMemory::createMutex()
 
 void ProtectedSharedMemory::connectMutex()
 {
-    HANDLE hMutex; 
-
     hMutex = OpenMutex( 
         MUTEX_ALL_ACCESS,            // request full access
         FALSE,                       // handle not inheritable
-        TEXT("NameOfMutexObject"));  // object name
+        TEXT("IETRJobPosting"));  // object name
 
     if (hMutex == NULL) 
         printf("OpenMutex error: %d\n", GetLastError() );
     else printf("OpenMutex successfully opened the mutex.\n");
 }
 
-int ProtectedSharedMemory::createMem()
+int ProtectedSharedMemory::createMem(int size)
 {
 
    this->hMapFile = CreateFileMapping(
-                 INVALID_HANDLE_VALUE,    // use paging file
-                 NULL,                    // default security 
-                 PAGE_READWRITE,          // read/write access
-                 0,                       // max. object size 
-                 BUF_SIZE,                // buffer size  
-                 szFileName);                 // name of mapping object
+                 INVALID_HANDLE_VALUE,		// use paging file
+                 NULL,						// default security 
+                 PAGE_READWRITE,			// read/write access
+                 0,							// max. object size 
+                 size,						// buffer size  
+                 szFileName);               // name of mapping object
  
    if (hMapFile == NULL) 
    { 
@@ -115,39 +108,45 @@ int ProtectedSharedMemory::connectMem()
    return 0;
 }
 
-ProtectedSharedMemory::ProtectedSharedMemory(int create)
+ProtectedSharedMemory::ProtectedSharedMemory(int size)
 {
 	LPTSTR lpszPipename = _T("\\\\.\\pipe\\ProtectedSharedMemory"); 
     DWORD dw = GetLastError();
 	memoryPointer = NULL;
 
-	if(create == 1){
+	if(size != 0){
 		createMutex();
-		createMem();
+		createMem(size);
 		write((void*)szMsg,0,10);
 	}
 	else{
 		connectMutex();
 		connectMem();
-		read(NULL,2,0);
+		TCHAR message[712];
+		if(read((void*)message,0,8)){
+			MessageBox(NULL, (LPCTSTR)message, TEXT("Process2"), MB_OK);
+		}
 	}
 }
 
 ProtectedSharedMemory::~ProtectedSharedMemory()
 {
-   _getch();
+   //_getch();
    UnmapViewOfFile(memoryPointer);
    CloseHandle(hMapFile);
 }
 
-void ProtectedSharedMemory::read(void* buffer, int offset, int size)
+int ProtectedSharedMemory::read(void* buffer, int offset, int size)
 {
 	char* charMemoryPointer =  (char*)(memoryPointer);
 	charMemoryPointer += offset;
 
 	if(memoryPointer != NULL){
-		MessageBox(NULL, (LPCTSTR)(charMemoryPointer), TEXT("Process2"), MB_OK);
+		CopyMemory(buffer, (PVOID)charMemoryPointer, size);
+		return 1;
 	}
+
+	return 0;
 }
 
 void ProtectedSharedMemory::write(void* buffer, int offset, int size)
@@ -156,7 +155,12 @@ void ProtectedSharedMemory::write(void* buffer, int offset, int size)
 	charMemoryPointer += offset;
 
 	if(memoryPointer != NULL){
+		DWORD tutu = WaitForSingleObject(hMutex, INFINITE);
+
+		// access the resource
 		CopyMemory((PVOID)(charMemoryPointer), buffer, size);
+
+		ReleaseMutex(hMutex);
 	}
 }
 
