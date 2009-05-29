@@ -41,7 +41,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * Parameters for a a Communicator (example: an edma)
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 

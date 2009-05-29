@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.types.DAGEdgePropertyType;
@@ -84,6 +85,11 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	 * Receive link used for this communication
 	 */
 	private LinkDescriptor receiveLink;
+
+	/**
+	 * Link list
+	 */
+	private List<LinkDescriptor> linkList = null;
 
 	/**
 	 * The communication durations on different links
@@ -887,7 +893,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return 1 ;
+			return 1;
 		}
 	}
 
@@ -952,7 +958,7 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 			} catch (InvalidExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				communicationDuration = 1 ;
+				communicationDuration = 1;
 			}
 		}
 	}
@@ -1140,6 +1146,21 @@ public class CommunicationDescriptor extends OperationDescriptor implements
 	 */
 	public void setSwitch(SwitchDescriptor sw) {
 		this.sw = sw;
+	}
+
+	/**
+	 * @return the linkList
+	 */
+	public List<LinkDescriptor> getLinkList() {
+		return linkList;
+	}
+
+	/**
+	 * @param linkList
+	 *            the linkList to set
+	 */
+	public void setLinkList(List<LinkDescriptor> linkList) {
+		this.linkList = linkList;
 	}
 
 	/**

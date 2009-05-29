@@ -75,6 +75,6 @@ public class Bus extends ArchitectureComponent implements ILink {
 	}
 	
 	public boolean isNode(){
-		return true;
+		return false;
 	}
 }

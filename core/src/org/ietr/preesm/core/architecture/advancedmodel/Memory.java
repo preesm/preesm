@@ -44,7 +44,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * a Memory (exemple: a Shared RAM)
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class Memory extends ArchitectureComponent implements ITerminal {
 
@@ -58,19 +58,19 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
 	 */
-	private Set<ICommunicationPerformer> commPerformers;
+	private Set<String> commPerformerNames;
 
 	public Memory(String name, MemoryDefinition type) {
 		super(name, type);
-		commPerformers = new HashSet<ICommunicationPerformer>();
+		commPerformerNames = new HashSet<String>();
 	}
 
-	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
-		commPerformers.add(commPerformer);
+	public void addCommunicationPerformerName(String commPerformerName) {
+		commPerformerNames.add(commPerformerName);
 	}
 
-	public Set<ICommunicationPerformer> getCommunicationPerformers() {
-		return commPerformers;
+	public Set<String> getCommunicationPerformerNames() {
+		return commPerformerNames;
 	}
 
 	public ArchitectureComponentType getType() {
@@ -79,10 +79,11 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 
 	@Override
 	public ArchitectureComponent clone() {
-		return new Memory(getName(),null);
+		return new Memory(getName(), null);
 	}
-	
-	public boolean isNode(){
-		return false;
+
+	public boolean isNode() {
+		return true;
 	}
+
 }

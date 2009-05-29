@@ -35,7 +35,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.architecture.parser;
 
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.NodeLinkTuple;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -49,20 +52,69 @@ public class IpCoprocessorParser {
 	/**
 	 * Parsing IpCoprocessor specific data from DOM document
 	 */
-	static void parse(IpCoprocessor ip, Element callElt) {
+	static void parse(MultiCoreArchitecture archi, IpCoprocessor ip,
+			Element callElt) {
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
 			if (node instanceof Element) {
-				// Element elt = (Element) node;
-				// String eltType = elt.getTagName();
-				// String configurableElementName = elt
-				// .getAttribute("spirit:referenceId");
-				// if (eltType.equals("spirit:configurableElementValue")
-				// && configurableElementName.equals("dataRate")) {
-				// String value = elt.getTextContent();
-				// def.setDataRate(Double.parseDouble(value));
-				// }
+				Element elt = (Element) node;
+				String eltType = elt.getTagName();
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")) {
+					if (configurableElementName.equals("routeStep")) {
+						// TODO : parse routeStep
+						// routeSteps have the format of
+						//terminalName;communicatorName;firstLinkName;(nodeName,
+						// linkName);...;(nodeName,linkName)
+						// ...
+						//terminalName;communicatorName;firstLinkName;(nodeName,
+						// linkName);...;(nodeName,linkName)
+						String value = elt.getTextContent();
+
+						RouteStep rs = new RouteStep();
+
+						rs.setBeginTerminalName(ip.getName());
+
+						int leftIndex = 0;
+						int rightIndex = value.indexOf(';', 0);
+						String terminalName = value.substring(0, rightIndex);
+						rs.setEndTerminalName(terminalName);
+
+						leftIndex = rightIndex + 1;
+						rightIndex = value.indexOf(';', leftIndex);
+						String communicatorName = value.substring(leftIndex,
+								rightIndex);
+						rs.setCommunicatorName(communicatorName);
+
+						leftIndex = rightIndex + 1;
+						rightIndex = value.indexOf(';', leftIndex);
+						if (rightIndex == -1) {
+							String firstLinkName = value.substring(leftIndex,
+									value.length());
+							rs.setFirstLinkName(firstLinkName);
+						} else {
+							String firstLinkName = value.substring(leftIndex,
+									rightIndex);
+							rs.setFirstLinkName(firstLinkName);
+							int middleIndex = 0;
+							while (rightIndex < value.length() - 1) {
+								leftIndex = value.indexOf('(', rightIndex + 1);
+								middleIndex = value.indexOf(',', leftIndex + 1);
+								rightIndex = value
+										.indexOf(')', middleIndex + 1);
+								String nodeName = value.substring(
+										leftIndex + 1, middleIndex);
+								String linkName = value.substring(
+										middleIndex + 1, rightIndex);
+								rs.addNodeLinkTuple(new NodeLinkTuple(nodeName,
+										linkName));
+							}
+						}
+						archi.getRouteStepTable().addRouteStep(rs);
+					}
+				}
 			}
 
 			node = node.getNextSibling();

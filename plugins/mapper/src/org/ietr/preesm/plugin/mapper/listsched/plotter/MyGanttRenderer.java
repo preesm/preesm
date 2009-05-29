@@ -235,9 +235,9 @@ public class MyGanttRenderer extends GanttRenderer {
 			Double r, g, b;
 
 			if (name.indexOf("transfer") == 0) {
-				r = Math.random() * (255 - 160) + 160;
+				r = 130.0;
 				g = 100.0;
-				b = 130.0;
+				b = 0.0;
 			} else if (name.indexOf("overhead") == 0) {
 				r = 130.0;
 				g = Math.random() * (255 - 160) + 160;

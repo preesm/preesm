@@ -54,15 +54,17 @@ public class CommunicatorParser {
 
 		while (node != null) {
 			if (node instanceof Element) {
-				// Element elt = (Element) node;
-				// String eltType = elt.getTagName();
-				// String configurableElementName = elt
-				// .getAttribute("spirit:referenceId");
-				// if (eltType.equals("spirit:configurableElementValue")
-				// && configurableElementName.equals("dataRate")) {
-				// String value = elt.getTextContent();
-				// def.setDataRate(Double.parseDouble(value));
-				// }
+				Element elt = (Element) node;
+				String eltType = elt.getTagName();
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")) {
+					if (configurableElementName.equals("access")) {
+						// TODO : parse access
+						String value = elt.getTextContent();
+						comm.addAccessTerminalName(value);
+					}
+				}
 			}
 
 			node = node.getNextSibling();

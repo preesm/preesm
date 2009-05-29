@@ -93,14 +93,19 @@ public class CDListSchedCdBlout extends CSListSchedCd {
 			indexOperator.addReceiveCommunication(bottomCommunication);
 			indexOperator.addSendCommunication(bottomCommunication);
 			indexOperator.addOperation(bottomCommunication);
-			for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
-			for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
+//			for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
+//				indexLink.addCommunication(topCommunication);
+//				indexLink.addCommunication(bottomCommunication);
+//			}
+//			for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
+//				indexLink.addCommunication(topCommunication);
+//				indexLink.addCommunication(bottomCommunication);
+//			}
+		}
+		for (LinkDescriptor indexLink : architecture.getAllLinks()
+				.values()) {
+			indexLink.addCommunication(topCommunication);
+			indexLink.addCommunication(bottomCommunication);
 		}
 
 		/*
@@ -215,9 +220,11 @@ public class CDListSchedCdBlout extends CSListSchedCd {
 			int time = 0;
 			for (CommunicationDescriptor indexCommunication : indexComputation
 					.getInputCommunications()) {
+//				int drt = algorithm.getComputation(
+//						indexCommunication.getOrigin()).getFinishTime()
+//						+ indexCommunication.getCommunicationDuration();
 				int drt = algorithm.getComputation(
-						indexCommunication.getOrigin()).getFinishTime()
-						+ indexCommunication.getCommunicationDuration();
+						indexCommunication.getOrigin()).getFinishTime();
 				if (time < drt) {
 					time = drt;
 				}

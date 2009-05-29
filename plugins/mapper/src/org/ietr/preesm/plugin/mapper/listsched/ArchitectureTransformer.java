@@ -42,6 +42,11 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.advancedmodel.Bus;
+import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStepList;
+import org.ietr.preesm.core.architecture.advancedmodel.NodeLinkTuple;
+import org.ietr.preesm.core.architecture.advancedmodel.ILink;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
@@ -84,6 +89,7 @@ public class ArchitectureTransformer {
 			MultiCoreArchitecture architecture) {
 		MultiCoreArchitecture archi = (MultiCoreArchitecture) architecture;
 		ArchitectureDescriptor archiDescriptor = new ArchitectureDescriptor();
+
 		this.ComponentDescriptorBuffer = archiDescriptor.getComponents();
 		for (ArchitectureComponent indexOperator : archi
 				.getComponents(ArchitectureComponentType.operator)) {
@@ -106,7 +112,7 @@ public class ArchitectureTransformer {
 					indexMedium.getDefinition().getId(),
 					ComponentDescriptorBuffer);
 			bus
-					.setAverageClockCyclesPerTransfer(1.0/((MediumDefinition) ((Medium) indexMedium)
+					.setAverageClockCyclesPerTransfer(1.0 / ((MediumDefinition) ((Medium) indexMedium)
 							.getDefinition()).getDataRate());
 		}
 		for (ArchitectureComponent indexMedium : archi
@@ -117,39 +123,20 @@ public class ArchitectureTransformer {
 			bus.setAverageClockCyclesPerTransfer(1 / ((Bus) indexMedium)
 					.getDataRate());
 		}
+		for (ArchitectureComponent indexMedium : archi
+				.getComponents(ArchitectureComponentType.fifo)) {
+			FifoDescriptor fifo = new FifoDescriptor(indexMedium.getName(),
+					indexMedium.getDefinition().getId(),
+					ComponentDescriptorBuffer);
+			fifo.setAverageClockCyclesPerTransfer(1 / ((Fifo) indexMedium)
+					.getDataRate());
+		}
 		for (ArchitectureComponent indexSwitch : archi
 				.getComponents(ArchitectureComponentType.communicationNode)) {
 			new SwitchDescriptor(indexSwitch.getName(), indexSwitch
 					.getDefinition().getId(), ComponentDescriptorBuffer);
 		}
 		for (Interconnection indexInterconnection : archi.getInterconnections()) {
-			// if (indexInterconnection
-			// .getInterface(ArchitectureComponentType.operator) != null) {
-			// ((TGVertexDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.operator).getOwner()
-			// .getName()))
-			// .addInputLink((BusDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.medium)
-			// .getOwner().getName()));
-			// ((TGVertexDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.operator).getOwner()
-			// .getName()))
-			// .addOutputLink((BusDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.medium)
-			// .getOwner().getName()));
-			// ((BusDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.medium).getOwner()
-			// .getName()))
-			// .addTGVertex((TGVertexDescriptor) ComponentDescriptorBuffer
-			// .get(indexInterconnection.getInterface(
-			// ArchitectureComponentType.operator)
-			// .getOwner().getName()));
-			// }
 			// transform two types of interconnections
 			ArchitectureComponent srcComponent = indexInterconnection.getCp1();
 			ArchitectureComponent dstComponent = indexInterconnection.getCp2();
@@ -211,6 +198,24 @@ public class ArchitectureTransformer {
 				}
 			}
 		}
+		if (archi.getRouteStepTable().getRouteStepLists().size() != 0) {
+			archiDescriptor.setArchi(archi);
+			for (RouteStepList indexRSL : archi.getRouteStepTable()
+					.getRouteStepLists()) {
+				for (RouteStep indexRS : indexRSL.getRouteSteps()) {
+					double minDataRate = ((ILink) archi.getComponent(indexRS
+							.getFirstLinkName())).getDataRate();
+					for (NodeLinkTuple indexNLT : indexRS.getNodeLinkTuples()) {
+						if (minDataRate > ((ILink) archi.getComponent(indexNLT
+								.getLinkName())).getDataRate()) {
+							minDataRate = ((ILink) archi.getComponent(indexNLT
+									.getLinkName())).getDataRate();
+						}
+					}
+					indexRS.setDataRate(minDataRate);
+				}
+			}
+		}
 		return archiDescriptor;
 	}
 
@@ -223,8 +228,14 @@ public class ArchitectureTransformer {
 	 */
 	public MultiCoreArchitecture descriptor2Architecture(
 			ArchitectureDescriptor archiDescriptor) {
-		MultiCoreArchitecture architecture = new MultiCoreArchitecture(
-				archiDescriptor.getName());
-		return architecture;
+		if (archiDescriptor.getArchi() != null) {
+			return archiDescriptor.getArchi();
+		} else {
+			MultiCoreArchitecture architecture = new MultiCoreArchitecture(
+					archiDescriptor.getName());
+			// TODO:
+			return architecture;
+		}
 	}
+
 }

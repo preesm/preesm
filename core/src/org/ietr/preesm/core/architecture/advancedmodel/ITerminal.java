@@ -45,8 +45,8 @@ import java.util.Set;
  */
 public interface ITerminal {
 
-	public void addCommunicationPerformer(ICommunicationPerformer commPerformer);
+	public void addCommunicationPerformerName(String commPerformerName);
 
-	public Set<ICommunicationPerformer> getCommunicationPerformers();
+	public Set<String> getCommunicationPerformerNames();
 
 }

@@ -35,18 +35,51 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.architecture.advancedmodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This interface should be implemented by Processor and Communicator.
+ * A route step table stores all the route steps of an architecture.
  * 
  * @author pmu
- * 
  */
-public interface ICommunicationPerformer {
+public class RouteStepTable {
 
-	public void addAccessTerminalName(String terminalName);
+	private Set<RouteStepList> table = null;
 
-	public Set<String> getAccessTerminalNames();
+	public RouteStepTable() {
+		table = new HashSet<RouteStepList>();
+	}
+
+	public RouteStepList getRouteStepList(String beginName, String endName) {
+		for (RouteStepList indexRSL : table) {
+			if (indexRSL.getBeginTerminalName().equals(beginName)
+					&& indexRSL.getEndTerminalName().equals(endName)) {
+				return indexRSL;
+			}
+		}
+		return null;
+	}
+
+	private void addRouteStepList(RouteStepList rsl) {
+		table.add(rsl);
+	}
+
+	public void addRouteStep(RouteStep rs) {
+		RouteStepList rsl = this.getRouteStepList(rs.getBeginTerminalName(), rs
+				.getEndTerminalName());
+		if (rsl != null) {
+			rsl.addRouteStep(rs);
+		} else {
+			rsl = new RouteStepList(rs.getBeginTerminalName(), rs
+					.getEndTerminalName());
+			rsl.addRouteStep(rs);
+			this.addRouteStepList(rsl);
+		}
+	}
+
+	public Set<RouteStepList> getRouteStepLists() {
+		return table;
+	}
 
 }

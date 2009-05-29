@@ -83,6 +83,7 @@ public class AlgorithmTransformer {
 	 */
 	public MapperDAG algorithm2DAG(AlgorithmDescriptor algorithm) {
 		MapperDAG dag = new MapperDAG(null, null);
+		// TODO:
 		return dag;
 	}
 
@@ -270,9 +271,10 @@ public class AlgorithmTransformer {
 	 * @param scenario
 	 *            A scenario associated to the SDFGraph
 	 * @return An AlgorithmDescriptor
-	 * @throws InvalidExpressionException 
+	 * @throws InvalidExpressionException
 	 */
-	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario) throws InvalidExpressionException {
+	public AlgorithmDescriptor sdf2Algorithm(SDFGraph sdf, IScenario scenario)
+			throws InvalidExpressionException {
 
 		// Construct AlgorithmDescriptor
 		AlgorithmDescriptor algorithm = new AlgorithmDescriptor(

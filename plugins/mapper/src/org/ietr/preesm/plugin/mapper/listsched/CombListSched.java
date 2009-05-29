@@ -78,7 +78,7 @@ public class CombListSched {
 
 	/**
 	 * @param args
-	 * @throws InvalidExpressionException 
+	 * @throws InvalidExpressionException
 	 */
 	public static void main(String[] args) throws InvalidExpressionException {
 		// TODO Auto-generated method stub
@@ -245,7 +245,8 @@ public class CombListSched {
 
 	/**
 	 * Parse the algorithm, architecture and scenario
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
 	 */
 	private void parse() throws InvalidExpressionException {
 		if (dag != null) {
@@ -389,7 +390,8 @@ public class CombListSched {
 
 	/**
 	 * Use different list scheduling methods to schedule
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
 	 */
 	public void schedule() throws InvalidExpressionException {
 		System.out
@@ -400,20 +402,35 @@ public class CombListSched {
 		parse();
 
 		/* Static */
-		CombCSListSched scheduler1 = new CombCSListSched(algo.clone(), archi
-				.clone());
+		AlgorithmDescriptor algoCloned = algo.clone();
+		ArchitectureDescriptor archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCSListSched scheduler1 = new CombCSListSched(algoCloned,
+				archiCloned);
 		scheduler1.schedule();
+		// CombCSListSched scheduler1 = new CombCSListSched(algo.clone(), archi
+		// .clone());
+		// scheduler1.schedule();
 
-		CombCSListSchedCc scheduler2 = new CombCSListSchedCc(algo.clone(), archi
-				.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCSListSchedCc scheduler2 = new CombCSListSchedCc(algoCloned,
+				archiCloned);
 		scheduler2.schedule();
 
-		CombCSListSchedCd scheduler3 = new CombCSListSchedCd(algo.clone(), archi
-				.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCSListSchedCd scheduler3 = new CombCSListSchedCd(algoCloned,
+				archiCloned);
 		scheduler3.schedule();
 
-		CombCSListSchedCcCd scheduler4 = new CombCSListSchedCcCd(algo.clone(),
-				archi.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCSListSchedCcCd scheduler4 = new CombCSListSchedCcCd(algoCloned,
+				archiCloned);
 		scheduler4.schedule();
 
 		compareScheduler(scheduler1.getBestScheduler());
@@ -422,20 +439,32 @@ public class CombListSched {
 		compareScheduler(scheduler4.getBestScheduler());
 
 		/* Dynamic */
-		CombCDListSched schedulerD1 = new CombCDListSched(algo.clone(), archi
-				.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCDListSched schedulerD1 = new CombCDListSched(algoCloned,
+				archiCloned);
 		schedulerD1.schedule();
 
-		CombCDListSchedCc schedulerD2 = new CombCDListSchedCc(algo.clone(),
-				archi.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCDListSchedCc schedulerD2 = new CombCDListSchedCc(algoCloned,
+				archiCloned);
 		schedulerD2.schedule();
 
-		CombCDListSchedCd schedulerD3 = new CombCDListSchedCd(algo.clone(),
-				archi.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCDListSchedCd schedulerD3 = new CombCDListSchedCd(algoCloned,
+				archiCloned);
 		schedulerD3.schedule();
 
-		CombCDListSchedCcCd schedulerD4 = new CombCDListSchedCcCd(algo.clone(),
-				archi.clone());
+		algoCloned = algo.clone();
+		archiCloned = archi.clone();
+//		archiCloned.setArchi(null);
+		CombCDListSchedCcCd schedulerD4 = new CombCDListSchedCcCd(algoCloned,
+				archiCloned);
 		schedulerD4.schedule();
 
 		compareScheduler(schedulerD1.getBestScheduler());
@@ -603,5 +632,14 @@ public class CombListSched {
 		plot(bestScheduler);
 		System.out
 				.println("\n\n***** Combined List Scheduling With Static Order Finishes!*****");
+		/* Test */
+//		plot(scheduler1.getBestScheduler());
+//		plot(scheduler2.getBestScheduler());
+//		plot(scheduler3.getBestScheduler());
+//		plot(scheduler4.getBestScheduler());
+//		plot(schedulerD1.getBestScheduler());
+//		plot(schedulerD2.getBestScheduler());
+//		plot(schedulerD3.getBestScheduler());
+//		plot(schedulerD4.getBestScheduler());
 	}
 }

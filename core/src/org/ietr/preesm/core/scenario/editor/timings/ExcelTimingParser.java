@@ -54,8 +54,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
@@ -130,7 +130,7 @@ public class ExcelTimingParser {
 		for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
 			for (ArchitectureComponentDefinition operatorDef : opDefs) {
 
-				String operatorId = ((OperatorDefinition) operatorDef)
+				String operatorId = ((IOperatorDefinition) operatorDef)
 						.getId();
 				String vertexName = vertex.getName();
 
@@ -147,7 +147,7 @@ public class ExcelTimingParser {
 								|| timingCell.getType().equals(
 										CellType.NUMBER_FORMULA)) {
 							Timing timing = new Timing(
-									((OperatorDefinition) operatorDef),
+									((IOperatorDefinition) operatorDef),
 									vertex, Integer.valueOf(timingCell
 											.getContents()));
 							scenario.getTimingManager().addTiming(timing);

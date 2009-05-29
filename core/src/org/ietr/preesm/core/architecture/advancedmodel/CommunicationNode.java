@@ -41,7 +41,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * a communication node (exemple: a switch)
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class CommunicationNode extends ArchitectureComponent {
 

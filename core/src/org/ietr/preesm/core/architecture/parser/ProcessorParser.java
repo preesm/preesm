@@ -36,7 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.parser;
 
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.NodeLinkTuple;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -51,7 +54,8 @@ public class ProcessorParser {
 	 * Parsing processor specific data from DOM document and filling the
 	 * processor
 	 */
-	static void parse(Processor proc, Element callElt) {
+	static void parse(MultiCoreArchitecture archi, Processor proc,
+			Element callElt) {
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -61,28 +65,76 @@ public class ProcessorParser {
 				String eltType = elt.getTagName();
 				String configurableElementName = elt
 						.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue")
-						&& configurableElementName.equals("setupTime")) {
-					String value = elt.getTextContent();
-					// TODO : parse setupTime for different communicators
-					// setupTimes have the format of
-					// (communicator_1:setupTime_1)
-					// (communicator_2:setupTime_2)
-					// ...
-					// (communicator_n:setupTime_n)
-					int leftIndex = -1;
-					int middleIndex = -1;
-					int rightIndex = -1;
-					while (rightIndex < value.length() - 1) {
-						leftIndex = value.indexOf('(', rightIndex + 1);
-						// leftIndex+=1;
-						middleIndex = value.indexOf(':', leftIndex + 1);
-						rightIndex = value.indexOf(')', middleIndex + 1);
+				if (eltType.equals("spirit:configurableElementValue")) {
+					if (configurableElementName.equals("routeStep")) {
+						// TODO : parse routeStep
+						// routeSteps have the format of
+						//terminalName;communicatorName;firstLinkName;(nodeName,
+						// linkName);...;(nodeName,linkName)
+						// ...
+						//terminalName;communicatorName;firstLinkName;(nodeName,
+						// linkName);...;(nodeName,linkName)
+						String value = elt.getTextContent();
+
+						RouteStep rs = new RouteStep();
+
+						rs.setBeginTerminalName(proc.getName());
+
+						int leftIndex = 0;
+						int rightIndex = value.indexOf(';', 0);
+						String terminalName = value.substring(0, rightIndex);
+						rs.setEndTerminalName(terminalName);
+
+						leftIndex = rightIndex + 1;
+						rightIndex = value.indexOf(';', leftIndex);
+						String communicatorName = value.substring(leftIndex,
+								rightIndex);
+						rs.setCommunicatorName(communicatorName);
+
+						leftIndex = rightIndex + 1;
+						rightIndex = value.indexOf(';', leftIndex);
+						if (rightIndex == -1) {
+							String firstLinkName = value.substring(leftIndex,
+									value.length());
+							rs.setFirstLinkName(firstLinkName);
+						} else {
+							String firstLinkName = value.substring(leftIndex,
+									rightIndex);
+							rs.setFirstLinkName(firstLinkName);
+							int middleIndex = 0;
+							while (rightIndex < value.length() - 1) {
+								leftIndex = value.indexOf('(', rightIndex + 1);
+								middleIndex = value.indexOf(',', leftIndex + 1);
+								rightIndex = value
+										.indexOf(')', middleIndex + 1);
+								String nodeName = value.substring(
+										leftIndex + 1, middleIndex);
+								String linkName = value.substring(
+										middleIndex + 1, rightIndex);
+								rs.addNodeLinkTuple(new NodeLinkTuple(nodeName,
+										linkName));
+							}
+						}
+						archi.getRouteStepTable().addRouteStep(rs);
+					} else if (configurableElementName.equals("setupTime")) {
+						// TODO : parse setupTime for different communicators
+						// setupTimes have the format of
+						// (communicator_1:setupTime_1)
+						// (communicator_2:setupTime_2)
+						// ...
+						// (communicator_n:setupTime_n)
+						String value = elt.getTextContent();
+						int leftIndex = 0;
+						int rightIndex = value.indexOf(':', 0);
 						String commName = value.substring(leftIndex + 1,
-								middleIndex);
+								rightIndex);
 						double setupTime = Double.parseDouble(value.substring(
-								middleIndex + 1, rightIndex));
+								rightIndex + 1, value.length()));
 						proc.addSetupTime(commName, setupTime);
+					} else if (configurableElementName.equals("access")) {
+						// TODO : parse access
+						String value = elt.getTextContent();
+						proc.addAccessTerminalName(value);
 					}
 				}
 			}

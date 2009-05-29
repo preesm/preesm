@@ -51,15 +51,15 @@ public class Route {
 	 */
 	public static final String propertyBeanName = "route";
 
-	private ITerminal originTerminal;
+	private String originTerminalName;
 
-	private ITerminal destinationTerminal;
+	private String destinationTerminalName;
 
 	private List<RouteStep> routSteps;
 
-	public Route(ITerminal originTerminal, ITerminal destinationTerminal) {
-		this.originTerminal = originTerminal;
-		this.destinationTerminal = destinationTerminal;
+	public Route(String originTerminalName, String destinationTerminalName) {
+		this.originTerminalName = originTerminalName;
+		this.destinationTerminalName = destinationTerminalName;
 		routSteps = new ArrayList<RouteStep>();
 	}
 
@@ -71,23 +71,24 @@ public class Route {
 		routSteps.add(routeStep);
 	}
 
-	public ITerminal getDestinationTerminal() {
-		return destinationTerminal;
+	public String getDestinationTerminalName() {
+		return destinationTerminalName;
 	}
 
-	public ITerminal getOriginTerminal() {
-		return originTerminal;
+	public String getOriginTerminalName() {
+		return originTerminalName;
 	}
 
 	public List<RouteStep> getRoutSteps() {
 		return routSteps;
 	}
 
-	public void setDestinationTerminal(ITerminal destinationTerminal) {
-		this.destinationTerminal = destinationTerminal;
+	public void setDestinationTerminalName(String destinationTerminalName) {
+		this.destinationTerminalName = destinationTerminalName;
 	}
 
-	public void setOriginTerminal(ITerminal originTerminal) {
-		this.originTerminal = originTerminal;
+	public void setOriginTerminalName(String originTerminalName) {
+		this.originTerminalName = originTerminalName;
 	}
+
 }

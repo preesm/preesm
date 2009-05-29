@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.advancedmodel;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 /**
  * a Communicator (example: an edma)
  * 
- * @author mpelcat
+ * @author pmu
  */
 public class Communicator extends ArchitectureComponent implements
 		ICommunicationPerformer {
@@ -62,16 +63,19 @@ public class Communicator extends ArchitectureComponent implements
 	 */
 	private Map<String, Double> setupTimes;
 
+	private Set<String> accessTerminalNames;
+
 	public Communicator(String name, CommunicatorDefinition type) {
 		super(name, type);
 		setupTimes = new HashMap<String, Double>();
+		accessTerminalNames = new HashSet<String>();
 	}
 
 	public void addSetupTime(String procName, double time) {
 		setupTimes.put(procName, time);
 	}
 
-	public Set<String> getProcessors() {
+	public Set<String> getProcessorNames() {
 		return setupTimes.keySet();
 	}
 
@@ -87,18 +91,26 @@ public class Communicator extends ArchitectureComponent implements
 		this.setupTimes = setupTimes;
 	}
 
+	public void addAccessTerminalName(String terminalName) {
+		accessTerminalNames.add(terminalName);
+	}
+
+	public Set<String> getAccessTerminalNames() {
+		return accessTerminalNames;
+	}
+
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.communicator;
 	}
 
 	@Override
 	public ArchitectureComponent clone() {
-		Communicator com =  new Communicator(getName(),null);
+		Communicator com = new Communicator(getName(), null);
 		com.getSetupTimes().putAll(setupTimes);
 		return com;
 	}
-	
-	public boolean isNode(){
-		return false;
+
+	public boolean isNode() {
+		return true;
 	}
 }

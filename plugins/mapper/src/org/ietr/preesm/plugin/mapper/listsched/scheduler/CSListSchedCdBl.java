@@ -84,14 +84,19 @@ public class CSListSchedCdBl extends CSListSchedCd {
 			indexOperator.addReceiveCommunication(bottomCommunication);
 			indexOperator.addSendCommunication(bottomCommunication);
 			indexOperator.addOperation(bottomCommunication);
-			for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
-			for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
+//			for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
+//				indexLink.addCommunication(topCommunication);
+//				indexLink.addCommunication(bottomCommunication);
+//			}
+//			for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
+//				indexLink.addCommunication(topCommunication);
+//				indexLink.addCommunication(bottomCommunication);
+//			}
+		}
+		for (LinkDescriptor indexLink : architecture.getAllLinks()
+				.values()) {
+			indexLink.addCommunication(topCommunication);
+			indexLink.addCommunication(bottomCommunication);
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {

@@ -69,28 +69,19 @@ public class Processor extends ArchitectureComponent implements IOperator,
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
 	 */
-	private Set<ICommunicationPerformer> commPerformers;
+	private Set<String> commPerformerNames;
+
+	private Set<String> accessTerminalNames;
 
 	public Processor(String name, ProcessorDefinition definition) {
 		super(name, definition);
 		setupTimes = new HashMap<String, Double>();
-		commPerformers = new HashSet<ICommunicationPerformer>();
-	}
-
-	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
-		commPerformers.add(commPerformer);
+		commPerformerNames = new HashSet<String>();
+		accessTerminalNames = new HashSet<String>();
 	}
 
 	public void addSetupTime(String commName, double time) {
 		setupTimes.put(commName, time);
-	}
-
-	public Set<ICommunicationPerformer> getCommunicationPerformers() {
-		return commPerformers;
-	}
-
-	public Set<String> getCommunicators() {
-		return setupTimes.keySet();
 	}
 
 	public double getSetupTime(String commName) {
@@ -101,16 +92,36 @@ public class Processor extends ArchitectureComponent implements IOperator,
 		return setupTimes;
 	}
 
+	public void addCommunicationPerformerName(String commPerformerName) {
+		commPerformerNames.add(commPerformerName);
+	}
+
+	public Set<String> getCommunicationPerformerNames() {
+		return commPerformerNames;
+	}
+
+	public void addAccessTerminalName(String terminalName) {
+		accessTerminalNames.add(terminalName);
+	}
+
+	public Set<String> getAccessTerminalNames() {
+		return accessTerminalNames;
+	}
+
+	public Set<String> getCommunicatorNames() {
+		return setupTimes.keySet();
+	}
+
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.processor;
 	}
 
 	@Override
 	public ArchitectureComponent clone() {
-		return new Processor(getName(),null);
+		return new Processor(getName(), null);
 	}
-	
-	public boolean isNode(){
-		return false;
+
+	public boolean isNode() {
+		return true;
 	}
 }

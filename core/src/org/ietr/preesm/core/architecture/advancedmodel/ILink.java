@@ -46,4 +46,5 @@ public interface ILink {
 	public double getDataRate();
 
 	public void setDataRate(double dataRate);
+
 }

@@ -38,6 +38,8 @@ package org.ietr.preesm.plugin.mapper.listsched.descriptor;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+
 /**
  * ArchitectureDescriptor describes an architecture
  * 
@@ -90,6 +92,11 @@ public class ArchitectureDescriptor {
 	 * Used surface of the architecture
 	 */
 	private int surfaceUsed = 0;
+
+	/**
+	 * Associated MultiCoreArchitecture
+	 */
+	private MultiCoreArchitecture archi = null;
 
 	/**
 	 * Construct an ArchitectureDescriptor
@@ -251,6 +258,7 @@ public class ArchitectureDescriptor {
 										.getDestination().getId())));
 			}
 		}
+		archi.setArchi(this.getArchi());
 		return archi;
 	}
 
@@ -471,4 +479,20 @@ public class ArchitectureDescriptor {
 	public void setSurfaceUsed(int surfaceUsed) {
 		this.surfaceUsed = surfaceUsed;
 	}
+
+	/**
+	 * @return the archi
+	 */
+	public MultiCoreArchitecture getArchi() {
+		return archi;
+	}
+
+	/**
+	 * @param archi
+	 *            the archi to set
+	 */
+	public void setArchi(MultiCoreArchitecture archi) {
+		this.archi = archi;
+	}
+
 }

@@ -35,6 +35,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.architecture.advancedmodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -59,19 +60,19 @@ public class IpCoprocessor extends ArchitectureComponent implements IOperator,
 	 * Communication performers are communicators and processors that can access
 	 * this processor.
 	 */
-	private Set<ICommunicationPerformer> commPerformers;
+	private Set<String> commPerformerNames;
 
 	public IpCoprocessor(String name, IpCoprocessorDefinition definition) {
 		super(name, definition);
+		commPerformerNames = new HashSet<String>();
 	}
 
-	public void addCommunicationPerformer(ICommunicationPerformer commPerformer) {
-		commPerformers.add(commPerformer);
-
+	public void addCommunicationPerformerName(String commPerformerName) {
+		commPerformerNames.add(commPerformerName);
 	}
 
-	public Set<ICommunicationPerformer> getCommunicationPerformers() {
-		return commPerformers;
+	public Set<String> getCommunicationPerformerNames() {
+		return commPerformerNames;
 	}
 
 	public ArchitectureComponentType getType() {
@@ -80,11 +81,11 @@ public class IpCoprocessor extends ArchitectureComponent implements IOperator,
 
 	@Override
 	public ArchitectureComponent clone() {
-		return new IpCoprocessor(getName(),null);
+		return new IpCoprocessor(getName(), null);
 	}
-	
-	public boolean isNode(){
-		return false;
+
+	public boolean isNode() {
+		return true;
 	}
 
 }

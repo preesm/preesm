@@ -47,23 +47,30 @@ import java.util.List;
  */
 public class RouteStep {
 
-	private Processor processor;
+	private String sendProcessorName = null;
+	
+	private String receiveProcessorName = null;
 
-	private Communicator communicator = null;
+	private String communicatorName = null;
 
-	private ITerminal startTerminal;
+	private String beginTerminalName = null;
 
-	private ILink startLink = null;
+	private String firstLinkName = null;
 
 	private List<NodeLinkTuple> nodeLinkTuples;
 
-	private ITerminal finishTerminal;
+	private String endTerminalName;
+	
+	private double dataRate;
 
-	public RouteStep(Processor processor, ITerminal startTerminal,
-			ITerminal finishTerminal) {
-		this.processor = processor;
-		this.startTerminal = startTerminal;
-		this.finishTerminal = finishTerminal;
+	public RouteStep() {
+		nodeLinkTuples = new ArrayList<NodeLinkTuple>();
+	}
+	
+	public RouteStep(String beginTerminalName,
+			String endTerminalName) {
+		this.beginTerminalName = beginTerminalName;
+		this.endTerminalName = endTerminalName;
 		nodeLinkTuples = new ArrayList<NodeLinkTuple>();
 	}
 
@@ -75,59 +82,80 @@ public class RouteStep {
 		nodeLinkTuples.add(nodeLinkTuple);
 	}
 
-	public Communicator getCommunicator() {
-		return communicator;
+	public String getCommunicatorName() {
+		return communicatorName;
 	}
 
-	public ITerminal getFinishTerminal() {
-		return finishTerminal;
+	public String getEndTerminalName() {
+		return endTerminalName;
 	}
 
 	public List<NodeLinkTuple> getNodeLinkTuples() {
 		return nodeLinkTuples;
 	}
 
-	public Processor getProcessor() {
-		return processor;
+	public String getSendProcessorName() {
+		return sendProcessorName;
+	}
+	
+	public String getReceiveProcessorName() {
+		return receiveProcessorName;
 	}
 
-	public ILink getStartLink() {
-		return startLink;
+	public String getFirstLinkName() {
+		return firstLinkName;
 	}
 
-	public ITerminal getStartTerminal() {
-		return startTerminal;
+	public String getBeginTerminalName() {
+		return beginTerminalName;
 	}
 
-	public void setCommunicator(Communicator communicator) {
-		this.communicator = communicator;
+	public void setCommunicatorName(String communicatorName) {
+		this.communicatorName = communicatorName;
 	}
 
-	public void setFinishTerminal(ITerminal finishTerminal) {
-		this.finishTerminal = finishTerminal;
+	public void setEndTerminalName(String endTerminalName) {
+		this.endTerminalName = endTerminalName;
 	}
 
-	public void setProcessor(Processor processor) {
-		this.processor = processor;
+	public void setSendProcessorName(String processorName) {
+		this.sendProcessorName = processorName;
+	}
+	
+	public void setReceiveProcessorName(String processorName) {
+		this.receiveProcessorName = processorName;
 	}
 
-	public void setStartLink(ILink startLink) {
-		this.startLink = startLink;
+	public void setFirstLinkName(String firstLinkName) {
+		this.firstLinkName = firstLinkName;
 	}
 
-	public void setStartTerminal(ITerminal startTerminal) {
-		this.startTerminal = startTerminal;
+	public void setBeginTerminalName(String beginTerminalName) {
+		this.beginTerminalName = beginTerminalName;
+	}
+
+	/**
+	 * @return the dataRate
+	 */
+	public double getDataRate() {
+		return dataRate;
+	}
+
+	/**
+	 * @param dataRate the dataRate to set
+	 */
+	public void setDataRate(double dataRate) {
+		this.dataRate = dataRate;
 	}
 
 	@Override
 	public String toString() {
-		if (communicator == null) {
-			return "{" + "(" + startTerminal.toString() + " ... "
-					+ finishTerminal.toString() + ")" + "}";
+		if (communicatorName == null) {
+			return "{" + "(" + beginTerminalName + " ... " + endTerminalName
+					+ ")" + "}";
 		} else {
-			return "{" + communicator.toString() + ", ("
-					+ startTerminal.toString() + " ... "
-					+ finishTerminal.toString() + ")" + "}";
+			return "{" + communicatorName + ", (" + beginTerminalName + " ... "
+					+ endTerminalName + ")" + "}";
 		}
 	}
 }

@@ -59,8 +59,6 @@ import org.ietr.preesm.core.architecture.advancedmodel.Bus;
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
 import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
 import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
-import org.ietr.preesm.core.architecture.advancedmodel.ICommunicationPerformer;
-import org.ietr.preesm.core.architecture.advancedmodel.ITerminal;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
 import org.ietr.preesm.core.architecture.advancedmodel.Memory;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
@@ -251,11 +249,11 @@ public class DesignParser {
 
 				// Advanced model
 				else if (type == ArchitectureComponentType.processor) {
-					ProcessorParser.parse((Processor) cmp, configElt);
+					ProcessorParser.parse(archi, (Processor) cmp, configElt);
 				} else if (type == ArchitectureComponentType.ipCoprocessor) {
-					IpCoprocessorParser.parse((IpCoprocessor) cmp, configElt);
+					IpCoprocessorParser.parse(archi, (IpCoprocessor) cmp, configElt);
 				} else if (type == ArchitectureComponentType.memory) {
-					MemoryParser.parse((Memory) cmp, configElt);
+					MemoryParser.parse(archi, (Memory) cmp, configElt);
 				} else if (type == ArchitectureComponentType.bus) {
 					BusParser.parse((Bus) cmp, configElt);
 				} else if (type == ArchitectureComponentType.fifo) {
@@ -380,8 +378,6 @@ public class DesignParser {
 		List<String> busRefList = new ArrayList<String>();
 		List<String> componentRefList = new ArrayList<String>();
 
-		boolean isAccess = false;
-		boolean isConfigure = false;
 		boolean isDirected = false;
 		boolean isSetup = false;
 
@@ -398,9 +394,6 @@ public class DesignParser {
 					componentRefList.add(elt
 							.getAttribute("spirit:componentRef"));
 				} else if (type.equals("spirit:displayName")) {
-					isAccess = (elt.getTextContent().equalsIgnoreCase("access"));
-					isConfigure = (elt.getTextContent()
-							.equalsIgnoreCase("configure"));
 					isDirected = (elt.getTextContent()
 							.equalsIgnoreCase("directed"));
 					isSetup = (elt.getTextContent().equalsIgnoreCase("setup"));
@@ -427,17 +420,8 @@ public class DesignParser {
 			ArchitectureInterface if2 = cmp2
 					.addInterface(new ArchitectureInterface(busRef2, cmp2));
 
-			// Advanced architecture
-			if (isAccess) {
-				((ITerminal) cmp2)
-						.addCommunicationPerformer((ICommunicationPerformer) cmp1);
-			} else if (isConfigure) {
-				((Communicator) cmp2).addSetupTime(cmp1.getName(),
-						((Processor) cmp1).getSetupTime(cmp2.getName()));
-			}
-
 			// Simple architecture
-			else if (isSetup) {
+			if (isSetup) {
 				// A setup is directed and its description gives the setup time
 				isDirected = true;
 				if (cmp1 instanceof Operator

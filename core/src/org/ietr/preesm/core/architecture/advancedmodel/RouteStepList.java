@@ -35,18 +35,61 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This interface should be implemented by Processor and Communicator.
+ * A route step list is a list of route steps with the same begin terminal and
+ * the same end terminal.
  * 
  * @author pmu
- * 
  */
-public interface ICommunicationPerformer {
+public class RouteStepList {
 
-	public void addAccessTerminalName(String terminalName);
+	private String beginTerminalName;
 
-	public Set<String> getAccessTerminalNames();
+	private String endTerminalName;
+
+	private List<RouteStep> routeSteps;
+
+	public RouteStepList(String beginTerminalName, String endTerminalName) {
+		this.beginTerminalName = beginTerminalName;
+		this.endTerminalName = endTerminalName;
+		routeSteps = new ArrayList<RouteStep>();
+	}
+
+	public String getBeginTerminalName() {
+		return beginTerminalName;
+	}
+
+	public String getEndTerminalName() {
+		return endTerminalName;
+	}
+
+	public List<RouteStep> getRouteSteps() {
+		return routeSteps;
+	}
+
+	public void addRouteStep(int index, RouteStep rs) {
+		if (rs.getBeginTerminalName().equals(beginTerminalName)
+				&& rs.getEndTerminalName().equals(endTerminalName)) {
+			routeSteps.add(index, rs);
+		}
+	}
+
+	public void addRouteStep(RouteStep rs) {
+		if (rs.getBeginTerminalName().equals(beginTerminalName)
+				&& rs.getEndTerminalName().equals(endTerminalName)) {
+			routeSteps.add(rs);
+		}
+	}
+
+	public RouteStep getRouteStep(int index) {
+		return routeSteps.get(index);
+	}
+
+	public RouteStep getRouteStep() {
+		return routeSteps.get(0);
+	}
 
 }

@@ -197,7 +197,8 @@ public class GanttPlotter extends ApplicationFrame {
 									new SimpleTimePeriod(start, end));
 							series.get(indexLink.getId()).addSubtask(t);
 						} else {
-							Task t = new Task(indexCommunication.getName(),
+							Task t = new Task("transfer_"
+									+ indexCommunication.getName(),
 									new SimpleTimePeriod(start, end));
 							series.get(indexLink.getId()).addSubtask(t);
 						}
@@ -245,7 +246,8 @@ public class GanttPlotter extends ApplicationFrame {
 									new SimpleTimePeriod(start, end));
 							series.get(indexLink.getId()).addSubtask(t);
 						} else {
-							Task t = new Task(indexCommunication.getName(),
+							Task t = new Task("transfer_"
+									+ indexCommunication.getName(),
 									new SimpleTimePeriod(start, end));
 							series.get(indexLink.getId()).addSubtask(t);
 						}
@@ -285,6 +287,43 @@ public class GanttPlotter extends ApplicationFrame {
 				Task t = new Task(indexCommunication.getName(),
 						new SimpleTimePeriod(start, end));
 				series.get(indexOperator.getId()).addSubtask(t);
+			}
+		}
+		for (LinkDescriptor indexLink : scheduler.getArchitecture()
+				.getAllLinks().values()) {
+			if (!links.contains(indexLink)) {
+				links.add(indexLink);
+				currenttask = new Task(indexLink.getId(), new SimpleTimePeriod(
+						0, indexLink.getCommunication(
+								indexLink.getCommunications().size() - 2)
+								.getFinishTimeOnLink()));
+				series.add(currenttask);
+				for (CommunicationDescriptor indexCommunication : indexLink
+						.getCommunications()) {
+					// long start = indexLink.getOccupiedTimeInterval(
+					// indexCommunication.getName()).getStartTime();
+					// long end = indexLink.getOccupiedTimeInterval(
+					// indexCommunication.getName()).getFinishTime();
+					long start = indexCommunication.getStartTimeOnLink();
+					long end = indexCommunication.getFinishTimeOnLink();
+					if (indexCommunication.getSendLink() == indexLink) {
+						Task t = new Task("send_"
+								+ indexCommunication.getName(),
+								new SimpleTimePeriod(start, end));
+						series.get(indexLink.getId()).addSubtask(t);
+					} else if (indexCommunication.getReceiveLink() == indexLink) {
+
+						Task t = new Task("receive_"
+								+ indexCommunication.getName(),
+								new SimpleTimePeriod(start, end));
+						series.get(indexLink.getId()).addSubtask(t);
+					} else {
+						Task t = new Task("transfer_"
+								+ indexCommunication.getName(),
+								new SimpleTimePeriod(start, end));
+						series.get(indexLink.getId()).addSubtask(t);
+					}
+				}
 			}
 		}
 

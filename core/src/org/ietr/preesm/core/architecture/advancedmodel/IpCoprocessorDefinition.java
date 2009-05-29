@@ -65,4 +65,5 @@ public class IpCoprocessorDefinition extends ArchitectureComponentDefinition
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.ipCoprocessor;
 	}
+
 }

@@ -35,9 +35,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.architecture.advancedmodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-
 /**
  * A node-link-tuple contains a communication node and a communication link.
  * 
@@ -45,37 +42,29 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class NodeLinkTuple {
 
-	private CommunicationNode node;
+	private String nodeName;
 
-	private ArchitectureComponent link;
+	private String linkName;
 
-	public NodeLinkTuple(CommunicationNode node, ArchitectureComponent link) {
-		if (link.getType() == ArchitectureComponentType.bus
-				|| link.getType() == ArchitectureComponentType.fifo) {
-			this.node = node;
-			this.link = link;
-		}
+	public NodeLinkTuple(String nodeName, String linkName) {
+		this.nodeName = nodeName;
+		this.linkName = linkName;
 	}
 
-	public ArchitectureComponent getLink() {
-		return link;
+	public String getLinkName() {
+		return linkName;
 	}
 
-	public CommunicationNode getNode() {
-		return node;
+	public String getNodeName() {
+		return nodeName;
 	}
 
-	public boolean setLink(ArchitectureComponent link) {
-		if (link.getType() == ArchitectureComponentType.bus
-				|| link.getType() == ArchitectureComponentType.fifo) {
-			this.link = link;
-			return true;
-		} else {
-			return false;
-		}
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
 	}
 
-	public void setNode(CommunicationNode node) {
-		this.node = node;
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
 	}
+
 }

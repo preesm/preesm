@@ -35,8 +35,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.plugin.mapper.listsched.scheduler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.NodeLinkTuple;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.CommunicationDescriptor;
@@ -83,14 +88,18 @@ public class CSListSchedCcCd extends AbstractScheduler {
 			indexOperator.addReceiveCommunication(bottomCommunication);
 			indexOperator.addSendCommunication(bottomCommunication);
 			indexOperator.addOperation(bottomCommunication);
-			for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
-			for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
-				indexLink.addCommunication(topCommunication);
-				indexLink.addCommunication(bottomCommunication);
-			}
+			// for (LinkDescriptor indexLink : indexOperator.getInputLinks()) {
+			// indexLink.addCommunication(topCommunication);
+			// indexLink.addCommunication(bottomCommunication);
+			// }
+			// for (LinkDescriptor indexLink : indexOperator.getOutputLinks()) {
+			// indexLink.addCommunication(topCommunication);
+			// indexLink.addCommunication(bottomCommunication);
+			// }
+		}
+		for (LinkDescriptor indexLink : architecture.getAllLinks().values()) {
+			indexLink.addCommunication(topCommunication);
+			indexLink.addCommunication(bottomCommunication);
 		}
 
 		for (int i = 0; i < staOrder.size(); i++) {
@@ -229,6 +238,17 @@ public class CSListSchedCcCd extends AbstractScheduler {
 											indexCommunication
 													.setReceiveLink(null);
 										}
+										if (indexCommunication.getLinkList() != null) {
+											for (int i = 0; i < indexCommunication
+													.getLinkList().size(); i++) {
+												LinkDescriptor link = indexCommunication
+														.getLinkList().get(i);
+												link
+														.removeCommunication(indexCommunication);
+											}
+											indexCommunication
+													.setLinkList(null);
+										}
 										indexCommunication.setExist();
 										indexCommunication.clearScheduled();
 									}
@@ -292,6 +312,17 @@ public class CSListSchedCcCd extends AbstractScheduler {
 									.removeCommunication(indexCommunication);
 							indexCommunication.setReceiveLink(null);
 						}
+						if (indexCommunication.getLinkList() != null) {
+							for (int i = 0; i < indexCommunication
+									.getLinkList().size(); i++) {
+								LinkDescriptor link = indexCommunication
+										.getLinkList().get(i);
+								link.removeCommunication(indexCommunication);
+							}
+							indexCommunication.setLinkList(null);
+						}
+						indexCommunication.setExist();
+						indexCommunication.clearScheduled();
 						indexCommunication.setExist();
 						indexCommunication.clearScheduled();
 					}
@@ -382,6 +413,14 @@ public class CSListSchedCcCd extends AbstractScheduler {
 						.getInputCommunications()) {
 					if (indexCommunication.isExist()) {
 						communicationList.add(indexCommunication);
+						// set an initial ALAP
+						indexCommunication
+								.setALAP(indexCommunication
+										.getStartTimeOnReceiveOperator()
+										+ indexCommunication
+												.getReceiveInvolvement()
+										- indexCommunication
+												.getCommunicationDuration());
 					} else {
 						// set ALAP to source computation finish time
 						indexCommunication
@@ -391,47 +430,25 @@ public class CSListSchedCcCd extends AbstractScheduler {
 					}
 				}
 				// Collections.sort(communicationList);
+				// for (int i = communicationList.size() - 1; i >= 0; i--) {
 				for (int i = 0; i < communicationList.size(); i++) {
-					if (communicationList.get(i).isScheduled()) {
-						int indexOnSendLink = communicationList.get(i)
-								.getSendLink().getCommunications().indexOf(
-										communicationList.get(i));
-						int indexOnReceiveLink = communicationList.get(i)
-								.getReceiveLink().getCommunications().indexOf(
-										communicationList.get(i));
-						communicationList
-								.get(i)
-								.setALAP(
-										min(
-												communicationList
-														.get(i)
-														.getStartTimeOnReceiveOperator()
-														+ communicationList
-																.get(i)
-																.getReceiveInvolvement()
-														- communicationList
-																.get(i)
-																.getCommunicationDuration(),
-												communicationList
-														.get(i)
-														.getReceiveLink()
-														.getCommunications()
-														.get(
-																indexOnReceiveLink + 1)
-														.getStartTimeOnLink()
-														- communicationList
-																.get(i)
-																.getCommunicationDuration(),
-												communicationList
-														.get(i)
-														.getSendLink()
-														.getCommunications()
-														.get(
-																indexOnSendLink + 1)
-														.getStartTimeOnLink()
-														- communicationList
-																.get(i)
-																.getCommunicationDuration()));
+					CommunicationDescriptor communication = communicationList
+							.get(i);
+					if (communication.isScheduled()) {
+						List<LinkDescriptor> linkList = communication
+								.getLinkList();
+						for (int j = 0; j < linkList.size(); j++) {
+							int indexOnLink = linkList.get(j)
+									.getCommunications().indexOf(communication);
+							communication
+									.setALAP(min(
+											communication.getALAP(),
+											linkList.get(j).getCommunications()
+													.get(indexOnLink + 1)
+													.getStartTimeOnLink()
+													- communication
+															.getCommunicationDuration()));
+						}
 					} else {
 						System.out.println("communication name: "
 								+ communicationList.get(i).getName());
@@ -503,122 +520,113 @@ public class CSListSchedCcCd extends AbstractScheduler {
 			} else {
 				// System.out
 				// .println(" sourceOperator != destinationOperator");
-				// RouteDescriptor route = findRoute(sourceOperator,
-				// destinationOperator);
-				LinkDescriptor sendLink = sourceOperator.getOutputLink(0);
-				LinkDescriptor receiveLink = destinationOperator
-						.getInputLink(0);
-				Vector<CommunicationDescriptor> sendCommunicationList = sendLink
-						.getCommunications();
-				Vector<CommunicationDescriptor> receiveCommunicationList = receiveLink
-						.getCommunications();
+				List<LinkDescriptor> linkList = findLinkList(sourceOperator,
+						destinationOperator);
 
-				// find slot in links
-				int indexCommunicationOnSendLink = 0;
-				int indexCommunicationOnReceiveLink = 0;
-				int infSendCommunicationTime = 0;
-				int supSendCommunicationTime = 0;
-				int infReceiveCommunicationTime = 0;
-				int supReceiveCommunicationTime = 0;
+				int indexCommunicationOnLink[] = new int[linkList.size()];
+				int infCommunicationTimeOnLink[] = new int[linkList.size()];
+				int supCommunicationTimeOnLink[] = new int[linkList.size()];
 				int infCommunicationTime = 0;
-				int supCommunicationTime = 0;
-				while (indexCommunicationOnSendLink < sendCommunicationList
-						.size()
-						&& indexCommunicationOnReceiveLink < receiveCommunicationList
-								.size()) {
-					if (sourceOperator.getSendCommunications().contains(
-							sendCommunicationList
-									.get(indexCommunicationOnSendLink))) {
-						// a send of sourceOperator
-						infSendCommunicationTime = max(algorithm
-								.getComputation(communication.getOrigin())
-								.getFinishTime()
-								+ communication.getSendOverhead(),
-								sendCommunicationList.get(
-										indexCommunicationOnSendLink)
-										.getFinishTimeOnSendOperator()
-										+ communication.getSendOverhead(),
-								sendCommunicationList.get(
-										indexCommunicationOnSendLink)
-										.getFinishTimeOnLink());
-					} else if (sourceOperator.getReceiveCommunications()
-							.contains(
-									sendCommunicationList
-											.get(indexCommunicationOnSendLink))) {
-						// a receive of sourceOperator
-						infSendCommunicationTime = max(algorithm
-								.getComputation(communication.getOrigin())
-								.getFinishTime()
-								+ communication.getSendOverhead(),
-								sendCommunicationList.get(
-										indexCommunicationOnSendLink)
-										.getFinishTimeOnReceiveOperator()
-										+ communication.getSendOverhead(),
-								sendCommunicationList.get(
-										indexCommunicationOnSendLink)
-										.getFinishTimeOnLink());
-					} else {
-						// neither a send nor a receive of sourceOperator
-						infSendCommunicationTime = max(algorithm
-								.getComputation(communication.getOrigin())
-								.getFinishTime()
-								+ communication.getSendOverhead(),
-								sendCommunicationList.get(
-										indexCommunicationOnSendLink)
-										.getFinishTimeOnLink());
-					}
-					supSendCommunicationTime = max(sendCommunicationList.get(
-							indexCommunicationOnSendLink + 1).getALAP(),
-							sendCommunicationList.get(
-									indexCommunicationOnSendLink + 1)
-									.getStartTimeOnLink());
-					infReceiveCommunicationTime = max(algorithm.getComputation(
-							communication.getOrigin()).getFinishTime()
-							+ communication.getSendOverhead(),
-							receiveCommunicationList.get(
-									indexCommunicationOnReceiveLink)
-									.getFinishTimeOnLink());
-					supReceiveCommunicationTime = max(
-							receiveCommunicationList.get(
-									indexCommunicationOnReceiveLink + 1)
-									.getALAP(), receiveCommunicationList.get(
-									indexCommunicationOnReceiveLink + 1)
-									.getStartTimeOnLink());
+				int supCommunicationTime = Integer.MAX_VALUE;
+				for (int i = 0; i < linkList.size(); i++) {
+					indexCommunicationOnLink[i] = 0;
+					infCommunicationTimeOnLink[i] = 0;
+					supCommunicationTimeOnLink[i] = Integer.MAX_VALUE;
+				}
+				while (true) {
+					infCommunicationTime = 0;
+					supCommunicationTime = Integer.MAX_VALUE;
+					for (int i = 0; i < linkList.size(); i++) {
+						List<CommunicationDescriptor> communicationList = linkList
+								.get(i).getCommunications();
+						if (sourceOperator.getSendCommunications().contains(
+								communicationList
+										.get(indexCommunicationOnLink[i]))) {
+							// a send communication on sourceOperator
+							infCommunicationTimeOnLink[i] = max(algorithm
+									.getComputation(communication.getOrigin())
+									.getFinishTime(), communicationList.get(
+									indexCommunicationOnLink[i])
+									.getFinishTimeOnSendOperator(),
+									communicationList.get(
+											indexCommunicationOnLink[i])
+											.getFinishTimeOnLink());
+						} else if (sourceOperator
+								.getReceiveCommunications()
+								.contains(
+										communicationList
+												.get(indexCommunicationOnLink[i]))) {
+							// a receive communication on sourceOperator
+							infCommunicationTimeOnLink[i] = max(algorithm
+									.getComputation(communication.getOrigin())
+									.getFinishTime(), communicationList.get(
+									indexCommunicationOnLink[i])
+									.getFinishTimeOnReceiveOperator(),
+									communicationList.get(
+											indexCommunicationOnLink[i])
+											.getFinishTimeOnLink());
+						} else {
+							// neither a send nor a receive on
+							// sourceOperator
+							infCommunicationTimeOnLink[i] = max(algorithm
+									.getComputation(communication.getOrigin())
+									.getFinishTime()
+									+ communication.getSendOverhead(),
+									communicationList.get(
+											indexCommunicationOnLink[i])
+											.getFinishTimeOnLink());
+						}
+						supCommunicationTimeOnLink[i] = communicationList.get(
+								indexCommunicationOnLink[i] + 1)
+								.getStartTimeOnLink();
+						supCommunicationTimeOnLink[i] = max(communicationList
+								.get(indexCommunicationOnLink[i] + 1)
+								.getStartTimeOnLink(), communicationList.get(
+								indexCommunicationOnLink[i] + 1).getALAP());
 
-					infCommunicationTime = max(infSendCommunicationTime,
-							infReceiveCommunicationTime);
-					supCommunicationTime = min(supSendCommunicationTime,
-							supReceiveCommunicationTime);
+						infCommunicationTime = max(infCommunicationTime,
+								infCommunicationTimeOnLink[i]);
+						supCommunicationTime = min(supCommunicationTime,
+								supCommunicationTimeOnLink[i]);
+					}
 					if (infCommunicationTime
 							+ communication.getCommunicationDuration() <= supCommunicationTime) {
 						break;
 					} else {
-						if (infSendCommunicationTime
-								+ communication.getCommunicationDuration() > supSendCommunicationTime) {
-							indexCommunicationOnSendLink++;
-						} else {
-							if (infReceiveCommunicationTime
-									+ communication.getCommunicationDuration() > supReceiveCommunicationTime) {
-								indexCommunicationOnReceiveLink++;
-							} else {
-								if (infSendCommunicationTime < infReceiveCommunicationTime) {
-									indexCommunicationOnSendLink++;
-								} else {
-									indexCommunicationOnReceiveLink++;
+						boolean allReady = true;
+						for (int i = 0; i < linkList.size(); i++) {
+
+							if (infCommunicationTimeOnLink[i]
+									+ communication.getCommunicationDuration() > supCommunicationTimeOnLink[i]) {
+								indexCommunicationOnLink[i]++;
+								allReady = false;
+								break;
+							}
+						}
+						if (allReady) {
+							for (int i = 0; i < linkList.size(); i++) {
+								if (supCommunicationTimeOnLink[i] == supCommunicationTime) {
+									indexCommunicationOnLink[i]++;
 								}
 							}
 						}
 					}
 				}
 
-				// set new start times on source operator and links
-				int indexOperationOnSourceOperator = max(sourceOperator
+				// set new start time on source operator
+				int indexOperationOnSourceOperator = sourceOperator
 						.getOperations().indexOf(
-								sendCommunicationList
-										.get(indexCommunicationOnSendLink)),
-						sourceOperator.getOperations().indexOf(
 								algorithm.getComputation(communication
-										.getOrigin())));
+										.getOrigin()));
+				for (int i = 0; i < linkList.size(); i++) {
+					CommunicationDescriptor previousCommunication = linkList
+							.get(i).getCommunication(
+									indexCommunicationOnLink[i]);
+					indexOperationOnSourceOperator = max(
+							indexOperationOnSourceOperator, sourceOperator
+									.getOperations().indexOf(
+											previousCommunication));
+				}
 				if (sourceOperator.getOperation(indexOperationOnSourceOperator)
 						.getType() == OperationType.Computation) {
 					communication
@@ -642,201 +650,51 @@ public class CSListSchedCcCd extends AbstractScheduler {
 										.getFinishTimeOnReceiveOperator());
 					}
 				}
+
+				// set new start times on links
 				communication.setStartTimeOnLink(infCommunicationTime);
-				sendCommunicationList
-						.get(indexCommunicationOnSendLink + 1)
-						.setStartTimeOnLink(
-								max(
-										communication.getFinishTimeOnLink(),
-										sendCommunicationList
-												.get(
-														indexCommunicationOnSendLink + 1)
-												.getStartTimeOnLink()));
-				sendLink.updateCommunication(sendCommunicationList
-						.get(indexCommunicationOnSendLink + 1));
-				receiveCommunicationList
-						.get(indexCommunicationOnReceiveLink + 1)
-						.setStartTimeOnLink(
-								max(
-										communication.getFinishTimeOnLink(),
-										receiveCommunicationList
-												.get(
-														indexCommunicationOnReceiveLink + 1)
-												.getStartTimeOnLink()));
-				receiveLink.updateCommunication(receiveCommunicationList
-						.get(indexCommunicationOnReceiveLink + 1));
+				for (int i = 0; i < linkList.size(); i++) {
+					CommunicationDescriptor nextCommunication = linkList.get(i)
+							.getCommunication(indexCommunicationOnLink[i] + 1);
+					nextCommunication.setStartTimeOnLink(max(communication
+							.getFinishTimeOnLink(), nextCommunication
+							.getStartTimeOnLink()));
 
-				// change ALAP for communications
-				sendCommunicationList
-						.get(indexCommunicationOnSendLink)
-						.setALAP(
-								min(
-										sendCommunicationList.get(
-												indexCommunicationOnSendLink)
-												.getALAP(),
-										communication.getStartTimeOnLink()
-												- sendCommunicationList
-														.get(
-																indexCommunicationOnSendLink)
-														.getCommunicationDuration()));
-				communication.setALAP(communication.getStartTimeOnLink());
-				receiveCommunicationList
-						.get(indexCommunicationOnReceiveLink)
-						.setALAP(
-								min(
-										receiveCommunicationList
-												.get(
-														indexCommunicationOnReceiveLink)
-												.getALAP(),
-										communication.getStartTimeOnLink()
-												- receiveCommunicationList
-														.get(
-																indexCommunicationOnReceiveLink)
-														.getCommunicationDuration()));
-
-				// // Check delay
-				// int delayStartTime = 0;
-				// int delayDuration = 0;
-				// boolean needDelay = true;
-				// if (sourceOperator.getOperation(
-				// indexOperationOnSourceOperator + 1).getType() ==
-				// OperationType.Computation) {
-				// if (((ComputationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTime() >= communication
-				// .getFinishTimeOnSendOperator()) {
-				// needDelay = false;
-				// } else {
-				// delayStartTime = ((ComputationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTime();
-				// delayDuration = communication
-				// .getFinishTimeOnSendOperator()
-				// - delayStartTime;
-				// }
-				// } else {
-				// if (sourceOperator
-				// .getSendCommunications()
-				// .contains(
-				// (CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))) {
-				// if (((CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTimeOnSendOperator() >= communication
-				// .getFinishTimeOnSendOperator()) {
-				// needDelay = false;
-				// } else {
-				// delayStartTime = ((CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTimeOnSendOperator();
-				// delayDuration = communication
-				// .getFinishTimeOnSendOperator()
-				// - delayStartTime;
-				// }
-				// } else {
-				// if (((CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTimeOnReceiveOperator() >= communication
-				// .getFinishTimeOnSendOperator()) {
-				// needDelay = false;
-				// } else {
-				// delayStartTime = ((CommunicationDescriptor) sourceOperator
-				// .getOperation(indexOperationOnSourceOperator + 1))
-				// .getStartTimeOnReceiveOperator();
-				// delayDuration = communication
-				// .getFinishTimeOnSendOperator()
-				// - delayStartTime;
-				// }
-				// }
-				// }
-				// if (needDelay) {
-				// // delay operations
-				// // System.out.println(" delay operations for: "
-				// // + delayDuration + " after: " + delayStartTime);
-				// for (OperatorDescriptor indexOperator : architecture
-				// .getAllOperators().values()) {
-				// for (int i = 1; i < indexOperator.getOperations()
-				// .size() - 1; i++) {
-				// if (indexOperator.getOperation(i).getType() ==
-				// OperationType.Computation) {
-				// if (((ComputationDescriptor) indexOperator
-				// .getOperation(i)).getStartTime() >= delayStartTime) {
-				// ((ComputationDescriptor) indexOperator
-				// .getOperation(i))
-				// .setStartTime(((ComputationDescriptor) indexOperator
-				// .getOperation(i))
-				// .getStartTime()
-				// + delayDuration);
-				// }
-				// } else {
-				// // check only the receive communication to avoid
-				// // duplicate checking
-				// if (indexOperator
-				// .getReceiveCommunications()
-				// .contains(
-				// (CommunicationDescriptor) indexOperator
-				// .getOperation(i))) {
-				// if (((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnSendOperator() >= delayStartTime) {
-				// ((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .setStartTimeOnSendOperator(((CommunicationDescriptor)
-				// indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnSendOperator()
-				// + delayDuration);
-				// }
-				// if (((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnLink() >= delayStartTime) {
-				// ((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .setStartTimeOnLink(((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnLink()
-				// + delayDuration);
-				// }
-				// if (((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnReceiveOperator() >= delayStartTime) {
-				// ((CommunicationDescriptor) indexOperator
-				// .getOperation(i))
-				// .setStartTimeOnReceiveOperator(((CommunicationDescriptor)
-				// indexOperator
-				// .getOperation(i))
-				// .getStartTimeOnReceiveOperator()
-				// + delayDuration);
-				// }
-				// }
-				// }
-				// }
-				// }
-				// }
+					linkList.get(i).updateCommunication(nextCommunication);
+					// change ALAP for communications
+					CommunicationDescriptor previousCommunication = linkList
+							.get(i).getCommunication(
+									indexCommunicationOnLink[i]);
+					previousCommunication
+							.setALAP(min(previousCommunication.getALAP(),
+									communication.getStartTimeOnLink()
+											- previousCommunication
+													.getCommunicationDuration()));
+				}
+				// communication.setALAP(communication.getStartTimeOnLink());
 
 				// find slot in destination operator
 				int indexOperationOnDestinationOperator = 0;
-				if (destinationOperator.getOperations()
-						.contains(
-								sendCommunicationList
-										.get(indexCommunicationOnSendLink))) {
-					indexOperationOnDestinationOperator = destinationOperator
-							.getOperations().indexOf(
-									sendCommunicationList
-											.get(indexCommunicationOnSendLink));
+				for (int i = 0; i < linkList.size(); i++) {
+					CommunicationDescriptor previousCommunication = linkList
+							.get(i).getCommunication(
+									indexCommunicationOnLink[i]);
+					indexOperationOnDestinationOperator = max(
+							indexOperationOnDestinationOperator,
+							destinationOperator.getOperations().indexOf(
+									previousCommunication));
 				}
+
 				int maxTime = 0;
 				for (int i = indexOperationOnDestinationOperator; i < destinationOperator
 						.getOperations().size() - 1; i++) {
 					maxTime = max(destinationOperator.getOccupiedTimeInterval(
 							destinationOperator.getOperation(i).getName())
-							.getFinishTime()
-							+ communication.getReceiveInvolvement(),
-							communication.getFinishTimeOnLink());
+							.getFinishTime(), communication
+							.getFinishTimeOnLink());
 					if (destinationOperator.getOccupiedTimeInterval(
 							destinationOperator.getOperation(i + 1).getName())
-							.getStartTime()
-							- maxTime >= communication.getReceiveOverhead()) {
+							.getStartTime() >= maxTime) {
 						communication.setStartTimeOnReceiveOperator(maxTime
 								- communication.getReceiveInvolvement());
 						indexOperationOnDestinationOperator = i;
@@ -844,13 +702,16 @@ public class CSListSchedCcCd extends AbstractScheduler {
 					}
 				}
 
+				// insert communication
+				// if (!sourceOperator.getSendCommunications().contains(
+				// communication)) {
 				sourceOperator.addSendCommunication(communication);
 				sourceOperator.addOperation(indexOperationOnSourceOperator + 1,
 						communication);
 				sourceOperator.addOccupiedTimeInterval(communication.getName(),
 						communication.getStartTimeOnSendOperator(),
 						communication.getFinishTimeOnSendOperator());
-
+				// }
 				destinationOperator.addReceiveCommunication(communication);
 				destinationOperator.addOperation(
 						indexOperationOnDestinationOperator + 1, communication);
@@ -858,15 +719,13 @@ public class CSListSchedCcCd extends AbstractScheduler {
 						.getName(), communication
 						.getStartTimeOnReceiveOperator(), communication
 						.getFinishTimeOnReceiveOperator());
-
-				sendLink.addCommunication(indexCommunicationOnSendLink + 1,
-						communication);
-				if (sendLink != receiveLink) {
-					receiveLink.addCommunication(
-							indexCommunicationOnReceiveLink + 1, communication);
+				for (int i = 0; i < linkList.size(); i++) {
+					linkList.get(i).addCommunication(
+							indexCommunicationOnLink[i] + 1, communication);
 				}
-				communication.setSendLink(sendLink);
-				communication.setReceiveLink(receiveLink);
+				communication.setSendLink(linkList.get(0));
+				communication.setReceiveLink(linkList.get(linkList.size() - 1));
+				communication.setLinkList(linkList);
 			}
 			communication.setScheduled();
 		} else {
@@ -876,13 +735,27 @@ public class CSListSchedCcCd extends AbstractScheduler {
 		}
 	}
 
-	// protected RouteDescriptor findRoute(OperatorDescriptor sourceOperator,
-	// OperatorDescriptor destinationOperator) {
-	// RouteDescriptor route = new RouteDescriptor();
-	// route.addLink(sourceOperator.getOutputLinks().get(0));
-	// route.addLink(destinationOperator.getInputLinks().get(0));
-	// return route;
-	//
-	// }
+	protected List<LinkDescriptor> findLinkList(
+			OperatorDescriptor sourceOperator,
+			OperatorDescriptor destinationOperator) {
+		MultiCoreArchitecture archi = this.architecture.getArchi();
+		List<LinkDescriptor> linkList = new ArrayList<LinkDescriptor>();
+		if (archi != null) {
+			// schedule a communication on a route step
+			RouteStep rs = archi.getRouteStepTable().getRouteStepList(
+					sourceOperator.getId(), destinationOperator.getId())
+					.getRouteStep();
+
+			linkList.add(architecture.getLink(rs.getFirstLinkName()));
+			for (NodeLinkTuple indexNLT : rs.getNodeLinkTuples()) {
+				linkList.add(architecture.getLink(indexNLT.getLinkName()));
+			}
+		} else {
+			linkList.add(sourceOperator.getOutputLink(0));
+			linkList.add(destinationOperator.getInputLink(0));
+		}
+
+		return linkList;
+	}
 
 }
