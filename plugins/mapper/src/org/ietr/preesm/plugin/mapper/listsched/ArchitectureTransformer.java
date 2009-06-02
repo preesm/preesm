@@ -143,7 +143,8 @@ public class ArchitectureTransformer {
 			if (indexInterconnection.isDirected()) {
 				if ((srcComponent.getType() == ArchitectureComponentType.operator)
 						|| (srcComponent.getType() == ArchitectureComponentType.processor)
-						|| (srcComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+						|| (srcComponent.getType() == ArchitectureComponentType.ipCoprocessor)
+						|| (srcComponent.getType() == ArchitectureComponentType.communicationNode)) {
 					((TGVertexDescriptor) ComponentDescriptorBuffer
 							.get(srcComponent.getName()))
 							.addOutputLink((FifoDescriptor) ComponentDescriptorBuffer
@@ -154,7 +155,8 @@ public class ArchitectureTransformer {
 									.get(srcComponent.getName()));
 				} else if ((dstComponent.getType() == ArchitectureComponentType.operator)
 						|| (dstComponent.getType() == ArchitectureComponentType.processor)
-						|| (dstComponent.getType() == ArchitectureComponentType.ipCoprocessor)) {
+						|| (dstComponent.getType() == ArchitectureComponentType.ipCoprocessor)
+						|| (dstComponent.getType() == ArchitectureComponentType.communicationNode)) {
 					((TGVertexDescriptor) ComponentDescriptorBuffer
 							.get(dstComponent.getName()))
 							.addInputLink((FifoDescriptor) ComponentDescriptorBuffer

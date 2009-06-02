@@ -562,7 +562,10 @@ public class CSListSched extends AbstractScheduler {
 			}
 		} else {
 			linkList.add(sourceOperator.getOutputLink(0));
-			linkList.add(destinationOperator.getInputLink(0));
+			if (destinationOperator.getInputLink(0) != sourceOperator
+					.getOutputLink(0)) {
+				linkList.add(destinationOperator.getInputLink(0));
+			}
 		}
 
 		return linkList;
