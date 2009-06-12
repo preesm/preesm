@@ -119,6 +119,21 @@ public class Buffer extends Parameter {
 
 		this.edge = edge;
 	}
+	
+	public Buffer(String name, Integer size, DataType type,
+			AbstractBufferContainer container) {
+
+		super(name, type);
+		reduceName(container);
+		this.sourceID = null;
+		this.destID = null;
+		this.sourceOutputPortID = null;
+		this.destInputPortID = null;
+
+		this.size = size;
+
+		this.edge = null;
+	}
 
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

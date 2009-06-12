@@ -37,7 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.codegen.buffer;
 
 import org.ietr.preesm.core.codegen.DataType;
-import org.ietr.preesm.core.codegen.Variable;
+import org.ietr.preesm.core.codegen.expression.IExpression;
+import org.ietr.preesm.core.codegen.expression.Variable;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -45,34 +46,33 @@ import org.sdf4j.model.sdf.SDFEdge;
 
 public class SubBuffer extends Buffer {
 
-	private Variable index;
-	private int modulo ;
+	private IExpression index;
 	private Buffer parentBuffer;
 
-	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, AbstractBufferContainer container) {
+	public SubBuffer(String name, Integer size, IExpression index ,  Buffer parentBuffer, AbstractBufferContainer container) {
 		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
 		this.parentBuffer = parentBuffer;
 		this.index = index ;
-		modulo = parentBuffer.getSize();
 	}
 	
-	public SubBuffer(String name, Integer size, Variable index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+	public SubBuffer(String name, Integer size, IExpression index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
 		super(name, size, parentBuffer.getType(), edge, container);
 		this.parentBuffer = parentBuffer;
 		this.index = index ;
-		modulo = parentBuffer.getSize();
+	}
+	
+	public SubBuffer(String name, Integer size, IExpression index , DataType type,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+		super(name, size, type, edge, container);
+		this.parentBuffer = parentBuffer;
+		this.index = index ;
 	}
 
-	public Variable getIndex() {
+	public IExpression getIndex() {
 		return index;
 	}
 
 	public Buffer getParentBuffer() {
 		return parentBuffer;
-	}
-	
-	public int getModulo(){
-		return modulo ;
 	}
 
 	public void setIndex(Variable index) {

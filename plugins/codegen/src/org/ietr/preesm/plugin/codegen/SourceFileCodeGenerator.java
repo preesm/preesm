@@ -54,10 +54,9 @@ import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
+import org.ietr.preesm.core.codegen.buffer.VirtualHeapAllocator;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
@@ -78,6 +77,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class SourceFileCodeGenerator {
 
 	SourceFile file;
+	VirtualHeapAllocator heap ;
 
 	public SourceFileCodeGenerator(SourceFile file) {
 		this.file = file;
@@ -111,15 +111,15 @@ public class SourceFileCodeGenerator {
 	 * edge and false if the aggregate belongs to an outgoing edge
 	 */
 	public void allocateEdgeBuffers(SDFEdge edge) {
-
-		Buffer buf = new Buffer(edge.getSource().getName(), edge.getTarget()
-				.getName(), edge.getSourceInterface().getName(), edge
-				.getTargetInterface().getName(), ((CodeGenSDFEdge) edge)
-				.getSize(), new DataType(edge.getDataType().toString()), edge,
-				file.getGlobalContainer());
-
-		BufferAllocation allocation = new BufferAllocation(buf);
-		file.addBuffer(allocation);
+		String bufferName = edge.getSourceInterface().getName()
+		+ "_" + edge.getTargetInterface().getName();
+		try {
+			int size = edge.getProd().intValue()*edge.getSource().getNbRepeat();
+			file.allocateBuffer(edge,bufferName, size, new DataType(edge.getDataType().toString()));
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -193,9 +193,12 @@ public class SourceFileCodeGenerator {
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
+		heap = new VirtualHeapAllocator(computationThread);
+		computationThread.setVirtualHeap(heap);
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
 
+		
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
@@ -298,7 +301,9 @@ public class SourceFileCodeGenerator {
 	 */
 	public static boolean usesBufferInCodeContainerType(SDFAbstractVertex vertex,
 			CodeSectionType codeContainerType, Buffer buf, String direction) {
-
+		if(! (vertex.getRefinement() instanceof FunctionCall)){ //TODO : treat when the vertex has a graph refinement
+			return false ;
+		}
 		FunctionCall call = ((FunctionCall) vertex.getRefinement());
 		if (call != null) {
 

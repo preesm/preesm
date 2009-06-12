@@ -41,6 +41,9 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAtIndex;
 import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
+import org.ietr.preesm.core.codegen.expression.BinaryExpression;
+import org.ietr.preesm.core.codegen.expression.ConstantValue;
+import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
@@ -194,8 +197,8 @@ public class CodeElementFactory {
 					for (int i = 0; i < outEdge.getProd().intValue() / minToken; i++) {
 						UserFunctionCall copyCall = new UserFunctionCall(
 								"memcpy", parentContainer);
-						copyCall.addParameter(parentContainer
-								.getBuffer(outEdge));
+						copyCall.addParameter(new BufferAtIndex(new ConstantValue(i*minToken), parentContainer
+								.getBuffer(outEdge)));
 						copyCall.addParameter(parentContainer
 								.getBuffer(incomingEdge));
 						copyCall.addParameter(new Constant("size", minToken
@@ -339,12 +342,15 @@ public class CodeElementFactory {
 							.getEdgeIndex(outEdge));
 					String buffName = parentContainer.getBuffer(outEdge)
 							.getName();
+					
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(outEdge
+							.getProd().intValue())),new ConstantValue(inBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, outEdge
-							.getProd().intValue(), index, inBuffer, outEdge,
+							.getProd().intValue(),expr , inBuffer, outEdge,
 							parentContainer);
 					parentContainer.removeBufferAllocation(parentContainer
 							.getBuffer(outEdge));
-					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+					parentContainer.addSubBufferAllocation(new SubBufferAllocation(subElt));
 					i++;
 				}
 			} else if (vertex instanceof CodeGenSDFJoinVertex) {
@@ -360,12 +366,14 @@ public class CodeElementFactory {
 							.getEdgeIndex(inEdge));
 					String buffName = parentContainer.getBuffer(inEdge)
 							.getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(inEdge.getCons()
+							.intValue())),new ConstantValue(outBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
-							.intValue(), index, outBuffer, inEdge,
+							.intValue(), expr, outBuffer, inEdge,
 							parentContainer);
 					parentContainer.removeBufferAllocation(parentContainer
 							.getBuffer(inEdge));
-					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+					parentContainer.addSubBufferAllocation(new SubBufferAllocation(subElt));
 					i++;
 				}
 			} else if (vertex instanceof CodeGenSDFBroadcastVertex) {
@@ -379,12 +387,14 @@ public class CodeElementFactory {
 							"int"), 0);
 					String buffName = parentContainer.getBuffer(outEdge)
 							.getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(outEdge
+							.getCons().intValue())),new ConstantValue(inBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, outEdge
-							.getCons().intValue(), index, inBuffer, outEdge,
+							.getCons().intValue(), expr, inBuffer, outEdge,
 							parentContainer);
 					parentContainer.removeBufferAllocation(parentContainer
 							.getBuffer(outEdge));
-					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+					parentContainer.addSubBufferAllocation(new SubBufferAllocation(subElt));
 				}
 			} else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
 				SDFEdge outgoingEdge = null;
@@ -397,12 +407,14 @@ public class CodeElementFactory {
 							"int"), 0);
 					String buffName = parentContainer.getBuffer(inEdge)
 							.getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(inEdge
+							.getCons().intValue())),new ConstantValue(outBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
-							.intValue(), index, outBuffer, inEdge,
+							.intValue(),expr, outBuffer, inEdge,
 							parentContainer);
 					parentContainer.removeBufferAllocation(parentContainer
 							.getBuffer(inEdge));
-					parentContainer.addBuffer(new SubBufferAllocation(subElt));
+					parentContainer.addSubBufferAllocation(new SubBufferAllocation(subElt));
 				}
 			}
 		} catch (InvalidExpressionException e) {

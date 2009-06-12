@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.codegen;
 
+import org.ietr.preesm.core.codegen.expression.Variable;
+
 public class LoopIndex extends Variable {
 
 	char indexName;

@@ -33,60 +33,39 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.codegen.expression;
 
-package org.ietr.preesm.core.codegen;
+import org.ietr.preesm.core.codegen.DataType;
 
-import java.util.HashMap;
+public class Variable implements IExpression {
 
-/**
- * Representing a data type in code generation (exple: char, int...).
- * 
- * @author mpelcat
- */
-public class DataType {
-
-	private String typeName;
+	// Buffer generated from a name
+	/**
+	 * Buffer name if not generated from edge characteristics
+	 */
+	private String name;
 
 	/**
-	 * Size in base units (usually bytes)
+	 * Type of the allocated buffer
 	 */
-	private Integer size;
+	private DataType type;
 
-	public static final Integer defaultDataTypeSize = 1;
-	public static final HashMap<String, Integer> nameToSize = new HashMap<String, Integer>();
+	public Variable(String name, DataType type) {
 
-	public DataType(String typeName) {
-		super();
-		this.typeName = typeName;
-		if(nameToSize.get(typeName) == null){
-			this.size = defaultDataTypeSize;
-		}else{
-			this.size = nameToSize.get(typeName);
-		}
-	}
-	
-	public DataType(DataType type){
-		super();
-		this.typeName = type.getTypeName();
-		this.size = type.getSize();
-	}
-	
-	public DataType(String typeName, Integer size) {
-		super();
-		this.typeName = typeName;
-		this.size = size;
-		nameToSize.put(typeName, size);
+		this.type = type;
+		this.name = name;
 	}
 
-	public String getTypeName() {
-		return typeName;
-	}
-	
-	public Integer getSize() {
-		return size;
+	public String getName() {
+		return name;
 	}
 
-	public void setSize(Integer size) {
-		this.size = size;
+	public DataType getType() {
+		return type;
+	}
+
+	public String toString() {
+		return getName();
 	}
 }

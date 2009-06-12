@@ -445,6 +445,11 @@ public class CodeGenSDFGraphFactory {
 			}
 			clusterGraph.validateModel(PreesmLogger.getLogger());
 			cluster.setNbRepeat(pgcd);
+			for(SDFAbstractVertex vertex : clusterGraph.vertexSet()){
+				if(!(vertex instanceof SDFInterfaceVertex)){
+					vertex.setNbRepeat(vertex.getNbRepeat()/pgcd);
+				}
+			}
 			if (!hasDelay) {
 				throw (new PreesmException("Cycle with no delay in " + graph));
 			}
@@ -701,7 +706,7 @@ public class CodeGenSDFGraphFactory {
 					if (outEdge.getCons().intValue() > (outEdge.getProd()
 							.intValue())
 							|| SDFMath.gcd(outEdge.getCons().intValue(),
-									outEdge.getProd().intValue()) == 1) {
+									outEdge.getProd().intValue()) != outEdge.getCons().intValue()) {
 						SDFBroadcastVertex broadcast = new SDFBroadcastVertex();
 						SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
 						input.setName("in");

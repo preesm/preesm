@@ -40,14 +40,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.codegen.Variable;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.VariableAllocation;
+import org.ietr.preesm.core.codegen.expression.Variable;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreContainer;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFEdge;
 
 /**
@@ -62,7 +61,9 @@ public abstract class AbstractBufferContainer {
 	/**
 	 * Contained buffers
 	 */
-	protected List<BufferAllocation> buffers;
+	protected IBufferAllocator bufferAllocator;
+
+	protected List<BufferAllocation> allocs;
 
 	/**
 	 * If the container was created in another container, reference to the
@@ -87,7 +88,12 @@ public abstract class AbstractBufferContainer {
 	 *            A parent buffer container. May be <code>null</code>.
 	 */
 	public AbstractBufferContainer(AbstractBufferContainer parentContainer) {
-		this.buffers = new ArrayList<BufferAllocation>();
+		if (parentContainer != null && parentContainer.getHeap() != null) {
+			this.bufferAllocator = parentContainer.getHeap().openNewSection(this);
+		} else {
+			this.bufferAllocator = AllocationPolicy.getInstance().getAllocator(this);
+		}
+		allocs = new ArrayList<BufferAllocation>();
 		this.variables = new ArrayList<VariableAllocation>();
 		this.parentContainer = parentContainer;
 		this.semaphoreContainer = new SemaphoreContainer(this);
@@ -98,8 +104,12 @@ public abstract class AbstractBufferContainer {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
 
-		if (buffers.size() > 0) {
-			Iterator<BufferAllocation> iterator = buffers.iterator();
+		// print the buffer allocator
+		bufferAllocator.accept(printer, currentLocation);
+
+		// allocate sub-buffers
+		if (allocs.size() > 0) {
+			Iterator<BufferAllocation> iterator = allocs.iterator();
 
 			while (iterator.hasNext()) {
 				BufferAllocation alloc = iterator.next();
@@ -122,18 +132,23 @@ public abstract class AbstractBufferContainer {
 	 * @param buffer
 	 *            A {@link BufferAllocation}.
 	 */
+	public Buffer allocateBuffer(SDFEdge edge, String name, int size,
+			DataType type) {
+		return bufferAllocator.addBuffer(edge, name, size, type);
+	}
+
 	public void addBuffer(BufferAllocation alloc) {
-		if (!existBuffer(alloc.getBuffer().getName(),true))
-			buffers.add(alloc);
-		else{
-			alloc.getBuffer().reduceName(this);
-			addBuffer(alloc);
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"buffer " + alloc.getBuffer().getName()
-							+ " already exists in the source file list renamed to "+alloc.getBuffer().getName());
-		}
-			
+		allocs.add(alloc);
+	}
+
+	/**
+	 * Adds the given buffer to the buffer list.
+	 * 
+	 * @param buffer
+	 *            A {@link BufferAllocation}.
+	 */
+	public void addSubBufferAllocation(SubBufferAllocation alloc) {
+		allocs.add(alloc);
 	}
 
 	/**
@@ -146,19 +161,21 @@ public abstract class AbstractBufferContainer {
 		VariableAllocation alloc = new VariableAllocation(var);
 		variables.add(alloc);
 	}
-	
+
 	/**
 	 * Gives the variable with the given name
-	 * @param name The name of the variable to return
+	 * 
+	 * @param name
+	 *            The name of the variable to return
 	 * @return The variable if found, null otherwise
 	 */
-	public Variable getVariable(String name){
-		for(VariableAllocation var : variables){
-			if(var.getVariable().getName().equals(name)){
+	public Variable getVariable(String name) {
+		for (VariableAllocation var : variables) {
+			if (var.getVariable().getName().equals(name)) {
 				return var.getVariable();
 			}
 		}
-		return null ;
+		return null;
 	}
 
 	/**
@@ -166,9 +183,17 @@ public abstract class AbstractBufferContainer {
 	 * (accessible or not).
 	 */
 	public boolean existBuffer(String name, boolean searchInOtherFiles) {
-		Iterator<BufferAllocation> iterator = buffers.iterator();
+		if (bufferAllocator == null) {
+			return false;
+		}
+		
+		if(bufferAllocator.getBuffer(name) != null){
+			return true ;
+		}
+		
 
-		// Looks for the buffer in the current container
+		// Looks for the buffer in the current sub-buffers
+		Iterator<BufferAllocation> iterator = allocs.iterator();
 		while (iterator.hasNext()) {
 			BufferAllocation alloc = iterator.next();
 			@SuppressWarnings("unused")
@@ -201,12 +226,14 @@ public abstract class AbstractBufferContainer {
 	}
 
 	public Buffer getBuffer(SDFEdge edge) {
-		for (BufferAllocation alloc : buffers) {
+		for (BufferAllocation alloc : allocs) {
 			if (alloc.getBuffer().getEdge().equals(edge)) {
 				return alloc.getBuffer();
 			}
 		}
-
+		if(bufferAllocator.getBuffer(edge) != null){
+			return bufferAllocator.getBuffer(edge) ;
+		}
 		if (parentContainer != null)
 			return (parentContainer.getBuffer(edge));
 
@@ -243,31 +270,41 @@ public abstract class AbstractBufferContainer {
 		return variables;
 	}
 
-	
-	public List<BufferAllocation> getBufferAllocations(){
-		return buffers;
+	public List<BufferAllocation> getBufferAllocations() {
+		return bufferAllocator.getBufferAllocations();
 	}
-	
-	
+
+	public List<BufferAllocation> getSubBufferAllocations() {
+		return allocs;
+	}
+
 	/**
 	 * Add a global buffer declaration
+	 * 
 	 * @param alloc
 	 */
-	public void addGlobalBuffer(BufferAllocation alloc){
-		getGlobalContainer().addBuffer(alloc);
+	public Buffer addGlobalBuffer(SDFEdge edge, String name, int size,
+			DataType type) {
+		return getGlobalContainer().allocateBuffer(edge, name, size, type);
 	}
-	
-	public void removeBufferAllocation(Buffer buff){
-		for(int i = 0 ; i < buffers.size() ; i ++){
-			BufferAllocation alloc = buffers.get(i);
-			if(alloc.getBuffer().equals(buff)){
-				buffers.remove(alloc);
-				return ;
+
+	public void removeBufferAllocation(Buffer buff) {
+		if(bufferAllocator.removeBufferAllocation(buff)){
+			return ;
+		}
+
+		for (int i = 0; i < allocs.size(); i++) {
+			BufferAllocation alloc = allocs.get(i);
+			if (alloc.getBuffer().equals(buff)) {
+				allocs.remove(alloc);
+				return;
 			}
 		}
-		this.parentContainer.removeBufferAllocation(buff);
+		if (this.parentContainer != null) {
+			this.parentContainer.removeBufferAllocation(buff);
+		}
 	}
-	
+
 	@Override
 	public String toString() {
 		String code = "";
@@ -275,12 +312,16 @@ public abstract class AbstractBufferContainer {
 		code += "\n//Buffer allocation for " + getName() + "\n";
 
 		// Displays allocations
-		for (BufferAllocation alloc : buffers) {
+		for (BufferAllocation alloc : bufferAllocator.getBufferAllocations()) {
 			code += alloc.toString();
 			code += "\n";
 		}
 
 		return code;
+	}
+
+	public IBufferAllocator getHeap() {
+		return bufferAllocator;
 	}
 
 }

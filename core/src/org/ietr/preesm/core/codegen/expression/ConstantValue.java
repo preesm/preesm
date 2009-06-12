@@ -1,4 +1,6 @@
-package org.ietr.preesm.core.codegen;
+package org.ietr.preesm.core.codegen.expression;
+
+import org.ietr.preesm.core.codegen.DataType;
 
 public class ConstantValue extends Variable{
 
@@ -11,7 +13,7 @@ public class ConstantValue extends Variable{
 	}
 	
 	public ConstantValue(int value) {
-		super("", new DataType(""));
+		super("",new DataType("long"));
 		this.value = value ;
 	}
 	

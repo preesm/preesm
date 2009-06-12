@@ -1,7 +1,7 @@
 package org.ietr.preesm.core.codegen.buffer;
 
 import org.ietr.preesm.core.codegen.Parameter;
-import org.ietr.preesm.core.codegen.Variable;
+import org.ietr.preesm.core.codegen.expression.Variable;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 

@@ -44,14 +44,12 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
-import net.sf.saxon.expr.CodeGeneratorService;
-
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
+import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;

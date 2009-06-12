@@ -51,7 +51,6 @@ import org.ietr.preesm.core.codegen.FiniteForLoop;
 import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.LaunchThread;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
-import org.ietr.preesm.core.codegen.LoopIndex;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SpecialBehaviorCall;
 import org.ietr.preesm.core.codegen.ThreadDeclaration;
@@ -226,7 +225,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element)currentLocation).appendChild(buffer);
 			buffer.setAttribute("name", domElt.getName());
 			buffer.setAttribute("parentBuffer", domElt.getParentBuffer().getName());
-			buffer.setAttribute("index", domElt.getIndex().getName());
+			buffer.setAttribute("index", domElt.getIndex().toString());
 			buffer.setAttribute("size", domElt.getSize().toString());
 		} 
 		
@@ -240,7 +239,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element buffer = dom.createElement("bufferAtIndex");
 			((Element)currentLocation).appendChild(buffer);
 			buffer.setAttribute("name", domElt.getParentBuffer().getName());
-			buffer.setAttribute("index", domElt.getIndex().getName());
+			buffer.setAttribute("index", domElt.getIndex().toString());
 		} 
 		return currentLocation;
 	}
@@ -566,11 +565,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			bufferAllocation.setAttribute("name", element.getBuffer().getName());
 			bufferAllocation.setAttribute("size", element.getBuffer().getSize().toString());
 			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
-			if(((SubBuffer) element.getBuffer()).getIndex() instanceof LoopIndex){
-				bufferAllocation.setAttribute("modulo",  Integer.toString(((SubBuffer) element.getBuffer()).getModulo()));
-			}
 			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element.getBuffer()).getParentBuffer().getName());
-			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().getName());
+			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().toString());
 		} 
 		
 		return currentLocation;

@@ -47,6 +47,9 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
+import org.ietr.preesm.core.codegen.expression.BinaryExpression;
+import org.ietr.preesm.core.codegen.expression.ConstantValue;
+import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
@@ -59,6 +62,8 @@ import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFInterfaceVertex;
+import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
+import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 
@@ -75,7 +80,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 
 	private List<ICodeElement> calls;
 
-	private HashMap<SDFEdge, Buffer> allocatedBuffers;
+	private HashMap<SDFEdge, Buffer> localBuffers;
 
 	private SDFAbstractVertex correspondingVertex;
 
@@ -93,7 +98,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 			AbstractBufferContainer parentContainer,
 			ICodeGenSDFVertex correspondingVertex) {
 		super(parentContainer);
-		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
+		localBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = (SDFAbstractVertex) correspondingVertex;
@@ -125,27 +130,22 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 						Buffer parentBuffer = parentContainer
 								.getBuffer(outEdge);
 						this.addBuffer(parentBuffer, edge);
-					} else if (this.getBuffer(edge) == null) {
+					} else if (this.getBuffer(edge) == null && needToBeAllocated(edge)) {
 						String bufferName = edge.getSourceInterface().getName()
 								+ "_" + edge.getTargetInterface().getName();
 						if (edge.getTarget() == edge.getSource()) {
-							this.addGlobalBuffer(new BufferAllocation(new Buffer(
-									bufferName, Math.max(edge.getProd()
-											.intValue(), edge.getCons()
-											.intValue()), new DataType(edge
-											.getDataType().toString()), edge,
-									parentContainer)));
+							this.allocateBuffer(edge,
+									bufferName, edge.getProd().intValue(), new DataType(edge
+											.getDataType().toString()));
 						} else {
-							this.addGlobalBuffer(new BufferAllocation(
-									new Buffer(bufferName, Math.max(edge
+							this.allocateBuffer(edge, bufferName, Math.max(edge
 											.getProd().intValue()
 											* edge.getSource().getNbRepeat(),
 											edge.getCons().intValue()
 													* edge.getTarget()
 															.getNbRepeat()),
 											new DataType(edge.getDataType()
-													.toString()), edge,
-											parentContainer)));
+													.toString()));
 						}
 					}
 					if (edge.getDelay().intValue() > 0) {
@@ -177,7 +177,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer) {
 		super(parentContainer);
-		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
+		localBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;
 		calls = new ArrayList<ICodeElement>();
@@ -193,11 +193,18 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 	 * @param edge The edge this buffer is associated to
 	 */
 	public void addBuffer(Buffer buff, SDFEdge edge) {
-		if (allocatedBuffers.get(edge) == null) {
-			allocatedBuffers.put(edge, buff);
+		if (localBuffers.get(edge) == null) {
+			localBuffers.put(edge, buff);
 		}
 	}
 
+	private boolean needToBeAllocated(SDFEdge edge){
+		if((edge.getSource() instanceof SDFBroadcastVertex) || (edge.getTarget() instanceof SDFRoundBufferVertex)){
+			return false;
+		}
+		return true ;
+	}
+	
 	/**
 	 * Treat teh calls of this compound element
 	 * @param vertices
@@ -273,13 +280,15 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 							.getEdgeIndex(outEdge));
 					String buffName = parentContainer.getBuffer(outEdge)
 							.getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(outEdge
+							.getProd().intValue())),new ConstantValue(inBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, outEdge
-							.getProd().intValue(), index, inBuffer, outEdge,
+							.getProd().intValue(), expr, inBuffer, outEdge,
 							parentContainer);
-					if (allocatedBuffers.get(outEdge) == null) {
+					if (localBuffers.get(outEdge) == null) {
 						parentContainer.removeBufferAllocation(parentContainer
 								.getBuffer(outEdge));
-						parentContainer.addBuffer(new SubBufferAllocation(
+						parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 								subElt));
 					}
 					i++;
@@ -297,13 +306,15 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 							.getEdgeIndex(inEdge));
 					String buffName = parentContainer.getBuffer(inEdge)
 							.getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(inEdge.getCons()
+							.intValue())),new ConstantValue(outBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
-							.intValue(), index, outBuffer, inEdge,
+							.intValue(), expr, outBuffer, inEdge,
 							parentContainer);
-					if (allocatedBuffers.get(inEdge) == null) {
+					if (localBuffers.get(inEdge) == null) {
 						parentContainer.removeBufferAllocation(parentContainer
 								.getBuffer(inEdge));
-						parentContainer.addBuffer(new SubBufferAllocation(
+						parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 								subElt));
 					}
 					i++;
@@ -322,15 +333,17 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
 					ConstantValue index = new ConstantValue("", new DataType(
 							"int"), 0);
-					String buffName = parentContainer.getBuffer(outEdge)
-							.getName();
+					String buffName = outEdge.getSourceInterface().getName()
+					+ "_" + outEdge.getTargetInterface().getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(outEdge
+							.getCons().intValue())),new ConstantValue(inBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, outEdge
-							.getProd().intValue(), index, inBuffer, outEdge,
+							.getProd().intValue(), expr, inBuffer, outEdge,
 							parentContainer);
-					if (allocatedBuffers.get(outEdge) == null) {
+					if (localBuffers.get(outEdge) == null) {
 						parentContainer.removeBufferAllocation(parentContainer
 								.getBuffer(outEdge));
-						parentContainer.addBuffer(new SubBufferAllocation(
+						parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 								subElt));
 					}
 				}
@@ -343,15 +356,17 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
 					ConstantValue index = new ConstantValue("", new DataType(
 							"int"), 0);
-					String buffName = parentContainer.getBuffer(inEdge)
-							.getName();
+					String buffName = inEdge.getSourceInterface().getName()
+					+ "_" + inEdge.getTargetInterface().getName();
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(inEdge.getCons()
+							.intValue())),new ConstantValue(outBuffer.getSize()));
 					SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
-							.intValue(), index, outBuffer, inEdge,
+							.intValue(), expr, outBuffer, inEdge,
 							parentContainer);
-					if (allocatedBuffers.get(inEdge) == null) {
+					if (localBuffers.get(inEdge) == null) {
 						parentContainer.removeBufferAllocation(parentContainer
 								.getBuffer(inEdge));
-						parentContainer.addBuffer(new SubBufferAllocation(
+						parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 								subElt));
 					}
 					;
@@ -364,10 +379,10 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 	}
 
 	public Buffer getBuffer(SDFEdge edge) {
-		if (allocatedBuffers.get(edge) == null) {
+		if (localBuffers.get(edge) == null) {
 			return super.getBuffer(edge);
 		} else {
-			return allocatedBuffers.get(edge);
+			return localBuffers.get(edge);
 		}
 	}
 
@@ -379,6 +394,9 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 			VariableAllocation alloc = iterator2.next();
 			alloc.accept(printer, currentLocation); // Accepts allocations
 		}
+		// print the buffer allocator
+		bufferAllocator.accept(printer, currentLocation);
+		
 		if (this.getParentContainer() instanceof FiniteForLoop) {
 			for (BufferAllocation buff : this.getParentContainer()
 					.getBufferAllocations()) {
@@ -386,12 +404,23 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 					buff.accept(printer, currentLocation);
 				}
 			}
-		}
-		for (BufferAllocation buff : this.getBufferAllocations()) {
-			if (buff != null) {
-				buff.accept(printer, currentLocation);
+			for (BufferAllocation buff : this.getParentContainer()
+					.getSubBufferAllocations()) {
+				if (buff != null) {
+					buff.accept(printer, currentLocation);
+				}
 			}
 		}
+//		for (BufferAllocation buff : this.getBufferAllocations()) {
+//			if (buff != null) {
+//				buff.accept(printer, currentLocation);
+//			}
+//		}
+//		for (BufferAllocation buff : this.getSubBufferAllocations()) {
+//			if (buff != null) {
+//				buff.accept(printer, currentLocation);
+//			}
+//		}
 		for (ICodeElement call : calls) {
 			call.accept(printer, currentLocation);
 		}

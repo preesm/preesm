@@ -41,6 +41,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
+import org.ietr.preesm.core.codegen.buffer.VirtualHeapAllocator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -53,8 +54,14 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class ComputationThreadDeclaration extends ThreadDeclaration {
 
+	VirtualHeapAllocator heap ;
+	
 	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
 		super("computationThread", parentContainer);
+	}
+	
+	public void setVirtualHeap(VirtualHeapAllocator heap){
+		this.heap = heap ;
 	}
 
 	/**

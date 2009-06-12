@@ -38,7 +38,6 @@ package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
-import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -76,14 +75,6 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 	public SDFAbstractVertex getCorrespondingVertex() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	public void addBuffer(BufferAllocation alloc){
-		if(alloc instanceof SubBufferAllocation){
-			super.addBuffer(alloc);
-		}else if(alloc instanceof BufferAllocation){
-			super.addGlobalBuffer(alloc);
-		}
 	}
 
 

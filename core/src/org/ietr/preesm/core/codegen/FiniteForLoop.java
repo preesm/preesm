@@ -43,6 +43,9 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.buffer.SubBufferAllocation;
+import org.ietr.preesm.core.codegen.expression.BinaryExpression;
+import org.ietr.preesm.core.codegen.expression.ConstantValue;
+import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -112,12 +115,14 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			if (parentBufferContainer != null && allocatedBuffers.get(edge) == null) {
 				if (edge.getProd().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(edge.getProd()
+							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getSize()));
 					SubBuffer newBuffer = new SubBuffer("inSub_" + index.getName() + "_"
 							+ parentBufferContainer.getBuffer(edge).getName(),
-							edge.getProd().intValue(), index,
+							edge.getProd().intValue(), expr,
 							parentBufferContainer.getBuffer(edge),
 							parentBufferContainer);
-					this.addBuffer(new SubBufferAllocation(newBuffer));
+					this.addSubBufferAllocation(new SubBufferAllocation(newBuffer));
 					this.addBuffer(newBuffer, edge);
 				} else {
 					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);
@@ -142,12 +147,12 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			if (parentBufferContainer != null && allocatedBuffers.get(edge) == null) {
 				if (edge.getCons().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
+					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(edge.getCons()
+							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getSize()));
 					SubBuffer newBuffer = new SubBuffer("outSub_" + index.getName() + "_"
-							+ parentBufferContainer.getBuffer(edge).getName(),
-							edge.getCons().intValue(), index,
-							parentBufferContainer.getBuffer(edge),
-							parentBufferContainer);
-					this.addBuffer(new SubBufferAllocation(newBuffer));
+							+ parentBufferContainer.getBuffer(edge).getName(), edge.getCons().intValue(), expr, parentBufferContainer.getBuffer(edge)
+							,parentBufferContainer);
+					this.addSubBufferAllocation(new SubBufferAllocation(newBuffer));
 					this.addBuffer(newBuffer, edge);
 				} else {
 					this.addBuffer(parentBufferContainer.getBuffer(edge), edge);

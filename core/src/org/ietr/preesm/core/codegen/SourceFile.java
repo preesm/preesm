@@ -168,7 +168,7 @@ public class SourceFile extends AbstractBufferContainer {
 	public boolean existBuffer(String name, boolean searchInOtherFiles) {
 		boolean bufferFound = super.existBuffer(name,false);
 		
-		if(!bufferFound && searchInOtherFiles){
+		if(!bufferFound && searchInOtherFiles && fileList != null){
 			for(SourceFile file : fileList){
 				bufferFound |= file.existBuffer(name,false);
 			}

@@ -216,6 +216,7 @@ public class CompThreadCodeGenerator {
 		}
 	}
 
+
 	/**
 	 * Adds one function call for each vertex in the ordered set
 	 */
