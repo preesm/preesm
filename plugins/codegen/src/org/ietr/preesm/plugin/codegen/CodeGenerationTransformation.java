@@ -48,6 +48,8 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
+import org.ietr.preesm.core.codegen.buffer.AllocationPolicy;
+import org.ietr.preesm.core.codegen.buffer.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
@@ -149,6 +151,10 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
 		
+		String allocPolicy = parameters.getVariable("allocationPolicy");
+		if(allocPolicy != null && BufferAllocator.fromString(allocPolicy) != null){
+			AllocationPolicy.setAllocatorType(BufferAllocator.fromString(allocPolicy));
+		}
 		// Generating the code generation specific graph
 		CodeGenSDFGraph codeGenSDFGraph = null;
 		try {

@@ -5,9 +5,9 @@
       <vertex id="__architecture" x="231" y="424"/>
       <vertex id="__scenario" x="57" y="444"/>
       <vertex id="HierarchyFlattening" x="303" y="183"/>
-      <vertex id="CodeGen" x="581" y="478"/>
+      <vertex id="CodeGen" x="647" y="444"/>
       <vertex id="Exporter" x="473" y="134"/>
-      <vertex id="Mapper" x="381" y="340"/>
+      <vertex id="Mapper" x="377" y="309"/>
       <vertex id="HSDF" x="452" y="208"/>
       <vertex id="FAST scheduler" x="57" y="351"/>
       <vertex id="Plotter" x="581" y="349"/>

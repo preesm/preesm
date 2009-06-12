@@ -11,6 +11,7 @@
     </preesm:task>
     <preesm:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
         <data key="variables">
+            <variable name="allocationPolicy" value="VirtualHeap"/>
             <variable name="sourcePath" value="FFT"/>
             <variable name="xslLibraryPath" value="FFT/Code/XSL"/>
         </data>

@@ -4,8 +4,29 @@
     <coreName>PC</coreName>
     <SourceFile>
         <bufferContainer>
-            <bufferAllocation name="dataOut_timeData" size="16" type="char"/>
-            <bufferAllocation name="fftData_dataIn" size="0" type="char"/>
+            <bufferAllocation name="virtual_heap" size="113" type="char"/>
+            <subBufferAllocation index="0" name="dataOut_timeData"
+                parentBuffer="virtual_heap" size="16" type="char"/>
+            <subBufferAllocation index="16" name="fftData_dataIn"
+                parentBuffer="virtual_heap" size="0" type="char"/>
+            <subBufferAllocation index="48" name="out_cluster_0_trig_0"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="32" name="outLoopPort_0_inLo_0"
+                parentBuffer="virtual_heap" size="0" type="char"/>
+            <subBufferAllocation index="64" name="data2Out_data2In"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="56" name="data1Out_data1In"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="80" name="data2Out_data2In_0"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="72" name="data1Out_data1In_0"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="96" name="dataOut_in"
+                parentBuffer="virtual_heap" size="16" type="char"/>
+            <subBufferAllocation index="88" name="weights_W"
+                parentBuffer="virtual_heap" size="8" type="char"/>
+            <subBufferAllocation index="112" name="res_in"
+                parentBuffer="virtual_heap" size="1" type="char"/>
         </bufferContainer>
         <threadDeclaration name="computationThread">
             <bufferContainer>
@@ -16,49 +37,41 @@
             <forLoop>
                 <userFunctionCall name="GenerateTimeSample"/>
                 <CompoundCode name="ComputeFFT">
-                    <bufferAllocation name="out_cluster_0_trig_0"
-                        size="8" type="char"/>
-                    <bufferAllocation name="outLoopPort_0_inLo_0"
-                        size="0" type="char"/>
                     <userFunctionCall name="init_inLoopPort_0">
-                        <buffer name="outLoopPort_0_inLo_0" size="0" type="char"/>
+                        <subBuffer index="32"
+                            name="outLoopPort_0_inLo_0"
+                            parentBuffer="virtual_heap" size="0"/>
                         <constant name="init_size" type="int" value="16"/>
                     </userFunctionCall>
                     <userFunctionCall name="trigger"/>
                     <finiteForLoop domain="8" index="i">
                         <CompoundCode name="cluster_0">
-                            <bufferAllocation name="weights_W" size="8" type="char"/>
-                            <bufferAllocation name="data2Out_data2In_0"
-                                size="8" type="char"/>
-                            <bufferAllocation name="dataOut_in"
-                                size="16" type="char"/>
-                            <bufferAllocation name="data1Out_data1In_0"
-                                size="8" type="char"/>
-                            <bufferAllocation name="data1Out_data1In"
-                                size="8" type="char"/>
-                            <bufferAllocation name="data2Out_data2In"
-                                size="8" type="char"/>
                             <subBufferAllocation index="((i*1)%8)"
                                 name="outSub_i_out_clust_0"
                                 parentBuffer="out_cluster_0_trig_0"
                                 size="1" type="char"/>
                             <userFunctionCall name="sortData">
-                                <buffer name="dataOut_timeData"
-                                    size="16" type="char"/>
-                                <buffer name="outLoopPort_0_inLo_0"
-                                    size="0" type="char"/>
+                                <subBuffer index="0"
+                                    name="dataOut_timeData"
+                                    parentBuffer="virtual_heap" size="16"/>
+                                <subBuffer index="32"
+                                    name="outLoopPort_0_inLo_0"
+                                    parentBuffer="virtual_heap" size="0"/>
                                 <subBuffer index="((i*1)%8)"
                                     name="outSub_i_out_clust_0"
                                     parentBuffer="out_cluster_0_trig_0" size="1"/>
-                                <buffer name="data1Out_data1In" size="8" type="char"/>
-                                <buffer name="data2Out_data2In" size="8" type="char"/>
-                                <buffer name="weights_W" size="8" type="char"/>
+                                <subBuffer index="56"
+                                    name="data1Out_data1In"
+                                    parentBuffer="virtual_heap" size="8"/>
+                                <subBuffer index="64"
+                                    name="data2Out_data2In"
+                                    parentBuffer="virtual_heap" size="8"/>
+                                <subBuffer index="88" name="weights_W"
+                                    parentBuffer="virtual_heap" size="8"/>
                                 <constant name="size" type="int" value="16"/>
                             </userFunctionCall>
                             <finiteForLoop domain="8" index="j">
                                 <CompoundCode name="butterflyStep">
-                                    <bufferAllocation name="res_in"
-                                    size="1" type="char"/>
                                     <subBufferAllocation
                                     index="((j*1)%8)"
                                     name="inSub_j_data1Out_d_0"
@@ -91,7 +104,9 @@
                                     <subBuffer index="((j*1)%8)"
                                     name="outSub_j_weights_W"
                                     parentBuffer="weights_W" size="1"/>
-                                    <buffer name="res_in" size="1" type="char"/>
+                                    <subBuffer index="112"
+                                    name="res_in"
+                                    parentBuffer="virtual_heap" size="1"/>
                                     </userFunctionCall>
                                     <userFunctionCall name="add">
                                     <subBuffer index="((j*1)%8)"
@@ -118,11 +133,14 @@
                                 </CompoundCode>
                             </finiteForLoop>
                             <userFunctionCall name="collectData">
-                                <buffer name="data1Out_data1In_0"
-                                    size="8" type="char"/>
-                                <buffer name="data2Out_data2In_0"
-                                    size="8" type="char"/>
-                                <buffer name="dataOut_in" size="16" type="char"/>
+                                <subBuffer index="72"
+                                    name="data1Out_data1In_0"
+                                    parentBuffer="virtual_heap" size="8"/>
+                                <subBuffer index="80"
+                                    name="data2Out_data2In_0"
+                                    parentBuffer="virtual_heap" size="8"/>
+                                <subBuffer index="96" name="dataOut_in"
+                                    parentBuffer="virtual_heap" size="16"/>
                                 <constant name="size" type="int" value="16"/>
                             </userFunctionCall>
                             <CompoundCode name="brSamples">

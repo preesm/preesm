@@ -1,8 +1,18 @@
     #include "../../Lib_com/include/x86.h"
 
     // Buffer declarations
-    char dataOut_timeData[16];
-    char *fftData_dataIn;
+    char virtual_heap[113];
+    char *dataOut_timeData = &virtual_heap [0];
+    char *fftData_dataIn = &virtual_heap [16];
+    char *out_cluster_0_trig_0 = &virtual_heap [48];
+    char *outLoopPort_0_inLo_0 = &virtual_heap [32];
+    char *data2Out_data2In = &virtual_heap [64];
+    char *data1Out_data1In = &virtual_heap [56];
+    char *data2Out_data2In_0 = &virtual_heap [80];
+    char *data1Out_data1In_0 = &virtual_heap [72];
+    char *dataOut_in = &virtual_heap [96];
+    char *weights_W = &virtual_heap [88];
+    char *res_in = &virtual_heap [112];
 
     DWORD WINAPI computationThread_PC( LPVOID lpParam );
 
@@ -14,23 +24,14 @@
         for(;;){
             GenerateTimeSample();
             {//ComputeFFT
-                char out_cluster_0_trig_0[8];
-                char *outLoopPort_0_inLo_0;
                 init_inLoopPort_0(outLoopPort_0_inLo_0, 16/*init_size*/);
                 trigger();
                 for(i = 0; i<8 ; i ++)
                 {//cluster_0
-                    char weights_W[8];
-                    char data2Out_data2In_0[8];
-                    char dataOut_in[16];
-                    char data1Out_data1In_0[8];
-                    char data1Out_data1In[8];
-                    char data2Out_data2In[8];
                     char *outSub_i_out_clust_0 = &out_cluster_0_trig_0 [((i*1)%8)];
                     sortData(dataOut_timeData, outLoopPort_0_inLo_0, outSub_i_out_clust_0, data1Out_data1In, data2Out_data2In, weights_W, 16/*size*/);
                     for(j = 0; j<8 ; j ++)
                     {//butterflyStep
-                        char res_in[1];
                         char *inSub_j_data1Out_d_0 = &data1Out_data1In_0 [((j*1)%8)];
                         char *inSub_j_data2Out_d_0 = &data2Out_data2In_0 [((j*1)%8)];
                         char *outSub_j_data1Out__0 = &data1Out_data1In [((j*1)%8)];

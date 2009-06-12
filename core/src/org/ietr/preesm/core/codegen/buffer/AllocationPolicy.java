@@ -3,7 +3,7 @@ package org.ietr.preesm.core.codegen.buffer;
 public class  AllocationPolicy{
 
 	public static AllocationPolicy instance = null;
-	public static BufferAllocator allocatorType = BufferAllocator.Local ;
+	public static BufferAllocator allocatorType = BufferAllocator.Global ;
 	
 	public static AllocationPolicy getInstance(){
 		if(instance == null){
