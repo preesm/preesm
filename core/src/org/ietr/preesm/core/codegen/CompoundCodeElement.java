@@ -206,7 +206,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 	}
 	
 	/**
-	 * Treat teh calls of this compound element
+	 * Treat the calls of this compound element
 	 * @param vertices
 	 */
 	private void treatCalls(Set<SDFAbstractVertex> vertices) {
@@ -416,11 +416,11 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 //				buff.accept(printer, currentLocation);
 //			}
 //		}
-//		for (BufferAllocation buff : this.getSubBufferAllocations()) {
-//			if (buff != null) {
-//				buff.accept(printer, currentLocation);
-//			}
-//		}
+		for (BufferAllocation buff : this.getSubBufferAllocations()) {
+			if (buff != null) {
+				buff.accept(printer, currentLocation);
+			}
+		}
 		for (ICodeElement call : calls) {
 			call.accept(printer, currentLocation);
 		}
