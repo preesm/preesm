@@ -98,7 +98,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 		try {
 			addPage(ganttPage);
 			addPage(overviewPage);
-			addPage(performancePage);
+			//addPage(performancePage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
