@@ -150,7 +150,7 @@ public class PerformancePlotter extends ApplicationFrame {
 		// Creating the best speedups subplot
 		this.speedups = new DefaultXYDataset();
 		
-		final NumberAxis rangeAxis = new NumberAxis("Maximum achievable speedups");
+		final NumberAxis rangeAxis = new NumberAxis("speedups");
 		
 		rangeAxis.setAutoRangeIncludesZero(false);
 		final XYPlot subplot = new XYPlot(this.speedups, null,

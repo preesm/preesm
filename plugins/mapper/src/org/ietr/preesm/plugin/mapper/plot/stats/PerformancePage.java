@@ -98,9 +98,9 @@ public class PerformancePage extends FormPage {
 		plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
 		
 		// Explanation on how to read the chart
-		createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
+		/*createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
 				Messages.getString("Performance.Explanation.description"));
-		
+		*/
 		createChartSection(managedForm, Messages.getString("Performance.Chart.title"), Messages.getString("Performance.Chart.description"));
 
 		managedForm.refresh();
@@ -143,8 +143,8 @@ public class PerformancePage extends FormPage {
 	 */
 	private void createExplanationSection(IManagedForm mform, String title, String desc) {
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 200;
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+		gridData.heightHint = 500;
 		
 		Composite client = createSection(mform, title, desc, 1,
 				gridData);
