@@ -129,7 +129,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 	private Semaphore pauseSemaphore = null;
 
 	/**
-	 * Constructs a new demonstration application.
+	 * Constructs the latency plotter
 	 * 
 	 * @param title
 	 *            the frame title.

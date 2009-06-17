@@ -53,7 +53,7 @@ import org.eclipse.swt.graphics.Image;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.plugin.mapper.plot.stats.Messages;
+import org.ietr.preesm.plugin.mapper.plot.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 
 /**

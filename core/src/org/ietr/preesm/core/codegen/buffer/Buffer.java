@@ -36,10 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.buffer;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.Parameter;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFEdge;
 
 /**
@@ -100,6 +103,10 @@ public class Buffer extends Parameter {
 			this.destInputPortID = edge.getTargetInterface().getName();
 		}
 
+		if(size == 0){
+			PreesmLogger.getLogger().log(Level.SEVERE,"Adding a buffer of size 0: " + getName());
+		}
+		
 		this.size = size;
 		this.edge = edge;
 	}
@@ -115,8 +122,11 @@ public class Buffer extends Parameter {
 		this.sourceOutputPortID = sourceOutputPortID;
 		this.destInputPortID = destInputPortID;
 
+		if(size == 0){
+			PreesmLogger.getLogger().log(Level.SEVERE,"Adding a buffer of size 0: " + getName());
+		}
+		
 		this.size = size;
-
 		this.edge = edge;
 	}
 	

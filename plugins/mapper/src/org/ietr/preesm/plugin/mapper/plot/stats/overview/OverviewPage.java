@@ -63,7 +63,7 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.plugin.mapper.plot.stats.Messages;
+import org.ietr.preesm.plugin.mapper.plot.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 
 /**

@@ -304,6 +304,10 @@ public class SourceFileCodeGenerator {
 		if(! (vertex.getRefinement() instanceof FunctionCall)){ //TODO : treat when the vertex has a graph refinement
 			return false ;
 		}
+		if(vertex.getRefinement() == null || !(vertex.getRefinement() instanceof FunctionCall)){
+			return true;
+		}
+		
 		FunctionCall call = ((FunctionCall) vertex.getRefinement());
 		if (call != null) {
 

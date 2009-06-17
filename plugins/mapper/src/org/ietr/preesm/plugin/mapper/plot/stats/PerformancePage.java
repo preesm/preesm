@@ -36,11 +36,28 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
+import java.util.Set;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.preesm.plugin.mapper.plot.Messages;
 
 /**
  * This page displays the quality of the current implementation compared to the 
@@ -49,8 +66,16 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
  * @author mpelcat
  */
 public class PerformancePage extends FormPage {
-
+	
+	/**
+	 * The class generating the performance data
+	 */
 	private StatGenerator statGen = null;
+
+	/**
+	 * The class plotting the performance data
+	 */
+	PerformancePlotter plotter = null;
 	
 
 	public PerformancePage(StatGenerator statGen, FormEditor editor, String id, String title) {
@@ -66,20 +91,97 @@ public class PerformancePage extends FormPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		
 		ScrolledForm form = managedForm.getForm();
-		ColumnLayout layout = new ColumnLayout();
-		layout.topMargin = 0;
-		layout.bottomMargin = 5;
-		layout.leftMargin = 10;
-		layout.rightMargin = 10;
-		layout.horizontalSpacing = 10;
-		layout.verticalSpacing = 10;
-		layout.maxNumColumns = 4;
-		layout.minNumColumns = 1;
+		form.setText(Messages.getString("Performance.title"));
+		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
-
-		PerformancePlotter plotter = new PerformancePlotter("Performance");
-		plotter.display(form.getBody());
 		
+		plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
+		
+		// Explanation on how to read the chart
+		createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
+				Messages.getString("Performance.Explanation.description"));
+		
+		createChartSection(managedForm, Messages.getString("Performance.Chart.title"), Messages.getString("Performance.Chart.description"));
+
+		managedForm.refresh();
+	}
+
+	/**
+	 * Creates a generic section
+	 */
+	public Composite createSection(IManagedForm mform, String title,
+			String desc, int numColumns, GridData gridData) {
+
+		final ScrolledForm form = mform.getForm();
+		FormToolkit toolkit = mform.getToolkit();
+		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
+				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		section.setText(title);
+		section.setDescription(desc);
+		toolkit.createCompositeSeparator(section);
+		Composite client = toolkit.createComposite(section);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = numColumns;
+		client.setLayout(layout);
+		section.setClient(client);
+		section.addExpansionListener(new ExpansionAdapter() {
+			public void expansionStateChanged(ExpansionEvent e) {
+				form.reflow(false);
+			}
+		});
+		section.setLayoutData(gridData);
+		return client;
+	}
+	
+	/**
+	 * Creates a section to explain the performances
+	 * 
+	 * @param mform form containing the section
+	 * @param title section title
+	 * @param desc description of the section
+	 */
+	private void createExplanationSection(IManagedForm mform, String title, String desc) {
+
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = 200;
+		
+		Composite client = createSection(mform, title, desc, 1,
+				gridData);
+
+		
+		FormToolkit toolkit = mform.getToolkit();
+		toolkit.paintBordersFor(client);
+	}
+	
+	/**
+	 * Creates a section for the chart
+	 * 
+	 * @param mform form containing the section
+	 * @param title section title
+	 * @param desc description of the section
+	 */
+	private void createChartSection(IManagedForm mform, String title, String desc) {
+
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+		
+		mform.getForm().setLayout(new FillLayout());
+		Composite client = createSection(mform, title, desc, 1,
+				gridData);
+
+		FormToolkit toolkit = mform.getToolkit();
+		
+		long workLength = statGen.getDAGWorkLength(); 
+		long spanLength = statGen.getDAGSpanLength();
+		long resultTime = statGen.getResultTime();
+		int resultNbCores = statGen.getNbUsedOperators();
+		
+		if(workLength > 0 && spanLength > 0 && resultTime > 0 && resultNbCores > 0){
+			plotter.setData(workLength, spanLength, resultTime, resultNbCores);
+			plotter.display(client);
+		}
+		
+		toolkit.paintBordersFor(client);
 	}
 
 

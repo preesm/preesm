@@ -42,6 +42,8 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -60,16 +62,22 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYDotRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.chart.renderer.xy.XYStepRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 /**
- * Plots the best latency found versus scheduling time
+ * Plots the performance of a given implementation and compares it
+ * to the maximum possible speed ups
  * 
- * @author pmenuet
+ * @author mpelcat
  */
 public class PerformancePlotter extends ApplicationFrame {
 
@@ -99,18 +107,11 @@ public class PerformancePlotter extends ApplicationFrame {
 		}
 		
 	}
-	
-	private static final long serialVersionUID = -6939533490316310961L;
 
-	/** The number of subplots. */
-	private int subplotCount = 1;
-	private int actionType = 0;
-
-	/** The datasets. */
-	private TimeSeriesCollection[] datasets;
-
-	/** The most recent value added to series 1. */
-	private double[] lastValue = new double[subplotCount];
+	/**
+	 * The data set containing the speedups
+	 */
+	private DefaultXYDataset speedups;
 
 	/**
 	 * Constructs a new demonstration application.
@@ -135,41 +136,39 @@ public class PerformancePlotter extends ApplicationFrame {
 	}
 
 	/**
-	 * Creates a chart.
+	 * Creates a chart in order to plot the speed-ups.
 	 * 
 	 * @return A chart.
 	 */
 	private JFreeChart createChart(String title) {
-		
-		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
-				new DateAxis("Time"));
-		this.datasets = new TimeSeriesCollection[subplotCount];
 
-		for (int i = 0; i < subplotCount; i++) {
-			this.lastValue[i] = 100.0;
-			final TimeSeries series = new TimeSeries("Real Time",
-					Millisecond.class);
-			this.datasets[i] = new TimeSeriesCollection(series);
-			final NumberAxis rangeAxis = new NumberAxis("Schedule");
-			rangeAxis.setAutoRangeIncludesZero(false);
-			final XYPlot subplot = new XYPlot(this.datasets[i], null,
-					rangeAxis, new StandardXYItemRenderer());
-			subplot.setBackgroundPaint(Color.white);
-			subplot.setDomainGridlinePaint(Color.lightGray);
-			subplot.setRangeGridlinePaint(Color.lightGray);
-			plot.add(subplot);
-		}
+		// Creating display domain
+		NumberAxis horizontalAxis = new NumberAxis("Number of cores");
+		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(horizontalAxis);
+		this.speedups = new DefaultXYDataset();
+			
+		// Creating the best speedups subplot
+		this.speedups = new DefaultXYDataset();
+		
+		final NumberAxis rangeAxis = new NumberAxis("Maximum achievable speedups");
+		
+		rangeAxis.setAutoRangeIncludesZero(false);
+		final XYPlot subplot = new XYPlot(this.speedups, null,
+				rangeAxis, new XYSplineRenderer());
+		subplot.setBackgroundPaint(Color.white);
+		subplot.setDomainGridlinePaint(Color.lightGray);
+		subplot.setRangeGridlinePaint(Color.lightGray);
+		plot.add(subplot);
 		
 		final JFreeChart chart = new JFreeChart(title, plot);
 
-		// chart.getLegend().setAnchor(Legend.EAST);
-		chart.setBorderPaint(Color.black);
+		chart.setBorderPaint(Color.white);
 		chart.setBorderVisible(true);
 		chart.setBackgroundPaint(Color.white);
 
 		plot.setBackgroundPaint(Color.white);
-		plot.setDomainGridlinePaint(Color.lightGray);
-		plot.setRangeGridlinePaint(Color.lightGray);
+		plot.setDomainGridlinePaint(Color.white);
+		plot.setRangeGridlinePaint(Color.white);
 
 		final ValueAxis axis = plot.getDomainAxis();
 		axis.setAutoRange(true);
@@ -177,59 +176,44 @@ public class PerformancePlotter extends ApplicationFrame {
 		return chart;
 		
 	}
-	
-	/**
-	 * Handles a click on the button and perform the wanted action.
-	 * 
-	 * @param e
-	 *            the action event.
-	 */
-	public void actionPerformed(final ActionEvent e) {
 
-		for (int i = 0; i < subplotCount; i++) {
-			if (e.getActionCommand().endsWith(String.valueOf(i))) {
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = this.lastValue[i]
-						* (0.90 + 0.2 * Math.random());
-				this.datasets[i].getSeries(0).add(new Millisecond(),
-						this.lastValue[i]);
+	/**
+	 * Creates the graph values for input data:
+	 * 
+	 * @param workLength sum of all the actor timings
+	 * @param spanLength length of the longest path in the DAG
+	 * @param resultTime latency of the current simulation
+	 * @param resultNbCores number of cores for the current simulation
+	 * 
+	 */
+	public void setData(long workLength, long spanLength, long resultTime, int resultNbCores){
+		
+		int maxCoreNumber = resultNbCores + 10;
+		double[][] bestSpeedups = new double[2][maxCoreNumber];
+		double absoluteBestSpeedup = ((double)workLength)/((double)spanLength);
+		
+		// Creating curve for best speedups
+		// The speedup is limited y the span length 
+		for(int nbCores = 1; nbCores <= maxCoreNumber; nbCores++){
+			bestSpeedups[0][nbCores-1] = nbCores;
+			
+			if(nbCores < absoluteBestSpeedup){
+				bestSpeedups[1][nbCores-1] = nbCores;
+			}
+			else{
+				bestSpeedups[1][nbCores-1] = absoluteBestSpeedup;
 			}
 		}
 
-		if (e.getActionCommand().equals("pause")) {
-
-			this.setActionType(2);
-
-		}
-
-		if (e.getActionCommand().equals("ADD_ALL")) {
-			this.setActionType(1);
-		}
-
-		if (e.getActionCommand().equals("Lecture")) {
-			this.setActionType(0);
-		}
-	}
-
-	/**
-	 * Getters and setters
-	 */
-
-	public int getSubplotCount() {
-		return subplotCount;
-	}
-
-	public int getActionType() {
-		return actionType;
-	}
-
-	public void setActionType(int actionType) {
-		this.actionType = actionType;
-	}
-
-	public void setSUBPLOT_COUNT(int subplot_count) {
-		subplotCount = subplot_count;
+		// Creating point for current speedup
+		this.speedups.addSeries("Maximum achievable speedups", bestSpeedups);
+		
+		
+		
+		double[][] currentSpeedup = new double[2][1];
+		currentSpeedup[0][0] = resultNbCores;
+		currentSpeedup[1][0] = ((double)workLength)/((double)resultTime);
+		this.speedups.addSeries("Currently obtained speedup", currentSpeedup);
 	}
 	
 	public void windowClosing(WindowEvent event){

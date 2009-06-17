@@ -139,6 +139,7 @@ public class JobPostingPrinter {
 	public void addPredecessors(Element elt, List<JobDescriptor> preds) {
 
 		Element predecessors = dom.createElement("predecessors");
+		predecessors.setAttribute("size", String.valueOf(preds.size()));
 		elt.appendChild(predecessors);
 
 		for (JobDescriptor pred : preds) {

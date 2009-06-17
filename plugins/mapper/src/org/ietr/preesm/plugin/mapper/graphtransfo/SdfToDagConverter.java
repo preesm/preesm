@@ -287,7 +287,7 @@ public class SdfToDagConverter {
 								sdfAggMember.getDataType().toString());
 				weight += prod * nbRepeat * typeSize;
 			}
-
+			
 			currentEdgeInit.setDataSize(weight);
 
 		}

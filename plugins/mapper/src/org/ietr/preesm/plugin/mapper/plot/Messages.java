@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.stats;
+package org.ietr.preesm.plugin.mapper.plot;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -46,7 +46,7 @@ import java.util.ResourceBundle;
  * @author mpelcat
  */
 public class Messages {
-	private static final String BUNDLE_NAME = "org.ietr.preesm.plugin.mapper.plot.stats.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.ietr.preesm.plugin.mapper.plot.messages"; //$NON-NLS-1$
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
 			.getBundle(BUNDLE_NAME);

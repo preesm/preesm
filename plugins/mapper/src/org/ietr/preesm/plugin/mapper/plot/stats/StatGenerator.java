@@ -40,6 +40,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -52,6 +54,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -59,6 +62,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.PropertyBean;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
@@ -92,68 +97,91 @@ public class StatGenerator {
 	}
 
 	/**
+	 * 
+	 */
+	/*
+	 * public long getDAGComplexSpanLength(RouteCalculator routeCalculator) {
+	 * 
+	 * MapperDAG taskDag = abc.getDAG().clone(); removeSendReceive(taskDag);
+	 * 
+	 * MultiCoreArchitecture localArchi = abc.getArchitecture().clone();
+	 * 
+	 * MediumDefinition mainMediumDef = (MediumDefinition) localArchi
+	 * .getMainMedium().getDefinition(); mainMediumDef.setDataRate(0);
+	 * mainMediumDef.setOverhead(0);
+	 * 
+	 * IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
+	 * localArchi, scenario); simu.updateFinalCosts(); long span =
+	 * simu.getFinalCost();
+	 * 
+	 * PreesmLogger.getLogger().log(Level.INFO, "infinite homogeneous timing: "
+	 * + span);
+	 * 
+	 * return span;
+	 * 
+	 * }
+	 */
+
+	/**
 	 * The span is the shortest possible execution time. It is theoretic because
 	 * no communication time is taken into account. We consider that we have an
 	 * infinity of cores of main type totally connected with perfect media. The
 	 * span complex because the DAG is not serial-parallel but can be any DAG.
+	 * It is retrieved from the DAG if it was set from the infinite homogeneous
+	 * simulation. If there was no such simulation, the span length can not be
+	 * recalculated because the original DAG without transfers is no more
+	 * available.
 	 */
-	public long getDAGComplexSpanLength(RouteCalculator routeCalculator) {
-
-		MapperDAG taskDag = abc.getDAG().clone();
-		removeSendReceive(taskDag);
-
-		MultiCoreArchitecture localArchi = abc.getArchitecture().clone();
-
-		MediumDefinition mainMediumDef = (MediumDefinition) localArchi
-				.getMainMedium().getDefinition();
-		mainMediumDef.setDataRate(0);
-		mainMediumDef.setOverhead(0);
-
-		IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
-				localArchi, scenario);
-		simu.updateFinalCosts();
-		long span = simu.getFinalCost();
-
-		PreesmLogger.getLogger().log(Level.INFO,
-				"infinite homogeneous timing: " + span);
-
-		return span;
-
+	public long getDAGSpanLength() {
+		Object span = abc.getDAG().getPropertyBean().getValue(
+				InfiniteHomogeneousAbc.DAG_SPAN);
+		if (span != null && span instanceof Long) {
+			return (Long) span;
+		}
+		return 0;
 	}
 
 	/**
-	 * The work is the sum of all task lengths
+	 * The work is the sum of all task lengths.
 	 */
-	public long getDAGComplexWorkLength() {
+	public long getDAGWorkLength() {
 
 		long work = 0;
-		MapperDAG localDag = abc.getDAG().clone();
-		MultiCoreArchitecture archi = abc.getArchitecture().clone();
+		MapperDAG dag = abc.getDAG();
+		Operator mainOp = abc.getArchitecture().getMainOperator();
 
-		if (localDag != null && archi != null) {
-
-			// Gets the appropriate abc to generate the gantt.
-			PropertyBean bean = localDag.getPropertyBean();
-			AbcType abctype = (AbcType) bean
-					.getValue(ImplementationPropertyNames.Graph_AbcReferenceType);
-			EdgeSchedType edgeSchedType = (EdgeSchedType) bean
-					.getValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType);
-
-			IAbc simu = AbstractAbc.getInstance(abctype, edgeSchedType,
-					localDag, archi,scenario);
-
-			simu.resetDAG();
-			simu.implantAllVerticesOnOperator(archi.getMainOperator());
-
-			simu.updateFinalCosts();
-			work = simu.getFinalCost();
-
-			PreesmLogger.getLogger().log(Level.INFO,
-					"single core timing: " + work);
-
-			return work;
+		for (DAGVertex vertex : dag.vertexSet()) {
+			if (!(vertex instanceof TransferVertex)) {
+				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
+						.getTime(mainOp);
+			}
 		}
-		return -1;
+
+		return work;
+	}
+
+	/**
+	 * Returns the final time of the current ABC
+	 */
+	public long getResultTime() {
+		if (abc instanceof LatencyAbc) {
+			return abc.getFinalCost();
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Returns the number of operators in the current architecture that execute vertices
+	 */
+	public int getNbUsedOperators() {
+		int nbUsedOperators = 0;
+		for(ArchitectureComponent o : abc.getArchitecture().getComponents(ArchitectureComponentType.operator)){
+			if(abc.getFinalCost((Operator)o)>0){
+				nbUsedOperators++;
+			}
+		}
+		return nbUsedOperators;
 	}
 
 	/**
