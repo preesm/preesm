@@ -73,6 +73,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * FAST Kwok algorithm
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class FASTTransformation extends AbstractMapping {
 
@@ -104,6 +105,9 @@ public class FASTTransformation extends AbstractMapping {
 			throw(new PreesmException(" graph can't be scheduled, check console messages"));
 		}
 		
+		// calculates the DAG span length on the architecture main operator (the tasks that can
+		// not be executed by the main operator are deported without transfer time to other operator
+		calculateSpan(dag,architecture,scenario,parameters);
 
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
 				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);

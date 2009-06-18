@@ -43,7 +43,12 @@ import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbstractParameters;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -71,5 +76,19 @@ public abstract class AbstractMapping implements IMapping {
 	protected void clean(MultiCoreArchitecture architecture,IScenario scenario) throws PreesmException{
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture,scenario);
+	}
+	
+	/**
+	 * Calculates the DAG span length on the architecture main operator 
+	 * (the tasks that cannot be executed by the main operator are deported 
+	 * without transfer time to other operator)
+	 */
+	protected void calculateSpan(MapperDAG dag,
+			MultiCoreArchitecture archi, IScenario scenario, AbstractParameters parameters){
+		
+		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters.getEdgeSchedType(),
+				dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);
+		spanCalc.resetDAG();
+
 	}
 }

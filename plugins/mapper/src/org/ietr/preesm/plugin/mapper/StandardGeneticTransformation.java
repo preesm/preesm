@@ -104,6 +104,10 @@ public class StandardGeneticTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
+		// calculates the DAG span length on the architecture main operator (the tasks that can
+		// not be executed by the main operator are deported without transfer time to other operator
+		calculateSpan(dag,architecture,scenario,parameters);
+		
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
 

@@ -55,6 +55,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -134,7 +135,7 @@ public class StatGenerator {
 	 */
 	public long getDAGSpanLength() {
 		Object span = abc.getDAG().getPropertyBean().getValue(
-				InfiniteHomogeneousAbc.DAG_SPAN);
+				SpanLengthCalculator.DAG_SPAN);
 		if (span != null && span instanceof Long) {
 			return (Long) span;
 		}

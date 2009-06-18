@@ -73,6 +73,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * Plug-in class for list scheduling
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class ListSchedulingTransformation extends AbstractMapping {
 	
@@ -103,6 +104,10 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		parameters = new ListSchedulingParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
+
+		// calculates the DAG span length on the architecture main operator (the tasks that can
+		// not be executed by the main operator are deported without transfer time to other operator)
+		calculateSpan(dag,architecture,scenario,parameters);
 		
 		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
 				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);

@@ -58,8 +58,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class InfiniteHomogeneousAbc extends
 		LatencyAbc {
-
-	public static final String DAG_SPAN = "span of the current dag";
 	
 	/**
 	 * Constructor 
@@ -82,9 +80,6 @@ public class InfiniteHomogeneousAbc extends
 		// to implant all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
-		
-		this.updateTimings();
-		dag.getPropertyBean().setValue(DAG_SPAN, (Long)getFinalCost());
 	}
 	
 	@Override
@@ -148,7 +143,7 @@ public class InfiniteHomogeneousAbc extends
 	}
 
 	@Override
-	protected final void setEdgeCost(MapperDAGEdge edge) {
+	protected void setEdgeCost(MapperDAGEdge edge) {
 
 		long edgesize = edge.getInitialEdgeProperty().getDataSize();
 

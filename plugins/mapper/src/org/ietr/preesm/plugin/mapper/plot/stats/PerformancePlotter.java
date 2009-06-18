@@ -187,10 +187,10 @@ public class PerformancePlotter extends ApplicationFrame {
 	 * 
 	 */
 	public void setData(long workLength, long spanLength, long resultTime, int resultNbCores){
-		
-		int maxCoreNumber = resultNbCores + 10;
-		double[][] bestSpeedups = new double[2][maxCoreNumber];
+
 		double absoluteBestSpeedup = ((double)workLength)/((double)spanLength);
+		int maxCoreNumber = (int)Math.ceil(absoluteBestSpeedup) + 10;
+		double[][] bestSpeedups = new double[2][maxCoreNumber];
 		
 		// Creating curve for best speedups
 		// The speedup is limited y the span length 

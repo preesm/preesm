@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.Set;
@@ -60,13 +60,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.plugin.mapper.plot.Messages;
 
 /**
- * This page displays the quality of the current implementation compared to the 
+ * This page displays the quality of the current implementation compared to the
  * theoretic achievable time
  * 
  * @author mpelcat
  */
 public class PerformancePage extends FormPage {
-	
+
 	/**
 	 * The class generating the performance data
 	 */
@@ -76,11 +76,11 @@ public class PerformancePage extends FormPage {
 	 * The class plotting the performance data
 	 */
 	PerformancePlotter plotter = null;
-	
 
-	public PerformancePage(StatGenerator statGen, FormEditor editor, String id, String title) {
+	public PerformancePage(StatGenerator statGen, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
-		
+
 		this.statGen = statGen;
 	}
 
@@ -89,19 +89,24 @@ public class PerformancePage extends FormPage {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		
+
 		ScrolledForm form = managedForm.getForm();
 		form.setText(Messages.getString("Performance.title"));
 		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
-		
-		plotter = new PerformancePlotter("Comparing the obtained speedup to ideal speedups");
-		
+
+		plotter = new PerformancePlotter(
+				"Comparing the obtained speedup to ideal speedups");
+
 		// Explanation on how to read the chart
-		/*createExplanationSection(managedForm, Messages.getString("Performance.Explanation.title"),
-				Messages.getString("Performance.Explanation.description"));
-		*/
-		createChartSection(managedForm, Messages.getString("Performance.Chart.title"), Messages.getString("Performance.Chart.description"));
+		/*
+		 * createExplanationSection(managedForm,
+		 * Messages.getString("Performance.Explanation.title"),
+		 * Messages.getString("Performance.Explanation.description"));
+		 */
+		createChartSection(managedForm, Messages
+				.getString("Performance.Chart.title"), Messages
+				.getString("Performance.Chart.description"));
 
 		managedForm.refresh();
 	}
@@ -133,60 +138,72 @@ public class PerformancePage extends FormPage {
 		section.setLayoutData(gridData);
 		return client;
 	}
-	
+
 	/**
 	 * Creates a section to explain the performances
 	 * 
-	 * @param mform form containing the section
-	 * @param title section title
-	 * @param desc description of the section
+	 * @param mform
+	 *            form containing the section
+	 * @param title
+	 *            section title
+	 * @param desc
+	 *            description of the section
 	 */
-	private void createExplanationSection(IManagedForm mform, String title, String desc) {
+	private void createExplanationSection(IManagedForm mform, String title,
+			String desc) {
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
 		gridData.heightHint = 500;
-		
-		Composite client = createSection(mform, title, desc, 1,
-				gridData);
 
-		
+		Composite client = createSection(mform, title, desc, 1, gridData);
+
 		FormToolkit toolkit = mform.getToolkit();
 		toolkit.paintBordersFor(client);
 	}
-	
+
 	/**
 	 * Creates a section for the chart
 	 * 
-	 * @param mform form containing the section
-	 * @param title section title
-	 * @param desc description of the section
+	 * @param mform
+	 *            form containing the section
+	 * @param title
+	 *            section title
+	 * @param desc
+	 *            description of the section
 	 */
-	private void createChartSection(IManagedForm mform, String title, String desc) {
+	private void createChartSection(IManagedForm mform, String title,
+			String desc) {
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-		
-		mform.getForm().setLayout(new FillLayout());
-		Composite client = createSection(mform, title, desc, 1,
-				gridData);
-
-		FormToolkit toolkit = mform.getToolkit();
-		
-		long workLength = statGen.getDAGWorkLength(); 
+		long workLength = statGen.getDAGWorkLength();
 		long spanLength = statGen.getDAGSpanLength();
 		long resultTime = statGen.getResultTime();
 		int resultNbCores = statGen.getNbUsedOperators();
-		
-		if(workLength > 0 && spanLength > 0 && resultTime > 0 && resultNbCores > 0){
+
+		String currentValuesDisplay = String
+				.format(
+						"work length: %d, span length: %d, implementation length: %d, implementation number of operators: %d",
+						workLength,spanLength, resultTime, resultNbCores);
+
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL);
+
+		mform.getForm().setLayout(new FillLayout());
+		Composite client = createSection(mform, title, desc + currentValuesDisplay, 1, gridData);
+
+		FormToolkit toolkit = mform.getToolkit();
+
+		if (workLength > 0 && spanLength > 0 && resultTime > 0
+				&& resultNbCores > 0) {
 			plotter.setData(workLength, spanLength, resultTime, resultNbCores);
 			plotter.display(client);
 		}
-		
+
 		toolkit.paintBordersFor(client);
 	}
-
 
 	public StatGenerator getStatGen() {
 		return statGen;
 	}
-	
+
 }
