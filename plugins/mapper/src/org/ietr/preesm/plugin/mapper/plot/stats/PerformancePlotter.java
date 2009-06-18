@@ -143,7 +143,7 @@ public class PerformancePlotter extends ApplicationFrame {
 	private JFreeChart createChart(String title) {
 
 		// Creating display domain
-		NumberAxis horizontalAxis = new NumberAxis("Number of cores");
+		NumberAxis horizontalAxis = new NumberAxis("Number of operators");
 		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(horizontalAxis);
 		this.speedups = new DefaultXYDataset();
 			
@@ -190,10 +190,11 @@ public class PerformancePlotter extends ApplicationFrame {
 
 		double absoluteBestSpeedup = ((double)workLength)/((double)spanLength);
 		int maxCoreNumber = (int)Math.ceil(absoluteBestSpeedup) + 10;
-		double[][] bestSpeedups = new double[2][maxCoreNumber];
 		
 		// Creating curve for best speedups
 		// The speedup is limited y the span length 
+		double[][] bestSpeedups = new double[2][maxCoreNumber];
+		
 		for(int nbCores = 1; nbCores <= maxCoreNumber; nbCores++){
 			bestSpeedups[0][nbCores-1] = nbCores;
 			
@@ -205,11 +206,21 @@ public class PerformancePlotter extends ApplicationFrame {
 			}
 		}
 
-		// Creating point for current speedup
 		this.speedups.addSeries("Maximum achievable speedups", bestSpeedups);
+
+		// Creating curve for best speedups
+		// The speedup is limited y the span length 
+		double[][] reachableSpeedups = new double[2][maxCoreNumber];
 		
+		for(int nbCores = 1; nbCores <= maxCoreNumber; nbCores++){
+			reachableSpeedups[0][nbCores-1] = nbCores;
+			
+			reachableSpeedups[1][nbCores-1] = ((double)(workLength * nbCores))/((double)(spanLength * nbCores + workLength));
+		}
+
+		this.speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);
 		
-		
+		// Creating point for current speedup
 		double[][] currentSpeedup = new double[2][1];
 		currentSpeedup[0][0] = resultNbCores;
 		currentSpeedup[1][0] = ((double)workLength)/((double)resultTime);

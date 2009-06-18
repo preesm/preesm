@@ -182,7 +182,7 @@ public class PerformancePage extends FormPage {
 
 		String currentValuesDisplay = String
 				.format(
-						"work length: %d, span length: %d, implementation length: %d, implementation number of operators: %d",
+						"work length: %d, span length: %d, implementation length: %d, implementation number of operators: %d.",
 						workLength,spanLength, resultTime, resultNbCores);
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
