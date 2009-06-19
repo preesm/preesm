@@ -326,7 +326,7 @@ public class CompoundCodeElement extends AbstractBufferContainer implements
 				}
 				Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
 				for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex)) {
-					if (outEdge.getTarget() instanceof SDFInterfaceVertex || outEdge.getProd().intValue() > incomingEdge.getCons().intValue()) {
+					if (outEdge.getTarget() instanceof SDFInterfaceVertex /*|| outEdge.getProd().intValue() > incomingEdge.getCons().intValue()*/) {
 						return false;
 					}
 				}
