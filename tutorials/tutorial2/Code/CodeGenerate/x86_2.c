@@ -1,86 +1,139 @@
     #include "x86.h"
 
     // Buffer declarations
-    LAR ReadParamGlobalbro_0[1];
-    LAR bro_01s_bro_01Code_0[1];
-    LAR *bro_01Codeur_Y_0_C_0;
-    LAR bro_01s_bro_01Code_1[1];
-    LAR bro_01s_bro_01Code_2[1];
-    LAR *bro_01Codeur_Y_0_C_1;
-    LAR *bro_01Codeur_Y_0_C_2;
-    LAR bro_01s_bro_01Code_3[1];
-    LAR bro_01s_bro_01Code_4[1];
-    LAR *bro_01Decodeur_Y_0_0;
-    LAR bro_01s_bro_01Code_5[1];
-    LAR bro_01s_bro_01Code_6[1];
-    LAR bro_01s_bro_01Deco_0[1];
-    LAR bro_01s_bro_01Code_7[1];
-    LAR bro_01s_bro_01Deco_1[1];
-    LAR *bro_01Codeur_Y_0_C_3;
-    LAR bro_01s_bro_01Code_8[1];
-    LAR bro_01s_bro_01Code_9[1];
-    LAR *bro_01Codeur_Y_0_C_4;
-    LAR bro_01s_bro_01Deco_2[1];
-    LAR *bro_01Codeur_Y_0_C_5;
-    LAR bro_01s_bro_01Cod_10[1];
-    LAR bro_01s_bro_01Cod_11[1];
-    LAR *bro_01Codeur_Y_0_C_6;
-    unsigned char Codeur_Y_0_Codeur_16[25344];
-    int Codeur_Y_0_Codeur_17[1];
-    unsigned char r_Codeur_Y_0_Codeu_6[6336];
-    unsigned char r_Codeur_Y_0_Codeu_7[6336];
-    unsigned char Codeur_Y_0_Codeur_18[1584];
-    unsigned char Codeur_Y_0_Codeur_19[1584];
-    unsigned char Codeur_Y_0_Codeur_20[1584];
-    unsigned char *Codeur_Y_0_Codeur_21;
-    unsigned char Codeur_Y_0_Codeur_22[396];
-    unsigned char r_Codeur_Y_0_Codeu_8[1584];
-    unsigned char Codeur_Y_0_Codeur_23[396];
-    int r_Codeur_Y_0_Codeu_9[1];
-    unsigned char r_Codeur_Y_0_broad_0[25344];
-    unsigned char Codeur_Y_0_Codage_34[25344];
-    int Codeur_Y_0_Codage_35[1];
-    unsigned char Codeur_Y_0_Codage_36[25344];
-    int Codeur_Y_0_Codage_37[1];
-    int Codeur_Y_0_Codage_38[1];
-    unsigned char Codeur_Y_0_Codage_39[25344];
-    unsigned char r_Codeur_Y_0_Codag_3[26280];
-    int Codeur_Y_0_Codage_40[1];
-    unsigned char Codeur_Y_0_Codage_41[3168];
-    unsigned char Codeur_Y_0_Codage_42[3168];
-    int Codeur_Y_0_Codage_43[1];
-    int Codeur_Y_0_Codage_44[1];
-    unsigned char Codeur_Y_0_Codage_45[3168];
-    int r_Codeur_Y_0_Codag_4[1];
-    unsigned char r_Codeur_Y_0_Codag_5[6336];
-    unsigned char Codeur_Y_0_Codage_46[25344];
-    unsigned char Codeur_Y_0_Codage_47[1040];
-    int Codeur_Y_0_Codage_48[1];
-    int Codeur_Y_0_Codage_49[1];
-    unsigned char Codeur_Y_0_Codage_50[6336];
-    int Decodeur_Y_0_Deco_34[1];
-    unsigned char Decodeur_Y_0_Deco_35[25344];
-    int Decodeur_Y_0_Deco_36[1];
-    int Decodeur_Y_0_Deco_37[1];
-    unsigned char Decodeur_Y_0_Deco_38[25344];
-    unsigned char Decodeur_Y_0_Deco_39[25344];
-    unsigned char Decodeur_Y_0_Deco_40[3168];
-    int Decodeur_Y_0_Deco_41[1];
-    unsigned char Decodeur_Y_0_Deco_42[3168];
-    int Decodeur_Y_0_Deco_43[1];
-    unsigned char Decodeur_Y_0_Deco_44[3168];
-    int Decodeur_Y_0_Deco_45[1];
-    unsigned char Decodeur_Y_0_Deco_46[25344];
-    unsigned char Decodeur_Y_0_Bros__0[25344];
-    unsigned char *Decodeur_Y_0_BroDe_0;
-    unsigned char Decodeur_Y_0_Bros__1[25344];
-    int r_Codeur_Y_0_Codag_6[1];
-    int r_Decodeur_Y_0_Dec_2[1];
-    unsigned char r_Decodeur_Y_0_Dec_3[792];
-    int r_Decodeur_Y_0_Dec_4[4];
-    unsigned char Decodeur_Y_0_Deco_47[6336];
-    int Decodeur_Y_0_Deco_48[1];
-    semaphore sem_0[70];
+    semaphore sem_0[34];
+    unsigned char *_in_1;
+    int TailleUchar_Taille_4[1];
+    LAR out_Global_34[1];
+    unsigned char TabUchar_buff_stre_3[1586];
+    int Taille_buffer_o_Ta_5[1];
+    unsigned char TabUchar_buff_stre_4[398];
+    int Coef_Quant__0[4];
+    unsigned char *out_im_i;
+    unsigned char TabUchar_buff_stre_1[25346];
+    LAR out_Global_29[1];
+    unsigned char _im_min_kxk_1[1584];
+    unsigned char *_im_tailles_i_3;
+    LAR out_Global_25[1];
+    unsigned char im_Quant_bord_o_im_1[26280];
+    int taille_error_4_Tai_0[1];
+    unsigned char *_im_min_kxk_0;
+    unsigned char Tab_Uchar_buff_str_1[25344];
+    unsigned char im_carres_im_carres[25344];
+    int taille_error_16_Ta_1[1];
+    int taille_error_2_Tai_1[1];
+    unsigned char *_Y;
+    unsigned char *_im_tailles_i_6;
+    unsigned char Tab_Uchar_buff_str_2[1584];
+    int Taille_buffer_o_po_3[1];
+    int taille_error_2_Tai_0[1];
+    unsigned char Tab_Uchar_buff_str_4[6336];
+    unsigned char Tab_bin_buff_strea_2[1584];
+    unsigned char im_tailles_o_[25344];
+    unsigned char *_im_tailles_i_2;
+    int taille_error_8_Tai_0[1];
+    int TailleTabRice_Tail_3[1];
+    unsigned char TabRice_buff_strea_2[1586];
+    LAR out_Global_22[1];
+    unsigned char _im_i_3[6336];
+    unsigned char *out_im_i_0;
+    unsigned char buff_error_2_TabUc_0[25346];
+    unsigned char Tab_bin_buff_strea_3[400];
+    unsigned char TabUchar_buff_stre_2[6338];
+    int taille_error_16_Ta_2[1];
+    unsigned char im_Quant_bord_o_im_2[26280];
+    unsigned char buff_signe_16_Tab__0[396];
+    unsigned char im_Quant_o_Y_0[25344];
+    LAR out_Global_27[1];
+    unsigned char buff_error_4_TabUc_0[6338];
+    unsigned char im_o__3[6336];
+    LAR out_Global_31[1];
+    int taille_signe_8_Tai_0[1];
+    unsigned char _im_tailles_i_7[25344];
+    int Taille_buffer_o_T_10[1];
+    int stream_ErPred_im_E_0[25344];
+    int taille_signe_4_Tai_2[1];
+    unsigned char buffer_level3_Tab__2[25344];
+    int Taille_flux_quad__0[1];
+    LAR out_Global_32[1];
+    LAR out_Global_23[1];
+    int taille_signe_2_Tai_0[1];
+    int taille_error_4_Tai_1[1];
+    int TailleUchar_Taille_1[1];
+    unsigned char buff_signe_4_Tab_b_1[6336];
+    unsigned char _im_tailles_i_4[25344];
+    LAR out_Global_30[1];
+    unsigned char TabRice_buff_strea_0[25346];
+    LAR out_Global_33[1];
+    unsigned char im_tailles_o_im_ta_2[25344];
+    int taille_max_o_taill_1[1];
+    int TailleTabRice_Tail_1[1];
+    unsigned char _im_i_4[1584];
+    int taille_max_o_taill_2[1];
+    unsigned char *out_im_originale;
+    LAR out_Global_36[1];
+    unsigned char Tab_Uchar_buff_str_3[396];
+    unsigned char im_o_im_i_0[25344];
+    unsigned char Y_[101376];
+    int Taille_stream_Erro_1[1];
+    int stream_Error_Pred__0[37876];
+    int Taille_buffer_o_Ta_8[1];
+    unsigned char buff_error_16_TabR_1[398];
+    int Taille_buffer_o_Ta_6[1];
+    unsigned char buff_signe_8_Tab_b_0[1584];
+    LAR out_Global_28[1];
+    int Taille_buffer_o_T_12[1];
+    int taille_signe_8_Tai_1[1];
+    unsigned char im_sommets_[101376];
+    int Taille_buffer_o_T_11[1];
+    unsigned char buff_signe_8_Tab_U_0[198];
+    int taille_signe_16_Ta_1[1];
+    unsigned char im_tailles_o_im_ta_0[25344];
+    LAR out_Global_37[1];
+    unsigned char TabRice_buff_strea_3[398];
+    int taille_max_o_taill_0[1];
+    int TailleTabRice_Tail_0[1];
+    unsigned char buff_signe_2_Tab_b_0[25344];
+    LAR *out_Global_35;
+    unsigned char Tab_bin_buff_strea_4[6336];
+    int taille_error_8_Tai_1[1];
+    LAR out_Global_21[1];
+    LAR out_Global_26[1];
+    unsigned char im_o_im_max_kxk_0[396];
+    LAR out_Global_24[1];
+    unsigned char _im_max_kxk_0[6336];
+    int taille_signe_4_Tai_3[1];
+    unsigned char buff_signe_2_Tab_U_0[3168];
+    int taille_signe_16_Ta_0[1];
+    unsigned char TabRice_buff_strea_1[6338];
+    int TailleUchar_Taille_3[1];
+    unsigned char Tab_bin_buffer_bin_0[3168];
+    unsigned char Tab_bin_buff_strea_1[25344];
+    unsigned char *out_in_3;
+    int taille_signe_2_Tai_1[1];
+    int TailleUchar_Taille_2[1];
+    unsigned char im_tailles_o_im_ta_1[25344];
+    unsigned char im_o__4[1584];
+    unsigned char buff_signe_16_Tab__1[50];
+    int Taille_buffer_o_Ta_7[1];
+    unsigned char im_o_im_i[25344];
+    int indice_level3_Tail_2[1];
+    LAR out_in_4[1];
+    unsigned char _im_tailles_i_8[25344];
+    unsigned char buff_error_4_TabRi_0[6338];
+    int taille_max_o__0[1];
+    int TailleTabRice_Tail_2[1];
+    unsigned char buff_signe_4_Tab_U_1[792];
+    unsigned char im_o__2[6336];
+    unsigned char buff_error_2_TabRi_0[25346];
+    unsigned char buff_error_16_TabU_0[398];
+    unsigned char buff_error_8_TabUc_0[1586];
+    int Taille_buffer_o_Ta_9[1];
+    unsigned char buff_error_8_TabRi_0[1586];
+    unsigned char *_im_tailles_i_5;
+    int im_Error_Pred_im_E_0[25344];
+    unsigned char im_o_im_min_kxk_0[396];
+    unsigned char *_im_max_kxk_1;
 
     DWORD WINAPI computationThread_x86_2( LPVOID lpParam );
     DWORD WINAPI communicationThread_x86_2( LPVOID lpParam );
@@ -89,159 +142,122 @@
         // Buffer declarations
 
         {
-            semaphoreInit(sem_0, 70/*semNumber*/, x86_2);
+            semaphoreInit(sem_0, 34/*semNumber*/, x86_2);
             CreateThread(NULL,8000,communicationThread_x86_2,NULL,0,NULL);
-            Read_LAR_Param_no_args(ReadParamGlobalbro_0);
-            bidon();
-            Display_Y_init_nocomment(1/*Number*/, 176/*xsize*/, 144/*ysize*/);
-            bidon();
+            read_Y_init_no_args(352/*xsize*/, 288/*ysize*/);
+            Display_Y_init_nocomment(0/*Number*/, 352/*xsize*/, 288/*ysize*/);
             bidon();
             bidon();
+            Display_Y_init_nocomment(2/*Number*/, 176/*xsize*/, 144/*ysize*/);
             ReleaseSemaphore(sem_0[0],1,NULL); //empty
-            ReleaseSemaphore(sem_0[2],1,NULL); //empty
-            ReleaseSemaphore(sem_0[4],1,NULL); //empty
-            ReleaseSemaphore(sem_0[6],1,NULL); //empty
             ReleaseSemaphore(sem_0[8],1,NULL); //empty
             ReleaseSemaphore(sem_0[10],1,NULL); //empty
             ReleaseSemaphore(sem_0[12],1,NULL); //empty
-            ReleaseSemaphore(sem_0[14],1,NULL); //empty
             ReleaseSemaphore(sem_0[16],1,NULL); //empty
-            ReleaseSemaphore(sem_0[18],1,NULL); //empty
             ReleaseSemaphore(sem_0[20],1,NULL); //empty
             ReleaseSemaphore(sem_0[22],1,NULL); //empty
             ReleaseSemaphore(sem_0[24],1,NULL); //empty
             ReleaseSemaphore(sem_0[26],1,NULL); //empty
-            ReleaseSemaphore(sem_0[28],1,NULL); //empty
-            ReleaseSemaphore(sem_0[30],1,NULL); //empty
-            ReleaseSemaphore(sem_0[36],1,NULL); //empty
-            ReleaseSemaphore(sem_0[38],1,NULL); //empty
-            ReleaseSemaphore(sem_0[40],1,NULL); //empty
-            ReleaseSemaphore(sem_0[44],1,NULL); //empty
-            ReleaseSemaphore(sem_0[50],1,NULL); //empty
-            ReleaseSemaphore(sem_0[54],1,NULL); //empty
-            ReleaseSemaphore(sem_0[56],1,NULL); //empty
-            ReleaseSemaphore(sem_0[58],1,NULL); //empty
-            ReleaseSemaphore(sem_0[62],1,NULL); //empty
         }
 
         for(;;){
+            Read_Y(Y_);
+            {//bro_0
+                _Y = &Y_[0];
+                _in_1 = &Y_[0];
+            }
+            {//Codeur_Y_0_broadcast_im_i
+                out_im_originale = &_in_1[0];
+                out_in_3 = &_in_1[0];
+            }
+            Display_Y(0/*Number*/, _Y);
+            {//Codeur_Y_0_Codage_DPCM_0_broadcast_Global
+                out_Global_35 = &out_in_4[0];
+                memcpy(out_Global_34, out_in_4, 1*sizeof(LAR)/*size*/);
+            }
+            {//Codeur_Y_0_Codeur_im_Y_0_broadcast_im_i
+                out_im_i_0 = &out_in_3[0];
+                out_im_i = &out_in_3[0];
+            }
+            Init_im_taille(out_Global_25, 1/*ratio*/, taille_max_o_taill_0, im_tailles_o_im_ta_0);
+            Max2x2(out_Global_24, 1/*k*/, 1/*ratio*/, out_im_i_0, im_o_im_i);
+            Min2x2(out_Global_26, 1/*k*/, 1/*ratio*/, out_im_i, im_o_im_i_0);
             WaitForSingleObject(sem_0[0],INFINITE); //empty
-            WaitForSingleObject(sem_0[2],INFINITE); //empty
-            WaitForSingleObject(sem_0[4],INFINITE); //empty
-            WaitForSingleObject(sem_0[6],INFINITE); //empty
+            Max2x2(out_Global_31, 2/*k*/, 1/*ratio*/, im_o_im_i, im_o__2);
+            ReleaseSemaphore(sem_0[1],1,NULL); //full
+            Min2x2(out_Global_27, 2/*k*/, 1/*ratio*/, im_o_im_i_0, im_o__3);
+            {//Codeur_Y_0_Codeur_im_Y_0_bro_4
+                _im_min_kxk_0 = &im_o__3[0];
+                memcpy(_im_i_3, im_o__3, 6336*sizeof(unsigned char)/*size*/);
+            }
+            Gray_Step_k(out_Global_28, 4/*k*/, 2/*decal*/, 1/*ratio*/, _im_max_kxk_0, _im_min_kxk_0, im_tailles_o_im_ta_0, taille_max_o_taill_0, taille_max_o_taill_1, im_tailles_o_im_ta_1);
+            WaitForSingleObject(sem_0[2],INFINITE); //full
+            {//Codeur_Y_0_Codeur_im_Y_0_bro_3
+                _im_max_kxk_1 = &im_o__4[0];
+                memcpy(_im_i_4, im_o__4, 1584*sizeof(unsigned char)/*size*/);
+            }
+            ReleaseSemaphore(sem_0[3],1,NULL); //empty
+            Gray_Step_k(out_Global_29, 8/*k*/, 3/*decal*/, 1/*ratio*/, _im_max_kxk_1, _im_min_kxk_1, im_tailles_o_im_ta_1, taille_max_o_taill_1, taille_max_o_taill_2, im_tailles_o_im_ta_2);
+            WaitForSingleObject(sem_0[4],INFINITE); //full
+            WaitForSingleObject(sem_0[6],INFINITE); //full
             WaitForSingleObject(sem_0[8],INFINITE); //empty
+            Gray_Step_k(out_Global_30, 16/*k*/, 4/*decal*/, 1/*ratio*/, im_o_im_max_kxk_0, im_o_im_min_kxk_0, im_tailles_o_im_ta_2, taille_max_o_taill_2, taille_max_o__0, im_tailles_o_);
+            ReleaseSemaphore(sem_0[9],1,NULL); //full
+            ReleaseSemaphore(sem_0[7],1,NULL); //empty
+            ReleaseSemaphore(sem_0[5],1,NULL); //empty
+            {//Codeur_Y_0_broad
+                _im_tailles_i_3 = &im_tailles_o_[0];
+                _im_tailles_i_2 = &im_tailles_o_[0];
+                _im_tailles_i_5 = &im_tailles_o_[0];
+                _im_tailles_i_6 = &im_tailles_o_[0];
+                memcpy(_im_tailles_i_4, im_tailles_o_, 25344*sizeof(unsigned char)/*size*/);
+            }
+            Create_im_average(out_Global_21, 1/*ratio*/, out_im_originale, _im_tailles_i_3, im_carres_im_carres);
+            Create_im_vertis(out_Global_22, 1/*ratio*/, _im_tailles_i_2, im_sommets_);
             WaitForSingleObject(sem_0[10],INFINITE); //empty
+            DPCM_simple_code(out_Global_35, 1/*ratio*/, im_carres_im_carres, _im_tailles_i_5, im_Error_Pred_im_E_0, im_Quant_bord_o_im_1);
+            ReleaseSemaphore(sem_0[11],1,NULL); //full
             WaitForSingleObject(sem_0[12],INFINITE); //empty
-            WaitForSingleObject(sem_0[14],INFINITE); //empty
+            Extract_Error_Symb_16(out_Global_32, 1/*ratio*/, _im_tailles_i_6, im_Error_Pred_im_E_0, buff_error_2_TabUc_0, taille_error_2_Tai_0, buff_signe_2_Tab_b_0, taille_signe_2_Tai_0, buff_error_4_TabUc_0, taille_error_4_Tai_0, buff_signe_4_Tab_b_1, taille_signe_4_Tai_2, buff_error_8_TabUc_0, taille_error_8_Tai_0, buff_signe_8_Tab_b_0, taille_signe_8_Tai_0, buff_error_16_TabU_0, taille_error_16_Ta_1, buff_signe_16_Tab__0, taille_signe_16_Ta_0);
+            ReleaseSemaphore(sem_0[13],1,NULL); //full
+            Bin_to_Uchar(buff_signe_16_Tab__0, taille_signe_16_Ta_0, Tab_Uchar_buff_str_3, Taille_buffer_o_Ta_7);
+            Bin_to_Uchar(buff_signe_2_Tab_b_0, taille_signe_2_Tai_0, Tab_Uchar_buff_str_1, Taille_buffer_o_Ta_5);
+            Bin_to_Uchar(buff_signe_8_Tab_b_0, taille_signe_8_Tai_0, Tab_Uchar_buff_str_2, Taille_buffer_o_Ta_6);
+            Encode_Rice_Code(buff_error_16_TabU_0, taille_error_16_Ta_1, TabRice_buff_strea_3, TailleTabRice_Tail_3);
+            Encode_Rice_Code(buff_error_2_TabUc_0, taille_error_2_Tai_0, TabRice_buff_strea_0, TailleTabRice_Tail_0);
+            Encode_Rice_Code(buff_error_4_TabUc_0, taille_error_4_Tai_0, TabRice_buff_strea_1, TailleTabRice_Tail_1);
+            Encode_Rice_Code(buff_error_8_TabUc_0, taille_error_8_Tai_0, TabRice_buff_strea_2, TailleTabRice_Tail_2);
+            WaitForSingleObject(sem_0[14],INFINITE); //full
             WaitForSingleObject(sem_0[16],INFINITE); //empty
-            WaitForSingleObject(sem_0[18],INFINITE); //empty
+            Concat_stream_ErPred_16(out_Global_33, TabRice_buff_strea_0, TailleTabRice_Tail_0, Tab_Uchar_buff_str_1, Taille_buffer_o_Ta_5, TabRice_buff_strea_1, TailleTabRice_Tail_1, Tab_Uchar_buff_str_4, Taille_buffer_o_Ta_8, TabRice_buff_strea_2, TailleTabRice_Tail_2, Tab_Uchar_buff_str_2, Taille_buffer_o_Ta_6, TabRice_buff_strea_3, TailleTabRice_Tail_3, Tab_Uchar_buff_str_3, Taille_buffer_o_Ta_7, stream_Error_Pred__0, Taille_stream_Erro_1);
+            ReleaseSemaphore(sem_0[17],1,NULL); //full
+            ReleaseSemaphore(sem_0[15],1,NULL); //empty
+            WaitForSingleObject(sem_0[18],INFINITE); //full
             WaitForSingleObject(sem_0[20],INFINITE); //empty
+            Uchar_to_Bin(buffer_level3_Tab__2, indice_level3_Tail_2, Tab_bin_buffer_bin_0, Taille_buffer_o_po_3);
+            ReleaseSemaphore(sem_0[21],1,NULL); //full
+            ReleaseSemaphore(sem_0[19],1,NULL); //empty
             WaitForSingleObject(sem_0[22],INFINITE); //empty
             WaitForSingleObject(sem_0[24],INFINITE); //empty
             WaitForSingleObject(sem_0[26],INFINITE); //empty
-            WaitForSingleObject(sem_0[28],INFINITE); //empty
-            {//bro_01
-                bro_01Codeur_Y_0_C_4 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_0 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_3 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_6 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_2 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_1 = &ReadParamGlobalbro_0[0];
-                bro_01Codeur_Y_0_C_5 = &ReadParamGlobalbro_0[0];
-                bro_01Decodeur_Y_0_0 = &ReadParamGlobalbro_0[0];
-                memcpy(bro_01s_bro_01Cod_11, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Cod_10, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_6, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_5, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_7, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_0, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_2, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_4, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_9, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_1, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_8, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Code_3, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Deco_0, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Deco_1, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-                memcpy(bro_01s_bro_01Deco_2, ReadParamGlobalbro_0, 1*sizeof(LAR)/*size*/);
-            }
-            ReleaseSemaphore(sem_0[29],1,NULL); //full
+            Explode_stream_ErPred_16(stream_Error_Pred__0, Coef_Quant__0, buff_error_2_TabRi_0, taille_error_2_Tai_1, buff_signe_2_Tab_U_0, taille_signe_2_Tai_1, buff_error_4_TabRi_0, taille_error_4_Tai_1, buff_signe_4_Tab_U_1, taille_signe_4_Tai_3, buff_error_8_TabRi_0, taille_error_8_Tai_1, buff_signe_8_Tab_U_0, taille_signe_8_Tai_1, buff_error_16_TabR_1, taille_error_16_Ta_2, buff_signe_16_Tab__1, taille_signe_16_Ta_1);
             ReleaseSemaphore(sem_0[27],1,NULL); //full
             ReleaseSemaphore(sem_0[25],1,NULL); //full
             ReleaseSemaphore(sem_0[23],1,NULL); //full
-            ReleaseSemaphore(sem_0[21],1,NULL); //full
-            ReleaseSemaphore(sem_0[19],1,NULL); //full
-            ReleaseSemaphore(sem_0[17],1,NULL); //full
-            ReleaseSemaphore(sem_0[15],1,NULL); //full
-            ReleaseSemaphore(sem_0[13],1,NULL); //full
-            ReleaseSemaphore(sem_0[11],1,NULL); //full
-            ReleaseSemaphore(sem_0[9],1,NULL); //full
-            ReleaseSemaphore(sem_0[7],1,NULL); //full
-            ReleaseSemaphore(sem_0[5],1,NULL); //full
-            ReleaseSemaphore(sem_0[3],1,NULL); //full
-            ReleaseSemaphore(sem_0[1],1,NULL); //full
-            WaitForSingleObject(sem_0[30],INFINITE); //empty
-            Init_im_taille(bro_01Codeur_Y_0_C_4, 1/*ratio*/, Codeur_Y_0_Codeur_17, Codeur_Y_0_Codeur_16);
-            ReleaseSemaphore(sem_0[31],1,NULL); //full
-            WaitForSingleObject(sem_0[32],INFINITE); //full
-            Max2x2(bro_01Codeur_Y_0_C_3, 3/*k*/, 1/*ratio*/, r_Codeur_Y_0_Codeu_6, Codeur_Y_0_Codeur_18);
-            ReleaseSemaphore(sem_0[33],1,NULL); //empty
-            WaitForSingleObject(sem_0[34],INFINITE); //full
-            WaitForSingleObject(sem_0[36],INFINITE); //empty
-            Min2x2(bro_01Codeur_Y_0_C_0, 3/*k*/, 1/*ratio*/, r_Codeur_Y_0_Codeu_7, Codeur_Y_0_Codeur_19);
-            ReleaseSemaphore(sem_0[37],1,NULL); //full
-            ReleaseSemaphore(sem_0[35],1,NULL); //empty
-            WaitForSingleObject(sem_0[38],INFINITE); //empty
-            {//Codeur_Y_0_Codeur_im_Y_0_bro_3
-                Codeur_Y_0_Codeur_21 = &Codeur_Y_0_Codeur_18[0];
-                memcpy(Codeur_Y_0_Codeur_20, Codeur_Y_0_Codeur_18, 1584*sizeof(unsigned char)/*size*/);
-            }
-            ReleaseSemaphore(sem_0[39],1,NULL); //full
-            WaitForSingleObject(sem_0[40],INFINITE); //empty
-            Max2x2(bro_01Codeur_Y_0_C_6, 4/*k*/, 1/*ratio*/, Codeur_Y_0_Codeur_21, Codeur_Y_0_Codeur_22);
-            ReleaseSemaphore(sem_0[41],1,NULL); //full
-            WaitForSingleObject(sem_0[42],INFINITE); //full
-            WaitForSingleObject(sem_0[44],INFINITE); //empty
-            Min2x2(bro_01Codeur_Y_0_C_2, 4/*k*/, 1/*ratio*/, r_Codeur_Y_0_Codeu_8, Codeur_Y_0_Codeur_23);
-            ReleaseSemaphore(sem_0[45],1,NULL); //full
-            ReleaseSemaphore(sem_0[43],1,NULL); //empty
-            WaitForSingleObject(sem_0[46],INFINITE); //full
-            Code_taille_quadtree_16(bro_01Codeur_Y_0_C_5, 1/*ratio*/, r_Codeur_Y_0_broad_0, Codeur_Y_0_Codage_39, Codeur_Y_0_Codage_35, Codeur_Y_0_Codage_34, Codeur_Y_0_Codage_37, Codeur_Y_0_Codage_36, Codeur_Y_0_Codage_38);
-            ReleaseSemaphore(sem_0[47],1,NULL); //empty
-            Bin_to_Uchar(Codeur_Y_0_Codage_39, Codeur_Y_0_Codage_35, Codeur_Y_0_Codage_41, Codeur_Y_0_Codage_40);
-            Bin_to_Uchar(Codeur_Y_0_Codage_34, Codeur_Y_0_Codage_37, Codeur_Y_0_Codage_42, Codeur_Y_0_Codage_43);
-            Bin_to_Uchar(Codeur_Y_0_Codage_36, Codeur_Y_0_Codage_38, Codeur_Y_0_Codage_45, Codeur_Y_0_Codage_44);
-            WaitForSingleObject(sem_0[48],INFINITE); //full
-            Create_im_quant(bro_01Codeur_Y_0_C_1, 1/*ratio*/, r_Codeur_Y_0_Codag_3, Codeur_Y_0_Codage_46);
-            ReleaseSemaphore(sem_0[49],1,NULL); //empty
-            WaitForSingleObject(sem_0[50],INFINITE); //empty
-            Concat_stream_quad_16(Codeur_Y_0_Codage_41, Codeur_Y_0_Codage_40, Codeur_Y_0_Codage_42, Codeur_Y_0_Codage_43, Codeur_Y_0_Codage_45, Codeur_Y_0_Codage_44, Codeur_Y_0_Codage_47, Codeur_Y_0_Codage_48);
-            ReleaseSemaphore(sem_0[51],1,NULL); //full
-            WaitForSingleObject(sem_0[52],INFINITE); //full
-            WaitForSingleObject(sem_0[54],INFINITE); //empty
-            Bin_to_Uchar(r_Codeur_Y_0_Codag_5, r_Codeur_Y_0_Codag_4, Codeur_Y_0_Codage_50, Codeur_Y_0_Codage_49);
-            ReleaseSemaphore(sem_0[55],1,NULL); //full
-            ReleaseSemaphore(sem_0[53],1,NULL); //empty
-            Explode_stream_quad_16(Codeur_Y_0_Codage_47, Decodeur_Y_0_Deco_39, Decodeur_Y_0_Deco_37, Decodeur_Y_0_Deco_35, Decodeur_Y_0_Deco_36, Decodeur_Y_0_Deco_38, Decodeur_Y_0_Deco_34);
-            Display_Y(1/*Number*/, Codeur_Y_0_Codage_46);
-            Uchar_to_Bin(Decodeur_Y_0_Deco_39, Decodeur_Y_0_Deco_37, Decodeur_Y_0_Deco_40, Decodeur_Y_0_Deco_41);
-            Uchar_to_Bin(Decodeur_Y_0_Deco_35, Decodeur_Y_0_Deco_36, Decodeur_Y_0_Deco_42, Decodeur_Y_0_Deco_43);
-            Uchar_to_Bin(Decodeur_Y_0_Deco_38, Decodeur_Y_0_Deco_34, Decodeur_Y_0_Deco_44, Decodeur_Y_0_Deco_45);
-            Decode_taille_quadtree_16(bro_01Decodeur_Y_0_0, 1/*ratio*/, Decodeur_Y_0_Deco_40, Decodeur_Y_0_Deco_42, Decodeur_Y_0_Deco_44, Decodeur_Y_0_Deco_46);
-            WaitForSingleObject(sem_0[56],INFINITE); //empty
-            WaitForSingleObject(sem_0[58],INFINITE); //empty
-            {//Decodeur_Y_0_Bro
-                Decodeur_Y_0_BroDe_0 = &Decodeur_Y_0_Deco_46[0];
-                memcpy(Decodeur_Y_0_Bros__1, Decodeur_Y_0_Deco_46, 25344*sizeof(unsigned char)/*size*/);
-                memcpy(Decodeur_Y_0_Bros__0, Decodeur_Y_0_Deco_46, 25344*sizeof(unsigned char)/*size*/);
-            }
-            ReleaseSemaphore(sem_0[59],1,NULL); //full
-            ReleaseSemaphore(sem_0[57],1,NULL); //full
-            WaitForSingleObject(sem_0[60],INFINITE); //full
-            WaitForSingleObject(sem_0[62],INFINITE); //empty
-            Uchar_to_Bin(r_Decodeur_Y_0_Dec_3, r_Decodeur_Y_0_Dec_2, Decodeur_Y_0_Deco_47, Decodeur_Y_0_Deco_48);
-            ReleaseSemaphore(sem_0[63],1,NULL); //full
-            ReleaseSemaphore(sem_0[61],1,NULL); //empty
+            Decode_Rice_Code(176/*xPR*/, 144/*yPR*/, 1/*SizeLevel*/, 1/*TailleOctet*/, buff_error_2_TabRi_0, taille_error_2_Tai_1, TabUchar_buff_stre_1, TailleUchar_Taille_1);
+            Decode_Rice_Code(176/*xPR*/, 144/*yPR*/, 1/*SizeLevel*/, 1/*TailleOctet*/, buff_error_4_TabRi_0, taille_error_4_Tai_1, TabUchar_buff_stre_2, TailleUchar_Taille_2);
+            Decode_Rice_Code(176/*xPR*/, 144/*yPR*/, 1/*SizeLevel*/, 1/*TailleOctet*/, buff_error_8_TabRi_0, taille_error_8_Tai_1, TabUchar_buff_stre_3, TailleUchar_Taille_3);
+            Uchar_to_Bin(buff_signe_16_Tab__1, taille_signe_16_Ta_1, Tab_bin_buff_strea_3, Taille_buffer_o_T_11);
+            Uchar_to_Bin(buff_signe_2_Tab_U_0, taille_signe_2_Tai_1, Tab_bin_buff_strea_1, Taille_buffer_o_Ta_9);
+            Uchar_to_Bin(buff_signe_8_Tab_U_0, taille_signe_8_Tai_1, Tab_bin_buff_strea_2, Taille_buffer_o_T_10);
+            WaitForSingleObject(sem_0[28],INFINITE); //full
+            WaitForSingleObject(sem_0[30],INFINITE); //full
+            Rebuild_Error_Symb_16(out_Global_23, 1/*ratio*/, _im_tailles_i_8, TabUchar_buff_stre_1, Tab_bin_buff_strea_1, TabUchar_buff_stre_2, Tab_bin_buff_strea_4, TabUchar_buff_stre_3, Tab_bin_buff_strea_2, TabUchar_buff_stre_4, Tab_bin_buff_strea_3, stream_ErPred_im_E_0);
+            ReleaseSemaphore(sem_0[31],1,NULL); //empty
+            ReleaseSemaphore(sem_0[29],1,NULL); //empty
+            DPCM_simple_decode(out_Global_36, 1/*ratio*/, stream_ErPred_im_E_0, _im_tailles_i_7, im_Quant_bord_o_im_2);
+            Create_im_quant(out_Global_37, 1/*ratio*/, im_Quant_bord_o_im_2, im_Quant_o_Y_0);
+            Display_Y(2/*Number*/, im_Quant_o_Y_0);
         }
 
         return 0;
@@ -253,59 +269,76 @@
         {
             Com_Init(MEDIUM_RCV,TCP,x86_1,x86_2);
             Com_Init(MEDIUM_SEND,TCP,x86_2,x86_1);
-            ReleaseSemaphore(sem_0[64],1,NULL); //empty
-            ReleaseSemaphore(sem_0[49],1,NULL); //empty
-            ReleaseSemaphore(sem_0[53],1,NULL); //empty
-            ReleaseSemaphore(sem_0[66],1,NULL); //empty
-            ReleaseSemaphore(sem_0[68],1,NULL); //empty
-            ReleaseSemaphore(sem_0[61],1,NULL); //empty
+            ReleaseSemaphore(sem_0[3],1,NULL); //empty
+            ReleaseSemaphore(sem_0[5],1,NULL); //empty
+            ReleaseSemaphore(sem_0[7],1,NULL); //empty
+            ReleaseSemaphore(sem_0[32],1,NULL); //empty
+            ReleaseSemaphore(sem_0[15],1,NULL); //empty
+            ReleaseSemaphore(sem_0[19],1,NULL); //empty
+            ReleaseSemaphore(sem_0[29],1,NULL); //empty
+            ReleaseSemaphore(sem_0[31],1,NULL); //empty
         }
 
         for(;;){
-            WaitForSingleObject(sem_0[31],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codeur_17,1*sizeof(int));
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codeur_16,25344*sizeof(unsigned char));
-            ReleaseSemaphore(sem_0[30],1,NULL); //empty
-            WaitForSingleObject(sem_0[37],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codeur_19,1584*sizeof(unsigned char));
-            ReleaseSemaphore(sem_0[36],1,NULL); //empty
-            WaitForSingleObject(sem_0[41],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codeur_22,396*sizeof(unsigned char));
-            ReleaseSemaphore(sem_0[40],1,NULL); //empty
-            WaitForSingleObject(sem_0[45],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codeur_23,396*sizeof(unsigned char));
-            ReleaseSemaphore(sem_0[44],1,NULL); //empty
-            WaitForSingleObject(sem_0[64],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Codeur_Y_0_Codeu_9,1*sizeof(int));
-            ReleaseSemaphore(sem_0[65],1,NULL); //full
-            WaitForSingleObject(sem_0[49],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Codeur_Y_0_Codag_3,26280*sizeof(unsigned char));
-            ReleaseSemaphore(sem_0[48],1,NULL); //full
-            WaitForSingleObject(sem_0[51],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codage_48,1*sizeof(int));
-            ReleaseSemaphore(sem_0[50],1,NULL); //empty
-            WaitForSingleObject(sem_0[53],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Codeur_Y_0_Codag_5,6336*sizeof(unsigned char));
-            receiveData(TCP,x86_1,x86_2,r_Codeur_Y_0_Codag_4,1*sizeof(int));
-            ReleaseSemaphore(sem_0[52],1,NULL); //full
-            WaitForSingleObject(sem_0[55],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codage_50,6336*sizeof(unsigned char));
-            sendData(TCP,x86_2,x86_1,Codeur_Y_0_Codage_49,1*sizeof(int));
-            ReleaseSemaphore(sem_0[54],1,NULL); //empty
-            WaitForSingleObject(sem_0[66],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Codeur_Y_0_Codag_6,1*sizeof(int));
-            ReleaseSemaphore(sem_0[67],1,NULL); //full
-            WaitForSingleObject(sem_0[68],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Decodeur_Y_0_Dec_4,4*sizeof(int));
-            ReleaseSemaphore(sem_0[69],1,NULL); //full
-            WaitForSingleObject(sem_0[61],INFINITE); //empty
-            receiveData(TCP,x86_1,x86_2,r_Decodeur_Y_0_Dec_3,792*sizeof(unsigned char));
-            receiveData(TCP,x86_1,x86_2,r_Decodeur_Y_0_Dec_2,1*sizeof(int));
-            ReleaseSemaphore(sem_0[60],1,NULL); //full
-            WaitForSingleObject(sem_0[63],INFINITE); //full
-            sendData(TCP,x86_2,x86_1,Decodeur_Y_0_Deco_47,6336*sizeof(unsigned char));
-            sendData(TCP,x86_2,x86_1,Decodeur_Y_0_Deco_48,1*sizeof(int));
-            ReleaseSemaphore(sem_0[62],1,NULL); //empty
+            WaitForSingleObject(sem_0[1],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,im_o__2,6336*sizeof(unsigned char));
+            ReleaseSemaphore(sem_0[0],1,NULL); //empty
+            WaitForSingleObject(sem_0[3],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,im_o__4,1584*sizeof(unsigned char));
+            ReleaseSemaphore(sem_0[2],1,NULL); //full
+            WaitForSingleObject(sem_0[5],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,im_o_im_max_kxk_0,396*sizeof(unsigned char));
+            ReleaseSemaphore(sem_0[4],1,NULL); //full
+            WaitForSingleObject(sem_0[7],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,im_o_im_min_kxk_0,396*sizeof(unsigned char));
+            ReleaseSemaphore(sem_0[6],1,NULL); //full
+            WaitForSingleObject(sem_0[9],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,taille_max_o__0,1*sizeof(int));
+            ReleaseSemaphore(sem_0[8],1,NULL); //empty
+            WaitForSingleObject(sem_0[11],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,im_Quant_bord_o_im_1,26280*sizeof(unsigned char));
+            ReleaseSemaphore(sem_0[10],1,NULL); //empty
+            WaitForSingleObject(sem_0[32],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,Taille_flux_quad__0,1*sizeof(int));
+            ReleaseSemaphore(sem_0[33],1,NULL); //full
+            WaitForSingleObject(sem_0[13],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,buff_signe_4_Tab_b_1,6336*sizeof(unsigned char));
+            sendData(TCP,x86_2,x86_1,taille_signe_4_Tai_2,1*sizeof(int));
+            ReleaseSemaphore(sem_0[12],1,NULL); //empty
+            WaitForSingleObject(sem_0[15],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,Tab_Uchar_buff_str_4,6336*sizeof(unsigned char));
+            receiveData(TCP,x86_1,x86_2,Taille_buffer_o_Ta_8,1*sizeof(int));
+            ReleaseSemaphore(sem_0[14],1,NULL); //full
+            WaitForSingleObject(sem_0[19],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,buffer_level3_Tab__2,25344*sizeof(unsigned char));
+            receiveData(TCP,x86_1,x86_2,indice_level3_Tail_2,1*sizeof(int));
+            ReleaseSemaphore(sem_0[18],1,NULL); //full
+            WaitForSingleObject(sem_0[17],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,Taille_stream_Erro_1,1*sizeof(int));
+            ReleaseSemaphore(sem_0[16],1,NULL); //empty
+            WaitForSingleObject(sem_0[21],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,Tab_bin_buffer_bin_0,3168*sizeof(unsigned char));
+            sendData(TCP,x86_2,x86_1,Taille_buffer_o_po_3,1*sizeof(int));
+            ReleaseSemaphore(sem_0[20],1,NULL); //empty
+            WaitForSingleObject(sem_0[23],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,Coef_Quant__0,4*sizeof(int));
+            ReleaseSemaphore(sem_0[22],1,NULL); //empty
+            WaitForSingleObject(sem_0[25],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,buff_signe_4_Tab_U_1,792*sizeof(unsigned char));
+            sendData(TCP,x86_2,x86_1,taille_signe_4_Tai_3,1*sizeof(int));
+            ReleaseSemaphore(sem_0[24],1,NULL); //empty
+            WaitForSingleObject(sem_0[27],INFINITE); //full
+            sendData(TCP,x86_2,x86_1,buff_error_16_TabR_1,398*sizeof(unsigned char));
+            sendData(TCP,x86_2,x86_1,taille_error_16_Ta_2,1*sizeof(int));
+            ReleaseSemaphore(sem_0[26],1,NULL); //empty
+            WaitForSingleObject(sem_0[29],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,TabUchar_buff_stre_4,398*sizeof(unsigned char));
+            receiveData(TCP,x86_1,x86_2,TailleUchar_Taille_4,1*sizeof(int));
+            ReleaseSemaphore(sem_0[28],1,NULL); //full
+            WaitForSingleObject(sem_0[31],INFINITE); //empty
+            receiveData(TCP,x86_1,x86_2,Tab_bin_buff_strea_4,6336*sizeof(unsigned char));
+            receiveData(TCP,x86_1,x86_2,Taille_buffer_o_T_12,1*sizeof(int));
+            ReleaseSemaphore(sem_0[30],1,NULL); //full
         }
 
         return 0;

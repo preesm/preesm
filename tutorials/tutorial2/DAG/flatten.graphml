@@ -101,6 +101,8 @@
                 <argument name="NULL" value="0"/>
             </data>
         </node>
+        <node id="Codeur_Y_0_broadcast_Global" kind="Broadcast"/>
+        <node id="Codeur_Y_0_broadcast_im_i" kind="Broadcast"/>
         <node id="Decodeur_Y_0_Bro" kind="Broadcast"/>
         <node id="Decodeur_Y_0_bidon7" kind="vertex">
             <data key="graph_desc">../Code/IDL/bidon.idl</data>
@@ -108,6 +110,7 @@
                 <argument name="NULL" value="0"/>
             </data>
         </node>
+        <node id="Decodeur_Y_0_broadcast_Global" kind="Broadcast"/>
         <node id="Codeur_Y_0_Codeur_im_Y_0_Max2x2" kind="vertex">
             <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
             <data key="arguments">
@@ -230,6 +233,8 @@
                 <argument name="k" value="4"/>
             </data>
         </node>
+        <node id="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global" kind="Broadcast"/>
+        <node id="Codeur_Y_0_Codeur_im_Y_0_broadcast_im_i" kind="Broadcast"/>
         <node id="Codeur_Y_0_Codage_DPCM_0_DPCM_simple_code" kind="vertex">
             <data key="graph_desc">../Code/IDL/DCPM_simple_code.idl</data>
             <data key="arguments">
@@ -242,6 +247,7 @@
                 <argument name="ratio" value="1"/>
             </data>
         </node>
+        <node id="Codeur_Y_0_Codage_DPCM_0_broadcast_Global" kind="Broadcast"/>
         <node id="Codeur_Y_0_Codage_entrop_err_Y_0_Extract_error_symb" kind="vertex">
             <data key="graph_desc">../Code/IDL/Extract_error_symb.idl</data>
             <data key="arguments">
@@ -309,6 +315,7 @@
             id="Codeur_Y_0_Codage_entrop_err_Y_0_Concat_stream_err_pred" kind="vertex">
             <data key="graph_desc">../Code/IDL/Concat_stream_err_pred.idl</data>
         </node>
+        <node id="Codeur_Y_0_Codage_entrop_err_Y_0_broadcast_Global" kind="Broadcast"/>
         <node
             id="Codeur_Y_0_Codage_Entrop_Quadtree_Y_0_Code_taille_quadtree" kind="vertex">
             <data key="graph_desc">../Code/IDL/Code_taille_quadtree_16.idl</data>
@@ -350,6 +357,7 @@
                 <argument name="ratio" value="1"/>
             </data>
         </node>
+        <node id="Decodeur_Y_0_Decodage_DPCM_Y_0_broadcast_Global" kind="Broadcast"/>
         <node
             id="Decodeur_Y_0_Decodage_entrop_err_Y_0_Explode_stream_err_pred" kind="vertex">
             <data key="graph_desc">../Code/IDL/Explode_stream_err_pred_16.idl</data>
@@ -492,33 +500,12 @@
             <data key="edge_cons">1</data>
             <data key="data_type">LAR</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Block_Average" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_0" sourceport=""
-            target="Codeur_Y_0_Block_Average" targetport="im_originale">
-            <data key="edge_prod">101376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">101376</data>
-            <data key="data_type">unsigned char</data>
-        </edge>
         <edge source="Codeur_Y_0_broad" sourceport=""
             target="Codeur_Y_0_Block_Average" targetport="im_tailles_i">
             <data key="edge_prod">25344</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_CreateVertis" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
         </edge>
         <edge source="Codeur_Y_0_broad" sourceport=""
             target="Codeur_Y_0_CreateVertis" targetport="im_tailles_i">
@@ -534,6 +521,41 @@
             <data key="edge_cons">101376</data>
             <data key="data_type">unsigned char</data>
         </edge>
+        <edge source="bro_01" sourceport=""
+            target="Codeur_Y_0_broadcast_Global" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
+            target="Codeur_Y_0_Block_Average" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
+            target="Codeur_Y_0_CreateVertis" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="bro_0" sourceport=""
+            target="Codeur_Y_0_broadcast_im_i" targetport="in">
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Codeur_Y_0_broadcast_im_i" sourceport="out"
+            target="Codeur_Y_0_Block_Average" targetport="im_originale">
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
         <edge source="Decodeur_Y_0_Bro" sourceport=""
             target="Decodeur_Y_0_bidon7" targetport="">
             <data key="edge_prod">25344</data>
@@ -542,18 +564,11 @@
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Max2x2" targetport="Global">
+            target="Decodeur_Y_0_broadcast_Global" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_0" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Max2x2" targetport="im_i">
-            <data key="edge_prod">101376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">101376</data>
-            <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_Max2x2" sourceport="im_o"
             target="Codeur_Y_0_Codeur_im_Y_0_Max4x4" targetport="im_i">
@@ -561,41 +576,6 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Init_im_taille" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Min2x2" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_0" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Min2x2" targetport="im_i">
-            <data key="edge_prod">101376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">101376</data>
-            <data key="data_type">unsigned char</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Min4x4" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_4" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
         </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_Init_im_taille"
             sourceport="taille_max_o"
@@ -611,20 +591,6 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Min8x8" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_8" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
         </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_Gray_step_4"
             sourceport="taille_max_o"
@@ -642,13 +608,6 @@
             <data key="edge_cons">396</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_16" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_Gray_step_8"
             sourceport="taille_max_o"
             target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_16" targetport="taille_max_i">
@@ -663,27 +622,6 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Max4x4" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Max8x8" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Max16x16" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
         </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_bro_2" sourceport=""
             target="Codeur_Y_0_Codeur_im_Y_0_Max8x8" targetport="im_i">
@@ -762,13 +700,6 @@
             <data key="edge_cons">1584</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codeur_im_Y_0_Min16x16" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
         <edge source="Codeur_Y_0_Codeur_im_Y_0_bro_5" sourceport=""
             target="Codeur_Y_0_Codeur_im_Y_0_Min16x16" targetport="im_i">
             <data key="edge_prod">1584</data>
@@ -815,12 +746,121 @@
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codage_DPCM_0_DPCM_simple_code" targetport="Global">
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Max2x2" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_Init_im_taille" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Min2x2" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Min4x4" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_4" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Min8x8" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_8" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_Gray_step_16" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Max4x4" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Max8x8" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Max16x16" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_Global"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Min16x16" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_broadcast_im_i" sourceport="out"
+            target="Codeur_Y_0_Codeur_im_Y_0_broadcast_im_i" targetport="in">
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_im_i"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Max2x2" targetport="im_i">
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codeur_im_Y_0_broadcast_im_i"
+            sourceport="out" target="Codeur_Y_0_Codeur_im_Y_0_Min2x2" targetport="im_i">
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Codeur_Y_0_Codage_DPCM_0_Create_im_quant"
             sourceport="im_Quant_o" target="Disp_pic_Quant" targetport="Y">
@@ -851,15 +891,24 @@
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codage_DPCM_0_Create_im_quant" targetport="Global">
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
+            target="Codeur_Y_0_Codage_DPCM_0_broadcast_Global" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">LAR</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codage_entrop_err_Y_0_Extract_error_symb" targetport="Global">
+        <edge source="Codeur_Y_0_Codage_DPCM_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codage_DPCM_0_DPCM_simple_code" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codage_DPCM_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codage_DPCM_0_Create_im_quant" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
@@ -1024,13 +1073,6 @@
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Codeur_Y_0_Codage_entrop_err_Y_0_Concat_stream_err_pred" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
         <edge
             source="Codeur_Y_0_Codage_entrop_err_Y_0_Encode_rice_buff_error_2"
             sourceport="TabRice"
@@ -1184,7 +1226,30 @@
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="bro_01" sourceport=""
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
+            target="Codeur_Y_0_Codage_entrop_err_Y_0_broadcast_Global" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codage_entrop_err_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codage_entrop_err_Y_0_Extract_error_symb" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_Codage_entrop_err_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Codeur_Y_0_Codage_entrop_err_Y_0_Concat_stream_err_pred" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Codeur_Y_0_broadcast_Global" sourceport="out"
             target="Codeur_Y_0_Codage_Entrop_Quadtree_Y_0_Code_taille_quadtree" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
@@ -1314,13 +1379,6 @@
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="bro_01" sourceport=""
-            target="Decodeur_Y_0_Decodage_DPCM_Y_0_DPCM_simple_code" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">LAR</data>
-        </edge>
         <edge source="Decodeur_Y_0_Decodage_DPCM_Y_0_Create_im_quant"
             sourceport="im_Quant_o" target="Disp_Decodeur_Y" targetport="Y">
             <data key="edge_prod">25344</data>
@@ -1343,7 +1401,23 @@
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
+        <edge source="Decodeur_Y_0_broadcast_Global" sourceport="out"
+            target="Decodeur_Y_0_Decodage_DPCM_Y_0_broadcast_Global" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Decodeur_Y_0_Decodage_DPCM_Y_0_broadcast_Global"
+            sourceport="out"
+            target="Decodeur_Y_0_Decodage_DPCM_Y_0_DPCM_simple_code" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Decodeur_Y_0_Decodage_DPCM_Y_0_broadcast_Global"
+            sourceport="out"
             target="Decodeur_Y_0_Decodage_DPCM_Y_0_Create_im_quant" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
@@ -1503,7 +1577,7 @@
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="bro_01" sourceport=""
+        <edge source="Decodeur_Y_0_broadcast_Global" sourceport="out"
             target="Decodeur_Y_0_Decodage_entrop_err_Y_0_Rebuild_error_symb" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
@@ -1777,7 +1851,7 @@
             <data key="edge_cons">25344</data>
             <data key="data_type">unsigned char</data>
         </edge>
-        <edge source="bro_01" sourceport=""
+        <edge source="Decodeur_Y_0_broadcast_Global" sourceport="out"
             target="Decodeur_Y_0_Decodage_Entrop_Quadtree_Y_0_Concat_stream_quad" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>

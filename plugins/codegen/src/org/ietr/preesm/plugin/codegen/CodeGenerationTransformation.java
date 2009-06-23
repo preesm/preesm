@@ -61,6 +61,7 @@ import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
+import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -120,6 +121,10 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		IFile iFile = workspace.getRoot().getFile(
 				new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
+		
+		// We reset the IDL factory to parse IDL files again in case of modifications
+		IDLFunctionFactory.reset();
+		
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
 
 		// Displays the DAG

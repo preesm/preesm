@@ -138,12 +138,12 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				if (element instanceof SDFGraph) {
 					SDFGraph graph = (SDFGraph) element;
 					fireOnCheck(graph, isChecked);
-					updateConstraints(null, contentProvider.getCurrentGraph());
+					//updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
 				} else if (element instanceof VertexWithPath) {
 					VertexWithPath vertex = (VertexWithPath) element;
 					fireOnCheck(vertex, isChecked);
-					updateConstraints(null, contentProvider.getCurrentGraph());
+					//updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
 
 				}
@@ -193,9 +193,11 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	}
 
 	/**
-	 * Adds or remove a constraint depending on the isChecked status
+	 * Adds or remove a constraint depending on the isChecked status. Removed because
+	 * the good handling of hierarchy makes that a task with children should sometimes
+	 * be checked even if some children are not (the whole 
 	 */
-	public void updateConstraints(SDFAbstractVertex currentVertex,
+/*	public void updateConstraints(SDFAbstractVertex currentVertex,
 			SDFGraph currentGraph) {
 
 		if (currentIOpDef != null) {
@@ -232,7 +234,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				}
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
