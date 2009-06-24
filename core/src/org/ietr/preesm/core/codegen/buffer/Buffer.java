@@ -160,6 +160,10 @@ public class Buffer extends Parameter {
 		return size;
 	}
 	
+	public Integer getAllocatedSize() {
+		return getSize();
+	}
+	
 	public void setSize(int size){
 		this.size = size ;
 	}

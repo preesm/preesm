@@ -116,7 +116,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				if (edge.getProd().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
 					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(edge.getProd()
-							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getSize()));
+							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getAllocatedSize()));
 					SubBuffer newBuffer = new SubBuffer("inSub_" + index.getName() + "_"
 							+ parentBufferContainer.getBuffer(edge).getName(),
 							edge.getProd().intValue(), expr,
@@ -148,7 +148,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				if (edge.getCons().intValue() != parentBufferContainer
 						.getBuffer(edge).getSize()) {
 					IExpression expr = new BinaryExpression("%",new BinaryExpression("*",index,new ConstantValue(edge.getCons()
-							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getSize()));
+							.intValue())),new ConstantValue(parentBufferContainer.getBuffer(edge).getAllocatedSize()));
 					SubBuffer newBuffer = new SubBuffer("outSub_" + index.getName() + "_"
 							+ parentBufferContainer.getBuffer(edge).getName(), edge.getCons().intValue(), expr, parentBufferContainer.getBuffer(edge)
 							,parentBufferContainer);

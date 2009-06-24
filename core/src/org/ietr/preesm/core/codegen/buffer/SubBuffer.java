@@ -79,6 +79,14 @@ public class SubBuffer extends Buffer {
 		this.index = index;
 	}
 	
+	public Integer getAllocatedSize(){
+		if(getSize() == 0 && parentBuffer != null){
+			return parentBuffer.getAllocatedSize();
+		}else{
+			return getSize();
+		}
+	}
+	
 	public void setType(DataType type){
 		this.getParentBuffer().setType(type);
 	}
