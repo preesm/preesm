@@ -7,8 +7,8 @@
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>C64_1</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="C64x"
-                spirit:vendor="" spirit:version=""/>
+            <spirit:componentRef spirit:library=""
+                spirit:name="C64x_protothread" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -16,8 +16,8 @@
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>C64_2</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="C64x"
-                spirit:vendor="" spirit:version=""/>
+            <spirit:componentRef spirit:library=""
+                spirit:name="C64x_protothread" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
@@ -25,8 +25,8 @@
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>C64_3</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="C64x"
-                spirit:vendor="" spirit:version=""/>
+            <spirit:componentRef spirit:library=""
+                spirit:name="C64x_protothread" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>

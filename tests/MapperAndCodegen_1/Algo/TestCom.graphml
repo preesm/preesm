@@ -22,7 +22,7 @@
         <data key="name"/>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="size" value="1000"/>
+            <variable name="size" value="10"/>
         </data>
         <node id="Sensor" kind="vertex">
             <data key="graph_desc">../Code/IDL/Sensor.idl</data>
@@ -47,7 +47,7 @@
             </data>
         </node>
         <node id="ParallelTest" kind="vertex">
-            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+            <data key="graph_desc">../Code/IDL/ParallelTest2.idl</data>
             <data key="name">ParallelTest</data>
             <data key="arguments"/>
         </node>
@@ -59,11 +59,6 @@
         <node id="ParallelTest3" kind="vertex">
             <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
             <data key="name">ParallelTest3</data>
-            <data key="arguments"/>
-        </node>
-        <node id="Sensor2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Sensor2.idl</data>
-            <data key="name">Sensor2</data>
             <data key="arguments"/>
         </node>
         <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
@@ -117,12 +112,6 @@
         </edge>
         <edge source="ParallelTest2" sourceport="o1"
             target="ParallelTest3" targetport="i1">
-            <data key="edge_prod">size</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">size</data>
-            <data key="data_type">char</data>
-        </edge>
-        <edge source="Sensor2" sourceport="o1" target="ParallelTest" targetport="i2">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>

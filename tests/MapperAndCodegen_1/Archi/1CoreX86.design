@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor>ti.com</spirit:vendor>
+    <spirit:name>4C64</spirit:name>
+    <spirit:library>preesm</spirit:library>
+    <spirit:version>1.0</spirit:version>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>Core1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="x86"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections/>
+    <spirit:hierConnections/>
+</spirit:design>

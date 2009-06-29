@@ -2,40 +2,31 @@
 <scenario>
     <files>
         <algorithm url="/MapperAndCodegen_1/Algo/TestCom.graphml"/>
-        <architecture url="/MapperAndCodegen_1/Archi/1CoreX86.design"/>
+        <architecture url="/MapperAndCodegen_1/Archi/2CoreX86.design"/>
         <timingfile url="/MapperAndCodegen_1/Scenarii/TestComPC.xls"/>
         <codegenDirectory url="/MapperAndCodegen_1/Code/x86/generatedSrc"/>
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="Core6"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core1"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
+            <task name="Gen_int"/>
             <task name="Actuator"/>
             <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
         </constraintGroup>
         <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core7"/>
+            <operator name="Core2"/>
+            <task name="ParallelTest3"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="ParallelTest"/>
         </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
     </constraints>
     <timings>
         <timing opname="x86" time="10000" vertexname="Sensor"/>
