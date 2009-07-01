@@ -240,15 +240,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	protected void setEdgeCost(MapperDAGEdge edge) {
 
-		// Special vertices create edges with dissuasive costs so that they
+		// Special vertices create edges with prohibitive costs so that they
 		// are mapped correctly: fork after the sender and join before the
-		// receiver
-		if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
-				.getTarget()))
-		/*
-		 * || (edge.getSource() != null && SpecialVertexManager
-		 * .isJoin(edge.getSource()))
-		 */) {
+		// receiver. No more used because the usable rules with prohibitive
+		// costs works not well with list scheduling.
+		/*if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
+				.getTarget()))) {
 			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
 					.getSource()).getImplementationVertexProperty();
 			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
@@ -266,7 +263,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 							SpecialVertexManager.dissuasiveCost);
 				}
 			}
-		}
+		}*/
 	}
 
 	public abstract EdgeSchedType getEdgeSchedType();

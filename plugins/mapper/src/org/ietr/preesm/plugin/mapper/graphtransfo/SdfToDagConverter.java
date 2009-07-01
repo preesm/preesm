@@ -363,7 +363,8 @@ public class SdfToDagConverter {
 		Set<ArchitectureComponent> operators = architecture
 				.getComponents(ArchitectureComponentType.operator);
 
-		// Special type vertices can be executed on any core
+		// Special type vertices are first enabled on any core but a refinement of
+		// the constraints is done depending on their neighbors
 		for (DAGVertex v : dag.vertexSet()) {
 			if (SpecialVertexManager.isBroadCast(v)
 					|| SpecialVertexManager.isFork(v)

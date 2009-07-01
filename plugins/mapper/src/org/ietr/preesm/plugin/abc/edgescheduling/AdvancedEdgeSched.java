@@ -42,7 +42,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * A complex edge scheduler
+ * A complex edge scheduler used for tests. Do not use it for the moment.
  * 
  * @author mpelcat
  */
@@ -75,11 +75,6 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 		}
 		else{
 			orderManager.insertVertexAfter(source, vertex);
-		}
-		
-		if(source.getCorrespondingSDFVertex().getId().equals("PreEncode")){
-			int i=0;
-			i++;
 		}
 
 

@@ -33,35 +33,56 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc;
 
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * The special vertices are special to the mapper because they have
- * additional mapping rules. 
+ * The special vertices are special to the mapper because they have additional
+ * mapping rules.
  * 
  * @author mpelcat
  */
 public class SpecialVertexManager {
 
-	// Still not ready to use. Needs some improvements on scheduling before
+	// Not ready to use. Needs some improvements on scheduling before
 	public static final long dissuasiveCost = 10000000000l;
-	
+
+	/**
+	 * Tests if a vertex is of type broadcast
+	 */
+	static public boolean isSpecial(DAGVertex vertex) {
+
+		String kind = vertex.getKind();
+		if (kind == null) {
+			return false;
+		}
+
+		if (kind.equalsIgnoreCase("dag_broadcast_vertex")
+				|| kind.equalsIgnoreCase("dag_fork_vertex")
+				|| kind.equalsIgnoreCase("dag_join_vertex")
+				|| kind.equalsIgnoreCase("dag_init_vertex")) {
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Tests if a vertex is of type broadcast
 	 */
 	static public boolean isBroadCast(DAGVertex vertex) {
 
-		if(vertex.getKind() == null){
+		String kind = vertex.getKind();
+		if (kind == null) {
 			return false;
 		}
 
-		if(vertex.getKind().equalsIgnoreCase("dag_broadcast_vertex")){
+		if (kind.equalsIgnoreCase("dag_broadcast_vertex")) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -70,14 +91,15 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isFork(DAGVertex vertex) {
 
-		if(vertex.getKind() == null){
+		String kind = vertex.getKind();
+		if (kind == null) {
 			return false;
 		}
-		
-		if(vertex.getKind().equalsIgnoreCase("dag_fork_vertex")){
+
+		if (kind.equalsIgnoreCase("dag_fork_vertex")) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -86,14 +108,15 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isJoin(DAGVertex vertex) {
 
-		if(vertex.getKind() == null){
+		String kind = vertex.getKind();
+		if (kind == null) {
 			return false;
 		}
 
-		if(vertex.getKind().equalsIgnoreCase("dag_join_vertex")){
+		if (kind.equalsIgnoreCase("dag_join_vertex")) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -102,15 +125,16 @@ public class SpecialVertexManager {
 	 */
 	static public boolean isInit(DAGVertex vertex) {
 
-		if(vertex.getKind() == null){
+		String kind = vertex.getKind();
+		if (kind == null) {
 			return false;
 		}
 
-		if(vertex.getKind().equalsIgnoreCase("dag_init_vertex")){
+		if (kind.equalsIgnoreCase("dag_init_vertex")) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 }

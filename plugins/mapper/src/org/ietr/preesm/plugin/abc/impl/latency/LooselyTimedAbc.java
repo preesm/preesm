@@ -108,7 +108,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 		}
 
 		//Setting edge costs for special types
-		super.setEdgeCost(edge);
+		//super.setEdgeCost(edge);
 	}
 
 	@Override

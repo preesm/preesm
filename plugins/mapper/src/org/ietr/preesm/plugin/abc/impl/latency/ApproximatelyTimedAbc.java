@@ -104,7 +104,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		edge.getTimingEdgeProperty().setCost(0);
 
 		//Setting edge costs for special types
-		super.setEdgeCost(edge);
+		//super.setEdgeCost(edge);
 
 	}
 

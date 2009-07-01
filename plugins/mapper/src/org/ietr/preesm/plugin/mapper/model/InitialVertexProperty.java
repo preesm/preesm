@@ -41,12 +41,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Properties of an implanted vertex set when converting dag to mapper dag
@@ -96,14 +100,40 @@ public class InitialVertexProperty {
 	public void setNbRepeat(int nbRepeat) {
 		this.nbRepeat = nbRepeat;
 	}
-	
+
 	public void addTiming(Timing timing) {
-		if(getTiming(timing.getOperatorDefinition()) == null)
+		if (getTiming(timing.getOperatorDefinition()) == null)
 			this.timings.add(timing);
 	}
-	
-	public void addOperator(Operator op) {
-		this.operators.add(op);
+
+	/**
+	 * Enabling the current vertex on the given operator. The operation is straightforward
+	 * for normal vertices. For special vertices, a test is done on the neighbors.
+	 */
+	public void addOperator(Operator operator) {
+		if (!SpecialVertexManager.isSpecial(parentVertex)) {
+			this.operators.add(operator);
+		} else {
+
+			if (SpecialVertexManager.isBroadCast(parentVertex)) {
+				boolean predImplantable = isPredImplantable(operator);
+				if (predImplantable) {
+					this.operators.add(operator);
+				}
+			} else if (SpecialVertexManager.isFork(parentVertex)) {
+				boolean predImplantable = isPredImplantable(operator);
+				if (predImplantable) {
+					this.operators.add(operator);
+				}
+			} else if (SpecialVertexManager.isJoin(parentVertex)) {
+				boolean succImplantable = isSuccImplantable(operator);
+				if (succImplantable) {
+					this.operators.add(operator);
+				}
+			} else if (SpecialVertexManager.isInit(parentVertex)) {
+				this.operators.add(operator);
+			}
+		}
 	}
 
 	public InitialVertexProperty clone(MapperDAGVertex parentVertex) {
@@ -124,15 +154,31 @@ public class InitialVertexProperty {
 			Operator next = it2.next();
 			property.addOperator(next);
 		}
-		
+
 		property.setNbRepeat(nbRepeat);
 
 		return property;
 
 	}
 
+	/**
+	 * Returns all the operators that can execute the vertex. Special vertices
+	 * are originally enabled on every operator but their status is updated
+	 * depending on the implantation of their neighbors
+	 */
 	public Set<Operator> getOperatorSet() {
-		return operators;
+		Set<Operator> localOperators = null;
+		if (!SpecialVertexManager.isSpecial(parentVertex)) {
+			localOperators = operators;
+		} else {
+			localOperators = new HashSet<Operator>();
+			for (Operator o : operators) {
+				if (isImplantable(o)) {
+					localOperators.add(o);
+				}
+			}
+		}
+		return localOperators;
 	}
 
 	public MapperDAGVertex getParentVertex() {
@@ -140,7 +186,8 @@ public class InitialVertexProperty {
 	}
 
 	/**
-	 * Returns the timing of the operation = number of repetitions * scenario time
+	 * Returns the timing of the operation = number of repetitions * scenario
+	 * time
 	 */
 	public int getTime(Operator operator) {
 
@@ -151,22 +198,27 @@ public class InitialVertexProperty {
 
 			returntiming = getTiming((OperatorDefinition) operator
 					.getDefinition());
-			
-			if(returntiming != Timing.UNAVAILABLE){
-				
-				if(SpecialVertexManager.isBroadCast(parentVertex)){
-					time = Timing.DEFAULT_BROADCAST_TIME;
-				} else if(SpecialVertexManager.isFork(parentVertex)){
-					time = Timing.DEFAULT_FORK_TIME;
-				} else if(SpecialVertexManager.isJoin(parentVertex)){
-					time = Timing.DEFAULT_JOIN_TIME;
-				} else if(SpecialVertexManager.isInit(parentVertex)){
-					time = Timing.DEFAULT_INIT_TIME;
-				} else if(returntiming.getTime() != 0){
-					// The basic timing is multiplied by the number of repetitions
-					time = returntiming.getTime() * this.nbRepeat;
-				}else{
-					time = Timing.DEFAULT_TASK_TIME;
+
+			if (returntiming != Timing.UNAVAILABLE) {
+
+				if (!SpecialVertexManager.isSpecial(parentVertex)) {
+					if (returntiming.getTime() != 0) {
+						// The basic timing is multiplied by the number of
+						// repetitions
+						time = returntiming.getTime() * this.nbRepeat;
+					} else {
+						time = Timing.DEFAULT_TASK_TIME;
+					}
+				} else {
+					if (SpecialVertexManager.isBroadCast(parentVertex)) {
+						time = Timing.DEFAULT_BROADCAST_TIME;
+					} else if (SpecialVertexManager.isFork(parentVertex)) {
+						time = Timing.DEFAULT_FORK_TIME;
+					} else if (SpecialVertexManager.isJoin(parentVertex)) {
+						time = Timing.DEFAULT_JOIN_TIME;
+					} else if (SpecialVertexManager.isInit(parentVertex)) {
+						time = Timing.DEFAULT_INIT_TIME;
+					}
 				}
 			}
 		}
@@ -198,39 +250,74 @@ public class InitialVertexProperty {
 
 	/**
 	 * Checks in the vertex initial properties if it can be implanted on the
-	 * given operator
+	 * given operator. For special vertices, the predecessors and successor
+	 * implantabilities are studied
 	 */
 	public boolean isImplantable(Operator operator) {
-		
-		if(SpecialVertexManager.isBroadCast(parentVertex)){
-			return true;
+
+		for (Operator op : operators) {
+			if (op.equals(operator))
+				return true;
 		}
-		else if(SpecialVertexManager.isFork(parentVertex)){
-			return true;
-		}
-		else if(SpecialVertexManager.isJoin(parentVertex)){
-			return true;
-		}
-		else if(SpecialVertexManager.isInit(parentVertex)){
-			return true;
-		}
-		else{
-			boolean isImplantable=false;
-			
-			for(Operator op:operators){
-				if(op.equals(operator))
-					return true;
+
+		return false;
+	}
+
+	/**
+	 * Checks if the vertex first non special predecessors can be implanted on
+	 * the given operator.
+	 */
+	public boolean isPredImplantable(Operator operator) {
+
+		boolean predImplantable = false;
+
+		for (DAGEdge edge : parentVertex.incomingEdges()) {
+			if (!(edge instanceof PrecedenceEdge)) {
+				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
+				if (pred == null) {
+					return false;
+				} else if (SpecialVertexManager.isSpecial(pred)) {
+					predImplantable |= pred.getInitialVertexProperty()
+							.isPredImplantable(operator);
+				} else {
+					predImplantable |= pred.getInitialVertexProperty()
+							.isImplantable(operator);
+				}
 			}
-			
-			return isImplantable;
 		}
-		
+
+		return predImplantable;
+	}
+
+	/**
+	 * Checks if the vertex first non special successor can be implanted on the
+	 * given operator.
+	 */
+	public boolean isSuccImplantable(Operator operator) {
+
+		boolean succImplantable = false;
+
+		for (DAGEdge edge : parentVertex.outgoingEdges()) {
+			if (!(edge instanceof PrecedenceEdge)) {
+				MapperDAGVertex succ = (MapperDAGVertex) edge.getTarget();
+				if (succ == null) {
+					return false;
+				} else if (SpecialVertexManager.isSpecial(succ)) {
+					succImplantable |= succ.getInitialVertexProperty()
+							.isSuccImplantable(operator);
+				} else {
+					succImplantable |= succ.getInitialVertexProperty()
+							.isImplantable(operator);
+				}
+			}
+		}
+
+		return succImplantable;
 	}
 
 	public void setParentVertex(MapperDAGVertex parentVertex) {
 		this.parentVertex = parentVertex;
 	}
-
 
 	public int getTopologicalLevel() {
 		return topologicalLevel;

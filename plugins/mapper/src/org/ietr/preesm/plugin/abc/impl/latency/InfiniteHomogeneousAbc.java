@@ -49,41 +49,52 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Simulates an architecture having as many cores as necessary to
- * execute one operation on one core. All core have the main operator
- * definition. These cores are all interconnected with media
- * corresponding to the main medium definition.
- *         
- * @author mpelcat   
+ * Simulates an architecture having as many cores as necessary to execute one
+ * operation on one core. All core have the main operator definition. These
+ * cores are all interconnected with media corresponding to the main medium
+ * definition.
+ * 
+ * @author mpelcat
  */
-public class InfiniteHomogeneousAbc extends
-		LatencyAbc {
-	
+public class InfiniteHomogeneousAbc extends LatencyAbc {
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, IScenario scenario) {
-		this(edgeSchedType,dag,archi,TaskSchedType.Simple, scenario);
+		this(edgeSchedType, dag, archi, TaskSchedType.Simple, scenario);
 	}
-	
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
 	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
-			MultiCoreArchitecture archi, TaskSchedType taskSchedType, IScenario scenario) {
+			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
+			IScenario scenario) {
 		super(null, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
+
+		if (archi.getMainMedium() != null) {
+			PreesmLogger.getLogger().info("Infinite homogeneous simulation");
+		} else {
+
+			PreesmLogger
+					.getLogger()
+					.info(
+							"Current architecture has no main medium. infinite homogeneous simulator will use default speed");
+		}
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
 		// to implant all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
 	}
-	
+
 	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex, boolean updateRank) {
+	protected void fireNewMappedVertex(MapperDAGVertex vertex,
+			boolean updateRank) {
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -99,7 +110,7 @@ public class InfiniteHomogeneousAbc extends
 					"implementation of " + vertex.getName() + " failed");
 
 			vertex.getTimingVertexProperty().setCost(0);
-			
+
 		} else {
 
 			if (updateRank) {
@@ -107,14 +118,14 @@ public class InfiniteHomogeneousAbc extends
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
 			}
-			
+
 			// Setting vertex time
 			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 			vertex.getTimingVertexProperty().setCost(vertextime);
 
 			// Setting edges times
-			
+
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
 		}
@@ -125,7 +136,7 @@ public class InfiniteHomogeneousAbc extends
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
-		
+
 		vertex.getTimingVertexProperty().resetCost();
 
 		resetCost(vertex.incomingEdges());
@@ -149,26 +160,20 @@ public class InfiniteHomogeneousAbc extends
 
 		/**
 		 * In a Infinite Homogeneous Architecture, each communication is
-		 * supposed to be done on the main medium. The communication
-		 * cost is simply calculated from the main medium speed.
+		 * supposed to be done on the main medium. The communication cost is
+		 * simply calculated from the main medium speed.
 		 */
 		if (archi.getMainMedium() != null) {
-			MediumDefinition def = (MediumDefinition) archi
-					.getMainMedium().getDefinition();
+			MediumDefinition def = (MediumDefinition) archi.getMainMedium()
+					.getDefinition();
 			edge.getTimingEdgeProperty().setCost(def.getTransferTime(edgesize));
 		} else {
-
-			PreesmLogger
-					.getLogger()
-					.info(
-							"current architecture has no main medium. infinite homogeneous simulator will use default speed");
-
 			Float speed = 1f;
 			speed = edgesize * speed;
 			edge.getTimingEdgeProperty().setCost(speed.intValue());
 		}
 	}
-	
+
 	public EdgeSchedType getEdgeSchedType() {
 		return null;
 	}

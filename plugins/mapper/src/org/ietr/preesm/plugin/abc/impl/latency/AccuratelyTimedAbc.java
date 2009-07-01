@@ -100,7 +100,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 		edge.getTimingEdgeProperty().setCost(0);
 
 		//Setting edge costs for special types
-		super.setEdgeCost(edge);
+		//super.setEdgeCost(edge);
 	}
 
 	@Override
