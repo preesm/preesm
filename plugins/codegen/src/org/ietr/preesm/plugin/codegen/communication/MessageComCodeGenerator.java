@@ -136,8 +136,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 							.getBuffers(inEdges);
 
 					// The target is the operator on which the corresponding
-					// receive
-					// operation is mapped
+					// receive operation is mapped
 					SDFAbstractVertex receive = (SDFAbstractVertex) (succList
 							.get(0));
 					Operator target = (Operator) receive

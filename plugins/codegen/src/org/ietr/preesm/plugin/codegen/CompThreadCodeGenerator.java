@@ -94,6 +94,7 @@ public class CompThreadCodeGenerator {
 		}
 
 		for (SDFAbstractVertex task : taskVertices) {
+			
 			// Getting incoming receive operations
 			SortedSet<SDFAbstractVertex> ownComVertices = thread
 					.getComVertices(task, true);
@@ -150,7 +151,7 @@ public class CompThreadCodeGenerator {
 					}
 				}
 			}
-
+			
 			// Getting outgoing send operations
 			ownComVertices = thread.getComVertices(task, false);
 

@@ -15,6 +15,10 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -97,6 +101,18 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 
 		if (vertex instanceof ICodeGenSDFVertex
 				&& vertex.getGraphDescription() == null) {
+			
+			// A special vertex is considered to have always loop code
+			if (codeContainerType.equals(CodeSectionType.loop) &&
+				(vertex instanceof CodeGenSDFBroadcastVertex ||
+				vertex instanceof CodeGenSDFForkVertex ||
+				vertex instanceof CodeGenSDFJoinVertex ||
+				vertex instanceof CodeGenSDFRoundBufferVertex)){
+				return true;
+			}
+			
+			
+			// Looks for function call in the prototype
 			FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
 			if (vertexCall != null) {
 

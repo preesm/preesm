@@ -57,7 +57,11 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.VirtualHeapAllocator;
 import org.ietr.preesm.core.codegen.com.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreInit;
@@ -77,7 +81,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 public class SourceFileCodeGenerator {
 
 	SourceFile file;
-	VirtualHeapAllocator heap ;
+	VirtualHeapAllocator heap;
 
 	public SourceFileCodeGenerator(SourceFile file) {
 		this.file = file;
@@ -111,11 +115,13 @@ public class SourceFileCodeGenerator {
 	 * edge and false if the aggregate belongs to an outgoing edge
 	 */
 	public void allocateEdgeBuffers(SDFEdge edge) {
-		String bufferName = edge.getSourceInterface().getName()
-		+ "_" + edge.getTargetInterface().getName();
+		String bufferName = edge.getSourceInterface().getName() + "_"
+				+ edge.getTargetInterface().getName();
 		try {
-			int size = edge.getProd().intValue()*edge.getSource().getNbRepeat();
-			file.allocateBuffer(edge,bufferName, size, new DataType(edge.getDataType().toString()));
+			int size = edge.getProd().intValue()
+					* edge.getSource().getNbRepeat();
+			file.allocateBuffer(edge, bufferName, size, new DataType(edge
+					.getDataType().toString()));
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -198,7 +204,6 @@ public class SourceFileCodeGenerator {
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
 
-		
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
@@ -299,15 +304,32 @@ public class SourceFileCodeGenerator {
 	 * Returns true if the vertex function prototype of the given
 	 * codeContainerType uses buf
 	 */
-	public static boolean usesBufferInCodeContainerType(SDFAbstractVertex vertex,
-			CodeSectionType codeContainerType, Buffer buf, String direction) {
-		if(! (vertex.getRefinement() instanceof FunctionCall)){ //TODO : treat when the vertex has a graph refinement
-			return false ;
-		}
-		if(vertex.getRefinement() == null || !(vertex.getRefinement() instanceof FunctionCall)){
+	public static boolean usesBufferInCodeContainerType(
+			SDFAbstractVertex vertex, CodeSectionType codeContainerType,
+			Buffer buf, String direction) {
+
+		// Special vertices are considered to use systematically their buffers
+		if (codeContainerType.equals(CodeSectionType.loop)
+				&& (vertex instanceof CodeGenSDFBroadcastVertex
+						|| vertex instanceof CodeGenSDFForkVertex
+						|| vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFRoundBufferVertex)) {
 			return true;
 		}
-		
+
+		if (!(vertex.getRefinement() instanceof FunctionCall)) { // TODO : treat
+																	// when the
+																	// vertex
+																	// has a
+																	// graph
+																	// refinement
+			return false;
+		}
+
+		if (vertex.getRefinement() == null
+				|| !(vertex.getRefinement() instanceof FunctionCall)) {
+			return true;
+		}
+
 		FunctionCall call = ((FunctionCall) vertex.getRefinement());
 		if (call != null) {
 
@@ -352,9 +374,9 @@ public class SourceFileCodeGenerator {
 	 * Returns true if the vertex function prototype of the given
 	 * codeContainerType uses at least one of the buffers in bufs
 	 */
-	public static boolean usesBuffersInCodeContainerType(SDFAbstractVertex vertex,
-			CodeSectionType codeContainerType, List<Buffer> bufs,
-			String direction) {
+	public static boolean usesBuffersInCodeContainerType(
+			SDFAbstractVertex vertex, CodeSectionType codeContainerType,
+			List<Buffer> bufs, String direction) {
 
 		for (Buffer buf : bufs) {
 			if (usesBufferInCodeContainerType(vertex, codeContainerType, buf,
