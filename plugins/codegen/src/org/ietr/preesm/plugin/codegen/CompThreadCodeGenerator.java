@@ -94,7 +94,7 @@ public class CompThreadCodeGenerator {
 		}
 
 		for (SDFAbstractVertex task : taskVertices) {
-			
+
 			// Getting incoming receive operations
 			SortedSet<SDFAbstractVertex> ownComVertices = thread
 					.getComVertices(task, true);
@@ -104,54 +104,68 @@ public class CompThreadCodeGenerator {
 						.getCodeElements(task);
 				if (taskElements.size() != 1) {
 					PreesmLogger.getLogger().log(
-							Level.INFO,
+							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
 									+ codeContainerType.toString());
 				} else {
 					ICodeElement taskElement = taskElements.get(0);
 
-					for (SDFAbstractVertex com : ownComVertices) {
-						// Creates the semaphore if necessary ; retrieves it
-						// otherwise from global declaration and creates the
-						// pending
-						// function
-						Set<SDFEdge> outEdges = (com.getBase()
-								.outgoingEdgesOf(com));
+					for (SDFAbstractVertex receive : ownComVertices) {
+						/*
+						 * Creates the semaphore if necessary ; retrieves it
+						 * otherwise from global declaration and creates the
+						 * pending function
+						 */
+						Set<SDFEdge> outEdges = (receive.getBase()
+								.outgoingEdgesOf(receive));
 						List<Buffer> buffers = container.getBuffers(outEdges);
 
 						DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighborindex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
 								task.getBase());
-						
+
 						SDFAbstractVertex send = (SDFAbstractVertex) (neighborindex
-								.predecessorListOf(com).get(0));
+								.predecessorListOf(receive).get(0));
 						SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
 								.predecessorListOf(send).get(0));
-						
+						/*
+						 * Tests if the sender task outputs the given buffer in
+						 * its prototype
+						 */
 						if (SourceFileCodeGenerator
-								.usesBuffersInCodeContainerType(senderVertex,codeContainerType,buffers,"output")) {
-							SemaphorePend pend = new SemaphorePend(container,
-									buffers, com, SemaphoreType.full,
-									codeContainerType);
-							codeContainer.addCodeElementBefore(taskElement,
-									pend);
+								.usesBuffersInCodeContainerType(senderVertex,
+										codeContainerType, buffers, "output")) {
+							/*
+							 * Testing for duplicated protection in case of
+							 * multiple buffers
+							 */
+							if (!existSemaphorePend(codeContainer, buffers)) {
 
-							if (codeContainerType.equals(CodeSectionType.loop)) {
-								// Creates the semaphore if necessary and
-								// creates
-								// the
-								// posting function
-								SemaphorePost post = new SemaphorePost(
-										container, buffers, com,
-										SemaphoreType.empty, codeContainerType);
-								codeContainer.addCodeElementAfter(taskElement,
-										post);
+								SemaphorePend pend = new SemaphorePend(
+										container, buffers, receive,
+										SemaphoreType.full, codeContainerType);
+								codeContainer.addCodeElementBefore(taskElement,
+										pend);
+
+								if (codeContainerType
+										.equals(CodeSectionType.loop)) {
+									/*
+									 * Creates the semaphore if necessary and
+									 * creates the posting function
+									 */
+									SemaphorePost post = new SemaphorePost(
+											container, buffers, receive,
+											SemaphoreType.empty,
+											codeContainerType);
+									codeContainer.addCodeElementAfter(
+											taskElement, post);
+								}
 							}
 						}
 					}
 				}
 			}
-			
+
 			// Getting outgoing send operations
 			ownComVertices = thread.getComVertices(task, false);
 
@@ -160,63 +174,111 @@ public class CompThreadCodeGenerator {
 						.getCodeElements(task);
 				if (loopElements.size() != 1) {
 					PreesmLogger.getLogger().log(
-							Level.INFO,
+							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
 									+ codeContainerType.toString());
 				} else {
-					ICodeElement taskElement = loopElements.get(0); // error if
-					// the array
-					// size is
-					// equal to
-					// 0
+					ICodeElement taskElement = loopElements.get(0);
+					/*
+					 * error if the array size is equal to 0
+					 */
 
-					for (SDFAbstractVertex com : ownComVertices) {
-						// A first token must initialize the semaphore pend due
-						// to
-						// a sending operation
-						Set<SDFEdge> inEdges = (com.getBase()
-								.incomingEdgesOf(com));
+					for (SDFAbstractVertex send : ownComVertices) {
+						/*
+						 * A first token must initialize the semaphore pend due
+						 * to a sending operation
+						 */
+						Set<SDFEdge> inEdges = (send.getBase()
+								.incomingEdgesOf(send));
 						List<Buffer> buffers = container.getBuffers(inEdges);
-						
+
+						/*
+						 * Testing in the prototypes if the sender is really
+						 * generating the buffers. If not, the semaphores are
+						 * discarded.
+						 */
 						if (SourceFileCodeGenerator
-								.usesBuffersInCodeContainerType(task,codeContainerType,buffers,"output")) {
-						// If the semaphore is generated for the loop, a first
-						// post is done in initialization and then a loop
-						// pending and posting. In beginning and end cases, only
-						// a post is generated when the send is ready to be
-						// called.
-						if (codeContainerType.equals(CodeSectionType.loop)) {
-							SemaphorePost initPost = new SemaphorePost(
-									container, buffers, com,
-									SemaphoreType.empty, codeContainerType);
+								.usesBuffersInCodeContainerType(task,
+										codeContainerType, buffers, "output")) {
+							/*
+							 * Testing for duplicated protection in case of
+							 * multiple buffers
+							 */
+							if (!existSemaphorePend(codeContainer, buffers)) {
+								/*
+								 * If the semaphore is generated for the loop, a
+								 * first post is done in initialization and then
+								 * a loop pending and posting. In beginning and
+								 * end cases, only a post is generated when the
+								 * send is ready to be called.
+								 */
+								if (codeContainerType
+										.equals(CodeSectionType.loop)) {
 
-							thread.getBeginningCode().addCodeElementBefore(
-									taskElement, initPost);
+									SemaphorePost initPost = new SemaphorePost(
+											container, buffers, send,
+											SemaphoreType.empty,
+											codeContainerType);
 
-							// Creates the semaphore if necessary ; retrieves it
-							// otherwise from global declaration and creates the
-							// pending function
-							SemaphorePend pend = new SemaphorePend(container,
-									buffers, com, SemaphoreType.empty,
-									codeContainerType);
-							codeContainer.addCodeElementBefore(taskElement,
-									pend);
+									thread.getBeginningCode()
+											.addCodeElementBefore(taskElement,
+													initPost);
+
+									/*
+									 * Creates the semaphore if necessary ;
+									 * retrieves it otherwise from global
+									 * declaration and creates the pending
+									 * function
+									 */
+									SemaphorePend pend = new SemaphorePend(
+											container, buffers, send,
+											SemaphoreType.empty,
+											codeContainerType);
+									codeContainer.addCodeElementBefore(
+											taskElement, pend);
+								}
+
+								/*
+								 * Creates the semaphore if necessary and
+								 * creates the posting function
+								 */
+								SemaphorePost post = new SemaphorePost(
+										container, buffers, send,
+										SemaphoreType.full, codeContainerType);
+
+								codeContainer.addCodeElementAfter(taskElement,
+										post);
+							}
 						}
-
-						// Creates the semaphore if necessary and creates the
-						// posting function
-						SemaphorePost post = new SemaphorePost(container,
-								buffers, com, SemaphoreType.full,
-								codeContainerType);
-
-						codeContainer.addCodeElementAfter(taskElement, post);
-					}}
+					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Returns true if there exists a semaphore pending function protected the
+	 * given buffers in the given code container
+	 */
+	private boolean existSemaphorePend(AbstractCodeContainer codeContainer,
+			List<Buffer> buffers) {
+		boolean areSameBuffers;
+		for (ICodeElement codeElt : codeContainer.getCodeElements()) {
+			if (codeElt instanceof SemaphorePend) {
+				List<Buffer> testBuffers = ((SemaphorePend) codeElt)
+						.getSemaphore().getProtectedBuffers();
+				areSameBuffers = true;
+				for (Buffer buf : testBuffers) {
+					areSameBuffers &= buffers.contains(buf);
+				}
+				if (areSameBuffers) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Adds one function call for each vertex in the ordered set
