@@ -197,6 +197,14 @@ public class CodeGenSDFGraphFactory {
 						newEdge.setDelay(new SDFIntEdgePropertyType(sdfSubEdge
 								.getDelay().intValue()));
 						newEdge.setDataType(sdfSubEdge.getDataType());
+						if(source.getCorrespondingSDFVertex() instanceof SDFForkVertex && newSource instanceof SDFForkVertex){
+							int edgeIndex = ((SDFForkVertex) source.getCorrespondingSDFVertex()).getEdgeIndex((SDFEdge) subEdge);
+							((SDFForkVertex) newSource).setConnectionIndex(newEdge, edgeIndex);
+						}
+						if(target.getCorrespondingSDFVertex() instanceof SDFJoinVertex && newTarget instanceof SDFJoinVertex){
+							int edgeIndex = ((SDFJoinVertex) target.getCorrespondingSDFVertex()).getEdgeIndex((SDFEdge) subEdge);
+							((SDFJoinVertex) newTarget).setConnectionIndex(newEdge, edgeIndex);
+						}
 					}
 				}
 			}
