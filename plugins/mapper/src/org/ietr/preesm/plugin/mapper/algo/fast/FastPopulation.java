@@ -37,20 +37,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.fast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
-import org.ietr.preesm.plugin.mapper.graphtransfo.DAGCreator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 
 /**
@@ -73,7 +68,7 @@ public class FastPopulation {
 	// architecture used to make this population
 	private MultiCoreArchitecture archi;
 	
-	private IScenario scenario;
+	//private IScenario scenario;
 
 	/**
 	 * Constructors
@@ -97,7 +92,7 @@ public class FastPopulation {
 		this.archi = archi;
 		this.population = new ArrayList<MapperDAG>();
 		this.edgeSchedType = edgeSchedType;
-		this.scenario = scenario;
+		//this.scenario = scenario;
 	}
 
 	/**

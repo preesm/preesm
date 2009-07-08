@@ -44,7 +44,6 @@ import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 
 /**
  * Container that handles the semaphores

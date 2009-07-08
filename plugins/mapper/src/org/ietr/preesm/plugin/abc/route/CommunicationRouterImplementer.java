@@ -45,7 +45,6 @@ import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * Routes a communication and creates the necessary communication vertices

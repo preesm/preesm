@@ -76,7 +76,6 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-
 /**
  * This class provides methods to check and execute a workflow. A workflow
  * consists of several transformation plug-ins applied to a scenario
@@ -114,12 +113,16 @@ public class Workflow {
 			IWorkflowNode node = it.next();
 			if (node.isTaskNode()) {
 				// Testing only connected nodes
-				if (!workflow.edgesOf(node).isEmpty()){
+				if (!workflow.edgesOf(node).isEmpty()) {
 					workflowOk = ((TaskNode) node).isTaskPossible();
 				}
-				
-				if(!workflowOk){
-					PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find plugin " + ((TaskNode) node).getTaskId() + " from workflow.");
+
+				if (!workflowOk) {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"Failed to find plugin "
+									+ ((TaskNode) node).getTaskId()
+									+ " from workflow.");
 				}
 			}
 		}
@@ -140,18 +143,20 @@ public class Workflow {
 			AlgorithmConfiguration algorithmConfiguration,
 			ArchitectureConfiguration architectureConfiguration,
 			ScenarioConfiguration scenarioConfiguration,
-			Map<String, String> envVars) throws PreesmException{
+			Map<String, String> envVars) throws PreesmException {
 
-		WorkflowStepManager stepManager = new WorkflowStepManager(monitor,workflow.vertexSet().size());
+		WorkflowStepManager stepManager = new WorkflowStepManager(monitor,
+				workflow.vertexSet().size());
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		MultiCoreArchitecture architecture = null;
 		IScenario scenario = null;
 		SourceFileList sourceFiles = null;
-		IMapperAbc abc = null; // This input type is known from the sender and the receiver
+		IMapperAbc abc = null; // This input type is known from the sender and
+								// the receiver
 
-		PreesmLogger.getLogger().log(Level.INFO,"Starting workflow execution");
-		
+		PreesmLogger.getLogger().log(Level.INFO, "Starting workflow execution");
+
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
 		while (it.hasNext()) {
@@ -189,11 +194,14 @@ public class Workflow {
 			}
 			TaskResult nodeResult = new TaskResult();
 			if (node.isAlgorithmNode()) {
-				stepManager.retrieveAlgorithm("loading algorithm",scenario,nodeResult);
-			} else if (node.isArchitectureNode()) {				
-				stepManager.retrieveArchitecture("loading architecture",scenario,nodeResult);
+				stepManager.retrieveAlgorithm("loading algorithm", scenario,
+						nodeResult);
+			} else if (node.isArchitectureNode()) {
+				stepManager.retrieveArchitecture("loading architecture",
+						scenario, nodeResult);
 			} else if (node.isScenarioNode()) {
-				stepManager.retrieveScenario("loading scenario",scenarioConfiguration,nodeResult);
+				stepManager.retrieveScenario("loading scenario",
+						scenarioConfiguration, nodeResult);
 			} else if (node.isTaskNode()) {
 
 				// A transformation is taken into account only if connected.
@@ -219,7 +227,8 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
-						PreesmLogger.getLogger().log(Level.INFO, "transforming");
+						PreesmLogger.getLogger()
+								.log(Level.INFO, "transforming");
 
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
@@ -227,7 +236,8 @@ public class Workflow {
 						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
-						PreesmLogger.getLogger().log(Level.INFO, "converting file");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"converting file");
 
 						// mapping
 						IFileConversion tranform = (IFileConversion) transformation;
@@ -235,14 +245,15 @@ public class Workflow {
 						nodeResult = tranform.transform(parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
-						PreesmLogger.getLogger().log(Level.INFO, "code generation");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"code generation");
 
 						// generic code generation
 						ICodeGeneration codeGen = (ICodeGeneration) transformation;
 
 						if (dag != null)
-							nodeResult = codeGen.transform(dag, architecture, scenario,
-									parameters);
+							nodeResult = codeGen.transform(dag, architecture,
+									scenario, parameters);
 
 						sourceFiles = nodeResult.getSourcefilelist();
 
@@ -251,14 +262,16 @@ public class Workflow {
 
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
-						PreesmLogger.getLogger().log(Level.INFO, "code translation");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"code translation");
 
 						// code translation
 						ICodeTranslation codeTrans = (ICodeTranslation) transformation;
 						codeTrans.transform(sourceFiles);
 					} else if (transformation instanceof IExporter) {
 						monitor.subTask("content exporter");
-						PreesmLogger.getLogger().log(Level.INFO, "content exporter");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"content exporter");
 						// code translation
 						IExporter exporter = (IExporter) transformation;
 
@@ -268,15 +281,8 @@ public class Workflow {
 							exporter.transform(dag, sdf, architecture,
 									scenario, parameters);
 
-						IWorkspace workspace = updateWorkspace(monitor);
-						Path path = new Path(parameters.getVariable("path"));
-						IResource resource = workspace.getRoot().findMember(
-								path.toOSString());
-
-						if (resource != null) {
-							FileEditorInput input = new FileEditorInput(
-									(IFile) resource);
-							openEditor(((IFile) resource).getName(), input);
+						if (parameters.getBooleanVariable("openFile")) {
+							openFile(parameters.getVariable("path"), monitor);
 						}
 					} else if (transformation instanceof IPlotter) {
 						monitor.subTask("plot");
@@ -284,8 +290,8 @@ public class Workflow {
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
-						
-						plotter.transform(abc,scenario,parameters);
+
+						plotter.transform(abc, scenario, parameters);
 					}
 				}
 
@@ -297,7 +303,7 @@ public class Workflow {
 			}
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO,"End of workflow execution");
+		PreesmLogger.getLogger().log(Level.INFO, "End of workflow execution");
 		// Workflow completed
 		monitor.done();
 	}
@@ -339,6 +345,18 @@ public class Workflow {
 		}
 		PlatformUI.getWorkbench().getDisplay().asyncExec(
 				new OpenWorkflowOutput(input, editor.getId()));
+	}
+
+	private void openFile(String fileName, IProgressMonitor monitor) {
+
+		IWorkspace workspace = updateWorkspace(monitor);
+		Path path = new Path(fileName);
+		IResource resource = workspace.getRoot().findMember(path.toOSString());
+
+		if (resource != null) {
+			FileEditorInput input = new FileEditorInput((IFile) resource);
+			openEditor(((IFile) resource).getName(), input);
+		}
 	}
 
 	private IWorkspace updateWorkspace(IProgressMonitor monitor) {

@@ -43,9 +43,7 @@ import java.awt.LinearGradientPaint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.swt.SWT;

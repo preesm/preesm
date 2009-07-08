@@ -36,24 +36,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import java.util.Set;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -149,7 +140,7 @@ public class PerformancePage extends FormPage {
 	 * @param desc
 	 *            description of the section
 	 */
-	private void createExplanationSection(IManagedForm mform, String title,
+	/*private void createExplanationSection(IManagedForm mform, String title,
 			String desc) {
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
@@ -160,7 +151,7 @@ public class PerformancePage extends FormPage {
 
 		FormToolkit toolkit = mform.getToolkit();
 		toolkit.paintBordersFor(client);
-	}
+	}*/
 
 	/**
 	 * Creates a section for the chart

@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 import org.ietr.preesm.core.architecture.advancedmodel.NodeLinkTuple;
+import org.ietr.preesm.core.architecture.advancedmodel.RouteStep;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.AlgorithmDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.ArchitectureDescriptor;
 import org.ietr.preesm.plugin.mapper.listsched.descriptor.CommunicationDescriptor;

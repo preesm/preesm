@@ -5,12 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
@@ -18,7 +14,6 @@ import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.AddInvolvementVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
@@ -90,7 +85,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			} else if (type == CommunicationRouter.involvementType) {
 				// Adding the involvement
 				MapperDAGEdge incomingEdge = null;
-				TransferVertex correspondingTransfer = null;
+				//TransferVertex correspondingTransfer = null;
 
 				for (Object o : alreadyCreatedVertices) {
 					if (o instanceof TransferVertex) {
@@ -101,7 +96,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 								// Finding the edge where to add an involvement
 								incomingEdge = (MapperDAGEdge) v
 										.incomingEdges().toArray()[0];
-								correspondingTransfer = v;
+								//correspondingTransfer = v;
 						}
 
 					}
@@ -115,7 +110,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 					PreesmLogger
 							.getLogger()
 							.log(
-									Level.SEVERE,
+									Level.FINE,
 									"The transfer following vertex"
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");

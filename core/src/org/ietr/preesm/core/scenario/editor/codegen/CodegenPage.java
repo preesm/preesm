@@ -169,7 +169,6 @@ public class CodegenPage extends FormPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text)e.getSource();
-				String type = ((String)text.getData());
 				
 				scenario.getCodegenManager().setCodegenDirectory(text.getText());
 				

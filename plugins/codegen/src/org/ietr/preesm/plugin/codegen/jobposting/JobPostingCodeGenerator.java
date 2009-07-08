@@ -19,14 +19,12 @@ import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
 
 /**
  * Generating code to address a job posting runtime system. It generates xml
@@ -38,7 +36,7 @@ import org.sdf4j.model.sdf.SDFInterfaceVertex;
 public class JobPostingCodeGenerator {
 
 	private CodeGenSDFGraph codeGenSDFGraph;
-	private IScenario scenario;
+	//private IScenario scenario;
 
 	/**
 	 * If true, the functions that are called are just simulation functions and
@@ -51,7 +49,7 @@ public class JobPostingCodeGenerator {
 			IScenario scenario, boolean timedSimulation) {
 		super();
 		this.codeGenSDFGraph = codeGenSDFGraph;
-		this.scenario = scenario;
+		//this.scenario = scenario;
 		this.timedSimulation = timedSimulation;
 
 		// Displays the DAG

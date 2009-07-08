@@ -133,7 +133,7 @@ public class ExcelConstraintsParser {
 	/**
 	 * Importing constraints from component definition ids
 	 */
-	private void checkOpDefConstraint(Workbook w,
+	public void checkOpDefConstraint(Workbook w,
 			OperatorDefinition operatorDef, MultiCoreArchitecture archi,
 			SDFAbstractVertex vertex) {
 		String operatorDefId = operatorDef.getId();

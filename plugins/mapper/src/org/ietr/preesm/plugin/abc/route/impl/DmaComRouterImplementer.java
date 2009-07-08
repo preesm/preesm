@@ -1,17 +1,12 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -22,8 +17,8 @@ import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
-import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -118,7 +113,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 					PreesmLogger
 							.getLogger()
 							.log(
-									Level.SEVERE,
+									Level.FINE,
 									"The transfer following vertex"
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");

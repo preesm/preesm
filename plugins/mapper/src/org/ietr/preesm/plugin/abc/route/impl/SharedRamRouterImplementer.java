@@ -1,32 +1,15 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
-import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
-import org.ietr.preesm.plugin.abc.transaction.AddInvolvementVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
-import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
  * Class responsible to generate the suited vertices while simulating a shared ram
@@ -129,7 +112,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 					PreesmLogger
 							.getLogger()
 							.log(
-									Level.SEVERE,
+									Level.FINE,
 									"The transfer following vertex"
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");

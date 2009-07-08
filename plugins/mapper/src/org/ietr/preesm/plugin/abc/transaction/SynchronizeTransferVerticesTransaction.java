@@ -36,31 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.transaction;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.order.SchedulingOrderComparator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.SynchroEdge;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * A transaction that adds one transfer vertex per contention node in an
@@ -84,12 +65,12 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 	/**
 	 * Implementation DAG
 	 */
-	private MapperDAG implementation = null;
+	//private MapperDAG implementation = null;
 
 	/**
 	 * Vertices order manager
 	 */
-	private SchedOrderManager orderManager;
+	//private SchedOrderManager orderManager;
 
 	public SynchronizeTransferVerticesTransaction(MapperDAG implementation,
 			List<MapperDAGVertex> verticesToSynchronize,
@@ -97,12 +78,12 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 		super();
 		this.verticesToSynchronize = verticesToSynchronize;
 		this.edgeScheduler = edgeScheduler;
-		this.implementation = implementation;
-		this.orderManager = orderManager;
+		//this.implementation = implementation;
+		//this.orderManager = orderManager;
 
 	}
 
-	private MapperDAGVertex getLatestPredecessor(MapperDAGVertex input) {
+	/*private MapperDAGVertex getLatestPredecessor(MapperDAGVertex input) {
 		MapperDAGVertex latestPredecessor = null;
 		Set<DAGEdge> edges = input.incomingEdges();
 
@@ -115,7 +96,7 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 		}
 
 		return latestPredecessor;
-	}
+	}*/
 
 	@Override
 	public void execute(List<Object> resultList) {
