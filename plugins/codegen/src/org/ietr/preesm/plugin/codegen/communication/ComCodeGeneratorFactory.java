@@ -28,6 +28,10 @@ public class ComCodeGeneratorFactory {
 	private Map<AbstractRouteStep,IComCodeGenerator> generators = null;
 	private CommunicationThreadDeclaration comThread;
 	private ComputationThreadDeclaration compThread;
+	
+	/**
+	 * The considered communication vertices (send, receive)
+	 */
 	private SortedSet<SDFAbstractVertex> vertices;
 	
 	

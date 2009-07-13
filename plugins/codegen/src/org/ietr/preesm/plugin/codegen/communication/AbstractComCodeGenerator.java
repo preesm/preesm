@@ -31,15 +31,30 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  */
 public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 
+	/**
+	 * Communication thread
+	 */
 	protected CommunicationThreadDeclaration comThread = null;
+
+	/**
+	 * Computation thread
+	 */
 	protected ComputationThreadDeclaration compThread = null;
 
-	// Initializing the Send and Receive channels only for the channels
-	// really used and only once per channel
+	/**
+	 * Initializing the Send and Receive channels only for the channels really
+	 * used and only once per channel
+	 */
 	protected Set<CommunicationFunctionInit> alreadyInits = null;
 
+	/**
+	 * The considered communication vertices (send, receive)
+	 */
 	protected SortedSet<SDFAbstractVertex> vertices = null;
 
+	/**
+	 * The considered communication vertices (send, receive)
+	 */
 	protected AbstractRouteStep step = null;
 
 	public AbstractComCodeGenerator(ComputationThreadDeclaration compThread,
@@ -55,7 +70,8 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 
 	@Override
 	public void createComs(SDFAbstractVertex vertex) {
-		// Creating and adding the calls to send and receive functions
+		// Creating and adding the inits and calls to send and receive
+		// functions: init phase
 		List<CommunicationFunctionCall> beginningComs = createCalls(comThread,
 				vertex, CodeSectionType.beginning);
 		if (!beginningComs.isEmpty()) {
@@ -65,6 +81,8 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 			}
 		}
 
+		// Creating and adding the inits and calls to send and receive
+		// functions: loop phase
 		List<CommunicationFunctionCall> loopComs = createCalls(comThread,
 				vertex, CodeSectionType.loop);
 		if (!loopComs.isEmpty()) {
@@ -74,6 +92,8 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 			}
 		}
 
+		// Creating and adding the inits and calls to send and receive
+		// functions: end phase
 		List<CommunicationFunctionCall> endComs = createCalls(comThread,
 				vertex, CodeSectionType.end);
 		if (!endComs.isEmpty()) {
@@ -94,24 +114,23 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 
 	/**
 	 * Returns true if a call exists for the given vertex in the current thread
-	 * container of the given type (beginning, loop or end code)
+	 * container of the given type (beginning, loop or end code). This is
+	 * checked in the IDL prototype.
 	 */
 	protected boolean hasCallForCodeContainerType(SDFAbstractVertex vertex,
 			CodeSectionType codeContainerType) {
 
 		if (vertex instanceof ICodeGenSDFVertex
 				&& vertex.getGraphDescription() == null) {
-			
+
 			// A special vertex is considered to have always loop code
-			if (codeContainerType.equals(CodeSectionType.loop) &&
-				(vertex instanceof CodeGenSDFBroadcastVertex ||
-				vertex instanceof CodeGenSDFForkVertex ||
-				vertex instanceof CodeGenSDFJoinVertex ||
-				vertex instanceof CodeGenSDFRoundBufferVertex)){
+			if (codeContainerType.equals(CodeSectionType.loop)
+					&& (vertex instanceof CodeGenSDFBroadcastVertex
+							|| vertex instanceof CodeGenSDFForkVertex
+							|| vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFRoundBufferVertex)) {
 				return true;
 			}
-			
-			
+
 			// Looks for function call in the prototype
 			FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
 			if (vertexCall != null) {
@@ -122,8 +141,7 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 				}
 
 				if (vertexCall.getInitCall() != null
-						&& codeContainerType
-								.equals(CodeSectionType.beginning)) {
+						&& codeContainerType.equals(CodeSectionType.beginning)) {
 					return true;
 				}
 

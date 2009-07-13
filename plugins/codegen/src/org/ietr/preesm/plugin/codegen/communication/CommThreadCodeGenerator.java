@@ -69,7 +69,8 @@ public class CommThreadCodeGenerator {
 	private CommunicationThreadDeclaration comThread;
 	private ComputationThreadDeclaration compThread;
 
-	public CommThreadCodeGenerator(ComputationThreadDeclaration compThread, CommunicationThreadDeclaration comThread) {
+	public CommThreadCodeGenerator(ComputationThreadDeclaration compThread,
+			CommunicationThreadDeclaration comThread) {
 		this.comThread = comThread;
 		this.compThread = compThread;
 	}
@@ -171,15 +172,16 @@ public class CommThreadCodeGenerator {
 
 	/**
 	 * Adds send and receive functions from vertices allocated on the current
-	 * core. Vertices are already in the correct order.
+	 * core. Vertices are already in the correct order. The code thread com
+	 * generator delegates com creation to each route step appropriate generator
 	 */
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
 			AbstractBufferContainer bufferContainer) {
 
 		// a code generator factory always outputs the same generator for a
 		// given route step
-		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(compThread,
-				comThread, vertices);
+		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(
+				compThread, comThread, vertices);
 		for (SDFAbstractVertex vertex : vertices) {
 			AbstractRouteStep step = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(

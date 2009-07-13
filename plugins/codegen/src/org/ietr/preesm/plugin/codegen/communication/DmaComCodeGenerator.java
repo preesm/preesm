@@ -85,7 +85,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			}
 		}
 
-		// Adding the address buffer
+		// Adding the address buffer where the distant addresses of the sending
+		// functions are stored in the order of send functions
 		if (addressBufferSize != 0) {
 			addressBuffer = new Buffer("addressBuffer", addressBufferSize,
 					new DataType("void *", 4), null, comThread
