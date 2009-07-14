@@ -66,6 +66,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.plugin.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
@@ -372,13 +373,54 @@ public class SdfToDagConverter {
 		 * to executed them but a refinement of A the constraints is done
 		 * depending on their neighbors
 		 */
-		for (DAGVertex v : dag.vertexSet()) {
+		TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
+		List<DAGVertex> vList = new ArrayList<DAGVertex>();
+		Set<ArchitectureComponent> specialCmps = scenario.getSimulationManager()
+		.getSpecialVertexOperators();
+		
+		while (it.hasNext()) {
+			MapperDAGVertex v = (MapperDAGVertex) it.next();
 			if (SpecialVertexManager.isSpecial(v)) {
-				for (ArchitectureComponent o : scenario.getSimulationManager()
-						.getSpecialVertexOperators()) {
+				vList.add(v);
+				for (ArchitectureComponent o : specialCmps) {
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator((Operator) o);
 				}
+			}
+		}
+
+		// Checking predecessors to reduce the possible allocations
+		for (DAGVertex v : vList) {
+			if (SpecialVertexManager.isBroadCast(v) || SpecialVertexManager.isFork(v)) {
+			for (ArchitectureComponent o : specialCmps) {
+				((MapperDAGVertex) v).getInitialVertexProperty()
+						.removeOperatorIfPredNotImplantable((Operator) o);
+			}}
+		}
+
+		// Checking successors to reduce the possible allocations
+		ListIterator<DAGVertex> vIt = vList.listIterator();
+		while (vIt.hasPrevious()) {
+			MapperDAGVertex v = (MapperDAGVertex) vIt.previous();
+			if (SpecialVertexManager.isJoin(v)) {
+			for (ArchitectureComponent o : specialCmps) {
+				v.getInitialVertexProperty()
+						.removeOperatorIfPredNotImplantable((Operator) o);
+			}
+			}
+		}
+
+		// If no allocation is possible any more, adds all cores from scenario special vertex section and displays a warning
+		for (DAGVertex dv : vList) {
+			MapperDAGVertex v = (MapperDAGVertex) dv;
+			
+			if(v.getInitialVertexProperty().getOperatorSet().isEmpty()){
+				for (ArchitectureComponent o : specialCmps) {
+					((MapperDAGVertex) v).getInitialVertexProperty()
+							.addOperator((Operator) o);
+				}
+				
+				PreesmLogger.getLogger().log(Level.WARNING,"the special vertex " + v.getName() + " can not be executed on the same operator as its reference neighbor.");
 			}
 		}
 	}

@@ -126,30 +126,35 @@ public class PreesmLogger extends Logger {
 							.asyncExec(new Runnable() {
 								@Override
 								public void run() {
-									if (levelVal <= Level.INFO.intValue())
+									if (levelVal < Level.WARNING.intValue())
 										stream
 												.setColor(new Color(null, 0, 0,
 														0));
-									else
-										stream.setColor(new Color(null, 255, 0,
+									else if (levelVal == Level.WARNING
+											.intValue())
+										stream.setColor(new Color(null, 255, 150,
 												0));
+									else if (levelVal > Level.WARNING
+											.intValue())
+										stream.setColor(new Color(null, 255,
+												0, 0));
 								}
 							});
 
 					stream.println(getFormattedTime() + record.getMessage());
 
-					if(getLevel().intValue() >= Level.SEVERE.intValue()){
-						//throw (new PreesmException(record.getMessage()));
+					if (getLevel().intValue() >= Level.SEVERE.intValue()) {
+						// throw (new PreesmException(record.getMessage()));
 					}
 				}
 			}
 		}
-		
+
 	}
-	
-	public static String getFormattedTime(){
+
+	public static String getFormattedTime() {
 		Calendar cal = Calendar.getInstance();
-		
+
 		String time = String.format("%2d:%2d:%2d ", cal
 				.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
 				.get(Calendar.SECOND));
