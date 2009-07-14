@@ -60,6 +60,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * Creates the CPN dominant list
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class InitialLists {
 
@@ -71,7 +72,7 @@ public class InitialLists {
 
 	// List of the nodes of the critical path
 	protected List<MapperDAGVertex> criticalPath;
-	
+
 	/**
 	 * constructors
 	 */
@@ -134,13 +135,13 @@ public class InitialLists {
 
 	/**
 	 * checkpredecessor: Choose the vertex necessary to continue the
-	 * CPNdominantlist and implement it in the CPN dominant list
+	 * CPNdominantlist and add it in the CPN dominant list
 	 * 
 	 * @param : MapperDAG ,MapperDAGVertex, List<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>,IArchitectureSimulator
 	 * @return : true if a vertex was found
 	 */
-	private boolean checkpredecessor(MapperDAG dag,
+	private boolean choosePredecessor(MapperDAG dag,
 			MapperDAGVertex currentvertex, List<MapperDAGVertex> orderlist,
 			LatencyAbc abc) {
 
@@ -227,9 +228,11 @@ public class InitialLists {
 
 	/**
 	 * constructCPN : Critical Path implemented in the CPN-DominantList
-	 * (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP)
+	 * (Critical Path Nodes= CPN) and the FCP-list (Final Critical Path = FCP).
+	 * See YK Kwok thesis p.59
 	 */
-	public boolean constructCPN(MapperDAG dag, List<MapperDAGVertex> cpnDominant,
+	public boolean constructCPN(MapperDAG dag,
+			List<MapperDAGVertex> cpnDominant,
 			List<MapperDAGVertex> criticalPath, LatencyAbc abc) {
 
 		PreesmLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
@@ -239,7 +242,7 @@ public class InitialLists {
 		MapperDAGVertex cpnvertex = null;
 		MapperDAGVertex tempvertex = null;
 		long commax = 0;
-		
+
 		// Sets the t and b levels
 		abc.updateTimings();
 
@@ -270,7 +273,8 @@ public class InitialLists {
 				.successorListOf((MapperDAGVertex) cpnvertex));
 
 		PreesmLogger.getLogger().log(Level.INFO, "Building CPN list.");
-		// Do the process while the vertex is not a leaf
+
+		/* Do the process while the vertex is not a leaf */
 		while (!(succset.isEmpty())) {
 			Iterator<DAGVertex> iter = succset.iterator();
 
@@ -288,8 +292,8 @@ public class InitialLists {
 					commax = edgeCost;
 					tempvertex = currentvertex;
 				} else if (edgeCost == commax) {
-					if (abc.getTLevel(currentvertex,false) < abc
-							.getTLevel(tempvertex,false)) {
+					if (abc.getTLevel(currentvertex, false) < abc.getTLevel(
+							tempvertex, false)) {
 						tempvertex = currentvertex;
 					}
 				}
@@ -300,11 +304,13 @@ public class InitialLists {
 			criticalPath.add(currentvertex);
 			succset.clear();
 			succset.addAll(neighborindex.successorListOf(currentvertex));
-			// Search for the predecessor of the final critical path nodes
-			// because they must be implanted before their successors
+			/*
+			 * Search for the predecessor of the final critical path nodes
+			 * because they must be implanted before their successors
+			 */
 			while (!(cpnDominant.contains(currentvertex))) {
 				// If no predecessor was found
-				if (!checkpredecessor(dag, currentvertex, cpnDominant, abc)) {
+				if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
 					PreesmLogger.getLogger().log(
 							Level.SEVERE,
 							"No predecessor was found for vertex: "
@@ -318,8 +324,6 @@ public class InitialLists {
 		return true;
 
 	}
-	
-	
 
 	/**
 	 * constructCPNobn: Add to the CPN dominant list and the Blocking Node list
@@ -328,8 +332,7 @@ public class InitialLists {
 	 * @param : MapperDAG , List<MapperDAGVertex>, List<MapperDAGVertex>
 	 * @return : void
 	 */
-	private void addCPNobn(MapperDAG dag,
-			List<MapperDAGVertex> orderlist,
+	private void addCPNobn(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			IAbc archi) {
 
 		// Variables
@@ -366,9 +369,9 @@ public class InitialLists {
 		criticalPath.clear();
 
 		if (simu instanceof LatencyAbc) {
-			// construction step by step of all the lists
-			if (!constructCPN(dag, cpnDominant,
-					criticalPath, (LatencyAbc)simu)) {
+			// construction of critical path and CPN dominant list with CPN and
+			// IBN actors
+			if (!constructCPN(dag, cpnDominant, criticalPath, (LatencyAbc) simu)) {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"Problem with initial list construction");
 				return false;
@@ -379,12 +382,13 @@ public class InitialLists {
 			return false;
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO, "Building OBN list");
+		PreesmLogger.getLogger().log(Level.INFO,
+				"Adding OBN actors to CPN and IBN actors in CPN dominant list");
 		addCPNobn(dag, cpnDominant, simu);
-		
-		for(DAGVertex v : dag.vertexSet()){
-			if(!(criticalPath.contains(v))){
-				blockingNodes.add((MapperDAGVertex)v);
+
+		for (DAGVertex v : dag.vertexSet()) {
+			if (!(criticalPath.contains(v))) {
+				blockingNodes.add((MapperDAGVertex) v);
 			}
 		}
 

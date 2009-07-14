@@ -37,8 +37,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.codegen.DataType;
 
@@ -56,9 +60,9 @@ public class SimulationManager {
 	private String mainOperatorName = "";
 
 	/**
-	 * Average transfer size sizes in base unit (usually byte). This
-	 * size is used while calculating the routing table. The routes between
-	 * operators are static and will be optimized for the given data size.
+	 * Average transfer size sizes in base unit (usually byte). This size is
+	 * used while calculating the routing table. The routes between operators
+	 * are static and will be optimized for the given data size.
 	 */
 	private long averageDataSize = Route.averageTransfer;
 
@@ -67,10 +71,16 @@ public class SimulationManager {
 	 */
 	private Map<String, DataType> dataTypes;
 
+	/**
+	 * Operators able to execute special vertices
+	 */
+	private Set<ArchitectureComponent> specialVertexOperators;
+
 	public SimulationManager() {
 		super();
 
 		dataTypes = new HashMap<String, DataType>();
+		specialVertexOperators = new HashSet<ArchitectureComponent>();
 	}
 
 	public String getMainMediumName() {
@@ -115,9 +125,41 @@ public class SimulationManager {
 
 	public void setAverageDataSize(long size) {
 		averageDataSize = size;
-	}	
+	}
 
 	public long getAverageDataSize() {
 		return averageDataSize;
+	}
+
+	public Set<ArchitectureComponent> getSpecialVertexOperators() {
+		return specialVertexOperators;
+	}
+
+	public void addSpecialVertexOperator(ArchitectureComponent c) {
+		if (!hasSpecialVertexOperator(c)) {
+			specialVertexOperators.add(c);
+		}
+	}
+
+	public void removeSpecialVertexOperator(ArchitectureComponent c) {
+		Iterator<ArchitectureComponent> it = specialVertexOperators.iterator();
+		while (it.hasNext()) {
+			ArchitectureComponent cmp = it.next();
+			if ((cmp.getInfo().equals(c.getInfo()))) {
+				it.remove();
+
+			}
+		}
+	}
+
+	public boolean hasSpecialVertexOperator(ArchitectureComponent c) {
+		Iterator<ArchitectureComponent> it = specialVertexOperators.iterator();
+		while (it.hasNext()) {
+			ArchitectureComponent cmp = it.next();
+			if ((cmp.getInfo().equals(c.getInfo()))) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -39,6 +39,7 @@ package org.ietr.preesm.core.workflow.sources;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
@@ -67,10 +68,27 @@ public class ArchitectureRetriever {
 		
 		parser.parseXmlFile(file);
 		architecture = parser.parseDocument();
+		
+		addVertexPathProperties(architecture,"");
 	}
 
 	public MultiCoreArchitecture getArchitecture() {
 		return architecture;
 	}
-			
+
+
+	/**
+	 * Adding an information that keeps the path of each vertex relative to the hierarchy
+	 */
+	private void addVertexPathProperties(MultiCoreArchitecture architecture, String currentPath){
+		
+		for(ArchitectureComponent vertex : architecture.vertexSet()){
+			String newPath = currentPath + vertex.getName();
+			vertex.setInfo(newPath);
+			newPath += "/";
+			if(vertex.getGraphDescription() != null){
+				addVertexPathProperties((MultiCoreArchitecture)vertex.getGraphDescription(), newPath);
+			}
+		}
+	}	
 }

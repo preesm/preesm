@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.simu;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,53 +44,52 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.tools.PathComparator;
 import org.sdf4j.model.IRefinement;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
-import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
 
 /**
- * This class provides the elements displayed in {@link SDFTreeSection}.
+ * This class provides the elements displayed in {@link OperatorTreeSection}.
  * Each element is a vertex. This tree is used in scenario editor to
  * edit the constraints
  * 
  * @author mpelcat
  */
-public class SDFTreeContentProvider implements ITreeContentProvider {
+public class OperatorTreeContentProvider implements ITreeContentProvider {
 	
-	private SDFGraph currentGraph = null;
+	private MultiCoreArchitecture currentArchi = null;
 
 	/**
 	 * This map keeps the VertexWithPath used as a tree content for each vertex.
 	 */
-	private Map<String,HierarchicalSDFVertex> correspondingVertexWithMap = null;
+	private Map<String,HierarchicalArchiCmp> correspondingCmpWithPath = null;
 
-	public SDFTreeContentProvider(CheckboxTreeViewer treeViewer) {
+	public OperatorTreeContentProvider(CheckboxTreeViewer treeViewer) {
 		super();
-		correspondingVertexWithMap = new HashMap<String, HierarchicalSDFVertex>();
+		correspondingCmpWithPath = new HashMap<String, HierarchicalArchiCmp>();
 	}
 	
 	@Override
 	public Object[] getChildren(Object parentElement) {
 		Object table[] = null;
 		
-		if(parentElement instanceof SDFGraph){
-			SDFGraph graph = (SDFGraph)parentElement;
+		if(parentElement instanceof MultiCoreArchitecture){
+			MultiCoreArchitecture archi = (MultiCoreArchitecture)parentElement;
 			
 			// Some types of vertices are ignored in the constraints view
-			table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
+			table = convertChildren(archi.vertexSet()).toArray();
 		}
-		else if(parentElement instanceof HierarchicalSDFVertex){
-			HierarchicalSDFVertex vertex = (HierarchicalSDFVertex)parentElement;
+		else if(parentElement instanceof HierarchicalArchiCmp){
+			HierarchicalArchiCmp vertex = (HierarchicalArchiCmp)parentElement;
 			IRefinement refinement = vertex.getStoredVertex().getRefinement();
 			
-			if(refinement != null && refinement instanceof SDFGraph){
-				SDFGraph graph = (SDFGraph)refinement;
-				table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
+			if(refinement != null && refinement instanceof MultiCoreArchitecture){
+				MultiCoreArchitecture archi = (MultiCoreArchitecture)refinement;
+				table = convertChildren(archi.vertexSet()).toArray();
 			}
 		}
 		
@@ -99,7 +98,6 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -108,22 +106,15 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 		boolean hasChildren = false;
 		
-		if(element instanceof SDFGraph){
-			SDFGraph graph = (SDFGraph)element;
+		if(element instanceof MultiCoreArchitecture){
+			MultiCoreArchitecture graph = (MultiCoreArchitecture)element;
 			hasChildren = !graph.vertexSet().isEmpty();
 		}
-		else if(element instanceof HierarchicalSDFVertex){
-			SDFAbstractVertex sdfVertex =((HierarchicalSDFVertex) element).getStoredVertex();
-			if(sdfVertex instanceof SDFBroadcastVertex){
-				//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
-				hasChildren = false;
-			}
-			else if(sdfVertex instanceof SDFVertex){
-				SDFVertex vertex = (SDFVertex)sdfVertex;
-				IRefinement refinement = vertex.getRefinement();
-				
-				hasChildren = (refinement != null);
-			}
+		else if(element instanceof HierarchicalArchiCmp){
+			ArchitectureComponent op = ((HierarchicalArchiCmp) element).getStoredVertex();
+
+			IRefinement refinement = op.getRefinement();
+			hasChildren = (refinement != null);
 		}
 		
 		return hasChildren;
@@ -137,20 +128,18 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			Scenario inputScenario = (Scenario)inputElement;
 			
 			// Opening algorithm from file
-			currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
-			table[0] = currentGraph;
+			currentArchi = ScenarioParser.getArchitecture(inputScenario.getArchitectureURL());
+			table[0] = currentArchi;
 		}
 		return table;
 	}
 
-	public SDFGraph getCurrentGraph() {
-		return currentGraph;
+	public MultiCoreArchitecture getCurrentArchi() {
+		return currentArchi;
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -158,27 +147,28 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 	}
 
+	public HierarchicalArchiCmp convertChild(ArchitectureComponent child){
+		
+		if(!correspondingCmpWithPath.containsKey(child.getInfo()))
+			correspondingCmpWithPath.put(child.getInfo(), new HierarchicalArchiCmp(child));
+			
+		return correspondingCmpWithPath.get(child.getInfo());
+	}
+
 	/**
-	 * Filters the children to display in the tree
+	 * Returns the children to display in the tree
 	 */
-	public Set<HierarchicalSDFVertex> keepAndConvertAppropriateChildren(Set<SDFAbstractVertex> children) {
+	public Set<HierarchicalArchiCmp> convertChildren(Set<ArchitectureComponent> children) {
 		
-		ConcurrentSkipListSet<HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<HierarchicalSDFVertex>(new PathComparator());
+		ConcurrentSkipListSet<HierarchicalArchiCmp> appropriateChildren = new ConcurrentSkipListSet<HierarchicalArchiCmp>(new PathComparator());
 		
-		for(SDFAbstractVertex v : children){
-			if(v.getKind() == "vertex"){
-				appropriateChildren.add(convertChild(v));
+		for(ArchitectureComponent v : children){
+			if(v instanceof Operator){
+				appropriateChildren.add(convertChild((Operator)v));
 			}
 		}
 		
 		return appropriateChildren;
-	}
-
-	public HierarchicalSDFVertex convertChild(SDFAbstractVertex child){
-		if(!correspondingVertexWithMap.containsKey(child.getInfo()))
-			correspondingVertexWithMap.put(child.getInfo(), new HierarchicalSDFVertex(child));
-			
-		return correspondingVertexWithMap.get(child.getInfo());
 	}
 	
 }

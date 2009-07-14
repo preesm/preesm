@@ -128,6 +128,13 @@ public class ScenarioWriter {
 				.values()) {
 			addDataType(dataTypes, dataType);
 		}
+		
+		Element sVOperators = dom.createElement("specialVertexOperators");
+		params.appendChild(sVOperators);
+
+		for (ArchitectureComponent cmp : scenario.getSimulationManager().getSpecialVertexOperators()) {
+			addSpecialVertexOperator(sVOperators,cmp);
+		}
 	}
 
 	private void addDataType(Element parent, DataType dataType) {
@@ -136,6 +143,13 @@ public class ScenarioWriter {
 		parent.appendChild(dataTypeElt);
 		dataTypeElt.setAttribute("name", dataType.getTypeName());
 		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
+	}
+
+	private void addSpecialVertexOperator(Element parent, ArchitectureComponent cmp) {
+
+		Element dataTypeElt = dom.createElement("specialVertexOperator");
+		parent.appendChild(dataTypeElt);
+		dataTypeElt.setAttribute("path", cmp.getInfo());
 	}
 
 	public void writeDom(IFile file) {

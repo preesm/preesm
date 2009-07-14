@@ -38,19 +38,30 @@ package org.ietr.preesm.core.tools;
 
 import java.util.Comparator;
 
-import org.ietr.preesm.core.scenario.editor.VertexWithPath;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.scenario.editor.IHierarchicalVertex;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * @author mpelcat
  *
  * Vertex comparator that helps to order vertices in path alphabetical order
  */
-public class PathComparator implements Comparator<VertexWithPath>{
+public class PathComparator implements Comparator<IHierarchicalVertex>{
 
 	@Override
-	public int compare(VertexWithPath o1, VertexWithPath o2) {
+	public int compare(IHierarchicalVertex o1, IHierarchicalVertex o2) {
 
-		int diff = o1.getStoredVertex().getInfo().compareTo(o2.getStoredVertex().getInfo());
+		int diff = 0;
+		
+		if(o1.getStoredVertex() instanceof Operator){
+			((Operator)o1.getStoredVertex()).getInfo().compareTo(((Operator)o2.getStoredVertex()).getInfo());
+		}
+		else if(o1.getStoredVertex() instanceof SDFAbstractVertex){
+			((SDFAbstractVertex)o1.getStoredVertex()).getInfo().compareTo(((SDFAbstractVertex)o2.getStoredVertex()).getInfo());
+			
+		}
+		
 		if(diff == 0) diff = 1;
 		
 		return diff;

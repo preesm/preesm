@@ -38,6 +38,8 @@ package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -155,6 +157,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Simulation.title"));
 		GridLayout layout = new GridLayout(2, true);
+		layout.verticalSpacing = 10;
 		form.getBody().setLayout(layout);
 
 		// Main operator chooser section
@@ -175,11 +178,15 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				.getString("Simulation.DataTypes.title"), Messages
 				.getString("Simulation.DataTypes.description"));
 
+		// Cores to execute broadcast/fork/join selection
+		createSpecialVertexSection(managedForm, Messages
+				.getString("Simulation.SpecialVertex.title"), Messages
+				.getString("Simulation.SpecialVertex.description"));
+
 		// Average data size section
 		createIntegerSection(managedForm, Messages
 				.getString("Simulation.DataAverageSize.title"), Messages
 				.getString("Simulation.DataAverageSize.description"));
-
 		managedForm.refresh();
 	}
 
@@ -188,27 +195,31 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	 */
 	private void createIntegerSection(IManagedForm managedForm, String title,
 			String desc) {
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
 		Composite client = createSection(managedForm, title, desc, 2, gridData);
-		
+
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		Text text = toolkit.createText(client, String.valueOf(scenario.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
+		Text text = toolkit.createText(client, String.valueOf(scenario
+				.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
 		text.setData(title);
-		text.addModifyListener(new ModifyListener(){
+		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				Text text = (Text)e.getSource();
+				Text text = (Text) e.getSource();
 				int averageSize = 0;
 				try {
 					averageSize = Integer.valueOf(text.getText());
-					scenario.getSimulationManager().setAverageDataSize(averageSize);
+					scenario.getSimulationManager().setAverageDataSize(
+							averageSize);
 					propertyChanged(this, IEditorPart.PROP_DIRTY);
 				} catch (NumberFormatException e1) {
 				}
-			}});
-		
+			}
+		});
+
 		text.setLayoutData(gridData);
 		toolkit.paintBordersFor(client);
 	}
@@ -242,7 +253,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	private void createComboBoxSection(IManagedForm managedForm, String title,
 			String desc, String tooltip, String type) {
 		// Creates the section
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
 		Composite container = createSection(managedForm, title, desc, 2,
 				gridData);
 
@@ -298,16 +310,17 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
 		Composite container = createSection(managedForm, title, desc, 1,
-				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+				new GridData(GridData.FILL_HORIZONTAL
+						| GridData.VERTICAL_ALIGN_BEGINNING));
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		addTable(container, toolkit);
+		addDataTypeTable(container, toolkit);
 	}
 
 	/**
 	 * Adds a table to edit data types
 	 */
-	protected void addTable(Composite parent, FormToolkit toolkit) {
+	protected void addDataTypeTable(Composite parent, FormToolkit toolkit) {
 
 		// Buttons to add and remove data types
 		Composite buttonscps = toolkit.createComposite(parent);
@@ -325,7 +338,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 
 		Table table = tableViewer.getTable();
 		table.setLayout(new GridLayout());
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		// table.setSize(100, 100);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -378,8 +391,11 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		});
 
 		tableViewer.setInput(scenario);
-		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
+		gd.heightHint = 400;
+		gd.widthHint = 250;
+		tablecps.setLayoutData(gd);
 
 		// Adding the new data type on click on add button
 		addButton.addSelectionListener(new SelectionAdapter() {
@@ -440,6 +456,65 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	public void propertyChanged(Object source, int propId) {
 		if (propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
+
+	}
+
+	/**
+	 * Creates the section editing the cores capability to execute special
+	 * vertices
+	 */
+	private void createSpecialVertexSection(IManagedForm managedForm,
+			String title, String desc) {
+
+		// Creates the section
+		managedForm.getForm().setLayout(new FillLayout());
+		Composite container = createSection(managedForm, title, desc, 1,
+				new GridData(GridData.FILL_HORIZONTAL
+						| GridData.VERTICAL_ALIGN_BEGINNING));
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		createOperatorTreeSection(container, toolkit, this);
+	}
+
+	/**
+	 * Creates the tree view for operators
+	 */
+	public void createOperatorTreeSection(Composite container,
+			FormToolkit toolkit, IPropertyListener listener) {
+
+		container.setLayout(new GridLayout());
+
+		OperatorCheckStateListener checkStateListener = new OperatorCheckStateListener(
+				(Section) container.getParent(), scenario);
+
+		// Creating the tree view
+		CheckboxTreeViewer treeviewer = new CheckboxTreeViewer(toolkit
+				.createTree(container, SWT.CHECK));
+
+		// The content provider fills the tree
+		OperatorTreeContentProvider contentProvider = new OperatorTreeContentProvider(
+				treeviewer);
+		treeviewer.setContentProvider(contentProvider);
+
+		// The check state listener modifies the check status of elements
+		checkStateListener.setTreeViewer(treeviewer, contentProvider, listener);
+		treeviewer.setLabelProvider(new OperatorTreeLabelProvider());
+		treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
+
+		treeviewer.addCheckStateListener(checkStateListener);
+
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
+		gd.heightHint = 400;
+		gd.widthHint = 250;
+		treeviewer.getTree().setLayoutData(gd);
+
+		treeviewer.setUseHashlookup(true);
+		treeviewer.setInput(scenario);
+		toolkit.paintBordersFor(container);
+
+		// Tree is refreshed in case of algorithm modifications
+		container.addPaintListener(checkStateListener);
 
 	}
 }

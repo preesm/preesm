@@ -44,20 +44,22 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  * 
  * @author mpelcat
  */
-public class VertexWithPath {
+public class HierarchicalSDFVertex implements IHierarchicalVertex {
 
 
 	private SDFAbstractVertex storedVertex;
 
-	public VertexWithPath(SDFAbstractVertex storedVertex) {
+	public HierarchicalSDFVertex(SDFAbstractVertex storedVertex) {
 		super();
 		this.storedVertex = storedVertex;
 	}
 
+	@Override
 	public SDFAbstractVertex getStoredVertex() {
 		return storedVertex;
 	}
 
+	@Override
 	public String getName() {
 		return storedVertex.getName();
 	}
@@ -65,9 +67,10 @@ public class VertexWithPath {
 	/**
 	 * Checking equality between vertices but also between their paths
 	 */
+	@Override
 	public boolean equals(Object e) {
-		if (e instanceof VertexWithPath) {
-			VertexWithPath v = ((VertexWithPath) e);
+		if (e instanceof HierarchicalSDFVertex) {
+			HierarchicalSDFVertex v = ((HierarchicalSDFVertex) e);
 			SDFAbstractVertex vStored = v.getStoredVertex();
 			SDFAbstractVertex thisStored = this.getStoredVertex();
 

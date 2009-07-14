@@ -34,28 +34,66 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.scenario.editor;
+package org.ietr.preesm.core.scenario.editor.simu;
 
-import org.eclipse.jface.viewers.LabelProvider;
-import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.scenario.editor.IHierarchicalVertex;
 
 /**
- * The label provider displays the name of the vertex displayed in a SDF tree
+ * Class used as a scenario editor tree content to distinguish two cores with
+ * the same name but different paths (stored in "info" property)
  * 
  * @author mpelcat
  */
-public class SDFTreeLabelProvider extends LabelProvider {
+public class HierarchicalArchiCmp implements IHierarchicalVertex {
 
+
+	private ArchitectureComponent storedOp;
+
+	public HierarchicalArchiCmp(ArchitectureComponent storedOp) {
+		super();
+		this.storedOp = storedOp;
+	}
+	
 	@Override
-	public String getText(Object element) {
-		String name = "";
-		if (element instanceof HierarchicalSDFVertex) {
-			name = ((HierarchicalSDFVertex) element).getName();
-		} else if (element instanceof SDFGraph) {
-			name = "graph";
-		}
-
-		return name;
+	public ArchitectureComponent getStoredVertex() {
+		return storedOp;
 	}
 
+	@Override
+	public String getName() {
+		return storedOp.getName();
+	}
+
+	/**
+	 * Checking equality between cores but also between their paths
+	 */
+	@Override
+	public boolean equals(Object e) {
+		if (e instanceof HierarchicalArchiCmp) {
+			HierarchicalArchiCmp v = ((HierarchicalArchiCmp) e);
+			ArchitectureComponent vStored = v.getStoredVertex();
+			ArchitectureComponent thisStored = this.getStoredVertex();
+
+			boolean equals = vStored.equals(thisStored);
+
+			if (equals) {
+				if (!(vStored.getInfo() == null || thisStored.getInfo() == null)) {
+					if ((!(vStored.getInfo().isEmpty()) || thisStored.getInfo()
+							.isEmpty())) {
+						equals = vStored.getInfo()
+								.equals(thisStored.getInfo());
+					}
+				}
+			}
+			return equals;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return storedOp.getInfo();
+	}
 }

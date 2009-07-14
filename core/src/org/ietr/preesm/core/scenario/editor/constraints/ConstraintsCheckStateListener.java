@@ -61,10 +61,10 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeContentProvider;
-import org.ietr.preesm.core.scenario.editor.VertexWithPath;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -140,8 +140,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 					fireOnCheck(graph, isChecked);
 					//updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
-				} else if (element instanceof VertexWithPath) {
-					VertexWithPath vertex = (VertexWithPath) element;
+				} else if (element instanceof HierarchicalSDFVertex) {
+					HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
 					fireOnCheck(vertex, isChecked);
 					//updateConstraints(null, contentProvider.getCurrentGraph());
 					updateCheck();
@@ -159,7 +159,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		if (currentIOpDef != null) {
 
 			// Checks the children of the current graph
-			for (VertexWithPath v : contentProvider
+			for (HierarchicalSDFVertex v : contentProvider
 					.keepAndConvertAppropriateChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
 			}
@@ -169,7 +169,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Adds or remove a constraint depending on the isChecked status
 	 */
-	public void fireOnCheck(VertexWithPath vertex, boolean isChecked) {
+	public void fireOnCheck(HierarchicalSDFVertex vertex, boolean isChecked) {
 		if (currentIOpDef != null) {
 			if (isChecked) {
 				scenario.getConstraintGroupManager().addConstraint(
@@ -185,7 +185,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		if (refinement != null && refinement instanceof SDFGraph) {
 			SDFGraph graph = (SDFGraph) refinement;
 
-			for (VertexWithPath v : contentProvider
+			for (HierarchicalSDFVertex v : contentProvider
 					.keepAndConvertAppropriateChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
 			}
@@ -267,7 +267,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	public void updateCheck() {
 		SDFGraph currentGraph = contentProvider.getCurrentGraph();
 		if (scenario != null && currentIOpDef != null && currentGraph != null) {
-			Set<VertexWithPath> cgSet = new HashSet<VertexWithPath>();
+			Set<HierarchicalSDFVertex> cgSet = new HashSet<HierarchicalSDFVertex>();
 
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
 					.getOpConstraintGroups(currentIOpDef)) {
@@ -287,7 +287,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 			// If all the children of a graph are checked, it is checked itself
 			boolean allChildrenChecked = true;
-			for (VertexWithPath v : contentProvider
+			for (HierarchicalSDFVertex v : contentProvider
 					.keepAndConvertAppropriateChildren(currentGraph.vertexSet())) {
 				allChildrenChecked &= treeViewer.getChecked(v);
 			}

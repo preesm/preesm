@@ -85,7 +85,8 @@ public class SdfToDagConverter {
 
 	/**
 	 * Main for test
-	 * @throws SDF4JException 
+	 * 
+	 * @throws SDF4JException
 	 */
 	public static void main(String[] args) throws SDF4JException {
 		int nbVertex = 10, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
@@ -126,17 +127,17 @@ public class SdfToDagConverter {
 	public static MapperDAG convert(SDFGraph sdfIn,
 			MultiCoreArchitecture architecture, IScenario scenario,
 			boolean display) {
-		
-		PreesmLogger.getLogger().log(Level.INFO,"Converting from SDF to DAG.");
-		
-		try{
-			
-			if(! sdfIn.validateModel(PreesmLogger.getLogger())){
-				return null ;
+
+		PreesmLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
+
+		try {
+
+			if (!sdfIn.validateModel(PreesmLogger.getLogger())) {
+				return null;
 			}
-		}catch(SDF4JException e){
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-			return null ;
+		} catch (SDF4JException e) {
+			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			return null;
 		}
 		SDFGraph sdf = sdfIn.clone();
 		// Generates a dag
@@ -152,7 +153,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
@@ -165,15 +166,18 @@ public class SdfToDagConverter {
 			SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
 			applet2.init(dag);
 		}
-		
-		if(dag.vertexSet().size() == 0){
-			PreesmLogger.getLogger().log(Level.SEVERE,"Can not map a DAG with no vertex.");
+
+		if (dag.vertexSet().size() == 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Can not map a DAG with no vertex.");
+		} else {
+			PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
+			PreesmLogger.getLogger().log(
+					Level.INFO,
+					"mapping a DAG with " + dag.vertexSet().size()
+							+ " vertices and " + dag.edgeSet().size()
+							+ " edges.");
 		}
-		else{
-			PreesmLogger.getLogger().log(Level.INFO,"Conversion finished.");
-			PreesmLogger.getLogger().log(Level.INFO,"mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size() + " edges.");
-		}
-		
 
 		return dag;
 	}
@@ -219,7 +223,7 @@ public class SdfToDagConverter {
 
 			// The SDF vertex id is used to reference the timings
 			List<Timing> timelist = scenario.getTimingManager()
-					.getGraphTimings(currentVertex, architecture); 
+					.getGraphTimings(currentVertex, architecture);
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
@@ -279,7 +283,7 @@ public class SdfToDagConverter {
 				} catch (InvalidExpressionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					prod = 1 ;
+					prod = 1;
 				}
 				int nbRepeat = currentEdge.getSource().getNbRepeat().intValue();
 				int typeSize = scenario.getSimulationManager()
@@ -287,7 +291,7 @@ public class SdfToDagConverter {
 								sdfAggMember.getDataType().toString());
 				weight += prod * nbRepeat * typeSize;
 			}
-			
+
 			currentEdgeInit.setDataSize(weight);
 
 		}
@@ -360,17 +364,16 @@ public class SdfToDagConverter {
 
 		}
 
-		Set<ArchitectureComponent> operators = architecture
-				.getComponents(ArchitectureComponentType.operator);
-
-		// Special type vertices are first enabled on any core but a refinement of
+		// Special type vertices are first enabled on any core but a refinement
+		// of
 		// the constraints is done depending on their neighbors
 		for (DAGVertex v : dag.vertexSet()) {
 			if (SpecialVertexManager.isBroadCast(v)
 					|| SpecialVertexManager.isFork(v)
 					|| SpecialVertexManager.isJoin(v)
 					|| SpecialVertexManager.isInit(v)) {
-				for (ArchitectureComponent o : operators) {
+				for (ArchitectureComponent o : scenario.getSimulationManager()
+						.getSpecialVertexOperators()) {
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator((Operator) o);
 				}

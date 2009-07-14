@@ -43,9 +43,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -53,11 +52,11 @@ import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
-import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
+import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.w3c.dom.Document;
@@ -183,6 +182,8 @@ public class ScenarioParser {
 					scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
 				} else if (type.equals("dataTypes")) {
 					parseDataTypes(elt);
+				} else if (type.equals("specialVertexOperators")) {
+					parseSpecialVertexOperators(elt);
 				}
 			}
 
@@ -215,6 +216,46 @@ public class ScenarioParser {
 			}
 
 			node = node.getNextSibling();
+		}
+	}
+
+	/**
+	 * Retrieves the operators able to execute fork/join/broadcast
+	 */
+	private void parseSpecialVertexOperators(Element spvElt) {
+
+		Node node = spvElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("specialVertexOperator")) {
+					String path = elt.getAttribute("path");
+
+					ArchitectureComponent cmp = archi
+							.getHierarchicalVertexFromPath(path);
+					
+					if (cmp != null) {
+						scenario.getSimulationManager().addSpecialVertexOperator(cmp);
+					}
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+		
+
+		/*
+		 * It is not possible to remove all operators from special vertex
+		 * executors: if no operator is selected, all of them are!!
+		 */
+		if(scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()){
+			for(ArchitectureComponent c : archi.getComponents(ArchitectureComponentType.operator)){
+				scenario.getSimulationManager().addSpecialVertexOperator(c);
+			}
+			
 		}
 	}
 
@@ -266,15 +307,9 @@ public class ScenarioParser {
 	 */
 	static public MultiCoreArchitecture getArchitecture(String url) {
 
-		String filename = url;
-		DesignParser parser = new DesignParser();
+		ArchitectureRetriever retriever = new ArchitectureRetriever(url);
 
-		Path relativePath = new Path(filename);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
-				relativePath);
-
-		parser.parseXmlFile(file);
-		return parser.parseDocument();
+		return retriever.getArchitecture();
 	}
 
 	/**

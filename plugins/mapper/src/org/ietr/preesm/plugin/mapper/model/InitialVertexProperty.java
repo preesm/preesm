@@ -112,7 +112,6 @@ public class InitialVertexProperty {
 		if (!SpecialVertexManager.isSpecial(parentVertex)) {
 			this.operators.add(operator);
 		} else {
-
 			if (SpecialVertexManager.isBroadCast(parentVertex)) {
 				boolean predImplantable = isPredImplantable(operator);
 				if (predImplantable) {
