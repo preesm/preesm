@@ -54,6 +54,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.task.IArchiTransformation;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.ICodeTranslation;
 import org.ietr.preesm.core.task.IExporter;
@@ -226,14 +227,23 @@ public class Workflow {
 								parameters, scenario, monitor);
 
 					} else if (transformation instanceof IGraphTransformation) {
-						monitor.subTask("transforming");
+						monitor.subTask("transforming graph");
 						PreesmLogger.getLogger()
-								.log(Level.INFO, "transforming");
+								.log(Level.INFO, "transforming graph");
 
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
 
 						nodeResult = tranform.transform(sdf, parameters);
+					} else if (transformation instanceof IArchiTransformation) {
+						monitor.subTask("transforming architecture");
+						PreesmLogger.getLogger()
+								.log(Level.INFO, "transforming architecture");
+
+						// mapping
+						IArchiTransformation tranform = (IArchiTransformation) transformation;
+
+						nodeResult = tranform.transform(architecture, parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
 						PreesmLogger.getLogger().log(Level.INFO,

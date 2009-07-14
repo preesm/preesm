@@ -38,7 +38,6 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -66,7 +65,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.plugin.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.generator.SDFRandomGraph;
