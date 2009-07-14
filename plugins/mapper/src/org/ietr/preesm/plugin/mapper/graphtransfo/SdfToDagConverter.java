@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -364,14 +367,13 @@ public class SdfToDagConverter {
 
 		}
 
-		// Special type vertices are first enabled on any core but a refinement
-		// of
-		// the constraints is done depending on their neighbors
+		/*
+		 * Special type vertices are first enabled on any core set in scenario
+		 * to executed them but a refinement of A the constraints is done
+		 * depending on their neighbors
+		 */
 		for (DAGVertex v : dag.vertexSet()) {
-			if (SpecialVertexManager.isBroadCast(v)
-					|| SpecialVertexManager.isFork(v)
-					|| SpecialVertexManager.isJoin(v)
-					|| SpecialVertexManager.isInit(v)) {
+			if (SpecialVertexManager.isSpecial(v)) {
 				for (ArchitectureComponent o : scenario.getSimulationManager()
 						.getSpecialVertexOperators()) {
 					((MapperDAGVertex) v).getInitialVertexProperty()

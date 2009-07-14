@@ -109,27 +109,26 @@ public class InitialVertexProperty {
 	 * for normal vertices. For special vertices, a test is done on the neighbors.
 	 */
 	public void addOperator(Operator operator) {
-		if (!SpecialVertexManager.isSpecial(parentVertex)) {
-			this.operators.add(operator);
-		} else {
-			if (SpecialVertexManager.isBroadCast(parentVertex)) {
-				boolean predImplantable = isPredImplantable(operator);
-				if (predImplantable) {
-					this.operators.add(operator);
-				}
-			} else if (SpecialVertexManager.isFork(parentVertex)) {
-				boolean predImplantable = isPredImplantable(operator);
-				if (predImplantable) {
-					this.operators.add(operator);
-				}
-			} else if (SpecialVertexManager.isJoin(parentVertex)) {
-				boolean succImplantable = isSuccImplantable(operator);
-				if (succImplantable) {
-					this.operators.add(operator);
-				}
-			} else if (SpecialVertexManager.isInit(parentVertex)) {
-				this.operators.add(operator);
-			}
+		this.operators.add(operator);
+	}
+
+	/**
+	 * 
+	 */
+	public void removeOperatorIfPredNotImplantable(Operator operator) {
+		boolean predImplantable = isPredImplantable(operator);
+		if (!predImplantable) {
+			this.operators.remove(operator);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void removeOperatorIfSuccNotImplantable(Operator operator) {
+		boolean succImplantable = isSuccImplantable(operator);
+		if (!succImplantable) {
+			this.operators.remove(operator);
 		}
 	}
 

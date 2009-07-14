@@ -3,15 +3,15 @@
 <repository name='PREESM Artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1243245966625'/>
+    <property name='p2.timestamp' value='1247574788515'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='9'>
-    <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.0.8'>
+  <artifacts size='13'>
+    <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.0.9'>
       <properties size='2'>
         <property name='artifact.size' value='1738'/>
         <property name='download.size' value='1738'/>
@@ -28,19 +28,6 @@
       <properties size='3'>
         <property name='artifact.size' value='1913'/>
         <property name='download.size' value='1913'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='net.sf.graphiti' version='1.1.0.alpha2'>
-      <properties size='2'>
-        <property name='artifact.size' value='1523'/>
-        <property name='download.size' value='1523'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.8'>
-      <properties size='3'>
-        <property name='artifact.size' value='5234364'/>
-        <property name='download.size' value='5234364'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -69,6 +56,46 @@
       <properties size='3'>
         <property name='artifact.size' value='2444806'/>
         <property name='download.size' value='2444806'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.0.8'>
+      <properties size='2'>
+        <property name='artifact.size' value='1738'/>
+        <property name='download.size' value='1738'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.core' version='0.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='11586200'/>
+        <property name='download.size' value='11586200'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.transforms' version='0.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='18153'/>
+        <property name='download.size' value='18153'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.sf.graphiti' version='1.1.0.alpha2'>
+      <properties size='2'>
+        <property name='artifact.size' value='1523'/>
+        <property name='download.size' value='1523'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.8'>
+      <properties size='3'>
+        <property name='artifact.size' value='5234364'/>
+        <property name='download.size' value='5234364'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='5238942'/>
+        <property name='download.size' value='5238942'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>

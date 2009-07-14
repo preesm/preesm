@@ -3,13 +3,13 @@
 <repository name='PREESM Update Site' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1243245966625'/>
+    <property name='p2.timestamp' value='1247574788531'/>
   </properties>
   <references size='2'>
     <repository url='http://preesm.sourceforge.net/eclipse/' type='0' options='0'/>
     <repository url='http://preesm.sourceforge.net/eclipse/' type='1' options='0'/>
   </references>
-  <units size='18'>
+  <units size='23'>
     <unit id='org.ietr.preesm.plugin.architransform' version='0.0.8'>
       <update id='org.ietr.preesm.plugin.architransform' range='[0.0.0,0.0.8)' severity='0'/>
       <properties size='1'>
@@ -656,7 +656,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Export-Package: net.sf.graphiti.io,net.sf.graphiti.model,net.sf.saxon,net.sf.saxon.charcode,net.sf.saxon.codenorm,net.sf.saxon.dom,net.sf.saxon.event,net.sf.saxon.evpull,net.sf.saxon.expr,net.sf.saxon.exslt,net.sf.saxon.functions,net.sf.saxon.instruct,net.sf.saxon.java,net.sf.saxon.number,net.sf.saxon.om,net.sf.saxon.pattern,net.sf.saxon.pull,net.sf.saxon.query,net.sf.saxon.regex,net.sf.saxon.s9api,net.sf.saxon.sort,net.sf.saxon.style,net.sf.saxon.sxpath,net.sf.saxon.tinytree,net.sf.saxon.trace,net.sf.saxon.trans,net.sf.saxon.tree,net.sf.saxon.type,net.sf.saxon.value,net.sf.saxon.xpath,org.antlr.runtime,org.antlr.runtime.debug,org.antlr.runtime.misc,org.antlr.runtime.tree&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources&#xA;Bundle-Activator: net.sf.graphiti.configuration.ui.Activator&#xA;Bundle-Name: Graphiti configuration Plug-in&#xA;Bundle-Version: 1.1.0.alpha2&#xA;Bundle-Vendor: IETR/INSA of Rennes&#xA;Bundle-SymbolicName: net.sf.graphiti.configuration;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ClassPath: lib/antlr-runtime-3.1.3.jar,lib/jgrapht-jdk1.6.jar,.,lib/saxon/saxon9-dom.jar,lib/saxon/saxon9-s9api.jar,lib/saxon/saxon9-xpath.jar,lib/saxon/saxon9.jar&#xA;Manifest-Version: 1.0&#xA;
+            Bundle-ManifestVersion: 2&#xA;Export-Package: net.sf.graphiti.io,net.sf.graphiti.model,net.sf.saxon,net.sf.saxon.charcode,net.sf.saxon.codenorm,net.sf.saxon.dom,net.sf.saxon.event,net.sf.saxon.evpull,net.sf.saxon.expr,net.sf.saxon.exslt,net.sf.saxon.functions,net.sf.saxon.instruct,net.sf.saxon.java,net.sf.saxon.number,net.sf.saxon.om,net.sf.saxon.pattern,net.sf.saxon.pull,net.sf.saxon.query,net.sf.saxon.regex,net.sf.saxon.s9api,net.sf.saxon.sort,net.sf.saxon.style,net.sf.saxon.sxpath,net.sf.saxon.tinytree,net.sf.saxon.trace,net.sf.saxon.trans,net.sf.saxon.tree,net.sf.saxon.type,net.sf.saxon.value,net.sf.saxon.xpath,org.antlr.runtime,org.antlr.runtime.debug,org.antlr.runtime.misc,org.antlr.runtime.tree&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources&#xA;Bundle-Activator: net.sf.graphiti.configuration.ui.Activator&#xA;Bundle-Name: Graphiti configuration Plug-in&#xA;Bundle-Version: 1.1.0.alpha2&#xA;Bundle-Vendor: IETR/INSA of Rennes&#xA;Bundle-SymbolicName: net.sf.graphiti.configuration;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ClassPath: lib/antlr-runtime-3.1.3.jar,lib/jgrapht-jdk1.6.jar,.,lib/saxon/saxon9-dom.jar,lib/saxon/saxon9-s9api.jar,lib/saxon/saxon9-xpath.jar,lib/saxon/saxon9.jar&#xA;Manifest-Version: 1.0
           </instruction>
         </instructions>
       </touchpointData>
@@ -689,7 +689,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.resources,org.eclipse.core.runtime,org.eclipse.gef,org.eclipse.ui,org.eclipse.ui.editors,org.eclipse.ui.ide,org.eclipse.ui.views,net.sf.graphiti.configuration&#xA;Bundle-Activator: net.sf.graphiti.ui.GraphitiPlugin&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.1.0.alpha2&#xA;Bundle-SymbolicName: net.sf.graphiti.plugin;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: Graphiti editor plug-in&#xA;Bundle-Vendor: IETR/INSA of Rennes&#xA;
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.resources,org.eclipse.core.runtime,org.eclipse.gef,org.eclipse.ui,org.eclipse.ui.editors,org.eclipse.ui.ide,org.eclipse.ui.views,net.sf.graphiti.configuration&#xA;Bundle-Activator: net.sf.graphiti.ui.GraphitiPlugin&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.1.0.alpha2&#xA;Bundle-SymbolicName: net.sf.graphiti.plugin;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-Name: Graphiti editor plug-in&#xA;Bundle-Vendor: IETR/INSA of Rennes
           </instruction>
         </instructions>
       </touchpointData>
@@ -706,6 +706,229 @@
         <required namespace='org.eclipse.equinox.p2.iu' name='net.sf.graphiti.feature.group' range='[1.1.0.alpha2,1.1.0.alpha2]'/>
       </requires>
       <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='org.ietr.preesm.plugin.transforms' version='0.0.9'>
+      <update id='org.ietr.preesm.plugin.transforms' range='[0.0.0,0.0.9)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Preesm graph transformation plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='IETR/INSA of Rennes'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.transforms' version='0.0.9'/>
+        <provided namespace='osgi.bundle' name='org.ietr.preesm.plugin.transforms' version='0.0.9'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.ietr.preesm.core' range='0.0.1'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.4.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.transforms' version='0.0.9'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-Name: Preesm graph transformation plug-in&#xA;Bundle-Version: 0.0.9&#xA;Require-Bundle: org.eclipse.core.runtime,org.ietr.preesm.core;bundle-version=&quot;0.0.1&quot;,org.eclipse.ui.workbench;bundle-version=&quot;3.4.0&quot;,org.eclipse.core.resources;bundle-version=&quot;3.4.0&quot;&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Bundle-SymbolicName: org.ietr.preesm.plugin.transforms;singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-Vendor: IETR/INSA of Rennes&#xA;Bundle-Activator: org.ietr.preesm.plugin.transforms.Activator&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.ietr.preesm.feature.feature.group' version='0.0.9' singleton='false'>
+      <update id='org.ietr.preesm.feature.feature.group' range='[0.0.0,0.0.9)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='Preesm Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='PREESM provides a complete framework for fast prototyping. PREESM&#xA;stands for Parallel &amp; Real-time Embedded Executives Scheduling&#xA;Method. It generates a simulation and an optimized multiprocessor&#xA;code from graph descriptions of algorithm and architecture.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://preesm.sf.net'/>
+        <property name='org.eclipse.equinox.p2.provider' value='IETR/INSA'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.feature.feature.group' version='0.0.9'/>
+      </provides>
+      <requires size='6'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.core' range='[0.0.9,0.0.9]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.codegen' range='[0.0.9,0.0.9]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.mapper' range='[0.0.9,0.0.9]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.transforms' range='[0.0.9,0.0.9]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.architransform' range='[0.0.9,0.0.9]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.feature.feature.jar' range='[0.0.9,0.0.9]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license>
+          This software is a computer program whose purpose is to prototype&#xA;parallel applications.&#xA;This software is governed by the CeCILL-C license under French&#xA;law and abiding by the rules of distribution of free software.&#xA;You can use, modify and/or redistribute the software under the&#xA;terms of the CeCILL-C license as circulated by CEA, CNRS and&#xA;INRIA at the following URL &quot;http://www.cecill.info&quot;.&#xA;As a counterpart to the access to the source code and rights&#xA;to copy, modify and redistribute granted by the license, users&#xA;are provided only with a limited warranty and the software&amp;apos;s&#xA;author, the holder of the economic rights, and the successive&#xA;licensors have only  limited liability.&#xA;In this respect, the user&apos;s attention is drawn to the risks associated&#xA;with loading, using, modifying and/or developing or reproducing&#xA;the software by the user in light of its specific status of free&#xA;software, that may mean that it is complicated to manipulate,&#xA;and that also therefore means that it is reserved for developers&#xA;and experienced professionals having in-depth computer knowledge.&#xA;Users are therefore encouraged to load and test the software&apos;s&#xA;suitability as regards their requirements in conditions enabling&#xA;the security of their systems and/or data to be ensured and,&#xA;more generally, to use and operate it in the  same conditions&#xA;as regards security. &#xA;The fact that you are presently reading this means that you have&#xA;had knowledge of the CeCILL-C license and that you accept its&#xA;terms.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright or © or Copr. &#xA;IETR/INSA: Matthieu Wipliez, Jonathan Piat, Maxime Pelcat, Peng&#xA;Cheng Mu, Jean-François Nezan, Mickaël Raulet&#xA;[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+      </copyright>
+    </unit>
+    <unit id='org.ietr.preesm.feature.feature.jar' version='0.0.9'>
+      <update id='org.ietr.preesm.feature.feature.jar' range='[0.0.0,0.0.9)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Preesm Feature'/>
+        <property name='org.eclipse.equinox.p2.description' value='PREESM provides a complete framework for fast prototyping. PREESM&#xA;stands for Parallel &amp; Real-time Embedded Executives Scheduling&#xA;Method. It generates a simulation and an optimized multiprocessor&#xA;code from graph descriptions of algorithm and architecture.'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://preesm.sf.net'/>
+        <property name='org.eclipse.equinox.p2.provider' value='IETR/INSA'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.feature.feature.jar' version='0.0.9'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='org.ietr.preesm.feature' version='0.0.9'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.0.9'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license>
+          This software is a computer program whose purpose is to prototype&#xA;parallel applications.&#xA;This software is governed by the CeCILL-C license under French&#xA;law and abiding by the rules of distribution of free software.&#xA;You can use, modify and/or redistribute the software under the&#xA;terms of the CeCILL-C license as circulated by CEA, CNRS and&#xA;INRIA at the following URL &quot;http://www.cecill.info&quot;.&#xA;As a counterpart to the access to the source code and rights&#xA;to copy, modify and redistribute granted by the license, users&#xA;are provided only with a limited warranty and the software&amp;apos;s&#xA;author, the holder of the economic rights, and the successive&#xA;licensors have only  limited liability.&#xA;In this respect, the user&apos;s attention is drawn to the risks associated&#xA;with loading, using, modifying and/or developing or reproducing&#xA;the software by the user in light of its specific status of free&#xA;software, that may mean that it is complicated to manipulate,&#xA;and that also therefore means that it is reserved for developers&#xA;and experienced professionals having in-depth computer knowledge.&#xA;Users are therefore encouraged to load and test the software&apos;s&#xA;suitability as regards their requirements in conditions enabling&#xA;the security of their systems and/or data to be ensured and,&#xA;more generally, to use and operate it in the  same conditions&#xA;as regards security. &#xA;The fact that you are presently reading this means that you have&#xA;had knowledge of the CeCILL-C license and that you accept its&#xA;terms.
+        </license>
+      </licenses>
+      <copyright>
+        Copyright or © or Copr. &#xA;IETR/INSA: Matthieu Wipliez, Jonathan Piat, Maxime Pelcat, Peng&#xA;Cheng Mu, Jean-François Nezan, Mickaël Raulet&#xA;[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+      </copyright>
+    </unit>
+    <unit id='org.ietr.preesm.core' version='0.0.9'>
+      <update id='org.ietr.preesm.core' range='[0.0.0,0.0.9)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Preesm core plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='IETR/INSA of Rennes'/>
+      </properties>
+      <provides size='59'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.core' version='0.0.9'/>
+        <provided namespace='osgi.bundle' name='org.ietr.preesm.core' version='0.0.9'/>
+        <provided namespace='java.package' name='net.sf.saxon' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.architecture' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.architecture.advancedmodel' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.architecture.route' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.architecture.simplemodel' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.buffer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.com' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.expression' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.printer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.sdfProperties' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.codegen.semaphore' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.expression' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.scenario' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.task' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.tools' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.types' version='0.0.0'/>
+        <provided namespace='java.package' name='org.ietr.preesm.core.workflow.sources' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.alg' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.alg.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.demo' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.event' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.ext' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.generate' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.graph' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.traverse' version='0.0.0'/>
+        <provided namespace='java.package' name='org.jgrapht.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.demo' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.exceptions' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.exporter' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.factories' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.generator' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.importer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.iterators' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.dag' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.dag.edag' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.dag.types' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.listenable' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.parameters' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.psdf' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.sdf' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.sdf.esdf' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.sdf.types' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.sdf.visitors' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.model.visitors' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.clustering' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.clustering.fast' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.clustering.internalisation' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.clustering.mfa' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.clustering.stronglyconnected' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.loops.detection' version='0.0.0'/>
+        <provided namespace='java.package' name='org.sdf4j.optimisations.loops.pipelining' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='11'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.expressions' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.forms' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.views' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.junit' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.ietr.preesm.core' version='0.0.9'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: net.sf.saxon,org.ietr.preesm.core.architecture,org.ietr.preesm.core.architecture.advancedmodel,org.ietr.preesm.core.architecture.route,org.ietr.preesm.core.architecture.simplemodel,org.ietr.preesm.core.codegen;uses:=&quot;org.ietr.preesm.core.architecture,org.ietr.preesm.core.codegen.sdfProperties,org.sdf4j.model.sdf&quot;,org.ietr.preesm.core.codegen.buffer,org.ietr.preesm.core.codegen.com,org.ietr.preesm.core.codegen.expression,org.ietr.preesm.core.codegen.model,org.ietr.preesm.core.codegen.printer,org.ietr.preesm.core.codegen.sdfProperties,org.ietr.preesm.core.codegen.semaphore,org.ietr.preesm.core.expression;uses:=&quot;org.nfunk.jep.function,org.nfunk.jep&quot;,org.ietr.preesm.core.scenario;uses:=&quot;org.ietr.preesm.core.architecture,org.sdf4j.model.sdf&quot;,org.ietr.preesm.core.task; uses:=&quot;org.ietr.preesm.core.architecture,  org.ietr.preesm.core.constraints,  org.ietr.preesm.core.codegen,  org.sdf4j.model.sdf&quot;,org.ietr.preesm.core.tools,org.ietr.preesm.core.types,org.ietr.preesm.core.workflow.sources,org.jgrapht;uses:=&quot;org.jgrapht.event&quot;,org.jgrapht.alg;uses:=&quot;org.jgrapht,org.jgrapht.event,org.jgrapht.graph&quot;,org.jgrapht.alg.util;uses:=&quot;org.jgrapht&quot;,org.jgrapht.demo;uses:=&quot;javax.swing&quot;,org.jgrapht.event,org.jgrapht.ext;uses:=&quot;org.jgraph.graph,org.jgrapht&quot;,org.jgrapht.generate;uses:=&quot;org.jgrapht&quot;,org.jgrapht.graph;uses:=&quot;org.jgrapht,org.jgrapht.event&quot;,org.jgrapht.traverse;uses:=&quot;org.jgrapht,org.jgrapht.event&quot;,org.jgrapht.util,org.sdf4j,org.sdf4j.demo,org.sdf4j.exceptions,org.sdf4j.exporter,org.sdf4j.factories,org.sdf4j.generator,org.sdf4j.importer,org.sdf4j.iterators,org.sdf4j.model,org.sdf4j.model.dag,org.sdf4j.model.dag.edag,org.sdf4j.model.dag.types,org.sdf4j.model.listenable,org.sdf4j.model.parameters,org.sdf4j.model.psdf,org.sdf4j.model.sdf,org.sdf4j.model.sdf.esdf,org.sdf4j.model.sdf.types,org.sdf4j.model.sdf.visitors,org.sdf4j.model.visitors,org.sdf4j.optimisations.clustering,org.sdf4j.optimisations.clustering.fast,org.sdf4j.optimisations.clustering.internalisation,org.sdf4j.optimisations.clustering.mfa,org.sdf4j.optimisations.clustering.stronglyconnected,org.sdf4j.optimisations.loops.detection,org.sdf4j.optimisations.loops.pipelining&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Require-Bundle: org.eclipse.core.expressions,org.eclipse.core.resources,org.eclipse.core.runtime,org.eclipse.debug.core,org.eclipse.debug.ui,org.eclipse.ui,org.eclipse.ui.console,org.eclipse.ui.forms,org.eclipse.ui.ide,org.eclipse.ui.views,org.junit&#xA;Bundle-Activator: org.ietr.preesm.core.ui.Activator&#xA;Bundle-Name: Preesm core plug-in&#xA;Bundle-Version: 0.0.9&#xA;Bundle-Vendor: IETR/INSA of Rennes&#xA;Bundle-SymbolicName: org.ietr.preesm.core;singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ClassPath: .,lib/djep-full-latest.jar,lib/jgrapht-jdk1.5.jar,lib/jmatharray.jar,lib/jgraph.jar,lib/jxl.jar,lib/saxon/saxon9-dom.jar,lib/saxon/saxon9.jar,lib/sdf4j.jar&#xA;Manifest-Version: 1.0&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.ietr.preesm.plugin.mapper' version='0.0.9'>
+      <update id='org.ietr.preesm.plugin.mapper' range='[0.0.0,0.0.9)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Preesm mapper Plug-in'/>
+        <property name='org.eclipse.equinox.p2.provider' value='IETR/INSA of Rennes'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.ietr.preesm.plugin.mapper' version='0.0.9'/>
+        <provided namespace='osgi.bundle' name='org.ietr.preesm.plugin.mapper' version='0.0.9'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='7'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.ietr.preesm.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.swt' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.forms' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.9'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-Vendor: IETR/INSA of Rennes&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-Activator: org.ietr.preesm.plugin.mapper.activator.Activator&#xA;Bundle-RequiredExecutionEnvironment: JavaSE-1.6&#xA;Bundle-ClassPath: lib/jcommon-1.0.13.jar,lib/jfreechart.jar,lib/jetm.jar,lib/jetm-optional.jar,.&#xA;Require-Bundle: org.eclipse.core.runtime,org.ietr.preesm.core,org.eclipse.swt,org.eclipse.ui,org.eclipse.ui.ide,org.eclipse.core.resources,org.eclipse.ui.forms&#xA;Bundle-Name: Preesm mapper Plug-in&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: org.ietr.preesm.plugin.mapper;singleton:=true&#xA;Bundle-Version: 0.0.9&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
   </units>
 </repository>
