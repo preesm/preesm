@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.architecture.simplemodel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
@@ -47,8 +50,15 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  */
 public class RamDefinition extends ArchitectureComponentDefinition {
 
+	/**
+	 * The time needed to set-up a communication depending
+	 * on the operator doing the set-up
+	 */
+	Map<String,Integer> setupTimes = null;
+
 	public RamDefinition(VLNV vlnv) {
 		super(vlnv, "ram");
+		setupTimes = new HashMap<String,Integer>();
 	}
 
 	public ArchitectureComponentType getType() {
@@ -63,5 +73,25 @@ public class RamDefinition extends ArchitectureComponentDefinition {
 	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
+	}
+	
+	public void addSetupTime(String opName, int time){
+		setupTimes.put(opName, time);
+	}
+	
+	public long getSetupTime(String opName){
+		return setupTimes.get(opName);
+	}
+	
+	public void addSetupTime(Operator o, int time){
+		addSetupTime(o.getName(), time);
+	}
+	
+	public long getSetupTime(Operator o){
+		return getSetupTime(o.getName());
+	}
+
+	public Map<String, Integer> getSetupTimes() {
+		return setupTimes;
 	}
 }

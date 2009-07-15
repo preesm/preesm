@@ -50,9 +50,17 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -99,6 +107,17 @@ public class DesignWriter {
 
 	}
 
+	public Document generateArchitectureDOM() {
+
+		Element root = dom.getDocumentElement();
+
+		addID(root);
+		addComponentInstances(root);
+		addInterconnections(root);
+
+		return dom;
+	}
+	
 	public void writeDom(String fileName) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -141,17 +160,6 @@ public class DesignWriter {
 		}
 	}
 
-	public Document generateArchitectureDOM() {
-
-		Element root = dom.getDocumentElement();
-
-		addID(root);
-		addComponentInstances(root);
-		addInterconnections(root);
-
-		return dom;
-	}
-
 	private void addInterconnections(Element parent) {
 
 		Element intsElt = dom.createElement("spirit:interconnections");
@@ -170,16 +178,40 @@ public class DesignWriter {
 		Element nameElt = dom.createElement("spirit:name");
 		intElt.appendChild(nameElt);
 
+		// Writing the setup times on the setup edges
 		if (intc.isSetup()) {
 
+			Element displayName = dom.createElement("spirit:displayName");
+			intElt.appendChild(displayName);
+			displayName.setTextContent("setup");
+			
 			Operator o = (Operator) intc.getSource();
-			Dma d = (Dma) intc.getTarget();
-			DmaDefinition dd = (DmaDefinition) d.getDefinition();
 			Element descElt = dom.createElement("spirit:description");
 			intElt.appendChild(descElt);
-			intElt.setTextContent(Long.toString(dd.getSetupTime(o)));
+
+			if (intc.getTarget() instanceof Dma) {
+				Dma d = (Dma) intc.getTarget();
+				DmaDefinition dd = (DmaDefinition) d.getDefinition();
+				descElt.setTextContent(Long.toString(dd.getSetupTime(o)));
+			}
+			else if (intc.getTarget() instanceof Ram) {
+				Ram d = (Ram) intc.getTarget();
+				RamDefinition dd = (RamDefinition) d.getDefinition();
+				descElt.setTextContent(Long.toString(dd.getSetupTime(o)));
+			}
 		}
 
+		// Writing the interfaces
+		Element intf1Elt = dom.createElement("spirit:activeInterface");
+		intElt.appendChild(intf1Elt);
+		intf1Elt.setAttribute("spirit:busRef", intc.getIf1().getBusReference().getId());
+		intf1Elt.setAttribute("spirit:componentRef", intc.getCp1().getId());
+		
+		Element intf2Elt = dom.createElement("spirit:activeInterface");
+		intElt.appendChild(intf2Elt);
+		intf2Elt.setAttribute("spirit:busRef", intc.getIf2().getBusReference().getId());
+		intf2Elt.setAttribute("spirit:componentRef", intc.getCp2().getId());
+		
 	}
 
 	private void addID(Element parent) {
@@ -241,137 +273,30 @@ public class DesignWriter {
 				.createElement("spirit:configurableElementValues");
 		parent.appendChild(confsElt);
 
-		Element typeElt = dom.createElement("spirit:configurableElementValue");
-		confsElt.appendChild(typeElt);
+		addParameter(confsElt,"componentType",cmp.getType().getName());
+		addParameter(confsElt,"refinement",cmp.getRefinementName());
 
-		typeElt.setAttribute("spirit:referenceId", "componentType");
-		typeElt.setTextContent(cmp.getType().getName());
-
-		Element refElt = dom.createElement("spirit:configurableElementValue");
-		confsElt.appendChild(refElt);
-
-		refElt.setAttribute("spirit:referenceId", "refinement");
-		refElt.setTextContent(cmp.getRefinementName());
-
+		// Writing component parameters depending on their type
+		if (cmp instanceof ContentionNode) {
+			ContentionNodeDefinition def = (ContentionNodeDefinition)((ContentionNode)cmp).getDefinition();
+			addParameter(confsElt,"node_dataRate",Float.toString(def.getDataRate()));
+		} else if (cmp instanceof ParallelNode) {
+			ParallelNodeDefinition def = (ParallelNodeDefinition)((ParallelNode)cmp).getDefinition();
+			addParameter(confsElt,"node_dataRate",Float.toString(def.getDataRate()));
+		} else if (cmp instanceof Medium) {
+			MediumDefinition def = (MediumDefinition)((Medium)cmp).getDefinition();
+			addParameter(confsElt,"medium_dataRate",Float.toString(def.getDataRate()));
+			addParameter(confsElt,"medium_overhead",Integer.toString(def.getOverheadTime()));
+		}
 	}
 
-	/*
-	 * 
-	 * private void addSimuParams(Element parent) {
-	 * 
-	 * Element params = dom.createElement("simuParams");
-	 * parent.appendChild(params);
-	 * 
-	 * Element core = dom.createElement("mainCore"); params.appendChild(core);
-	 * core.setTextContent(scenario.getSimulationManager()
-	 * .getMainOperatorName());
-	 * 
-	 * Element medium = dom.createElement("mainMedium");
-	 * params.appendChild(medium);
-	 * medium.setTextContent(scenario.getSimulationManager()
-	 * .getMainMediumName());
-	 * 
-	 * Element dataSize = dom.createElement("averageDataSize");
-	 * params.appendChild(dataSize);
-	 * dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
-	 * .getAverageDataSize()));
-	 * 
-	 * 
-	 * 
-	 * Element dataTypes = dom.createElement("dataTypes");
-	 * params.appendChild(dataTypes);
-	 * 
-	 * for (DataType dataType : scenario.getSimulationManager().getDataTypes()
-	 * .values()) { addDataType(dataTypes, dataType); }
-	 * 
-	 * Element sVOperators = dom.createElement("specialVertexOperators");
-	 * params.appendChild(sVOperators);
-	 * 
-	 * for (ArchitectureComponent cmp :
-	 * scenario.getSimulationManager().getSpecialVertexOperators()) {
-	 * addSpecialVertexOperator(sVOperators,cmp); } }
-	 * 
-	 * private void addDataType(Element parent, DataType dataType) {
-	 * 
-	 * Element dataTypeElt = dom.createElement("dataType");
-	 * parent.appendChild(dataTypeElt); dataTypeElt.setAttribute("name",
-	 * dataType.getTypeName()); dataTypeElt.setAttribute("size",
-	 * Integer.toString(dataType.getSize())); }
-	 * 
-	 * private void addSpecialVertexOperator(Element parent,
-	 * ArchitectureComponent cmp) {
-	 * 
-	 * Element dataTypeElt = dom.createElement("specialVertexOperator");
-	 * parent.appendChild(dataTypeElt); dataTypeElt.setAttribute("path",
-	 * cmp.getInfo()); }
-	 * 
-	 * private void addFiles(Element parent) {
-	 * 
-	 * Element files = dom.createElement("files"); parent.appendChild(files);
-	 * 
-	 * Element algo = dom.createElement("algorithm"); files.appendChild(algo);
-	 * algo.setAttribute("url", scenario.getAlgorithmURL());
-	 * 
-	 * Element archi = dom.createElement("architecture");
-	 * files.appendChild(archi); archi.setAttribute("url",
-	 * scenario.getArchitectureURL());
-	 * 
-	 * Element timings = dom.createElement("timingfile");
-	 * files.appendChild(timings); timings.setAttribute("url",
-	 * scenario.getTimingManager() .getTimingFileURL());
-	 * 
-	 * Element codeGenDir = dom.createElement("codegenDirectory");
-	 * files.appendChild(codeGenDir); codeGenDir.setAttribute("url",
-	 * scenario.getCodegenManager() .getCodegenDirectory());
-	 * 
-	 * }
-	 * 
-	 * private void addConstraints(Element parent) {
-	 * 
-	 * Element constraints = dom.createElement("constraints");
-	 * parent.appendChild(constraints);
-	 * 
-	 * for (ConstraintGroup cst : scenario.getConstraintGroupManager()
-	 * .getConstraintGroups()) { addConstraint(constraints, cst); } }
-	 * 
-	 * private void addConstraint(Element parent, ConstraintGroup cst) {
-	 * 
-	 * Element constraintGroupElt = dom.createElement("constraintGroup");
-	 * parent.appendChild(constraintGroupElt);
-	 * 
-	 * for (IOperator opdef : cst.getOperators()) { if (((ArchitectureComponent)
-	 * opdef).getType() == ArchitectureComponentType.operator) { Element
-	 * opdefelt = dom.createElement("operator");
-	 * constraintGroupElt.appendChild(opdefelt); opdefelt.setAttribute("name",
-	 * ((ArchitectureComponent) opdef) .getName()); } else if
-	 * (((ArchitectureComponent) opdef).getType() ==
-	 * ArchitectureComponentType.processor) { Element opdefelt =
-	 * dom.createElement("processor"); constraintGroupElt.appendChild(opdefelt);
-	 * opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-	 * .getName()); } else if (((ArchitectureComponent) opdef).getType() ==
-	 * ArchitectureComponentType.ipCoprocessor) { Element opdefelt =
-	 * dom.createElement("ipCoprocessor");
-	 * constraintGroupElt.appendChild(opdefelt); opdefelt.setAttribute("name",
-	 * ((ArchitectureComponent) opdef) .getName()); } }
-	 * 
-	 * for (SDFAbstractVertex vtx : cst.getVertices()) { Element vtxelt =
-	 * dom.createElement("task"); constraintGroupElt.appendChild(vtxelt);
-	 * vtxelt.setAttribute("name", vtx.getInfo()); } }
-	 * 
-	 * private void addTimings(Element parent) {
-	 * 
-	 * Element timings = dom.createElement("timings");
-	 * parent.appendChild(timings);
-	 * 
-	 * for (Timing timing : scenario.getTimingManager().getTimings()) {
-	 * addTiming(timings, timing); } }
-	 * 
-	 * private void addTiming(Element parent, Timing timing) {
-	 * 
-	 * Element timingelt = dom.createElement("timing");
-	 * parent.appendChild(timingelt); timingelt.setAttribute("vertexname",
-	 * timing.getVertex().getName()); timingelt .setAttribute("opname",
-	 * timing.getOperatorDefinition().getId()); timingelt.setAttribute("time",
-	 * Integer.toString(timing.getTime())); }
-	 */
+	private void addParameter(Element parent,
+			String name, String value) {
+
+		Element paramElt = dom.createElement("spirit:configurableElementValue");
+		parent.appendChild(paramElt);
+		paramElt.setAttribute("spirit:referenceId", name);
+		paramElt.setTextContent(value);
+	}
+
 }

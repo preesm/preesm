@@ -48,16 +48,9 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * @author mpelcat
  */
 public class Ram extends ArchitectureComponent {
-
-	/**
-	 * The time needed to set-up a communication depending
-	 * on the operator doing the set-up
-	 */
-	Map<Operator,Integer> setupTimes = null;
 	
 	public Ram(String name, RamDefinition type) {
 		super(name, type);
-		setupTimes = new HashMap<Operator,Integer>();
 	}
 	
 	public ArchitectureComponentType getType(){
@@ -71,9 +64,5 @@ public class Ram extends ArchitectureComponent {
 	
 	public boolean isNode(){
 		return false;
-	}
-	
-	public void addSetupTime(Operator o, int time){
-		setupTimes.put(o, time);
 	}
 }

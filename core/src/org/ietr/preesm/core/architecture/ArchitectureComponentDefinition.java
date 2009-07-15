@@ -137,7 +137,6 @@ public abstract class ArchitectureComponentDefinition {
 			for(String opName : dmaDef.getSetupTimes().keySet()){
 				((DmaDefinition)newdef).addSetupTime(opName, (int)dmaDef.getSetupTime(opName));
 			}
-			//newDef
 		} else if (getType().equals(ArchitectureComponentType.fifo)) {
 			newdef = new FifoDefinition(this.getVlnv());
 			((FifoDefinition)newdef).setDataRate(((FifoDefinition)this).getDataRate());
@@ -157,7 +156,11 @@ public abstract class ArchitectureComponentDefinition {
 		} else if (getType().equals(ArchitectureComponentType.processor)) {
 			newdef = new ProcessorDefinition(this.getVlnv());
 		} else if (getType().equals(ArchitectureComponentType.ram)) {
+			RamDefinition ramDef = (RamDefinition)this;
 			newdef = new RamDefinition(this.getVlnv());
+			for(String opName : ramDef.getSetupTimes().keySet()){
+				((RamDefinition)newdef).addSetupTime(opName, (int)ramDef.getSetupTime(opName));
+			}
 		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component definition.");

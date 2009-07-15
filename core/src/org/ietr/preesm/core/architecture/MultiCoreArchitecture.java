@@ -201,47 +201,6 @@ public class MultiCoreArchitecture extends
 		}
 	}
 
-	@Override
-	public MultiCoreArchitecture clone() {
-		// super.clone();
-
-		// Creating archi
-		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
-		newArchi.setId(this.getId());
-		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
-
-		for (BusReference ref : busReferences.values()) {
-			newArchi.createBusReference(ref.getId());
-		}
-
-		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
-				.values()) {
-			newArchi.addComponentDefinition(def.clone());
-		}
-
-		for (ArchitectureComponent vertex : vertexSet()) {
-			ArchitectureComponent newVertex = (ArchitectureComponent) vertex
-					.clone();
-			newVertex.fill(vertex, newArchi);
-			newArchi.addVertex(newVertex);
-			matchCopies.put(vertex, newVertex);
-		}
-
-		for (Interconnection edge : edgeSet()) {
-			ArchitectureComponent newSource = matchCopies.get(edge.getSource());
-			ArchitectureComponent newTarget = matchCopies.get(edge.getTarget());
-			Interconnection newEdge = newArchi.addEdge(newSource, newTarget);
-			newEdge.setIf1(newSource.getInterface(edge.getIf1()
-					.getBusReference()));
-			newEdge.setIf2(newTarget.getInterface(edge.getIf2()
-					.getBusReference()));
-			newEdge.setDirected(edge.isDirected());
-			newEdge.setSetup(edge.isSetup());
-		}
-
-		return newArchi;
-	}
-
 	/**
 	 * Connect two components. If the connection is directed, cmp1 and cmp2 are
 	 * source and target components relatively.
@@ -551,4 +510,44 @@ public class MultiCoreArchitecture extends
 
 	}
 
+	@Override
+	public MultiCoreArchitecture clone() {
+		// super.clone();
+
+		// Creating archi
+		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
+		newArchi.setId(this.getId());
+		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
+
+		for (BusReference ref : busReferences.values()) {
+			newArchi.createBusReference(ref.getId());
+		}
+
+		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
+				.values()) {
+			newArchi.addComponentDefinition(def.clone());
+		}
+
+		for (ArchitectureComponent vertex : vertexSet()) {
+			ArchitectureComponent newVertex = (ArchitectureComponent) vertex
+					.clone();
+			newVertex.fill(vertex, newArchi);
+			newArchi.addVertex(newVertex);
+			matchCopies.put(vertex, newVertex);
+		}
+
+		for (Interconnection edge : edgeSet()) {
+			ArchitectureComponent newSource = matchCopies.get(edge.getSource());
+			ArchitectureComponent newTarget = matchCopies.get(edge.getTarget());
+			Interconnection newEdge = newArchi.addEdge(newSource, newTarget);
+			newEdge.setIf1(newSource.getInterface(edge.getIf1()
+					.getBusReference()));
+			newEdge.setIf2(newTarget.getInterface(edge.getIf2()
+					.getBusReference()));
+			newEdge.setDirected(edge.isDirected());
+			newEdge.setSetup(edge.isSetup());
+		}
+
+		return newArchi;
+	}
 }

@@ -69,6 +69,7 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -140,7 +141,7 @@ public class DesignParser {
 
 			Node node = docElt.getFirstChild();
 			archi = new MultiCoreArchitecture();
-			
+
 			while (node != null) {
 
 				if (node instanceof Element) {
@@ -203,7 +204,7 @@ public class DesignParser {
 	private void parseComponentInstance(Element callElt) {
 
 		VLNV cmpDefVLNV = new VLNV();
-		
+
 		String cmpName = "";
 		String cmpType = "";
 		IFile refinementFile = null;
@@ -243,9 +244,9 @@ public class DesignParser {
 
 		if (type != null) {
 			ArchitectureComponent cmp = archi.addComponent(
-					ArchitectureComponentType.getType(cmpType),cmpDefVLNV,
+					ArchitectureComponentType.getType(cmpType), cmpDefVLNV,
 					cmpName);
-			
+
 			cmp.setRefinementName(refinementName);
 
 			// parse components
@@ -267,7 +268,8 @@ public class DesignParser {
 				else if (type == ArchitectureComponentType.processor) {
 					ProcessorParser.parse(archi, (Processor) cmp, configElt);
 				} else if (type == ArchitectureComponentType.ipCoprocessor) {
-					IpCoprocessorParser.parse(archi, (IpCoprocessor) cmp, configElt);
+					IpCoprocessorParser.parse(archi, (IpCoprocessor) cmp,
+							configElt);
 				} else if (type == ArchitectureComponentType.memory) {
 					MemoryParser.parse(archi, (Memory) cmp, configElt);
 				} else if (type == ArchitectureComponentType.bus) {
@@ -468,7 +470,8 @@ public class DesignParser {
 						((DmaDefinition) ((Dma) cmp2).getDefinition())
 								.addSetupTime((Operator) cmp1, setupTime);
 					} else {
-						((Ram) cmp2).addSetupTime((Operator) cmp1, setupTime);
+						((RamDefinition) ((Ram) cmp2).getDefinition())
+								.addSetupTime((Operator) cmp1, setupTime);
 					}
 				} else {
 					PreesmLogger
