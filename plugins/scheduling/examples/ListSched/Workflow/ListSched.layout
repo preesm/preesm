@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="__algorithm" x="266" y="110"/>
+      <vertex id="__architecture" x="265" y="190"/>
+      <vertex id="__scenario" x="96" y="226"/>
+      <vertex id="list scheduling" x="449" y="208"/>
+   </vertices>
+</layout>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor>ietr.org</spirit:vendor>
+    <spirit:name>2P2IP</spirit:name>
+    <spirit:library>preesm</spirit:library>
+    <spirit:version>1.0</spirit:version>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>P1</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="microblaze" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">processor</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">IP1;;F1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">P2;C1;B1;(CN1,B2)</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">IP2;C1;B1;(CN1,B2)</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="setupTime">C1:1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">P1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">IP1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">P2</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">IP2</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>P2</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="microblaze" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">processor</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">P1;C2;B2;(CN1,B1)</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">IP2;C2;B2</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="setupTime">C2:1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">P1</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">P2</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="access">IP2</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>IP1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="idct2d"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">ipCoprocessor</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">P1;;F2</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>IP2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="vga"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">ipCoprocessor</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">P1;C1;B2;(CN1,B1)</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="routeStep">P2;C2;B2</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>C1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="dma"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">communicator</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>C2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="dma"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">communicator</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>CN1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="bridge"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">communicationNode</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>B1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="plb"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>B2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="plb"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">bus</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>F1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="fsl"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>F2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="fsl"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="componentType">fifo</spirit:configurableElementValue>
+                <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataRate">1.0</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="P1"/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="B1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="C1"/>
+            <spirit:activeInterface spirit:busRef="io2" spirit:componentRef="B1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="CN1"/>
+            <spirit:activeInterface spirit:busRef="io3" spirit:componentRef="B1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="P2"/>
+            <spirit:activeInterface spirit:busRef="io2" spirit:componentRef="B2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="C2"/>
+            <spirit:activeInterface spirit:busRef="io3" spirit:componentRef="B2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io2" spirit:componentRef="CN1"/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="B2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:activeInterface spirit:busRef="io1" spirit:componentRef="IP2"/>
+            <spirit:activeInterface spirit:busRef="io4" spirit:componentRef="B2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:displayName>directed</spirit:displayName>
+            <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="P1"/>
+            <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="F1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:displayName>directed</spirit:displayName>
+            <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="F1"/>
+            <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="IP1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:displayName>directed</spirit:displayName>
+            <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="IP1"/>
+            <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="F2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name/>
+            <spirit:displayName>directed</spirit:displayName>
+            <spirit:activeInterface spirit:busRef="o1" spirit:componentRef="F2"/>
+            <spirit:activeInterface spirit:busRef="i1" spirit:componentRef="P1"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections/>
+</spirit:design>

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Preesm scheduling Plug-in
+Bundle-SymbolicName: org.ietr.preesm.plugin.scheduling;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: org.ietr.preesm.plugin.scheduling.Activator
+Bundle-Vendor: IETR/INSA of Rennes
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.ietr.preesm.core;bundle-version="0.0.9"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/jcommon-1.0.13.jar,
+ lib/jfreechart.jar

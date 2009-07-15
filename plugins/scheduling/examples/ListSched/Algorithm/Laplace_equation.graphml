@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <node id="n1" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n1</data>
+      </node>
+      <node id="n3" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n3</data>
+      </node>
+      <node id="n4" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n4</data>
+      </node>
+      <node id="n5" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n5</data>
+      </node>
+      <node id="n6" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n6</data>
+      </node>
+      <node id="n7" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n7</data>
+      </node>
+      <node id="n9" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n9</data>
+      </node>
+      <node id="n10" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n10</data>
+      </node>
+      <node id="n11" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n11</data>
+      </node>
+      <node id="n12" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n12</data>
+      </node>
+      <node id="n14" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n14</data>
+      </node>
+      <node id="n15" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n15</data>
+      </node>
+      <node id="n16" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n16</data>
+      </node>
+      <node id="n2" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n2</data>
+      </node>
+      <node id="n8" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n8</data>
+      </node>
+      <node id="n13" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">n13</data>
+      </node>
+      <edge source="n1" sourceport="o2" target="n3" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n7" sourceport="o1" target="n11" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n9" sourceport="o1" target="n12" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n12" sourceport="o1" target="n14" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n12" sourceport="o2" target="n15" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n1" sourceport="o1" target="n2" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n9" sourceport="o2" target="n13" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n2" sourceport="o1" target="n4" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n2" sourceport="o2" target="n5" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n3" sourceport="o1" target="n5" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n3" sourceport="o2" target="n6" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n4" sourceport="o1" target="n7" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n4" sourceport="o2" target="n8" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n5" sourceport="o1" target="n8" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n5" sourceport="o2" target="n9" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n6" sourceport="o1" target="n9" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n6" sourceport="o2" target="n10" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n8" sourceport="o2" target="n12" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n8" sourceport="o1" target="n11" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n10" sourceport="o1" target="n13" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n13" sourceport="o1" target="n15" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n15" sourceport="o1" target="n16" targetport="i2">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n14" sourceport="o1" target="n16" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="n11" sourceport="o1" target="n14" targetport="i1">
+         <data key="edge_prod">40</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">40</data>
+         <data key="data_type">char</data>
+      </edge>
+   </graph>
+</graphml>
