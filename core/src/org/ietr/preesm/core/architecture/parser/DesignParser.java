@@ -205,7 +205,8 @@ public class DesignParser {
 		
 		String cmpName = "";
 		String cmpType = "";
-		IFile cmpFile = null;
+		IFile refinementFile = null;
+		String refinementName = "";
 
 		Element configElt = null;
 
@@ -226,7 +227,8 @@ public class DesignParser {
 				} else if (type.equals("spirit:configurableElementValues")) {
 					configElt = elt;
 					cmpType = parseComponentType(configElt);
-					cmpFile = findComponentRefinement(configElt);
+					refinementName = getComponentRefinementName(configElt);
+					refinementFile = findComponentRefinementFile(refinementName);
 				}
 			}
 
@@ -242,8 +244,10 @@ public class DesignParser {
 			ArchitectureComponent cmp = archi.addComponent(
 					ArchitectureComponentType.getType(cmpType),cmpDefVLNV,
 					cmpName);
+			
+			cmp.setRefinementName(refinementName);
 
-			// parse components for advanced architecture
+			// parse components
 			if (configElt != null) {
 				// Simple model
 				// Looking for definitions
@@ -275,9 +279,9 @@ public class DesignParser {
 			}
 
 			// Parsing the component file if present and retrieving data
-			if (cmpFile != null) {
+			if (refinementFile != null) {
 				ComponentParser cmpParser = new ComponentParser(archi, cmp);
-				cmpParser.parseXmlFile(cmpFile);
+				cmpParser.parseXmlFile(refinementFile);
 				cmpParser.parseDocument();
 			}
 		}
@@ -318,9 +322,8 @@ public class DesignParser {
 	 * If such a file is found, a parser is called and information is retrieved
 	 * from it.
 	 */
-	private IFile findComponentRefinement(Element callElt) {
+	private String getComponentRefinementName(Element callElt) {
 
-		IFile file = null;
 		String componentRefinement = "";
 
 		Node node = callElt.getFirstChild();
@@ -341,14 +344,26 @@ public class DesignParser {
 			node = node.getNextSibling();
 		}
 
-		if (!componentRefinement.isEmpty()) {
+		return componentRefinement;
+	}
+
+	/**
+	 * The refinement is the file containing the IP-XACT component definition.
+	 * If such a file is found, a parser is called and information is retrieved
+	 * from it.
+	 */
+	private IFile findComponentRefinementFile(String name) {
+
+		IFile file = null;
+
+		if (!name.isEmpty()) {
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 			String fileExt = "component";
 			IResource resource = workspace.getRoot().findMember(
 					currentFile.getFullPath().removeLastSegments(1) + "/"
-							+ componentRefinement + "." + fileExt);
+							+ name + "." + fileExt);
 			if (resource instanceof IFile) {
 				file = ((IFile) resource);
 			}

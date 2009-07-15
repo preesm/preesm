@@ -175,6 +175,8 @@ public class DesignWriter {
 		nameElt.setTextContent(cmp.getName());
 		
 		addVLNV(cmpElt,cmp);
+		
+		addConfigurableElementValues(cmpElt,cmp);
 	}
 	
 	private void addVLNV(Element parent, ArchitectureComponent cmp) {
@@ -187,8 +189,26 @@ public class DesignWriter {
 		vlnvElt.setAttribute("spirit:version", cmp.getDefinition().getVlnv().getVersion());
 		
 	}
-
 	
+	private void addConfigurableElementValues(Element parent, ArchitectureComponent cmp) {
+
+		Element confsElt = dom.createElement("spirit:configurableElementValues");
+		parent.appendChild(confsElt);
+		
+		Element typeElt = dom.createElement("spirit:configurableElementValue");
+		confsElt.appendChild(typeElt);
+
+		typeElt.setAttribute("spirit:referenceId", "componentType");
+		typeElt.setTextContent(cmp.getType().getName());
+
+		Element refElt = dom.createElement("spirit:configurableElementValue");
+		confsElt.appendChild(refElt);
+		
+		refElt.setAttribute("spirit:referenceId", "refinement");
+		refElt.setTextContent(cmp.getRefinementName());
+		
+	}
+
 /*
 
 	private void addSimuParams(Element parent) {

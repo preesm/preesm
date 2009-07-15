@@ -74,6 +74,11 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 	 * (example: C64x+) as well as specific parameters
 	 */
 	private ArchitectureComponentDefinition definition;
+	
+	/**
+	 * Saving refinement name if present in IP-XACT in order to be able to export it
+	 */
+	private String refinementName = "";
 
 	/**
 	 * Name of the component instance
@@ -166,6 +171,8 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 		// Definition is cloned
 		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
 				.getType(), this.getDefinition().getVlnv(), this.getName());
+		newCmp.setBaseAddress(getBaseAddress());
+		newCmp.setRefinementName(getRefinementName());
 		newCmp.getDefinition().fill(this.getDefinition());
 
 		// We iterate on interfaces
@@ -221,4 +228,14 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 	}
 
 	public abstract boolean isNode();
+
+	public String getRefinementName() {
+		return refinementName;
+	}
+
+	public void setRefinementName(String refinementName) {
+		this.refinementName = refinementName;
+	}
+	
+	
 }

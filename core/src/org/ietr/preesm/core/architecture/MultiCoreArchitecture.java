@@ -196,6 +196,7 @@ public class MultiCoreArchitecture extends
 
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
+		newArchi.setId(this.getId());
 		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
 
 		for (BusReference ref : busReferences.values()) {
