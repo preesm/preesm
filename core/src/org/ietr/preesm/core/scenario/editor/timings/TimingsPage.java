@@ -210,15 +210,15 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		for (ArchitectureComponentDefinition def : archi
 				.getComponentDefinitions(ArchitectureComponentType.operator)) {
-			combo.add(((OperatorDefinition) def).getId());
+			combo.add(((OperatorDefinition) def).getVlnv().getName());
 		}
 		for (ArchitectureComponentDefinition def : archi
 				.getComponentDefinitions(ArchitectureComponentType.processor)) {
-			combo.add(((ProcessorDefinition) def).getId());
+			combo.add(((ProcessorDefinition) def).getVlnv().getName());
 		}
 		for (ArchitectureComponentDefinition def : archi
 				.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
-			combo.add(((IpCoprocessorDefinition) def).getId());
+			combo.add(((IpCoprocessorDefinition) def).getVlnv().getName());
 		}
 
 		combo.setData(archi);

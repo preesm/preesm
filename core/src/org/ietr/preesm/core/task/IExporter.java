@@ -54,6 +54,14 @@ public interface IExporter extends ITask{
 	public void transform(AbstractGraph algorithm, TextParameters params);
 
 	/**
+	 * Method to export a given architecture using the given parameters
+	 * @param archi The architecture to export
+	 * @param params The parameters rulling the exportation
+	 */
+	@SuppressWarnings("unchecked") 
+	public void transform(MultiCoreArchitecture archi, TextParameters params);
+
+	/**
 	 * Method to export a given graph using the given parameters
 	 * @param algorithm The algorithm to export
 	 * @param params The parameters rulling the exportation
@@ -63,5 +71,7 @@ public interface IExporter extends ITask{
 	public boolean isSDFExporter();
 	
 	public boolean isDAGExporter();
+	
+	public boolean isArchiExporter();
 
 }

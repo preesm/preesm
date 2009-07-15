@@ -64,6 +64,11 @@ public class SDF4JGMLExporter implements IExporter {
 		return true;
 	}
 
+	@Override
+	public boolean isArchiExporter() {
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void transform(AbstractGraph algorithm, TextParameters params) {
 		GMLSDFExporter exporter = new GMLSDFExporter();
@@ -100,6 +105,12 @@ public class SDF4JGMLExporter implements IExporter {
 			TextParameters params) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void transform(MultiCoreArchitecture archi, TextParameters params) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

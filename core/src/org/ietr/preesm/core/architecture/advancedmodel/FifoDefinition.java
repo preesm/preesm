@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * Parameters for a Fifo
@@ -51,13 +52,13 @@ public class FifoDefinition extends ArchitectureComponentDefinition {
 	 */
 	private double dataRate;
 
-	public FifoDefinition(String id) {
-		super(id, "fifo");
+	public FifoDefinition(VLNV vlnv) {
+		super(vlnv, "fifo");
 		dataRate = 0;
 	}
 
 	public FifoDefinition clone() {
-		FifoDefinition newdef = new FifoDefinition(this.getId());
+		FifoDefinition newdef = new FifoDefinition(this.getVlnv());
 		return newdef;
 	}
 

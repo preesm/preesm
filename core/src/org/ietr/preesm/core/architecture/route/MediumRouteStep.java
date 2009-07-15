@@ -93,7 +93,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 	 */
 	@Override
 	public String getId() {
-		return medium.getDefinition().getId();
+		return medium.getDefinition().getVlnv().getName();
 	}
 
 	/**

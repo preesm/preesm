@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * A Random Access memory
@@ -46,8 +47,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class RamDefinition extends ArchitectureComponentDefinition {
 
-	public RamDefinition(String id) {
-		super(id, "ram");
+	public RamDefinition(VLNV vlnv) {
+		super(vlnv, "ram");
 	}
 
 	public ArchitectureComponentType getType() {
@@ -57,7 +58,7 @@ public class RamDefinition extends ArchitectureComponentDefinition {
 	public RamDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
-		RamDefinition newdef = new RamDefinition(this.getId());
+		RamDefinition newdef = new RamDefinition(this.getVlnv());
 
 		return newdef;
 	}

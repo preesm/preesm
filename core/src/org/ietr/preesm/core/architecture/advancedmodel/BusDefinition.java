@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * Parameters for a Bus
@@ -51,13 +52,13 @@ public class BusDefinition extends ArchitectureComponentDefinition {
 	 */
 	private double dataRate;
 
-	public BusDefinition(String id) {
-		super(id, "bus");
+	public BusDefinition(VLNV vlnv) {
+		super(vlnv, "bus");
 		dataRate = 0;
 	}
 
 	public BusDefinition clone() {
-		BusDefinition newdef = new BusDefinition(this.getId());
+		BusDefinition newdef = new BusDefinition(this.getVlnv());
 		return newdef;
 	}
 

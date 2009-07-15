@@ -39,6 +39,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * The operator definition specifies the operator characteristics
@@ -48,8 +49,8 @@ import org.ietr.preesm.core.architecture.IOperatorDefinition;
 public class OperatorDefinition extends ArchitectureComponentDefinition
 		implements IOperatorDefinition {
 
-	public OperatorDefinition(String id) {
-		super(id, "operator");
+	public OperatorDefinition(VLNV vlnv) {
+		super(vlnv, "operator");
 	}
 
 	public ArchitectureComponentType getType() {
@@ -59,7 +60,7 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 	public OperatorDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
-		OperatorDefinition newdef = new OperatorDefinition(this.getId());
+		OperatorDefinition newdef = new OperatorDefinition(this.getVlnv());
 
 		return newdef;
 	}

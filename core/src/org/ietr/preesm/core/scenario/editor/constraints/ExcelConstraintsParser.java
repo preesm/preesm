@@ -136,7 +136,7 @@ public class ExcelConstraintsParser {
 	public void checkOpDefConstraint(Workbook w,
 			OperatorDefinition operatorDef, MultiCoreArchitecture archi,
 			SDFAbstractVertex vertex) {
-		String operatorDefId = operatorDef.getId();
+		String operatorDefId = operatorDef.getVlnv().getName();
 		String vertexName = vertex.getName();
 
 		if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
@@ -153,7 +153,7 @@ public class ExcelConstraintsParser {
 							.getComponents(ArchitectureComponentType.operator);
 
 					for (ArchitectureComponent operator : operators) {
-						if (operator.getDefinition().getId().equalsIgnoreCase(
+						if (operator.getDefinition().getVlnv().getName().equalsIgnoreCase(
 								operatorDefId))
 							scenario.getConstraintGroupManager().addConstraint(
 									(Operator) operator, vertex);

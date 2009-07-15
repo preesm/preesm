@@ -154,7 +154,7 @@ public class Workflow {
 		IScenario scenario = null;
 		SourceFileList sourceFiles = null;
 		IMapperAbc abc = null; // This input type is known from the sender and
-								// the receiver
+		// the receiver
 
 		PreesmLogger.getLogger().log(Level.INFO, "Starting workflow execution");
 
@@ -228,8 +228,8 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming graph");
-						PreesmLogger.getLogger()
-								.log(Level.INFO, "transforming graph");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"transforming graph");
 
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
@@ -237,13 +237,14 @@ public class Workflow {
 						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof IArchiTransformation) {
 						monitor.subTask("transforming architecture");
-						PreesmLogger.getLogger()
-								.log(Level.INFO, "transforming architecture");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"transforming architecture");
 
 						// mapping
 						IArchiTransformation tranform = (IArchiTransformation) transformation;
 
-						nodeResult = tranform.transform(architecture, parameters);
+						nodeResult = tranform.transform(architecture,
+								parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
 						PreesmLogger.getLogger().log(Level.INFO,
@@ -285,11 +286,14 @@ public class Workflow {
 						// code translation
 						IExporter exporter = (IExporter) transformation;
 
-						if (exporter.isSDFExporter())
+						if (exporter.isSDFExporter()) {
 							exporter.transform(sdf, parameters);
-						else
+						} else if (exporter.isDAGExporter()) {
 							exporter.transform(dag, sdf, architecture,
 									scenario, parameters);
+						} else if (exporter.isArchiExporter()) {
+							exporter.transform(architecture, parameters);
+						}
 
 						if (parameters.getBooleanVariable("openFile")) {
 							openFile(parameters.getVariable("path"), monitor);

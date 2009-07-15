@@ -45,7 +45,6 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -84,41 +83,6 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author mpelcat
  */
 public class SdfToDagConverter {
-
-	/**
-	 * Main for test
-	 * 
-	 * @throws SDF4JException
-	 */
-	public static void main(String[] args) throws SDF4JException {
-		int nbVertex = 10, minInDegree = 1, maxInDegree = 3, minOutDegree = 1, maxOutDegree = 3;
-
-		// Creates a random SDF graph
-		int minrate = 1, maxrate = 15;
-		SDFRandomGraph test = new SDFRandomGraph();
-		SDFGraph demoGraph = test.createRandomGraph(nbVertex, minInDegree,
-				maxInDegree, minOutDegree, maxOutDegree, minrate, maxrate);
-		// SDFGraph demoGraph =createTestComGraph();
-
-		MultiCoreArchitecture architecture = Examples.get2C64Archi();
-
-		IScenario scenario = new Scenario();
-		TimingManager tmanager = new TimingManager();
-
-		Iterator<SDFAbstractVertex> it = demoGraph.vertexSet().iterator();
-
-		while (it.hasNext()) {
-			SDFAbstractVertex vertex = it.next();
-
-			Timing t = new Timing((OperatorDefinition) architecture
-					.getMainOperator().getDefinition(), vertex);
-			t.setTime(100);
-			tmanager.addTiming(t);
-		}
-
-		convert(demoGraph, architecture, scenario, false);
-
-	}
 
 	/**
 	 * Converts a SDF in a DAG and retrieves the interesting properties from the

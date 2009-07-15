@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * The medium definition describes the medium capabilities
@@ -68,17 +69,17 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	private int overhead = 0;
 
 	public MediumDefinition(MediumDefinition origin) {
-		super(origin.getId(), "medium");
+		super(origin.getVlnv(), "medium");
 		
 		this.fill(origin);
 	}
 
-	public MediumDefinition(String id) {
-		super(id, "medium");
+	public MediumDefinition(VLNV vlnv) {
+		super(vlnv, "medium");
 	}
 
-	public MediumDefinition(String id,float invSpeed, int overhead) {
-		super(id, "medium");
+	public MediumDefinition(VLNV vlnv,float invSpeed, int overhead) {
+		super(vlnv, "medium");
 		setDataRate(invSpeed);
 		setOverhead(overhead);
 	}
@@ -89,7 +90,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	@Override
 	public MediumDefinition clone() {
-		return new MediumDefinition(this.getId(),this.getDataRate(), this.getOverheadTime());
+		return new MediumDefinition(this.getVlnv(),this.getDataRate(), this.getOverheadTime());
 	}
 
 	public void fill(ArchitectureComponentDefinition origin){

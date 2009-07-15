@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * A Direct Memory Access is set up by an operator to transfer data
@@ -55,8 +56,8 @@ public class DmaDefinition extends ArchitectureComponentDefinition {
 	 */
 	Map<Operator,Integer> setupTimes = null;
 
-	public DmaDefinition(String id) {
-		super(id, "dma");
+	public DmaDefinition(VLNV vlnv) {
+		super(vlnv, "dma");
 		setupTimes = new HashMap<Operator,Integer>();
 	}
 
@@ -67,7 +68,7 @@ public class DmaDefinition extends ArchitectureComponentDefinition {
 	public DmaDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
-		DmaDefinition newdef = new DmaDefinition(this.getId());
+		DmaDefinition newdef = new DmaDefinition(this.getVlnv());
 
 		return newdef;
 	}

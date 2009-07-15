@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * A parallel node is a communication node which contention
@@ -47,8 +48,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 
-	public ParallelNodeDefinition(String id) {
-		super(id, "parallelNode");
+	public ParallelNodeDefinition(VLNV vlnv) {
+		super(vlnv, "parallelNode");
 	}
 
 	public ArchitectureComponentType getType() {
@@ -58,7 +59,7 @@ public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 	public ParallelNodeDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
-		ParallelNodeDefinition newdef = new ParallelNodeDefinition(this.getId());
+		ParallelNodeDefinition newdef = new ParallelNodeDefinition(this.getVlnv());
 
 		return newdef;
 	}

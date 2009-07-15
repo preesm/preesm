@@ -128,7 +128,7 @@ public class ScenarioTransformer {
 		for (Timing indexTiming : scenario.getTimingManager().getTimings()) {
 			algorithm.getComputation(indexTiming.getVertex().getName())
 					.addComputationDuration(
-							indexTiming.getOperatorDefinition().getId(),
+							indexTiming.getOperatorDefinition().getVlnv().getName(),
 							indexTiming.getTime());
 			System.out
 					.println(" Name="
@@ -136,13 +136,13 @@ public class ScenarioTransformer {
 									indexTiming.getVertex().getName())
 									.getName()
 							+ "; Operator="
-							+ indexTiming.getOperatorDefinition().getId()
+							+ indexTiming.getOperatorDefinition().getVlnv().getName()
 							+ "; computationDuration="
 							+ algorithm.getComputation(
 									indexTiming.getVertex().getName())
 									.getComputationDuration(
 											indexTiming.getOperatorDefinition()
-													.getId())
+													.getVlnv().getName())
 							+ "; nbTotalRepeate="
 							+ algorithm.getComputation(
 									indexTiming.getVertex().getName())

@@ -131,7 +131,7 @@ public class ExcelTimingParser {
 			for (ArchitectureComponentDefinition operatorDef : opDefs) {
 
 				String operatorId = ((IOperatorDefinition) operatorDef)
-						.getId();
+						.getVlnv().getName();
 				String vertexName = vertex.getName();
 
 				if (!operatorId.isEmpty() && !vertexName.isEmpty()) {

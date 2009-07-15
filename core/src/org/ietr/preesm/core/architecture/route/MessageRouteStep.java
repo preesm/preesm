@@ -90,7 +90,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 	public String getId() {
 		String id = "";
 		for (AbstractNode node : nodes) {
-			id += node.getDefinition().getId();
+			id += node.getDefinition().getVlnv().getName();
 		}
 		return id;
 	}

@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * Parameters for a Memory (exemple: a Shared RAM)
@@ -45,12 +46,12 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class MemoryDefinition extends ArchitectureComponentDefinition {
 
-	public MemoryDefinition(String id) {
-		super(id, "memory");
+	public MemoryDefinition(VLNV vlnv) {
+		super(vlnv, "memory");
 	}
 
 	public MemoryDefinition clone() {
-		MemoryDefinition newdef = new MemoryDefinition(this.getId());
+		MemoryDefinition newdef = new MemoryDefinition(this.getVlnv());
 		return newdef;
 	}
 

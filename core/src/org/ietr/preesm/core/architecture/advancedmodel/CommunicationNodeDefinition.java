@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * Parameters for a communication node (exemple: a switch)
@@ -46,13 +47,13 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 public class CommunicationNodeDefinition extends
 		ArchitectureComponentDefinition {
 
-	public CommunicationNodeDefinition(String id) {
-		super(id, "communicationNode");
+	public CommunicationNodeDefinition(VLNV vlnv) {
+		super(vlnv, "communicationNode");
 	}
 
 	public CommunicationNodeDefinition clone() {
 		CommunicationNodeDefinition newdef = new CommunicationNodeDefinition(
-				this.getId());
+				this.getVlnv());
 		return newdef;
 	}
 

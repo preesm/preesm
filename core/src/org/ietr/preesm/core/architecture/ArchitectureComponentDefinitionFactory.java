@@ -43,6 +43,7 @@ import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -58,52 +59,52 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  */
 public class ArchitectureComponentDefinitionFactory {
 	
-	public static ArchitectureComponentDefinition createElement(ArchitectureComponentType type,String name){
+	public static ArchitectureComponentDefinition createElement(ArchitectureComponentType type,VLNV vlnv){
 
 		ArchitectureComponentDefinition result = null;
 		
 		if(type != null){
 			//Simple model
 			if(type == ArchitectureComponentType.medium){
-				result = new MediumDefinition(name);
+				result = new MediumDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.operator){
-				result = new OperatorDefinition(name);
+				result = new OperatorDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.contentionNode){
-				result = new ContentionNodeDefinition(name);
+				result = new ContentionNodeDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.parallelNode){
-				result = new ParallelNodeDefinition(name);
+				result = new ParallelNodeDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.dma){
-				result = new DmaDefinition(name);
+				result = new DmaDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.ram){
-				result = new RamDefinition(name);
+				result = new RamDefinition(vlnv);
 			}
 			
 			// Advanced model
 			else if(type == ArchitectureComponentType.processor){
-				result = new ProcessorDefinition(name);
+				result = new ProcessorDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.ipCoprocessor){
-				result = new IpCoprocessorDefinition(name);
+				result = new IpCoprocessorDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.communicationNode){
-				result = new CommunicationNodeDefinition(name);
+				result = new CommunicationNodeDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.communicator){
-				result = new CommunicatorDefinition(name);
+				result = new CommunicatorDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.memory){
-				result = new MemoryDefinition(name);
+				result = new MemoryDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.bus){
-				result = new BusDefinition(name);
+				result = new BusDefinition(vlnv);
 			}
 			else if(type == ArchitectureComponentType.fifo){
-				result = new FifoDefinition(name);
+				result = new FifoDefinition(vlnv);
 			}
 		}
 		

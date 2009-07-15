@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * A contention node is a communication node which contention
@@ -55,8 +56,8 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 	 */
 	private float dataRate = 0f;
 
-	public ContentionNodeDefinition(String id) {
-		super(id, "contentionNode");
+	public ContentionNodeDefinition(VLNV vlnv) {
+		super(vlnv, "contentionNode");
 	}
 
 	public ArchitectureComponentType getType() {
@@ -66,7 +67,7 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 	public ContentionNodeDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
-		ContentionNodeDefinition newdef = new ContentionNodeDefinition(this.getId());
+		ContentionNodeDefinition newdef = new ContentionNodeDefinition(this.getVlnv());
 		newdef.setDataRate(this.getDataRate());
 		return newdef;
 	}

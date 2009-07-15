@@ -45,7 +45,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.buffer.AllocationPolicy;
@@ -74,37 +73,6 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author Matthieu Wipliez
  */
 public class CodeGenerationTransformation implements ICodeGeneration {
-
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-		Logger logger = PreesmLogger.getLogger();
-		logger.setLevel(Level.FINER);
-
-		logger.log(Level.FINER, "Testing code generation with an example");
-
-		// Creating generator
-		@SuppressWarnings("unused")
-		CodeGenerationTransformation gen = new CodeGenerationTransformation();
-
-		// Input archi & algo
-		// TODO: parse algorithm
-		@SuppressWarnings("unused")
-		MultiCoreArchitecture architecture = Examples.get2C64Archi();
-		@SuppressWarnings("unused")
-		DirectedAcyclicGraph algorithm = null;
-
-		// Input file list
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("sourcePath", "d:/Test");
-		@SuppressWarnings("unused")
-		TextParameters params = new TextParameters(map);
-
-		// gen.transform(algorithm, architecture, params);
-
-		logger.log(Level.FINER, "Code generated");
-	}
 
 	/**
 	 * Generates the source files from an implementation and an architecture.

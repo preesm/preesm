@@ -40,7 +40,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.Examples;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 
@@ -50,10 +49,6 @@ import org.ietr.preesm.core.architecture.parser.DesignParser;
  * @author mpelcat
  */
 public class ArchitectureRetriever {
-
-	static public MultiCoreArchitecture ExampleArchitecture(){
-		return Examples.get2C64Archi();
-	}
 
 	MultiCoreArchitecture architecture = null;
 	

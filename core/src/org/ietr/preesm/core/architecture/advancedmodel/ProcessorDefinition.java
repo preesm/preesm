@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * The processor definition specifies the characteristics of a processor.
@@ -47,13 +48,13 @@ import org.ietr.preesm.core.architecture.IOperatorDefinition;
 public class ProcessorDefinition extends ArchitectureComponentDefinition
 		implements IOperatorDefinition {
 
-	public ProcessorDefinition(String id) {
-		super(id, "processor");
+	public ProcessorDefinition(VLNV vlnv) {
+		super(vlnv, "processor");
 	}
 
 	public ProcessorDefinition clone() {
 		// A new ProcessorDefinition is created with same id
-		ProcessorDefinition newdef = new ProcessorDefinition(this.getId());
+		ProcessorDefinition newdef = new ProcessorDefinition(this.getVlnv());
 		return newdef;
 	}
 

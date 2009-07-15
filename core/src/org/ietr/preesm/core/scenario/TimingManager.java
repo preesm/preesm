@@ -43,6 +43,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.dag.DAGVertex;
@@ -76,7 +77,7 @@ public class TimingManager {
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
-		defaultTiming = new Timing(new OperatorDefinition("default"),
+		defaultTiming = new Timing(new OperatorDefinition(new VLNV("default","default","default","default")),
 				new SDFVertex(), Timing.DEFAULT_TASK_TIME);
 	}
 

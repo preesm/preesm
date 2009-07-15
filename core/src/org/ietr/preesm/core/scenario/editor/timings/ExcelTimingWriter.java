@@ -134,7 +134,7 @@ public class ExcelTimingWriter implements SelectionListener {
 			for (ArchitectureComponentDefinition opDef : archi
 					.getComponentDefinitions(ArchitectureComponentType.operator)) {
 				for (SDFAbstractVertex vertex : vSet) {
-					String opDefName = opDef.getId();
+					String opDefName = opDef.getVlnv().getName();
 					String vertexName = vertex.getName();
 
 					int time = scenario.getTimingManager().getTimingOrDefault(

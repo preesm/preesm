@@ -165,7 +165,7 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 
 		// Definition is cloned
 		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
-				.getType(), this.getDefinition().getId(), this.getName());
+				.getType(), this.getDefinition().getVlnv(), this.getName());
 		newCmp.getDefinition().fill(this.getDefinition());
 
 		// We iterate on interfaces
@@ -212,7 +212,7 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 
 	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi){
 		this.setBaseAddress(cmp.getBaseAddress());
-		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition().getType(), cmp.getDefinition().getId()));
+		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition().getType(), cmp.getDefinition().getVlnv()));
 		
 		for(ArchitectureInterface itf : availableInterfaces){
 			ArchitectureInterface newItf = new ArchitectureInterface(newArchi.getBusReference(itf.getBusReference().getId()),this);

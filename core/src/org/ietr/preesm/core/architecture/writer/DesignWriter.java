@@ -34,17 +34,23 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario;
+package org.ietr.preesm.core.architecture.writer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.DataType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -55,11 +61,11 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
- * Writes a scenario as an XML
+ * Writes an architecture as an IP-XACT XML file
  * 
  * @author mpelcat
  */
-public class ScenarioWriter {
+public class DesignWriter {
 
 	/**
 	 * Current document
@@ -69,35 +75,121 @@ public class ScenarioWriter {
 	/**
 	 * Current scenario
 	 */
-	private Scenario scenario;
+	private MultiCoreArchitecture archi;
 
-	public ScenarioWriter(Scenario scenario) {
+	public DesignWriter(MultiCoreArchitecture archi) {
 		super();
 
-		this.scenario = scenario;
+		this.archi = archi;
 
 		try {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("", "scenario", null);
+			dom = impl.createDocument("http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4", "spirit:design", null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-
-	public Document generateScenarioDOM() {
+	
+	public Document generateArchitectureDOM() {
 
 		Element root = dom.getDocumentElement();
 
-		addFiles(root);
-		addConstraints(root);
-		addTimings(root);
-		addSimuParams(root);
+		addID(root);
+		addComponentInstances(root);
 
 		return dom;
 	}
+
+	public void writeDom(String fileName) {
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		Path relativePath = new Path(fileName);
+		
+		IFile file = workspace.getRoot().getFile(relativePath);
+		
+		if(file != null){
+		try {
+			// Gets the DOM implementation of document
+			DOMImplementation impl = dom.getImplementation();
+			DOMImplementationLS implLS = (DOMImplementationLS) impl;
+
+			LSOutput output = implLS.createLSOutput();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			output.setByteStream(out);
+
+			LSSerializer serializer = implLS.createLSSerializer();
+			serializer.getDomConfig().setParameter("format-pretty-print", true);
+			serializer.write(dom, output);
+
+			if(file.exists()){
+			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,false,
+					 new NullProgressMonitor());
+			}
+			else{
+
+				file.create(new ByteArrayInputStream(out.toByteArray()), true,
+						 new NullProgressMonitor());
+			}
+			out.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		}
+		else{
+			PreesmLogger.getLogger().log(Level.SEVERE,"Architecture exporter has an invalid file path.");
+		}
+	}
+
+	private void addID(Element parent) {
+
+		Element id = dom.createElement("spirit:id");
+		parent.appendChild(id);
+		id.setTextContent(archi.getId());
+
+		Element name = dom.createElement("spirit:name");
+		parent.appendChild(name);
+		name.setTextContent(archi.getName());
+	}
+	
+	private void addComponentInstances(Element parent) {
+
+		Element cmpsElt = dom.createElement("spirit:componentInstances");
+		parent.appendChild(cmpsElt);
+		
+		for(ArchitectureComponent cmp : archi.getComponents()){
+			addComponentInstance(cmpsElt,cmp);
+		}
+	}
+	
+	private void addComponentInstance(Element parent, ArchitectureComponent cmp) {
+
+		Element cmpElt = dom.createElement("spirit:componentInstance");
+		parent.appendChild(cmpElt);
+
+		Element nameElt = dom.createElement("spirit:instanceName");
+		cmpElt.appendChild(nameElt);
+		nameElt.setTextContent(cmp.getName());
+		
+		addVLNV(cmpElt,cmp);
+	}
+	
+	private void addVLNV(Element parent, ArchitectureComponent cmp) {
+
+		Element vlnvElt = dom.createElement("spirit:componentRef");
+		parent.appendChild(vlnvElt);
+		vlnvElt.setAttribute("spirit:library", cmp.getDefinition().getVlnv().getLibrary());
+		vlnvElt.setAttribute("spirit:name", cmp.getDefinition().getVlnv().getName());
+		vlnvElt.setAttribute("spirit:vendor", cmp.getDefinition().getVlnv().getVendor());
+		vlnvElt.setAttribute("spirit:version", cmp.getDefinition().getVlnv().getVersion());
+		
+	}
+
+	
+/*
 
 	private void addSimuParams(Element parent) {
 
@@ -150,30 +242,6 @@ public class ScenarioWriter {
 		Element dataTypeElt = dom.createElement("specialVertexOperator");
 		parent.appendChild(dataTypeElt);
 		dataTypeElt.setAttribute("path", cmp.getInfo());
-	}
-
-	public void writeDom(IFile file) {
-
-		try {
-			// Gets the DOM implementation of document
-			DOMImplementation impl = dom.getImplementation();
-			DOMImplementationLS implLS = (DOMImplementationLS) impl;
-
-			LSOutput output = implLS.createLSOutput();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			output.setByteStream(out);
-
-			LSSerializer serializer = implLS.createLSSerializer();
-			serializer.getDomConfig().setParameter("format-pretty-print", true);
-			serializer.write(dom, output);
-
-			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
-					false, new NullProgressMonitor());
-			out.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void addFiles(Element parent) {
@@ -259,7 +327,7 @@ public class ScenarioWriter {
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("vertexname", timing.getVertex().getName());
 		timingelt
-				.setAttribute("opname", timing.getOperatorDefinition().getVlnv().getName());
+				.setAttribute("opname", timing.getOperatorDefinition().getId());
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
-	}
+	}*/
 }

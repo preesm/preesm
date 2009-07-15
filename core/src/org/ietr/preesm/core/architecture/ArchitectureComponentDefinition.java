@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.parser.VLNV;
+
 /**
  * The architecture component definition gives component specifications
  * 
@@ -51,14 +53,14 @@ public abstract class ArchitectureComponentDefinition {
 	/**
 	 * ID of the architecture component definition (examples: TCP, C64x+...)
 	 */
-	private String id;
+	private VLNV vlnv;
 
 	/**
 	 * Constructor with clone
 	 */
 	public ArchitectureComponentDefinition(
 			ArchitectureComponentDefinition origin) {
-		this.id = origin.id;
+		this.vlnv = origin.vlnv;
 
 		this.category = origin.category;
 	}
@@ -66,8 +68,8 @@ public abstract class ArchitectureComponentDefinition {
 	/**
 	 * Constructor
 	 */
-	public ArchitectureComponentDefinition(String id, String category) {
-		this.id = new String(id);
+	public ArchitectureComponentDefinition(VLNV vlnv, String category) {
+		this.vlnv = vlnv;
 
 		this.category = new String(category);
 	}
@@ -77,14 +79,14 @@ public abstract class ArchitectureComponentDefinition {
 
 		if (obj.getClass().equals(this.getClass())) {
 			ArchitectureComponentDefinition def = (ArchitectureComponentDefinition) obj;
-			return id.equalsIgnoreCase(def.getId())
+			return vlnv.equals(def.getVlnv())
 					&& category.equalsIgnoreCase(def.category);
 		}
 		return false;
 	}
 
-	public String getId() {
-		return id;
+	public VLNV getVlnv() {
+		return vlnv;
 	}
 
 	/**
@@ -98,7 +100,7 @@ public abstract class ArchitectureComponentDefinition {
 	 * Compares two definitions for id
 	 */
 	public boolean sameId(ArchitectureComponentDefinition othertype) {
-		return (id.compareTo(othertype.id) == 0);
+		return (vlnv.equals(othertype.vlnv));
 	}
 
 	public abstract ArchitectureComponentType getType();

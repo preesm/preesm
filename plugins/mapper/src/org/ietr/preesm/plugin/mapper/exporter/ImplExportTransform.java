@@ -80,19 +80,28 @@ public class ImplExportTransform implements IExporter{
 
 	@Override
 	public boolean isDAGExporter() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isSDFExporter() {
-		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isArchiExporter() {
 		return false;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked") 
 	public void transform(AbstractGraph algorithm, TextParameters params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void transform(MultiCoreArchitecture archi, TextParameters params) {
 		// TODO Auto-generated method stub
 		
 	}

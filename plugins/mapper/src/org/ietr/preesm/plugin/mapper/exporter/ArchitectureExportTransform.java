@@ -34,62 +34,81 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper;
+package org.ietr.preesm.plugin.mapper.exporter;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.writer.DesignWriter;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.IScenario;
-import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
+import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.listsched.AlgorithmTransformer;
-import org.ietr.preesm.plugin.mapper.listsched.CombListSched;
-import org.sdf4j.model.parameters.InvalidExpressionException;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.jgrapht.Graph;
+import org.sdf4j.exporter.GMLExporter;
+import org.sdf4j.model.AbstractGraph;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.w3c.dom.Element;
 
 /**
- * Class calling a tranformation for communication contentious list scheduling
+ * Exporter for IP-XACT multicore architectures
  * 
- * @author pmu
+ * @author mpelcat
+ * 
  */
-public class ListSchedTransformation extends AbstractMapping {
+public class ArchitectureExportTransform implements IExporter {
 
 	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) {
-		// TODO Auto-generated method stub
-
+	public boolean isDAGExporter() {
+		return false;
 	}
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters, IScenario scenario, IProgressMonitor monitor) throws PreesmException{
+	public boolean isSDFExporter() {
+		return false;
+	}
 
-		super.transform(algorithm,architecture,textParameters,scenario,monitor);
-		// TODO Add here the calls to your task scheduling algorithm
-		// in which you ask communicationcontentiouslistschedulingdabc for
-		// implementation evaluations
-		System.out
-				.println("Communication Contentious List Scheduling Transformation!");
-		TaskResult result = new TaskResult();
-		// CommunicationContentiousListSchedulingParameters parameters = new
-		// CommunicationContentiousListSchedulingParameters(
-		// textParameters);
-		// AlgorithmTransformer algoTransformer = new AlgorithmTransformer();
-		// architecture = Examples.get3C64Archi();
-		CombListSched scheduler = new CombListSched(algorithm, architecture,
-				scenario);
+	@Override
+	public boolean isArchiExporter() {
+		return true;
+	}
 
-		try {
-			scheduler.schedule();
-		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
-			throw(new PreesmException(e.getMessage()));
+	@Override
+	public void transform(MultiCoreArchitecture archi, TextParameters params) {
+		
+		String pathKey = "path";
+		if(params.hasVariable(pathKey)){
+		DesignWriter writer = new DesignWriter(archi);
+		writer.generateArchitectureDOM();
+		writer.writeDom(params.getVariable(pathKey));
 		}
-
-		// result.setDAG(algoTransformer.algorithm2DAG(scheduler
-		// .getBestScheduler()));
-		super.clean(architecture,scenario);
-		return result;
+		else{
+			PreesmLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
+		}
 	}
+
+	@Override
+	public void transform(AbstractGraph algorithm, TextParameters params) {
+		
+	}
+
+	@Override
+	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
+			MultiCoreArchitecture archi, IScenario scenario,
+			TextParameters params) {
+		
+	}
+
 
 }

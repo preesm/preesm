@@ -94,22 +94,22 @@ public class ArchitectureTransformer {
 		for (ArchitectureComponent indexOperator : archi
 				.getComponents(ArchitectureComponentType.operator)) {
 			new ProcessorDescriptor(indexOperator.getName(), indexOperator
-					.getDefinition().getId(), ComponentDescriptorBuffer);
+					.getDefinition().getVlnv().getName(), ComponentDescriptorBuffer);
 		}
 		for (ArchitectureComponent indexOperator : archi
 				.getComponents(ArchitectureComponentType.processor)) {
 			new ProcessorDescriptor(indexOperator.getName(), indexOperator
-					.getDefinition().getId(), ComponentDescriptorBuffer);
+					.getDefinition().getVlnv().getName(), ComponentDescriptorBuffer);
 		}
 		for (ArchitectureComponent indexOperator : archi
 				.getComponents(ArchitectureComponentType.ipCoprocessor)) {
 			new ProcessorDescriptor(indexOperator.getName(), indexOperator
-					.getDefinition().getId(), ComponentDescriptorBuffer);
+					.getDefinition().getVlnv().getName(), ComponentDescriptorBuffer);
 		}
 		for (ArchitectureComponent indexMedium : archi
 				.getComponents(ArchitectureComponentType.medium)) {
 			BusDescriptor bus = new BusDescriptor(indexMedium.getName(),
-					indexMedium.getDefinition().getId(),
+					indexMedium.getDefinition().getVlnv().getName(),
 					ComponentDescriptorBuffer);
 			bus
 					.setAverageClockCyclesPerTransfer(1.0 / ((MediumDefinition) ((Medium) indexMedium)
@@ -118,7 +118,7 @@ public class ArchitectureTransformer {
 		for (ArchitectureComponent indexMedium : archi
 				.getComponents(ArchitectureComponentType.bus)) {
 			BusDescriptor bus = new BusDescriptor(indexMedium.getName(),
-					indexMedium.getDefinition().getId(),
+					indexMedium.getDefinition().getVlnv().getName(),
 					ComponentDescriptorBuffer);
 			bus.setAverageClockCyclesPerTransfer(1 / ((Bus) indexMedium)
 					.getDataRate());
@@ -126,7 +126,7 @@ public class ArchitectureTransformer {
 		for (ArchitectureComponent indexMedium : archi
 				.getComponents(ArchitectureComponentType.fifo)) {
 			FifoDescriptor fifo = new FifoDescriptor(indexMedium.getName(),
-					indexMedium.getDefinition().getId(),
+					indexMedium.getDefinition().getVlnv().getName(),
 					ComponentDescriptorBuffer);
 			fifo.setAverageClockCyclesPerTransfer(1 / ((Fifo) indexMedium)
 					.getDataRate());
@@ -134,7 +134,7 @@ public class ArchitectureTransformer {
 		for (ArchitectureComponent indexSwitch : archi
 				.getComponents(ArchitectureComponentType.communicationNode)) {
 			new SwitchDescriptor(indexSwitch.getName(), indexSwitch
-					.getDefinition().getId(), ComponentDescriptorBuffer);
+					.getDefinition().getVlnv().getName(), ComponentDescriptorBuffer);
 		}
 		for (Interconnection indexInterconnection : archi.getInterconnections()) {
 			// transform two types of interconnections

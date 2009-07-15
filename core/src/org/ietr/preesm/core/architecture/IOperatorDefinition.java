@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.parser.VLNV;
+
 /**
  * This interface should be implemented by ProcessorDefinition and
  * IpCoprocessorDefinition in advanced model as well as OperatorDefinition in
@@ -45,5 +47,5 @@ package org.ietr.preesm.core.architecture;
  * 
  */
 public interface IOperatorDefinition {
-	public String getId();
+	public VLNV getVlnv();
 }

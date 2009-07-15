@@ -136,7 +136,7 @@ public class GenericPrinter {
 			specificPath = specificPath.append(fileName + ".c");
 	
 			IPath xslFilePath = new Path(xslPath);
-			xslFilePath = xslFilePath.append(operator.getDefinition().getId() + ".xslt");
+			xslFilePath = xslFilePath.append(operator.getDefinition().getVlnv().getName() + ".xslt");
 	
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
@@ -154,7 +154,7 @@ public class GenericPrinter {
 	 */
 	public XMLPrinter getPrinter(Operator opRef) {
 		XMLPrinter printer = null;
-		String opRefId = opRef.getDefinition().getId();
+		String opRefId = opRef.getDefinition().getVlnv().getName();
 		String opName = opRef.getName();
 
 		printer = new XMLPrinter();

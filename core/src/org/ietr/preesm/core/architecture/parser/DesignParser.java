@@ -138,14 +138,17 @@ public class DesignParser {
 			Element docElt = dom.getDocumentElement();
 
 			Node node = docElt.getFirstChild();
-
+			archi = new MultiCoreArchitecture();
+			
 			while (node != null) {
 
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
 					if (type.equals("spirit:name")) {
-						archi = new MultiCoreArchitecture(elt.getTextContent());
+						archi.setName(elt.getTextContent());
+					} else if (type.equals("spirit:id")) {
+						archi.setId(elt.getTextContent());
 					} else if (type.equals("spirit:componentInstances")) {
 
 						if (archi == null) {
@@ -198,8 +201,9 @@ public class DesignParser {
 	 */
 	private void parseComponentInstance(Element callElt) {
 
+		VLNV cmpDefVLNV = new VLNV();
+		
 		String cmpName = "";
-		String cmpDefId = "";
 		String cmpType = "";
 		IFile cmpFile = null;
 
@@ -215,7 +219,10 @@ public class DesignParser {
 				if (type.equals("spirit:instanceName")) {
 					cmpName = elt.getTextContent();
 				} else if (type.equals("spirit:componentRef")) {
-					cmpDefId = elt.getAttribute("spirit:name");
+					cmpDefVLNV.setVendor(elt.getAttribute("spirit:vendor"));
+					cmpDefVLNV.setLibrary(elt.getAttribute("spirit:library"));
+					cmpDefVLNV.setName(elt.getAttribute("spirit:name"));
+					cmpDefVLNV.setVersion(elt.getAttribute("spirit:version"));
 				} else if (type.equals("spirit:configurableElementValues")) {
 					configElt = elt;
 					cmpType = parseComponentType(configElt);
@@ -233,12 +240,13 @@ public class DesignParser {
 
 		if (type != null) {
 			ArchitectureComponent cmp = archi.addComponent(
-					ArchitectureComponentType.getType(cmpType), cmpDefId,
+					ArchitectureComponentType.getType(cmpType),cmpDefVLNV,
 					cmpName);
 
 			// parse components for advanced architecture
 			if (configElt != null) {
 				// Simple model
+				// Looking for definitions
 				if (type == ArchitectureComponentType.medium) {
 					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
 							configElt);

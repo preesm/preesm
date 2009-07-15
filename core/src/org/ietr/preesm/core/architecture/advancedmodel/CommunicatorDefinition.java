@@ -37,6 +37,7 @@ package org.ietr.preesm.core.architecture.advancedmodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
  * Parameters for a a Communicator (example: an edma)
@@ -45,12 +46,12 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 
-	public CommunicatorDefinition(String id) {
-		super(id, "communicator");
+	public CommunicatorDefinition(VLNV vlnv) {
+		super(vlnv, "communicator");
 	}
 
 	public CommunicatorDefinition clone() {
-		CommunicatorDefinition newdef = new CommunicatorDefinition(this.getId());
+		CommunicatorDefinition newdef = new CommunicatorDefinition(this.getVlnv());
 		return newdef;
 	}
 

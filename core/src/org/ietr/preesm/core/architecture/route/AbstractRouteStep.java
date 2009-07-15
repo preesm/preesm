@@ -115,29 +115,29 @@ public abstract class AbstractRouteStep {
 
 		Element sender = dom.createElement("sender");
 		sender.setAttribute("name", this.getSender().getName());
-		sender.setAttribute("def", this.getSender().getDefinition().getId());
+		sender.setAttribute("def", this.getSender().getDefinition().getVlnv().getName());
 		routeStep.appendChild(sender);
 
 		Element receiver = dom.createElement("receiver");
 		receiver.setAttribute("name", this.getReceiver().getName());
-		receiver.setAttribute("def", this.getReceiver().getDefinition().getId());
+		receiver.setAttribute("def", this.getReceiver().getDefinition().getVlnv().getName());
 		routeStep.appendChild(receiver);
 		
 		if(this.getType() == MediumRouteStep.type){
 			MediumRouteStep mStep = (MediumRouteStep)this;
 			routeStep.setAttribute("type", "med");
-			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getId());
+			routeStep.setAttribute("mediumDef", mStep.getMedium().getDefinition().getVlnv().getName());
 			routeStep.setAttribute("mediumName", mStep.getMedium().getName());
 		}
 		else if(this.getType() == DmaRouteStep.type){
 			routeStep.setAttribute("type", "dma");
 			DmaRouteStep dStep = (DmaRouteStep)this;
-			routeStep.setAttribute("dmaDef", dStep.getDma().getDefinition().getId());
+			routeStep.setAttribute("dmaDef", dStep.getDma().getDefinition().getVlnv().getName());
 			
 			for(AbstractNode node : dStep.getNodes()){
 				Element eNode = dom.createElement("node");
 				eNode.setAttribute("name", node.getName());
-				eNode.setAttribute("def", node.getDefinition().getId());
+				eNode.setAttribute("def", node.getDefinition().getVlnv().getName());
 				routeStep.appendChild(eNode);
 			}
 		}
@@ -148,14 +148,14 @@ public abstract class AbstractRouteStep {
 			for(AbstractNode node : nStep.getNodes()){
 				Element eNode = dom.createElement("node");
 				eNode.setAttribute("name", node.getName());
-				eNode.setAttribute("def", node.getDefinition().getId());
+				eNode.setAttribute("def", node.getDefinition().getVlnv().getName());
 				routeStep.appendChild(eNode);
 			}	
 		}
 		else if(this.getType() == RamRouteStep.type){
 			routeStep.setAttribute("type", "ram");
 			RamRouteStep rStep = (RamRouteStep)this;
-			routeStep.setAttribute("ramDef", rStep.getRam().getDefinition().getId());
+			routeStep.setAttribute("ramDef", rStep.getRam().getDefinition().getVlnv().getName());
 		}
 	}
 	
