@@ -181,6 +181,7 @@ public class DesignWriter {
 		// Writing the setup times on the setup edges
 		if (intc.isSetup()) {
 
+			// The display named is used to characterized setup edges
 			Element displayName = dom.createElement("spirit:displayName");
 			intElt.appendChild(displayName);
 			displayName.setTextContent("setup");
@@ -204,13 +205,13 @@ public class DesignWriter {
 		// Writing the interfaces
 		Element intf1Elt = dom.createElement("spirit:activeInterface");
 		intElt.appendChild(intf1Elt);
-		intf1Elt.setAttribute("spirit:busRef", intc.getIf1().getBusReference().getId());
-		intf1Elt.setAttribute("spirit:componentRef", intc.getCp1().getId());
+		intf1Elt.setAttribute("spirit:busRef", intc.getSrcIf().getBusReference().getId());
+		intf1Elt.setAttribute("spirit:componentRef", intc.getSource().getName());
 		
 		Element intf2Elt = dom.createElement("spirit:activeInterface");
 		intElt.appendChild(intf2Elt);
-		intf2Elt.setAttribute("spirit:busRef", intc.getIf2().getBusReference().getId());
-		intf2Elt.setAttribute("spirit:componentRef", intc.getCp2().getId());
+		intf2Elt.setAttribute("spirit:busRef", intc.getTgtIf().getBusReference().getId());
+		intf2Elt.setAttribute("spirit:componentRef", intc.getTarget().getName());
 		
 	}
 

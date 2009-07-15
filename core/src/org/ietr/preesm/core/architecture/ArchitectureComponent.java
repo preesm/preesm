@@ -212,13 +212,21 @@ public abstract class ArchitectureComponent extends
 	}
 
 	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi) {
+
 		this.setBaseAddress(cmp.getBaseAddress());
+		this.setRefinementName(cmp.getRefinementName());
+		
 		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition()
 				.getType(), cmp.getDefinition().getVlnv()));
 
-		for (ArchitectureInterface itf : availableInterfaces) {
+		for (ArchitectureInterface itf : cmp.availableInterfaces) {
+			
+			if(itf.getBusReference().getId().isEmpty()){
+				PreesmLogger.getLogger().log(Level.SEVERE, "Dangerous unnamed ports in architecture.");
+			}
+			
 			ArchitectureInterface newItf = new ArchitectureInterface(newArchi
-					.getBusReference(itf.getBusReference().getId()), this);
+					.createBusReference(itf.getBusReference().getId()), this);
 			this.getAvailableInterfaces().add(newItf);
 		}
 	}
@@ -276,9 +284,6 @@ public abstract class ArchitectureComponent extends
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component.");
 		}
-
-		newCmp.setBaseAddress(getBaseAddress());
-		newCmp.setRefinementName(getRefinementName());
 
 		return newCmp;
 	}

@@ -213,8 +213,8 @@ public class MultiCoreArchitecture extends
 			Interconnection itc = this.addEdge(cmp1, cmp2);
 
 			if (itc != null) {
-				itc.setIf1(if1);
-				itc.setIf2(if2);
+				itc.setSrcIf(if1);
+				itc.setTgtIf(if2);
 				itc.setDirected(isDirected);
 				itc.setSetup(isSetup);
 
@@ -241,7 +241,7 @@ public class MultiCoreArchitecture extends
 			ArchitectureInterface if2) {
 
 		Set<Interconnection> iSet = getAllEdges(cmp1, cmp2);
-		Interconnection testInter = new Interconnection(cmp1, if1, cmp2, if2);
+		Interconnection testInter = new Interconnection(if1, if2);
 		Iterator<Interconnection> iterator = iSet.iterator();
 
 		while (iterator.hasNext()) {
@@ -540,9 +540,9 @@ public class MultiCoreArchitecture extends
 			ArchitectureComponent newSource = matchCopies.get(edge.getSource());
 			ArchitectureComponent newTarget = matchCopies.get(edge.getTarget());
 			Interconnection newEdge = newArchi.addEdge(newSource, newTarget);
-			newEdge.setIf1(newSource.getInterface(edge.getIf1()
+			newEdge.setSrcIf(newSource.getInterface(edge.getSrcIf()
 					.getBusReference()));
-			newEdge.setIf2(newTarget.getInterface(edge.getIf2()
+			newEdge.setTgtIf(newTarget.getInterface(edge.getTgtIf()
 					.getBusReference()));
 			newEdge.setDirected(edge.isDirected());
 			newEdge.setSetup(edge.isSetup());

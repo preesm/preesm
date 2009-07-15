@@ -138,8 +138,8 @@ public class ArchitectureTransformer {
 		}
 		for (Interconnection indexInterconnection : archi.getInterconnections()) {
 			// transform two types of interconnections
-			ArchitectureComponent srcComponent = indexInterconnection.getCp1();
-			ArchitectureComponent dstComponent = indexInterconnection.getCp2();
+			ArchitectureComponent srcComponent = indexInterconnection.getSource();
+			ArchitectureComponent dstComponent = indexInterconnection.getTarget();
 			if (indexInterconnection.isDirected()) {
 				if ((srcComponent.getType() == ArchitectureComponentType.operator)
 						|| (srcComponent.getType() == ArchitectureComponentType.processor)

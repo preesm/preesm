@@ -49,22 +49,16 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 	private boolean directed = false;
 	private boolean setup = false;
 
-	private ArchitectureComponent cp1 = null;
-	private ArchitectureInterface if1 = null;
+	private ArchitectureInterface srcIf = null;
+	private ArchitectureInterface tgtIf = null;
 
-	private ArchitectureComponent cp2 = null;
-	private ArchitectureInterface if2 = null;
+	public Interconnection() {
 
-	public Interconnection(ArchitectureComponent cp1, ArchitectureComponent cp2) {
-		this.cp1 = cp1;
-		this.cp2 = cp2;
 	}
 
-	public Interconnection(ArchitectureComponent cp1, ArchitectureInterface if1, ArchitectureComponent cp2, ArchitectureInterface if2) {
-		this.cp1 = cp1;
-		this.if1 = if1;
-		this.cp2 = cp2;
-		this.if2 = if2;
+	public Interconnection(ArchitectureInterface if1, ArchitectureInterface if2) {
+		this.srcIf = if1;
+		this.tgtIf = if2;
 	}
 
 	@Override
@@ -72,45 +66,37 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 
 		if (obj instanceof Interconnection) {
 			Interconnection intc = (Interconnection) obj;
-			return (intc.cp1.equals(this.cp1) && intc.cp2.equals(this.cp2)
-					&& intc.if1.equals(this.if1) && intc.if2.equals(this.if2))
-					|| (intc.cp2.equals(this.cp1) && intc.cp1.equals(this.cp2)
-							&& intc.if2.equals(this.if1) && intc.if1
-							.equals(this.if2));
+			return (intc.getSource().equals(this.getSource()) && intc.getTarget().equals(this.getTarget())
+					&& intc.srcIf.equals(this.srcIf) && intc.tgtIf.equals(this.tgtIf))
+					|| (intc.getTarget().equals(this.getSource()) && intc.getSource().equals(this.getTarget())
+							&& intc.tgtIf.equals(this.srcIf) && intc.srcIf
+							.equals(this.tgtIf));
 		}
 		return false;
 	}
 
-	public ArchitectureComponent getCp1() {
-		return cp1;
+	public ArchitectureInterface getSrcIf() {
+		return srcIf;
 	}
 
-	public ArchitectureComponent getCp2() {
-		return cp2;
-	}
-
-	public ArchitectureInterface getIf1() {
-		return if1;
-	}
-
-	public ArchitectureInterface getIf2() {
-		return if2;
+	public ArchitectureInterface getTgtIf() {
+		return tgtIf;
 	}
 	
-	public void setIf1(ArchitectureInterface if1) {
-		this.if1 = if1;
+	public void setSrcIf(ArchitectureInterface srcIf) {
+		this.srcIf = srcIf;
 	}
 
-	public void setIf2(ArchitectureInterface if2) {
-		this.if2 = if2;
+	public void setTgtIf(ArchitectureInterface tgtIf) {
+		this.tgtIf = tgtIf;
 	}
 
 	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
 
-		if (cp1.getType() == type)
-			return if1;
-		else if (cp2.getType() == type)
-			return if2;
+		if (getSource().getType() == type)
+			return srcIf;
+		else if (getTarget().getType() == type)
+			return tgtIf;
 		else
 			return null;
 	}
@@ -133,6 +119,6 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 
 	@Override
 	public String toString() {
-		return "(" + cp1.toString() + "," + cp2.toString() + ")";
+		return "(" + getSource().toString() + "," + getTarget().toString() + ")";
 	}
 }

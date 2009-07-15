@@ -20,7 +20,7 @@ public class InterconnectionFactory implements EdgeFactory<ArchitectureComponent
 	@Override
 	public Interconnection createEdge(ArchitectureComponent cmp1,
 			ArchitectureComponent cmp2) {
-		return new Interconnection(cmp1, cmp2);
+		return new Interconnection();
 	}
 
 }
