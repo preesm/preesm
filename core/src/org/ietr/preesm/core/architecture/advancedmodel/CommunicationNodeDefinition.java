@@ -51,11 +51,11 @@ public class CommunicationNodeDefinition extends
 		super(vlnv, "communicationNode");
 	}
 
-	public CommunicationNodeDefinition clone() {
+	/*public CommunicationNodeDefinition clone() {
 		CommunicationNodeDefinition newdef = new CommunicationNodeDefinition(
 				this.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

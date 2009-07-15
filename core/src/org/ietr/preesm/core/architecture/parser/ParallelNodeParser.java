@@ -33,35 +33,46 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.parser.VLNV;
+package org.ietr.preesm.core.architecture.parser;
+
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * A Random Access memory
+ * A parallel node has specific properties parsed in this class to generate a
+ * ParallelNodeDefinition
  * 
  * @author mpelcat
  */
-public class RamDefinition extends ArchitectureComponentDefinition {
+public class ParallelNodeParser {
+	
+	/**
+	 * Parsing parallel node specific data from DOM document and filling the
+	 * contention node definition
+	 */
+	static void parse(ParallelNodeDefinition def, Element callElt) {
 
-	public RamDefinition(VLNV vlnv) {
-		super(vlnv, "ram");
-	}
+		Node node = callElt.getFirstChild();
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.ram;
-	}
+		while (node != null) {
 
-	/*public RamDefinition clone() {
-		// A new OperatorDefinition is created with same id
-		RamDefinition newdef = new RamDefinition(this.getVlnv());
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String eltType = elt.getTagName();
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("node_dataRate")) {
+					String value = elt.getTextContent();
+					def.setDataRate(Float.parseFloat(value));
+				}
+			}
 
-		return newdef;
-	}*/
+			node = node.getNextSibling();
+		}
 
-	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }

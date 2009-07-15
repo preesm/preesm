@@ -48,7 +48,11 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -86,85 +90,121 @@ public class DesignWriter {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4", "spirit:design", null);
+			dom = impl.createDocument(
+					"http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4",
+					"spirit:design", null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-	}
-	
-	public Document generateArchitectureDOM() {
-
-		Element root = dom.getDocumentElement();
-
-		addID(root);
-		addComponentInstances(root);
-
-		return dom;
 	}
 
 	public void writeDom(String fileName) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		Path relativePath = new Path(fileName);
-		
+
 		IFile file = workspace.getRoot().getFile(relativePath);
-		
-		if(file != null){
-		try {
-			// Gets the DOM implementation of document
-			DOMImplementation impl = dom.getImplementation();
-			DOMImplementationLS implLS = (DOMImplementationLS) impl;
 
-			LSOutput output = implLS.createLSOutput();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			output.setByteStream(out);
+		if (file != null) {
+			try {
+				// Gets the DOM implementation of document
+				DOMImplementation impl = dom.getImplementation();
+				DOMImplementationLS implLS = (DOMImplementationLS) impl;
 
-			LSSerializer serializer = implLS.createLSSerializer();
-			serializer.getDomConfig().setParameter("format-pretty-print", true);
-			serializer.write(dom, output);
+				LSOutput output = implLS.createLSOutput();
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				output.setByteStream(out);
 
-			if(file.exists()){
-			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,false,
-					 new NullProgressMonitor());
+				LSSerializer serializer = implLS.createLSSerializer();
+				serializer.getDomConfig().setParameter("format-pretty-print",
+						true);
+				serializer.write(dom, output);
+
+				if (file.exists()) {
+					file.setContents(
+							new ByteArrayInputStream(out.toByteArray()), true,
+							false, new NullProgressMonitor());
+				} else {
+
+					file.create(new ByteArrayInputStream(out.toByteArray()),
+							true, new NullProgressMonitor());
+				}
+				out.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			else{
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Architecture exporter has an invalid file path.");
+		}
+	}
 
-				file.create(new ByteArrayInputStream(out.toByteArray()), true,
-						 new NullProgressMonitor());
-			}
-			out.close();
+	public Document generateArchitectureDOM() {
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		Element root = dom.getDocumentElement();
+
+		addID(root);
+		addComponentInstances(root);
+		addInterconnections(root);
+
+		return dom;
+	}
+
+	private void addInterconnections(Element parent) {
+
+		Element intsElt = dom.createElement("spirit:interconnections");
+		parent.appendChild(intsElt);
+
+		for (Interconnection intc : archi.getInterconnections()) {
+			addInterconnection(intsElt, intc);
 		}
+	}
+
+	private void addInterconnection(Element parent, Interconnection intc) {
+
+		Element intElt = dom.createElement("spirit:interconnection");
+		parent.appendChild(intElt);
+
+		Element nameElt = dom.createElement("spirit:name");
+		intElt.appendChild(nameElt);
+
+		if (intc.isSetup()) {
+
+			Operator o = (Operator) intc.getSource();
+			Dma d = (Dma) intc.getTarget();
+			DmaDefinition dd = (DmaDefinition) d.getDefinition();
+			Element descElt = dom.createElement("spirit:description");
+			intElt.appendChild(descElt);
+			intElt.setTextContent(Long.toString(dd.getSetupTime(o)));
 		}
-		else{
-			PreesmLogger.getLogger().log(Level.SEVERE,"Architecture exporter has an invalid file path.");
-		}
+
 	}
 
 	private void addID(Element parent) {
 
-		Element id = dom.createElement("spirit:id");
-		parent.appendChild(id);
-		id.setTextContent(archi.getId());
+		if (archi.getId() != null) {
+			Element id = dom.createElement("spirit:id");
+			parent.appendChild(id);
+			id.setTextContent(archi.getId());
+		}
 
 		Element name = dom.createElement("spirit:name");
 		parent.appendChild(name);
 		name.setTextContent(archi.getName());
 	}
-	
+
 	private void addComponentInstances(Element parent) {
 
 		Element cmpsElt = dom.createElement("spirit:componentInstances");
 		parent.appendChild(cmpsElt);
-		
-		for(ArchitectureComponent cmp : archi.getComponents()){
-			addComponentInstance(cmpsElt,cmp);
+
+		for (ArchitectureComponent cmp : archi.getComponents()) {
+			addComponentInstance(cmpsElt, cmp);
 		}
 	}
-	
+
 	private void addComponentInstance(Element parent, ArchitectureComponent cmp) {
 
 		Element cmpElt = dom.createElement("spirit:componentInstance");
@@ -173,28 +213,34 @@ public class DesignWriter {
 		Element nameElt = dom.createElement("spirit:instanceName");
 		cmpElt.appendChild(nameElt);
 		nameElt.setTextContent(cmp.getName());
-		
-		addVLNV(cmpElt,cmp);
-		
-		addConfigurableElementValues(cmpElt,cmp);
+
+		addVLNV(cmpElt, cmp);
+
+		addConfigurableElementValues(cmpElt, cmp);
 	}
-	
+
 	private void addVLNV(Element parent, ArchitectureComponent cmp) {
 
 		Element vlnvElt = dom.createElement("spirit:componentRef");
 		parent.appendChild(vlnvElt);
-		vlnvElt.setAttribute("spirit:library", cmp.getDefinition().getVlnv().getLibrary());
-		vlnvElt.setAttribute("spirit:name", cmp.getDefinition().getVlnv().getName());
-		vlnvElt.setAttribute("spirit:vendor", cmp.getDefinition().getVlnv().getVendor());
-		vlnvElt.setAttribute("spirit:version", cmp.getDefinition().getVlnv().getVersion());
-		
-	}
-	
-	private void addConfigurableElementValues(Element parent, ArchitectureComponent cmp) {
+		vlnvElt.setAttribute("spirit:library", cmp.getDefinition().getVlnv()
+				.getLibrary());
+		vlnvElt.setAttribute("spirit:name", cmp.getDefinition().getVlnv()
+				.getName());
+		vlnvElt.setAttribute("spirit:vendor", cmp.getDefinition().getVlnv()
+				.getVendor());
+		vlnvElt.setAttribute("spirit:version", cmp.getDefinition().getVlnv()
+				.getVersion());
 
-		Element confsElt = dom.createElement("spirit:configurableElementValues");
+	}
+
+	private void addConfigurableElementValues(Element parent,
+			ArchitectureComponent cmp) {
+
+		Element confsElt = dom
+				.createElement("spirit:configurableElementValues");
 		parent.appendChild(confsElt);
-		
+
 		Element typeElt = dom.createElement("spirit:configurableElementValue");
 		confsElt.appendChild(typeElt);
 
@@ -203,151 +249,129 @@ public class DesignWriter {
 
 		Element refElt = dom.createElement("spirit:configurableElementValue");
 		confsElt.appendChild(refElt);
-		
+
 		refElt.setAttribute("spirit:referenceId", "refinement");
 		refElt.setTextContent(cmp.getRefinementName());
-		
-	}
-
-/*
-
-	private void addSimuParams(Element parent) {
-
-		Element params = dom.createElement("simuParams");
-		parent.appendChild(params);
-
-		Element core = dom.createElement("mainCore");
-		params.appendChild(core);
-		core.setTextContent(scenario.getSimulationManager()
-				.getMainOperatorName());
-
-		Element medium = dom.createElement("mainMedium");
-		params.appendChild(medium);
-		medium.setTextContent(scenario.getSimulationManager()
-				.getMainMediumName());
-		
-		Element dataSize = dom.createElement("averageDataSize");
-		params.appendChild(dataSize);
-		dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
-			.getAverageDataSize()));
-		
-		
-
-		Element dataTypes = dom.createElement("dataTypes");
-		params.appendChild(dataTypes);
-
-		for (DataType dataType : scenario.getSimulationManager().getDataTypes()
-				.values()) {
-			addDataType(dataTypes, dataType);
-		}
-		
-		Element sVOperators = dom.createElement("specialVertexOperators");
-		params.appendChild(sVOperators);
-
-		for (ArchitectureComponent cmp : scenario.getSimulationManager().getSpecialVertexOperators()) {
-			addSpecialVertexOperator(sVOperators,cmp);
-		}
-	}
-
-	private void addDataType(Element parent, DataType dataType) {
-
-		Element dataTypeElt = dom.createElement("dataType");
-		parent.appendChild(dataTypeElt);
-		dataTypeElt.setAttribute("name", dataType.getTypeName());
-		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
-	}
-
-	private void addSpecialVertexOperator(Element parent, ArchitectureComponent cmp) {
-
-		Element dataTypeElt = dom.createElement("specialVertexOperator");
-		parent.appendChild(dataTypeElt);
-		dataTypeElt.setAttribute("path", cmp.getInfo());
-	}
-
-	private void addFiles(Element parent) {
-
-		Element files = dom.createElement("files");
-		parent.appendChild(files);
-
-		Element algo = dom.createElement("algorithm");
-		files.appendChild(algo);
-		algo.setAttribute("url", scenario.getAlgorithmURL());
-
-		Element archi = dom.createElement("architecture");
-		files.appendChild(archi);
-		archi.setAttribute("url", scenario.getArchitectureURL());
-
-		Element timings = dom.createElement("timingfile");
-		files.appendChild(timings);
-		timings.setAttribute("url", scenario.getTimingManager()
-				.getTimingFileURL());
-
-		Element codeGenDir = dom.createElement("codegenDirectory");
-		files.appendChild(codeGenDir);
-		codeGenDir.setAttribute("url", scenario.getCodegenManager()
-				.getCodegenDirectory());
 
 	}
 
-	private void addConstraints(Element parent) {
-
-		Element constraints = dom.createElement("constraints");
-		parent.appendChild(constraints);
-
-		for (ConstraintGroup cst : scenario.getConstraintGroupManager()
-				.getConstraintGroups()) {
-			addConstraint(constraints, cst);
-		}
-	}
-
-	private void addConstraint(Element parent, ConstraintGroup cst) {
-
-		Element constraintGroupElt = dom.createElement("constraintGroup");
-		parent.appendChild(constraintGroupElt);
-
-		for (IOperator opdef : cst.getOperators()) {
-			if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.operator) {
-				Element opdefelt = dom.createElement("operator");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
-			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.processor) {
-				Element opdefelt = dom.createElement("processor");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
-			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.ipCoprocessor) {
-				Element opdefelt = dom.createElement("ipCoprocessor");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
-			}
-		}
-
-		for (SDFAbstractVertex vtx : cst.getVertices()) {
-			Element vtxelt = dom.createElement("task");
-			constraintGroupElt.appendChild(vtxelt);
-			vtxelt.setAttribute("name", vtx.getInfo());
-		}
-	}
-
-	private void addTimings(Element parent) {
-
-		Element timings = dom.createElement("timings");
-		parent.appendChild(timings);
-
-		for (Timing timing : scenario.getTimingManager().getTimings()) {
-			addTiming(timings, timing);
-		}
-	}
-
-	private void addTiming(Element parent, Timing timing) {
-
-		Element timingelt = dom.createElement("timing");
-		parent.appendChild(timingelt);
-		timingelt.setAttribute("vertexname", timing.getVertex().getName());
-		timingelt
-				.setAttribute("opname", timing.getOperatorDefinition().getId());
-		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
-	}*/
+	/*
+	 * 
+	 * private void addSimuParams(Element parent) {
+	 * 
+	 * Element params = dom.createElement("simuParams");
+	 * parent.appendChild(params);
+	 * 
+	 * Element core = dom.createElement("mainCore"); params.appendChild(core);
+	 * core.setTextContent(scenario.getSimulationManager()
+	 * .getMainOperatorName());
+	 * 
+	 * Element medium = dom.createElement("mainMedium");
+	 * params.appendChild(medium);
+	 * medium.setTextContent(scenario.getSimulationManager()
+	 * .getMainMediumName());
+	 * 
+	 * Element dataSize = dom.createElement("averageDataSize");
+	 * params.appendChild(dataSize);
+	 * dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
+	 * .getAverageDataSize()));
+	 * 
+	 * 
+	 * 
+	 * Element dataTypes = dom.createElement("dataTypes");
+	 * params.appendChild(dataTypes);
+	 * 
+	 * for (DataType dataType : scenario.getSimulationManager().getDataTypes()
+	 * .values()) { addDataType(dataTypes, dataType); }
+	 * 
+	 * Element sVOperators = dom.createElement("specialVertexOperators");
+	 * params.appendChild(sVOperators);
+	 * 
+	 * for (ArchitectureComponent cmp :
+	 * scenario.getSimulationManager().getSpecialVertexOperators()) {
+	 * addSpecialVertexOperator(sVOperators,cmp); } }
+	 * 
+	 * private void addDataType(Element parent, DataType dataType) {
+	 * 
+	 * Element dataTypeElt = dom.createElement("dataType");
+	 * parent.appendChild(dataTypeElt); dataTypeElt.setAttribute("name",
+	 * dataType.getTypeName()); dataTypeElt.setAttribute("size",
+	 * Integer.toString(dataType.getSize())); }
+	 * 
+	 * private void addSpecialVertexOperator(Element parent,
+	 * ArchitectureComponent cmp) {
+	 * 
+	 * Element dataTypeElt = dom.createElement("specialVertexOperator");
+	 * parent.appendChild(dataTypeElt); dataTypeElt.setAttribute("path",
+	 * cmp.getInfo()); }
+	 * 
+	 * private void addFiles(Element parent) {
+	 * 
+	 * Element files = dom.createElement("files"); parent.appendChild(files);
+	 * 
+	 * Element algo = dom.createElement("algorithm"); files.appendChild(algo);
+	 * algo.setAttribute("url", scenario.getAlgorithmURL());
+	 * 
+	 * Element archi = dom.createElement("architecture");
+	 * files.appendChild(archi); archi.setAttribute("url",
+	 * scenario.getArchitectureURL());
+	 * 
+	 * Element timings = dom.createElement("timingfile");
+	 * files.appendChild(timings); timings.setAttribute("url",
+	 * scenario.getTimingManager() .getTimingFileURL());
+	 * 
+	 * Element codeGenDir = dom.createElement("codegenDirectory");
+	 * files.appendChild(codeGenDir); codeGenDir.setAttribute("url",
+	 * scenario.getCodegenManager() .getCodegenDirectory());
+	 * 
+	 * }
+	 * 
+	 * private void addConstraints(Element parent) {
+	 * 
+	 * Element constraints = dom.createElement("constraints");
+	 * parent.appendChild(constraints);
+	 * 
+	 * for (ConstraintGroup cst : scenario.getConstraintGroupManager()
+	 * .getConstraintGroups()) { addConstraint(constraints, cst); } }
+	 * 
+	 * private void addConstraint(Element parent, ConstraintGroup cst) {
+	 * 
+	 * Element constraintGroupElt = dom.createElement("constraintGroup");
+	 * parent.appendChild(constraintGroupElt);
+	 * 
+	 * for (IOperator opdef : cst.getOperators()) { if (((ArchitectureComponent)
+	 * opdef).getType() == ArchitectureComponentType.operator) { Element
+	 * opdefelt = dom.createElement("operator");
+	 * constraintGroupElt.appendChild(opdefelt); opdefelt.setAttribute("name",
+	 * ((ArchitectureComponent) opdef) .getName()); } else if
+	 * (((ArchitectureComponent) opdef).getType() ==
+	 * ArchitectureComponentType.processor) { Element opdefelt =
+	 * dom.createElement("processor"); constraintGroupElt.appendChild(opdefelt);
+	 * opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
+	 * .getName()); } else if (((ArchitectureComponent) opdef).getType() ==
+	 * ArchitectureComponentType.ipCoprocessor) { Element opdefelt =
+	 * dom.createElement("ipCoprocessor");
+	 * constraintGroupElt.appendChild(opdefelt); opdefelt.setAttribute("name",
+	 * ((ArchitectureComponent) opdef) .getName()); } }
+	 * 
+	 * for (SDFAbstractVertex vtx : cst.getVertices()) { Element vtxelt =
+	 * dom.createElement("task"); constraintGroupElt.appendChild(vtxelt);
+	 * vtxelt.setAttribute("name", vtx.getInfo()); } }
+	 * 
+	 * private void addTimings(Element parent) {
+	 * 
+	 * Element timings = dom.createElement("timings");
+	 * parent.appendChild(timings);
+	 * 
+	 * for (Timing timing : scenario.getTimingManager().getTimings()) {
+	 * addTiming(timings, timing); } }
+	 * 
+	 * private void addTiming(Element parent, Timing timing) {
+	 * 
+	 * Element timingelt = dom.createElement("timing");
+	 * parent.appendChild(timingelt); timingelt.setAttribute("vertexname",
+	 * timing.getVertex().getName()); timingelt .setAttribute("opname",
+	 * timing.getOperatorDefinition().getId()); timingelt.setAttribute("time",
+	 * Integer.toString(timing.getTime())); }
+	 */
 }

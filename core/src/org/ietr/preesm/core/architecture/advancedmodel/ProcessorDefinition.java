@@ -52,11 +52,11 @@ public class ProcessorDefinition extends ArchitectureComponentDefinition
 		super(vlnv, "processor");
 	}
 
-	public ProcessorDefinition clone() {
+	/*public ProcessorDefinition clone() {
 		// A new ProcessorDefinition is created with same id
 		ProcessorDefinition newdef = new ProcessorDefinition(this.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

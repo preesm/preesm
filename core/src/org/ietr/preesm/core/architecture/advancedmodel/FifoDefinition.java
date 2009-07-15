@@ -57,10 +57,10 @@ public class FifoDefinition extends ArchitectureComponentDefinition {
 		dataRate = 0;
 	}
 
-	public FifoDefinition clone() {
+	/*public FifoDefinition clone() {
 		FifoDefinition newdef = new FifoDefinition(this.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

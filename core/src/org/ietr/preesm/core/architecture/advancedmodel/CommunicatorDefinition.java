@@ -50,10 +50,10 @@ public class CommunicatorDefinition extends ArchitectureComponentDefinition {
 		super(vlnv, "communicator");
 	}
 
-	public CommunicatorDefinition clone() {
+	/*public CommunicatorDefinition clone() {
 		CommunicatorDefinition newdef = new CommunicatorDefinition(this.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

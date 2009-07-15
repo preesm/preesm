@@ -52,35 +52,45 @@ public class DmaDefinition extends ArchitectureComponentDefinition {
 
 	/**
 	 * The time needed to set-up a communication depending
-	 * on the operator doing the set-up
+	 * on the operator doing the set-up. Using operator names as keys
 	 */
-	Map<Operator,Integer> setupTimes = null;
+	Map<String,Integer> setupTimes = null;
 
 	public DmaDefinition(VLNV vlnv) {
 		super(vlnv, "dma");
-		setupTimes = new HashMap<Operator,Integer>();
+		setupTimes = new HashMap<String,Integer>();
 	}
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.dma;
 	}
 
-	public DmaDefinition clone() {
-
+	/*public DmaDefinition clone() {
 		// A new OperatorDefinition is created with same id
 		DmaDefinition newdef = new DmaDefinition(this.getVlnv());
-
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
 	
+	public void addSetupTime(String opName, int time){
+		setupTimes.put(opName, time);
+	}
+	
+	public long getSetupTime(String opName){
+		return setupTimes.get(opName);
+	}
+	
 	public void addSetupTime(Operator o, int time){
-		setupTimes.put(o, time);
+		addSetupTime(o.getName(), time);
 	}
 	
 	public long getSetupTime(Operator o){
-		return setupTimes.get(o);
+		return getSetupTime(o.getName());
+	}
+
+	public Map<String, Integer> getSetupTimes() {
+		return setupTimes;
 	}
 }

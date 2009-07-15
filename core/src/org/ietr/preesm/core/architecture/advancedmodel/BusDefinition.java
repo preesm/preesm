@@ -57,10 +57,11 @@ public class BusDefinition extends ArchitectureComponentDefinition {
 		dataRate = 0;
 	}
 
-	public BusDefinition clone() {
+	/*public BusDefinition clone() {
 		BusDefinition newdef = new BusDefinition(this.getVlnv());
+		newdef.setDataRate(getDataRate());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

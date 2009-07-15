@@ -53,12 +53,12 @@ public class IpCoprocessorDefinition extends ArchitectureComponentDefinition
 		super(vlnv, "ipCoprocessor");
 	}
 
-	public IpCoprocessorDefinition clone() {
+	/*public IpCoprocessorDefinition clone() {
 		// A new IpCoprocessorDefinition is created with same id
 		IpCoprocessorDefinition newdef = new IpCoprocessorDefinition(this
 				.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

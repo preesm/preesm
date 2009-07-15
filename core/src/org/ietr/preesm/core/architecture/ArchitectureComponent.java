@@ -68,7 +68,8 @@ import org.sdf4j.model.AbstractVertex;
  * 
  * @author mpelcat
  */
-public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArchitecture> {
+public abstract class ArchitectureComponent extends
+		AbstractVertex<MultiCoreArchitecture> {
 
 	public static class ArchitectureComponentComparator implements
 			Comparator<ArchitectureComponent> {
@@ -91,9 +92,10 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 	 * (example: C64x+) as well as specific parameters
 	 */
 	private ArchitectureComponentDefinition definition;
-	
+
 	/**
-	 * Saving refinement name if present in IP-XACT in order to be able to export it
+	 * Saving refinement name if present in IP-XACT in order to be able to
+	 * export it
 	 */
 	private String refinementName = "";
 
@@ -195,26 +197,28 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 	@Override
 	public void ConnectionAdded(AbstractEdge e) {
 		// Nothing to do for the moment
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void ConnectionRemoved(AbstractEdge e) {
 		// Nothing to do for the moment
-		
+
 	}
-	
+
 	public void setDefinition(ArchitectureComponentDefinition definition) {
 		this.definition = definition;
 	}
 
-	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi){
+	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi) {
 		this.setBaseAddress(cmp.getBaseAddress());
-		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition().getType(), cmp.getDefinition().getVlnv()));
-		
-		for(ArchitectureInterface itf : availableInterfaces){
-			ArchitectureInterface newItf = new ArchitectureInterface(newArchi.getBusReference(itf.getBusReference().getId()),this);
+		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition()
+				.getType(), cmp.getDefinition().getVlnv()));
+
+		for (ArchitectureInterface itf : availableInterfaces) {
+			ArchitectureInterface newItf = new ArchitectureInterface(newArchi
+					.getBusReference(itf.getBusReference().getId()), this);
 			this.getAvailableInterfaces().add(newItf);
 		}
 	}
@@ -229,73 +233,54 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 		this.refinementName = refinementName;
 	}
 
-	public final ArchitectureComponent clone(MultiCoreArchitecture archi) {
-
-		// Definition is cloned
-		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
-				.getType(), this.getDefinition().getVlnv(), this.getName());
-		newCmp.setBaseAddress(getBaseAddress());
-		newCmp.setRefinementName(getRefinementName());
-		newCmp.getDefinition().fill(this.getDefinition());
-
-		// We iterate on interfaces
-		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
-				.iterator();
-
-		while (interIt.hasNext()) {
-			// Each interface is cloned and added to the new medium.
-			// The interface medium definition is set to the current definition
-			ArchitectureInterface itf = interIt.next();
-			newCmp.availableInterfaces
-					.add(itf.clone(archi.createBusReference(itf
-							.getBusReference().getId()), newCmp));
-		}
-
-		return newCmp;
-	}
-	
-
 	public final ArchitectureComponent clone() {
 
 		// Definition is cloned
 		ArchitectureComponent newCmp = null;
-		
-		if(this.getType().equals(ArchitectureComponentType.bus)){
-			newCmp = new Bus(getName(),null);
-		} else if(this.getType().equals(ArchitectureComponentType.communicationNode)){
-			newCmp = new CommunicationNode(getName(),null);
-		} else if(this.getType().equals(ArchitectureComponentType.communicator)){
+
+		if (this.getType().equals(ArchitectureComponentType.bus)) {
+			newCmp = new Bus(getName(), null);
+		} else if (this.getType().equals(
+				ArchitectureComponentType.communicationNode)) {
+			newCmp = new CommunicationNode(getName(), null);
+		} else if (this.getType()
+				.equals(ArchitectureComponentType.communicator)) {
 			Communicator com = new Communicator(getName(), null);
-			com.getSetupTimes().putAll(((Communicator)this).getSetupTimes());
+			com.getSetupTimes().putAll(((Communicator) this).getSetupTimes());
 			newCmp = com;
-		} else if(this.getType().equals(ArchitectureComponentType.contentionNode)){
-			newCmp = new ContentionNode(getName(),null);
-		} else if(this.getType().equals(ArchitectureComponentType.dma)){
-			newCmp = new Dma(getName(),null);
-		} else if(this.getType().equals(ArchitectureComponentType.fifo)){
+		} else if (this.getType().equals(
+				ArchitectureComponentType.contentionNode)) {
+			newCmp = new ContentionNode(getName(), null);
+		} else if (this.getType().equals(ArchitectureComponentType.dma)) {
+			newCmp = new Dma(getName(), null);
+		} else if (this.getType().equals(ArchitectureComponentType.fifo)) {
 			newCmp = new Fifo(getName(), null);
-		} else if(this.getType().equals(ArchitectureComponentType.ipCoprocessor)){
+		} else if (this.getType().equals(
+				ArchitectureComponentType.ipCoprocessor)) {
 			newCmp = new IpCoprocessor(getName(), null);
-		} else if(this.getType().equals(ArchitectureComponentType.medium)){
-			newCmp = new Medium(getName(),(MediumDefinition)getDefinition());
-		} else if(this.getType().equals(ArchitectureComponentType.memory)){
+		} else if (this.getType().equals(ArchitectureComponentType.medium)) {
+			newCmp = new Medium(getName(), (MediumDefinition) getDefinition());
+		} else if (this.getType().equals(ArchitectureComponentType.memory)) {
 			newCmp = new Memory(getName(), null);
-		} else if(this.getType().equals(ArchitectureComponentType.operator)){
-			newCmp = new Operator(getName(),(OperatorDefinition)getDefinition());
-		} else if(this.getType().equals(ArchitectureComponentType.parallelNode)){
-			newCmp = new ParallelNode(getName(),null);
-		} else if(this.getType().equals(ArchitectureComponentType.processor)){
+		} else if (this.getType().equals(ArchitectureComponentType.operator)) {
+			newCmp = new Operator(getName(),
+					(OperatorDefinition) getDefinition());
+		} else if (this.getType()
+				.equals(ArchitectureComponentType.parallelNode)) {
+			newCmp = new ParallelNode(getName(), null);
+		} else if (this.getType().equals(ArchitectureComponentType.processor)) {
 			newCmp = new Processor(getName(), null);
-		} else if(this.getType().equals(ArchitectureComponentType.ram)){
-			newCmp = new Ram(getName(),null);
-		}else{
-			PreesmLogger.getLogger().log(Level.SEVERE,"Cloning unknown type archi component.");
+		} else if (this.getType().equals(ArchitectureComponentType.ram)) {
+			newCmp = new Ram(getName(), null);
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Cloning unknown type archi component.");
 		}
-		
+
 		newCmp.setBaseAddress(getBaseAddress());
 		newCmp.setRefinementName(getRefinementName());
 
 		return newCmp;
 	}
-	
+
 }

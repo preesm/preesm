@@ -48,6 +48,14 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  */
 public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 
+	/**
+	 * Transfer speed in AU (Allocation Unit)/TU(Time Unit) The usual
+	 * utilization is with Bytes/cycle
+	 * 
+	 * The speed can depend on parameters like data size
+	 */
+	private float dataRate = 0f;
+
 	public ParallelNodeDefinition(VLNV vlnv) {
 		super(vlnv, "parallelNode");
 	}
@@ -56,14 +64,29 @@ public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 		return ArchitectureComponentType.parallelNode;
 	}
 
-	public ParallelNodeDefinition clone() {
+	/*public ParallelNodeDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
 		ParallelNodeDefinition newdef = new ParallelNodeDefinition(this.getVlnv());
 
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
+	}
+	
+	public float getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(float dataRate) {
+		this.dataRate = dataRate;
+	}
+	
+	public long getTransferTime(long transferSize){
+		Long datasize = transferSize;
+		Double time = datasize.doubleValue() / getDataRate();
+		time = Math.ceil(time);
+		return time.longValue();
 	}
 }

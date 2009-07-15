@@ -154,9 +154,20 @@ public class MultiCoreArchitecture extends
 		} else {
 			ArchitectureComponentDefinition def = ArchitectureComponentDefinitionFactory
 					.createElement(type, vlnv);
-			architectureComponentDefinitions.put(def.getVlnv(), def);
+			addComponentDefinition(def);
 			return def;
 		}
+	}
+
+	/**
+	 * Adds the definition of a component and returns it to let the user add
+	 * specific properties
+	 */
+	public ArchitectureComponentDefinition addComponentDefinition(
+			ArchitectureComponentDefinition def) {
+
+		architectureComponentDefinitions.put(def.getVlnv(), def);
+		return def;
 	}
 
 	/**
@@ -205,7 +216,7 @@ public class MultiCoreArchitecture extends
 
 		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
 				.values()) {
-			newArchi.addComponentDefinition(def.getType(), def.getVlnv());
+			newArchi.addComponentDefinition(def.clone());
 		}
 
 		for (ArchitectureComponent vertex : vertexSet()) {
@@ -225,6 +236,7 @@ public class MultiCoreArchitecture extends
 			newEdge.setIf2(newTarget.getInterface(edge.getIf2()
 					.getBusReference()));
 			newEdge.setDirected(edge.isDirected());
+			newEdge.setSetup(edge.isSetup());
 		}
 
 		return newArchi;

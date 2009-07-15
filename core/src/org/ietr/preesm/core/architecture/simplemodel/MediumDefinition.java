@@ -88,10 +88,10 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 		return ArchitectureComponentType.medium;
 	}
 
-	@Override
+	/*@Override
 	public MediumDefinition clone() {
 		return new MediumDefinition(this.getVlnv(),this.getDataRate(), this.getOverheadTime());
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin){
 		this.dataRate = ((MediumDefinition)origin).getDataRate();

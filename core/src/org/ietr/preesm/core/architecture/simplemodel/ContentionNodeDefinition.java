@@ -64,13 +64,13 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 		return ArchitectureComponentType.contentionNode;
 	}
 
-	public ContentionNodeDefinition clone() {
+	/*public ContentionNodeDefinition clone() {
 
 		// A new OperatorDefinition is created with same id
 		ContentionNodeDefinition newdef = new ContentionNodeDefinition(this.getVlnv());
 		newdef.setDataRate(this.getDataRate());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin){
 		this.dataRate = ((ContentionNodeDefinition)origin).getDataRate();

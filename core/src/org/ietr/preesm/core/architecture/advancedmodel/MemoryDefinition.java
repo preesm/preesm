@@ -50,10 +50,10 @@ public class MemoryDefinition extends ArchitectureComponentDefinition {
 		super(vlnv, "memory");
 	}
 
-	public MemoryDefinition clone() {
+	/*public MemoryDefinition clone() {
 		MemoryDefinition newdef = new MemoryDefinition(this.getVlnv());
 		return newdef;
-	}
+	}*/
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}

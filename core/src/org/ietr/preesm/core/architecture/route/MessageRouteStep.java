@@ -43,6 +43,8 @@ import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 
 /**
  * Represents a single step in a route between two operators separated by
@@ -110,15 +112,21 @@ public class MessageRouteStep extends AbstractRouteStep {
 	}
 
 	/**
-	 * Returns the longest time a contention node needs to transfer the data
+	 * Returns the longest time a node needs to transfer the data
 	 */
 	@Override
-	public long getWorstTransferTime(long transfersSize) {
+	public final long getWorstTransferTime(long transfersSize) {
 		long time = 0;
 		
-		for(ContentionNode node: getContentionNodes()){
+		for(AbstractNode node: nodes){
+			if(node instanceof ContentionNode){
 			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
 			time = Math.max(time,def.getTransferTime(transfersSize));
+			}
+			else if (node instanceof ParallelNode){
+				ParallelNodeDefinition def = (ParallelNodeDefinition)node.getDefinition();
+				time = Math.max(time,def.getTransferTime(transfersSize));
+			}
 		}
 		return time;
 	}

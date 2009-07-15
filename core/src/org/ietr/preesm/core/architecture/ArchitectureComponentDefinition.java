@@ -36,7 +36,24 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import java.util.logging.Level;
+
+import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
+import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.parser.VLNV;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * The architecture component definition gives component specifications
@@ -54,16 +71,6 @@ public abstract class ArchitectureComponentDefinition {
 	 * ID of the architecture component definition (examples: TCP, C64x+...)
 	 */
 	private VLNV vlnv;
-
-	/**
-	 * Constructor with clone
-	 */
-	public ArchitectureComponentDefinition(
-			ArchitectureComponentDefinition origin) {
-		this.vlnv = origin.vlnv;
-
-		this.category = origin.category;
-	}
 
 	/**
 	 * Constructor
@@ -104,11 +111,64 @@ public abstract class ArchitectureComponentDefinition {
 	}
 
 	public abstract ArchitectureComponentType getType();
-	
-	public abstract ArchitectureComponentDefinition clone();
 
 	/**
-	 * Duplicates in the common definition the parameters from the input definition
+	 * Cloning a definition and its properties
+	 */
+	public final ArchitectureComponentDefinition clone() {
+
+		ArchitectureComponentDefinition newdef = null;
+
+		if (getType().equals(ArchitectureComponentType.bus)) {
+			newdef = new BusDefinition(this.getVlnv());
+			((BusDefinition)newdef).setDataRate(((BusDefinition)this).getDataRate());
+		} else if (getType()
+				.equals(ArchitectureComponentType.communicationNode)) {
+			newdef = new CommunicationNodeDefinition(
+					this.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.communicator)) {
+			newdef = new CommunicatorDefinition(this.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.contentionNode)) {
+			newdef = new ContentionNodeDefinition(this.getVlnv());
+			((ContentionNodeDefinition)newdef).setDataRate(((ContentionNodeDefinition)this).getDataRate());
+		} else if (getType().equals(ArchitectureComponentType.dma)) {
+			DmaDefinition dmaDef = (DmaDefinition)this;
+			newdef = new DmaDefinition(this.getVlnv());
+			for(String opName : dmaDef.getSetupTimes().keySet()){
+				((DmaDefinition)newdef).addSetupTime(opName, (int)dmaDef.getSetupTime(opName));
+			}
+			//newDef
+		} else if (getType().equals(ArchitectureComponentType.fifo)) {
+			newdef = new FifoDefinition(this.getVlnv());
+			((FifoDefinition)newdef).setDataRate(((FifoDefinition)this).getDataRate());
+		} else if (getType().equals(ArchitectureComponentType.ipCoprocessor)) {
+			newdef = new IpCoprocessorDefinition(this
+					.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.medium)) {
+			MediumDefinition def = (MediumDefinition)this;
+			newdef = new MediumDefinition(this.getVlnv(),def.getDataRate(), def.getOverheadTime());
+		} else if (getType().equals(ArchitectureComponentType.memory)) {
+			newdef = new MemoryDefinition(this.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.operator)) {
+			newdef = new OperatorDefinition(this.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
+			newdef = new ParallelNodeDefinition(this.getVlnv());
+			((ParallelNodeDefinition)newdef).setDataRate(((ParallelNodeDefinition)this).getDataRate());
+		} else if (getType().equals(ArchitectureComponentType.processor)) {
+			newdef = new ProcessorDefinition(this.getVlnv());
+		} else if (getType().equals(ArchitectureComponentType.ram)) {
+			newdef = new RamDefinition(this.getVlnv());
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Cloning unknown type archi component definition.");
+		}
+
+		return newdef;
+	}
+
+	/**
+	 * Duplicates in the common definition the parameters from the input
+	 * definition
 	 */
 	public abstract void fill(ArchitectureComponentDefinition origin);
 }
