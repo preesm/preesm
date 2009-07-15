@@ -149,24 +149,21 @@ public class DesignParser {
 					String type = elt.getTagName();
 					if (type.equals("spirit:name")) {
 						archi.setName(elt.getTextContent());
-					} else if (type.equals("spirit:id")) {
-						archi.setId(elt.getTextContent());
-					} else if (type.equals("spirit:componentInstances")) {
-
+					} else {
 						if (archi == null) {
 							PreesmLogger.getLogger().log(Level.SEVERE,
 									"enter a name in the architecture");
 						}
-
-						parseComponentInstances(elt);
-					} else if (type.equals("spirit:interconnections")) {
-
-						if (archi == null) {
-							PreesmLogger.getLogger().log(Level.SEVERE,
-									"enter a name in the architecture");
+						
+						if (type.equals("spirit:id")) {
+							archi.setId(elt.getTextContent());
+						} else if (type.equals("spirit:componentInstances")) {
+							parseComponentInstances(elt);
+						} else if (type.equals("spirit:interconnections")) {
+							parseInterconnections(elt);
+						} else if (type.equals("spirit:hierConnections")) {
+							parseHierConnections(elt);
 						}
-
-						parseInterconnections(elt);
 					}
 				}
 
@@ -175,6 +172,59 @@ public class DesignParser {
 		}
 
 		return archi;
+	}
+
+	/**
+	 * Parses all hierarchical connections
+	 */
+	private void parseHierConnections(Element callElt) {
+
+		Node node = callElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("spirit:hierConnection")) {
+					parseHierConnection(elt);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+	}
+
+	/**
+	 * Parses one hierarchical interconnection
+	 */
+	private void parseHierConnection(Element callElt) {
+
+		String intRef = callElt.getAttribute("spirit:interfaceRef");
+		String busRef = null;
+		String componentRef = null;
+		
+		
+		Node node = callElt.getFirstChild();
+
+		while (node != null) {
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("spirit:activeInterface")) {
+					busRef = elt.getAttribute("spirit:busRef");
+					componentRef = elt
+							.getAttribute("spirit:componentRef");
+					break;
+				}
+			}
+			node = node.getNextSibling();
+		}
+		
+		if(intRef != null && busRef != null && componentRef != null ){
+			// TODO: add hierarchyport in multiarchi and an interconnection to it.
+		}
+
 	}
 
 	/**
