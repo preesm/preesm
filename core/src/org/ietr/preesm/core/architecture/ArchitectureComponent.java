@@ -41,7 +41,24 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.architecture.advancedmodel.Bus;
+import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
+import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
+import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
+import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
+import org.ietr.preesm.core.architecture.advancedmodel.Memory;
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.Medium;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 
@@ -166,31 +183,6 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 
 	public abstract ArchitectureComponentType getType();
 
-	public final ArchitectureComponent clone(MultiCoreArchitecture archi) {
-
-		// Definition is cloned
-		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
-				.getType(), this.getDefinition().getVlnv(), this.getName());
-		newCmp.setBaseAddress(getBaseAddress());
-		newCmp.setRefinementName(getRefinementName());
-		newCmp.getDefinition().fill(this.getDefinition());
-
-		// We iterate on interfaces
-		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
-				.iterator();
-
-		while (interIt.hasNext()) {
-			// Each interface is cloned and added to the new medium.
-			// The interface medium definition is set to the current definition
-			ArchitectureInterface itf = interIt.next();
-			newCmp.availableInterfaces
-					.add(itf.clone(archi.createBusReference(itf
-							.getBusReference().getId()), newCmp));
-		}
-
-		return newCmp;
-	}
-
 	public String getBaseAddress() {
 		return baseAddress;
 	}
@@ -236,6 +228,74 @@ public abstract class ArchitectureComponent extends AbstractVertex<MultiCoreArch
 	public void setRefinementName(String refinementName) {
 		this.refinementName = refinementName;
 	}
+
+	public final ArchitectureComponent clone(MultiCoreArchitecture archi) {
+
+		// Definition is cloned
+		ArchitectureComponent newCmp = archi.addComponent(this.getDefinition()
+				.getType(), this.getDefinition().getVlnv(), this.getName());
+		newCmp.setBaseAddress(getBaseAddress());
+		newCmp.setRefinementName(getRefinementName());
+		newCmp.getDefinition().fill(this.getDefinition());
+
+		// We iterate on interfaces
+		Iterator<ArchitectureInterface> interIt = this.availableInterfaces
+				.iterator();
+
+		while (interIt.hasNext()) {
+			// Each interface is cloned and added to the new medium.
+			// The interface medium definition is set to the current definition
+			ArchitectureInterface itf = interIt.next();
+			newCmp.availableInterfaces
+					.add(itf.clone(archi.createBusReference(itf
+							.getBusReference().getId()), newCmp));
+		}
+
+		return newCmp;
+	}
 	
+
+	public final ArchitectureComponent clone() {
+
+		// Definition is cloned
+		ArchitectureComponent newCmp = null;
+		
+		if(this.getType().equals(ArchitectureComponentType.bus)){
+			newCmp = new Bus(getName(),null);
+		} else if(this.getType().equals(ArchitectureComponentType.communicationNode)){
+			newCmp = new CommunicationNode(getName(),null);
+		} else if(this.getType().equals(ArchitectureComponentType.communicator)){
+			Communicator com = new Communicator(getName(), null);
+			com.getSetupTimes().putAll(((Communicator)this).getSetupTimes());
+			newCmp = com;
+		} else if(this.getType().equals(ArchitectureComponentType.contentionNode)){
+			newCmp = new ContentionNode(getName(),null);
+		} else if(this.getType().equals(ArchitectureComponentType.dma)){
+			newCmp = new Dma(getName(),null);
+		} else if(this.getType().equals(ArchitectureComponentType.fifo)){
+			newCmp = new Fifo(getName(), null);
+		} else if(this.getType().equals(ArchitectureComponentType.ipCoprocessor)){
+			newCmp = new IpCoprocessor(getName(), null);
+		} else if(this.getType().equals(ArchitectureComponentType.medium)){
+			newCmp = new Medium(getName(),(MediumDefinition)getDefinition());
+		} else if(this.getType().equals(ArchitectureComponentType.memory)){
+			newCmp = new Memory(getName(), null);
+		} else if(this.getType().equals(ArchitectureComponentType.operator)){
+			newCmp = new Operator(getName(),(OperatorDefinition)getDefinition());
+		} else if(this.getType().equals(ArchitectureComponentType.parallelNode)){
+			newCmp = new ParallelNode(getName(),null);
+		} else if(this.getType().equals(ArchitectureComponentType.processor)){
+			newCmp = new Processor(getName(), null);
+		} else if(this.getType().equals(ArchitectureComponentType.ram)){
+			newCmp = new Ram(getName(),null);
+		}else{
+			PreesmLogger.getLogger().log(Level.SEVERE,"Cloning unknown type archi component.");
+		}
+		
+		newCmp.setBaseAddress(getBaseAddress());
+		newCmp.setRefinementName(getRefinementName());
+
+		return newCmp;
+	}
 	
 }

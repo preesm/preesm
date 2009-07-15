@@ -56,9 +56,9 @@ public class Medium extends AbstractNode {
 		return ArchitectureComponentType.medium;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new Medium(getName(),(MediumDefinition)getDefinition());
-	}
+	}*/
 
 }

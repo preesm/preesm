@@ -59,10 +59,10 @@ public class CommunicationNode extends ArchitectureComponent {
 		return ArchitectureComponentType.communicationNode;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new CommunicationNode(getName(),null);
-	}
+	}*/
 	
 	public boolean isNode(){
 		return true;

@@ -69,10 +69,10 @@ public class Bus extends ArchitectureComponent implements ILink {
 		((BusDefinition) this.getDefinition()).setDataRate(dataRate);
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new Bus(getName(),null);
-	}
+	}*/
 	
 	public boolean isNode(){
 		return false;

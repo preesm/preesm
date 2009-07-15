@@ -64,10 +64,10 @@ public class Ram extends ArchitectureComponent {
 		return ArchitectureComponentType.ram;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new Ram(getName(),null);
-	}
+	}*/
 	
 	public boolean isNode(){
 		return false;

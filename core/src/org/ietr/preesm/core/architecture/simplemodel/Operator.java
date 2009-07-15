@@ -57,11 +57,11 @@ public class Operator extends ArchitectureComponent implements IOperator {
 	public ArchitectureComponentType getType(){
 		return ArchitectureComponentType.operator;
 	}
-
+/*
 	@Override
 	public ArchitectureComponent clone() {
 		return new Operator(getName(),(OperatorDefinition)getDefinition());
-	}
+	}*/
 	
 	public boolean isNode(){
 		return false;

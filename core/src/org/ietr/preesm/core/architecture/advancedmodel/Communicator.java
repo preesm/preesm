@@ -103,12 +103,12 @@ public class Communicator extends ArchitectureComponent implements
 		return ArchitectureComponentType.communicator;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		Communicator com = new Communicator(getName(), null);
 		com.getSetupTimes().putAll(setupTimes);
 		return com;
-	}
+	}*/
 
 	public boolean isNode() {
 		return true;

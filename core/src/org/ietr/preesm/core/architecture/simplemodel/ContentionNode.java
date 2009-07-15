@@ -55,8 +55,8 @@ public class ContentionNode extends AbstractNode {
 		return ArchitectureComponentType.contentionNode;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new ContentionNode(getName(),null);
-	}
+	}*/
 }

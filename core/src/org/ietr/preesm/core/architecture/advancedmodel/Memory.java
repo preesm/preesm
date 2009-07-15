@@ -77,10 +77,10 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 		return ArchitectureComponentType.memory;
 	}
 
-	@Override
+	/*@Override
 	public ArchitectureComponent clone() {
 		return new Memory(getName(), null);
-	}
+	}*/
 
 	public boolean isNode() {
 		return true;
