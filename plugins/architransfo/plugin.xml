@@ -4,9 +4,9 @@
    <extension
          point="org.ietr.preesm.core.tasks">
       <task
-            id="org.ietr.preesm.plugin.architransfos.transforms.HierarchyFlattening"
+            id="org.ietr.preesm.plugin.architransfo.transforms.HierarchyFlattening"
             name="Architecture Hierarchy Flattening"
-            type="org.ietr.preesm.plugin.architransfos.transforms.HierarchyFlattening">
+            type="org.ietr.preesm.plugin.architransfo.transforms.HierarchyFlattening">
       </task>
    </extension>
 

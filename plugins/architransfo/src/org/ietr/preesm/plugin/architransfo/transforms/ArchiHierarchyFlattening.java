@@ -1,4 +1,4 @@
-package org.ietr.preesm.plugin.architransfos.transforms;
+package org.ietr.preesm.plugin.architransfo.transforms;
 
 import java.util.HashMap;
 import java.util.Vector;

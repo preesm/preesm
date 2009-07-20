@@ -56,32 +56,32 @@ terms.
          id="org.ietr.preesm.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.0.9"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.codegen"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.0.9"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.mapper"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.0.9"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.transforms"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.0.9"
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.plugin.architransform"
+         id="org.ietr.preesm.plugin.architransfo"
          download-size="0"
          install-size="0"
          version="0.0.0"
