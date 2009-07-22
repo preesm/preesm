@@ -77,7 +77,7 @@ public class GanttEditorInput implements IEditorInput {
 	}
 	@Override
 	public String getName() {
-		return PreesmLogger.getFormattedTime() + name;
+		return name + " " + PreesmLogger.getFormattedTime();
 	}
 	@Override
 	public IPersistableElement getPersistable() {
@@ -85,7 +85,7 @@ public class GanttEditorInput implements IEditorInput {
 	}
 	@Override
 	public String getToolTipText() {
-		return "Gantt";
+		return name;
 	}
 	@SuppressWarnings("unchecked")
 	@Override

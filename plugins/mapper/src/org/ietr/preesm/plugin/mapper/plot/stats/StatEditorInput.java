@@ -94,7 +94,7 @@ public class StatEditorInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return PreesmLogger.getFormattedTime() + " Stats";
+		return "Stats " + PreesmLogger.getFormattedTime();
 	}
 
 	@Override
