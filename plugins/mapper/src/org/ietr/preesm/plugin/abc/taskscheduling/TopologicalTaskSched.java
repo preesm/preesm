@@ -48,7 +48,7 @@ import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Scheduling the tasks in topological order
+ * Scheduling the tasks in topological order and alphabetical order
  * 
  * @author mpelcat
  */

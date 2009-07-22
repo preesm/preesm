@@ -178,11 +178,12 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public Set<MapperDAGVertex> getVertices(SDFAbstractVertex sdfvertex) {
 
 		Set<MapperDAGVertex> currentset = new HashSet<MapperDAGVertex>();
-		Iterator<DAGVertex> iter = vertexSet().iterator();
 		MapperDAGVertex currentvertex = null;
-		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex)iter.next();
-			if (currentvertex.getCorrespondingSDFVertex().getId().equals(sdfvertex.getId())) {
+		for (DAGVertex currentv : vertexSet()) {
+			currentvertex = (MapperDAGVertex)currentv;
+			
+			// Special vertices have null info
+			if (currentvertex.getCorrespondingSDFVertex().getInfo() != null && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
 				currentset.add(currentvertex);
 			}
 		}

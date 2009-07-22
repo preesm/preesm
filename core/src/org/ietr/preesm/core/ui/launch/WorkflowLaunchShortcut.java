@@ -89,7 +89,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 			workingCopy = type.newInstance(null, DebugPlugin.getDefault()
 					.getLaunchManager()
 					.generateUniqueLaunchConfigurationNameFrom(
-							file.getName() + ":" + scenarioName));
+							file.getName() + "__" + scenarioName));
 		} catch (CoreException e) {
 			return null;
 		}

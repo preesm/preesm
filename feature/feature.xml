@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.ietr.preesm.feature"
-      label="Preesm Feature"
-      version="0.1.0"
+      label="PREESM Rapid Prototyping Tool"
+      version="0.2.0"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">

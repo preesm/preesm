@@ -137,6 +137,7 @@ public class FastAlgorithm extends Observable {
 		// Variables
 		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
 				dag, archi, scenario);
+		
 		// A topological task scheduler is chosen for the list scheduling.
 		// It schedules the tasks in topological order and, if they are on
 		// the same level, in alphabetical name order
@@ -177,7 +178,7 @@ public class FastAlgorithm extends Observable {
 		bestTotalOrder = simulator.getTotalOrder().toList();
 		if (displaySolutions) {
 			GanttEditor.createEditor(simulator, getBestTotalOrder(),
-					"List Solution: " + initial);
+					"" + initial + " List");
 		}
 
 		logger.log(Level.FINE, "InitialSP " + initial);
@@ -285,7 +286,7 @@ public class FastAlgorithm extends Observable {
 				bestTotalOrder = simulator.getTotalOrder().toList();
 				if (displaySolutions) {
 					GanttEditor.createEditor(simulator, getBestTotalOrder(),
-							"FAST solution: " + bestSL);
+							"" + bestSL + " FAST");
 				}
 
 				dagfinal.setScheduleLatency(bestSL);
