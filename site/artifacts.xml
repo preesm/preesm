@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/D:/Projets/Preesm/trunk/site/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+<repository name='file:/D:/Projets/Preesm/trunk/site/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1248074340000'/>
+    <property name='p2.timestamp' value='1248083996875'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='7'>
+  <artifacts size='14'>
     <artifact classifier='osgi.bundle' id='org.ietr.preesm.core' version='0.0.9'>
       <properties size='3'>
         <property name='artifact.size' value='11594614'/>
@@ -24,10 +24,64 @@
         <property name='download.size' value='1738'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.core' version='0.1.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='11594612'/>
+        <property name='download.size' value='11594612'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sf.graphiti.plugin' version='1.1.0.alpha2'>
       <properties size='3'>
         <property name='artifact.size' value='429621'/>
         <property name='download.size' value='429621'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='5225430'/>
+        <property name='download.size' value='5225430'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.1.0'>
+      <properties size='2'>
+        <property name='artifact.size' value='1736'/>
+        <property name='download.size' value='1736'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.ietr.preesm.feature' version='0.1.0'>
+      <properties size='2'>
+        <property name='artifact.size' value='1747'/>
+        <property name='download.size' value='1747'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sf.graphiti.configuration' version='1.1.0.alpha2'>
+      <properties size='3'>
+        <property name='artifact.size' value='2444806'/>
+        <property name='download.size' value='2444806'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.transforms' version='0.1.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='18214'/>
+        <property name='download.size' value='18214'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.architransfo' version='0.1.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='4732'/>
+        <property name='download.size' value='4732'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.1.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='5225429'/>
+        <property name='download.size' value='5225429'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -44,17 +98,10 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.mapper' version='0.0.9'>
+    <artifact classifier='osgi.bundle' id='org.ietr.preesm.plugin.codegen' version='0.1.0'>
       <properties size='3'>
-        <property name='artifact.size' value='5240029'/>
-        <property name='download.size' value='5240029'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='net.sf.graphiti.configuration' version='1.1.0.alpha2'>
-      <properties size='3'>
-        <property name='artifact.size' value='2444806'/>
-        <property name='download.size' value='2444806'/>
+        <property name='artifact.size' value='600224'/>
+        <property name='download.size' value='600224'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>

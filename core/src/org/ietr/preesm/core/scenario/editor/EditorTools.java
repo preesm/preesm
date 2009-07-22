@@ -46,11 +46,15 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.ietr.preesm.core.ui.Activator;
 
 /**
  * Useful SWT methods
@@ -94,6 +98,20 @@ public class EditorTools {
 			}
 
 			return list.toArray();
+		}
+	}
+
+	/**
+	 * Validates the selection based on the multi select and folder setting.
+	 */
+	private static class SingleFileSelectionValidator implements
+			ISelectionStatusValidator {
+
+		public IStatus validate(Object[] selection) {
+			if (selection.length == 1 && selection[0] instanceof IFile) {
+				return new Status(IStatus.OK,Activator.PLUGIN_ID,"");
+			}
+			return new Status(IStatus.ERROR,Activator.PLUGIN_ID,"");
 		}
 	}
 
@@ -156,6 +174,7 @@ public class EditorTools {
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		tree.setMessage(title);
 		tree.setTitle(title);
+		tree.setValidator(new SingleFileSelectionValidator());
 		// opens the dialog
 		if (tree.open() == Window.OK) {
 			IPath fileIPath = null;

@@ -94,60 +94,54 @@ public class PreesmLogger extends Logger {
 
 		Level level = record.getLevel();
 		final int levelVal = level.intValue();
-		if (getLevel() != null) {
-			if (levelVal >= getLevel().intValue()) {
+		if (getLevel() == null || levelVal >= getLevel().intValue()) {
 
-				// Writes a log in standard output
-				if (console == null) {
-					if (levelVal < Level.INFO.intValue()) {
-						String msg = record.getMillis() + " "
-								+ level.toString() + ": " + record.getMessage()
-								+ " (in " + record.getSourceClassName() + "#"
-								+ record.getSourceMethodName() + ")";
+			// Writes a log in standard output
+			if (console == null) {
+				if (levelVal < Level.INFO.intValue()) {
+					String msg = record.getMillis() + " " + level.toString()
+							+ ": " + record.getMessage() + " (in "
+							+ record.getSourceClassName() + "#"
+							+ record.getSourceMethodName() + ")";
+					System.out.println(msg);
+				} else {
+					Date date = new Date(record.getMillis());
+					DateFormat df = DateFormat.getTimeInstance();
+					String msg = df.format(date) + " " + level.toString()
+							+ ": " + record.getMessage();
+
+					if (levelVal < Level.WARNING.intValue()) {
 						System.out.println(msg);
 					} else {
-						Date date = new Date(record.getMillis());
-						DateFormat df = DateFormat.getTimeInstance();
-						String msg = df.format(date) + " " + level.toString()
-								+ ": " + record.getMessage();
-
-						if (levelVal < Level.WARNING.intValue()) {
-							System.out.println(msg);
-						} else {
-							System.err.println(msg);
-						}
-					}
-				} else {
-					// Writes a log in console
-					final MessageConsoleStream stream = console
-							.newMessageStream();
-
-					Activator.getDefault().getWorkbench().getDisplay()
-							.asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									if (levelVal < Level.WARNING.intValue())
-										stream
-												.setColor(new Color(null, 0, 0,
-														0));
-									else if (levelVal == Level.WARNING
-											.intValue())
-										stream.setColor(new Color(null, 255, 150,
-												0));
-									else if (levelVal > Level.WARNING
-											.intValue())
-										stream.setColor(new Color(null, 255,
-												0, 0));
-								}
-							});
-
-					stream.println(getFormattedTime() + record.getMessage());
-
-					if (getLevel().intValue() >= Level.SEVERE.intValue()) {
-						// throw (new PreesmException(record.getMessage()));
+						System.err.println(msg);
 					}
 				}
+			} else {
+				// Writes a log in console
+				final MessageConsoleStream stream = console.newMessageStream();
+
+				Activator.getDefault().getWorkbench().getDisplay().asyncExec(
+						new Runnable() {
+							@Override
+							public void run() {
+								if (levelVal < Level.WARNING.intValue())
+									stream.setColor(new Color(null, 0, 0, 0));
+								else if (levelVal == Level.WARNING.intValue())
+									stream
+											.setColor(new Color(null, 255, 150,
+													0));
+								else if (levelVal > Level.WARNING.intValue())
+									stream.setColor(new Color(null, 255, 0, 0));
+							}
+						});
+
+				stream.println(getFormattedTime() + record.getMessage());
+
+				if (getLevel().intValue() >= Level.SEVERE.intValue()) {
+					// throw (new PreesmException(record.getMessage()));
+				}
 			}
+
 		}
 
 	}

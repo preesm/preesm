@@ -51,24 +51,24 @@ public class HierarchyPort extends
 	/**
 	 * A HierarchyPort has only one connection to a given component
 	 */
-	private Interconnection hierarchyConnection = null;
+	//private Interconnection hierarchyConnection = null;
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void ConnectionAdded(AbstractEdge e) {
 		if(e instanceof Interconnection){
-			hierarchyConnection = (Interconnection)e;
+			//hierarchyConnection = (Interconnection)e;
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void ConnectionRemoved(AbstractEdge e) {
-		hierarchyConnection = null;
+		//hierarchyConnection = null;
 	}
 
 	@Override
-	//@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public AbstractVertex clone() {
 		HierarchyPort newHC = new HierarchyPort();
 		newHC.setName(this.getName());

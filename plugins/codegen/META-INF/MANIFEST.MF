@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm code generation plug-in
 Bundle-SymbolicName: org.ietr.preesm.plugin.codegen;singleton:=true
-Bundle-Version: 0.0.9
+Bundle-Version: 0.1.0
 Bundle-Activator: org.ietr.preesm.plugin.codegen.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -13,3 +13,4 @@ Bundle-ClassPath: lib/idl.jar,
  lib/logkit-1.2.jar,
  .
 Bundle-Vendor: IETR/INSA of Rennes
+Bundle-ActivationPolicy: lazy

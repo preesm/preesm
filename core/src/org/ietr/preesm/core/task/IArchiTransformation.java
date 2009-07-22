@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Describe the interface to the transformation of an architecture

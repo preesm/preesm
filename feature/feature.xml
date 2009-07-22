@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.0.9"
+      version="0.1.0"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">
@@ -56,28 +56,28 @@ terms.
          id="org.ietr.preesm.core"
          download-size="0"
          install-size="0"
-         version="0.0.9"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.codegen"
          download-size="0"
          install-size="0"
-         version="0.0.9"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.mapper"
          download-size="0"
          install-size="0"
-         version="0.0.9"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.ietr.preesm.plugin.transforms"
          download-size="0"
          install-size="0"
-         version="0.0.9"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin

@@ -38,6 +38,7 @@ package org.ietr.preesm.core.ui.launch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -60,6 +61,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.scenario.editor.EditorTools;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 
@@ -73,25 +75,30 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = manager
 				.getLaunchConfigurationType(WorkflowLaunchConfigurationDelegate.WORKFLOW_LAUNCH_CONFIGURATION_TYPE_ID);
-
+		
+		// We ask for the scenario to use with the selected workflow
+		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getShell(), Messages
+				.getString("Shortcut.browseScenarioTitle"), "scenario");
+		
+		String split[] = scenarioPath.split("/");
+		String scenarioName = split[split.length-1];
+			
 		ILaunchConfigurationWorkingCopy workingCopy;
 		try {
 			workingCopy = type.newInstance(null, DebugPlugin.getDefault()
 					.getLaunchManager()
 					.generateUniqueLaunchConfigurationNameFrom(
-							file.getFullPath().toString()));
+							file.getName() + ":" + scenarioName));
 		} catch (CoreException e) {
 			return null;
 		}
+		
+		//workingCopy.
 
 		workingCopy.setAttribute(
 				WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME,
 				file.getFullPath().toString());
-
-		// We ask for the scenario to use with the selected workflow
-		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getShell(), Messages
-				.getString("Shortcut.browseScenarioTitle"), "scenario");
 
 		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,
 				scenarioPath);
@@ -104,9 +111,12 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		tab.setDefaults(workingCopy);
 		tab.dispose();
 
+		//return workingCopy;
+		// Careful!!! Necessary but failing with Galileo Eclipse
 		try {
 			return workingCopy.doSave();
-		} catch (CoreException e) {
+			} catch (CoreException e) {
+			PreesmLogger.getLogger().log(Level.SEVERE,"Problem with launch configuration");
 			return null;
 		}
 	}

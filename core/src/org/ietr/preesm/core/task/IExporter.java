@@ -58,7 +58,6 @@ public interface IExporter extends ITask{
 	 * @param archi The architecture to export
 	 * @param params The parameters rulling the exportation
 	 */
-	@SuppressWarnings("unchecked") 
 	public void transform(MultiCoreArchitecture archi, TextParameters params);
 
 	/**

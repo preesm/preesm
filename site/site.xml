@@ -6,7 +6,7 @@
    <feature url="features/net.sf.graphiti_1.1.0.alpha2.jar" id="net.sf.graphiti" version="1.1.0.alpha2">
       <category name="Graphiti"/>
    </feature>
-   <feature url="features/org.ietr.preesm.feature_0.0.9.jar" id="org.ietr.preesm.feature" version="0.0.9">
+   <feature url="features/org.ietr.preesm.feature_0.1.0.jar" id="org.ietr.preesm.feature" version="0.1.0">
       <category name="PREESM"/>
    </feature>
    <category-def name="PREESM" label="PREESM"/>
