@@ -44,7 +44,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.DataType;
@@ -99,7 +99,7 @@ public class SourceFileCodeGenerator {
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
 			// retrieving the operator where the vertex is allocated
-			Operator vertexOperator = (Operator) vertex.getPropertyBean()
+			IOperator vertexOperator = (IOperator) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 			if (vertex instanceof ICodeGenSDFVertex
 					&& vertexOperator.equals(file.getOperator())) {
@@ -266,7 +266,7 @@ public class SourceFileCodeGenerator {
 			SDFAbstractVertex vertex = iterator.next();
 
 			// retrieving the operator where the vertex is allocated
-			Operator vertexOperator = (Operator) vertex.getPropertyBean()
+			IOperator vertexOperator = (IOperator) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 
 			// retrieving the type of the vertex

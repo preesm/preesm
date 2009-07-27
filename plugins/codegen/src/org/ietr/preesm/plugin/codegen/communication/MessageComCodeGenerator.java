@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -139,7 +139,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// receive operation is mapped
 					SDFAbstractVertex receive = (SDFAbstractVertex) (succList
 							.get(0));
-					Operator target = (Operator) receive
+					IOperator target = (IOperator) receive
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);
@@ -173,7 +173,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// The source is the operator on which the corresponding
 					// send
 					// operation is allocated
-					Operator source = (Operator) send
+					IOperator source = (IOperator) send
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);

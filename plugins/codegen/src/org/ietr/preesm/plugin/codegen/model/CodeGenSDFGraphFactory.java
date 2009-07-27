@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
@@ -156,9 +156,9 @@ public class CodeGenSDFGraphFactory {
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
 			VertexType targetType = (VertexType) target.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
-			Operator operatorSource = (Operator) source.getPropertyBean()
+			IOperator operatorSource = (IOperator) source.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			Operator operatorTarget = (Operator) target.getPropertyBean()
+			IOperator operatorTarget = (IOperator) target.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 			if ((sourceType.equals(VertexType.send) && targetType
 					.equals(VertexType.receive))

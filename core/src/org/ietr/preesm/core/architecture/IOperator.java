@@ -44,5 +44,5 @@ package org.ietr.preesm.core.architecture;
  * 
  */
 public interface IOperator {
-
+	public String getName();
 }

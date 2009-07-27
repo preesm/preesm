@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen;
 
 import java.util.Iterator;
@@ -41,6 +41,7 @@ import java.util.Iterator;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
@@ -83,6 +84,17 @@ public class CodeGenerator {
 			if (architecture.getMainOperator().equals(currentOp)) {
 				list.setMain(sourceFile);
 			}
+		}
+		// Generates and populates one source file per processor
+		iterator = architecture.getComponents(
+				ArchitectureComponentType.processor).iterator();
+		while (iterator.hasNext()) {
+
+			Processor currentProc = (Processor) iterator.next();
+
+			SourceFile sourceFile = new SourceFile(currentProc.getName(),
+					currentProc, list);
+			list.add(sourceFile);
 		}
 	}
 

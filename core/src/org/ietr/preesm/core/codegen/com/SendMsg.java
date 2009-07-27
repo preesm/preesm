@@ -39,7 +39,7 @@ package org.ietr.preesm.core.codegen.com;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -56,10 +56,10 @@ public class SendMsg extends CommunicationFunctionCall {
 	/**
 	 * Target of the currently sent communication
 	 */
-	Operator target;
+	IOperator target;
 
 	public SendMsg(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target) {
+			List<Buffer> bufferSet, AbstractRouteStep routeStep, IOperator target) {
 		super("send", parentContainer, bufferSet, routeStep, vertex, 0);
 
 		this.target = target;
@@ -70,7 +70,7 @@ public class SendMsg extends CommunicationFunctionCall {
 		super.accept(printer, currentLocation);
 	}
 
-	public Operator getTarget() {
+	public IOperator getTarget() {
 		return target;
 	}
 

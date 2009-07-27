@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -62,7 +62,7 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Operator on which this source file will run
 	 */
-	private Operator operator;
+	private IOperator operator;
 
 	/**
 	 * The threads in this file.
@@ -82,7 +82,7 @@ public class SourceFile extends AbstractBufferContainer {
 	 * @param operator
 	 *            The operator it is created on.
 	 */
-	public SourceFile(String name, Operator operator, SourceFileList fileList) {
+	public SourceFile(String name, IOperator operator, SourceFileList fileList) {
 		super(null);
 		this.name = name;
 		this.operator = operator;
@@ -130,7 +130,7 @@ public class SourceFile extends AbstractBufferContainer {
 	 * 
 	 * @return This source file's operator.
 	 */
-	public Operator getOperator() {
+	public IOperator getOperator() {
 		return operator;
 	}
 

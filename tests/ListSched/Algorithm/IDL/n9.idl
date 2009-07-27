@@ -1,0 +1,5 @@
+module n9 {
+	interface loop {
+		 void n9(in char i1, in char i2, in char i3);
+	};
+};
