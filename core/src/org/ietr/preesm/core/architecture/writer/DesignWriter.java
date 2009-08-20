@@ -55,6 +55,7 @@ import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
@@ -284,6 +285,9 @@ public class DesignWriter {
 			MediumDefinition def = (MediumDefinition)((Medium)cmp).getDefinition();
 			addParameter(confsElt,"medium_dataRate",Float.toString(def.getDataRate()));
 			addParameter(confsElt,"medium_overhead",Integer.toString(def.getOverheadTime()));
+		} else if (cmp instanceof Operator) {
+			OperatorDefinition def = (OperatorDefinition)((Operator)cmp).getDefinition();
+			addParameter(confsElt,"dataCopySpeed",Float.toString(def.getDataCopySpeed()));
 		}
 	}
 

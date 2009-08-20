@@ -130,7 +130,8 @@ public class SourceFileCodeGenerator {
 
 	/**
 	 * Route steps are allocated here. A route steps means that a receive and a
-	 * send are called successively. The receive output is allocated.
+	 * send are called successively to tranfer a data via the current core without
+	 * processing it there. The receive output is allocated.
 	 */
 	public void allocateRouteSteps(Set<SDFAbstractVertex> comVertices) {
 
@@ -147,8 +148,7 @@ public class SourceFileCodeGenerator {
 	}
 
 	/**
-	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
-	 * allocates the input buffers, otherwise allocates output buffers.
+	 * Allocates output buffers belonging to vertex.
 	 */
 	public void allocateVertexOutputBuffers(SDFAbstractVertex vertex) {
 		Set<SDFEdge> edgeSet;

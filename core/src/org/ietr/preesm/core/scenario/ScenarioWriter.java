@@ -119,8 +119,6 @@ public class ScenarioWriter {
 		dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
 			.getAverageDataSize()));
 		
-		
-
 		Element dataTypes = dom.createElement("dataTypes");
 		params.appendChild(dataTypes);
 

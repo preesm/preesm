@@ -183,29 +183,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				.getString("Simulation.SpecialVertex.title"), Messages
 				.getString("Simulation.SpecialVertex.description"));
 
-		// Average data size section
-		createIntegerSection(managedForm, Messages
-				.getString("Simulation.DataAverageSize.title"), Messages
-				.getString("Simulation.DataAverageSize.description"));
-		managedForm.refresh();
-	}
-
-	/**
-	 * Creates the section editing the average data size
-	 */
-	private void createIntegerSection(IManagedForm managedForm, String title,
-			String desc) {
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
-				| GridData.VERTICAL_ALIGN_BEGINNING);
-		Composite client = createSection(managedForm, title, desc, 2, gridData);
-
-		FormToolkit toolkit = managedForm.getToolkit();
-
-		Text text = toolkit.createText(client, String.valueOf(scenario
-				.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
-		text.setData(title);
-		text.addModifyListener(new ModifyListener() {
-
+		// Text modification listener that updates the average data size
+		ModifyListener averageDataSizeListener = new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text) e.getSource();
@@ -218,7 +197,31 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				} catch (NumberFormatException e1) {
 				}
 			}
-		});
+		};
+
+		// Average data size section
+		createIntegerSection(managedForm, Messages
+				.getString("Simulation.DataAverageSize.title"), Messages
+				.getString("Simulation.DataAverageSize.description"),
+				averageDataSizeListener);
+		managedForm.refresh();
+	}
+
+	/**
+	 * Creates the section editing the average data size
+	 */
+	private void createIntegerSection(IManagedForm managedForm, String title,
+			String desc, ModifyListener modifListener) {
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
+		Composite client = createSection(managedForm, title, desc, 2, gridData);
+
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		Text text = toolkit.createText(client, String.valueOf(scenario
+				.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(modifListener);
 
 		text.setLayoutData(gridData);
 		toolkit.paintBordersFor(client);

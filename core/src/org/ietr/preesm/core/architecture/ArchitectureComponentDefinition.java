@@ -149,6 +149,7 @@ public abstract class ArchitectureComponentDefinition {
 			newdef = new MemoryDefinition(this.getVlnv());
 		} else if (getType().equals(ArchitectureComponentType.operator)) {
 			newdef = new OperatorDefinition(this.getVlnv());
+			((OperatorDefinition)newdef).setDataCopySpeed(((OperatorDefinition)this).getDataCopySpeed());
 		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
 			newdef = new ParallelNodeDefinition(this.getVlnv());
 			((ParallelNodeDefinition)newdef).setDataRate(((ParallelNodeDefinition)this).getDataRate());

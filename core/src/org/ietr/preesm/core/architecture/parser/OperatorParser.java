@@ -33,50 +33,42 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.architecture.parser;
 
-package org.ietr.preesm.core.architecture.simplemodel;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
-import org.ietr.preesm.core.architecture.parser.VLNV;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
- * The operator definition specifies the operator characteristics
+ * An operator has specific properties parsed in this class to generate an OperatorDefinition
  * 
  * @author mpelcat
  */
-public class OperatorDefinition extends ArchitectureComponentDefinition
-		implements IOperatorDefinition {
+public class OperatorParser {
 
-	/* 
-	 * a value (typically in byte/cycle) defining the speed of a local
-	 * data copy on an operator
+	/**
+	 * Parsing operator specific data from DOM document and filling the operator definition
 	 */
-	private float dataCopySpeed = -1;
-	
-	public OperatorDefinition(VLNV vlnv) {
-		super(vlnv, "operator");
-	}
+	static void parse(OperatorDefinition def, Element callElt){
+		
+		Node node = callElt.getFirstChild();
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.operator;
-	}
+		while (node != null) {
 
-	/*public OperatorDefinition clone() {
-		// A new OperatorDefinition is created with same id
-		OperatorDefinition newdef = new OperatorDefinition(this.getVlnv());
-		return newdef;
-	}*/
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String eltType = elt.getTagName();
+				String configurableElementName = elt.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("dataCopySpeed")) {
+					String value = elt.getTextContent();
+					def.setDataCopySpeed(Float.parseFloat(value));
+				} 
+			}
 
-	public float getDataCopySpeed() {
-		return dataCopySpeed;
-	}
+			node = node.getNextSibling();
+		}
 
-	public void setDataCopySpeed(float dataCopySpeed) {
-		this.dataCopySpeed = dataCopySpeed;
-	}
-
-	public void fill(ArchitectureComponentDefinition origin) {
 	}
 }

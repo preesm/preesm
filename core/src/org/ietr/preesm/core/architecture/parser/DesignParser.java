@@ -67,6 +67,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
@@ -305,6 +306,9 @@ public class DesignParser {
 				// Looking for definitions
 				if (type == ArchitectureComponentType.medium) {
 					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
+							configElt);
+				} else if (type == ArchitectureComponentType.operator) {
+					OperatorParser.parse((OperatorDefinition) cmp.getDefinition(),
 							configElt);
 				} else if (type == ArchitectureComponentType.contentionNode) {
 					ContentionNodeParser.parse((ContentionNodeDefinition) cmp

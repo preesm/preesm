@@ -207,7 +207,24 @@ public class InitialVertexProperty {
 					}
 				} else {
 					if (SpecialVertexManager.isBroadCast(parentVertex)) {
+						// Broadcast time is calculated from its output size
+						// if a memory copy speed is set in the operator
+						OperatorDefinition def = (OperatorDefinition) operator.getDefinition();
 						time = Timing.DEFAULT_BROADCAST_TIME;
+						
+						float dataCopySpeed = def.getDataCopySpeed();
+						if(dataCopySpeed > 0){
+							// Calculating the sum of output data sizes
+							int broadcastOutputDataSize = 0;
+							for(DAGEdge e : parentVertex.outgoingEdges()){
+								MapperDAGEdge me = (MapperDAGEdge)e;
+								broadcastOutputDataSize += me.getInitialEdgeProperty().getDataSize();
+							}
+
+							if(broadcastOutputDataSize > 0){
+								time = (int) Math.ceil(broadcastOutputDataSize / dataCopySpeed);
+							}
+						}
 					} else if (SpecialVertexManager.isFork(parentVertex)) {
 						time = Timing.DEFAULT_FORK_TIME;
 					} else if (SpecialVertexManager.isJoin(parentVertex)) {
