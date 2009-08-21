@@ -56,7 +56,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
+import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
@@ -143,7 +143,7 @@ public class FastAlgorithm extends Observable {
 		// the same level, in alphabetical name order
 		simulator.resetTaskScheduler(TaskSchedType.Topological);
 
-		ListScheduler listscheduler = new ListScheduler();
+		KwokListScheduler listscheduler = new KwokListScheduler();
 		Iterator<Operator> prociter;
 
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(

@@ -49,6 +49,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -76,8 +77,8 @@ public class GraphTimeKeeper {
 	 * Helper to scan the neighbors of a vertex
 	 */
 	private DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex;
-	
-	private Map<ArchitectureComponent,Long> componentFinalTimes;
+
+	private Map<ArchitectureComponent, Long> componentFinalTimes;
 
 	/**
 	 * Constructor
@@ -88,7 +89,7 @@ public class GraphTimeKeeper {
 		this.implementation = implementation;
 
 		neighborindex = null;
-		componentFinalTimes = new HashMap<ArchitectureComponent,Long>();
+		componentFinalTimes = new HashMap<ArchitectureComponent, Long>();
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class GraphTimeKeeper {
 		// We iterate the dirty vertices to reset their t-levels
 		for (DAGVertex dagV : implementation.vertexSet()) {
 			currentvertex = (MapperDAGVertex) dagV;
-			currentvertex.getTimingVertexProperty().resetTlevel();
+			currentvertex.getTimingVertexProperty().resetTLevel();
 		}
 
 		// We iterate the dirty vertices to set their t-levels
@@ -129,11 +130,15 @@ public class GraphTimeKeeper {
 			calculateTLevel(currentvertex);
 		}
 
-		// We handle synchronized vertices
-		for (DAGVertex dagV : implementation.vertexSet()) {
-			currentvertex = (MapperDAGVertex) dagV;
-			handleSynchros(currentvertex);
-		}
+		/*
+		 * TopologicalDAGIterator it = new
+		 * TopologicalDAGIterator(implementation); // We handle synchronized
+		 * vertices while (it.hasNext()) { currentvertex = (MapperDAGVertex)
+		 * it.next();
+		 * 
+		 * if(currentvertex.getTimingVertexProperty().getTlevel() >=0)
+		 * handleSynchros(currentvertex); }
+		 */
 
 	}
 
@@ -141,19 +146,23 @@ public class GraphTimeKeeper {
 	 * Handling synchronized vertices.
 	 */
 	private void handleSynchros(MapperDAGVertex modifiedvertex) {
-		// Handling synchronized vertices: Setting all the t-levels of synchronized vertices at the same value.
+		// Handling synchronized vertices: Setting all the t-levels of
+		// synchronized vertices at the same value.
 		if (modifiedvertex.getTimingVertexProperty().getSynchronizedVertices() != null) {
 			List<MapperDAGVertex> synchronizedVertices = modifiedvertex
 					.getTimingVertexProperty().getSynchronizedVertices();
 			if (synchronizedVertices.size() > 1) {
 				long maxTLevel = -1;
+				boolean allHaveTLevel = true;
 				for (MapperDAGVertex v : synchronizedVertices) {
 					long tLevel = v.getTimingVertexProperty().getTlevel();
 					if (tLevel > maxTLevel)
 						maxTLevel = tLevel;
+					if (!v.getTimingVertexProperty().hasTlevel())
+						allHaveTLevel = false;
 				}
 
-				if(maxTLevel >= 0)
+				if (allHaveTLevel)
 					updateTLevel((MapperDAGVertex) modifiedvertex, maxTLevel);
 			}
 		}
@@ -161,8 +170,7 @@ public class GraphTimeKeeper {
 
 	public void updateTLevel(MapperDAGVertex modifiedvertex, long newTLevel) {
 		if (newTLevel > modifiedvertex.getTimingVertexProperty().getTlevel()
-				/*&& modifiedvertex.getImplementationVertexProperty()
-						.hasEffectiveComponent()*/) {
+				&& modifiedvertex.getTimingVertexProperty().getTlevel() >= 0) {
 			modifiedvertex.getTimingVertexProperty().setTlevel(newTLevel);
 			Set<DAGVertex> sucSet = neighborindex.successorsOf(modifiedvertex);
 			for (DAGVertex v : sucSet) {
@@ -182,9 +190,9 @@ public class GraphTimeKeeper {
 		long edgeCost = edge.getTimingEdgeProperty().getCost();
 
 		long newPathLength = -1;
-		if (predTProperty.getTlevel() >= 0 && predTProperty.getCost() >= 0 && edgeCost >= 0) {
-			newPathLength = predTProperty.getTlevel()
-					+ predTProperty.getCost();
+		if (predTProperty.getTlevel() >= 0 && predTProperty.getCost() >= 0
+				&& edgeCost >= 0) {
+			newPathLength = predTProperty.getTlevel() + predTProperty.getCost();
 		}
 
 		return newPathLength;
@@ -230,21 +238,22 @@ public class GraphTimeKeeper {
 				long l = getLongestPrecedingPath(predset, modifiedvertex);
 				currenttimingproperty.setTlevel(l);
 			}
-			
+
 			// Updating the operator final time
-			ArchitectureComponent c = modifiedvertex.getImplementationVertexProperty().getEffectiveComponent();
+			ArchitectureComponent c = modifiedvertex
+					.getImplementationVertexProperty().getEffectiveComponent();
 			ArchitectureComponent finalTimeRefCmp = c;
 			long currentCmpFinalTime = TimingVertexProperty.UNAVAILABLE;
-			for(ArchitectureComponent o : componentFinalTimes.keySet()){
-				if(o.equals(c)){
+			for (ArchitectureComponent o : componentFinalTimes.keySet()) {
+				if (o.equals(c)) {
 					currentCmpFinalTime = componentFinalTimes.get(o);
 					finalTimeRefCmp = o;
 				}
 			}
 
 			long newFinalTime = getFinalTime(modifiedvertex);
-			
-			if(newFinalTime > currentCmpFinalTime){
+
+			if (newFinalTime > currentCmpFinalTime) {
 				componentFinalTimes.put(finalTimeRefCmp, newFinalTime);
 			}
 
@@ -356,7 +365,8 @@ public class GraphTimeKeeper {
 		Set<DAGVertex> succset = neighborindex
 				.successorsOf((MapperDAGVertex) modifiedvertex);
 
-		// If the current vertex has an effective component
+		// If the current vertex has an effective component and is an ending
+		// vertex
 		if (modifiedvertex.getImplementationVertexProperty()
 				.hasEffectiveComponent()
 				&& succset.isEmpty()) {
@@ -462,8 +472,8 @@ public class GraphTimeKeeper {
 	public long getFinalTime() {
 
 		long finaltime = TimingVertexProperty.UNAVAILABLE;
-		
-		for(ArchitectureComponent o : componentFinalTimes.keySet()){
+
+		for (ArchitectureComponent o : componentFinalTimes.keySet()) {
 			long nextFinalTime = componentFinalTimes.get(o);
 			// Returns TimingVertexProperty.UNAVAILABLE if at least one
 			// vertex has no final time. Otherwise returns the highest final
@@ -483,18 +493,18 @@ public class GraphTimeKeeper {
 	 * vertices
 	 */
 	public long getFinalTime(ArchitectureComponent component) {
-		
+
 		ArchitectureComponent finalTimeRefCmp = null;
-		for(ArchitectureComponent o : componentFinalTimes.keySet()){
-			if(o.equals(component)){
+		for (ArchitectureComponent o : componentFinalTimes.keySet()) {
+			if (o.equals(component)) {
 				finalTimeRefCmp = o;
 			}
 		}
-		
-		if(finalTimeRefCmp != null){
+
+		if (finalTimeRefCmp != null) {
 			return componentFinalTimes.get(finalTimeRefCmp);
 		}
-		
+
 		return TimingVertexProperty.UNAVAILABLE;
 	}
 

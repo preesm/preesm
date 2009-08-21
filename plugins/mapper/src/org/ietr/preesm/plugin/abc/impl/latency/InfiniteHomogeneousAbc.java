@@ -151,6 +151,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	@Override
 	public final void updateTimings() {
 		timeKeeper.updateTandBLevels();
+		nTimeKeeper.updateTandBLevels();
 	}
 
 	@Override

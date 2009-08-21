@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -70,8 +71,8 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * An architecture simulator calculates
- * costs for a given partial or total implementation
+ * An architecture simulator calculates costs for a given partial or total
+ * implementation
  * 
  * @author mpelcat
  */
@@ -107,7 +108,10 @@ public abstract class AbstractAbc implements IAbc {
 	 * Task scheduler
 	 */
 	protected AbstractTaskSched taskScheduler = null;
-	
+
+	/**
+	 * Scenario with information common to algorithm and architecture
+	 */
 	protected IScenario scenario;
 
 	/**
@@ -120,9 +124,11 @@ public abstract class AbstractAbc implements IAbc {
 		AbstractAbc abc = null;
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi, scenario);
+			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi,
+					scenario);
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType, scenario);
+			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType,
+					scenario);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
 			abc = new ApproximatelyTimedAbc(edgeSchedType, dag, archi,
 					simulatorType, scenario);
@@ -130,14 +136,15 @@ public abstract class AbstractAbc implements IAbc {
 			abc = new AccuratelyTimedAbc(edgeSchedType, dag, archi,
 					simulatorType, scenario);
 		} else if (simulatorType == AbcType.CommConten) {
-			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType, scenario);
+			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType,
+					scenario);
 		}
 
 		return abc;
 	}
 
 	/**
-	 * Architecture simulator constructor
+	 * ABC constructor
 	 */
 	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
 			AbcType abcType, IScenario scenario) {
@@ -151,7 +158,9 @@ public abstract class AbstractAbc implements IAbc {
 
 		this.archi = archi;
 		this.scenario = scenario;
-		
+
+		// Schedules the tasks in topological and alphabetical order. Some
+		// better order should be looked for
 		resetTaskScheduler(TaskSchedType.Topological);
 	}
 
@@ -180,7 +189,7 @@ public abstract class AbstractAbc implements IAbc {
 	public MultiCoreArchitecture getArchitecture() {
 		return this.archi;
 	}
-	
+
 	public IScenario getScenario() {
 		return scenario;
 	}
@@ -228,7 +237,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * *********Implantation accesses**********
+	 * *********Implementation accesses**********
 	 */
 
 	/**
@@ -267,6 +276,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		if (implementation != null && dag != null) {
 
+			// Sets the order in the implementation
 			for (String vName : totalOrder) {
 				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
 						.getVertex(vName);
@@ -282,6 +292,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			}
 
+			// Retrieves the new order in order manager
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
 			TransactionManager localTransactionManager = new TransactionManager();
@@ -319,7 +330,7 @@ public abstract class AbstractAbc implements IAbc {
 			if (isImplantable(impvertex, operator)
 					|| impvertex instanceof TransferVertex) {
 
-				// Implantation property is set in both DAG and implementation
+				// Implementation property is set in both DAG and implementation
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
@@ -376,7 +387,8 @@ public abstract class AbstractAbc implements IAbc {
 						.severe(
 								"The current mapping algorithm necessitates that all vertices can be mapped on an operator");
 				PreesmLogger.getLogger().severe(
-						"Problem with: " + currentvertex.getName() + ". Consider changing the scenario.");
+						"Problem with: " + currentvertex.getName()
+								+ ". Consider changing the scenario.");
 
 				possible = false;
 			}
@@ -404,15 +416,6 @@ public abstract class AbstractAbc implements IAbc {
 				if (op.getDefinition().equals(preferedOperator.getDefinition())) {
 					if (isImplantable(currentvertex, op)) {
 						adequateOp = op;
-
-						/*PreesmLogger
-								.getLogger()
-								.info(
-										"The vertex: "
-												+ currentvertex.getName()
-												+ " could not be mapped on main operator "
-												+ preferedOperator.getName()
-												+ ". An alternative with same definition was found.");*/
 					}
 				}
 			}
@@ -424,15 +427,6 @@ public abstract class AbstractAbc implements IAbc {
 						.getOperatorSet()) {
 					if (isImplantable(currentvertex, op)) {
 						adequateOp = op;
-
-						/*PreesmLogger
-								.getLogger()
-								.info(
-										"The vertex: "
-												+ currentvertex.getName()
-												+ " could not be mapped on main operator "
-												+ preferedOperator.getName()
-												+ ". An alternative with another definition was found.");*/
 					}
 				}
 			}
@@ -489,7 +483,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * resets the costs of a set of edges
 	 */
-	private final MapperDAGEdge translateInImplantationEdge(MapperDAGEdge edge) {
+	private final MapperDAGEdge translateInImplementationEdge(MapperDAGEdge edge) {
 
 		MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex) edge
 				.getSource());
@@ -511,9 +505,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Unimplants all vertices
-	 * 
-	 * Resets the time keeper only at the end
+	 * Unimplants all vertices from implementation
 	 */
 	public void resetImplementation() {
 
@@ -526,8 +518,7 @@ public abstract class AbstractAbc implements IAbc {
 
 	/**
 	 * Unimplants all vertices in both implementation and DAG
-	 * 
-	 * Resets the time keeper only at the end
+	 * Resets the order manager only at the end
 	 */
 	public void resetDAG() {
 
@@ -558,9 +549,6 @@ public abstract class AbstractAbc implements IAbc {
 
 		// Keeps the total order
 		orderManager.remove(impvertex, false);
-
-		// PreesmLogger.getLogger().log(Level.SEVERE,"unimplanting " +
-		// impvertex.getName() + "\n");
 	}
 
 	/**
@@ -577,7 +565,7 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	@Override
 	public long getCost(MapperDAGEdge edge) {
-		edge = translateInImplantationEdge(edge);
+		edge = translateInImplementationEdge(edge);
 		return edge.getTimingEdgeProperty().getCost();
 
 	}
@@ -607,11 +595,13 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Prepares task rescheduling
 	 */
-	public void resetTaskScheduler(TaskSchedType taskSchedType){
+	public void resetTaskScheduler(TaskSchedType taskSchedType) {
 
-		taskScheduler = AbstractTaskSched.getInstance(taskSchedType, orderManager);
-		if(taskScheduler instanceof TopologicalTaskSched){
-			((TopologicalTaskSched)taskScheduler).createTopology(implementation);
+		taskScheduler = AbstractTaskSched.getInstance(taskSchedType,
+				orderManager);
+		if (taskScheduler instanceof TopologicalTaskSched) {
+			((TopologicalTaskSched) taskScheduler)
+					.createTopology(implementation);
 		}
 	}
 

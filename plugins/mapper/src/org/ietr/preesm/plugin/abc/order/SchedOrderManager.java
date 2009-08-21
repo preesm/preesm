@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -56,7 +57,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class SchedOrderManager {
+public class SchedOrderManager extends Observable {
 
 	/**
 	 * Contains the rank list of all the vertices in an implementation
@@ -114,6 +115,15 @@ public class SchedOrderManager {
 				currentSched.addVertexFirst(vertex);
 			}
 
+			// Notifies the time keeper that it should update the successors
+			setChanged();
+			notifyObservers(vertex);
+			MapperDAGVertex successor = totalOrder.getNextVertex(vertex);
+			while(successor != null){
+				setChanged();
+				notifyObservers(successor);
+				successor = totalOrder.getNextVertex(successor);
+			}
 		}
 
 	}
@@ -138,6 +148,8 @@ public class SchedOrderManager {
 				totalOrder.remove(vertex);
 
 			totalOrder.addLast(vertex);
+			setChanged();
+			notifyObservers(vertex);
 
 		}
 	}
@@ -163,6 +175,11 @@ public class SchedOrderManager {
 
 			totalOrder.addFirst(vertex);
 
+			// Notifies the time keeper that it should update the successors
+			for(MapperDAGVertex v : totalOrder){
+				setChanged();
+				notifyObservers(v);
+			}
 		}
 	}
 
@@ -237,7 +254,6 @@ public class SchedOrderManager {
 		} else {
 			addLast(vertex);
 		}
-
 	}
 
 	/**
@@ -315,8 +331,17 @@ public class SchedOrderManager {
 					.getImplementationVertexProperty().getEffectiveComponent();
 			Schedule sch = getSchedule(cmp);
 
-			if (sch != null)
+			if (sch != null){
+				// Notifies the time keeper that it should update the successors
+				MapperDAGVertex successor = totalOrder.getNextVertex(vertex);
+				while(successor != null){
+					setChanged();
+					notifyObservers(successor);
+					successor = totalOrder.getNextVertex(successor);
+				}
+				
 				sch.remove(vertex);
+			}
 		} else { // Looks for the right scheduling to remove the vertex
 			Iterator<Schedule> it = schedules.values().iterator();
 
@@ -328,6 +353,7 @@ public class SchedOrderManager {
 		if (removeFromTotalOrder) {
 			totalOrder.remove(vertex);
 		}
+		
 	}
 
 	/**

@@ -91,7 +91,6 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
 			comRouter.routeNewVertex(vertex, types);
-
 		}
 	}
 

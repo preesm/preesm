@@ -57,7 +57,7 @@ import org.jgrapht.traverse.AbstractGraphIterator;
  * 
  * @author mpelcat
  */
-public abstract class ImplantationIterator extends
+public abstract class ImplementationIterator extends
 		AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> implements
 		Comparator<MapperDAGVertex> {
 
@@ -78,7 +78,7 @@ public abstract class ImplantationIterator extends
 	 */
 	protected LatencyAbc simulator;
 
-	public ImplantationIterator(MapperDAG dag, IAbc simulator,
+	public ImplementationIterator(MapperDAG dag, IAbc simulator,
 			boolean directOrder) {
 		super();
 		this.directOrder = directOrder;

@@ -49,12 +49,12 @@ import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Class cleaning an implementation i.e. removing added transfers and edges.
- * TODO: Remove this class and incorporate the cleaning into router
  * 
  * @author mpelcat
  */
@@ -64,13 +64,14 @@ public class ImplementationCleaner {
 	private MapperDAG implementation;
 	private TransactionManager transactionManager;
 
-	public ImplementationCleaner(SchedOrderManager orderManager,MapperDAG implementation) {
+	public ImplementationCleaner(SchedOrderManager orderManager,
+			MapperDAG implementation) {
 		super();
 		this.orderManager = orderManager;
 		this.implementation = implementation;
 		this.transactionManager = new TransactionManager();
 	}
-	
+
 	/**
 	 * Removes all transfers from routes coming from or going to vertex
 	 */
@@ -129,31 +130,32 @@ public class ImplementationCleaner {
 	}
 
 	/**
-	 * Removes the precedence edges scheduling a vertex and schedules its successor
-	 * after its predecessor.
+	 * Removes the precedence edges scheduling a vertex and schedules its
+	 * successor after its predecessor.
 	 */
 	public void unscheduleVertex(MapperDAGVertex vertex) {
 
 		MapperDAGVertex prev = orderManager.getPreviousVertex(vertex);
 		MapperDAGVertex next = orderManager.getNextVertex(vertex);
-		PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(orderManager);
+		PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
+				orderManager);
 
-		if(prev != null){
+		if (prev != null) {
 			precEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
 		}
-		
-		if(next != null){
+
+		if (next != null) {
 			precEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
 		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
-		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
+		if ((prev != null && next != null)
+				&& (edges == null || edges.isEmpty())) {
 			precEdgeAdder.addPrecedenceEdge(implementation, prev, next);
 		}
 
 	}
-
 
 	/**
 	 * Gets all transfers from routes coming from or going to vertex. Do not

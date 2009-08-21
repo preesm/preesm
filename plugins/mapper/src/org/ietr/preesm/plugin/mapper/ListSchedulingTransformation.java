@@ -49,7 +49,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
+import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -112,7 +112,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		IAbc simu2 = AbstractAbc
 				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
 		
-		ListScheduler scheduler = new ListScheduler();
+		KwokListScheduler scheduler = new KwokListScheduler();
 		scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");

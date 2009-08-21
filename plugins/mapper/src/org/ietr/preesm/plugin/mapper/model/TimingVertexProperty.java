@@ -38,12 +38,12 @@ package org.ietr.preesm.plugin.mapper.model;
 
 import java.util.List;
 
-
 /**
- * Property added to a DAG vertex to give its timing properties
- * Only used within ABCs.
+ * Property added to a DAG vertex to give its timing properties Only used within
+ * ABCs.
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class TimingVertexProperty {
 
@@ -66,9 +66,21 @@ public class TimingVertexProperty {
 	private long cost;
 
 	/**
-	 * time to execute the vertex
+	 * Vertices that must appear in the Gantt at the exact same time as the
+	 * current vertex.
 	 */
 	private List<MapperDAGVertex> synchronizedVertices = null;
+
+	/**
+	 * B Level is the time between the vertex start and the total end of
+	 * execution. Valid only with infinite homogeneous architecture simulator
+	 */
+	private long newbLevel;
+
+	/**
+	 * T Level is the time between the start of execution and the vertex start
+	 */
+	private long newtLevel;
 
 	public TimingVertexProperty() {
 		super();
@@ -105,6 +117,10 @@ public class TimingVertexProperty {
 		cost = UNAVAILABLE;
 		tLevel = UNAVAILABLE;
 		bLevel = UNAVAILABLE;
+		newtLevel = UNAVAILABLE;
+		newbLevel = UNAVAILABLE;
+		
+		synchronizedVertices = null;
 	}
 
 	public void setBlevel(long blevel) {
@@ -115,7 +131,7 @@ public class TimingVertexProperty {
 		this.tLevel = tlevel;
 	}
 
-	public void resetTlevel() {
+	public void resetTLevel() {
 		this.tLevel = UNAVAILABLE;
 	}
 
@@ -143,9 +159,34 @@ public class TimingVertexProperty {
 		return synchronizedVertices;
 	}
 
-	public void setSynchronizedVertices(List<MapperDAGVertex> synchronizedVertices) {
+	public void setSynchronizedVertices(
+			List<MapperDAGVertex> synchronizedVertices) {
 		this.synchronizedVertices = synchronizedVertices;
 	}
-	
+
+	public long getNewbLevel() {
+		return newbLevel;
+	}
+
+	public void setNewbLevel(long newbLevel) {
+		this.newbLevel = newbLevel;
+	}
+
+	public long getNewtLevel() {
+		return newtLevel;
+	}
+
+	public void setNewtLevel(long newtLevel) {
+		this.newtLevel = newtLevel;
+	}
+
+	public boolean hasNewblevel() {
+		return newbLevel != UNAVAILABLE;
+	}
+
+	public boolean hasNewtLevel() {
+		return (newtLevel != UNAVAILABLE);
+	}
+
 	
 }

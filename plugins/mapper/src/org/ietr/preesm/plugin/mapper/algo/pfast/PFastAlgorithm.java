@@ -62,7 +62,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.list.ListScheduler;
+import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
@@ -312,7 +312,7 @@ public class PFastAlgorithm extends Observable {
 		Vector<MapperDAGVertex> fcpVector = new Vector<MapperDAGVertex>(
 				initialLists.getCriticalpath());
 		MapperDAG dagfinal;
-		ListScheduler scheduler = new ListScheduler();
+		KwokListScheduler scheduler = new KwokListScheduler();
 		IAbc archisimu = AbstractAbc
 				.getInstance(simulatorType, edgeSchedType, dag, archi, scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();

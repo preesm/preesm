@@ -45,7 +45,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * 
  * @author mpelcat
  */
-public class TLevelIterator extends ImplantationIterator {
+public class TLevelIterator extends ImplementationIterator {
 
 	public TLevelIterator(MapperDAG dag, IAbc simulator,
 			boolean directOrder) {

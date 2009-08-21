@@ -45,7 +45,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * A transaction that adds one transfer vertex per contention node in an
- * implementation and schedules them given the right edge scheduler
+ * implementation and schedules them given a edge scheduler
  * 
  * @author mpelcat
  */

@@ -52,16 +52,17 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
- * List scheduler
+ * List scheduler from Yu Kwong Kwok PhD thesis
  * 
  * @author pmenuet
+ * @author mpelcat
  */
-public class ListScheduler {
+public class KwokListScheduler {
 
 	/**
 	 * constructor
 	 */
-	public ListScheduler() {
+	public KwokListScheduler() {
 		super();
 	}
 

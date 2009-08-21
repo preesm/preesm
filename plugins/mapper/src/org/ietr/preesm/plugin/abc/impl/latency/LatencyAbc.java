@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
@@ -64,6 +65,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.GraphTimeKeeper;
+import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -85,6 +87,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * time tags in DAG
 	 */
 	protected GraphTimeKeeper timeKeeper;
+	protected NewTimeKeeper nTimeKeeper;
 
 	protected AbstractCommunicationRouter comRouter = null;
 
@@ -104,6 +107,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
+		
+		nTimeKeeper = new NewTimeKeeper(implementation);
+		nTimeKeeper.resetTimings();
+		this.orderManager.addObserver(nTimeKeeper);
 
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
@@ -126,6 +133,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		this.timeKeeper = new GraphTimeKeeper(implementation);
 		timeKeeper.resetTimings();
+		
+		nTimeKeeper = new NewTimeKeeper(implementation);
+		nTimeKeeper.resetTimings();
+		this.orderManager.addObserver(nTimeKeeper);
 
 		// Forces the unmapping process before the new mapping process
 		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
@@ -225,6 +236,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void updateTimings() {
 
 		timeKeeper.updateTLevels();
+		nTimeKeeper.updateTLevels();
 	}
 
 	/**

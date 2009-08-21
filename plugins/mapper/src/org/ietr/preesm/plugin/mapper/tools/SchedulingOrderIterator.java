@@ -45,7 +45,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * 
  * @author mpelcat
  */
-public class SchedulingOrderIterator extends ImplantationIterator {
+public class SchedulingOrderIterator extends ImplementationIterator {
 
 	public SchedulingOrderIterator(MapperDAG implementation,
 			IAbc simulator, boolean directOrder) {
