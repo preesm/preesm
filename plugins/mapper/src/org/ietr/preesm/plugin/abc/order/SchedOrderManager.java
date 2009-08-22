@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.order;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -114,18 +115,14 @@ public class SchedOrderManager extends Observable {
 			} else {
 				currentSched.addVertexFirst(vertex);
 			}
-
-			// Notifies the time keeper that it should update the successors
-			setChanged();
-			notifyObservers(vertex);
-			MapperDAGVertex successor = totalOrder.getNextVertex(vertex);
-			while(successor != null){
-				setChanged();
-				notifyObservers(successor);
-				successor = totalOrder.getNextVertex(successor);
-			}
 		}
 
+		// Notifies the time keeper that it should update the successors
+		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
+		vSet = totalOrder.getSuccessors(vertex);
+		vSet.add(vertex);
+		setChanged();
+		notifyObservers(vSet);
 	}
 
 	/**
@@ -148,10 +145,11 @@ public class SchedOrderManager extends Observable {
 				totalOrder.remove(vertex);
 
 			totalOrder.addLast(vertex);
-			setChanged();
-			notifyObservers(vertex);
-
 		}
+
+		// Notifies the time keeper that it should update the vertex
+		setChanged();
+		notifyObservers(vertex);
 	}
 
 	/**
@@ -174,13 +172,11 @@ public class SchedOrderManager extends Observable {
 				totalOrder.remove(vertex);
 
 			totalOrder.addFirst(vertex);
-
-			// Notifies the time keeper that it should update the successors
-			for(MapperDAGVertex v : totalOrder){
-				setChanged();
-				notifyObservers(v);
-			}
 		}
+
+		// Notifies the time keeper that it should update the successors
+		setChanged();
+		notifyObservers(new HashSet<DAGVertex>(totalOrder));
 	}
 
 	/**
@@ -332,14 +328,6 @@ public class SchedOrderManager extends Observable {
 			Schedule sch = getSchedule(cmp);
 
 			if (sch != null){
-				// Notifies the time keeper that it should update the successors
-				MapperDAGVertex successor = totalOrder.getNextVertex(vertex);
-				while(successor != null){
-					setChanged();
-					notifyObservers(successor);
-					successor = totalOrder.getNextVertex(successor);
-				}
-				
 				sch.remove(vertex);
 			}
 		} else { // Looks for the right scheduling to remove the vertex
@@ -349,6 +337,12 @@ public class SchedOrderManager extends Observable {
 				it.next().remove(vertex);
 			}
 		}
+
+		// Notifies the time keeper that it should update the successors
+		Set<DAGVertex> successors = totalOrder.getSuccessors(vertex);
+		successors.add(vertex);
+		setChanged();
+		notifyObservers(successors);
 
 		if (removeFromTotalOrder) {
 			totalOrder.remove(vertex);

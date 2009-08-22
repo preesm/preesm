@@ -37,11 +37,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.order;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * A schedule represents the consecutive tasks mapped on a single
@@ -75,6 +78,21 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 		if (currentIndex < 0 || indexOf(vertex) >= this.size() - 1)
 			return null;
 		return (get(currentIndex + 1));
+	}
+
+	/**
+	 * Gets the next vertex in the current schedule
+	 */
+	public Set<DAGVertex> getSuccessors(MapperDAGVertex vertex) {
+		int currentIndex = indexOf(vertex);
+		if (currentIndex < 0 || indexOf(vertex) >= this.size())
+			return null;
+		
+		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
+		for(int i = currentIndex+1;i<size();i++){
+			vSet.add(get(i));
+		}
+		return vSet;
 	}
 
 	/**

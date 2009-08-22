@@ -80,16 +80,18 @@ public class GraphTimeKeeper {
 
 	private Map<ArchitectureComponent, Long> componentFinalTimes;
 
+	private NewTimeKeeper nTimeKeeper;
 	/**
 	 * Constructor
 	 */
-	public GraphTimeKeeper(MapperDAG implementation) {
+	public GraphTimeKeeper(MapperDAG implementation, NewTimeKeeper nTimeKeeper) {
 
 		this.dirtyTimings = false;
 		this.implementation = implementation;
 
 		neighborindex = null;
 		componentFinalTimes = new HashMap<ArchitectureComponent, Long>();
+		this.nTimeKeeper = nTimeKeeper;
 	}
 
 	/**
@@ -460,7 +462,7 @@ public class GraphTimeKeeper {
 						+ timingproperty.getTlevel();
 			}
 		}
-
+		
 		return vertexfinaltime;
 	}
 
@@ -479,9 +481,9 @@ public class GraphTimeKeeper {
 			// vertex has no final time. Otherwise returns the highest final
 			// time
 			if (nextFinalTime == TimingVertexProperty.UNAVAILABLE) {
-				return TimingVertexProperty.UNAVAILABLE;
-			} else
-				finaltime = Math.max(finaltime, nextFinalTime);
+				finaltime = TimingVertexProperty.UNAVAILABLE;
+			} else{
+				finaltime = Math.max(finaltime, nextFinalTime); }
 		}
 
 		return finaltime;
@@ -494,6 +496,8 @@ public class GraphTimeKeeper {
 	 */
 	public long getFinalTime(ArchitectureComponent component) {
 
+		long finaltime = TimingVertexProperty.UNAVAILABLE;
+		
 		ArchitectureComponent finalTimeRefCmp = null;
 		for (ArchitectureComponent o : componentFinalTimes.keySet()) {
 			if (o.equals(component)) {
@@ -502,10 +506,10 @@ public class GraphTimeKeeper {
 		}
 
 		if (finalTimeRefCmp != null) {
-			return componentFinalTimes.get(finalTimeRefCmp);
+			finaltime = componentFinalTimes.get(finalTimeRefCmp);
 		}
 
-		return TimingVertexProperty.UNAVAILABLE;
+		return finaltime;
 	}
 
 	public void updateTLevels() {

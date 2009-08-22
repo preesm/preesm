@@ -53,12 +53,12 @@ public class TimingVertexProperty {
 	 * B Level is the time between the vertex start and the total end of
 	 * execution. Valid only with infinite homogeneous architecture simulator
 	 */
-	private long bLevel;
+	//private long bLevel;
 
 	/**
 	 * T Level is the time between the start of execution and the vertex start
 	 */
-	private long tLevel;
+	//private long tLevel;
 
 	/**
 	 * time to execute the vertex
@@ -90,13 +90,15 @@ public class TimingVertexProperty {
 	@Override
 	public TimingVertexProperty clone() {
 		TimingVertexProperty property = new TimingVertexProperty();
-		property.setBlevel(this.getBlevel());
-		property.setTlevel(this.getTlevel());
+		//property.setBlevel(this.getBlevel());
+		//property.setTlevel(this.getTlevel());
+		property.setNewbLevel(this.getNewbLevel());
+		property.setNewtLevel(this.getNewtLevel());
 		property.setCost(this.getCost());
 		return property;
 	}
 
-	public long getBlevel() {
+	/*public long getBlevel() {
 
 		return bLevel;
 	}
@@ -110,20 +112,20 @@ public class TimingVertexProperty {
 	}
 
 	public boolean hasTlevel() {
-		return (tLevel != UNAVAILABLE);
-	}
+		return tLevel != UNAVAILABLE;
+	}*/
 
 	public void reset() {
 		cost = UNAVAILABLE;
-		tLevel = UNAVAILABLE;
-		bLevel = UNAVAILABLE;
+		//tLevel = UNAVAILABLE;
+		//bLevel = UNAVAILABLE;
 		newtLevel = UNAVAILABLE;
 		newbLevel = UNAVAILABLE;
 		
 		synchronizedVertices = null;
 	}
 
-	public void setBlevel(long blevel) {
+	/*public void setBlevel(long blevel) {
 		this.bLevel = blevel;
 	}
 
@@ -133,7 +135,7 @@ public class TimingVertexProperty {
 
 	public void resetTLevel() {
 		this.tLevel = UNAVAILABLE;
-	}
+	}*/
 
 	public String toString() {
 		return "";

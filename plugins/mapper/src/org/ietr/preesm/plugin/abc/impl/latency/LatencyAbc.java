@@ -86,7 +86,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Current time keeper: called exclusively by simulator to update the useful
 	 * time tags in DAG
 	 */
-	protected GraphTimeKeeper timeKeeper;
+	//protected GraphTimeKeeper timeKeeper;
 	protected NewTimeKeeper nTimeKeeper;
 
 	protected AbstractCommunicationRouter comRouter = null;
@@ -105,12 +105,11 @@ public abstract class LatencyAbc extends AbstractAbc {
 		super(dag, archi, abcType, scenario);
 		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
-		this.timeKeeper = new GraphTimeKeeper(implementation);
-		timeKeeper.resetTimings();
-		
-		nTimeKeeper = new NewTimeKeeper(implementation);
+		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-		this.orderManager.addObserver(nTimeKeeper);
+		
+		//this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
+		//timeKeeper.resetTimings();
 
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
@@ -131,12 +130,11 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		orderManager.reconstructTotalOrderFromDAG(implementation);
 
-		this.timeKeeper = new GraphTimeKeeper(implementation);
-		timeKeeper.resetTimings();
-		
-		nTimeKeeper = new NewTimeKeeper(implementation);
+		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-		this.orderManager.addObserver(nTimeKeeper);
+		
+		//this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
+		//timeKeeper.resetTimings();
 
 		// Forces the unmapping process before the new mapping process
 		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
@@ -220,13 +218,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void implant(MapperDAGVertex dagvertex, Operator operator,
 			boolean updateRank) {
 		super.implant(dagvertex, operator, updateRank);
-		timeKeeper.setAsDirty(dagvertex);
+		//timeKeeper.setAsDirty(dagvertex);
 	}
 
 	@Override
 	public void unimplant(MapperDAGVertex dagvertex) {
 		super.unimplant(dagvertex);
-		timeKeeper.setAsDirty(dagvertex);
+		//timeKeeper.setAsDirty(dagvertex);
 	}
 
 	/**
@@ -235,7 +233,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	public void updateTimings() {
 
-		timeKeeper.updateTLevels();
+		//timeKeeper.updateTLevels();
 		nTimeKeeper.updateTLevels();
 	}
 
@@ -285,13 +283,20 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// visualize results
 		// monitor.render(new SimpleTextRenderer());
 
-		long finalTime = timeKeeper.getFinalTime();
+		long finalTime = nTimeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final time");
 		}
 
+		/*if(timeKeeper.getFinalTime() != finalTime){
+
+			timeKeeper.getFinalTime();
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"false finaltime");
+		}*/
+		
 		return finalTime;
 	}
 
@@ -301,8 +306,16 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		//updateTimings();
 
-		long finalTime = timeKeeper.getFinalTime(vertex);
+		long finalTime = nTimeKeeper.getFinalTime(vertex);
 
+
+		/*if(timeKeeper.getFinalTime(vertex) != finalTime){
+
+			timeKeeper.getFinalTime(vertex);
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"false finaltime " + vertex.getName());
+		}*/
+		
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
@@ -315,10 +328,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	public final long getFinalCost(ArchitectureComponent component) {
 
-		//updateTimings();
+		long finalTime = nTimeKeeper.getFinalTime(component);
 
-		long finalTime = timeKeeper.getFinalTime(component);
+		/*if(timeKeeper.getFinalTime(component) != finalTime){
 
+			timeKeeper.getFinalTime(component);
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"false finaltime " + component.getName());
+		}*/
+		
 		return finalTime;
 	}
 
@@ -327,7 +345,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if(update)
 			updateTimings();
-		return vertex.getTimingVertexProperty().getTlevel();
+		return vertex.getTimingVertexProperty().getNewtLevel();
 	}
 
 	public final long getBLevel(MapperDAGVertex vertex, boolean update) {
@@ -335,7 +353,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if(update)
 			updateTimings();
-		return vertex.getTimingVertexProperty().getBlevel();
+		return vertex.getTimingVertexProperty().getNewbLevel();
 	}
 
 	/**

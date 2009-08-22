@@ -103,8 +103,8 @@ public class IntervalFinder {
 			minIndex = orderManager.totalIndexOf(minVertex);
 
 			TimingVertexProperty props = minVertex.getTimingVertexProperty();
-			if (props.getTlevel() >= 0) {
-				minIndexVertexEndTime = props.getTlevel() + props.getCost();
+			if (props.getNewtLevel() >= 0) {
+				minIndexVertexEndTime = props.getNewtLevel() + props.getCost();
 			}
 		}
 
@@ -119,10 +119,10 @@ public class IntervalFinder {
 		if (schedule != null) {
 			for (MapperDAGVertex v : schedule) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
-				if (props.getTlevel() >= 0) {
+				if (props.getNewtLevel() >= 0) {
 					// newInt is the interval corresponding to the execution of
 					// the vertex v
-					newInt = new Interval(props.getCost(), props.getTlevel(),
+					newInt = new Interval(props.getCost(), props.getNewtLevel(),
 							orderManager.totalIndexOf(v));
 
 					if (type == FindType.largestFreeInterval) {
@@ -185,8 +185,8 @@ public class IntervalFinder {
 		Schedule schedule = orderManager.getSchedule(component);
 
 		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
-		long availability = sourceProps.getTlevel() + sourceProps.getCost();
-		if (sourceProps.getTlevel() < 0)
+		long availability = sourceProps.getNewtLevel() + sourceProps.getCost();
+		if (sourceProps.getNewtLevel() < 0)
 			availability = -1;
 
 		String trace = "schedule of " + vertex.getName() + " available at "
@@ -195,9 +195,9 @@ public class IntervalFinder {
 		if (schedule != null) {
 			for (MapperDAGVertex v : schedule) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
-				if (props.getTlevel() >= 0)
-					trace += "<" + props.getTlevel() + ","
-							+ (props.getTlevel() + props.getCost()) + ">";
+				if (props.getNewtLevel() >= 0)
+					trace += "<" + props.getNewtLevel() + ","
+							+ (props.getNewtLevel() + props.getCost()) + ">";
 			}
 		}
 

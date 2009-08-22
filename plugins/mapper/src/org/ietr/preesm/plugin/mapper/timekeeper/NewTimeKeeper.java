@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -45,36 +46,26 @@ public class NewTimeKeeper implements Observer {
 	private DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex;
 
 	/**
-	 * In order to minimize recalculation, component final times are stored
-	 */
-	private Map<ArchitectureComponent, Long> componentFinalTimes;
-
-	/**
 	 * In order to minimize recalculation, a set of modified vertices is kept
 	 */
-	private Set<DAGVertex> dirtyVertices;
+	private Set<DAGVertex> dirtyTLevelVertices;
+
+	/**
+	 * Manager of the vertices ordering
+	 */
+	private SchedOrderManager orderManager;
 
 	/**
 	 * Constructor
 	 */
-	public NewTimeKeeper(MapperDAG implementation) {
+	public NewTimeKeeper(MapperDAG implementation,
+			SchedOrderManager orderManager) {
 
 		this.implementation = implementation;
 		neighborindex = null;
-		componentFinalTimes = new HashMap<ArchitectureComponent, Long>();
-		dirtyVertices = new HashSet<DAGVertex>();
-	}
-
-	/**
-	 * Observer update notifying that a vertex status has changed and its
-	 * timings need recalculation
-	 */
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		if (arg1 != null && arg1 instanceof MapperDAGVertex) {
-			MapperDAGVertex v = (MapperDAGVertex) arg1;
-			dirtyVertices.add(v);
-		}
+		dirtyTLevelVertices = new HashSet<DAGVertex>();
+		this.orderManager = orderManager;
+		this.orderManager.addObserver(this);
 	}
 
 	/**
@@ -88,79 +79,49 @@ public class NewTimeKeeper implements Observer {
 		}
 	}
 
+	// // T Level calculation
+
+	/**
+	 * Observer update notifying that a vertex status has changed and its
+	 * timings need recalculation
+	 */
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg1 != null) {
+			if (arg1 instanceof Set) {
+				dirtyTLevelVertices.addAll((Set<DAGVertex>) arg1);
+			} else if (arg1 instanceof MapperDAGVertex) {
+				dirtyTLevelVertices.add((MapperDAGVertex) arg1);
+			}
+		}
+	}
+
 	private void calculateTLevel() {
 
 		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
 		neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(castAlgo);
 
-		// allDirtyVertices contains the vertices dirty because of
-		// implementation modification or
-		// neighbors modification
+		/*
+		 * allDirtyVertices contains the vertices dirty because of
+		 * implementation modification or neighbors modification
+		 */
 
-		Iterator<DAGVertex> vIt = dirtyVertices.iterator();
+		Iterator<DAGVertex> vIt = dirtyTLevelVertices.iterator();
 		while (vIt.hasNext()) {
-			if(!implementation.vertexSet().contains(vIt.next())){
+			DAGVertex v = vIt.next();
+			if (!implementation.vertexSet().contains(v)) {
 				vIt.remove();
 			}
 		}
-		
-		Set<DAGVertex> allDirtyVertices = new HashSet<DAGVertex>(dirtyVertices);
-		
-		// We iterate the original dirty vertices to calculate the inferred ones
-		/*addSuccessorsDirtyVertices(dirtyVertices, allDirtyVertices);
 
-		for (DAGVertex v : dirtyVertices) {
-			addPrecedingTransfersDirtyVertices(neighborindex.predecessorsOf(v),
-					allDirtyVertices);
-		}*/
+		Set<DAGVertex> allDirtyTLevelVertices = new HashSet<DAGVertex>(
+				dirtyTLevelVertices);
 
-		//dirtyVertices.addAll(allDirtyVertices);
-
-		for (DAGVertex v : allDirtyVertices) {
-			if (dirtyVertices.contains(v))
+		for (DAGVertex v : allDirtyTLevelVertices) {
+			if (dirtyTLevelVertices.contains(v))
 				calculateTLevel((MapperDAGVertex) v);
 		}
 	}
-
-	/**
-	 * All the successors of a dirty vertex are dirty
-	 */
-	/*public void addSuccessorsDirtyVertices(Set<DAGVertex> vertices,
-			Set<DAGVertex> allDirtyVertices) {
-		// We iterate the dirty vertices successors to set them as dirty
-		if (vertices != null) {
-			for (DAGVertex dagV : vertices) {
-				allDirtyVertices.add(dagV);
-
-				Set<DAGVertex> succSet = neighborindex.successorsOf(dagV);
-				addSuccessorsDirtyVertices(succSet, allDirtyVertices);
-			}
-		}
-	}*/
-
-	/**
-	 * All the preceding transfers of a dirty vertex are dirty
-	 */
-	/*public void addPrecedingTransfersDirtyVertices(Set<DAGVertex> vertices,
-			Set<DAGVertex> allDirtyVertices) {
-		// We iterate the preceding transfers to set them as dirty
-		if (vertices != null) {
-			for (DAGVertex dagV : vertices) {
-				if (dagV instanceof TransferVertex
-						|| dagV instanceof OverheadVertex) {
-					allDirtyVertices.add(dagV);
-					
-					if(dagV instanceof TransferVertex && ((TransferVertex)dagV).getInvolvementVertex() != null){
-						allDirtyVertices.add(((TransferVertex)dagV).getInvolvementVertex());
-					}
-
-					Set<DAGVertex> predSet = neighborindex.predecessorsOf(dagV);
-					addPrecedingTransfersDirtyVertices(predSet,
-							allDirtyVertices);
-				}
-			}
-		}
-	}*/
 
 	/**
 	 * calculating top time (or tLevel) of modified vertex and all its
@@ -188,25 +149,6 @@ public class NewTimeKeeper implements Observer {
 				currenttimingproperty.setNewtLevel(l);
 			}
 
-			// Updating the operator final time
-			ArchitectureComponent c = modifiedvertex
-					.getImplementationVertexProperty().getEffectiveComponent();
-			ArchitectureComponent finalTimeRefCmp = c;
-			long currentCmpFinalTime = TimingVertexProperty.UNAVAILABLE;
-
-			// Looking for the architecture component corresponding to c
-			for (ArchitectureComponent o : componentFinalTimes.keySet()) {
-				if (o.equals(c)) {
-					currentCmpFinalTime = componentFinalTimes.get(o);
-					finalTimeRefCmp = o;
-				}
-			}
-
-			long newFinalTime = getFinalTime(modifiedvertex);
-
-			if (newFinalTime > currentCmpFinalTime) {
-				componentFinalTimes.put(finalTimeRefCmp, newFinalTime);
-			}
 		} else {
 			// If the current vertex has no effective component
 			PreesmLogger.getLogger().log(
@@ -217,7 +159,7 @@ public class NewTimeKeeper implements Observer {
 					.setNewtLevel(TimingVertexProperty.UNAVAILABLE);
 		}
 
-		dirtyVertices.remove(modifiedvertex);
+		dirtyTLevelVertices.remove(modifiedvertex);
 	}
 
 	/**
@@ -248,7 +190,7 @@ public class NewTimeKeeper implements Observer {
 
 			// If we lack information on predecessors, path calculation fails
 			// No recalculation of predecessor T Level if already calculated
-			if (dirtyVertices.contains(vertex)) {
+			if (dirtyTLevelVertices.contains(vertex)) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
 					calculateTLevel(vertex);
@@ -257,7 +199,8 @@ public class NewTimeKeeper implements Observer {
 
 			// If we could not calculate the T level of the predecessor,
 			// calculation fails
-			if (!vertexTProperty.hasCost() || dirtyVertices.contains(vertex)) {
+			if (!vertexTProperty.hasCost()
+					|| dirtyTLevelVertices.contains(vertex)) {
 				PreesmLogger.getLogger().log(
 						Level.INFO,
 						"tLevel unavailable for vertex " + inputvertex
@@ -285,11 +228,133 @@ public class NewTimeKeeper implements Observer {
 				current);
 		TimingVertexProperty predTProperty = pred.getTimingVertexProperty();
 		long edgeCost = edge.getTimingEdgeProperty().getCost();
-		long newPathLength = predTProperty.getTlevel()
+		long newPathLength = predTProperty.getNewtLevel()
 				+ predTProperty.getCost() + edgeCost;
 
 		return newPathLength;
 	}
+
+	// // B Level Section
+
+	/**
+	 * calculating bottom times of each vertex. A b-level is the difference
+	 * between the start time of the task and the end time of the longest branch
+	 * containing the vertex.
+	 */
+	public void calculateBLevel() {
+
+		MapperDAGVertex currentvertex;
+
+		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
+
+		// We iterate the dag tree in topological order to calculate b-level
+
+		while (iterator.hasNext()) {
+			currentvertex = (MapperDAGVertex) iterator.next();
+
+			// Starting from end vertices, sets the b-levels of the preceding
+			// tasks
+			if (currentvertex.outgoingEdges().isEmpty())
+				calculateBLevel(currentvertex);
+
+		}
+	}
+
+	/**
+	 * calculating bottom time of a vertex without successors.
+	 */
+	public void calculateBLevel(MapperDAGVertex modifiedvertex) {
+
+		TimingVertexProperty currenttimingproperty = modifiedvertex
+				.getTimingVertexProperty();
+		DirectedGraph<DAGVertex, DAGEdge> castAlgo = implementation;
+		neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(castAlgo);
+
+		Set<DAGVertex> predset = neighborindex
+				.predecessorsOf((MapperDAGVertex) modifiedvertex);
+		Set<DAGVertex> succset = neighborindex
+				.successorsOf((MapperDAGVertex) modifiedvertex);
+
+		// If the current vertex has an effective component and is an ending
+		// vertex
+		if (modifiedvertex.getImplementationVertexProperty()
+				.hasEffectiveComponent()
+				&& succset.isEmpty()) {
+
+			if (currenttimingproperty.hasNewtLevel()
+					&& currenttimingproperty.hasCost()) {
+				currenttimingproperty
+						.setNewbLevel(currenttimingproperty.getCost());
+
+				if (!predset.isEmpty()) {
+					// Sets recursively the BLevel of its predecessors
+					setPrecedingBlevel(modifiedvertex, predset);
+				}
+			} else {
+				currenttimingproperty
+						.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
+			}
+
+		} else {
+
+			PreesmLogger
+					.getLogger()
+					.log(
+							Level.SEVERE,
+							"Trying to start b_level calculation from a vertex with successors or without implantation.");
+			currenttimingproperty.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
+		}
+	}
+
+	/**
+	 * recursive method setting the b-level of the preceding tasks given the
+	 * b-level of a start task
+	 */
+	private void setPrecedingBlevel(MapperDAGVertex startvertex,
+			Set<DAGVertex> predset) {
+
+		long currentBLevel = 0;
+		TimingVertexProperty starttimingproperty = startvertex
+				.getTimingVertexProperty();
+		boolean hasStartVertexBLevel = starttimingproperty.hasNewblevel();
+
+		Iterator<DAGVertex> iterator = predset.iterator();
+
+		// Sets the b-levels of each predecessor
+		while (iterator.hasNext()) {
+
+			MapperDAGVertex currentvertex = (MapperDAGVertex) iterator.next();
+
+			TimingVertexProperty currenttimingproperty = currentvertex
+					.getTimingVertexProperty();
+
+			long edgeweight = ((MapperDAGEdge) implementation.getEdge(
+					currentvertex, startvertex)).getTimingEdgeProperty()
+					.getCost();
+
+			if (hasStartVertexBLevel && currenttimingproperty.hasCost()
+					&& edgeweight >= 0) {
+				currentBLevel = starttimingproperty.getNewbLevel()
+						+ currenttimingproperty.getCost() + edgeweight;
+
+				currenttimingproperty.setNewbLevel(Math.max(currenttimingproperty
+						.getNewbLevel(), currentBLevel));
+
+				Set<DAGVertex> newPredSet = neighborindex
+						.predecessorsOf(currentvertex);
+
+				if (!newPredSet.isEmpty())
+					// Recursively sets the preceding b levels
+					setPrecedingBlevel(currentvertex, newPredSet);
+			} else {
+				currenttimingproperty
+						.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
+			}
+
+		}
+	}
+
+	// // Final Time Section
 
 	/**
 	 * Gives the final time of the given vertex in the current implementation.
@@ -301,10 +366,10 @@ public class NewTimeKeeper implements Observer {
 		long vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
 		TimingVertexProperty timingproperty = vertex.getTimingVertexProperty();
 		if (vertex.getTimingVertexProperty().hasCost()) {
-			if (!dirtyVertices.contains(vertex)) {
+			if (!dirtyTLevelVertices.contains(vertex)) {
 				// Returns, if possible, TLevel + vertex timing
 				vertexfinaltime = vertex.getTimingVertexProperty().getCost()
-						+ timingproperty.getTlevel();
+						+ timingproperty.getNewtLevel();
 			}
 		}
 
@@ -320,8 +385,8 @@ public class NewTimeKeeper implements Observer {
 
 		long finaltime = TimingVertexProperty.UNAVAILABLE;
 
-		for (ArchitectureComponent o : componentFinalTimes.keySet()) {
-			long nextFinalTime = componentFinalTimes.get(o);
+		for (ArchitectureComponent o : orderManager.getArchitectureComponents()) {
+			long nextFinalTime = getFinalTime(o);
 			// Returns TimingVertexProperty.UNAVAILABLE if at least one
 			// vertex has no final time. Otherwise returns the highest final
 			// time
@@ -342,38 +407,33 @@ public class NewTimeKeeper implements Observer {
 	public long getFinalTime(ArchitectureComponent component) {
 
 		ArchitectureComponent finalTimeRefCmp = null;
-		for (ArchitectureComponent o : componentFinalTimes.keySet()) {
+		for (ArchitectureComponent o : orderManager.getArchitectureComponents()) {
 			if (o.equals(component)) {
 				finalTimeRefCmp = o;
 			}
 		}
 
 		if (finalTimeRefCmp != null) {
-			return componentFinalTimes.get(finalTimeRefCmp);
+			return getFinalTime(orderManager.getSchedule(finalTimeRefCmp)
+					.getLast());
 		}
 
 		return TimingVertexProperty.UNAVAILABLE;
 	}
 
-	private void calculateBLevel() {
-
-	}
-
 	public void updateTLevels() {
-/*
-		componentFinalTimes.clear();
 		calculateTLevel();
+		dirtyTLevelVertices.clear();
 
-		compareResults();
-		dirtyVertices.clear();*/
+		//compareResults();
 	}
 
 	public void updateTandBLevels() {
-		/*
-		 * componentFinalTimes.clear(); calculateTLevel(); calculateBLevel();
-		 * 
-		 * // compareResults(); dirtyVertices.clear();
-		 */
+		calculateTLevel();
+		dirtyTLevelVertices.clear();
+		calculateBLevel();
+
+		//compareResults();
 	}
 
 	private void compareResults() {
@@ -385,20 +445,24 @@ public class NewTimeKeeper implements Observer {
 
 			TimingVertexProperty tProp = v.getTimingVertexProperty();
 
-			/*
-			 * if (tProp.getBlevel() != tProp.getNewbLevel()) {
-			 * PreesmLogger.getLogger().log(Level.SEVERE, "false bL " +
-			 * v.getName()); }
-			 */
-
-			if (tProp.getTlevel() != tProp.getNewtLevel()) {
-				/*
-				 * PreesmLogger.getLogger().log(Level.SEVERE, "false tL " +
-				 * v.getName());
-				 */
+			if (tProp.getNewbLevel() != tProp.getNewbLevel()) {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"false bL " + v.getName());
 				int i = 0;
 				i++;
-			} else if (tProp.getTlevel() != -1) {
+			} else if (tProp.getNewbLevel() != -1) {
+				int i = 1;
+				i++;
+			}
+
+			if (tProp.getNewtLevel() != tProp.getNewtLevel()) {
+
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"false tL " + v.getName());
+
+				int i = 0;
+				i++;
+			} else if (tProp.getNewtLevel() != -1) {
 				int i = 1;
 				i++;
 			}
