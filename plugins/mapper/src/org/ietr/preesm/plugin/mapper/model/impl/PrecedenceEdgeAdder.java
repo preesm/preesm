@@ -65,18 +65,10 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class PrecedenceEdgeAdder {
 
-	private SchedOrderManager orderManager;
-
-	public PrecedenceEdgeAdder(SchedOrderManager orderManager) {
-		super();
-
-		this.orderManager = orderManager;
-	}
-
 	/**
 	 * Removes all schedule edges
 	 */
-	public void removePrecedenceEdges(MapperDAG implementation,
+	public static void removePrecedenceEdges(MapperDAG implementation,
 			TransactionManager transactionManager) {
 
 		for (DAGEdge e : implementation.edgeSet()) {
@@ -92,7 +84,8 @@ public class PrecedenceEdgeAdder {
 	 * Adds all necessary precedence edges to an implementation respecting the
 	 * order given by the scheduling order manager.
 	 */
-	public void addPrecedenceEdges(MapperDAG implementation) {
+	public static void addPrecedenceEdges(SchedOrderManager orderManager,
+			MapperDAG implementation) {
 
 		TransactionManager localTransactionManager = new TransactionManager();
 		Iterator<ArchitectureComponent> schedIt = orderManager
@@ -130,7 +123,7 @@ public class PrecedenceEdgeAdder {
 		localTransactionManager.execute();
 	}
 
-	public PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
+	public static PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
 		precedenceEdge.getTimingEdgeProperty().setCost(0);
@@ -138,7 +131,7 @@ public class PrecedenceEdgeAdder {
 		return precedenceEdge;
 	}
 
-	public void removePrecedenceEdge(MapperDAG implementation,
+	public static void removePrecedenceEdge(MapperDAG implementation,
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
 
@@ -161,8 +154,9 @@ public class PrecedenceEdgeAdder {
 	 * For Debug purposes, checks that all necessary precedence edges are
 	 * present
 	 */
-	public void checkPrecedences(MapperDAG implementation,
-			MultiCoreArchitecture archi, MapperDAGVertex modifiedVertex) {
+	public static void checkPrecedences(SchedOrderManager orderManager,
+			MapperDAG implementation, MultiCoreArchitecture archi,
+			MapperDAGVertex modifiedVertex) {
 
 		Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>();
 		cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
@@ -194,28 +188,29 @@ public class PrecedenceEdgeAdder {
 	/**
 	 * Schedules a given vertex
 	 */
-	public void scheduleVertex(MapperDAG implementation, MapperDAGVertex newVertex) {
+	public static void scheduleVertex(SchedOrderManager orderManager,
+			MapperDAG implementation, MapperDAGVertex newVertex) {
 
 		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
 		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
- 		
+
 		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
 		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
 
 		boolean prevAndNewLinked = (prevEdges != null && !prevEdges.isEmpty());
 		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
-		
-		if ((prev != null && newVertex != null) && !prevAndNewLinked){
+
+		if ((prev != null && newVertex != null) && !prevAndNewLinked) {
 			addPrecedenceEdge(implementation, prev, newVertex);
 			prevAndNewLinked = true;
 		}
 
-		if ((newVertex != null && next != null) && !newAndNextLinked){
+		if ((newVertex != null && next != null) && !newAndNextLinked) {
 			addPrecedenceEdge(implementation, newVertex, next);
 			newAndNextLinked = true;
 		}
-		
-		if(prevAndNewLinked && newAndNextLinked){
+
+		if (prevAndNewLinked && newAndNextLinked) {
 			removePrecedenceEdge(implementation, prev, next);
 		}
 	}

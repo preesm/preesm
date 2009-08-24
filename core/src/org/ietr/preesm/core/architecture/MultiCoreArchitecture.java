@@ -145,7 +145,7 @@ public class MultiCoreArchitecture extends
 		if (vlnv.getName().isEmpty()) {
 			PreesmLogger
 					.getLogger()
-					.log(Level.SEVERE,
+					.log(Level.WARNING,
 							"careful: at least one component has no definition in the architecture");
 		}
 

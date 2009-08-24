@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -151,10 +152,6 @@ public class NewTimeKeeper implements Observer {
 
 		} else {
 			// If the current vertex has no effective component
-			PreesmLogger.getLogger().log(
-					Level.FINEST,
-					"tLevel unavailable for vertex " + modifiedvertex
-							+ ". No effective component.");
 			currenttimingproperty
 					.setNewtLevel(TimingVertexProperty.UNAVAILABLE);
 		}
@@ -283,8 +280,8 @@ public class NewTimeKeeper implements Observer {
 
 			if (currenttimingproperty.hasNewtLevel()
 					&& currenttimingproperty.hasCost()) {
-				currenttimingproperty
-						.setNewbLevel(currenttimingproperty.getCost());
+				currenttimingproperty.setNewbLevel(currenttimingproperty
+						.getCost());
 
 				if (!predset.isEmpty()) {
 					// Sets recursively the BLevel of its predecessors
@@ -302,7 +299,8 @@ public class NewTimeKeeper implements Observer {
 					.log(
 							Level.SEVERE,
 							"Trying to start b_level calculation from a vertex with successors or without implantation.");
-			currenttimingproperty.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
+			currenttimingproperty
+					.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
 		}
 	}
 
@@ -337,8 +335,8 @@ public class NewTimeKeeper implements Observer {
 				currentBLevel = starttimingproperty.getNewbLevel()
 						+ currenttimingproperty.getCost() + edgeweight;
 
-				currenttimingproperty.setNewbLevel(Math.max(currenttimingproperty
-						.getNewbLevel(), currentBLevel));
+				currenttimingproperty.setNewbLevel(Math.max(
+						currenttimingproperty.getNewbLevel(), currentBLevel));
 
 				Set<DAGVertex> newPredSet = neighborindex
 						.predecessorsOf(currentvertex);
@@ -406,6 +404,8 @@ public class NewTimeKeeper implements Observer {
 	 */
 	public long getFinalTime(ArchitectureComponent component) {
 
+		long finaltime = TimingVertexProperty.UNAVAILABLE;
+
 		ArchitectureComponent finalTimeRefCmp = null;
 		for (ArchitectureComponent o : orderManager.getArchitectureComponents()) {
 			if (o.equals(component)) {
@@ -414,18 +414,23 @@ public class NewTimeKeeper implements Observer {
 		}
 
 		if (finalTimeRefCmp != null) {
-			return getFinalTime(orderManager.getSchedule(finalTimeRefCmp)
-					.getLast());
+			Schedule sched = orderManager.getSchedule(finalTimeRefCmp);
+
+			if (sched != null && !sched.isEmpty()) {
+				finaltime = getFinalTime(sched.getLast());
+			} else {
+				finaltime = 0;
+			}
 		}
 
-		return TimingVertexProperty.UNAVAILABLE;
+		return finaltime;
 	}
 
 	public void updateTLevels() {
 		calculateTLevel();
 		dirtyTLevelVertices.clear();
 
-		//compareResults();
+		// compareResults();
 	}
 
 	public void updateTandBLevels() {
@@ -433,7 +438,7 @@ public class NewTimeKeeper implements Observer {
 		dirtyTLevelVertices.clear();
 		calculateBLevel();
 
-		//compareResults();
+		// compareResults();
 	}
 
 	private void compareResults() {

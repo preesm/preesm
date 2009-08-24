@@ -225,7 +225,10 @@ public class MyGanttRenderer extends GanttRenderer {
 			}
 		}
 	}
-
+	
+	/**
+	 * Chooses colors for the vertices depending on their names
+	 */
 	Color getRandomBrightColor(String name) {
 
 		Color c = null;
@@ -233,33 +236,42 @@ public class MyGanttRenderer extends GanttRenderer {
 		if (colorMap.containsKey(name)) {
 			c = colorMap.get(name);
 		} else {
-			Double r, g, b;
-
 			if (name.indexOf("__transfer") == 0) {
-				r = Math.random() * (255 - 190) + 190;
-				g = 100.0;
-				b = 130.0;
+				c = getRandomColor(190.0, 100.0, 130.0, 20);
+			} else if (name.indexOf("__write") == 0) {
+				c = getRandomColor(240.0, 100.0, 100.0, 20);
+			} else if (name.indexOf("__read") == 0) {
+				c = getRandomColor(250.0, 180.0, 180.0, 20);
 			} else if (name.indexOf("__overhead") == 0) {
-				r = 130.0;
-				g = Math.random() * (255 - 160) + 160;
-				b = 100.0;
+				c = getRandomColor(130.0, 160.0, 100.0, 20);
 			} else if (name.indexOf("__involvement") == 0) {
-				r = Math.random() * (255 - 210) + 210;
-				g = 150.0;
-				b = 50.0;
+				c = getRandomColor(210.0, 150.0, 50.0, 20);
 			} else if (name.indexOf("__send") == 0 || name.indexOf("__receive") == 0) {
-				r = Math.random() * (255 - 160) + 160;
-				g = 130.0;
-				b = 100.0;
+				c = getRandomColor(160.0, 130.0, 100.0, 20);
 			} else {
-				r = 130.0;
-				g = 100.0;
-				b = Math.random() * (255 - 160) + 160;
+				c = getRandomColor(130.0, 100.0, 160.0, 20);
 			}
-
-			c = new Color(r.intValue(), g.intValue(), b.intValue());
+			
 			colorMap.put(name, c);
 		}
+
+		return c;
+	}
+	
+	/**
+	 * Given a color c, returns a random color close to c
+	 */
+	Color getRandomColor(Double r, Double g, Double b, int liberty) {
+		
+		r = Math.random() * liberty + r;
+		g = Math.random() * liberty + g;
+		b = Math.random() * liberty + b;
+		
+		r = Math.max(0,Math.min(r,255));
+		g = Math.max(0,Math.min(g,255));
+		b = Math.max(0,Math.min(b,255));
+		
+		Color c = new Color(r.intValue(), g.intValue(), b.intValue());
 
 		return c;
 	}

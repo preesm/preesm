@@ -42,19 +42,20 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+
 /**
- * An advanced edge scheduler. It looks for the largest free interval in scheduling
- * and schedules the new communication in this slot.
+ * An advanced edge scheduler. It looks for the largest free interval in
+ * scheduling and schedules the new communication in this slot.
  * 
  * @author mpelcat
  */
 public class SwitcherEdgeSched extends AbstractEdgeSched {
 
 	private IntervalFinder intervalFinder = null;
-	
+
 	public SwitcherEdgeSched(SchedOrderManager orderManager) {
 		super(orderManager);
-		
+
 		intervalFinder = new IntervalFinder(orderManager);
 	}
 
@@ -66,32 +67,43 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	}
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
+	public void schedule(TransferVertex vertex, MapperDAGVertex source,
+			MapperDAGVertex target) {
 
-		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
-		//intervalFinder.displayCurrentSchedule(vertex, source);
-		Interval largestInterval = intervalFinder.findLargestFreeInterval(component, source, target);
-		
-		if(largestInterval.getDuration()>0){
-			orderManager.insertVertexAtIndex(largestInterval.getTotalOrderIndex(), vertex);
-		}
-		else{
-			int sourceIndex = intervalFinder.getOrderManager().totalIndexOf(source)+1;
-			int targetIndex = intervalFinder.getOrderManager().totalIndexOf(target);
-			
-			if(targetIndex-sourceIndex > 0){
-				Random r = new Random();
-				int randomVal = Math.abs(r.nextInt());
-				randomVal = randomVal%(targetIndex-sourceIndex);
-				orderManager.insertVertexAtIndex(sourceIndex+randomVal, vertex);
-			}
-			else{
-				orderManager.insertVertexAfter(source, vertex);
+		// Synchronized vertices should not be moved in order to stay synchronized
+		if (!vertex.getTimingVertexProperty().getSynchronizedVertices()
+				.isEmpty()) {
+			orderManager.insertVertexAfter(source, vertex);
+		} else {
+			ArchitectureComponent component = vertex
+					.getImplementationVertexProperty().getEffectiveComponent();
+			// intervalFinder.displayCurrentSchedule(vertex, source);
+			Interval largestInterval = intervalFinder.findLargestFreeInterval(
+					component, source, target);
+
+			if (largestInterval.getDuration() > 0) {
+				orderManager.insertVertexAtIndex(largestInterval
+						.getTotalOrderIndex(), vertex);
+			} else {
+				int sourceIndex = intervalFinder.getOrderManager()
+						.totalIndexOf(source) + 1;
+				int targetIndex = intervalFinder.getOrderManager()
+						.totalIndexOf(target);
+
+				if (targetIndex - sourceIndex > 0) {
+					Random r = new Random();
+					int randomVal = Math.abs(r.nextInt());
+					randomVal = randomVal % (targetIndex - sourceIndex);
+					orderManager.insertVertexAtIndex(sourceIndex + randomVal,
+							vertex);
+				} else {
+					orderManager.insertVertexAfter(source, vertex);
+				}
 			}
 		}
 	}
 
-	public EdgeSchedType getEdgeSchedType(){
+	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Switcher;
 	}
 }

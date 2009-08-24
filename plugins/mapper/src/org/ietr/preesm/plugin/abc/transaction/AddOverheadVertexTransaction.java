@@ -160,9 +160,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 			}
 
 			// Scheduling overhead vertex
-			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
-					orderManager);
-			precEdgeAdder.scheduleVertex(implementation, oVertex);
+			PrecedenceEdgeAdder.scheduleVertex(orderManager,implementation, oVertex);
 			
 			if(resultList != null){
 				resultList.add(oVertex);

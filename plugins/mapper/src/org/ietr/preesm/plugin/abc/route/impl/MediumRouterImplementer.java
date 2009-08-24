@@ -55,7 +55,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 
 				if (transferTime > 0) {
 					int nodeIndex = 0;// a medium route step has only one node with index 0
-					Transaction transaction = new AddTransferVertexTransaction(
+					Transaction transaction = new AddTransferVertexTransaction("transfer",
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
 							routeStepIndex, nodeIndex, routeStep, transferTime, medium,

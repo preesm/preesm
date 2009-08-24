@@ -60,6 +60,12 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
 	// Inputs
 	/**
+	 * Determining if the current involvement is executed by the sender or by
+	 * the receiver
+	 */
+	private boolean isSender;
+
+	/**
 	 * Implementation DAG to which the vertex is added
 	 */
 	private MapperDAG implementation = null;
@@ -90,16 +96,14 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	 */
 	private InvolvementVertex iVertex = null;
 
-	/**
-	 * edges added
-	 */
-	private MapperDAGEdge newInEdge = null;
-	//private MapperDAGEdge newOutEdge = null;
+	// private MapperDAGEdge newOutEdge = null;
 
-	public AddInvolvementVertexTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, AbstractRouteStep step,
-			long involvementTime, SchedOrderManager orderManager) {
+	public AddInvolvementVertexTransaction(boolean isSender,
+			MapperDAGEdge edge, MapperDAG implementation,
+			AbstractRouteStep step, long involvementTime,
+			SchedOrderManager orderManager) {
 		super();
+		this.isSender = isSender;
 		this.edge = edge;
 		this.implementation = implementation;
 		this.step = step;
@@ -121,51 +125,54 @@ public class AddInvolvementVertexTransaction extends Transaction {
 			return;
 		}
 
-		String overtexID = "__involvement (" + currentSource.getName() + ","
+		String ivertexID = "__involvement (" + currentSource.getName() + ","
 				+ currentTarget.getName() + ")";
 
 		if (involvementTime > 0) {
-			iVertex = new InvolvementVertex(overtexID, implementation);
+			iVertex = new InvolvementVertex(ivertexID, implementation);
 
 			iVertex.getTimingVertexProperty().setCost(involvementTime);
 
-			iVertex.getImplementationVertexProperty().setEffectiveOperator(
-					step.getSender());
-
-			if (!(currentTarget instanceof TransferVertex)) {
-				PreesmLogger.getLogger().log(Level.SEVERE,
-						"An involvement must be followed by a transfer");
+			if (isSender) {
+				iVertex.getImplementationVertexProperty().setEffectiveOperator(
+						step.getSender());
+				((TransferVertex) currentTarget).setInvolvementVertex(iVertex);
+			} else {
+				iVertex.getImplementationVertexProperty().setEffectiveOperator(
+						step.getReceiver());
+				((TransferVertex) currentSource).setInvolvementVertex(iVertex);
 			}
-			((TransferVertex)currentTarget).setInvolvementVertex(iVertex);
 
 			implementation.addVertex(iVertex);
 
-			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
-					iVertex);
-			//newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
-			//		currentTarget);
+			if (isSender) {
+				MapperDAGEdge newInEdge = (MapperDAGEdge) implementation.addEdge(
+						currentSource, iVertex);
+				newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newInEdge.getTimingEdgeProperty().setCost(0);
 
-			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-					.clone());
-			//newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-			//		.clone());
-
-			newInEdge.getTimingEdgeProperty().setCost(0);
-			//newOutEdge.getTimingEdgeProperty().setCost(0);
-
-			if (true) {
-				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
-				taskSwitcher.insertVertexBefore(currentTarget, iVertex);
+				if (true) {
+					TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
+					taskSwitcher.insertVertexBefore(currentTarget, iVertex);
+				} else {
+					orderManager.insertVertexBefore(currentTarget, iVertex);
+				}
 			} else {
-				orderManager.insertVertexBefore(currentTarget, iVertex);
+				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
+						currentTarget);
+				newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newOutEdge.getTimingEdgeProperty().setCost(0);
+
+				orderManager.insertVertexAfter(currentSource, iVertex);
 			}
 
 			// Scheduling involvement vertex
-			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
-					orderManager);
-			precEdgeAdder.scheduleVertex(implementation, iVertex);
-			
-			if(resultList != null){
+			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation,
+					iVertex);
+
+			if (resultList != null) {
 				resultList.add(iVertex);
 			}
 		}

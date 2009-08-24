@@ -296,11 +296,9 @@ public abstract class AbstractAbc implements IAbc {
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
 			TransactionManager localTransactionManager = new TransactionManager();
-			PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
-					orderManager);
-			precEdgeAdder.removePrecedenceEdges(implementation,
+			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
 					localTransactionManager);
-			precEdgeAdder.addPrecedenceEdges(implementation);
+			PrecedenceEdgeAdder.addPrecedenceEdges(orderManager, implementation);
 
 		}
 	}

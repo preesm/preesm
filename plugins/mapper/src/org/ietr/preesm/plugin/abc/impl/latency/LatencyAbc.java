@@ -76,12 +76,6 @@ import org.sdf4j.model.dag.DAGVertex;
 public abstract class LatencyAbc extends AbstractAbc {
 
 	/**
-	 * Current precedence edge adder: called exclusively by simulator to
-	 * schedule vertices on the different operators
-	 */
-	protected PrecedenceEdgeAdder precedenceEdgeAdder;
-
-	/**
 	 * Current time keeper: called exclusively by simulator to update the useful
 	 * time tags in DAG
 	 */
@@ -102,7 +96,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public LatencyAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
 		super(dag, archi, abcType, scenario);
-		precedenceEdgeAdder = new PrecedenceEdgeAdder(orderManager);
 
 		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();

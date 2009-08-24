@@ -137,22 +137,20 @@ public class ImplementationCleaner {
 
 		MapperDAGVertex prev = orderManager.getPreviousVertex(vertex);
 		MapperDAGVertex next = orderManager.getNextVertex(vertex);
-		PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
-				orderManager);
 
 		if (prev != null) {
-			precEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);
 		}
 
 		if (next != null) {
-			precEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
+			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, vertex, next);
 		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
 		if ((prev != null && next != null)
 				&& (edges == null || edges.isEmpty())) {
-			precEdgeAdder.addPrecedenceEdge(implementation, prev, next);
+			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
 		}
 
 	}

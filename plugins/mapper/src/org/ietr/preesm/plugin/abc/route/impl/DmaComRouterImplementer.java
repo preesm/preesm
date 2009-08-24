@@ -75,7 +75,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 
 				for (ContentionNode node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
-					transaction = new AddTransferVertexTransaction(
+					transaction = new AddTransferVertexTransaction("transfer",
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
 							routeStepIndex, nodeIndex, routeStep, transferTime,

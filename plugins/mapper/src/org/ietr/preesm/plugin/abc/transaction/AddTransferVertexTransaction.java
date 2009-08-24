@@ -60,6 +60,11 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 public class AddTransferVertexTransaction extends Transaction {
 	// Inputs
 	/**
+	 * The beginning of the transfer name. Typically: 'transfer', 'read' or 'write'
+	 */
+	private String transferType = null;
+	
+	/**
 	 * If not null, the transfer vertices need to be chained with formerly added
 	 * ones
 	 */
@@ -135,12 +140,13 @@ public class AddTransferVertexTransaction extends Transaction {
 	 */
 	private MapperDAGVertex currentTarget = null;
 
-	public AddTransferVertexTransaction(Transaction precedingTransaction,
+	public AddTransferVertexTransaction(String transferType, Transaction precedingTransaction,
 			IEdgeSched edgeScheduler, MapperDAGEdge edge,
 			MapperDAG implementation, SchedOrderManager orderManager,
 			int routeIndex,int nodeIndex, AbstractRouteStep step, long transferTime,
 			ArchitectureComponent effectiveComponent, boolean scheduleVertex) {
 		super();
+		this.transferType = transferType;
 		this.precedingTransaction = precedingTransaction;
 		this.edgeScheduler = edgeScheduler;
 		this.edge = edge;
@@ -174,7 +180,7 @@ public class AddTransferVertexTransaction extends Transaction {
 			currentSource = (MapperDAGVertex) edge.getSource();
 		}
 
-		String tvertexID = "__transfer" + routeIndex + "_" + nodeIndex + " ("
+		String tvertexID = "__" + transferType + routeIndex + "_" + nodeIndex + " ("
 				+ ((MapperDAGVertex) edge.getSource()).getName() + ","
 				+ currentTarget.getName() + ")";
 
@@ -218,9 +224,7 @@ public class AddTransferVertexTransaction extends Transaction {
 				// Scheduling transfer vertex
 				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
 				
-				PrecedenceEdgeAdder precEdgeAdder = new PrecedenceEdgeAdder(
-						orderManager);
-				precEdgeAdder.scheduleVertex(implementation, tVertex);
+				PrecedenceEdgeAdder.scheduleVertex(orderManager,implementation, tVertex);
 			}
 
 			if (resultList != null) {

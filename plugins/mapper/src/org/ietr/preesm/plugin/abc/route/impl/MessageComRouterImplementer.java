@@ -73,7 +73,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 
 				for (ContentionNode node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
-					transaction = new AddTransferVertexTransaction(
+					transaction = new AddTransferVertexTransaction("transfer",
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
 							routeStepIndex, nodeIndex, routeStep, transferTime,
@@ -103,7 +103,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 				}
 				
 				if (incomingEdge != null) {
-					transactions.add(new AddInvolvementVertexTransaction(
+					transactions.add(new AddInvolvementVertexTransaction(true,
 							incomingEdge, getImplementation(), routeStep,
 							transferTime, getOrderManager()));
 				} else {

@@ -1,19 +1,31 @@
 package org.ietr.preesm.plugin.abc.route.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.architecture.route.RamRouteStep;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
+import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
+import org.ietr.preesm.plugin.abc.transaction.AddInvolvementVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
+import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
+import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * Class responsible to generate the suited vertices while simulating a shared ram
- * communication
+ * Class responsible to generate the suited vertices while simulating a shared
+ * ram communication
  * 
  * @author mpelcat
  */
@@ -43,79 +55,91 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 	@Override
 	public Transaction addVertices(AbstractRouteStep routeStep,
 			MapperDAGEdge edge, TransactionManager transactions, int type,
-			int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices) {
+			int routeStepIndex, Transaction lastTransaction,
+			List<Object> alreadyCreatedVertices) {
 
-		/*if (routeStep instanceof RamRouteStep) {
+		if (routeStep instanceof RamRouteStep) {
 			// Adding the transfers
 			RamRouteStep ramStep = ((RamRouteStep) routeStep);
 			// All the transfers along the path have the same time: the time
 			// to transfer the data on the slowest contention node
-			long senderTransferTime = ramStep.getSenderSideWorstTransferTime(edge
-					.getInitialEdgeProperty().getDataSize());
-			long receiverTransferTime = ramStep.getReceiverSideWorstTransferTime(edge
-					.getInitialEdgeProperty().getDataSize());
+			long senderTransferTime = ramStep
+					.getSenderSideWorstTransferTime(edge
+							.getInitialEdgeProperty().getDataSize());
+			long receiverTransferTime = ramStep
+					.getReceiverSideWorstTransferTime(edge
+							.getInitialEdgeProperty().getDataSize());
 
-			// Adding the transfers of a message route step
+			// Adding the transfers of a ram route step
 			if (type == CommunicationRouter.transferType) {
-				List<ContentionNode> nodes = ramStep.getSenderSideContentionNodes();
+				List<ContentionNode> nodes = ramStep
+						.getSenderSideContentionNodes();
 				AddTransferVertexTransaction transaction = null;
 
 				for (ContentionNode node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
-					transaction = new AddTransferVertexTransaction(
+					transaction = new AddTransferVertexTransaction("write",
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
-							routeStepIndex, nodeIndex, routeStep, senderTransferTime,
-							node, true);
+							routeStepIndex, nodeIndex, routeStep,
+							senderTransferTime, node, true);
 					transactions.add(transaction);
 				}
-				
+
 				lastTransaction = transaction;
-				
+
 				nodes = ramStep.getReceiverSideContentionNodes();
 				for (ContentionNode node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
-					transaction = new AddTransferVertexTransaction(
+					transaction = new AddTransferVertexTransaction("read",
 							lastTransaction, getEdgeScheduler(), edge,
 							getImplementation(), getOrderManager(),
-							routeStepIndex, nodeIndex, routeStep, senderTransferTime,
-							node, true);
+							routeStepIndex, nodeIndex, routeStep,
+							receiverTransferTime, node, true);
 					transactions.add(transaction);
 				}
 
 				return transaction;
 			} else if (type == CommunicationRouter.involvementType) {
-				// Adding the involvement
+				// Adding the involvements
 				MapperDAGEdge incomingEdge = null;
-				TransferVertex correspondingTransfer = null;
+				MapperDAGEdge outgoingEdge = null;
+				int currentNodeIndex = -1;
 
 				for (Object o : alreadyCreatedVertices) {
 					if (o instanceof TransferVertex) {
 						TransferVertex v = (TransferVertex) o;
 						if (v.getSource().equals(edge.getSource())
 								&& v.getTarget().equals(edge.getTarget())
-								&& v.getRouteStep() == routeStep && v.getNodeIndex() == 0) {
-								// Finding the edge where to add an overhead
-								incomingEdge = (MapperDAGEdge) v
-										.incomingEdges().toArray()[0];
-								correspondingTransfer = v;
+								&& v.getRouteStep() == routeStep
+								&& v.getNodeIndex() == 0) {
+							// Finding the edge where to add an involvement
+							incomingEdge = (MapperDAGEdge) v.incomingEdges()
+									.toArray()[0];
+						}
+						else if(v.getTarget().equals(edge.getTarget())
+								&& v.getSource().equals(edge.getSource())
+								&& v.getRouteStep() == routeStep
+								&& v.getNodeIndex() > currentNodeIndex){
+							// Finding the edge where to add an involvement
+							outgoingEdge = (MapperDAGEdge) v.outgoingEdges()
+									.toArray()[0];
+							currentNodeIndex = v.getNodeIndex();
 						}
 
 					}
 				}
-				
+
 				if (incomingEdge != null) {
-					transactions.add(new AddInvolvementVertexTransaction(
+					transactions.add(new AddInvolvementVertexTransaction(true,
 							incomingEdge, getImplementation(), routeStep,
-							transferTime, getOrderManager()));
-				} else {
-					PreesmLogger
-							.getLogger()
-							.log(
-									Level.FINE,
-									"The transfer following vertex"
-											+ edge.getSource()
-											+ "was not found. We could not add overhead.");
+							senderTransferTime, getOrderManager()));
+				}
+
+				if (outgoingEdge != null) {
+					transactions.add(new AddInvolvementVertexTransaction(false,
+							outgoingEdge, getImplementation(), routeStep,
+							receiverTransferTime, getOrderManager()));
 				}
 
 			} else if (type == CommunicationRouter.synchroType) {
@@ -130,8 +154,8 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 								&& v.getTarget().equals(edge.getTarget())
 								&& v.getRouteStep() == routeStep) {
 							toSynchronize.add(v);
-							
-							if(v.getInvolvementVertex() != null)
+
+							if (v.getInvolvementVertex() != null)
 								toSynchronize.add(v.getInvolvementVertex());
 						}
 
@@ -154,7 +178,8 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 				transactions.add(transaction);
 				return transaction;
 			}
-		}*/
+		}
+
 		return null;
 	}
 

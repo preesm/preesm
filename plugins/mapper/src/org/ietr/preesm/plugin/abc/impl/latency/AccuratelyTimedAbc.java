@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 
 /**
  * The accurately timed ABC schedules edges and set-up times
@@ -85,7 +86,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
+			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}

@@ -47,6 +47,7 @@ import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 
 /**
  * A loosely timed architecture simulator associates a simple cost to each
@@ -77,7 +78,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
+			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
 		}
 	}
 

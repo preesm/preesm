@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 
 /**
  * An approximately timed architecture simulator associates a complex cost to
@@ -89,7 +90,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
 
-			precedenceEdgeAdder.scheduleVertex(implementation, vertex);
+			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}

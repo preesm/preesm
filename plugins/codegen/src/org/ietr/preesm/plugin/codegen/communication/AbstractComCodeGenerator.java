@@ -74,7 +74,10 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 		// functions: init phase
 		List<CommunicationFunctionCall> beginningComs = createCalls(comThread,
 				vertex, CodeSectionType.beginning);
-		if (!beginningComs.isEmpty()) {
+		
+		createCalls(comThread,
+				vertex, CodeSectionType.beginning);
+		if (beginningComs != null && !beginningComs.isEmpty()) {
 			for (CommunicationFunctionCall call : beginningComs) {
 				comThread.getBeginningCode().addCodeElement(call);
 				createinits(call, comThread.getGlobalContainer(), alreadyInits);
@@ -85,7 +88,7 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 		// functions: loop phase
 		List<CommunicationFunctionCall> loopComs = createCalls(comThread,
 				vertex, CodeSectionType.loop);
-		if (!loopComs.isEmpty()) {
+		if (loopComs != null && !loopComs.isEmpty()) {
 			for (CommunicationFunctionCall call : loopComs) {
 				comThread.getLoopCode().addCodeElement(call);
 				createinits(call, comThread.getGlobalContainer(), alreadyInits);
@@ -96,7 +99,7 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 		// functions: end phase
 		List<CommunicationFunctionCall> endComs = createCalls(comThread,
 				vertex, CodeSectionType.end);
-		if (!endComs.isEmpty()) {
+		if (endComs != null && !endComs.isEmpty()) {
 			for (CommunicationFunctionCall call : endComs) {
 				comThread.getEndCode().addCodeElement(call);
 				createinits(call, comThread.getGlobalContainer(), alreadyInits);
