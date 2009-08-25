@@ -149,14 +149,17 @@ public class MultiCoreArchitecture extends
 							"careful: at least one component has no definition in the architecture");
 		}
 
-		if (architectureComponentDefinitions.containsKey(vlnv)) {
-			return architectureComponentDefinitions.get(vlnv);
-		} else {
-			ArchitectureComponentDefinition def = ArchitectureComponentDefinitionFactory
-					.createElement(type, vlnv);
-			addComponentDefinition(def);
-			return def;
+		for (VLNV currentVlnv : architectureComponentDefinitions.keySet()) {
+			if (currentVlnv.equals(vlnv)) {
+				return architectureComponentDefinitions.get(currentVlnv);
+			}
 		}
+
+		ArchitectureComponentDefinition def = ArchitectureComponentDefinitionFactory
+				.createElement(type, vlnv);
+		addComponentDefinition(def);
+		return def;
+
 	}
 
 	/**
