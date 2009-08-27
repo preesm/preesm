@@ -38,22 +38,28 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.InvolvementVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -138,11 +144,17 @@ public class StatGenerator {
 		long work = 0;
 		MapperDAG dag = abc.getDAG();
 		Operator mainOp = abc.getArchitecture().getMainOperator();
-
+		
 		for (DAGVertex vertex : dag.vertexSet()) {
-			if (!(vertex instanceof TransferVertex)) {
+			if (!(vertex instanceof TransferVertex)
+					&& !(vertex instanceof OverheadVertex)
+					&& !(vertex instanceof InvolvementVertex)) {
+				
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
 						.getTime(mainOp);
+				
+				PreesmLogger.getLogger().log(Level.INFO,"task " + vertex.getName() + " duration " + ((MapperDAGVertex) vertex).getInitialVertexProperty()
+						.getTime(mainOp));
 			}
 		}
 
@@ -161,12 +173,14 @@ public class StatGenerator {
 	}
 
 	/**
-	 * Returns the number of operators in the current architecture that execute vertices
+	 * Returns the number of operators in the current architecture that execute
+	 * vertices
 	 */
 	public int getNbUsedOperators() {
 		int nbUsedOperators = 0;
-		for(ArchitectureComponent o : abc.getArchitecture().getComponents(ArchitectureComponentType.operator)){
-			if(abc.getFinalCost((Operator)o)>0){
+		for (ArchitectureComponent o : abc.getArchitecture().getComponents(
+				ArchitectureComponentType.operator)) {
+			if (abc.getFinalCost((Operator) o) > 0) {
 				nbUsedOperators++;
 			}
 		}

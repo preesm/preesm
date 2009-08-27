@@ -48,6 +48,7 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
@@ -105,8 +106,9 @@ public class InitialVertexProperty {
 	}
 
 	/**
-	 * Enabling the current vertex on the given operator. The operation is straightforward
-	 * for normal vertices. For special vertices, a test is done on the neighbors.
+	 * Enabling the current vertex on the given operator. The operation is
+	 * straightforward for normal vertices. For special vertices, a test is done
+	 * on the neighbors.
 	 */
 	public void addOperator(Operator operator) {
 		this.operators.add(operator);
@@ -187,12 +189,11 @@ public class InitialVertexProperty {
 	 */
 	public int getTime(Operator operator) {
 
-		Timing returntiming = Timing.UNAVAILABLE;
 		int time = 0;
 
 		if (operator != Operator.NO_COMPONENT) {
 
-			returntiming = getTiming((OperatorDefinition) operator
+			Timing returntiming = getTiming((OperatorDefinition) operator
 					.getDefinition());
 
 			if (returntiming != Timing.UNAVAILABLE) {
@@ -209,26 +210,48 @@ public class InitialVertexProperty {
 					if (SpecialVertexManager.isBroadCast(parentVertex)) {
 						// Broadcast time is calculated from its output size
 						// if a memory copy speed is set in the operator
-						OperatorDefinition def = (OperatorDefinition) operator.getDefinition();
+						OperatorDefinition def = (OperatorDefinition) operator
+								.getDefinition();
 						time = Timing.DEFAULT_BROADCAST_TIME;
-						
-						float dataCopySpeed = def.getDataCopySpeed();
-						if(dataCopySpeed > 0){
-							// Calculating the sum of output data sizes
-							int broadcastOutputDataSize = 0;
-							for(DAGEdge e : parentVertex.outgoingEdges()){
-								MapperDAGEdge me = (MapperDAGEdge)e;
-								broadcastOutputDataSize += me.getInitialEdgeProperty().getDataSize();
-							}
 
-							if(broadcastOutputDataSize > 0){
-								time = (int) Math.ceil(broadcastOutputDataSize / dataCopySpeed);
+						float dataCopySpeed = def.getDataCopySpeed();
+						if (dataCopySpeed > 0) {
+							// Calculating the sum of output data sizes
+							int inputDataSize = getVertexInputBuffersSize(parentVertex);
+							int outputDataSize = getVertexOutputBuffersSize(parentVertex);
+
+							// A broadcast with different sizes in inputs and
+							// output creates a memory copy with a given speed
+							if (inputDataSize < outputDataSize
+									&& outputDataSize > 0) {
+								time = (int) Math.ceil(outputDataSize
+										/ dataCopySpeed);
+							} else {
+								time = Timing.DEFAULT_BROADCAST_TIME;
 							}
 						}
 					} else if (SpecialVertexManager.isFork(parentVertex)) {
 						time = Timing.DEFAULT_FORK_TIME;
 					} else if (SpecialVertexManager.isJoin(parentVertex)) {
-						time = Timing.DEFAULT_JOIN_TIME;
+						// Join time is calculated from its input size
+						// if a memory copy speed is set in the operator
+						OperatorDefinition def = (OperatorDefinition) operator
+								.getDefinition();
+						time = Timing.DEFAULT_BROADCAST_TIME;
+
+						float dataCopySpeed = def.getDataCopySpeed();
+						if (dataCopySpeed > 0) {
+							// Calculating the sum of input data sizes
+							// A join creates a memory copy with a given speed
+							int inputDataSize = getVertexInputBuffersSize(parentVertex);
+
+							if (inputDataSize > 0) {
+								time = (int) Math.ceil(inputDataSize
+										/ dataCopySpeed);
+							} else {
+								time = Timing.DEFAULT_JOIN_TIME;
+							}
+						}
 					} else if (SpecialVertexManager.isInit(parentVertex)) {
 						time = Timing.DEFAULT_INIT_TIME;
 					}
@@ -237,6 +260,33 @@ public class InitialVertexProperty {
 		}
 
 		return time;
+	}
+
+	private int getVertexInputBuffersSize(MapperDAGVertex v) {
+		int inputDataSize = 0;
+
+		for (DAGEdge e : parentVertex.incomingEdges()) {
+			MapperDAGEdge me = (MapperDAGEdge) e;
+			if (!(me.getSource() instanceof TransferVertex)) {
+				inputDataSize += me.getInitialEdgeProperty().getDataSize();
+			}
+		}
+
+		return inputDataSize;
+	}
+
+	private int getVertexOutputBuffersSize(MapperDAGVertex v) {
+		int outputDataSize = 0;
+
+		for (DAGEdge e : v.outgoingEdges()) {
+			MapperDAGEdge me = (MapperDAGEdge) e;
+			if (!(me.getTarget() instanceof TransferVertex)) {
+				outputDataSize += me.getInitialEdgeProperty().getDataSize();
+			}
+		}
+
+		return outputDataSize;
+
 	}
 
 	public Timing getTiming(IOperatorDefinition operatordef) {

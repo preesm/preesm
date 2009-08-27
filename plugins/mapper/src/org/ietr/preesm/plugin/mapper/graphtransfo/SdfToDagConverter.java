@@ -312,8 +312,7 @@ public class SdfToDagConverter {
 
 								currentvertex.getInitialVertexProperty()
 										.addOperator(currentop);
-								// If no timing is set, we add a unavailable
-								// timing
+
 								Timing newTiming = new Timing(
 										(OperatorDefinition) currentop
 												.getDefinition(),
