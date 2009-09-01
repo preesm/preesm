@@ -77,11 +77,11 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 /**
- * Plots the best latency found versus scheduling time
+ * Plots the best cost found versus scheduling time. Can be latency or else
  * 
  * @author pmenuet
  */
-public class BestLatencyPlotter extends ApplicationFrame implements
+public class BestCostPlotter extends ApplicationFrame implements
 		ActionListener, Observer {
 
 	public class SizeListener implements ControlListener {
@@ -134,7 +134,7 @@ public class BestLatencyPlotter extends ApplicationFrame implements
 	 * @param title
 	 *            the frame title.
 	 */
-	public BestLatencyPlotter(final String title, Semaphore pauseSemaphore) {
+	public BestCostPlotter(final String title, Semaphore pauseSemaphore) {
 
 		super(title);
 

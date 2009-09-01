@@ -34,84 +34,48 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.bestlatency;
+package org.ietr.preesm.plugin.mapper.plot.bestcost;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.plugin.mapper.activator.Activator;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 /**
- * Input of the editor displaying the best latency found in time
+ * Class used by the editor displaying the best latency found in time.
+ * Useful to run editor in display thread.
  * 
  * @author mpelcat
  */
-public class BestLatencyEditorInput implements IEditorInput {
+public class BestCostEditorRunnable implements Runnable {
 
-	private BestLatencyPlotter plotter = null;
-
-	public BestLatencyEditorInput(BestLatencyPlotter plotter) {
+	private IEditorInput input;
+	
+	public BestCostEditorRunnable(IEditorInput input) {
 		super();
-		this.plotter = plotter;
+		this.input = input;
 	}
 
+	@Override
+	public void run() {
+
+		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
+				.getWorkbenchWindows()[0];
+
+		if (dwindow != null && input instanceof BestCostEditorInput) {
+			IWorkbenchPage page = dwindow.getActivePage();
+			
+			try {
+				page.openEditor(input,
+								"org.ietr.preesm.plugin.mapper.plot.TimeEditor");
+
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	
-	public BestLatencyPlotter getPlotter() {
-		return plotter;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#exists()
-	 */
-	@Override
-	public boolean exists() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-	 */
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
-		return img;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getName()
-	 */
-	@Override
-	public String getName() {
-		return "Best Latency";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getPersistable()
-	 */
-	@Override
-	public IPersistableElement getPersistable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
-	 */
-	@Override
-	public String getToolTipText() {
-		return "Best Latency";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked") 
-	@Override
-	public Object getAdapter(Class adapter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

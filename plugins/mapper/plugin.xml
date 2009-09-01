@@ -57,7 +57,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor"
+            class="org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor"
             default="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.TimeEditor"

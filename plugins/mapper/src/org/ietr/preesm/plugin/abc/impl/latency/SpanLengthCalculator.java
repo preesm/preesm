@@ -18,14 +18,17 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
 	public static final String DAG_SPAN = "dag span length";
-	
+
 	public SpanLengthCalculator(EdgeSchedType edgeSchedType, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
 			IScenario scenario) {
 		super(edgeSchedType, dag, archi, taskSchedType, scenario);
-		
+
 		this.updateTimings();
-		dag.getPropertyBean().setValue(DAG_SPAN, (Long)getFinalCost());
+
+		// The span corresponds to the final latency of an infinite homogeneous
+		// simulation
+		dag.getPropertyBean().setValue(DAG_SPAN, (Long) getFinalLatency());
 	}
 
 	@Override

@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl.latency;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +81,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Current time keeper: called exclusively by simulator to update the useful
 	 * time tags in DAG
 	 */
-	//protected GraphTimeKeeper timeKeeper;
+	// protected GraphTimeKeeper timeKeeper;
 	protected NewTimeKeeper nTimeKeeper;
 
 	protected AbstractCommunicationRouter comRouter = null;
@@ -99,9 +101,9 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-		
-		//this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
-		//timeKeeper.resetTimings();
+
+		// this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
+		// timeKeeper.resetTimings();
 
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
@@ -124,9 +126,9 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-		
-		//this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
-		//timeKeeper.resetTimings();
+
+		// this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
+		// timeKeeper.resetTimings();
 
 		// Forces the unmapping process before the new mapping process
 		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
@@ -210,13 +212,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void implant(MapperDAGVertex dagvertex, Operator operator,
 			boolean updateRank) {
 		super.implant(dagvertex, operator, updateRank);
-		//timeKeeper.setAsDirty(dagvertex);
+		// timeKeeper.setAsDirty(dagvertex);
 	}
 
 	@Override
 	public void unimplant(MapperDAGVertex dagvertex) {
 		super.unimplant(dagvertex);
-		//timeKeeper.setAsDirty(dagvertex);
+		// timeKeeper.setAsDirty(dagvertex);
 	}
 
 	/**
@@ -225,7 +227,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	public void updateTimings() {
 
-		//timeKeeper.updateTLevels();
+		// timeKeeper.updateTLevels();
 		nTimeKeeper.updateTLevels();
 	}
 
@@ -239,26 +241,23 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// are mapped correctly: fork after the sender and join before the
 		// receiver. No more used because the usable rules with prohibitive
 		// costs works not well with list scheduling.
-		/*if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
-				.getTarget()))) {
-			ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
-					.getSource()).getImplementationVertexProperty();
-			ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
-					.getTarget()).getImplementationVertexProperty();
-
-			Operator sourceOp = sourceimp.getEffectiveOperator();
-			Operator destOp = destimp.getEffectiveOperator();
-
-			if (sourceOp != Operator.NO_COMPONENT
-					&& destOp != Operator.NO_COMPONENT) {
-				if (sourceOp.equals(destOp)) {
-					edge.getTimingEdgeProperty().setCost(0);
-				} else {
-					edge.getTimingEdgeProperty().setCost(
-							SpecialVertexManager.dissuasiveCost);
-				}
-			}
-		}*/
+		/*
+		 * if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
+		 * .getTarget()))) { ImplementationVertexProperty sourceimp =
+		 * ((MapperDAGVertex) edge
+		 * .getSource()).getImplementationVertexProperty();
+		 * ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
+		 * .getTarget()).getImplementationVertexProperty();
+		 * 
+		 * Operator sourceOp = sourceimp.getEffectiveOperator(); Operator destOp
+		 * = destimp.getEffectiveOperator();
+		 * 
+		 * if (sourceOp != Operator.NO_COMPONENT && destOp !=
+		 * Operator.NO_COMPONENT) { if (sourceOp.equals(destOp)) {
+		 * edge.getTimingEdgeProperty().setCost(0); } else {
+		 * edge.getTimingEdgeProperty().setCost(
+		 * SpecialVertexManager.dissuasiveCost); } } }
+		 */
 	}
 
 	public abstract EdgeSchedType getEdgeSchedType();
@@ -267,47 +266,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * *********Timing accesses**********
 	 */
 
-	@Override
-	public final long getFinalCost() {
-
-		//updateTimings();
-
-		// visualize results
-		// monitor.render(new SimpleTextRenderer());
-
-		long finalTime = nTimeKeeper.getFinalTime();
-
-		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"negative implementation final time");
-		}
-
-		/*if(timeKeeper.getFinalTime() != finalTime){
-
-			timeKeeper.getFinalTime();
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"false finaltime");
-		}*/
-		
-		return finalTime;
-	}
-
+	/**
+	 * The cost of a vertex is the end time of its execution (latency minimization)
+	 */
 	@Override
 	public final long getFinalCost(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 
-		//updateTimings();
-
 		long finalTime = nTimeKeeper.getFinalTime(vertex);
 
-
-		/*if(timeKeeper.getFinalTime(vertex) != finalTime){
-
-			timeKeeper.getFinalTime(vertex);
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"false finaltime " + vertex.getName());
-		}*/
-		
 		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
@@ -317,25 +284,49 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 	}
 
+	/**
+	 * The cost of a component is the end time of its last vertex (latency minimization)
+	 */
 	@Override
 	public final long getFinalCost(ArchitectureComponent component) {
 
 		long finalTime = nTimeKeeper.getFinalTime(component);
 
-		/*if(timeKeeper.getFinalTime(component) != finalTime){
+		return finalTime;
+	}
 
-			timeKeeper.getFinalTime(component);
+	/**
+	 * The cost of an implementation is calculated from its latency and loads
+	 */
+	@Override
+	public final long getFinalCost() {
+
+		long finalTime = getFinalLatency();
+
+		long loadBalancing = evaluateLoadBalancing();
+
+		return finalTime + loadBalancing;
+	}
+
+	/**
+	 * The cost of an implementation is calculated from its latency and loads
+	 */
+	public final long getFinalLatency() {
+
+		long finalTime = nTimeKeeper.getFinalTime();
+
+		if (finalTime < 0) {
 			PreesmLogger.getLogger().log(Level.SEVERE,
-					"false finaltime " + component.getName());
-		}*/
-		
+					"negative implementation final latency");
+		}
+
 		return finalTime;
 	}
 
 	public final long getTLevel(MapperDAGVertex vertex, boolean update) {
 		vertex = translateInImplementationVertex(vertex);
 
-		if(update)
+		if (update)
 			updateTimings();
 		return vertex.getTimingVertexProperty().getNewtLevel();
 	}
@@ -343,7 +334,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public final long getBLevel(MapperDAGVertex vertex, boolean update) {
 		vertex = translateInImplementationVertex(vertex);
 
-		if(update)
+		if (update)
 			updateTimings();
 		return vertex.getTimingVertexProperty().getNewbLevel();
 	}
@@ -369,64 +360,40 @@ public abstract class LatencyAbc extends AbstractAbc {
 		return comRouter;
 	}
 
-	/*
-	private void addVertexAfterSourceLastTransfer(MapperDAGVertex v,
-			List<String> orderedNames) {
-		DAGVertex source = ((MapperDAGEdge) v.incomingEdges().toArray()[0])
-				.getSource();
-		int predIdx = orderedNames.indexOf(source.getName()) + 1;
-		try {
-			while (orderedNames.get(predIdx).indexOf("__transfer") == 0
-					|| orderedNames.get(predIdx).indexOf("__overhead") == 0) {
-				predIdx++;
-			}
-			orderedNames.add(predIdx, v.getName());
-		} catch (IndexOutOfBoundsException e) {
-			orderedNames.add(v.getName());
-		}
-	}
+	/**
+	 * Gives an index between 0 and 1 evaluating the load balancing
+	 */
+	public long evaluateLoadBalancing() {
 
-	private void addVertexBeforeTargetFirstTransfer(MapperDAGVertex v,
-			List<String> orderedNames) {
-		DAGVertex target = ((MapperDAGEdge) v.outgoingEdges().toArray()[0])
-				.getTarget();
-		int predIdx = orderedNames.indexOf(target.getName()) - 1;
-		try {
-			while (orderedNames.get(predIdx).indexOf("__transfer") == 0) {
-				predIdx--;
-			}
-			orderedNames.add(predIdx + 1, v.getName());
-		} catch (IndexOutOfBoundsException e) {
-			orderedNames.add(0, v.getName());
-		}
-	}
+		List<Long> taskSums = new ArrayList<Long>();
+		long totalTaskSum = 0l;
 
-	private void addVertexBeforeTarget(MapperDAGVertex v,
-			List<String> orderedNames) {
-		DAGVertex target = ((MapperDAGEdge) v.outgoingEdges().toArray()[0])
-				.getTarget();
-		int predIdx = orderedNames.indexOf(target.getName()) - 1;
-		try {
-			orderedNames.add(predIdx + 1, v.getName());
-		} catch (IndexOutOfBoundsException e) {
-			orderedNames.add(0, v.getName());
-		}
-	}
-
-	private void addVertexAfterSourceLastOverhead(MapperDAGVertex v,
-			List<String> orderedNames) {
-		DAGVertex source = ((MapperDAGEdge) v.incomingEdges().toArray()[0])
-				.getSource();
-		int predIdx = orderedNames.indexOf(source.getName()) + 1;
-		try {
-			while (orderedNames.get(predIdx).indexOf("__overhead") == 0) {
-				predIdx++;
+		for (ArchitectureComponent o : archi.getComponents()) {
+			long load = getLoad(o);
+			if (load > 0) {
+				taskSums.add(load);
+				totalTaskSum += load;
 			}
-			orderedNames.add(predIdx, v.getName());
-		} catch (IndexOutOfBoundsException e) {
-			orderedNames.add(v.getName());
 		}
-	}*/
+
+		int cmpNr = taskSums.size();
+
+		Collections.sort(taskSums, new Comparator<Long>() {
+			@Override
+			public int compare(Long arg0, Long arg1) {
+				return (int) (arg0 - arg1);
+			}
+		});
+
+		long mean = totalTaskSum / taskSums.size();
+		long variance = 0;
+		// Calculating the load sum of half the components with the lowest loads
+		for (long taskDuration : taskSums) {
+			variance += ((taskDuration - mean)*(taskDuration - mean)) / taskSums.size();
+		}
+
+		return (long)Math.sqrt(variance);
+	}
 
 	/**
 	 * Reschedule all the transfers generated during mapping
@@ -453,7 +420,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 							@Override
 							public int compare(MapperDAGVertex arg0,
 									MapperDAGVertex arg1) {
-								long TLevelDifference = (getTLevel(arg0,false) - getTLevel(arg1,false));
+								long TLevelDifference = (getTLevel(arg0, false) - getTLevel(
+										arg1, false));
 								if (TLevelDifference == 0)
 									TLevelDifference = (arg0.getName()
 											.compareTo(arg1.getName()));
@@ -506,9 +474,9 @@ public abstract class LatencyAbc extends AbstractAbc {
 		 */
 		// reorder(orderedNames);
 	}
-	
+
 	@Override
-	public void updateFinalCosts(){
+	public void updateFinalCosts() {
 		updateTimings();
 	}
 }

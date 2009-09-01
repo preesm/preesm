@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.jgrapht.Graph;
 import org.sdf4j.exporter.GMLExporter;
@@ -50,6 +51,8 @@ import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Exporter for mapper DAG graphs
@@ -128,13 +131,26 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		exportKeys("vertex", vertexElt, vertex.getPropertyBean());
 
 		if (vertex instanceof TransferVertex) {
+			// Adding route step to the node
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
 							ImplementationPropertyNames.SendReceive_routeStep);
 			if (routeStep != null) {
-				exportRouteStep(routeStep,
-						vertexElt);
+				exportRouteStep(routeStep, vertexElt);
 			}
+		} else {
+			// Adding operator definition type to the newly created element
+			Element opDefElt = domDocument.createElement("data");
+			vertexElt.appendChild(opDefElt);
+			
+
+			opDefElt.setAttribute("key",ImplementationPropertyNames.Vertex_OperatorDef);
+			
+			opDefElt.setTextContent(
+					((MapperDAGVertex) vertex)
+							.getImplementationVertexProperty()
+							.getEffectiveOperator().getDefinition()
+							.getVlnv().getName());
 		}
 	}
 

@@ -74,6 +74,11 @@ public final class ImplementationPropertyNames {
 	public static final String Vertex_Operator = "Operator";
 	
 	/**
+	 * {@link OperatorDefinition} of the vertex operator.
+	 */
+	public static final String Vertex_OperatorDef = "OperatorDef";
+	
+	/**
 	 * integer equal to the total order of the vertex.
 	 */
 	public static final String Vertex_schedulingOrder = "schedulingOrder";

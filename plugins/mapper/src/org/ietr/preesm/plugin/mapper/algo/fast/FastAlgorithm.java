@@ -59,8 +59,8 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
+import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
@@ -121,17 +121,17 @@ public class FastAlgorithm extends Observable {
 			List<MapperDAGVertex> finalcriticalpathList) {
 
 		Semaphore pauseSemaphore = new Semaphore(1);
-		final BestLatencyPlotter bestLatencyPlotter = new BestLatencyPlotter(
+		final BestCostPlotter costPlotter = new BestCostPlotter(
 				"FastAlgorithm", pauseSemaphore);
 
 		// initialing the data window if this is necessary
 		if (!pfastused) {
 
-			bestLatencyPlotter.setSUBPLOT_COUNT(1);
+			costPlotter.setSUBPLOT_COUNT(1);
 			// demo.display();
-			BestLatencyEditor.createEditor(bestLatencyPlotter);
+			BestCostEditor.createEditor(costPlotter);
 
-			this.addObserver(bestLatencyPlotter);
+			this.addObserver(costPlotter);
 		}
 
 		// Variables
@@ -203,7 +203,7 @@ public class FastAlgorithm extends Observable {
 
 			if (!pfastused) {
 				// Mode Pause
-				if (bestLatencyPlotter.getActionType() == 2) {
+				if (costPlotter.getActionType() == 2) {
 					try {
 						pauseSemaphore.acquire();
 						pauseSemaphore.release();
@@ -214,7 +214,7 @@ public class FastAlgorithm extends Observable {
 				}
 
 				// Mode stop
-				if (bestLatencyPlotter.getActionType() == 1
+				if (costPlotter.getActionType() == 1
 						|| (monitor != null && monitor.isCanceled())) {
 					logger
 							.log(

@@ -241,13 +241,19 @@ public class GanttPlotter extends ApplicationFrame implements
 	 */
 	public static void plot(MapperDAG dag, IAbc simulator) {
 
-		simulator.updateFinalCosts();
-		GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
-				+ simulator.getFinalCost(), dag, simulator);
+		if (simulator instanceof LatencyAbc) {
+			LatencyAbc abc = (LatencyAbc) simulator;
+			abc.updateFinalCosts();
+			GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
+					+ abc.getFinalLatency(), dag, abc);
 
-		plot.pack();
-		RefineryUtilities.centerFrameOnScreen(plot);
-		plot.setVisible(true);
+			plot.pack();
+			RefineryUtilities.centerFrameOnScreen(plot);
+			plot.setVisible(true);
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"No plotting available without a latency ABC.");
+		}
 
 	}
 

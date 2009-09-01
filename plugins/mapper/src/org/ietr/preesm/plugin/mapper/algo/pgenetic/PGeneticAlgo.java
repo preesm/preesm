@@ -59,8 +59,8 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
+import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 
 /**
  * Task scheduling genetic algorithm
@@ -165,12 +165,12 @@ public class PGeneticAlgo extends Observable {
 		}
 
 		// Set Data window
-		final BestLatencyPlotter demo = new BestLatencyPlotter(
+		final BestCostPlotter costPlotter = new BestCostPlotter(
 				"Parallel genetic Algorithm", null);
-		demo.setSUBPLOT_COUNT(1);
+		costPlotter.setSUBPLOT_COUNT(1);
 		//demo.display();
-		BestLatencyEditor.createEditor(demo);
-		this.addObserver(demo);
+		BestCostEditor.createEditor(costPlotter);
+		this.addObserver(costPlotter);
 
 		// set best population
 		result.addAll(population);
@@ -204,11 +204,11 @@ public class PGeneticAlgo extends Observable {
 			logger.log(Level.FINE, "regroup number " + j);
 
 			// Mode Pause
-			while (demo.getActionType() == 2)
+			while (costPlotter.getActionType() == 2)
 				;
 
 			// Mode stop
-			if (demo.getActionType() == 1) {
+			if (costPlotter.getActionType() == 1) {
 				List<Chromosome> result2 = new ArrayList<Chromosome>();
 				result2.addAll(result);
 				return result2;

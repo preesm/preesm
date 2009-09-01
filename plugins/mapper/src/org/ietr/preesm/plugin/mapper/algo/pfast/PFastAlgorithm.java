@@ -65,8 +65,8 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
+import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 
 /**
  * Task scheduling FAST algorithm multithread
@@ -330,14 +330,14 @@ public class PFastAlgorithm extends Observable {
 
 		// Data window set
 		Semaphore pauseSemaphore = new Semaphore(1);
-		final BestLatencyPlotter demo = new BestLatencyPlotter("PFast Algorithm", pauseSemaphore);
+		final BestCostPlotter costPlotter = new BestCostPlotter("PFast Algorithm", pauseSemaphore);
 
 		if (!population) {
-			demo.setSUBPLOT_COUNT(1);
+			costPlotter.setSUBPLOT_COUNT(1);
 			//demo.display();
-			BestLatencyEditor.createEditor(demo);
+			BestCostEditor.createEditor(costPlotter);
 
-			this.addObserver(demo);
+			this.addObserver(costPlotter);
 		}
 
 		// step 1
@@ -365,11 +365,11 @@ public class PFastAlgorithm extends Observable {
 
 			logger.log(Level.FINE, "Itération " + j);
 			// Mode Pause
-			while (demo.getActionType() == 2)
+			while (costPlotter.getActionType() == 2)
 				;
 
 			// Mode stop
-			if (demo.getActionType() == 1)
+			if (costPlotter.getActionType() == 1)
 				return mappedDAGSet.first().clone();
 
 			// step 11

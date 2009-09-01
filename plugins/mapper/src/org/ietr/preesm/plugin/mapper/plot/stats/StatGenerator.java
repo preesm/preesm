@@ -70,7 +70,7 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class StatGenerator {
 
-	private IAbc abc = null;
+	private LatencyAbc abc = null;
 
 	private IScenario scenario = null;
 	private TextParameters params = null;
@@ -80,15 +80,15 @@ public class StatGenerator {
 		super();
 		this.params = params;
 		this.scenario = scenario;
-		this.abc = abc;
-
-		abc.updateFinalCosts();
-		this.finalTime = abc.getFinalCost();
-
-		// getDAGComplexSpanLength();
-		// getDAGComplexWorkLength();
-		// getLoad(archi.getMainOperator());
-		// getMem(archi.getMainOperator());
+		if (abc instanceof LatencyAbc) {
+			this.abc = (LatencyAbc) abc;
+			
+			this.abc.updateFinalCosts();
+			this.finalTime = this.abc.getFinalLatency();
+		} else {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Statistics can only be generated from latency ABCs.");
+		}
 	}
 
 	/**
@@ -144,17 +144,23 @@ public class StatGenerator {
 		long work = 0;
 		MapperDAG dag = abc.getDAG();
 		Operator mainOp = abc.getArchitecture().getMainOperator();
-		
+
 		for (DAGVertex vertex : dag.vertexSet()) {
 			if (!(vertex instanceof TransferVertex)
 					&& !(vertex instanceof OverheadVertex)
 					&& !(vertex instanceof InvolvementVertex)) {
-				
+
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
 						.getTime(mainOp);
-				
-				PreesmLogger.getLogger().log(Level.INFO,"task " + vertex.getName() + " duration " + ((MapperDAGVertex) vertex).getInitialVertexProperty()
-						.getTime(mainOp));
+
+				PreesmLogger.getLogger().log(
+						Level.INFO,
+						"task "
+								+ vertex.getName()
+								+ " duration "
+								+ ((MapperDAGVertex) vertex)
+										.getInitialVertexProperty().getTime(
+												mainOp));
 			}
 		}
 
@@ -166,7 +172,7 @@ public class StatGenerator {
 	 */
 	public long getResultTime() {
 		if (abc instanceof LatencyAbc) {
-			return abc.getFinalCost();
+			return abc.getFinalLatency();
 		}
 
 		return 0;

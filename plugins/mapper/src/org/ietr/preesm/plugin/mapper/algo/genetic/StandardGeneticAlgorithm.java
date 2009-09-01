@@ -49,8 +49,8 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
-import org.ietr.preesm.plugin.mapper.plot.bestlatency.BestLatencyEditor;
+import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
+import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
 /**
@@ -157,15 +157,15 @@ public class StandardGeneticAlgorithm extends Observable {
 			AbcType type, EdgeSchedType edgeSchedType, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
-		final BestLatencyPlotter demo = new BestLatencyPlotter("Genetic Algorithm", null);
+		final BestCostPlotter costPlotter = new BestCostPlotter("Genetic Algorithm", null);
 
 		// Set data window if necessary
 		if (!pgeneticalgo) {
 
-			demo.setSUBPLOT_COUNT(1);
+			costPlotter.setSUBPLOT_COUNT(1);
 			//demo.display();
-			BestLatencyEditor.createEditor(demo);
-			this.addObserver(demo);
+			BestCostEditor.createEditor(costPlotter);
+			this.addObserver(costPlotter);
 		}
 
 		// Convert MapperDAG in chromosome
@@ -187,11 +187,11 @@ public class StandardGeneticAlgorithm extends Observable {
 
 			// Button data window
 			if (!pgeneticalgo) {
-				while (demo.getActionType() == 2)
+				while (costPlotter.getActionType() == 2)
 					;
 
 				// Mode stop
-				if (demo.getActionType() == 1)
+				if (costPlotter.getActionType() == 1)
 					return chromoSet;
 
 			}

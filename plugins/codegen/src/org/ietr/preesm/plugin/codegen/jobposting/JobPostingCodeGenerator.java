@@ -29,7 +29,7 @@ import org.sdf4j.model.sdf.SDFEdge;
 /**
  * Generating code to address a job posting runtime system. It generates xml
  * data converted in a .h with useful data sizes and a .h with a list of task
- * descriptors
+ * descriptors. Experimental: Do not use!!
  * 
  * @author mpelcat
  */

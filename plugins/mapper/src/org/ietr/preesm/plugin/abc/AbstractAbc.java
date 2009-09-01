@@ -223,7 +223,6 @@ public abstract class AbstractAbc implements IAbc {
 		long load = 0;
 
 		if (implementation != null) {
-
 			for (DAGVertex v : implementation.vertexSet()) {
 				MapperDAGVertex mv = (MapperDAGVertex) v;
 				if (mv.getImplementationVertexProperty()

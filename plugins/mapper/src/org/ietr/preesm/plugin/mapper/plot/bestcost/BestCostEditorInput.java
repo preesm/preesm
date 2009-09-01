@@ -34,100 +34,84 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.plugin.mapper.plot.bestlatency;
+package org.ietr.preesm.plugin.mapper.plot.bestcost;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.plugin.mapper.plot.BestLatencyPlotter;
+import org.eclipse.ui.IPersistableElement;
+import org.ietr.preesm.plugin.mapper.activator.Activator;
+import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 
 /**
- * Editor displaying the best latency found in time
+ * Input of the editor displaying the best cost found in time
  * 
  * @author mpelcat
  */
-public class BestLatencyEditor extends EditorPart {
+public class BestCostEditorInput implements IEditorInput {
 
-	private BestLatencyPlotter plotter = null;
-	
-	public BestLatencyEditor() {
+	private BestCostPlotter plotter = null;
+
+	public BestCostEditorInput(BestCostPlotter plotter) {
 		super();
-		// TODO Auto-generated constructor stub
+		this.plotter = plotter;
 	}
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		
+	
+	public BestCostPlotter getPlotter() {
+		return plotter;
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#exists()
+	 */
 	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		
-		try {
-			setSite(site);
-			setInput(input);
-			setPartName(input.getName());
-			
-			if(input instanceof BestLatencyEditorInput){
-				BestLatencyEditorInput implinput = (BestLatencyEditorInput)input;
-				this.plotter = implinput.getPlotter();
-			}
-			
-		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases.  So
-			// just close it.
-			this.getEditorSite().getPage().closeEditor(this, false);
-			throw new PartInitException("File " + input.getName()
-					+ " does not exist.");
-		} 
-
-	}
-
-	@Override
-	public boolean isDirty() {
+	public boolean exists() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+	 */
 	@Override
-	public boolean isSaveAsAllowed() {
+	public ImageDescriptor getImageDescriptor() {
+		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
+		return img;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getName()
+	 */
+	@Override
+	public String getName() {
+		return "Best Latency";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getPersistable()
+	 */
+	@Override
+	public IPersistableElement getPersistable() {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
+	 */
 	@Override
-	public void createPartControl(Composite parent) {
-		
-		if(plotter != null){
-
-			plotter.display(parent);
-		}
-		
+	public String getToolTipText() {
+		return "Best Latency";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	@SuppressWarnings("unchecked") 
 	@Override
-	public void setFocus() {
+	public Object getAdapter(Class adapter) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
-	public static void createEditor(BestLatencyPlotter plotter) {
-		IEditorInput input = new BestLatencyEditorInput(plotter);
-
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new BestLatencyEditorRunnable(input));
-		
-	}
 }
