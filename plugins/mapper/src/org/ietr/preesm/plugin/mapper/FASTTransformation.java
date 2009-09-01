@@ -54,6 +54,7 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -82,10 +83,10 @@ public class FASTTransformation extends AbstractMapping {
 			IScenario scenario, IProgressMonitor monitor) throws PreesmException {
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
-		FastAlgoParameters parameters;
 		TaskResult result = new TaskResult();
 
-		parameters = new FastAlgoParameters(textParameters);
+		FastAlgoParameters fastParameters = new FastAlgoParameters(textParameters);
+		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
@@ -96,10 +97,10 @@ public class FASTTransformation extends AbstractMapping {
 		
 		// calculates the DAG span length on the architecture main operator (the tasks that can
 		// not be executed by the main operator are deported without transfer time to other operator
-		calculateSpan(dag,architecture,scenario,parameters);
+		calculateSpan(dag,architecture,scenario,abcParameters);
 
-		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(),
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
+		IAbc simu = new InfiniteHomogeneousAbc(abcParameters,
+				dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 		
 		InitialLists initialLists = new InitialLists();
 
@@ -108,16 +109,14 @@ public class FASTTransformation extends AbstractMapping {
 
 		simu.resetDAG();
 
-		IAbc simu2 = AbstractAbc.getInstance(parameters.getSimulatorType(),
-				parameters.getEdgeSchedType(), dag, architecture, scenario);
+		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
-		dag = fastAlgorithm.map("test", parameters.getSimulatorType(),
-				parameters.getEdgeSchedType(), dag, architecture, parameters.getMaxCount(),
-				parameters.getMaxStep(), parameters.getMargIn(), false, false
-				, parameters.isDisplaySolutions(), monitor);
+		dag = fastAlgorithm.map("test", abcParameters, dag, architecture, fastParameters.getMaxCount(),
+				fastParameters.getMaxStep(), fastParameters.getMargIn(), false, false
+				, fastParameters.isDisplaySolutions(), monitor);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
 		
@@ -131,7 +130,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		// The mapper dag properties are put in the property bean to be transfered to code generation
 		try {
-			tagSDF.tag(dag, architecture, scenario, simu2, parameters
+			tagSDF.tag(dag, architecture, scenario, simu2, abcParameters
 					.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			throw(new PreesmException(e.getMessage()));

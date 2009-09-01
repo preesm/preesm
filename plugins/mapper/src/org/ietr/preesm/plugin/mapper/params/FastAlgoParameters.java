@@ -44,10 +44,13 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * Class which purpose is setting the parameters for the fast algorithm
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 
-public class FastAlgoParameters extends AbstractParameters {
+public class FastAlgoParameters {
 
+	protected TextParameters textParameters = null;
+	
 	/**
 	 * This is the number of probabilistic local jump which the user want. The
 	 * PFast, as the Fast, does probabilistic jump on the critical path which
@@ -75,7 +78,6 @@ public class FastAlgoParameters extends AbstractParameters {
 	private boolean displaySolutions;
 
 	public FastAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
 		
 		this.maxCount = textParameters.getIntVariable("maxCount");
 		this.maxStep = textParameters.getIntVariable("maxStep");
@@ -91,7 +93,6 @@ public class FastAlgoParameters extends AbstractParameters {
 
 	public FastAlgoParameters(int maxCount, int maxStep, int margIn, boolean displaySolutions,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		super(simulatorType,edgeSchedType);
 		textParameters.addVariable("maxCount",maxCount);
 		textParameters.addVariable("maxStep",maxStep);
 		textParameters.addVariable("margIn",margIn);

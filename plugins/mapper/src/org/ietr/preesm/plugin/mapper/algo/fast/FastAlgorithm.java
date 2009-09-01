@@ -59,6 +59,7 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
@@ -89,8 +90,7 @@ public class FastAlgorithm extends Observable {
 		this.scenario = scenario;
 	}
 
-	public MapperDAG map(String threadName, AbcType simulatorType,
-			EdgeSchedType edgeSchedType, MapperDAG dag,
+	public MapperDAG map(String threadName, AbcParameters abcParams, MapperDAG dag,
 			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
 			boolean alreadyimplanted, boolean pfastused,
 			boolean displaySolutions, IProgressMonitor monitor) {
@@ -101,7 +101,7 @@ public class FastAlgorithm extends Observable {
 		List<MapperDAGVertex> finalcriticalpathList = initialLists
 				.getCriticalpath();
 
-		return map(threadName, simulatorType, edgeSchedType, dag, archi, maxcount,
+		return map(threadName, abcParams, dag, archi, maxcount,
 				maxstep, margin, alreadyimplanted, pfastused, displaySolutions,
 				monitor, cpnDominantList, blockingNodesList,
 				finalcriticalpathList);
@@ -111,8 +111,7 @@ public class FastAlgorithm extends Observable {
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
 	 */
-	public MapperDAG map(String threadName, AbcType simulatorType,
-			EdgeSchedType edgeSchedType, MapperDAG dag,
+	public MapperDAG map(String threadName, AbcParameters abcParams, MapperDAG dag,
 			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
 			boolean alreadyimplanted, boolean pfastused,
 			boolean displaySolutions, IProgressMonitor monitor,
@@ -135,7 +134,7 @@ public class FastAlgorithm extends Observable {
 		}
 
 		// Variables
-		IAbc simulator = AbstractAbc.getInstance(simulatorType, edgeSchedType,
+		IAbc simulator = AbstractAbc.getInstance(abcParams,
 				dag, archi, scenario);
 		
 		// A topological task scheduler is chosen for the list scheduling.
@@ -177,8 +176,8 @@ public class FastAlgorithm extends Observable {
 
 		bestTotalOrder = simulator.getTotalOrder().toList();
 		if (displaySolutions) {
-			GanttEditor.createEditor(simulator, getBestTotalOrder(),
-					"" + initial + " List");
+			GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
+					"Cost:" + initial + " List");
 		}
 
 		logger.log(Level.FINE, "InitialSP " + initial);
@@ -285,8 +284,8 @@ public class FastAlgorithm extends Observable {
 
 				bestTotalOrder = simulator.getTotalOrder().toList();
 				if (displaySolutions) {
-					GanttEditor.createEditor(simulator, getBestTotalOrder(),
-							"" + bestSL + " FAST");
+					GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
+							"Cost:" + bestSL + " Fast");
 				}
 
 				dagfinal.setScheduleLatency(bestSL);

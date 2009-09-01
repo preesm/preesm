@@ -66,6 +66,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
@@ -117,26 +118,26 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture simulator from a simulator type
 	 */
-	public static IAbc getInstance(AbcType simulatorType,
-			EdgeSchedType edgeSchedType, MapperDAG dag,
+	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, IScenario scenario) {
 
 		AbstractAbc abc = null;
+		AbcType simulatorType = params.getSimulatorType();
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(edgeSchedType, dag, archi,
+			abc = new InfiniteHomogeneousAbc(params, dag, archi,
 					scenario);
 		} else if (simulatorType == AbcType.LooselyTimed) {
-			abc = new LooselyTimedAbc(edgeSchedType, dag, archi, simulatorType,
+			abc = new LooselyTimedAbc(params, dag, archi, simulatorType,
 					scenario);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
-			abc = new ApproximatelyTimedAbc(edgeSchedType, dag, archi,
+			abc = new ApproximatelyTimedAbc(params, dag, archi,
 					simulatorType, scenario);
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
-			abc = new AccuratelyTimedAbc(edgeSchedType, dag, archi,
+			abc = new AccuratelyTimedAbc(params, dag, archi,
 					simulatorType, scenario);
 		} else if (simulatorType == AbcType.CommConten) {
-			abc = new CommContenAbc(edgeSchedType, dag, archi, simulatorType,
+			abc = new CommContenAbc(params, dag, archi, simulatorType,
 					scenario);
 		}
 

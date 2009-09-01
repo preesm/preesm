@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -43,6 +43,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
 
 /**
@@ -55,15 +56,14 @@ public class StatEditorInput implements IEditorInput {
 	private IAbc abc = null;
 	private IScenario scenario = null;
 	private TextParameters params = null;
-	
-	public StatEditorInput(IAbc abc, IScenario scenario,
-			TextParameters params) {
+
+	public StatEditorInput(IAbc abc, IScenario scenario, TextParameters params) {
 		super();
 		this.abc = abc;
 		this.params = params;
 		this.scenario = scenario;
 	}
-	
+
 	public IScenario getScenario() {
 		return scenario;
 	}
@@ -79,7 +79,7 @@ public class StatEditorInput implements IEditorInput {
 	public void setAbc(IAbc abc) {
 		this.abc = abc;
 	}
-	
+
 	@Override
 	public boolean exists() {
 		// TODO Auto-generated method stub
@@ -88,13 +88,21 @@ public class StatEditorInput implements IEditorInput {
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm1mini.PNG");
+		ImageDescriptor img = Activator
+				.getImageDescriptor("icons/preesm1mini.PNG");
 		return img;
 	}
 
 	@Override
 	public String getName() {
-		return "Stats " + PreesmLogger.getFormattedTime();
+		if (abc instanceof LatencyAbc) {
+			abc.updateFinalCosts();
+			return "Latency:" + ((LatencyAbc) abc).getFinalLatency() + " Cost:"
+					+ abc.getFinalCost() + " "
+					+ PreesmLogger.getFormattedTime();
+		} else {
+			return "Stats " + PreesmLogger.getFormattedTime();
+		}
 	}
 
 	@Override
@@ -102,11 +110,12 @@ public class StatEditorInput implements IEditorInput {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String getToolTipText() {
 		return "Implementation";
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object getAdapter(Class adapter) {

@@ -59,6 +59,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 
@@ -77,17 +78,16 @@ public class PGeneticAlgo extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		private AbcType simulatorType = null;
-		private EdgeSchedType edgeSchedType = null;
+		private AbcParameters abcParams = null;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
 			long difference = 0;
 			if (o1.isDirty())
-				o1.evaluate(simulatorType,edgeSchedType);
+				o1.evaluate(abcParams);
 			if (o2.isDirty())
-				o2.evaluate(simulatorType,edgeSchedType);
+				o2.evaluate(abcParams);
 
 			difference = o1.getEvaluateCost() - o2.getEvaluateCost();
 
@@ -104,11 +104,10 @@ public class PGeneticAlgo extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
+		public FinalTimeComparator(AbcParameters abcParams,
 				Chromosome chromosome) {
 			super();
-			this.simulatorType = type;
-			this.edgeSchedType = edgeSchedType;
+			this.abcParams = abcParams;
 		}
 
 	}
@@ -133,7 +132,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, IScenario scenario, AbcType type,EdgeSchedType edgeSchedType,
+			MultiCoreArchitecture archi, IScenario scenario, AbcParameters abcParams,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
@@ -149,7 +148,7 @@ public class PGeneticAlgo extends Observable {
 
 		// best Population
 		ConcurrentSkipListSet<Chromosome> result = new ConcurrentSkipListSet<Chromosome>(
-				new FinalTimeComparator(type,edgeSchedType, population.get(0)));
+				new FinalTimeComparator(abcParams, population.get(0)));
 		Logger logger = PreesmLogger.getLogger();
 
 		// if only one processor is used we must do the Standard Genetic
@@ -157,7 +156,7 @@ public class PGeneticAlgo extends Observable {
 		if (processorNumber == 0) {
 			StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 			result = geneticAlgorithm.runGeneticAlgo("genetic algorithm",
-					populationDAG, archi,scenario, type,edgeSchedType, populationSize,
+					populationDAG, archi,scenario, abcParams, populationSize,
 					generationNumber, false);
 			List<Chromosome> result2 = new ArrayList<Chromosome>();
 			result2.addAll(result);
@@ -188,7 +187,7 @@ public class PGeneticAlgo extends Observable {
 
 		// simple verification and variables
 		if (result.first().isDirty())
-			result.first().evaluate(type, edgeSchedType);
+			result.first().evaluate(abcParams);
 		long iBest = result.first().getEvaluateCost();
 		setChanged();
 		notifyObservers(iBest);
@@ -232,7 +231,7 @@ public class PGeneticAlgo extends Observable {
 				// step 9/11
 				PGeneticAlgoCallable thread = new PGeneticAlgoCallable(archi,scenario,
 						generationNumberTemp, iter.next(), populationSize,
-						type, name);
+						abcParams, name);
 				// Add the thread in the pool for the executor
 				FutureTask<List<Chromosome>> task = new FutureTask<List<Chromosome>>(
 						thread);

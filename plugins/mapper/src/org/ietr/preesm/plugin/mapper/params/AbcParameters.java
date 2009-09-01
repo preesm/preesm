@@ -41,11 +41,11 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
 /**
- * Common behavior of all the mapping algorithm parameters
+ * Parameters applied to the current Abc
  * 
  * @author mpelcat
  */
-public abstract class AbstractParameters {
+public class AbcParameters {
 
 	protected TextParameters textParameters = null;
 
@@ -62,7 +62,7 @@ public abstract class AbstractParameters {
 	/**
 	 * Constructor creating a new text parameter
 	 */
-	public AbstractParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
 		textParameters = new TextParameters();
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
@@ -73,7 +73,7 @@ public abstract class AbstractParameters {
 	/**
 	 * Constructor from textual parameters
 	 */
-	public AbstractParameters(TextParameters textParameters) {
+	public AbcParameters(TextParameters textParameters) {
 		this.textParameters = textParameters;
 		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));

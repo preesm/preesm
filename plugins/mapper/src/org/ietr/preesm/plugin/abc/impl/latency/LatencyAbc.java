@@ -64,6 +64,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
@@ -95,7 +96,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LatencyAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public LatencyAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
@@ -106,7 +107,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// timeKeeper.resetTimings();
 
 		// The media simulator calculates the edges costs
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeSchedType,
+		edgeScheduler = AbstractEdgeSched.getInstance(params.getEdgeSchedType(),
 				orderManager);
 		comRouter = new CommunicationRouter(archi, scenario, implementation,
 				edgeScheduler, orderManager);
@@ -236,28 +237,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	@Override
 	protected void setEdgeCost(MapperDAGEdge edge) {
-
-		// Special vertices create edges with prohibitive costs so that they
-		// are mapped correctly: fork after the sender and join before the
-		// receiver. No more used because the usable rules with prohibitive
-		// costs works not well with list scheduling.
-		/*
-		 * if ((edge.getTarget() != null && SpecialVertexManager.isFork(edge
-		 * .getTarget()))) { ImplementationVertexProperty sourceimp =
-		 * ((MapperDAGVertex) edge
-		 * .getSource()).getImplementationVertexProperty();
-		 * ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
-		 * .getTarget()).getImplementationVertexProperty();
-		 * 
-		 * Operator sourceOp = sourceimp.getEffectiveOperator(); Operator destOp
-		 * = destimp.getEffectiveOperator();
-		 * 
-		 * if (sourceOp != Operator.NO_COMPONENT && destOp !=
-		 * Operator.NO_COMPONENT) { if (sourceOp.equals(destOp)) {
-		 * edge.getTimingEdgeProperty().setCost(0); } else {
-		 * edge.getTimingEdgeProperty().setCost(
-		 * SpecialVertexManager.dissuasiveCost); } } }
-		 */
+		
 	}
 
 	public abstract EdgeSchedType getEdgeSchedType();

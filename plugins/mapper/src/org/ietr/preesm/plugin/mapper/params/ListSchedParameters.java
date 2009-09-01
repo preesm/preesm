@@ -43,7 +43,7 @@ import org.ietr.preesm.core.task.TextParameters;
  * @author pmu
  * 
  */
-public class ListSchedParameters extends AbstractParameters {
+public class ListSchedParameters {
 
 	/**
 	 * Construct the ListSchedParameters with given text parameters
@@ -52,6 +52,5 @@ public class ListSchedParameters extends AbstractParameters {
 	 *            TextParameters to be used
 	 */
 	public ListSchedParameters(TextParameters textParameters) {
-		super(textParameters);
 	}
 }

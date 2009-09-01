@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
 /**
@@ -71,7 +72,7 @@ public class MutationOperator {
 	 * @return Chromosome
 	 */
 	public Chromosome transform(Chromosome chromosome1,
-			AbcType simulatorType, EdgeSchedType edgeSchedType) {
+			AbcParameters abcParams) {
 
 		// Construct the son
 		Chromosome chromosome = chromosome1.clone();
@@ -96,7 +97,7 @@ public class MutationOperator {
 
 		// set the change in the gene
 		currentGene.setOperatorId(operator.getName());
-		chromosome.evaluate(simulatorType,edgeSchedType);
+		chromosome.evaluate(abcParams);
 
 		return chromosome;
 

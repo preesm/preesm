@@ -48,6 +48,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 
 /**
@@ -125,10 +126,10 @@ public class GanttEditor extends EditorPart {
 		
 	}
 
-	public static void createEditor(IAbc abc, List<String> bestTotalOrder, String name) {
+	public static void createEditor(IAbc abc, AbcParameters abcParams, List<String> bestTotalOrder, String name) {
 		
 		MapperDAG dag = abc.getDAG().clone();
-		IAbc newAbc = AbstractAbc.getInstance(abc.getType(), abc.getEdgeSchedType(), dag, abc.getArchitecture(), abc.getScenario());
+		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc.getArchitecture(), abc.getScenario());
 		newAbc.setDAG(dag);
 		newAbc.reorder(bestTotalOrder);
 		

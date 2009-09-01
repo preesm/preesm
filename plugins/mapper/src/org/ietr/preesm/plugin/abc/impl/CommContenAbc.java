@@ -47,6 +47,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 
 /**
@@ -56,7 +57,7 @@ import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
  */
 public class CommContenAbc extends AbstractAbc {
 
-	public CommContenAbc(EdgeSchedType edgeSchedType, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+	public CommContenAbc(AbcParameters params, MapperDAG dag, MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
 		super(dag, archi, abcType, scenario);
 		// TODO Auto-generated constructor stub
 	}

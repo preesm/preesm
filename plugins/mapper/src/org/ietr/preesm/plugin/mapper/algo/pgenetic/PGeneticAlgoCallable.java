@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * Task scheduling genetic algorithm multithread
@@ -57,8 +58,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 
 	// Simulator chosen
-	private AbcType simulatorType;
-	private EdgeSchedType edgeSchedType;
+	private AbcParameters abcParams;
 
 	// Architecture chosen
 	private MultiCoreArchitecture architecture;
@@ -89,7 +89,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 */
 	public PGeneticAlgoCallable(MultiCoreArchitecture architecture, IScenario scenario,
 			int generationNumber, List<Chromosome> population,
-			int populationSize, AbcType simulatorType,
+			int populationSize, AbcParameters abcParams,
 			String threadName) {
 		super();
 		this.architecture = architecture;
@@ -97,7 +97,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 		this.generationNumber = generationNumber;
 		this.population = population;
 		this.populationSize = populationSize;
-		this.simulatorType = simulatorType;
+		this.abcParams = abcParams;
 		this.threadName = threadName;
 	}
 
@@ -131,7 +131,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 		// perform the standard genetic algorithm
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 		outputChromosomeList.addAll(geneticAlgorithm.runGeneticAlgo(threadName,
-				callableMapperDAGList, architecture,scenario, simulatorType, edgeSchedType,
+				callableMapperDAGList, architecture,scenario, abcParams,
 				populationSize, generationNumber, true));
 
 		return outputChromosomeList;

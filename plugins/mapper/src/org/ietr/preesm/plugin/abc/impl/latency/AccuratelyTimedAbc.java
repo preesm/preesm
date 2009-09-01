@@ -49,6 +49,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * The accurately timed ABC schedules edges and set-up times
@@ -62,9 +63,9 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public AccuratelyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public AccuratelyTimedAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
-		super(edgeSchedType, dag, archi, abcType, scenario);
+		super(params, dag, archi, abcType, scenario);
 		
 		types = new ArrayList<Integer>();
 		types.add(CommunicationRouter.transferType);

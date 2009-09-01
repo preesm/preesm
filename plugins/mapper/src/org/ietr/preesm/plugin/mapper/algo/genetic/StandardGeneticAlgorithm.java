@@ -49,6 +49,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
@@ -68,17 +69,16 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	private class FinalTimeComparator implements Comparator<Chromosome> {
 
-		private AbcType simulatorType = null;
-		private EdgeSchedType edgeSchedType = null;
+		private AbcParameters abcParams;
 
 		@Override
 		public int compare(Chromosome o1, Chromosome o2) {
 
 			long difference = 0;
 			if (o1.isDirty())
-				o1.evaluate(simulatorType, edgeSchedType);
+				o1.evaluate(abcParams);
 			if (o2.isDirty())
-				o2.evaluate(simulatorType, edgeSchedType);
+				o2.evaluate(abcParams);
 
 			difference = o1.getEvaluateCost() - o2.getEvaluateCost();
 
@@ -86,7 +86,7 @@ public class StandardGeneticAlgorithm extends Observable {
 				difference = 1;
 			}
 
-			return (int)difference;
+			return (int) difference;
 		}
 
 		/**
@@ -95,11 +95,10 @@ public class StandardGeneticAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, Chromosome
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
+		public FinalTimeComparator(AbcParameters abcParams,
 				Chromosome chromosome) {
 			super();
-			this.simulatorType = type;
-			this.edgeSchedType = edgeSchedType;
+			this.abcParams = abcParams;
 		}
 
 	}
@@ -130,7 +129,8 @@ public class StandardGeneticAlgorithm extends Observable {
 		// transform the MapperDAG into chromosome
 		Iterator<MapperDAG> iterator = list.listIterator();
 		while (iterator.hasNext()) {
-			Chromosome chromosome11 = new Chromosome(iterator.next(), archi, scenario);
+			Chromosome chromosome11 = new Chromosome(iterator.next(), archi,
+					scenario);
 			population3.add(chromosome11);
 		}
 
@@ -153,17 +153,18 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return ConcurrentSkipListSet<Chromosome>
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
-			List<MapperDAG> populationDAG, MultiCoreArchitecture archi, IScenario scenario,
-			AbcType type, EdgeSchedType edgeSchedType, int populationSize,
+			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
+			IScenario scenario, AbcParameters abcParams, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
-		final BestCostPlotter costPlotter = new BestCostPlotter("Genetic Algorithm", null);
+		final BestCostPlotter costPlotter = new BestCostPlotter(
+				"Genetic Algorithm", null);
 
 		// Set data window if necessary
 		if (!pgeneticalgo) {
 
 			costPlotter.setSUBPLOT_COUNT(1);
-			//demo.display();
+			// demo.display();
 			BestCostEditor.createEditor(costPlotter);
 			this.addObserver(costPlotter);
 		}
@@ -177,7 +178,7 @@ public class StandardGeneticAlgorithm extends Observable {
 		MutationOperator mutationOperator = new MutationOperator();
 		CrossOverOperator crossOverOperator = new CrossOverOperator();
 		ConcurrentSkipListSet<Chromosome> chromoSet = new ConcurrentSkipListSet<Chromosome>(
-				new FinalTimeComparator(type,edgeSchedType, population.get(0)));
+				new FinalTimeComparator(abcParams, population.get(0)));
 		chromoSet.addAll(population);
 		Chromosome chromosome;
 		Chromosome chromosome1;
@@ -211,7 +212,8 @@ public class StandardGeneticAlgorithm extends Observable {
 
 				// mutation
 				chromosome = iter.next();
-				chromoSet.add(mutationOperator.transform(chromosome, type, edgeSchedType));
+				chromoSet
+						.add(mutationOperator.transform(chromosome, abcParams));
 
 				// cross over
 				chromosome = iter.next();
@@ -220,7 +222,7 @@ public class StandardGeneticAlgorithm extends Observable {
 					chromosome1 = iter.next();
 				}
 				chromoSet.add(crossOverOperator.transform(chromosome1,
-						chromosome, type, edgeSchedType));
+						chromosome, abcParams));
 
 			}
 

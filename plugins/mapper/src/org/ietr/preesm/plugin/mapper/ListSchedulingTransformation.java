@@ -53,6 +53,7 @@ import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.ListSchedulingParameters;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -87,18 +88,18 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		TaskResult result = new TaskResult();
-		ListSchedulingParameters parameters;
 		
-		parameters = new ListSchedulingParameters(textParameters);
+		ListSchedulingParameters listParameters = new ListSchedulingParameters(textParameters);
+		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
 
 		// calculates the DAG span length on the architecture main operator (the tasks that can
 		// not be executed by the main operator are deported without transfer time to other operator)
-		calculateSpan(dag,architecture,scenario,parameters);
+		calculateSpan(dag,architecture,scenario,abcParameters);
 		
-		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
+		IAbc simu = new InfiniteHomogeneousAbc(abcParameters, 
+				dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
@@ -110,7 +111,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
 		simu.resetDAG();
 		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
+				.getInstance(abcParameters, dag, architecture, scenario);
 		
 		KwokListScheduler scheduler = new KwokListScheduler();
 		scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
@@ -120,7 +121,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
+			tagSDF.tag(dag,architecture,scenario,simu2, abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 			throw(new PreesmException(e.getMessage()));

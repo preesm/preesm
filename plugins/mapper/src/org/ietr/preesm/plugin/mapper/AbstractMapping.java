@@ -46,7 +46,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.params.AbstractParameters;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -82,9 +82,9 @@ public abstract class AbstractMapping implements IMapping {
 	 * without transfer time to other operator)
 	 */
 	protected void calculateSpan(MapperDAG dag,
-			MultiCoreArchitecture archi, IScenario scenario, AbstractParameters parameters){
+			MultiCoreArchitecture archi, IScenario scenario, AbcParameters parameters){
 		
-		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters.getEdgeSchedType(),
+		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,
 				dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);
 		spanCalc.resetDAG();
 

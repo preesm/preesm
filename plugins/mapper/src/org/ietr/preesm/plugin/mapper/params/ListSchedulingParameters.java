@@ -44,15 +44,14 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * Parameters for list scheduling
  * 
  * @author pmenuet
+ * @author mpelcat
  */
-public class ListSchedulingParameters extends AbstractParameters {
+public class ListSchedulingParameters {
 
 	public ListSchedulingParameters(TextParameters textParameters) {
-		super(textParameters);
 	}
 
 	public ListSchedulingParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		super(simulatorType,edgeSchedType);
 	}
 
 }

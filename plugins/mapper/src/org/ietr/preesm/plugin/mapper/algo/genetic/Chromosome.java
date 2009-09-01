@@ -49,6 +49,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * Chromosome representing an implementation
@@ -144,10 +145,10 @@ public class Chromosome {
 	 * 
 	 * @return : void
 	 */
-	public void evaluate(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+	public void evaluate(AbcParameters abcParams) {
 		this.updateDAG();
 		IAbc simulator = AbstractAbc
-				.getInstance(simulatorType, edgeSchedType, this.dag, this.archi, scenario);
+				.getInstance(abcParams, this.dag, this.archi, scenario);
 		simulator.setDAG(this.getDag());
 		simulator.updateFinalCosts();
 		this.setEvaluateCost(simulator.getFinalCost());

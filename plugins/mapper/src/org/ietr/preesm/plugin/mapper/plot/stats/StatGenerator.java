@@ -144,23 +144,27 @@ public class StatGenerator {
 		long work = 0;
 		MapperDAG dag = abc.getDAG();
 		Operator mainOp = abc.getArchitecture().getMainOperator();
-
+		
 		for (DAGVertex vertex : dag.vertexSet()) {
 			if (!(vertex instanceof TransferVertex)
 					&& !(vertex instanceof OverheadVertex)
 					&& !(vertex instanceof InvolvementVertex)) {
 
+				// Looks for an operator able to execute currentvertex (preferably
+				// the given operator)
+				Operator adequateOp = abc.findOperator((MapperDAGVertex)vertex, mainOp);
+				
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
-						.getTime(mainOp);
+						.getTime(adequateOp);
 
-				PreesmLogger.getLogger().log(
+				/*PreesmLogger.getLogger().log(
 						Level.INFO,
 						"task "
 								+ vertex.getName()
 								+ " duration "
 								+ ((MapperDAGVertex) vertex)
 										.getInitialVertexProperty().getTime(
-												mainOp));
+												adequateOp));*/
 			}
 		}
 

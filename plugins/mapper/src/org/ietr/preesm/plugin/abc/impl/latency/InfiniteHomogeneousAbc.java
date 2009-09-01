@@ -47,6 +47,7 @@ import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one
@@ -61,16 +62,16 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	/**
 	 * Constructor
 	 */
-	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, IScenario scenario) {
-		this(edgeSchedType, dag, archi, TaskSchedType.Simple, scenario);
+		this(params, dag, archi, TaskSchedType.Simple, scenario);
 	}
 
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public InfiniteHomogeneousAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
 			IScenario scenario) {
 		super(null, dag, archi, AbcType.InfiniteHomogeneous, scenario);

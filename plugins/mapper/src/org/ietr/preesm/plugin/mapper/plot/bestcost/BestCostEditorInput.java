@@ -84,7 +84,7 @@ public class BestCostEditorInput implements IEditorInput {
 	 */
 	@Override
 	public String getName() {
-		return "Best Latency";
+		return "Best found cost";
 	}
 
 	/* (non-Javadoc)

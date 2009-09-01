@@ -65,6 +65,7 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 
@@ -118,10 +119,10 @@ public class PFastAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, MapperDAG, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(AbcType type, EdgeSchedType edgeSchedType,
+		public FinalTimeComparator(AbcParameters abcParams,
 				MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario) {
 			super();
-			this.simulator = AbstractAbc.getInstance(type, edgeSchedType,
+			this.simulator = AbstractAbc.getInstance(abcParams,
 					dag, archi, scenario);
 		}
 
@@ -295,7 +296,7 @@ public class PFastAlgorithm extends Observable {
 	@SuppressWarnings("unchecked")
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario, int nboperator,
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
-			int margIn, AbcType simulatorType, EdgeSchedType edgeSchedType,
+			int margIn, AbcParameters abcParams,
 			boolean population, int populationsize, boolean isDisplaySolutions, 
 			List<MapperDAG> populationList) {
 
@@ -314,7 +315,7 @@ public class PFastAlgorithm extends Observable {
 		MapperDAG dagfinal;
 		KwokListScheduler scheduler = new KwokListScheduler();
 		IAbc archisimu = AbstractAbc
-				.getInstance(simulatorType, edgeSchedType, dag, archi, scenario);
+				.getInstance(abcParams, dag, archi, scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 		Logger logger = PreesmLogger.getLogger();
 
@@ -322,7 +323,7 @@ public class PFastAlgorithm extends Observable {
 		if (nboperator == 0) {
 			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-			dag = algorithm.map("Fast", simulatorType, edgeSchedType, dag, archi, maxCount,
+			dag = algorithm.map("Fast", abcParams, dag, archi, maxCount,
 					maxStep, margIn, false, false, false, null,
 					cpnDominantVector, blockingnodeVector, fcpVector);
 			return dag;
@@ -358,7 +359,7 @@ public class PFastAlgorithm extends Observable {
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
-				new FinalTimeComparator(simulatorType, edgeSchedType, dagfinal, archi, scenario));
+				new FinalTimeComparator(abcParams, dagfinal, archi, scenario));
 
 		// step 5/7/8
 		for (int j = 2; totalsearchcount < maxCount; j++) {
@@ -388,7 +389,7 @@ public class PFastAlgorithm extends Observable {
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
 						subiter.next(), maxcounttemp, maxStep, margIn, isDisplaySolutions, true,
-						simulatorType, edgeSchedType, scenario);
+						abcParams, scenario);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
 				futureTasks.add(task);

@@ -51,6 +51,7 @@ import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * One thread of Task scheduling FAST algorithm multithread 
@@ -60,8 +61,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 class PFastCallable implements Callable<MapperDAG> {
 
 	// Simulator chosen
-	private AbcType simulatorType;
-	private EdgeSchedType edgeSchedType;
+	private AbcParameters abcParams;
 
 	// thread named by threadName
 	private String threadName;
@@ -110,7 +110,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	public PFastCallable(String name, MapperDAG inputDAG,
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
 			int maxCount, int maxStep, int margIn, boolean isDisplaySolutions, boolean alreadyImplanted,
-			AbcType simulatorType, EdgeSchedType edgeSchedType, IScenario scenario) {
+			AbcParameters abcParams, IScenario scenario) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;
@@ -119,8 +119,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		this.maxStep = maxStep;
 		this.margIn = margIn;
 		this.alreadyImplanted = alreadyImplanted;
-		this.simulatorType = simulatorType;
-		this.edgeSchedType = edgeSchedType;
+		this.abcParams = abcParams;
 		this.isDisplaySolutions = isDisplaySolutions;
 		this.scenario = scenario;
 	}
@@ -155,7 +154,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		}
 
 		// Create the CPN Dominant Sequence
-		IAbc IHsimu = new InfiniteHomogeneousAbc(edgeSchedType, 
+		IAbc IHsimu = new InfiniteHomogeneousAbc(abcParams, 
 				callableDAG.clone(), callableArchi, scenario);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
@@ -163,7 +162,7 @@ class PFastCallable implements Callable<MapperDAG> {
 
 		// performing the fast algorithm
 		FastAlgorithm algo = new FastAlgorithm(initialLists, scenario);
-		outputDAG = algo.map(threadName, simulatorType, edgeSchedType, callableDAG,
+		outputDAG = algo.map(threadName, abcParams, callableDAG,
 				callableArchi,
 				maxCount, maxStep, margIn, alreadyImplanted, true, isDisplaySolutions, null, initialLists.getCpnDominant(),
 				callableBlockingNodes, initialLists.getCriticalpath());

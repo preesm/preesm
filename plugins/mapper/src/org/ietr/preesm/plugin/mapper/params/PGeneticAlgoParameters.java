@@ -44,9 +44,12 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * Parameters for task scheduling genetic algorithm multithread
  * 
  * @author pmenuet
+ * @author mpelcat
  */
-public class PGeneticAlgoParameters extends AbstractParameters {
+public class PGeneticAlgoParameters {
 
+	protected TextParameters textParameters = null;
+	
 	// Number of individuals the algorithm will keep in the best population
 	private int populationSize;
 
@@ -64,7 +67,6 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 	 */
 
 	public PGeneticAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
 
 		this.generationNumber = textParameters.getIntVariable("generationNumber");
 		this.populationSize = textParameters.getIntVariable("populationSize");
@@ -86,7 +88,6 @@ public class PGeneticAlgoParameters extends AbstractParameters {
 			int populationSize, int procNumber,
 			AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean pfastused2makepopulation) {
-		super(simulatorType,edgeSchedType);
 
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);

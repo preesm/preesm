@@ -48,6 +48,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
  * A loosely timed architecture simulator associates a simple cost to each
@@ -63,9 +64,9 @@ public class LooselyTimedAbc extends LatencyAbc {
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
-	public LooselyTimedAbc(EdgeSchedType edgeSchedType, MapperDAG dag,
+	public LooselyTimedAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
-		super(edgeSchedType, dag, archi, abcType, scenario);
+		super(params, dag, archi, abcType, scenario);
 	}
 
 	@Override

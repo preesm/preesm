@@ -50,6 +50,7 @@ import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.PFastAlgoParameters;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -72,45 +73,51 @@ public class PFASTTransformation extends AbstractMapping {
 	 * Function called while running the plugin
 	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor) throws PreesmException{
+	public TaskResult transform(SDFGraph algorithm,
+			MultiCoreArchitecture architecture, TextParameters textParameters,
+			IScenario scenario, IProgressMonitor monitor)
+			throws PreesmException {
 
-		super.transform(algorithm,architecture,textParameters,scenario,monitor);
+		super.transform(algorithm, architecture, textParameters, scenario,
+				monitor);
 		TaskResult result = new TaskResult();
-		PFastAlgoParameters parameters;
-		
-		parameters = new PFastAlgoParameters(textParameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
+		PFastAlgoParameters parameters = new PFastAlgoParameters(textParameters);
+		AbcParameters abcParameters = new AbcParameters(textParameters);
 
-		// calculates the DAG span length on the architecture main operator (the tasks that can
-		// not be executed by the main operator are deported without transfer time to other operator
-		calculateSpan(dag,architecture,scenario,parameters);
-		
-		IAbc simu = new InfiniteHomogeneousAbc(parameters.getEdgeSchedType(), 
-				dag, architecture, parameters.getSimulatorType().getTaskSchedType(), scenario);
+		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
+				scenario, false);
+
+		// calculates the DAG span length on the architecture main operator (the
+		// tasks that can
+		// not be executed by the main operator are deported without transfer
+		// time to other operator
+		calculateSpan(dag, architecture, scenario, abcParameters);
+
+		IAbc simu = new InfiniteHomogeneousAbc(
+				abcParameters, dag, architecture,
+				abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 
 		InitialLists initial = new InitialLists();
 
-		if(!initial.constructInitialLists(dag, simu))
-				return null;
+		if (!initial.constructInitialLists(dag, simu))
+			return null;
 
 		simu.resetDAG();
 
-		IAbc simu2 = AbstractAbc
-				.getInstance(parameters.getSimulatorType(), parameters.getEdgeSchedType(), dag, architecture, scenario);
-		
+		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
+
 		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-		dag = pfastAlgorithm.map(dag, architecture, scenario, parameters.getProcNumber(),
-				parameters.getNodesmin(), initial, parameters.getMaxCount(),
-				parameters.getMaxStep(), parameters.getMargIn(), parameters
-						.getSimulatorType(),parameters.getEdgeSchedType(), false, 0, parameters.isDisplaySolutions(), null);
+		dag = pfastAlgorithm.map(dag, architecture, scenario, parameters
+				.getProcNumber(), parameters.getNodesmin(), initial, parameters
+				.getMaxCount(), parameters.getMaxStep(),
+				parameters.getMargIn(), abcParameters, false, 0, parameters
+						.isDisplaySolutions(), null);
 
 		simu2.setDAG(dag);
 
-		//simu2.plotImplementation();
+		// simu2.plotImplementation();
 
 		// The transfers are reordered using the best found order during
 		// scheduling
@@ -118,24 +125,25 @@ public class PFASTTransformation extends AbstractMapping {
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag,architecture,scenario,simu2, parameters.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2, abcParameters
+					.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
-			throw(new PreesmException(e.getMessage()));
+			throw (new PreesmException(e.getMessage()));
 		}
 
 		result.setDAG(dag);
 		result.setAbc(simu2);
 
-		super.clean(architecture,scenario);
+		super.clean(architecture, scenario);
 		return result;
 	}
 
 	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) throws PreesmException{
+	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm)
+			throws PreesmException {
 		// TODO Auto-generated method stub
 
 	}
-
 
 }

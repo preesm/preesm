@@ -44,9 +44,12 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * Specific parameters of genetic algorithm
  * 
  * @author pmenuet
+ * @author mpelcat
  */
-public class GeneticAlgoParameters extends AbstractParameters {
+public class GeneticAlgoParameters {
 
+	protected TextParameters textParameters = null;
+	
 	// Number of individuals in the population
 	private int populationSize;
 
@@ -63,7 +66,6 @@ public class GeneticAlgoParameters extends AbstractParameters {
 	public GeneticAlgoParameters(int generationNumber, int populationSize,
 			AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean pfastused2makepopulation) {
-		super(simulatorType,edgeSchedType);
 		
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
@@ -75,7 +77,6 @@ public class GeneticAlgoParameters extends AbstractParameters {
 	}
 
 	public GeneticAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
 		
 		this.generationNumber = textParameters.getIntVariable("generationNumber");
 		this.populationSize = textParameters.getIntVariable("populationSize");

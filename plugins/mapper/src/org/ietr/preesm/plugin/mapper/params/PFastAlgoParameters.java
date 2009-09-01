@@ -44,9 +44,12 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * Parameters for task scheduling FAST algorithm multithread
  * 
  * @author pmenuet
+ * @author mpelcat
  */
-public class PFastAlgoParameters extends AbstractParameters {
+public class PFastAlgoParameters {
 
+	protected TextParameters textParameters = null;
+	
 	/**
 	 * This variable is the one which fix the number of Nodes necessary for each
 	 * processor to execute probabilistic jump locally(local refinement). The
@@ -91,7 +94,6 @@ public class PFastAlgoParameters extends AbstractParameters {
 	 */
 
 	public PFastAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
 		this.maxCount = textParameters.getIntVariable("maxCount");
 		this.maxStep = textParameters.getIntVariable("maxStep");
 		this.margIn = textParameters.getIntVariable("margIn");
@@ -103,7 +105,6 @@ public class PFastAlgoParameters extends AbstractParameters {
 	public PFastAlgoParameters(int margIn, int maxCount, int maxStep, boolean displaySolutions,
 			int nodesmin, int procNumber,
 			AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		super(simulatorType,edgeSchedType);
 		textParameters.addVariable("margIn", margIn);
 		textParameters.addVariable("maxCount", maxCount);
 		textParameters.addVariable("maxStep", maxStep);
