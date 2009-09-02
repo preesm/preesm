@@ -345,7 +345,7 @@ public class PFastAlgorithm extends Observable {
 		// step 2
 		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
 
-		bestTotalOrder = archisimu.getTotalOrder().toList();
+		bestTotalOrder = archisimu.getTotalOrder().toStringList();
 		archisimu.updateFinalCosts();
 		long iBest = (Long) archisimu.getFinalCost();
 		

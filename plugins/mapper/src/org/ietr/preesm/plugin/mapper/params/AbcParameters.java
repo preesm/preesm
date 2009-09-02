@@ -58,16 +58,24 @@ public class AbcParameters {
 	 * Edge scheduling type
 	 */
 	private EdgeSchedType edgeSchedType = null;
+	
+	/**
+	 * true if loads are minimized while minimizing other parameters
+	 */
+	private boolean balanceLoads = false;
 
 	/**
 	 * Constructor creating a new text parameter
 	 */
-	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType,boolean balanceLoads) {
 		textParameters = new TextParameters();
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
+		this.balanceLoads = balanceLoads;
+		
 		textParameters.addVariable("simulatorType", simulatorType.toString());
 		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
+		textParameters.addVariable("balanceLoads", balanceLoads);
 	}
 	
 	/**
@@ -77,6 +85,7 @@ public class AbcParameters {
 		this.textParameters = textParameters;
 		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
 		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));
+		this.balanceLoads = textParameters.getBooleanVariable("balanceLoads");
 	}
 	
 	
@@ -91,11 +100,11 @@ public class AbcParameters {
 		return simulatorType;
 	}
 
-	public void setSimulatorType(AbcType simulatorType) {
-		this.simulatorType = simulatorType;
-	}
-
 	public EdgeSchedType getEdgeSchedType() {
 		return edgeSchedType;
+	}
+
+	public boolean isBalanceLoads() {
+		return balanceLoads;
 	}
 }

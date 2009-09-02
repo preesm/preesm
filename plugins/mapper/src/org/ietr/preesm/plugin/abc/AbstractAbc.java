@@ -125,20 +125,18 @@ public abstract class AbstractAbc implements IAbc {
 		AbcType simulatorType = params.getSimulatorType();
 
 		if (simulatorType == AbcType.InfiniteHomogeneous) {
-			abc = new InfiniteHomogeneousAbc(params, dag, archi,
-					scenario);
+			abc = new InfiniteHomogeneousAbc(params, dag, archi, scenario);
 		} else if (simulatorType == AbcType.LooselyTimed) {
 			abc = new LooselyTimedAbc(params, dag, archi, simulatorType,
 					scenario);
 		} else if (simulatorType == AbcType.ApproximatelyTimed) {
-			abc = new ApproximatelyTimedAbc(params, dag, archi,
-					simulatorType, scenario);
-		} else if (simulatorType == AbcType.AccuratelyTimed) {
-			abc = new AccuratelyTimedAbc(params, dag, archi,
-					simulatorType, scenario);
-		} else if (simulatorType == AbcType.CommConten) {
-			abc = new CommContenAbc(params, dag, archi, simulatorType,
+			abc = new ApproximatelyTimedAbc(params, dag, archi, simulatorType,
 					scenario);
+		} else if (simulatorType == AbcType.AccuratelyTimed) {
+			abc = new AccuratelyTimedAbc(params, dag, archi, simulatorType,
+					scenario);
+		} else if (simulatorType == AbcType.CommConten) {
+			abc = new CommContenAbc(params, dag, archi, simulatorType, scenario);
 		}
 
 		return abc;
@@ -218,24 +216,6 @@ public abstract class AbstractAbc implements IAbc {
 	@Override
 	public abstract long getFinalCost(ArchitectureComponent component);
 
-	@Override
-	public final long getLoad(ArchitectureComponent component) {
-
-		long load = 0;
-
-		if (implementation != null) {
-			for (DAGVertex v : implementation.vertexSet()) {
-				MapperDAGVertex mv = (MapperDAGVertex) v;
-				if (mv.getImplementationVertexProperty()
-						.getEffectiveComponent().equals(component)) {
-					load += getCost(mv);
-				}
-			}
-		}
-
-		return load;
-	}
-
 	/**
 	 * *********Implementation accesses**********
 	 */
@@ -298,7 +278,8 @@ public abstract class AbstractAbc implements IAbc {
 			TransactionManager localTransactionManager = new TransactionManager();
 			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
 					localTransactionManager);
-			PrecedenceEdgeAdder.addPrecedenceEdges(orderManager, implementation);
+			PrecedenceEdgeAdder
+					.addPrecedenceEdges(orderManager, implementation);
 
 		}
 	}
@@ -515,15 +496,18 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Unimplants all vertices in both implementation and DAG
-	 * Resets the order manager only at the end
+	 * Unimplants all vertices in both implementation and DAG Resets the order
+	 * manager only at the end
 	 */
 	public void resetDAG() {
 
 		Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
 
 		while (iterator.hasNext()) {
-			unimplant((MapperDAGVertex) iterator.next());
+			MapperDAGVertex v = (MapperDAGVertex) iterator.next();
+			if (v.getImplementationVertexProperty().hasEffectiveComponent()) {
+				unimplant(v);
+			}
 		}
 
 		orderManager.resetTotalOrder();
@@ -544,9 +528,6 @@ public abstract class AbstractAbc implements IAbc {
 
 		impvertex.getImplementationVertexProperty().setEffectiveOperator(
 				(Operator) Operator.NO_COMPONENT);
-
-		// Keeps the total order
-		orderManager.remove(impvertex, false);
 	}
 
 	/**

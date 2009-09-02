@@ -160,7 +160,7 @@ public class FastPopulation {
 
 			// perform the initialization
 			IAbc simu = new InfiniteHomogeneousAbc(new AbcParameters(
-					AbcType.InfiniteHomogeneous, EdgeSchedType.Simple),
+					AbcType.InfiniteHomogeneous, EdgeSchedType.Simple, false),
 					tempdag, this.getArchi(), scenario);
 			InitialLists initialLists = new InitialLists();
 			initialLists.constructInitialLists(tempdag, simu);

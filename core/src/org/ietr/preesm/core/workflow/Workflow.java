@@ -295,6 +295,10 @@ public class Workflow {
 							exporter.transform(architecture, parameters);
 						}
 
+						// Updating workspace so that the exported file can be
+						// easily opened
+						updateWorkspace(monitor);
+
 						if (parameters.getBooleanVariable("openFile")) {
 							openFile(parameters.getVariable("path"), monitor);
 						}
@@ -363,7 +367,7 @@ public class Workflow {
 
 	private void openFile(String fileName, IProgressMonitor monitor) {
 
-		IWorkspace workspace = updateWorkspace(monitor);
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		Path path = new Path(fileName);
 		IResource resource = workspace.getRoot().findMember(path.toOSString());
 

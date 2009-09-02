@@ -74,7 +74,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
 			IScenario scenario) {
-		super(null, dag, archi, AbcType.InfiniteHomogeneous, scenario);
+		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 
 		if (archi.getMainMedium() != null) {
@@ -114,12 +114,6 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 		} else {
 
-			if (updateRank) {
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
-			}
-
 			// Setting vertex time
 			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
@@ -129,6 +123,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
+			
+			if (updateRank) {
+				taskScheduler.insertVertex(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+
 		}
 	}
 
@@ -137,9 +138,11 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
+		
+		// Keeps the total order
+		orderManager.remove(vertex, false);
 
 		vertex.getTimingVertexProperty().resetCost();
-
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 

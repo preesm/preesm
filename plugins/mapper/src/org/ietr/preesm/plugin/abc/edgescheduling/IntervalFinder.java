@@ -117,7 +117,7 @@ public class IntervalFinder {
 		Interval biggestFreeInterval = new Interval(-1, -1, 0);
 
 		if (schedule != null) {
-			for (MapperDAGVertex v : schedule) {
+			for (MapperDAGVertex v : schedule.getVervexList()) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if (props.getNewtLevel() >= 0) {
 					// newInt is the interval corresponding to the execution of
@@ -193,7 +193,7 @@ public class IntervalFinder {
 				+ availability + ": ";
 
 		if (schedule != null) {
-			for (MapperDAGVertex v : schedule) {
+			for (MapperDAGVertex v : schedule.getVervexList()) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if (props.getNewtLevel() >= 0)
 					trace += "<" + props.getNewtLevel() + ","

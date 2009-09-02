@@ -165,7 +165,7 @@ public class PrecedenceEdgeAdder {
 		for (ArchitectureComponent o : cmpSet) {
 			if (orderManager.getSchedule(o) != null) {
 				MapperDAGVertex pv = null;
-				for (MapperDAGVertex v : orderManager.getSchedule(o)) {
+				for (MapperDAGVertex v : orderManager.getSchedule(o).getVervexList()) {
 					if (pv != null) {
 						if (implementation.getAllEdges(pv, v) == null
 								|| implementation.getAllEdges(pv, v).isEmpty()) {

@@ -137,7 +137,7 @@ public class StatGenerator {
 	}
 
 	/**
-	 * The work is the sum of all task lengths.
+	 * The work is the sum of all task lengths excluding vertices added by the mapping.
 	 */
 	public long getDAGWorkLength() {
 

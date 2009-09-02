@@ -98,11 +98,6 @@ public interface IAbc extends IMapperAbc {
 	public long getFinalCost(ArchitectureComponent component);
 
 	/**
-	 * Returns the sum of execution times on the given component
-	 */
-	public long getLoad(ArchitectureComponent component);
-
-	/**
 	 * Gets the rank of the given vertex on its operator. -1 if the vertex has
 	 * no rank
 	 */

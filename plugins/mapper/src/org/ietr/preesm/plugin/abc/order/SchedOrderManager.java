@@ -47,8 +47,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
+import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -94,11 +96,9 @@ public class SchedOrderManager extends Observable {
 			int newSchedulingTotalOrder = totalIndexOf(vertex);
 
 			// Iterates the schedule
-			Iterator<MapperDAGVertex> it = currentSched.iterator();
 			int maxPrec = -1;
 
-			while (it.hasNext()) {
-				MapperDAGVertex current = it.next();
+			for (MapperDAGVertex current : currentSched.getVervexList()) {
 
 				// Looking for the preceding vertex with maximum total order
 				int currentTotalOrder = totalIndexOf(current);
@@ -139,12 +139,12 @@ public class SchedOrderManager extends Observable {
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
 
-			currentSchedule.addVertex(vertex);
+			currentSchedule.addVertexLast(vertex);
 
 			if (totalOrder.contains(vertex))
 				totalOrder.remove(vertex);
 
-			totalOrder.addLast(vertex);
+			totalOrder.addVertexLast(vertex);
 		}
 
 		// Notifies the time keeper that it should update the vertex
@@ -166,17 +166,17 @@ public class SchedOrderManager extends Observable {
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
 
-			currentSchedule.addFirst(vertex);
+			currentSchedule.addVertexFirst(vertex);
 
 			if (totalOrder.contains(vertex))
 				totalOrder.remove(vertex);
 
-			totalOrder.addFirst(vertex);
+			totalOrder.addVertexFirst(vertex);
 		}
 
 		// Notifies the time keeper that it should update the successors
 		setChanged();
-		notifyObservers(new HashSet<DAGVertex>(totalOrder));
+		notifyObservers(new HashSet<DAGVertex>(totalOrder.getVervexList()));
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class SchedOrderManager extends Observable {
 	 */
 	public List<MapperDAGVertex> getScheduleList(ArchitectureComponent cmp) {
 
-		return getSchedule(cmp);
+		return getSchedule(cmp).getVervexList();
 
 	}
 
@@ -393,19 +393,17 @@ public class SchedOrderManager extends Observable {
 		newTotalOrder.addAll(dag.vertexSet());
 
 		for (DAGVertex vertex : newTotalOrder) {
+			
 			addLast((MapperDAGVertex) vertex);
 		}
-
 	}
 
 	/**
 	 * Sets the total order of each implementation property in DAG
 	 */
 	public void tagDAG(MapperDAG dag) {
-		Iterator<MapperDAGVertex> iterator = totalOrder.iterator();
 
-		while (iterator.hasNext()) {
-			MapperDAGVertex internalVertex = iterator.next();
+		for (MapperDAGVertex internalVertex : totalOrder.getVervexList()) {
 			MapperDAGVertex vertex = dag.getMapperDAGVertex(internalVertex
 					.getName());
 

@@ -93,12 +93,19 @@ public abstract class LatencyAbc extends AbstractAbc {
 	protected IEdgeSched edgeScheduler;
 
 	/**
+	 * Current abc parameters
+	 */
+	protected AbcParameters params;
+
+	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been implanted yet.
 	 */
 	public LatencyAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
 		super(dag, archi, abcType, scenario);
+
+		this.params = params;
 
 		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
@@ -107,8 +114,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// timeKeeper.resetTimings();
 
 		// The media simulator calculates the edges costs
-		edgeScheduler = AbstractEdgeSched.getInstance(params.getEdgeSchedType(),
-				orderManager);
+		edgeScheduler = AbstractEdgeSched.getInstance(
+				params.getEdgeSchedType(), orderManager);
 		comRouter = new CommunicationRouter(archi, scenario, implementation,
 				edgeScheduler, orderManager);
 	}
@@ -173,12 +180,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 					"implementation of " + vertex.getName() + " failed");
 		} else {
 
-			if (updateRank) {
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
-			}
-
 			long vertextime = vertex.getInitialVertexProperty().getTime(
 					effectiveOp);
 
@@ -187,6 +188,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
+
+			if (updateRank) {
+				taskScheduler.insertVertex(vertex);
+			} else {
+				orderManager.insertVertexInTotalOrder(vertex);
+			}
+
 		}
 	}
 
@@ -196,17 +204,20 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// unimplanting a vertex resets the cost of the current vertex
 		// and its edges
 
-		vertex.getTimingVertexProperty().resetCost();
-
-		resetCost(vertex.incomingEdges());
-		resetCost(vertex.outgoingEdges());
-
 		ImplementationCleaner cleaner = new ImplementationCleaner(orderManager,
 				implementation);
 		cleaner.removeAllOverheads(vertex);
 		cleaner.removeAllInvolvements(vertex);
 		cleaner.removeAllTransfers(vertex);
 		cleaner.unscheduleVertex(vertex);
+
+		// Keeps the total order
+		orderManager.remove(vertex, false);
+
+		vertex.getTimingVertexProperty().resetCost();
+		resetCost(vertex.incomingEdges());
+		resetCost(vertex.outgoingEdges());
+
 	}
 
 	@Override
@@ -237,7 +248,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	@Override
 	protected void setEdgeCost(MapperDAGEdge edge) {
-		
+
 	}
 
 	public abstract EdgeSchedType getEdgeSchedType();
@@ -247,7 +258,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 
 	/**
-	 * The cost of a vertex is the end time of its execution (latency minimization)
+	 * The cost of a vertex is the end time of its execution (latency
+	 * minimization)
 	 */
 	@Override
 	public final long getFinalCost(MapperDAGVertex vertex) {
@@ -265,7 +277,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	}
 
 	/**
-	 * The cost of a component is the end time of its last vertex (latency minimization)
+	 * The cost of a component is the end time of its last vertex (latency
+	 * minimization)
 	 */
 	@Override
 	public final long getFinalCost(ArchitectureComponent component) {
@@ -281,11 +294,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	public final long getFinalCost() {
 
-		long finalTime = getFinalLatency();
+		long cost = getFinalLatency();
 
-		long loadBalancing = evaluateLoadBalancing();
-
-		return finalTime + loadBalancing;
+		if (params.isBalanceLoads()) {
+			long loadBalancing = evaluateLoadBalancing();
+			cost += loadBalancing;
+		}
+		return cost;
 	}
 
 	/**
@@ -341,22 +356,22 @@ public abstract class LatencyAbc extends AbstractAbc {
 	}
 
 	/**
-	 * Gives an index between 0 and 1 evaluating the load balancing
+	 * Gives an index evaluating the load balancing. This index is actually the
+	 * standard deviation of the loads considered as values of a random variable
 	 */
 	public long evaluateLoadBalancing() {
 
 		List<Long> taskSums = new ArrayList<Long>();
 		long totalTaskSum = 0l;
 
-		for (ArchitectureComponent o : archi.getComponents()) {
+		for (ArchitectureComponent o : orderManager.getArchitectureComponents()) {
 			long load = getLoad(o);
+
 			if (load > 0) {
 				taskSums.add(load);
 				totalTaskSum += load;
 			}
 		}
-
-		int cmpNr = taskSums.size();
 
 		Collections.sort(taskSums, new Comparator<Long>() {
 			@Override
@@ -369,10 +384,32 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long variance = 0;
 		// Calculating the load sum of half the components with the lowest loads
 		for (long taskDuration : taskSums) {
-			variance += ((taskDuration - mean)*(taskDuration - mean)) / taskSums.size();
+			variance += ((taskDuration - mean) * (taskDuration - mean))
+					/ taskSums.size();
 		}
 
-		return (long)Math.sqrt(variance);
+		return (long) Math.sqrt(variance);
+	}
+
+	/**
+	 * Returns the sum of execution times on the given component
+	 */
+	public final long getLoad(ArchitectureComponent component) {
+
+		long load = 0;
+		long load2 = orderManager.getSchedule(component).getBusyTime();
+
+		/*
+		 * if (implementation != null) { for (DAGVertex v :
+		 * implementation.vertexSet()) { MapperDAGVertex mv = (MapperDAGVertex)
+		 * v; if (mv.getImplementationVertexProperty()
+		 * .getEffectiveComponent().equals(component)) { load += getCost(mv); }
+		 * } }
+		 * 
+		 * if(load2 != load){ int i=0; i++; }
+		 */
+
+		return load2;
 	}
 
 	/**
@@ -386,7 +423,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 			for (ArchitectureComponent cmp : archi
 					.getComponents(ArchitectureComponentType.contentionNode)) {
-				for (MapperDAGVertex v : this.orderManager.getSchedule(cmp)) {
+				for (MapperDAGVertex v : this.orderManager.getSchedule(cmp)
+						.getVervexList()) {
 					cleaner.unscheduleVertex(v);
 				}
 			}
@@ -408,7 +446,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 								return (int) TLevelDifference;
 							}
 						});
-				list.addAll(this.orderManager.getSchedule(cmp));
+				list.addAll(this.orderManager.getSchedule(cmp).getVervexList());
 
 				for (MapperDAGVertex v : list) {
 					TransferVertex tv = (TransferVertex) v;

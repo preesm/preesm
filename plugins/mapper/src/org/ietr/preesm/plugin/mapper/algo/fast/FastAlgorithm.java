@@ -174,11 +174,14 @@ public class FastAlgorithm extends Observable {
 		simulator.updateFinalCosts();
 		long initial = simulator.getFinalCost();
 
-		bestTotalOrder = simulator.getTotalOrder().toList();
+		bestTotalOrder = simulator.getTotalOrder().toStringList();
+		
 		if (displaySolutions) {
 			GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
 					"Cost:" + initial + " List");
 		}
+		
+		PreesmLogger.getLogger().log(Level.INFO,"Found List solution; Cost:" + initial);
 
 		logger.log(Level.FINE, "InitialSP " + initial);
 
@@ -282,11 +285,13 @@ public class FastAlgorithm extends Observable {
 				simulator.updateFinalCosts();
 				bestSL = simulator.getFinalCost();
 
-				bestTotalOrder = simulator.getTotalOrder().toList();
+				bestTotalOrder = simulator.getTotalOrder().toStringList();
 				if (displaySolutions) {
 					GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
 							"Cost:" + bestSL + " Fast");
 				}
+				
+				PreesmLogger.getLogger().log(Level.INFO,"Found Fast solution; Cost:" + bestSL);
 
 				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
@@ -310,6 +315,7 @@ public class FastAlgorithm extends Observable {
 
 				operatorfcp = prociter.next();
 			}
+			
 			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);
 

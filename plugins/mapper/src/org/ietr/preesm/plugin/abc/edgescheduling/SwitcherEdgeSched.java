@@ -70,9 +70,11 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		// Synchronized vertices should not be moved in order to stay synchronized
-		if (!vertex.getTimingVertexProperty().getSynchronizedVertices()
-				.isEmpty()) {
+		// Synchronized vertices should not be moved in order to stay
+		// synchronized
+		if (vertex.getTimingVertexProperty().getSynchronizedVertices() != null
+				&& !vertex.getTimingVertexProperty().getSynchronizedVertices()
+						.isEmpty()) {
 			orderManager.insertVertexAfter(source, vertex);
 		} else {
 			ArchitectureComponent component = vertex

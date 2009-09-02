@@ -41,8 +41,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.sdf4j.model.dag.DAGVertex;
 
@@ -52,63 +54,53 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class Schedule extends LinkedList<MapperDAGVertex> {
+public class Schedule {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The ordered list of vertices in this schedule
+	 */
+	private LinkedList<MapperDAGVertex> vervexList;
+	
+	/**
+	 * The total time of the schedule vertices
+	 */
+	private long busyTime;
 
 	public Schedule() {
 
 		super();
-	}
-
-	/**
-	 * Gets the previous vertex in the current schedule
-	 */
-	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
-		if (indexOf(vertex) <= 0)
-			return null;
-		return (get(indexOf(vertex) - 1));
-	}
-
-	/**
-	 * Gets the next vertex in the current schedule
-	 */
-	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
-		int currentIndex = indexOf(vertex);
-		if (currentIndex < 0 || indexOf(vertex) >= this.size() - 1)
-			return null;
-		return (get(currentIndex + 1));
-	}
-
-	/**
-	 * Gets the next vertex in the current schedule
-	 */
-	public Set<DAGVertex> getSuccessors(MapperDAGVertex vertex) {
-		int currentIndex = indexOf(vertex);
-		if (currentIndex < 0 || indexOf(vertex) >= this.size())
-			return null;
-		
-		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
-		for(int i = currentIndex+1;i<size();i++){
-			vSet.add(get(i));
-		}
-		return vSet;
+		this.vervexList = new LinkedList<MapperDAGVertex>();
+		resetBusyTime();
 	}
 
 	/**
 	 * Appends a vertex at the end of the schedule
 	 */
-	public void addVertex(MapperDAGVertex vertex) {
-		if (!contains(vertex))
-			addLast(vertex);
+	public void addVertexLast(MapperDAGVertex vertex) {
+		if(vertex.getTimingVertexProperty().getCost() >= 0){
+			busyTime += vertex.getTimingVertexProperty().getCost();}
+		else{
+			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 1.");
+			}
+		
+		if (!vervexList.contains(vertex))
+			vervexList.addLast(vertex);
 	}
 
 	/**
 	 * Inserts a vertex at the beginning of the schedule
 	 */
 	public void addVertexFirst(MapperDAGVertex vertex) {
-		if (!contains(vertex))
-			addFirst(vertex);
+		if(vertex.getTimingVertexProperty().getCost() >= 0){
+			busyTime += vertex.getTimingVertexProperty().getCost();}
+		else{
+			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 2.");
+		}
+		
+		if (!vervexList.contains(vertex))
+			vervexList.addFirst(vertex);
 	}
 
 	/**
@@ -116,19 +108,24 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 	 */
 	public void insertVertexAfter(MapperDAGVertex previous,
 			MapperDAGVertex vertex) {
+		if(vertex.getTimingVertexProperty().getCost() >= 0){
+			busyTime += vertex.getTimingVertexProperty().getCost();}
+		else{
+			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 3.");
+		}
 
-		if (!contains(vertex))
-			if (indexOf(previous) >= 0) {
-				if (indexOf(previous) + 1 < size()) {
-					MapperDAGVertex next = get(indexOf(previous) + 1);
+		if (!vervexList.contains(vertex))
+			if (vervexList.indexOf(previous) >= 0) {
+				if (vervexList.indexOf(previous) + 1 < vervexList.size()) {
+					MapperDAGVertex next = vervexList.get(vervexList.indexOf(previous) + 1);
 					if(!areSynchronized(previous,next)){
-						add(indexOf(next), vertex);
+						vervexList.add(vervexList.indexOf(next), vertex);
 					}
 					else{
 						insertVertexAfter(next,vertex);
 					}
 				} else{
-					addLast(vertex);
+					vervexList.addLast(vertex);
 				}
 			}
 	}
@@ -137,12 +134,17 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 	 * Inserts a vertex before the given one
 	 */
 	public void insertVertexBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
+		if(vertex.getTimingVertexProperty().getCost() >= 0){
+			busyTime += vertex.getTimingVertexProperty().getCost();}
+		else{
+			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 4.");
+		}
 
-		if (!contains(vertex))
-			if (indexOf(next) >= 0) {
-				MapperDAGVertex previous = get(indexOf(next) - 1);
+		if (!vervexList.contains(vertex))
+			if (vervexList.indexOf(next) >= 0) {
+				MapperDAGVertex previous = vervexList.get(vervexList.indexOf(next) - 1);
 				if(!areSynchronized(previous,next)){
-					add(indexOf(next), vertex);
+					vervexList.add(vervexList.indexOf(next), vertex);
 				}
 				else{
 					insertVertexAfter(next,vertex);
@@ -150,6 +152,33 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 			}
 	}
 	
+	public void clear(){
+		resetBusyTime();
+		
+		vervexList.clear();
+	}
+	
+	public void resetBusyTime(){
+		busyTime = 0;
+	}
+	
+	public void remove(MapperDAGVertex vertex){
+		if(vervexList.contains(vertex)){
+			if(vertex.getTimingVertexProperty().getCost() >= 0){
+				busyTime -= vertex.getTimingVertexProperty().getCost();}
+			else{
+				//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 5.");
+			}
+		}
+		
+		vervexList.remove(vertex);
+	}
+	
+	// Access without modification
+
+	/**
+	 * Returns true if two vertices are synchronized; i.e. they must have the same starting time
+	 */
 	private boolean areSynchronized(MapperDAGVertex previous, MapperDAGVertex next){
 		boolean areSynchronized = false;
 		List<MapperDAGVertex> synchros = previous.getTimingVertexProperty().getSynchronizedVertices();
@@ -160,21 +189,81 @@ public class Schedule extends LinkedList<MapperDAGVertex> {
 		
 		return areSynchronized;
 	}
+	
+	public MapperDAGVertex get(int i){
+		return vervexList.get(i);
+	}
+	
+	public MapperDAGVertex getLast(){
+		return vervexList.getLast();
+	}
+	/**
+	 * Gets the previous vertex in the current schedule
+	 */
+	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
+		if (vervexList.indexOf(vertex) <= 0)
+			return null;
+		return (vervexList.get(vervexList.indexOf(vertex) - 1));
+	}
+
+	/**
+	 * Gets the next vertex in the current schedule
+	 */
+	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
+		int currentIndex = vervexList.indexOf(vertex);
+		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size() - 1)
+			return null;
+		return (vervexList.get(currentIndex + 1));
+	}
+
+	/**
+	 * Gets the next vertex in the current schedule
+	 */
+	public Set<DAGVertex> getSuccessors(MapperDAGVertex vertex) {
+		int currentIndex = vervexList.indexOf(vertex);
+		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size())
+			return null;
+		
+		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
+		for(int i = currentIndex+1;i<vervexList.size();i++){
+			vSet.add(vervexList.get(i));
+		}
+		return vSet;
+	}
+	
+	public int indexOf(MapperDAGVertex v){
+		return vervexList.indexOf(v);
+	}
+	
+	public boolean contains(MapperDAGVertex v){
+		return vervexList.contains(v);
+	}
+	
+	public boolean isEmpty(){
+		return vervexList.isEmpty();
+	}
+
+	public LinkedList<MapperDAGVertex> getVervexList() {
+		return vervexList;
+	}
 
 	@Override
 	public String toString() {
 		return "{" + super.toString() + "}";
 	}
 
-	public List<String> toList() {
+	public List<String> toStringList() {
 
 		List<String> order = new ArrayList<String>();
 
-		for (MapperDAGVertex v : this) {
+		for (MapperDAGVertex v : vervexList) {
 			order.add(v.getName());
 		}
 
 		return order;
 	}
 
+	public long getBusyTime() {
+		return busyTime;
+	}	
 }
