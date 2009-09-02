@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Observer;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
@@ -57,12 +56,12 @@ import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
@@ -373,22 +372,27 @@ public abstract class LatencyAbc extends AbstractAbc {
 			}
 		}
 
-		Collections.sort(taskSums, new Comparator<Long>() {
-			@Override
-			public int compare(Long arg0, Long arg1) {
-				return (int) (arg0 - arg1);
-			}
-		});
+		if (taskSums.size() > 0) {
+			Collections.sort(taskSums, new Comparator<Long>() {
+				@Override
+				public int compare(Long arg0, Long arg1) {
+					return (int) (arg0 - arg1);
+				}
+			});
 
-		long mean = totalTaskSum / taskSums.size();
-		long variance = 0;
-		// Calculating the load sum of half the components with the lowest loads
-		for (long taskDuration : taskSums) {
-			variance += ((taskDuration - mean) * (taskDuration - mean))
-					/ taskSums.size();
+			long mean = totalTaskSum / taskSums.size();
+			long variance = 0;
+			// Calculating the load sum of half the components with the lowest
+			// loads
+			for (long taskDuration : taskSums) {
+				variance += ((taskDuration - mean) * (taskDuration - mean))
+						/ taskSums.size();
+			}
+
+			return (long) Math.sqrt(variance);
 		}
 
-		return (long) Math.sqrt(variance);
+		return 0;
 	}
 
 	/**
@@ -396,10 +400,15 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	public final long getLoad(ArchitectureComponent component) {
 
-		long load = 0;
-		long load2 = orderManager.getSchedule(component).getBusyTime();
+		long load2 = 0;
+		Schedule sched = orderManager.getSchedule(component);
+
+		if (sched != null) {
+			load2 = sched.getBusyTime();
+		}
 
 		/*
+		long load = 0;
 		 * if (implementation != null) { for (DAGVertex v :
 		 * implementation.vertexSet()) { MapperDAGVertex mv = (MapperDAGVertex)
 		 * v; if (mv.getImplementationVertexProperty()

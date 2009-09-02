@@ -42,7 +42,6 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.mapper.listsched.AlgorithmTransformer;
 import org.ietr.preesm.plugin.mapper.listsched.CombListSched;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;

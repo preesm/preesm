@@ -50,10 +50,8 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
@@ -90,10 +88,11 @@ public class FastAlgorithm extends Observable {
 		this.scenario = scenario;
 	}
 
-	public MapperDAG map(String threadName, AbcParameters abcParams, MapperDAG dag,
-			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
-			boolean alreadyimplanted, boolean pfastused,
-			boolean displaySolutions, IProgressMonitor monitor) {
+	public MapperDAG map(String threadName, AbcParameters abcParams,
+			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
+			int maxstep, int margin, boolean alreadyimplanted,
+			boolean pfastused, boolean displaySolutions,
+			IProgressMonitor monitor) {
 
 		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
 		List<MapperDAGVertex> blockingNodesList = initialLists
@@ -101,21 +100,20 @@ public class FastAlgorithm extends Observable {
 		List<MapperDAGVertex> finalcriticalpathList = initialLists
 				.getCriticalpath();
 
-		return map(threadName, abcParams, dag, archi, maxcount,
-				maxstep, margin, alreadyimplanted, pfastused, displaySolutions,
-				monitor, cpnDominantList, blockingNodesList,
-				finalcriticalpathList);
+		return map(threadName, abcParams, dag, archi, maxcount, maxstep,
+				margin, alreadyimplanted, pfastused, displaySolutions, monitor,
+				cpnDominantList, blockingNodesList, finalcriticalpathList);
 	}
 
 	/**
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
 	 */
-	public MapperDAG map(String threadName, AbcParameters abcParams, MapperDAG dag,
-			MultiCoreArchitecture archi, int maxcount, int maxstep, int margin,
-			boolean alreadyimplanted, boolean pfastused,
-			boolean displaySolutions, IProgressMonitor monitor,
-			List<MapperDAGVertex> cpnDominantList,
+	public MapperDAG map(String threadName, AbcParameters abcParams,
+			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
+			int maxstep, int margin, boolean alreadyimplanted,
+			boolean pfastused, boolean displaySolutions,
+			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
 			List<MapperDAGVertex> finalcriticalpathList) {
 
@@ -134,9 +132,9 @@ public class FastAlgorithm extends Observable {
 		}
 
 		// Variables
-		IAbc simulator = AbstractAbc.getInstance(abcParams,
-				dag, archi, scenario);
-		
+		IAbc simulator = AbstractAbc.getInstance(abcParams, dag, archi,
+				scenario);
+
 		// A topological task scheduler is chosen for the list scheduling.
 		// It schedules the tasks in topological order and, if they are on
 		// the same level, in alphabetical name order
@@ -175,13 +173,14 @@ public class FastAlgorithm extends Observable {
 		long initial = simulator.getFinalCost();
 
 		bestTotalOrder = simulator.getTotalOrder().toStringList();
-		
+
 		if (displaySolutions) {
 			GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
 					"Cost:" + initial + " List");
 		}
-		
-		PreesmLogger.getLogger().log(Level.INFO,"Found List solution; Cost:" + initial);
+
+		PreesmLogger.getLogger().log(Level.INFO,
+				"Found List solution; Cost:" + initial);
 
 		logger.log(Level.FINE, "InitialSP " + initial);
 
@@ -214,18 +213,6 @@ public class FastAlgorithm extends Observable {
 						e.printStackTrace();
 					}
 				}
-
-				// Mode stop
-				if (costPlotter.getActionType() == 1
-						|| (monitor != null && monitor.isCanceled())) {
-					logger
-							.log(
-									Level.FINE,
-									"Gain "
-											+ ((((double) initial - (double) bestSL) / (double) initial) * 100)
-											+ " %");
-					return dagfinal.clone();
-				}
 			}
 
 			// step 5
@@ -234,14 +221,22 @@ public class FastAlgorithm extends Observable {
 
 			// step 6 : neighborhood search
 			do {
+				// Mode stop
+				if (!pfastused
+						&& (costPlotter.getActionType() == 1 || (monitor != null && monitor
+								.isCanceled()))) {
+
+					return dagfinal.clone();
+				}
+
 				// step 7
 				currentvertex = (MapperDAGVertex) vertexiter.next();
 				simulator.updateFinalCosts();
 				SL = simulator.getFinalCost();
 
 				// step 8
-				Set<Operator> operatorSet = currentvertex.getInitialVertexProperty()
-				.getOperatorSet();
+				Set<Operator> operatorSet = currentvertex
+						.getInitialVertexProperty().getOperatorSet();
 
 				prociter = new RandomIterator<Operator>(operatorSet,
 						new Random());
@@ -287,11 +282,12 @@ public class FastAlgorithm extends Observable {
 
 				bestTotalOrder = simulator.getTotalOrder().toStringList();
 				if (displaySolutions) {
-					GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
-							"Cost:" + bestSL + " Fast");
+					GanttEditor.createEditor(simulator, abcParams,
+							getBestTotalOrder(), "Cost:" + bestSL + " Fast");
 				}
-				
-				PreesmLogger.getLogger().log(Level.INFO,"Found Fast solution; Cost:" + bestSL);
+
+				PreesmLogger.getLogger().log(Level.INFO,
+						"Found Fast solution; Cost:" + bestSL);
 
 				dagfinal.setScheduleLatency(bestSL);
 				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
@@ -315,7 +311,7 @@ public class FastAlgorithm extends Observable {
 
 				operatorfcp = prociter.next();
 			}
-			
+
 			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);
 

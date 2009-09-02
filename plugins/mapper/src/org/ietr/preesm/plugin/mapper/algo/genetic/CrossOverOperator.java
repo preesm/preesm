@@ -41,8 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**

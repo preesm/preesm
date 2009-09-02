@@ -38,7 +38,6 @@ package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -47,7 +46,6 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;

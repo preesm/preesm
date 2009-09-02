@@ -36,30 +36,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.exporter;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.writer.DesignWriter;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.jgrapht.Graph;
-import org.sdf4j.exporter.GMLExporter;
 import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.w3c.dom.Element;
 
 /**
  * Exporter for IP-XACT multicore architectures
@@ -99,6 +86,7 @@ public class ArchitectureExportTransform implements IExporter {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void transform(AbstractGraph algorithm, TextParameters params) {
 		
 	}
