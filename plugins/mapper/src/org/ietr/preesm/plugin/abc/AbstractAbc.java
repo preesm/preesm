@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -343,8 +344,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		boolean possible = true;
 		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
-				implementation);
+		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
 		/*
 		 * The listener is implanted in each vertex
@@ -391,20 +391,15 @@ public abstract class AbstractAbc implements IAbc {
 			for (Operator op : currentvertex.getInitialVertexProperty()
 					.getOperatorSet()) {
 				if (op.getDefinition().equals(preferedOperator.getDefinition())) {
-					if (isImplantable(currentvertex, op)) {
-						adequateOp = op;
-					}
+					adequateOp = op;
 				}
 			}
 
 			// Search among the operators with other type than the prefered one
 			if (adequateOp == null) {
-
 				for (Operator op : currentvertex.getInitialVertexProperty()
 						.getOperatorSet()) {
-					if (isImplantable(currentvertex, op)) {
-						adequateOp = op;
-					}
+					adequateOp = op;
 				}
 			}
 		}

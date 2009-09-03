@@ -36,7 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.workflow;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TaskResult;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * @author mwipliez
@@ -60,35 +63,39 @@ public class WorkflowEdge {
 	}
 
 	public void setCarriedData(TaskResult data) {
-		
-		if(carriedDataType != null){
-			switch (carriedDataType) {
-			case SDF:
-				this.data.setSDF(data.getSDF());
-				break;
-			case DAG:
-				this.data.setDAG(data.getDAG());
-				break;
-			case ARCHITECTURE:
-				this.data.setArchitecture(data.getArchitecture());
-				break;
-			case SCENARIO:
-				this.data.setScenario(data.getScenario());
-				break;
-			case SOURCELIST:
-				this.data.setSourcefilelist(data.getSourcefilelist());
-				break;
-			case ABC:
-				this.data.setAbc(data.getAbc());
-				break;
-			default:
-	
+
+		if (carriedDataType != null) {
+			if (data != null) {
+				switch (carriedDataType) {
+				case SDF:
+					this.data.setSDF(data.getSDF());
+					break;
+				case DAG:
+					this.data.setDAG(data.getDAG());
+					break;
+				case ARCHITECTURE:
+					this.data.setArchitecture(data.getArchitecture());
+					break;
+				case SCENARIO:
+					this.data.setScenario(data.getScenario());
+					break;
+				case SOURCELIST:
+					this.data.setSourcefilelist(data.getSourcefilelist());
+					break;
+				case ABC:
+					this.data.setAbc(data.getAbc());
+					break;
+				default:
+
+				}
+			} else {
+				PreesmLogger.getLogger().log(Level.SEVERE,"A data is not available in the workflow.");
 			}
 		}
 	}
-	
-	public WorkflowEdgeType getCarriedDataType(){
-		return carriedDataType ;
+
+	public WorkflowEdgeType getCarriedDataType() {
+		return carriedDataType;
 	}
 
 	public void setCarriedDataType(String type) {
