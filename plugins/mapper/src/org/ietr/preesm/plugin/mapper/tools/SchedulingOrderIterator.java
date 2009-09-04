@@ -47,10 +47,11 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class SchedulingOrderIterator extends ImplementationIterator {
 
-	public SchedulingOrderIterator(MapperDAG implementation,
-			IAbc simulator, boolean directOrder) {
-		super(implementation, simulator, directOrder);
-		// TODO Auto-generated constructor stub
+	IAbc abc = null;
+	
+	public SchedulingOrderIterator(MapperDAG implementation, IAbc abc, boolean directOrder) {
+		this.abc = abc;
+		super.initParams(implementation, directOrder);
 	}
 
 	/*
@@ -63,7 +64,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
 	 */
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
-		return (simulator.getSchedTotalOrder(arg0) - simulator
+		return (abc.getSchedTotalOrder(arg0) - abc
 				.getSchedTotalOrder(arg1));
 	}
 

@@ -125,7 +125,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		// The transfers are reordered using the best found order during
 		// scheduling
-		simu2.reorder(fastAlgorithm.getBestTotalOrder());
+		simu2.reschedule(fastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
 		// The mapper dag properties are put in the property bean to be transfered to code generation
@@ -137,6 +137,7 @@ public class FASTTransformation extends AbstractMapping {
 		}
 		
 		result.setDAG(dag);
+		// A simple task scheduler avoids new task swaps and ensures reuse of previous order.
 		simu2.resetTaskScheduler(TaskSchedType.Simple);
 		result.setAbc(simu2);
 

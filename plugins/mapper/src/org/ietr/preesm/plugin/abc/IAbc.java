@@ -114,9 +114,10 @@ public interface IAbc extends IMapperAbc {
 	public Schedule getTotalOrder();
 
 	/**
-	 * Reorders the implementation using the given total order
+	 * Reorders the implementation using the given total order or trying to find the best schedule
 	 */
-	public void reorder(List<String> totalOrder);
+	public void reschedule(List<String> totalOrder);
+	public void reschedule();
 
 	/**
 	 * Gets the cost of the given vertex in the implementation

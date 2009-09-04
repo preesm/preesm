@@ -249,41 +249,6 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Reorders the implementation using the given total order
-	 */
-	public void reorder(List<String> totalOrder) {
-
-		if (implementation != null && dag != null) {
-
-			// Sets the order in the implementation
-			for (String vName : totalOrder) {
-				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
-						.getVertex(vName);
-				if (ImplVertex != null)
-					ImplVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.indexOf(vName));
-
-				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
-						.getVertex(vName);
-				if (dagVertex != null)
-					dagVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.indexOf(vName));
-
-			}
-
-			// Retrieves the new order in order manager
-			orderManager.reconstructTotalOrderFromDAG(implementation);
-
-			TransactionManager localTransactionManager = new TransactionManager();
-			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
-					localTransactionManager);
-			PrecedenceEdgeAdder
-					.addPrecedenceEdges(orderManager, implementation);
-
-		}
-	}
-
-	/**
 	 * Implants the vertex on the operator. If updaterank is true, finds a new
 	 * place for the vertex in the schedule. Otherwise, use the vertex rank to
 	 * know where to schedule it.

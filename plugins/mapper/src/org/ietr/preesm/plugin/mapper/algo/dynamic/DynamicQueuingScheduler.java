@@ -37,15 +37,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -63,5 +66,41 @@ public class DynamicQueuingScheduler {
 	 */
 	public DynamicQueuingScheduler() {
 		super();
+	}
+
+	/**
+	 * implants the vertices depending on their availability at the mapping time
+	 */
+	static public boolean implantVertices(LatencyAbc abc) {
+
+		boolean possible = true;
+		MapperDAGVertex currentvertex;
+		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
+				abc.getDAG());
+
+		long currentExecutionTime = 0;
+		boolean implanted;
+		
+		while (iterator.hasNext()) {
+			currentvertex = (MapperDAGVertex) iterator.next();
+			implanted = false;
+			Set<Operator> adequateOps = currentvertex.getInitialVertexProperty().getOperatorSet();
+
+			for(Operator op : adequateOps){
+				if(abc.getFinalCost(op) <= currentExecutionTime){
+					abc.implant(currentvertex, op, true);
+					implanted = true;
+					break;
+				}
+			}
+			
+			if(!implanted){
+				abc.implant(currentvertex, abc.findOperator(currentvertex, abc.getArchitecture().getMainOperator()), true);
+			}
+			
+			currentExecutionTime = abc.getTLevel(currentvertex, true);
+		}
+
+		return possible;
 	}
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
 import java.util.ArrayList;
@@ -54,32 +54,35 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class TopologicalTaskSched extends AbstractTaskSched {
 
-	private static class TopoComparator implements Comparator<MapperDAGVertex>{
+	private static class TopoComparator implements Comparator<MapperDAGVertex> {
 
 		@Override
 		public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
 			int compare;
-			
-			compare = v0.getInitialVertexProperty()
-			.getTopologicalLevel() - v1.getInitialVertexProperty()
-			.getTopologicalLevel();
-			
-			if(compare == 0){
+
+			compare = v0.getInitialVertexProperty().getTopologicalLevel()
+					- v1.getInitialVertexProperty().getTopologicalLevel();
+
+			if (compare == 0) {
 				compare = v0.getName().compareTo(v1.getName());
 			}
-			
+
 			return compare;
 		}
-		
+
 	}
-	
+
 	private List<MapperDAGVertex> topolist = null;
 
 	public TopologicalTaskSched(SchedOrderManager orderManager) {
 		super(orderManager);
 	}
 
-	public void createTopology(MapperDAG dag) {
+	/**
+	 * Listing the vertices first in topological order and on one level in
+	 * alphabetical order
+	 */
+	public List<MapperDAGVertex> createTopology(MapperDAG dag) {
 		topolist = new ArrayList<MapperDAGVertex>();
 
 		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
@@ -91,24 +94,27 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				v.getInitialVertexProperty().setTopologicalLevel(0);
 			} else {
 				int precedentLevel = 0;
-				for(DAGEdge edge : v.incomingEdges()){
-					MapperDAGVertex precVertex = (MapperDAGVertex) edge.getSource();
-					precedentLevel = Math.max(precedentLevel, precVertex.getInitialVertexProperty()
-							.getTopologicalLevel());
+				for (DAGEdge edge : v.incomingEdges()) {
+					MapperDAGVertex precVertex = (MapperDAGVertex) edge
+							.getSource();
+					precedentLevel = Math.max(precedentLevel, precVertex
+							.getInitialVertexProperty().getTopologicalLevel());
 					v.getInitialVertexProperty().setTopologicalLevel(
 							precedentLevel + 1);
 				}
 			}
 		}
-		
+
 		Collections.sort(topolist, new TopoComparator());
+
+		return topolist;
 	}
 
 	@Override
 	public void insertVertex(MapperDAGVertex vertex) {
 		int topoOrder = topolist.indexOf(vertex);
 		boolean inserted = false;
-		
+
 		if (topolist != null && topoOrder >= 0) {
 
 			topoOrder--;
@@ -116,14 +122,16 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				MapperDAGVertex previousCandidate = topolist.get(topoOrder);
 				int totalOrder = orderManager.totalIndexOf(previousCandidate);
 				if (orderManager.getTotalOrder().contains(previousCandidate)) {
-					orderManager.insertVertexAfter(orderManager.getVertex(totalOrder), vertex);
+					orderManager.insertVertexAfter(orderManager
+							.getVertex(totalOrder), vertex);
 					inserted = true;
 					break;
 				}
 				topoOrder--;
 			}
-			
-			if(!inserted && vertex.getInitialVertexProperty().getTopologicalLevel() == 0){
+
+			if (!inserted
+					&& vertex.getInitialVertexProperty().getTopologicalLevel() == 0) {
 				orderManager.addFirst(vertex);
 			}
 		} else {

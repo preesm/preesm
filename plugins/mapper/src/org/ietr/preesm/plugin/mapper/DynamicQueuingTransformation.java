@@ -51,6 +51,7 @@ import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
+import org.ietr.preesm.plugin.mapper.algo.dynamic.DynamicQueuingScheduler;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
@@ -104,7 +105,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		
 		IAbc simu2 = AbstractAbc
 				.getInstance(abcParameters, dag, architecture, scenario);
-		implantVertices((LatencyAbc)simu2);
+		DynamicQueuingScheduler.implantVertices((LatencyAbc)simu2);
 		simu2.retrieveTotalOrder();
 
 		TagDAG tagSDF = new TagDAG();
@@ -124,46 +125,6 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		PreesmLogger.getLogger().log(Level.INFO,"End of Dynamic Scheduling");
 		
 		return result;
-	}
-
-	/**
-	 * implants the vertices depending on their availability at the mapping time
-	 */
-	public boolean implantVertices(LatencyAbc abc) {
-
-		boolean possible = true;
-		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
-				abc.getDAG());
-
-		long currentExecutionTime = 0;
-		long smallestFinalLatency = 0;
-		boolean implanted;
-		
-		/*
-		 * The listener is implanted in each vertex
-		 */
-		while (iterator.hasNext()) {
-			currentvertex = (MapperDAGVertex) iterator.next();
-			implanted = false;
-			Set<Operator> adequateOps = currentvertex.getInitialVertexProperty().getOperatorSet();
-
-			/*for(Operator op : adequateOps){
-				if(abc.getFinalCost(op) <= currentExecutionTime){
-					abc.implant(currentvertex, op, true);
-					implanted = true;
-					break;
-				}
-			}*/
-			
-			if(!implanted){
-				abc.implant(currentvertex, abc.findOperator(currentvertex, abc.getArchitecture().getMainOperator()), true);
-			}
-			
-			currentExecutionTime = abc.getTLevel(currentvertex, true);
-		}
-
-		return possible;
 	}
 
 }

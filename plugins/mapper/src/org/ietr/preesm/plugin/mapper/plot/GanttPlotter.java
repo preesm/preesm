@@ -43,7 +43,9 @@ import java.awt.LinearGradientPaint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.swt.SWT;
@@ -53,6 +55,7 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
@@ -140,7 +143,7 @@ public class GanttPlotter extends ApplicationFrame implements
 		Point2D start = new Point2D.Float(0, 0);
 		Point2D end = new Point2D.Float(500, 500);
 		float[] dist = { 0.0f, 0.8f };
-		Color[] colors = { Color.BLUE.brighter().brighter(), Color.WHITE };
+		Color[] colors = { new Color(170,160,190), Color.WHITE };
 		LinearGradientPaint p = new LinearGradientPaint(start, end, dist,
 				colors);
 
@@ -183,27 +186,21 @@ public class GanttPlotter extends ApplicationFrame implements
 	 * @return The dataset.
 	 */
 	private static IntervalCategoryDataset createDataset(MapperDAG dag,
-			LatencyAbc simulator) {
-
-		simulator.updateFinalCosts();
+			MultiCoreArchitecture archi) {
 
 		TaskSeries series = new TaskSeries("Scheduled");
 		Task currenttask;
+		Map<String, Long> finalCosts = new HashMap<String, Long>();
 
 		// Creating the Operator lines
-		List<ArchitectureComponent> cmps = simulator.getArchitecture()
-				.getComponents();
+		List<ArchitectureComponent> cmps = archi.getComponents();
 		Collections.sort(cmps,
 				new ArchitectureComponent.ArchitectureComponentComparator());
 
-		for (ArchitectureComponent c : cmps) {
-			long finalCost = simulator.getFinalCost(c);
-			if (finalCost > 0) {
-				currenttask = new Task(c.getName(), new SimpleTimePeriod(0,
-						finalCost));
-				series.add(currenttask);
-			}
-
+		for (ArchitectureComponent cmp : cmps) {
+			currenttask = new Task(cmp.getName(), new SimpleTimePeriod(0, 1));
+			series.add(currenttask);
+			finalCosts.put(cmp.getName(), 0l);
 		}
 
 		// Populating the Operator lines
@@ -211,18 +208,37 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			ArchitectureComponent cmp = simulator
-					.getEffectiveComponent(currentVertex);
+			ArchitectureComponent cmp = currentVertex
+					.getImplementationVertexProperty().getEffectiveComponent();
 
 			if (cmp != ArchitectureComponent.NO_COMPONENT) {
-				long start = simulator.getTLevel(currentVertex, false);
-				long end = simulator.getFinalCost(currentVertex);
+				long start = currentVertex.getTimingVertexProperty()
+						.getNewtLevel();
+				long end = start
+						+ currentVertex.getTimingVertexProperty().getCost();
 				String taskName = currentVertex.getName()
 						+ " (x"
 						+ currentVertex.getInitialVertexProperty()
 								.getNbRepeat() + ")";
 				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
 				series.get(cmp.getName()).addSubtask(t);
+
+				// Updating the component final cost
+				long finalCost = finalCosts.get(cmp.getName());
+				if (finalCost < end) {
+					finalCosts.put(cmp.getName(), end);
+				}
+			}
+		}
+
+		// Setting the series length to the maximum end time of a task
+		for (ArchitectureComponent cmp : cmps) {
+			long finalCost = finalCosts.get(cmp.getName());
+			if (finalCost > 0) {
+				series.get(cmp.getName()).setDuration(
+						new SimpleTimePeriod(0, finalCost));
+			} else {
+				series.remove(series.get(cmp.getName()));
 			}
 		}
 
@@ -239,21 +255,13 @@ public class GanttPlotter extends ApplicationFrame implements
 	 * @param args
 	 *            ignored.
 	 */
-	public static void plot(MapperDAG dag, IAbc simulator) {
+	public static void plot(MapperDAG dag, MultiCoreArchitecture archi) {
 
-		if (simulator instanceof LatencyAbc) {
-			LatencyAbc abc = (LatencyAbc) simulator;
-			abc.updateFinalCosts();
-			GanttPlotter plot = new GanttPlotter("Solution gantt, latency: "
-					+ abc.getFinalLatency(), dag, abc);
+			GanttPlotter plot = new GanttPlotter("Solution gantt", dag, archi);
 
 			plot.pack();
 			RefineryUtilities.centerFrameOnScreen(plot);
 			plot.setVisible(true);
-		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"No plotting available without a latency ABC.");
-		}
 
 	}
 
@@ -277,25 +285,16 @@ public class GanttPlotter extends ApplicationFrame implements
 	}
 
 	/**
-	 * A demonstration application showing how to create a simple time series
-	 * chart. This example uses monthly data.
-	 * 
-	 * @param title
-	 *            the frame title.
+	 * Plotting a Gantt chart
 	 */
-	public GanttPlotter(String title, MapperDAG dag, IAbc simulator) {
+	public GanttPlotter(String title, MapperDAG dag, MultiCoreArchitecture archi) {
 		super(title);
-		if (simulator instanceof LatencyAbc) {
-			JFreeChart chart = createChart(createDataset(dag,
-					(LatencyAbc) simulator));
-			ChartPanel chartPanel = new ChartPanel(chart);
-			chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-			chartPanel.setMouseZoomable(true, false);
-			setContentPane(chartPanel);
-		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"To display a graph Gantt chart, a latency ABC is needed.");
-		}
+
+		JFreeChart chart = createChart(createDataset(dag, archi));
+		ChartPanel chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+		chartPanel.setMouseZoomable(true, false);
+		setContentPane(chartPanel);
 
 	}
 

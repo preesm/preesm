@@ -131,7 +131,7 @@ public class GanttEditor extends EditorPart {
 		MapperDAG dag = abc.getDAG().clone();
 		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc.getArchitecture(), abc.getScenario());
 		newAbc.setDAG(dag);
-		newAbc.reorder(bestTotalOrder);
+		newAbc.reschedule(bestTotalOrder);
 		
 		IEditorInput input = new GanttEditorInput(newAbc, name);
 

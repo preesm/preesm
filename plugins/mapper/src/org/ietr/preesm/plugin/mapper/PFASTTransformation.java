@@ -121,7 +121,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		// The transfers are reordered using the best found order during
 		// scheduling
-		simu2.reorder(pfastAlgorithm.getBestTotalOrder());
+		simu2.reschedule(pfastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
 		try {

@@ -40,6 +40,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Frame;
+import java.awt.Shape;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
@@ -63,8 +64,8 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 /**
- * Plots the performance of a given implementation and compares it
- * to the maximum possible speed ups
+ * Plots the performance of a given implementation and compares it to the
+ * maximum possible speed ups
  * 
  * @author mpelcat
  */
@@ -75,12 +76,12 @@ public class PerformancePlotter extends ApplicationFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public class SizeListener implements ControlListener{
+	public class SizeListener implements ControlListener {
 
 		Composite composite;
 
 		Container frame;
-		
+
 		public SizeListener(Composite composite, Container frame) {
 			super();
 			this.composite = composite;
@@ -97,9 +98,9 @@ public class PerformancePlotter extends ApplicationFrame {
 		public void controlResized(ControlEvent e) {
 			// TODO Auto-generated method stub
 
-			frame.setSize(composite.getSize().x,composite.getSize().y);
+			frame.setSize(composite.getSize().x, composite.getSize().y);
 		}
-		
+
 	}
 
 	/**
@@ -138,22 +139,26 @@ public class PerformancePlotter extends ApplicationFrame {
 
 		// Creating display domain
 		NumberAxis horizontalAxis = new NumberAxis("Number of operators");
-		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(horizontalAxis);
-		this.speedups = new DefaultXYDataset();
-			
+		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
+				horizontalAxis);
+
 		// Creating the best speedups subplot
 		this.speedups = new DefaultXYDataset();
+
+		final NumberAxis xAxis = new NumberAxis("speedups");
+
+		xAxis.setAutoRangeIncludesZero(false);
 		
-		final NumberAxis rangeAxis = new NumberAxis("speedups");
-		
-		rangeAxis.setAutoRangeIncludesZero(false);
-		final XYPlot subplot = new XYPlot(this.speedups, null,
-				rangeAxis, new XYSplineRenderer());
+		XYSplineRenderer renderer = new XYSplineRenderer();
+		final XYPlot subplot = new XYPlot(this.speedups, null, xAxis,
+				renderer);
 		subplot.setBackgroundPaint(Color.white);
 		subplot.setDomainGridlinePaint(Color.lightGray);
 		subplot.setRangeGridlinePaint(Color.lightGray);
 		plot.add(subplot);
 		
+		plot.setForegroundAlpha(0.5f);
+
 		final JFreeChart chart = new JFreeChart(title, plot);
 
 		chart.setBorderPaint(Color.white);
@@ -166,79 +171,90 @@ public class PerformancePlotter extends ApplicationFrame {
 
 		final ValueAxis axis = plot.getDomainAxis();
 		axis.setAutoRange(true);
-		
+
 		return chart;
-		
+
 	}
 
 	/**
 	 * Creates the graph values for input data:
 	 * 
-	 * @param workLength sum of all the actor timings
-	 * @param spanLength length of the longest path in the DAG
-	 * @param resultTime latency of the current simulation
-	 * @param resultNbCores number of cores for the current simulation
+	 * @param workLength
+	 *            sum of all the actor timings
+	 * @param spanLength
+	 *            length of the longest path in the DAG
+	 * @param resultTime
+	 *            latency of the current simulation
+	 * @param resultNbCores
+	 *            number of cores for the current simulation
+	 * @param resultNbMainCores
+	 *            number of cores with type main for the current simulation
 	 * 
 	 */
-	public void setData(long workLength, long spanLength, long resultTime, int resultNbCores){
+	public void setData(long workLength, long spanLength, long resultTime,
+			int resultNbCores, int resultNbMainCores) {
 
-		double absoluteBestSpeedup = ((double)workLength)/((double)spanLength);
-		int maxCoreNumber = (int)Math.ceil(absoluteBestSpeedup) + 10;
-		
+		double absoluteBestSpeedup = ((double) workLength)
+				/ ((double) spanLength);
+		int maxCoreNumber = (int) Math.ceil(absoluteBestSpeedup) + 10;
+
 		// Creating curve for best speedups
-		// The speedup is limited y the span length 
+		// The speedup is limited y the span length
 		double[][] bestSpeedups = new double[2][maxCoreNumber];
-		
-		for(int nbCores = 1; nbCores <= maxCoreNumber; nbCores++){
-			bestSpeedups[0][nbCores-1] = nbCores;
-			
-			if(nbCores < absoluteBestSpeedup){
-				bestSpeedups[1][nbCores-1] = nbCores;
-			}
-			else{
-				bestSpeedups[1][nbCores-1] = absoluteBestSpeedup;
+
+		for (int nbCores = 1; nbCores <= maxCoreNumber; nbCores++) {
+			bestSpeedups[0][nbCores - 1] = nbCores;
+
+			if (nbCores < absoluteBestSpeedup) {
+				bestSpeedups[1][nbCores - 1] = nbCores;
+			} else {
+				bestSpeedups[1][nbCores - 1] = absoluteBestSpeedup;
 			}
 		}
 
 		this.speedups.addSeries("Maximum achievable speedups", bestSpeedups);
-
-		// Creating curve for best speedups
-		// The speedup is limited y the span length 
-		double[][] reachableSpeedups = new double[2][maxCoreNumber];
 		
-		for(int nbCores = 1; nbCores <= maxCoreNumber; nbCores++){
-			reachableSpeedups[0][nbCores-1] = nbCores;
-			
-			reachableSpeedups[1][nbCores-1] = ((double)(workLength * nbCores))/((double)(spanLength * nbCores + workLength));
+		// Creating curve for best speedups
+		// The speedup is limited y the span length
+		double[][] reachableSpeedups = new double[2][maxCoreNumber];
+
+		for (int nbCores = 1; nbCores <= maxCoreNumber; nbCores++) {
+			reachableSpeedups[0][nbCores - 1] = nbCores;
+
+			reachableSpeedups[1][nbCores - 1] = ((double) (workLength * nbCores))
+					/ ((double) (spanLength * nbCores + workLength));
 		}
 
-		this.speedups.addSeries("Greedy-Scheduling Theorem bound", reachableSpeedups);
-		
+		this.speedups.addSeries("Greedy-Scheduling Theorem bound",
+				reachableSpeedups);
+
 		// Creating point for current speedup
 		double[][] currentSpeedup = new double[2][1];
-		currentSpeedup[0][0] = resultNbCores;
-		currentSpeedup[1][0] = ((double)workLength)/((double)resultTime);
+		currentSpeedup[0][0] = resultNbMainCores;
+		currentSpeedup[1][0] = ((double) workLength) / ((double) resultTime);
 		this.speedups.addSeries("Currently obtained speedup", currentSpeedup);
 	}
-	
-	public void windowClosing(WindowEvent event){
-		if(event.equals(WindowEvent.WINDOW_CLOSING)){
-			
+
+	public void windowClosing(WindowEvent event) {
+		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
+
 		}
 	}
 
-	public void display(Composite parentComposite){
-	
-	    Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
-	    parentComposite.setLayout(new FillLayout());
-	    Frame frame = SWT_AWT.new_Frame(composite);
-	    frame.add(this.getContentPane());
+	public void display(Composite parentComposite) {
 
-	    parentComposite.addControlListener(this.new SizeListener(composite,frame));
+		Composite composite = new Composite(parentComposite, SWT.EMBEDDED
+				| SWT.FILL);
+		parentComposite.setLayout(new FillLayout());
+		Frame frame = SWT_AWT.new_Frame(composite);
+		frame.add(this.getContentPane());
+
+		parentComposite.addControlListener(this.new SizeListener(composite,
+				frame));
 	}
 
-	public void display(){
-		
+	public void display() {
+
 		this.pack();
 		RefineryUtilities.centerFrameOnScreen(this);
 		this.setVisible(true);

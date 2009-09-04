@@ -247,7 +247,7 @@ public class InitialLists {
 		abc.updateTimings();
 
 		// This step takes time because the whole graph b levels are calculated.
-		BLevelIterator iterator = new BLevelIterator(dag, abc, false);
+		BLevelIterator iterator = new BLevelIterator(dag, false);
 
 		// The DAG is entirely read in b-level order by the iterator to find the
 		// Critical Path
@@ -333,11 +333,11 @@ public class InitialLists {
 	 * @return : void
 	 */
 	private void addCPNobn(MapperDAG dag, List<MapperDAGVertex> orderlist,
-			IAbc archi) {
+			IAbc abc) {
 
 		// Variables
 		MapperDAGVertex currentvertex = null;
-		BLevelIterator iterator = new BLevelIterator(dag, archi, false);
+		BLevelIterator iterator = new BLevelIterator(dag, false);
 
 		// Class the OBN into the lists (CPN and Blocking node)
 		while (iterator.hasNext()) {

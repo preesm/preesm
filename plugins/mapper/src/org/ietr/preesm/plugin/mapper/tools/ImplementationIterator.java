@@ -73,27 +73,20 @@ public abstract class ImplementationIterator extends
 	 */
 	private List<MapperDAGVertex> orderedlist;
 
-	/**
-	 * Current architecture simulator
-	 */
-	protected LatencyAbc simulator;
+	public ImplementationIterator() {
+		super();
+	}
 
-	public ImplementationIterator(MapperDAG dag, IAbc simulator,
+	public ImplementationIterator(MapperDAG dag,
 			boolean directOrder) {
 		super();
+		initParams(dag,directOrder);
+	}
+	
+	public void initParams(MapperDAG dag,
+			boolean directOrder) {
 		this.directOrder = directOrder;
-		if (simulator instanceof LatencyAbc) {
-			this.simulator = (LatencyAbc) simulator;
-		} else {
-			this.simulator = null;
-			PreesmLogger
-					.getLogger()
-					.log(Level.SEVERE,
-							"To iterate a graph in timed order, a latency ABC is needed.");
-		}
-
 		createOrderedList(dag);
-
 		currentIndex = 0;
 	}
 

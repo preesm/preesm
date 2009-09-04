@@ -41,8 +41,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -193,6 +195,22 @@ public class StatGenerator {
 			}
 		}
 		return nbUsedOperators;
+	}
+
+	/**
+	 * Returns the number of operators with main type
+	 */
+	public int getNbMainTypeOperators() {
+		int nbMainTypeOperators = 0;
+		Operator main = abc.getArchitecture().getMainOperator();
+		ArchitectureComponentDefinition maindef = main.getDefinition();
+		for (ArchitectureComponent o : abc.getArchitecture().getComponents(
+				ArchitectureComponentType.operator)) {
+			if (maindef.equals(o.getDefinition())) {
+				nbMainTypeOperators++;
+			}
+		}
+		return nbMainTypeOperators;
 	}
 
 	/**

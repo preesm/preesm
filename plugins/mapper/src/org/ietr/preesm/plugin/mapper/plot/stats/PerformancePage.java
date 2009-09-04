@@ -170,6 +170,7 @@ public class PerformancePage extends FormPage {
 		long spanLength = statGen.getDAGSpanLength();
 		long resultTime = statGen.getResultTime();
 		int resultNbCores = statGen.getNbUsedOperators();
+		int resultNbMainCores = statGen.getNbMainTypeOperators();
 
 		String currentValuesDisplay = String
 				.format(
@@ -186,7 +187,7 @@ public class PerformancePage extends FormPage {
 
 		if (workLength > 0 && spanLength > 0 && resultTime > 0
 				&& resultNbCores > 0) {
-			plotter.setData(workLength, spanLength, resultTime, resultNbCores);
+			plotter.setData(workLength, spanLength, resultTime, resultNbCores, resultNbMainCores);
 			plotter.display(client);
 		}
 

@@ -128,4 +128,16 @@ public class CommContenAbc extends AbstractAbc {
 	@Override
 	public void updateFinalCosts(){
 	}
+
+	@Override
+	public void reschedule(List<String> totalOrder) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reschedule() {
+		// TODO Auto-generated method stub
+		
+	}
 }

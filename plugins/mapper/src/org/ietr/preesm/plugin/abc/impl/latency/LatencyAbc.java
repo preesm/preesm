@@ -59,15 +59,19 @@ import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
+import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -342,11 +346,11 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if (!delegateDisplay) {
 			updateTimings();
-			GanttPlotter.plot(implementation, this);
+			GanttPlotter.plot(implementation, this.getArchitecture());
 			return null;
 		} else {
 			updateTimings();
-			return new GanttPlotter("Solution gantt", implementation, this);
+			return new GanttPlotter("Solution gantt", implementation, this.getArchitecture());
 		}
 	}
 
@@ -505,5 +509,87 @@ public abstract class LatencyAbc extends AbstractAbc {
 	@Override
 	public void updateFinalCosts() {
 		updateTimings();
+	}
+
+	/**
+	 * Reorders the implementation using the given total order
+	 */
+	@Override
+	public void reschedule(List<String> totalOrder) {
+
+		if (implementation != null && dag != null) {
+
+			// Sets the order in the implementation
+			for (String vName : totalOrder) {
+				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
+						.getVertex(vName);
+				if (ImplVertex != null)
+					ImplVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(totalOrder.indexOf(vName));
+
+				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
+						.getVertex(vName);
+				if (dagVertex != null)
+					dagVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(totalOrder.indexOf(vName));
+
+			}
+
+			// Retrieves the new order in order manager
+			orderManager.reconstructTotalOrderFromDAG(implementation);
+
+			TransactionManager localTransactionManager = new TransactionManager();
+			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
+					localTransactionManager);
+			PrecedenceEdgeAdder
+					.addPrecedenceEdges(orderManager, implementation);
+
+		}
+	}
+
+	/**
+	 * Reorders the implementation using the given total order
+	 */
+	@Override
+	public void reschedule() {
+
+		if (implementation != null && dag != null) {
+
+			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
+					new TransactionManager());
+			updateTimings();
+			this.plotImplementation(false);
+			
+			/*TopologicalTaskSched taskSched = new TopologicalTaskSched(orderManager);
+			List<MapperDAGVertex> vList = taskSched.createTopology(implementation);
+
+			// Sets the order in the implementation
+			for (MapperDAGVertex implVertex : vList) {*/
+			
+			int index = 0;
+			TLevelIterator iterator = new TLevelIterator(implementation,true);
+			
+			while(iterator.hasNext()){
+				MapperDAGVertex implVertex = iterator.next();
+				if (implVertex != null)
+					implVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(index);
+
+				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
+						.getVertex(implVertex.getName());
+				if (dagVertex != null)
+					dagVertex.getImplementationVertexProperty()
+							.setSchedTotalOrder(index);
+
+				index++;
+			}
+
+			// Retrieves the new order in order manager
+			orderManager.reconstructTotalOrderFromDAG(implementation);
+
+			PrecedenceEdgeAdder
+					.addPrecedenceEdges(orderManager, implementation);
+
+		}
 	}
 }

@@ -47,17 +47,16 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class TLevelIterator extends ImplementationIterator {
 
-	public TLevelIterator(MapperDAG dag, IAbc simulator,
-			boolean directOrder) {
-		super(dag, simulator, directOrder);
+	public TLevelIterator(MapperDAG dag, boolean directOrder) {
+		super(dag, directOrder);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		long TLevelDifference = (simulator.getTLevel(arg0,false) - simulator
-				.getTLevel(arg1,false));
+		long TLevelDifference = (arg0.getTimingVertexProperty().getNewtLevel() - arg1
+				.getTimingVertexProperty().getNewtLevel());
 
 		if (!directOrder)
 			TLevelDifference = -TLevelDifference;
@@ -65,7 +64,7 @@ public class TLevelIterator extends ImplementationIterator {
 		if (TLevelDifference == 0)
 			TLevelDifference++;
 
-		return (int)TLevelDifference;
+		return (int) TLevelDifference;
 	}
 
 }

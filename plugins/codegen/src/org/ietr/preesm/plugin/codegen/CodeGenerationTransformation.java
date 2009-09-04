@@ -71,6 +71,7 @@ import org.sdf4j.model.visitors.SDF4JException;
  * Code generation.
  * 
  * @author Matthieu Wipliez
+ * @author mpelcat
  */
 public class CodeGenerationTransformation implements ICodeGeneration {
 
