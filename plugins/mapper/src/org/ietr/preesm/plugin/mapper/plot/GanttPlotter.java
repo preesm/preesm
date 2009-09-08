@@ -143,7 +143,7 @@ public class GanttPlotter extends ApplicationFrame implements
 		Point2D start = new Point2D.Float(0, 0);
 		Point2D end = new Point2D.Float(500, 500);
 		float[] dist = { 0.0f, 0.8f };
-		Color[] colors = { new Color(170,160,190), Color.WHITE };
+		Color[] colors = { new Color(170, 160, 190), Color.WHITE };
 		LinearGradientPaint p = new LinearGradientPaint(start, end, dist,
 				colors);
 
@@ -249,39 +249,47 @@ public class GanttPlotter extends ApplicationFrame implements
 
 	}
 
+	public static void plotDeployment(MapperDAG dag,
+			MultiCoreArchitecture archi, Composite delegateDisplay) {
+
+		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag,
+				archi);
+		
+		if (delegateDisplay == null) {
+			plotter.plot(dag, archi);
+		} else {
+			plotter.plotInComposite(dag, archi, delegateDisplay);
+		}
+	}
+
 	/**
 	 * Starting point for the demonstration application.
 	 * 
 	 * @param args
 	 *            ignored.
 	 */
-	public static void plot(MapperDAG dag, MultiCoreArchitecture archi) {
+	public void plot(MapperDAG dag, MultiCoreArchitecture archi) {
 
-			GanttPlotter plot = new GanttPlotter("Solution gantt", dag, archi);
-
-			plot.pack();
-			RefineryUtilities.centerFrameOnScreen(plot);
-			plot.setVisible(true);
+		pack();
+		RefineryUtilities.centerFrameOnScreen(this);
+		setVisible(true);
 
 	}
 
 	/**
 	 * Gantt chart plotting function in a given composite
 	 */
-	public static void plotInComposite(IAbc simulator, Composite parent) {
-
-		IImplementationPlotter plotter = simulator.plotImplementation(true);
-		if (plotter instanceof GanttPlotter) {
-			GanttPlotter plot = (GanttPlotter) simulator
-					.plotImplementation(true);
+	public void plotInComposite(MapperDAG dag,
+			MultiCoreArchitecture archi, Composite parent) {
 
 			Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
 			parent.setLayout(new FillLayout());
 			Frame frame = SWT_AWT.new_Frame(composite);
-			frame.add(plot.getContentPane());
+			frame.add(getContentPane());
 
-			parent.addControlListener(plot.new SizeListener(composite, frame));
-		}
+			parent
+					.addControlListener(new SizeListener(composite,
+							frame));
 	}
 
 	/**

@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc;
 
 import java.util.List;
 
+import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -45,6 +46,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -151,7 +153,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Plots the current implementation
 	 */
-	public IImplementationPlotter plotImplementation(boolean delegateDisplay);
+	public void plotImplementation(Composite delegateDisplay);
 
 	/**
 	 * Unimplants all vertices in internal implementation
@@ -183,7 +185,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Sets the task scheduler of the current ABC
 	 */
-	public void resetTaskScheduler(TaskSchedType taskSchedType);
+	public void setTaskScheduler(AbstractTaskSched taskSched);
 
 	/**
 	 * Reschedule all the transfers generated during mapping

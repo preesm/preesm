@@ -45,6 +45,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
@@ -103,6 +104,7 @@ public class PFASTTransformation extends AbstractMapping {
 		if (!initial.constructInitialLists(dag, simu))
 			return null;
 
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
@@ -113,7 +115,7 @@ public class PFASTTransformation extends AbstractMapping {
 				.getProcNumber(), parameters.getNodesmin(), initial, parameters
 				.getMaxCount(), parameters.getMaxStep(),
 				parameters.getMargIn(), abcParameters, false, 0, parameters
-						.isDisplaySolutions(), null);
+						.isDisplaySolutions(), null, taskSched);
 
 		simu2.setDAG(dag);
 

@@ -48,6 +48,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastPopulation;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
@@ -107,6 +108,7 @@ public class PGeneticTransformation extends AbstractMapping {
 		if(!initial.constructInitialLists(dag, simu))
 				return null;
 
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
 		simu.resetDAG();
 
 		List<MapperDAG> populationDAG = new ArrayList<MapperDAG>();
@@ -122,7 +124,7 @@ public class PGeneticTransformation extends AbstractMapping {
 					.getProcNumber(), parameter.getNodesmin(), initial,
 					parameter.getMaxCount(), parameter.getMaxStep(), parameter
 							.getMargIn(), abcParameters, true,
-					pGenParameters.getPopulationSize(), true, populationDAG);
+					pGenParameters.getPopulationSize(), true, populationDAG, taskSched);
 
 		} else {
 

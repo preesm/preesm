@@ -56,8 +56,13 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 	private IntervalFinder intervalFinder;
 	
-	public TaskSwitcher(SchedOrderManager orderManager) {
-		super(orderManager);
+	public TaskSwitcher() {
+		super();
+	}
+
+	@Override
+	public void setOrderManager(SchedOrderManager orderManager) {
+		super.setOrderManager(orderManager);
 		intervalFinder = new IntervalFinder(orderManager);
 	}
 

@@ -58,6 +58,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
@@ -296,7 +297,7 @@ public class PFastAlgorithm extends Observable {
 			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
 			int margIn, AbcParameters abcParams,
 			boolean population, int populationsize, boolean isDisplaySolutions, 
-			List<MapperDAG> populationList) {
+			List<MapperDAG> populationList, AbstractTaskSched taskSched) {
 
 		// Variables
 		int i = 0;
@@ -323,7 +324,7 @@ public class PFastAlgorithm extends Observable {
 
 			dag = algorithm.map("Fast", abcParams, dag, archi, maxCount,
 					maxStep, margIn, false, false, false, null,
-					cpnDominantVector, blockingnodeVector, fcpVector);
+					cpnDominantVector, blockingnodeVector, fcpVector, taskSched);
 			return dag;
 		}
 

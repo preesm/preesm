@@ -49,7 +49,6 @@ public class TLevelIterator extends ImplementationIterator {
 
 	public TLevelIterator(MapperDAG dag, boolean directOrder) {
 		super(dag, directOrder);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -61,8 +60,13 @@ public class TLevelIterator extends ImplementationIterator {
 		if (!directOrder)
 			TLevelDifference = -TLevelDifference;
 
-		if (TLevelDifference == 0)
-			TLevelDifference++;
+		if (TLevelDifference == 0){
+			TLevelDifference = arg0.getName().compareTo(arg1.getName());
+			
+			if (TLevelDifference == 0){
+				TLevelDifference++;
+			}
+		}
 
 		return (int) TLevelDifference;
 	}

@@ -50,12 +50,14 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
+import org.ietr.preesm.plugin.abc.impl.latency.DynamicQueuingAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LooselyTimedAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
@@ -136,6 +138,8 @@ public abstract class AbstractAbc implements IAbc {
 					scenario);
 		} else if (simulatorType == AbcType.CommConten) {
 			abc = new CommContenAbc(params, dag, archi, simulatorType, scenario);
+		} else if (simulatorType == AbcType.DynamicQueuing) {
+			abc = new DynamicQueuingAbc(params, dag, archi, simulatorType, scenario);
 		}
 
 		return abc;
@@ -159,7 +163,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		// Schedules the tasks in topological and alphabetical order. Some
 		// better order should be looked for
-		resetTaskScheduler(TaskSchedType.Topological);
+		setTaskScheduler(new TaskSwitcher());
 	}
 
 	public MapperDAG getDAG() {
@@ -532,12 +536,13 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Prepares task rescheduling
 	 */
-	public void resetTaskScheduler(TaskSchedType taskSchedType) {
+	public void setTaskScheduler(AbstractTaskSched taskScheduler){
 
-		taskScheduler = AbstractTaskSched.getInstance(taskSchedType,
-				orderManager);
-		if (taskScheduler instanceof TopologicalTaskSched) {
-			((TopologicalTaskSched) taskScheduler)
+		this.taskScheduler = taskScheduler;
+		this.taskScheduler.setOrderManager(orderManager);
+		
+		if (this.taskScheduler instanceof TopologicalTaskSched) {
+			((TopologicalTaskSched) this.taskScheduler)
 					.createTopology(implementation);
 		}
 	}

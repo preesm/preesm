@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.impl;
 
 import java.util.List;
 
+import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -107,12 +108,6 @@ public class CommContenAbc extends AbstractAbc {
 	}
 
 	@Override
-	public IImplementationPlotter plotImplementation(boolean delegateDisplay) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void setDAG(MapperDAG dag) {
 		// TODO Auto-generated method stub
 		
@@ -137,6 +132,12 @@ public class CommContenAbc extends AbstractAbc {
 
 	@Override
 	public void reschedule() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void plotImplementation(Composite delegateDisplay) {
 		// TODO Auto-generated method stub
 		
 	}

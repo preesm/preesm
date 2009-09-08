@@ -153,7 +153,8 @@ public class AddInvolvementVertexTransaction extends Transaction {
 				newInEdge.getTimingEdgeProperty().setCost(0);
 
 				if (true) {
-					TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
+					TaskSwitcher taskSwitcher = new TaskSwitcher();
+					taskSwitcher.setOrderManager(orderManager);
 					taskSwitcher.insertVertexBefore(currentTarget, iVertex);
 				} else {
 					orderManager.insertVertexBefore(currentTarget, iVertex);

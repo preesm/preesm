@@ -103,22 +103,25 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		PreesmLogger.getLogger().log(Level.INFO,"Dynamic Scheduling");
 		
-		IAbc simu2 = AbstractAbc
+		IAbc simu = AbstractAbc
 				.getInstance(abcParameters, dag, architecture, scenario);
-		DynamicQueuingScheduler.implantVertices((LatencyAbc)simu2);
-		simu2.retrieveTotalOrder();
+		
+		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler();
+		dynamicSched.implantVertices(simu);
+		
+		simu.retrieveTotalOrder();
 
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag,architecture,scenario,simu2, abcParameters.getEdgeSchedType());
+			tagSDF.tag(dag,architecture,scenario,simu, abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 			throw(new PreesmException(e.getMessage()));
 		}
 		
 		result.setDAG(dag);
-		result.setAbc(simu2);
+		result.setAbc(simu);
 
 		super.clean(architecture,scenario);
 		

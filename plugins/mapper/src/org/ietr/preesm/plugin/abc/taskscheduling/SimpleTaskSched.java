@@ -46,8 +46,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class SimpleTaskSched extends AbstractTaskSched {
 
-	public SimpleTaskSched(SchedOrderManager orderManager) {
-		super(orderManager);
+	public SimpleTaskSched() {
+		super();
 	}
 
 	@Override

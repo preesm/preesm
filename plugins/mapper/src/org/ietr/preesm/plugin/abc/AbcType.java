@@ -53,6 +53,7 @@ public class AbcType {
 	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed");
 	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
 	public static final AbcType CommConten = new AbcType("CommConten");
+	public static final AbcType DynamicQueuing = new AbcType("DynamicQueuing");
 
 	/**
 	 * Name of the current type
@@ -90,6 +91,8 @@ public class AbcType {
 			return AccuratelyTimed;
 		} else if (type.equalsIgnoreCase("CommConten")) {
 			return CommConten;
+		} else if (type.equalsIgnoreCase("DynamicQueuing")) {
+			return DynamicQueuing;
 		}
 
 		return null;

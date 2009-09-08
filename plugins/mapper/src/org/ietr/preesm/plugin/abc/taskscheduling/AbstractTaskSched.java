@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -51,24 +51,13 @@ public abstract class AbstractTaskSched {
 	 */
 	protected SchedOrderManager orderManager = null;
 
-	public AbstractTaskSched(SchedOrderManager orderManager) {
+	public AbstractTaskSched() {
 		super();
+	}
+
+	public void setOrderManager(SchedOrderManager orderManager) {
 		this.orderManager = orderManager;
 	}
-	
+
 	public abstract void insertVertex(MapperDAGVertex vertex);
-	
-	public static AbstractTaskSched getInstance(TaskSchedType type, SchedOrderManager orderManager){
-		if(type.equals(TaskSchedType.Simple)){
-			return new SimpleTaskSched(orderManager);
-		}
-		else if(type.equals(TaskSchedType.Switcher)){
-			return new TaskSwitcher(orderManager);
-		}
-		else if(type.equals(TaskSchedType.Topological)){
-			return new TopologicalTaskSched(orderManager);
-		}
-		
-		return null;
-	}
 }

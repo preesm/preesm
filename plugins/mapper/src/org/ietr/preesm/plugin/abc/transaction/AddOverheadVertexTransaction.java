@@ -153,7 +153,8 @@ public class AddOverheadVertexTransaction extends Transaction {
 			newOutEdge.getTimingEdgeProperty().setCost(0);
 
 			if (true) {
-				TaskSwitcher taskSwitcher = new TaskSwitcher(orderManager);
+				TaskSwitcher taskSwitcher = new TaskSwitcher();
+				taskSwitcher.setOrderManager(orderManager);
 				taskSwitcher.insertVertexBefore(currentTarget, oVertex);
 			} else {
 				orderManager.insertVertexBefore(currentTarget, oVertex);

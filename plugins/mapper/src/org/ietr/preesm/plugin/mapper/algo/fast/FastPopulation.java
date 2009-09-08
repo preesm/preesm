@@ -45,6 +45,7 @@ import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
@@ -164,13 +165,15 @@ public class FastPopulation {
 					tempdag, this.getArchi(), scenario);
 			InitialLists initialLists = new InitialLists();
 			initialLists.constructInitialLists(tempdag, simu);
+
+			TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
 			simu.resetDAG();
 
 			// perform the fast algo
 			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 			tempdag = algorithm.map("population", abcParams, tempdag,
 					this.archi, MAXCOUNT, MAXSTEP, MARGIN, false, true, false,
-					null).clone();
+					null, taskSched).clone();
 			temp.add(tempdag.clone());
 
 		}

@@ -377,16 +377,18 @@ public class Workflow {
 		}
 	}
 
-	private IWorkspace updateWorkspace(IProgressMonitor monitor) {
+	private void updateWorkspace(IProgressMonitor monitor) {
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
-			workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+			// to avoid automatic cancellation
+			if (!monitor.isCanceled()) {
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				
+				workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE,
+						monitor);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return workspace;
 	}
 }

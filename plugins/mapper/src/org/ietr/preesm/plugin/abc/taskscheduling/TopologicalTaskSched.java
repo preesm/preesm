@@ -46,6 +46,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Scheduling the tasks in topological order and alphabetical order
@@ -53,6 +54,9 @@ import org.sdf4j.model.dag.DAGEdge;
  * @author mpelcat
  */
 public class TopologicalTaskSched extends AbstractTaskSched {
+
+	private List<String> initList = null;
+	private List<MapperDAGVertex> topolist = null;
 
 	private static class TopoComparator implements Comparator<MapperDAGVertex> {
 
@@ -72,17 +76,38 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
 	}
 
-	private List<MapperDAGVertex> topolist = null;
+	private static class InitListComparator implements
+			Comparator<MapperDAGVertex> {
 
-	public TopologicalTaskSched(SchedOrderManager orderManager) {
-		super(orderManager);
+		private List<String> initList = null;
+
+		public InitListComparator(List<String> initlist) {
+			super();
+			this.initList = initlist;
+		}
+
+		@Override
+		public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
+			int compare;
+
+			compare = initList.indexOf(v0.getName())
+					- initList.indexOf(v1.getName());
+
+			return compare;
+		}
+
+	}
+
+	public TopologicalTaskSched(List<String> initlist) {
+		this.initList = initlist;
 	}
 
 	/**
 	 * Listing the vertices first in topological order and on one level in
 	 * alphabetical order
 	 */
-	public List<MapperDAGVertex> createTopology(MapperDAG dag) {
+
+	public void createTopology2(MapperDAG dag) {
 		topolist = new ArrayList<MapperDAGVertex>();
 
 		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
@@ -106,6 +131,25 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 		}
 
 		Collections.sort(topolist, new TopoComparator());
+
+	}
+
+	/**
+	 * Reuse infinite homogeneous order
+	 */
+
+	public List<MapperDAGVertex> createTopology(MapperDAG dag) {
+		topolist = new ArrayList<MapperDAGVertex>();
+
+		for (DAGVertex v : dag.vertexSet()) {
+			topolist.add((MapperDAGVertex) v);
+			
+			if (!initList.contains(v.getName())) {
+				initList.add(v.getName());
+			}
+		}
+
+		Collections.sort(topolist, new InitListComparator(initList));
 
 		return topolist;
 	}
@@ -131,7 +175,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 			}
 
 			if (!inserted
-					&& vertex.getInitialVertexProperty().getTopologicalLevel() == 0) {
+					&& vertex.getPredecessorSet().isEmpty()) {
 				orderManager.addFirst(vertex);
 			}
 		} else {

@@ -48,7 +48,9 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
@@ -56,6 +58,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
+import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -103,20 +106,21 @@ public class FASTTransformation extends AbstractMapping {
 				dag, architecture, abcParameters.getSimulatorType().getTaskSchedType(), scenario);
 		
 		InitialLists initialLists = new InitialLists();
-
-		if (!initialLists.constructInitialLists(dag, simu))
+		if (!initialLists.constructInitialLists(dag, simu)){
 			return result;
+		}
 
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
 		simu.resetDAG();
-
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
+		
 		dag = fastAlgorithm.map("test", abcParameters, dag, architecture, fastParameters.getMaxCount(),
 				fastParameters.getMaxStep(), fastParameters.getMargIn(), false, false
-				, fastParameters.isDisplaySolutions(), monitor);
+				, fastParameters.isDisplaySolutions(), monitor, taskSched);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
 		
@@ -138,7 +142,7 @@ public class FASTTransformation extends AbstractMapping {
 		
 		result.setDAG(dag);
 		// A simple task scheduler avoids new task swaps and ensures reuse of previous order.
-		simu2.resetTaskScheduler(TaskSchedType.Simple);
+		simu2.setTaskScheduler(new SimpleTaskSched());
 		result.setAbc(simu2);
 
 		super.clean(architecture,scenario);

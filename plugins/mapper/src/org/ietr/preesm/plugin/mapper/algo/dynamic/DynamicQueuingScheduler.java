@@ -69,38 +69,35 @@ public class DynamicQueuingScheduler {
 	}
 
 	/**
-	 * implants the vertices depending on their availability at the mapping time
+	 * implants the vertices on the operator with lowest final cost (soonest available)
 	 */
-	static public boolean implantVertices(LatencyAbc abc) {
+	public void implantVertices(IAbc abc) {
 
-		boolean possible = true;
 		MapperDAGVertex currentvertex;
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
 				abc.getDAG());
 
-		long currentExecutionTime = 0;
-		boolean implanted;
+		Operator currentMinOp = null;
 		
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
-			implanted = false;
+			
 			Set<Operator> adequateOps = currentvertex.getInitialVertexProperty().getOperatorSet();
-
+			long currentMinCost = Long.MAX_VALUE;
 			for(Operator op : adequateOps){
-				if(abc.getFinalCost(op) <= currentExecutionTime){
-					abc.implant(currentvertex, op, true);
-					implanted = true;
-					break;
+				abc.updateFinalCosts();
+				long newCost = abc.getFinalCost(op);
+				if(newCost < currentMinCost){
+					currentMinCost = newCost;
+					currentMinOp = op;
 				}
 			}
 			
-			if(!implanted){
-				abc.implant(currentvertex, abc.findOperator(currentvertex, abc.getArchitecture().getMainOperator()), true);
+			// Implanting on operator with minimal final cost
+			if(currentMinOp != null){
+				abc.implant(currentvertex, currentMinOp, true);
 			}
 			
-			currentExecutionTime = abc.getTLevel(currentvertex, true);
 		}
-
-		return possible;
 	}
 }

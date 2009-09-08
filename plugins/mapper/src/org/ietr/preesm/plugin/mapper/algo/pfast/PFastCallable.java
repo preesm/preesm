@@ -45,6 +45,8 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -156,6 +158,8 @@ class PFastCallable implements Callable<MapperDAG> {
 				callableDAG.clone(), callableArchi, scenario);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
+
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu.getTotalOrder().toStringList());
 		IHsimu.resetDAG();
 
 		// performing the fast algorithm
@@ -163,7 +167,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		outputDAG = algo.map(threadName, abcParams, callableDAG,
 				callableArchi,
 				maxCount, maxStep, margIn, alreadyImplanted, true, isDisplaySolutions, null, initialLists.getCpnDominant(),
-				callableBlockingNodes, initialLists.getCriticalpath());
+				callableBlockingNodes, initialLists.getCriticalpath(), taskSched);
 
 		// Saving best total order for future display
 		outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());

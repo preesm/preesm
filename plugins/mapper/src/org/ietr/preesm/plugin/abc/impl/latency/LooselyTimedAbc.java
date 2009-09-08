@@ -79,6 +79,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
+			// Adding precedence edges for an automatic graph timings calculation
 			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
 		}
 	}

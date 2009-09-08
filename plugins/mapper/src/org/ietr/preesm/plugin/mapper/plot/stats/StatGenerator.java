@@ -70,7 +70,7 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class StatGenerator {
 
-	private LatencyAbc abc = null;
+	private IAbc abc = null;
 
 	private IScenario scenario = null;
 	private TextParameters params = null;
@@ -81,41 +81,16 @@ public class StatGenerator {
 		this.params = params;
 		this.scenario = scenario;
 		if (abc instanceof LatencyAbc) {
-			this.abc = (LatencyAbc) abc;
+			this.abc = abc;
 			
 			this.abc.updateFinalCosts();
-			this.finalTime = this.abc.getFinalLatency();
+			this.finalTime = ((LatencyAbc)this.abc).getFinalLatency();
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"Statistics can only be generated from latency ABCs.");
+			this.abc = abc;
+			this.abc.updateFinalCosts();
+			this.finalTime = 0;
 		}
 	}
-
-	/**
-	 * 
-	 */
-	/*
-	 * public long getDAGComplexSpanLength(RouteCalculator routeCalculator) {
-	 * 
-	 * MapperDAG taskDag = abc.getDAG().clone(); removeSendReceive(taskDag);
-	 * 
-	 * MultiCoreArchitecture localArchi = abc.getArchitecture().clone();
-	 * 
-	 * MediumDefinition mainMediumDef = (MediumDefinition) localArchi
-	 * .getMainMedium().getDefinition(); mainMediumDef.setDataRate(0);
-	 * mainMediumDef.setOverhead(0);
-	 * 
-	 * IAbc simu = new InfiniteHomogeneousAbc(EdgeSchedType.Simple, taskDag,
-	 * localArchi, scenario); simu.updateFinalCosts(); long span =
-	 * simu.getFinalCost();
-	 * 
-	 * PreesmLogger.getLogger().log(Level.INFO, "infinite homogeneous timing: "
-	 * + span);
-	 * 
-	 * return span;
-	 * 
-	 * }
-	 */
 
 	/**
 	 * The span is the shortest possible execution time. It is theoretic because
@@ -176,10 +151,11 @@ public class StatGenerator {
 	 */
 	public long getResultTime() {
 		if (abc instanceof LatencyAbc) {
-			return abc.getFinalLatency();
+			return ((LatencyAbc)abc).getFinalLatency();
 		}
-
-		return 0;
+		else{
+			return 0l;
+		}
 	}
 
 	/**
@@ -217,9 +193,14 @@ public class StatGenerator {
 	 * The load is the percentage of a processing resource used for the given
 	 * algorithm
 	 */
-	public Long getLoad(Operator operator) {
+	public long getLoad(Operator operator) {
 
-		return abc.getLoad(operator);
+		if (abc instanceof LatencyAbc) {
+			return ((LatencyAbc)abc).getLoad(operator);
+		}
+		else{
+			return 0l;
+		}
 	}
 
 	/**

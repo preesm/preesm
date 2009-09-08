@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
+import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -341,15 +342,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Plots the current implementation. If delegatedisplay=false, the gantt is
 	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
 	 */
-	public final IImplementationPlotter plotImplementation(
-			boolean delegateDisplay) {
+	public final void plotImplementation(
+			Composite delegateDisplay) {
 
-		if (!delegateDisplay) {
-			GanttPlotter.plot(implementation, this.getArchitecture());
-			return null;
-		} else {
-			return new GanttPlotter("Solution gantt", implementation, this.getArchitecture());
-		}
+		GanttPlotter.plotDeployment(implementation, this.getArchitecture(),delegateDisplay);
 	}
 
 	public AbstractCommunicationRouter getComRouter() {
@@ -556,7 +552,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
 					new TransactionManager());
 			updateTimings();
-			this.plotImplementation(false);
+			this.plotImplementation(null);
 			
 			/*TopologicalTaskSched taskSched = new TopologicalTaskSched(orderManager);
 			List<MapperDAGVertex> vList = taskSched.createTopology(implementation);

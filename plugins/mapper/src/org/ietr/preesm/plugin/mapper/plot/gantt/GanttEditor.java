@@ -50,6 +50,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
+import org.ietr.preesm.plugin.mapper.plot.stats.GanttPage;
 
 /**
  * Editor displaying the gantt chart
@@ -115,7 +116,7 @@ public class GanttEditor extends EditorPart {
 	public void createPartControl(Composite parent) {
 		
 		if(abc != null){
-			GanttPlotter.plotInComposite(abc, parent);
+			abc.plotImplementation(parent);
 		}
 		
 	}
@@ -123,21 +124,6 @@ public class GanttEditor extends EditorPart {
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-		
-	}
-
-	public static void createEditor(IAbc abc, AbcParameters abcParams, List<String> bestTotalOrder, String name) {
-		
-		MapperDAG dag = abc.getDAG().clone();
-		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc.getArchitecture(), abc.getScenario());
-		newAbc.setDAG(dag);
-		newAbc.reschedule(bestTotalOrder);
-		newAbc.updateFinalCosts();
-		
-		IEditorInput input = new GanttEditorInput(newAbc, name);
-
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new GanttEditorRunnable(input));
 		
 	}
 }

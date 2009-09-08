@@ -44,10 +44,12 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
 
 /**
  * Simulates an architecture having as many cores as necessary to execute one
@@ -91,6 +93,17 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		// to implant all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
 		implantAllVerticesOnOperator(archi.getMainOperator());
+
+		updateFinalCosts();
+		orderManager.resetTotalOrder();
+		TLevelIterator iterator = new TLevelIterator(implementation, true);
+
+		while(iterator.hasNext()){
+			MapperDAGVertex v = iterator.next();
+			orderManager.addLast(v);
+		}
+		
+		retrieveTotalOrder();
 	}
 
 	@Override

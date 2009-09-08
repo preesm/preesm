@@ -46,13 +46,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -61,6 +65,8 @@ import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditor;
+import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorInput;
+import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorRunnable;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
 /**
@@ -92,7 +98,7 @@ public class FastAlgorithm extends Observable {
 			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
 			int maxstep, int margin, boolean alreadyimplanted,
 			boolean pfastused, boolean displaySolutions,
-			IProgressMonitor monitor) {
+			IProgressMonitor monitor, AbstractTaskSched taskSched) {
 
 		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
 		List<MapperDAGVertex> blockingNodesList = initialLists
@@ -102,16 +108,19 @@ public class FastAlgorithm extends Observable {
 
 		return map(threadName, abcParams, dag, archi, maxcount, maxstep,
 				margin, alreadyimplanted, pfastused, displaySolutions, monitor,
-				cpnDominantList, blockingNodesList, finalcriticalpathList);
+				cpnDominantList, blockingNodesList, finalcriticalpathList, taskSched);
 	}
 
 	/**
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
 	 * 
-	 * @param maxcount nb max of tested neighborhoods
-	 * @param maxstep nb max solutions tested in neighborhood
-	 * @param margin nb max better solutions found in neighborhood
+	 * @param maxcount
+	 *            nb max of tested neighborhoods
+	 * @param maxstep
+	 *            nb max solutions tested in neighborhood
+	 * @param margin
+	 *            nb max better solutions found in neighborhood
 	 * 
 	 */
 	public MapperDAG map(String threadName, AbcParameters abcParams,
@@ -120,7 +129,7 @@ public class FastAlgorithm extends Observable {
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
-			List<MapperDAGVertex> finalcriticalpathList) {
+			List<MapperDAGVertex> finalcriticalpathList, AbstractTaskSched taskSched) {
 
 		Semaphore pauseSemaphore = new Semaphore(1);
 		final BestCostPlotter costPlotter = new BestCostPlotter(
@@ -143,7 +152,7 @@ public class FastAlgorithm extends Observable {
 		// A topological task scheduler is chosen for the list scheduling.
 		// It schedules the tasks in topological order and, if they are on
 		// the same level, in alphabetical name order
-		simulator.resetTaskScheduler(TaskSchedType.Topological);
+		simulator.setTaskScheduler(taskSched);
 
 		KwokListScheduler listscheduler = new KwokListScheduler();
 		Iterator<Operator> prociter;
@@ -180,8 +189,8 @@ public class FastAlgorithm extends Observable {
 		bestTotalOrder = simulator.getTotalOrder().toStringList();
 
 		if (displaySolutions) {
-			GanttEditor.createEditor(simulator, abcParams, getBestTotalOrder(),
-					"Cost:" + initial + " List");
+			createEditor(simulator, abcParams, getBestTotalOrder(), "Cost:"
+					+ initial + " List");
 		}
 
 		PreesmLogger.getLogger().log(Level.INFO,
@@ -199,14 +208,14 @@ public class FastAlgorithm extends Observable {
 		dagfinal.setScheduleLatency(bestSL);
 
 		// A switcher task scheduler is chosen for the fast refinement
-		simulator.resetTaskScheduler(TaskSchedType.Switcher);
-		
+		simulator.setTaskScheduler(new TaskSwitcher());
+
 		// step 4/17
 		// FAST is to be stopped manually
 		while (!pfastused || (searchcount <= maxcount)) {
 
 			searchcount++;
-			
+
 			iBest = (Long) bestSL;
 			setChanged();
 			notifyObservers(iBest);
@@ -261,7 +270,7 @@ public class FastAlgorithm extends Observable {
 
 				// step 10
 				simulator.updateFinalCosts();
-				
+
 				long newSL = simulator.getFinalCost();
 				if (newSL >= SL) {
 
@@ -293,8 +302,8 @@ public class FastAlgorithm extends Observable {
 
 				bestTotalOrder = simulator.getTotalOrder().toStringList();
 				if (displaySolutions) {
-					GanttEditor.createEditor(simulator, abcParams,
-							getBestTotalOrder(), "Cost:" + bestSL + " Fast");
+					createEditor(simulator, abcParams, getBestTotalOrder(),
+							"Cost:" + bestSL + " Fast");
 				}
 
 				PreesmLogger.getLogger().log(Level.INFO,
@@ -341,6 +350,23 @@ public class FastAlgorithm extends Observable {
 
 	public List<String> getBestTotalOrder() {
 		return bestTotalOrder;
+	}
+
+	public void createEditor(IAbc abc, AbcParameters abcParams,
+			List<String> bestTotalOrder, String name) {
+
+		MapperDAG dag = abc.getDAG().clone();
+		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc
+				.getArchitecture(), abc.getScenario());
+		newAbc.setDAG(dag);
+		newAbc.reschedule(bestTotalOrder);
+		newAbc.updateFinalCosts();
+
+		IEditorInput input = new GanttEditorInput(newAbc, name);
+
+		PlatformUI.getWorkbench().getDisplay().asyncExec(
+				new GanttEditorRunnable(input));
+
 	}
 
 }
