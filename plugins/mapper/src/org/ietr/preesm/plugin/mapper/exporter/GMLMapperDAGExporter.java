@@ -133,22 +133,30 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
 							ImplementationPropertyNames.SendReceive_routeStep);
+			
 			if (routeStep != null) {
 				exportRouteStep(routeStep, vertexElt);
 			}
+			
 		} else {
 			// Adding operator definition type to the newly created element
 			Element opDefElt = domDocument.createElement("data");
 			vertexElt.appendChild(opDefElt);
-			
-
 			opDefElt.setAttribute("key",ImplementationPropertyNames.Vertex_OperatorDef);
-			
 			opDefElt.setTextContent(
 					((MapperDAGVertex) vertex)
 							.getImplementationVertexProperty()
 							.getEffectiveOperator().getDefinition()
 							.getVlnv().getName());
+
+			// Adding available operators to the newly created element
+			Element opsElt = domDocument.createElement("data");
+			vertexElt.appendChild(opsElt);
+			opsElt.setAttribute("key",ImplementationPropertyNames.Vertex_Available_Operators);
+			opsElt.setTextContent(
+					((MapperDAGVertex) vertex)
+							.getInitialVertexProperty().getOperatorSet().toString());
+			
 		}
 	}
 
