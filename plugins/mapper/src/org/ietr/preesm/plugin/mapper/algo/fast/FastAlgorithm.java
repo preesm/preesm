@@ -108,6 +108,11 @@ public class FastAlgorithm extends Observable {
 	/**
 	 * map : do the FAST algorithm by Kwok without the initialization of the
 	 * list which must be done before this algorithm
+	 * 
+	 * @param maxcount nb max of tested neighborhoods
+	 * @param maxstep nb max solutions tested in neighborhood
+	 * @param margin nb max better solutions found in neighborhood
+	 * 
 	 */
 	public MapperDAG map(String threadName, AbcParameters abcParams,
 			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
@@ -195,9 +200,13 @@ public class FastAlgorithm extends Observable {
 
 		// A switcher task scheduler is chosen for the fast refinement
 		simulator.resetTaskScheduler(TaskSchedType.Switcher);
+		
 		// step 4/17
-		while (searchcount++ <= maxcount) {
+		// FAST is to be stopped manually
+		while (!pfastused || (searchcount <= maxcount)) {
 
+			searchcount++;
+			
 			iBest = (Long) bestSL;
 			setChanged();
 			notifyObservers(iBest);
@@ -252,6 +261,7 @@ public class FastAlgorithm extends Observable {
 
 				// step 10
 				simulator.updateFinalCosts();
+				
 				long newSL = simulator.getFinalCost();
 				if (newSL >= SL) {
 
@@ -266,8 +276,9 @@ public class FastAlgorithm extends Observable {
 
 				}
 
+				searchstep++;
 				// step 11
-			} while (searchstep++ < maxstep && counter < margin);
+			} while (searchstep < maxstep && counter < margin);
 
 			// step 12
 			simulator.updateFinalCosts();

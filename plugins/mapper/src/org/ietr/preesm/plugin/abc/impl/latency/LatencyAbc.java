@@ -345,11 +345,9 @@ public abstract class LatencyAbc extends AbstractAbc {
 			boolean delegateDisplay) {
 
 		if (!delegateDisplay) {
-			updateTimings();
 			GanttPlotter.plot(implementation, this.getArchitecture());
 			return null;
 		} else {
-			updateTimings();
 			return new GanttPlotter("Solution gantt", implementation, this.getArchitecture());
 		}
 	}

@@ -76,56 +76,23 @@ public class KwokListScheduler {
 	public long operatorvertexstarttime(MapperDAG dag, MapperDAGVertex vertex,
 			Operator operator, IAbc simu) {
 
-		// Variables
-		long temptime;
-		long starttime = 0;
-
 		// check the vertex is into the DAG
 		vertex = dag.getMapperDAGVertex(vertex.getName());
 
-		DirectedGraph<DAGVertex, DAGEdge> castDag = dag;
-		DirectedNeighborIndex<DAGVertex, DAGEdge> neighborindex = new DirectedNeighborIndex<DAGVertex, DAGEdge>(
-				castDag);
-
-		List<DAGVertex> predList = neighborindex.predecessorListOf(vertex);
 		Logger logger = PreesmLogger.getLogger();
 
 		logger.log(Level.FINEST, " entering operator/vertex start time ");
-		
+
 		// implant the vertex on the operator
 		simu.implant(vertex, operator, true);
 		simu.updateFinalCosts();
-		
+
 		logger
 				.log(Level.FINEST, " implant the vertex on "
 						+ operator.getName());
-		
 
 		// check if the vertex is a source vertex with no predecessors
-		if (predList.isEmpty())
-			return simu.getFinalCost(operator);
-
-		// Search the predecessors to find when the data will be available
-		for (DAGVertex preccurrentvertex : predList) {
-			temptime = simu.getFinalCost((MapperDAGVertex)preccurrentvertex);
-
-			// test if the data are already available in this operator
-			if (!(simu.getEffectiveComponent((MapperDAGVertex)preccurrentvertex)
-					.equals(operator))) {
-				temptime = Math.max(temptime
-						+ simu.getCost((MapperDAGEdge)dag.getEdge(preccurrentvertex, vertex)),
-						simu.getFinalCost(operator));
-			} else {
-				temptime = Math.max(temptime, simu.getFinalCost(operator));
-			}
-			
-			starttime = Math.max(temptime, starttime);
-
-		}
-		
-		//simu.retrieveTotalOrder();
-	
-		return starttime;
+		return simu.getFinalCost(vertex);
 	}
 
 	/**
@@ -141,8 +108,8 @@ public class KwokListScheduler {
 	 * @return : Implemented MapperDAG
 	 */
 
-	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist, IAbc archisimu,
-			Operator operatorfcp, MapperDAGVertex fcpvertex) {
+	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
+			IAbc archisimu, Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
 		// Variables
 		Operator chosenoperator = null;
@@ -159,8 +126,9 @@ public class KwokListScheduler {
 			} else {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
-				for (Operator currentoperator : currentvertex.getInitialVertexProperty()
-						.getOperatorSet()) {
+
+				for (Operator currentoperator : currentvertex
+						.getInitialVertexProperty().getOperatorSet()) {
 
 					long test = operatorvertexstarttime(dag, currentvertex,
 							currentoperator, archisimu);
@@ -173,9 +141,10 @@ public class KwokListScheduler {
 				}
 				// Implant the chosen operator in the CPN-Dominant list
 				archisimu.implant(currentvertex, chosenoperator, true);
-				
+
 				int currentVertexTotalOrder = orderlist.indexOf(currentvertex);
-				if((currentVertexTotalOrder % 100) == 0 && (fcpvertex == null) && (currentVertexTotalOrder != 0)){
+				if ((currentVertexTotalOrder % 100) == 0 && (fcpvertex == null)
+						&& (currentVertexTotalOrder != 0)) {
 					logger.log(Level.INFO, "list scheduling: "
 							+ currentVertexTotalOrder + " vertices mapped ");
 				}
@@ -184,8 +153,8 @@ public class KwokListScheduler {
 
 			}
 		}
-		
-		//archisimu.rescheduleTransfers(orderlist);
+
+		// archisimu.rescheduleTransfers(orderlist);
 		archisimu.retrieveTotalOrder();
 
 		return dag;

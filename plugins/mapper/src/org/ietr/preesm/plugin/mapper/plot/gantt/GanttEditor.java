@@ -132,6 +132,7 @@ public class GanttEditor extends EditorPart {
 		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc.getArchitecture(), abc.getScenario());
 		newAbc.setDAG(dag);
 		newAbc.reschedule(bestTotalOrder);
+		newAbc.updateFinalCosts();
 		
 		IEditorInput input = new GanttEditorInput(newAbc, name);
 

@@ -33,8 +33,10 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.exporter;
+
+import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -42,10 +44,12 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
- * This class provides methods to transform an XML file or a DOM element to a string in a workflow
+ * This class provides methods to transform an XML file or a DOM element to a
+ * string in a workflow
  * 
  * @author Matthieu Wipliez
  * @author mpelcat
@@ -59,21 +63,24 @@ public class XsltTransform implements IFileConversion {
 		Path inputPath = new Path(params.getVariable("inputFile"));
 		Path outputPath = new Path(params.getVariable("outputFile"));
 		Path xslPath = new Path(params.getVariable("xslFile"));
-		
-		if(!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()){
+
+		if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
-				if(xsltTransfo.setXSLFile(xslPath.toOSString())){
-				xsltTransfo.transformFileToFile(inputPath.toOSString(), outputPath.toOSString());
+				if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
+					PreesmLogger.getLogger().log(Level.INFO,
+							"Generating file: " + outputPath.toOSString());
+					xsltTransfo.transformFileToFile(inputPath.toOSString(),
+							outputPath.toOSString());
 				}
-				
-				//xsltTransfo.
+
+				// xsltTransfo.
 			} catch (TransformerConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		return new TaskResult();
 	}
 
