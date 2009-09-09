@@ -127,7 +127,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 		if (op != null) {
 			Interval largestInterval = intervalFinder.findLargestFreeInterval(op, source, target);
 			
-			if(false/*largestInterval.getDuration()>0*/){
+			if(largestInterval.getDuration()>0){
 				index = largestInterval.getTotalOrderIndex();
 			}
 			else{
