@@ -41,11 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;

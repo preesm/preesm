@@ -40,7 +40,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Frame;
-import java.awt.Shape;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;

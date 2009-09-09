@@ -45,7 +45,6 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;

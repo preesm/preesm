@@ -69,6 +69,7 @@ public class SchedOrderManager extends Observable {
 	 * total order of the vertices in the implementation
 	 */
 	Schedule totalOrder = null;
+
 	public SchedOrderManager() {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
@@ -116,8 +117,10 @@ public class SchedOrderManager extends Observable {
 		}
 
 		// Notifies the time keeper that it should update the successors
-		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
-		vSet = totalOrder.getSuccessors(vertex);
+		Set<DAGVertex> vSet = totalOrder.getSuccessors(vertex);
+		if (vSet.isEmpty()) {
+			vSet = new HashSet<DAGVertex>();
+		}
 		vSet.add(vertex);
 		setChanged();
 		notifyObservers(vSet);
@@ -151,7 +154,8 @@ public class SchedOrderManager extends Observable {
 	}
 
 	/**
-	 * Appends the vertex at the beginning of a schedule and at the end of total order
+	 * Appends the vertex at the beginning of a schedule and at the end of total
+	 * order
 	 */
 	public void addFirst(MapperDAGVertex vertex) {
 
@@ -241,7 +245,7 @@ public class SchedOrderManager extends Observable {
 	 * Inserts vertex after previous
 	 */
 	public void insertVertexAtIndex(int index, MapperDAGVertex vertex) {
-		
+
 		MapperDAGVertex ref = totalOrder.get(index);
 		if (ref != null) {
 			insertVertexBefore(ref, vertex);
@@ -305,8 +309,8 @@ public class SchedOrderManager extends Observable {
 	public Schedule getSchedule(ArchitectureComponent cmp) {
 
 		// Preventing from creating several schedules with same name
-		for(ArchitectureComponent o : schedules.keySet()){
-			if(o.equals(cmp)){
+		for (ArchitectureComponent o : schedules.keySet()) {
+			if (o.equals(cmp)) {
 				return schedules.get(o);
 			}
 		}
@@ -325,7 +329,7 @@ public class SchedOrderManager extends Observable {
 					.getImplementationVertexProperty().getEffectiveComponent();
 			Schedule sch = getSchedule(cmp);
 
-			if (sch != null){
+			if (sch != null) {
 				sch.remove(vertex);
 			}
 		} else { // Looks for the right scheduling to remove the vertex
@@ -338,6 +342,9 @@ public class SchedOrderManager extends Observable {
 
 		// Notifies the time keeper that it should update the successors
 		Set<DAGVertex> successors = totalOrder.getSuccessors(vertex);
+		if (successors == null) {
+			successors = new HashSet<DAGVertex>();
+		}
 		successors.add(vertex);
 		setChanged();
 		notifyObservers(successors);
@@ -345,7 +352,7 @@ public class SchedOrderManager extends Observable {
 		if (removeFromTotalOrder) {
 			totalOrder.remove(vertex);
 		}
-		
+
 	}
 
 	/**
@@ -391,7 +398,7 @@ public class SchedOrderManager extends Observable {
 		newTotalOrder.addAll(dag.vertexSet());
 
 		for (DAGVertex vertex : newTotalOrder) {
-			
+
 			addLast((MapperDAGVertex) vertex);
 		}
 	}

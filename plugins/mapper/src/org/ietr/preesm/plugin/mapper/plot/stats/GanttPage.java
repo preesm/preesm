@@ -36,21 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import java.awt.Frame;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter.SizeListener;
 
 /**
  * This page contains the gantt display

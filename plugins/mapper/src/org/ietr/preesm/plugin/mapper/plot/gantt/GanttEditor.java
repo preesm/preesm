@@ -36,21 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
-import org.ietr.preesm.plugin.mapper.plot.stats.GanttPage;
 
 /**
  * Editor displaying the gantt chart

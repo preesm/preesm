@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**

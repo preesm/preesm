@@ -44,12 +44,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * List scheduler from Yu Kwong Kwok PhD thesis

@@ -36,23 +36,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Scheduler that simulates a dynamic queuing system
@@ -62,42 +54,79 @@ import org.sdf4j.model.dag.DAGVertex;
 public class DynamicQueuingScheduler {
 
 	/**
+	 * The queue of vertices to map
+	 */
+	private Schedule queue;
+
+	/**
+	 * Parameters of the workflow
+	 */
+	private TextParameters textParameters;
+
+	/**
 	 * constructor
 	 */
-	public DynamicQueuingScheduler() {
+	public DynamicQueuingScheduler(Schedule queue, TextParameters textParameters) {
 		super();
+		this.queue = queue;
+		this.textParameters = textParameters;
 	}
 
 	/**
-	 * implants the vertices on the operator with lowest final cost (soonest available)
+	 * implants the vertices on the operator with lowest final cost (soonest
+	 * available)
 	 */
 	public void implantVertices(IAbc abc) {
 
-		MapperDAGVertex currentvertex;
-		TopologicalDAGIterator iterator = new TopologicalDAGIterator(
-				abc.getDAG());
+		// Type of order to use while mapping/scheduling
+		String listType = textParameters.getVariable("listType");
 
-		Operator currentMinOp = null;
+		if(listType.isEmpty()){
+			listType = "optimised";
+		}
 		
-		while (iterator.hasNext()) {
-			currentvertex = (MapperDAGVertex) iterator.next();
-			
-			Set<Operator> adequateOps = currentvertex.getInitialVertexProperty().getOperatorSet();
-			long currentMinCost = Long.MAX_VALUE;
-			for(Operator op : adequateOps){
-				abc.updateFinalCosts();
-				long newCost = abc.getFinalCost(op);
-				if(newCost < currentMinCost){
-					currentMinCost = newCost;
-					currentMinOp = op;
-				}
+		if (listType.equalsIgnoreCase("optimised")) {
+			LinkedList<MapperDAGVertex> vList = queue.getVervexList();
+
+			for (MapperDAGVertex v : vList) {
+				MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG()
+						.getVertex(v.getName());
+
+				implantOnBestOp(abc, currentvertex);
+
 			}
-			
-			// Implanting on operator with minimal final cost
-			if(currentMinOp != null){
-				abc.implant(currentvertex, currentMinOp, true);
+		} else if (listType.equalsIgnoreCase("topological")) {
+			TopologicalDAGIterator it = new TopologicalDAGIterator(abc.getDAG());
+
+			while (it.hasNext()) {
+				MapperDAGVertex v = (MapperDAGVertex) it.next();
+				MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG()
+						.getVertex(v.getName());
+
+				implantOnBestOp(abc, currentvertex);
+
 			}
-			
+		}
+	}
+
+	public void implantOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
+		Set<Operator> adequateOps = currentvertex.getInitialVertexProperty()
+				.getOperatorSet();
+		long currentMinCost = Long.MAX_VALUE;
+		Operator currentMinOp = null;
+
+		for (Operator op : adequateOps) {
+			abc.updateFinalCosts();
+			long newCost = abc.getFinalCost(op);
+			if (newCost < currentMinCost) {
+				currentMinCost = newCost;
+				currentMinOp = op;
+			}
+		}
+
+		// Implanting on operator with minimal final cost
+		if (currentMinOp != null) {
+			abc.implant(currentvertex, currentMinOp, true);
 		}
 	}
 }

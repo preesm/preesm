@@ -49,7 +49,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.ietr.preesm.plugin.mapper.plot.IImplementationPlotter;
 
 /**
  * Prepared for communication contentious list scheduling ABC

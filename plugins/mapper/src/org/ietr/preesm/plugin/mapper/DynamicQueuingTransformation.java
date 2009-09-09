@@ -36,33 +36,24 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.dynamic.DynamicQueuingScheduler;
-import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
-import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -72,65 +63,77 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  */
 public class DynamicQueuingTransformation extends AbstractMapping {
-	
+
 	/**
 	 * 
 	 */
 	public DynamicQueuingTransformation() {
 	}
 
-
 	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) throws PreesmException{
-		
+	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm)
+			throws PreesmException {
+
 	}
 
 	/**
 	 * Function called while running the plugin
 	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor) throws PreesmException{
+	public TaskResult transform(SDFGraph algorithm,
+			MultiCoreArchitecture architecture, TextParameters textParameters,
+			IScenario scenario, IProgressMonitor monitor)
+			throws PreesmException {
 
-		super.transform(algorithm,architecture,textParameters,scenario,monitor);
+		super.transform(algorithm, architecture, textParameters, scenario,
+				monitor);
 
 		TaskResult result = new TaskResult();
 		AbcParameters abcParameters = new AbcParameters(textParameters);
 
-		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
+		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
+				scenario, false);
 
-		// calculates the DAG span length on the architecture main operator (the tasks that can
-		// not be executed by the main operator are deported without transfer time to other operator)
-		calculateSpan(dag,architecture,scenario,abcParameters);
+		// calculates the DAG span length on the architecture main operator (the
+		// tasks that can
+		// not be executed by the main operator are deported without transfer
+		// time to other operator)
+		calculateSpan(dag, architecture, scenario, abcParameters);
 
-		PreesmLogger.getLogger().log(Level.INFO,"Dynamic Scheduling");
-		
-		IAbc simu = AbstractAbc
-				.getInstance(abcParameters, dag, architecture, scenario);
-		simu.setTaskScheduler(new SimpleTaskSched());
-		
-		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler();
-		dynamicSched.implantVertices(simu);
-		
-		simu.retrieveTotalOrder();
+		// Generating the vertex list in correct order
+		IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag,
+				architecture, abcParameters.getSimulatorType()
+						.getTaskSchedType(), scenario);
+
+		PreesmLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
+
+		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
+				scenario);
+		simu2.setTaskScheduler(new SimpleTaskSched());
+
+		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(simu
+				.getTotalOrder(), textParameters);
+		dynamicSched.implantVertices(simu2);
+
+		simu2.retrieveTotalOrder();
 
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag,architecture,scenario,simu, abcParameters.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2, abcParameters
+					.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
-			throw(new PreesmException(e.getMessage()));
+			throw (new PreesmException(e.getMessage()));
 		}
-		
-		result.setDAG(dag);
-		result.setAbc(simu);
 
-		super.clean(architecture,scenario);
-		
-		PreesmLogger.getLogger().log(Level.INFO,"End of Dynamic Scheduling");
-		
+		result.setDAG(dag);
+		result.setAbc(simu2);
+
+		super.clean(architecture, scenario);
+
+		PreesmLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
+
 		return result;
 	}
 

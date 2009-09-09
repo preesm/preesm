@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;

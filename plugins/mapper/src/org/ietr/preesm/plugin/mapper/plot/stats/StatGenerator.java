@@ -38,16 +38,13 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
