@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.algo.fast;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -106,7 +107,8 @@ public class FastAlgorithm extends Observable {
 
 		return map(threadName, abcParams, dag, archi, maxcount, maxstep,
 				margin, alreadyimplanted, pfastused, displaySolutions, monitor,
-				cpnDominantList, blockingNodesList, finalcriticalpathList, taskSched);
+				cpnDominantList, blockingNodesList, finalcriticalpathList,
+				taskSched);
 	}
 
 	/**
@@ -127,7 +129,10 @@ public class FastAlgorithm extends Observable {
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
-			List<MapperDAGVertex> finalcriticalpathList, AbstractTaskSched taskSched) {
+			List<MapperDAGVertex> finalcriticalpathList,
+			AbstractTaskSched taskSched) {
+
+		Random randomGenerator = new Random(System.nanoTime());
 
 		Semaphore pauseSemaphore = new Semaphore(1);
 		final BestCostPlotter costPlotter = new BestCostPlotter(
@@ -153,13 +158,12 @@ public class FastAlgorithm extends Observable {
 		simulator.setTaskScheduler(taskSched);
 
 		KwokListScheduler listscheduler = new KwokListScheduler();
-		Iterator<Operator> prociter;
 
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
-				blockingNodesList, new Random());
+				blockingNodesList, randomGenerator);
 
 		RandomIterator<MapperDAGVertex> iter = new RandomIterator<MapperDAGVertex>(
-				finalcriticalpathList, new Random());
+				finalcriticalpathList, randomGenerator);
 		MapperDAGVertex currentvertex = null;
 		MapperDAGVertex fcpvertex = null;
 		Operator operatortest;
@@ -210,56 +214,61 @@ public class FastAlgorithm extends Observable {
 
 		// step 4/17
 		// FAST is to be stopped manually
+		// PFAST stops after maxcount iterations
 		while (!pfastused || (searchcount <= maxcount)) {
 
 			searchcount++;
 
+			// Notifying display
 			iBest = (Long) bestSL;
 			setChanged();
 			notifyObservers(iBest);
 
-			if (!pfastused) {
-				// Mode Pause
-				if (costPlotter.getActionType() == 2) {
-					try {
-						pauseSemaphore.acquire();
-						pauseSemaphore.release();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-
 			// step 5
 			int searchstep = 0;
-			int counter = 0;
+			int localCounter = 0;
+			simulator.updateFinalCosts();
 
 			// step 6 : neighborhood search
 			do {
-				// Mode stop
-				if (!pfastused
-						&& (costPlotter.getActionType() == 1 || (monitor != null && monitor
-								.isCanceled()))) {
+				if (!pfastused) {
+					// Mode stop
+					if (costPlotter.getActionType() == 1
+							|| (monitor != null && monitor.isCanceled())) {
 
-					return dagfinal.clone();
+						return dagfinal.clone();
+					} else if (costPlotter.getActionType() == 2) {
+						// Mode Pause
+						try {
+							pauseSemaphore.acquire();
+							pauseSemaphore.release();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 
 				// step 7
-				currentvertex = (MapperDAGVertex) vertexiter.next();
-				simulator.updateFinalCosts();
+				// Selecting random vertex with operator set of size > 1
+				Set<Operator> operatorSet = null;
+				int nonBlockingIndex = 0;
+
+				do {
+					nonBlockingIndex++;
+					currentvertex = (MapperDAGVertex) vertexiter.next();
+					operatorSet = currentvertex.getInitialVertexProperty()
+							.getOperatorSet();
+				} while (operatorSet.size() < 2 && nonBlockingIndex < 100);
+
 				SL = simulator.getFinalCost();
 
 				// step 8
-				Set<Operator> operatorSet = currentvertex
-						.getInitialVertexProperty().getOperatorSet();
-
-				prociter = new RandomIterator<Operator>(operatorSet,
-						new Random());
 
 				// The mapping can reaffect the same operator as before,
 				// refining the edge scheduling
-				operatortest = prociter.next();
+				int randomIndex = randomGenerator.nextInt(operatorSet.size());
+				operatortest = (Operator) operatorSet.toArray()[randomIndex];
+
 				operatorprec = (Operator) simulator
 						.getEffectiveComponent(currentvertex);
 
@@ -268,37 +277,34 @@ public class FastAlgorithm extends Observable {
 
 				// step 10
 				simulator.updateFinalCosts();
-
 				long newSL = simulator.getFinalCost();
+
 				if (newSL >= SL) {
-
 					simulator.implant(currentvertex, operatorprec, false);
-					counter++;
+					simulator.updateFinalCosts();
+					localCounter++;
 				} else {
-					logger.log(Level.FINEST, threadName + ", SL " + SL
-							+ "FinalTime " + newSL);
-
-					counter = 0;
+					localCounter = 0;
 					SL = newSL;
-
 				}
 
 				searchstep++;
 				// step 11
-			} while (searchstep < maxstep && counter < margin);
+			} while (searchstep < maxstep && localCounter < margin);
 
 			// step 12
 			simulator.updateFinalCosts();
+
 			if (bestSL > simulator.getFinalCost()) {
 
 				// step 13
 				dagfinal = simulator.getDAG().clone();
 				// step 14
 
-				simulator.updateFinalCosts();
 				bestSL = simulator.getFinalCost();
 
 				bestTotalOrder = simulator.getTotalOrder().toStringList();
+
 				if (displaySolutions) {
 					createEditor(simulator, abcParams, getBestTotalOrder(),
 							"Cost:" + bestSL + " Fast");
@@ -308,40 +314,39 @@ public class FastAlgorithm extends Observable {
 						"Found Fast solution; Cost:" + bestSL);
 
 				dagfinal.setScheduleLatency(bestSL);
-				logger.log(Level.FINER, threadName + ", bestSL " + bestSL);
-
 			}
 
 			// step 15
 			simulator.resetDAG();
 
 			// step 16
-			fcpvertex = (MapperDAGVertex) iter.next();
-			Set<Operator> operatorSet = fcpvertex.getInitialVertexProperty()
-					.getOperatorSet();
+			// Choosing a vertex in critical path with an operator set of more
+			// than 1 element
+			Set<Operator> operatorSet = null;
+			int nonBlockingIndex = 0;
 
-			prociter = new RandomIterator<Operator>(operatorSet, new Random());
+			do {
+				nonBlockingIndex++;
+				fcpvertex = (MapperDAGVertex) iter.next();
+				operatorSet = fcpvertex.getInitialVertexProperty()
+						.getOperatorSet();
+			} while (operatorSet.size() < 2 && nonBlockingIndex < 100);
 
-			operatorfcp = prociter.next();
-			if (operatorfcp.equals(dagfinal.getMapperDAGVertex(
+			// Choosing an operator different from the current vertex operator
+			Operator currentOp = dagfinal.getMapperDAGVertex(
 					fcpvertex.getName()).getImplementationVertexProperty()
-					.getEffectiveOperator())) {
+					.getEffectiveOperator();
 
-				operatorfcp = prociter.next();
-			}
+			do {
+				int randomIndex = randomGenerator.nextInt(operatorSet.size());
+				operatorfcp = (Operator) operatorSet.toArray()[randomIndex];
+			} while (operatorfcp.equals(currentOp));
 
+			// Reschedule the whole dag
 			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);
 
 		}
-
-		logger
-				.log(
-						Level.FINE,
-						threadName
-								+ " : Gain "
-								+ ((((double) initial - (double) bestSL) / (double) initial) * 100)
-								+ " %");
 
 		return dagfinal;
 	}

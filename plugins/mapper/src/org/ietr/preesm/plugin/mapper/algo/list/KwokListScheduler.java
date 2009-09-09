@@ -134,7 +134,7 @@ public class KwokListScheduler {
 					}
 
 				}
-				// Implant the chosen operator in the CPN-Dominant list
+				// Implant the chosen operator
 				archisimu.implant(currentvertex, chosenoperator, true);
 
 				int currentVertexTotalOrder = orderlist.indexOf(currentvertex);

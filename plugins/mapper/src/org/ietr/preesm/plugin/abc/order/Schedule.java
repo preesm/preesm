@@ -263,5 +263,9 @@ public class Schedule {
 
 	public long getBusyTime() {
 		return busyTime;
+	}
+
+	public int size() {
+		return vervexList.size();
 	}	
 }

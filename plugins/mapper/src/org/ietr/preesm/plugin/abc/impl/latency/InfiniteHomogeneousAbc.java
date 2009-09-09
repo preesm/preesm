@@ -137,6 +137,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 			setEdgesCosts(vertex.outgoingEdges());
 			
 			if (updateRank) {
+				nTimeKeeper.updateTLevels();
 				taskScheduler.insertVertex(vertex);
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);

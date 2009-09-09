@@ -55,9 +55,11 @@ import org.sdf4j.model.dag.DAGEdge;
 public class TaskSwitcher extends AbstractTaskSched{
 
 	private IntervalFinder intervalFinder;
+	private Random random;
 	
 	public TaskSwitcher() {
 		super();
+		random = new Random(System.nanoTime());
 	}
 
 	@Override
@@ -115,11 +117,6 @@ public class TaskSwitcher extends AbstractTaskSched{
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		if (latePred == -1) {
-			getEarliestsuccessorIndex(vertex);
-			getLatestPredecessorIndex(vertex);
-		}
-
 		Operator op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 		MapperDAGVertex source = (latePred == -1) ? null : orderManager
@@ -130,17 +127,18 @@ public class TaskSwitcher extends AbstractTaskSched{
 		if (op != null) {
 			Interval largestInterval = intervalFinder.findLargestFreeInterval(op, source, target);
 			
-			if(largestInterval.getDuration()>0){
+			if(false/*largestInterval.getDuration()>0*/){
 				index = largestInterval.getTotalOrderIndex();
 			}
 			else{
-				int sourceIndex = intervalFinder.getOrderManager().totalIndexOf(source)+1;
-				int targetIndex = intervalFinder.getOrderManager().totalIndexOf(target);
+				int sourceIndex = latePred+1;
+				int targetIndex = earlySuc;
+				if(targetIndex == -1){
+					targetIndex = orderManager.getTotalOrder().size();
+				}
 				
 				if(targetIndex-sourceIndex > 0){
-					Random r = new Random();
-					int randomVal = Math.abs(r.nextInt());
-					randomVal = randomVal%(targetIndex-sourceIndex);
+					int randomVal = random.nextInt(targetIndex-sourceIndex);
 					index = sourceIndex+randomVal;
 				}
 			}

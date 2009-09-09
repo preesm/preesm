@@ -192,6 +192,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			setEdgesCosts(vertex.outgoingEdges());
 
 			if (updateRank) {
+				updateTimings();
 				taskScheduler.insertVertex(vertex);
 			} else {
 				orderManager.insertVertexInTotalOrder(vertex);
