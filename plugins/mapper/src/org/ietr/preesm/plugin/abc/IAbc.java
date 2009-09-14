@@ -136,6 +136,7 @@ public interface IAbc extends IMapperAbc {
 	 */
 	public void implant(MapperDAGVertex vertex, Operator operator,
 			boolean updateRank);
+	public void unimplant(MapperDAGVertex dagvertex);
 
 	/**
 	 * implants all the vertices on the given operator

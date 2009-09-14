@@ -67,6 +67,7 @@ import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorInput;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorRunnable;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
+import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Fast Algorithm
@@ -316,9 +317,6 @@ public class FastAlgorithm extends Observable {
 				dagfinal.setScheduleLatency(bestSL);
 			}
 
-			// step 15
-			simulator.resetDAG();
-
 			// step 16
 			// Choosing a vertex in critical path with an operator set of more
 			// than 1 element
@@ -342,6 +340,13 @@ public class FastAlgorithm extends Observable {
 				operatorfcp = (Operator) operatorSet.toArray()[randomIndex];
 			} while (operatorfcp.equals(currentOp));
 
+
+			// step 15
+			List<MapperDAGVertex> toRemapList = cpnDominantList;
+			toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex), toRemapList.size());
+			
+			simulator.resetDAG();
+			
 			// Reschedule the whole dag
 			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);

@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.list;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,26 +123,33 @@ public class KwokListScheduler {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				for (Operator currentoperator : currentvertex
-						.getInitialVertexProperty().getOperatorSet()) {
+				Set<Operator> opSet = currentvertex.getInitialVertexProperty()
+						.getOperatorSet();
+				if (opSet.size() == 1) {
+					chosenoperator = (Operator) opSet.toArray()[0];
+				} else {
+					for (Operator currentoperator : currentvertex
+							.getInitialVertexProperty().getOperatorSet()) {
 
-					long test = operatorvertexstarttime(dag, currentvertex,
-							currentoperator, archisimu);
-					// test the earliest ready operator
-					if (test < time) {
-						chosenoperator = currentoperator;
-						time = test;
+						long test = operatorvertexstarttime(dag, currentvertex,
+								currentoperator, archisimu);
+						// test the earliest ready operator
+						if (test < time) {
+							chosenoperator = currentoperator;
+							time = test;
+						}
+
 					}
-
 				}
+
 				// Implant the chosen operator
 				archisimu.implant(currentvertex, chosenoperator, true);
 
-				int currentVertexTotalOrder = orderlist.indexOf(currentvertex);
-				if ((currentVertexTotalOrder % 100) == 0 && (fcpvertex == null)
-						&& (currentVertexTotalOrder != 0)) {
+				int currentVertexRank = orderlist.indexOf(currentvertex);
+				if ((currentVertexRank % 100) == 0 && (fcpvertex == null)
+						&& (currentVertexRank != 0)) {
 					logger.log(Level.INFO, "list scheduling: "
-							+ currentVertexTotalOrder + " vertices mapped ");
+							+ currentVertexRank + " vertices mapped ");
 				}
 
 				chosenoperator = null;
@@ -150,7 +158,7 @@ public class KwokListScheduler {
 		}
 
 		// archisimu.rescheduleTransfers(orderlist);
-		archisimu.retrieveTotalOrder();
+		//archisimu.retrieveTotalOrder();
 
 		return dag;
 	}

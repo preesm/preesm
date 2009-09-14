@@ -34,42 +34,23 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.workflow.sources;
+package org.ietr.preesm.core.task;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.ILaunchConfiguration;
+import org.ietr.preesm.core.scenario.IScenario;
 
 /**
- * Representing the configuration for the scenario retrieved from launch tab.
- * It feeds a {@link ScenarioRetriever} to create the input scenario.
+ * This interface defines methods to load a new scenario and optionally change
+ * some constraints from an output DAG.
  * 
  * @author mpelcat
- *
  */
-public class ScenarioConfiguration {
+public interface IScenarioTransformation extends ITask {
 
 	/**
-	 * ID used to save scenario file name in tab attributes
+	 * Generating the scenario
+	 * 
+	 * @param parameters
+	 *            Text parameters. Especially paths to files
 	 */
-	public static final String ATTR_SCENARIO_FILE_NAME = "org.ietr.preesm.core.scenarioFileName";
-
-	private String scenarioFileName = null;
-
-	public ScenarioConfiguration(ILaunchConfiguration configuration) throws CoreException {
-		super();
-		this.scenarioFileName = configuration.getAttribute(
-				ATTR_SCENARIO_FILE_NAME, "");
-	}
-
-	public ScenarioConfiguration() {
-		super();
-	}
-
-	public void setScenarioFileName(String scenarioFileName) {
-		this.scenarioFileName = scenarioFileName;
-	}
-
-	public String getScenarioFileName() {
-		return scenarioFileName;
-	}
+	public TaskResult transform(TextParameters parameters);
 }

@@ -62,6 +62,7 @@ import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.IPlotter;
+import org.ietr.preesm.core.task.IScenarioTransformation;
 import org.ietr.preesm.core.task.ITask;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
@@ -72,6 +73,8 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.graph.DirectedMultigraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -87,14 +90,23 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class Workflow {
 
+	private class WorkflowEdgeFactory implements org.jgrapht.EdgeFactory<IWorkflowNode, WorkflowEdge>{
+
+		@Override
+		public WorkflowEdge createEdge(IWorkflowNode arg0, IWorkflowNode arg1) {
+			return new WorkflowEdge();
+		}
+		
+	}
+	
 	private DirectedGraph<IWorkflowNode, WorkflowEdge> workflow;
 
 	/**
 	 * Creates a new workflow.
 	 */
 	public Workflow() {
-		workflow = new SimpleDirectedGraph<IWorkflowNode, WorkflowEdge>(
-				WorkflowEdge.class);
+		workflow = new DirectedMultigraph<IWorkflowNode, WorkflowEdge>(
+				new WorkflowEdgeFactory());
 	}
 
 	/**
@@ -245,6 +257,15 @@ public class Workflow {
 
 						nodeResult = tranform.transform(architecture,
 								parameters);
+					} else if (transformation instanceof IScenarioTransformation) {
+						monitor.subTask("transforming scenario");
+						PreesmLogger.getLogger().log(Level.INFO,
+								"transforming scenario");
+
+						// scenario transformation
+						IScenarioTransformation gen = (IScenarioTransformation) transformation;
+
+						nodeResult = gen.transform(parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
 						PreesmLogger.getLogger().log(Level.INFO,
@@ -383,7 +404,7 @@ public class Workflow {
 			// to avoid automatic cancellation
 			if (!monitor.isCanceled()) {
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				
+
 				workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE,
 						monitor);
 			}

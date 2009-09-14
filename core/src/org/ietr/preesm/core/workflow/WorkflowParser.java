@@ -40,11 +40,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.jgrapht.DirectedGraph;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -69,7 +71,7 @@ public class WorkflowParser extends DefaultHandler2 {
 	private Map<String, IWorkflowNode> nodes;
 
 	private DirectedGraph<IWorkflowNode, WorkflowEdge> workflow;
-	
+
 	/**
 	 * Creates a new workflow parser.
 	 * 
@@ -82,11 +84,11 @@ public class WorkflowParser extends DefaultHandler2 {
 			DirectedGraph<IWorkflowNode, WorkflowEdge> workflow) {
 		this.nodes = new HashMap<String, IWorkflowNode>();
 		this.workflow = workflow;
-		
+
 		Path relativePath = new Path(fileName);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
+				relativePath);
+
 		try {
 			XMLReader reader = XMLReaderFactory.createXMLReader();
 			reader.setContentHandler(this);
@@ -106,7 +108,7 @@ public class WorkflowParser extends DefaultHandler2 {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) {
-		
+
 		if (qName.equals("preesm:algorithm")) {
 			IWorkflowNode node = new AlgorithmNode();
 			workflow.addVertex(node);
@@ -131,10 +133,20 @@ public class WorkflowParser extends DefaultHandler2 {
 			IWorkflowNode target = nodes.get(attributes.getValue("to"));
 			String dataType = attributes.getValue("targetport");
 			WorkflowEdge edge = workflow.addEdge(source, target);
-			edge.setCarriedDataType(dataType);
+
+			if (edge != null) {
+				edge.setCarriedDataType(dataType);
+			} else {
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"Could not create workflow edge of type " + dataType
+								+ " between " + attributes.getValue("from")
+								+ " and " + attributes.getValue("to") + ".");
+			}
 		} else if (qName.equals("variable")) {
-			if(lastTransformationNode != null){
-				lastTransformationNode.addVariable(attributes.getValue("name"),attributes.getValue("value"));
+			if (lastTransformationNode != null) {
+				lastTransformationNode.addVariable(attributes.getValue("name"),
+						attributes.getValue("value"));
 			}
 		}
 	}

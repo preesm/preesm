@@ -58,6 +58,11 @@
             name="Dynamic Queuing Scheduling"
             type="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformation">
       </task>
+      <task
+            id="org.ietr.preesm.plugin.mapper.scenariogen.ScenarioGenerator"
+            name="Scenario Generator"
+            type="org.ietr.preesm.plugin.mapper.scenariogen.ScenarioGenerator">
+      </task>
    </extension>
    <extension
          point="org.eclipse.ui.editors">

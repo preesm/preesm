@@ -130,7 +130,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 			if(largestInterval.getDuration()>0){
 				index = largestInterval.getTotalOrderIndex();
 			}
-			else{
+			else if(latePred != -1){
 				int sourceIndex = latePred+1;
 				int targetIndex = earlySuc;
 				if(targetIndex == -1){

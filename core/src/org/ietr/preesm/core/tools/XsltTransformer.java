@@ -102,10 +102,12 @@ public class XsltTransformer {
 		TransformerFactory factory = TransformerFactory.newInstance(
 				"net.sf.saxon.TransformerFactoryImpl", null);
 		
+		
 		StreamSource xsltSource;
 		try {
 			xsltSource = new StreamSource(file.getContents());
 			transformer = factory.newTransformer(xsltSource);
+
 		} catch (CoreException e) {
 			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
 			return false;
