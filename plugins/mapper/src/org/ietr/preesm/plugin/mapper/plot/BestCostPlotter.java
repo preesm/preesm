@@ -41,6 +41,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -69,19 +70,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.CandlestickRenderer;
-import org.jfree.chart.renderer.xy.ClusteredXYBarRenderer;
-import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
-import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.chart.renderer.xy.VectorRenderer;
-import org.jfree.chart.renderer.xy.WindItemRenderer;
-import org.jfree.chart.renderer.xy.XYBlockRenderer;
-import org.jfree.chart.renderer.xy.XYBoxAndWhiskerRenderer;
-import org.jfree.chart.renderer.xy.XYBubbleRenderer;
-import org.jfree.chart.renderer.xy.XYLine3DRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.renderer.xy.XYStepRenderer;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -210,14 +199,18 @@ public class BestCostPlotter extends ApplicationFrame implements
 
 		final JFreeChart chart = new JFreeChart(title, plot);
 
-		// chart.getLegend().setAnchor(Legend.EAST);
-		chart.setBorderPaint(Color.black);
+		chart.removeLegend();
+		//chart.getLegend().setPosition(RectangleEdge.BOTTOM);
+		
+		chart.setBorderPaint(Color.lightGray);
 		chart.setBorderVisible(true);
-		chart.setBackgroundPaint(Color.white);
+
+		Paint p = GanttPlotter.getBackgroundColorGradient();
+		chart.setBackgroundPaint(p);
 
 		plot.setBackgroundPaint(Color.white);
-		plot.setDomainGridlinePaint(Color.lightGray);
-		plot.setRangeGridlinePaint(Color.lightGray);
+		plot.setDomainGridlinePaint(Color.white);
+		plot.setRangeGridlinePaint(Color.black);
 
 		final ValueAxis axis = plot.getDomainAxis();
 		axis.setAutoRange(true);

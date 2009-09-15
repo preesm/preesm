@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.CodeSectionType;
 import org.ietr.preesm.core.codegen.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;

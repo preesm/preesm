@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.LinearGradientPaint;
+import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.util.Collections;
@@ -136,13 +137,8 @@ public class GanttPlotter extends ApplicationFrame implements
 				);
 
 		CategoryPlot plot = (CategoryPlot) chart.getPlot();
-		Point2D start = new Point2D.Float(0, 0);
-		Point2D end = new Point2D.Float(500, 500);
-		float[] dist = { 0.0f, 0.8f };
-		Color[] colors = { new Color(170, 160, 190), Color.WHITE };
-		LinearGradientPaint p = new LinearGradientPaint(start, end, dist,
-				colors);
 
+		Paint p = getBackgroundColorGradient();
 		chart.setBackgroundPaint(p);
 
 		plot.setBackgroundPaint(Color.white);
@@ -159,8 +155,7 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		plot.setDrawingSupplier(d);
 		GanttRenderer ren = new MyGanttRenderer();
-		ren.setBaseFillPaint(p);
-		// ren.setSeriesPaint(0, p);
+
 		ren.setSeriesItemLabelsVisible(0, false);
 		ren.setSeriesVisibleInLegend(0, false);
 		ren.setSeriesItemLabelGenerator(0,
@@ -248,9 +243,8 @@ public class GanttPlotter extends ApplicationFrame implements
 	public static void plotDeployment(MapperDAG dag,
 			MultiCoreArchitecture archi, Composite delegateDisplay) {
 
-		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag,
-				archi);
-		
+		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag, archi);
+
 		if (delegateDisplay == null) {
 			plotter.plot(dag, archi);
 		} else {
@@ -275,17 +269,15 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Gantt chart plotting function in a given composite
 	 */
-	public void plotInComposite(MapperDAG dag,
-			MultiCoreArchitecture archi, Composite parent) {
+	public void plotInComposite(MapperDAG dag, MultiCoreArchitecture archi,
+			Composite parent) {
 
-			Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
-			parent.setLayout(new FillLayout());
-			Frame frame = SWT_AWT.new_Frame(composite);
-			frame.add(getContentPane());
+		Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
+		parent.setLayout(new FillLayout());
+		Frame frame = SWT_AWT.new_Frame(composite);
+		frame.add(getContentPane());
 
-			parent
-					.addControlListener(new SizeListener(composite,
-							frame));
+		parent.addControlListener(new SizeListener(composite, frame));
 	}
 
 	/**
@@ -308,4 +300,13 @@ public class GanttPlotter extends ApplicationFrame implements
 		}
 	}
 
+	public static LinearGradientPaint getBackgroundColorGradient() {
+		Point2D start = new Point2D.Float(0, 0);
+		Point2D end = new Point2D.Float(500, 500);
+		float[] dist = { 0.0f, 0.8f };
+		Color[] colors = { new Color(170, 160, 190), Color.WHITE };
+		LinearGradientPaint p = new LinearGradientPaint(start, end, dist,
+				colors);
+		return p;
+	}
 }

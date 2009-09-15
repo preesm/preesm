@@ -40,39 +40,55 @@ import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 
 /**
- * A hierarchical connection joins one interface of a component to one port of its
- * design component
+ * A hierarchical connection joins one interface of a component to one port of
+ * its design component
  * 
  * @author mpelcat
  */
-public class HierarchyPort extends
-		AbstractVertex<MultiCoreArchitecture> {
+public class HierarchyPort {
 
 	/**
 	 * A HierarchyPort has only one connection to a given component
 	 */
-	//private Interconnection hierarchyConnection = null;
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public void ConnectionAdded(AbstractEdge e) {
-		if(e instanceof Interconnection){
-			//hierarchyConnection = (Interconnection)e;
-		}
+	private String connectedOperator = null;
+
+	/**
+	 * A the connection has a given bus reference
+	 */
+	private String busReference = null;
+
+	/**
+	 * Hierarchical connection name
+	 */
+	private String name = null;
+
+	public HierarchyPort(String name, String connectedOperator,
+			String busReference) {
+		super();
+		this.name = name;
+		this.connectedOperator = connectedOperator;
+		this.busReference = busReference;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void ConnectionRemoved(AbstractEdge e) {
-		//hierarchyConnection = null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public AbstractVertex clone() {
-		HierarchyPort newHC = new HierarchyPort();
-		newHC.setName(this.getName());
+	public HierarchyPort clone() {
+		HierarchyPort newHC = new HierarchyPort(this.getName(),
+				getConnectedOperator(), getBusReference());
 		return newHC;
 	}
 
+	public String getConnectedOperator() {
+		return connectedOperator;
+	}
+
+	public String getBusReference() {
+		return busReference;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	
 }

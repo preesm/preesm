@@ -1,25 +1,10 @@
 package org.ietr.preesm.plugin.architransfo.transforms;
 
-import java.util.HashMap;
-import java.util.Vector;
-
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.AbstractVertex;
-import org.sdf4j.model.parameters.Argument;
 import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
-import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
-import org.sdf4j.model.sdf.esdf.SDFForkVertex;
-import org.sdf4j.model.sdf.esdf.SDFJoinVertex;
-import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
-import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
 import org.sdf4j.model.visitors.AbstractHierarchyFlattening;
 import org.sdf4j.model.visitors.SDF4JException;
 

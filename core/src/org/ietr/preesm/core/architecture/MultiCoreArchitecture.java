@@ -53,6 +53,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * Architecture based on a fixed number of cores
@@ -76,6 +77,11 @@ public class MultiCoreArchitecture extends
 	 * List of the bus references associated to interfaces
 	 */
 	private Map<String, BusReference> busReferences;
+
+	/**
+	 * List of the hierarchy ports linked to a given component
+	 */
+	private Set<HierarchyPort> hierarchyPorts;
 
 	/**
 	 * name and id of the archi.
@@ -109,6 +115,7 @@ public class MultiCoreArchitecture extends
 		super(new InterconnectionFactory());
 		architectureComponentDefinitions = new HashMap<VLNV, ArchitectureComponentDefinition>();
 		busReferences = new HashMap<String, BusReference>();
+		hierarchyPorts = new HashSet<HierarchyPort>();
 
 		this.name = name;
 
@@ -188,6 +195,17 @@ public class MultiCoreArchitecture extends
 			addVertex(cmp);
 			return cmp;
 		}
+	}
+
+	/**
+	 * Adds a hierarchy port with its corresponding component
+	 */
+	public void addHierarchyPort(HierarchyPort hierarchyPort){
+		hierarchyPorts.add(hierarchyPort);
+	}
+	
+	public Set<HierarchyPort> getHierarchyPorts() {
+		return hierarchyPorts;
 	}
 
 	/**
@@ -516,7 +534,6 @@ public class MultiCoreArchitecture extends
 	@Override
 	public MultiCoreArchitecture clone() {
 
-
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
 		newArchi.setId(this.getId());
@@ -550,12 +567,20 @@ public class MultiCoreArchitecture extends
 			newEdge.setDirected(edge.isDirected());
 			newEdge.setSetup(edge.isSetup());
 		}
+		
+		for(HierarchyPort hierPort : hierarchyPorts){
+			newArchi.addHierarchyPort(hierPort);
+		}
 
 		/**
 		 * main operator and medium.
 		 */
-		newArchi.setMainOperator(mainOperator.getName());
-		newArchi.setMainMedium(mainMedium.getName());
+		if (mainOperator != null) {
+			newArchi.setMainOperator(mainOperator.getName());
+		}
+		if (mainMedium != null) {
+			newArchi.setMainMedium(mainMedium.getName());
+		}
 
 		return newArchi;
 	}

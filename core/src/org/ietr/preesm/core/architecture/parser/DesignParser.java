@@ -54,6 +54,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
+import org.ietr.preesm.core.architecture.HierarchyPort;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.advancedmodel.Bus;
 import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
@@ -71,6 +72,7 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
+import org.ietr.preesm.core.scenario.editor.simu.HierarchicalArchiCmp;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -223,7 +225,8 @@ public class DesignParser {
 		}
 		
 		if(intRef != null && busRef != null && componentRef != null ){
-			// TODO: add hierarchyport in multiarchi and an interconnection to it.
+			HierarchyPort hierPort = new HierarchyPort(intRef, componentRef, busRef);
+			archi.addHierarchyPort(hierPort);
 		}
 
 	}

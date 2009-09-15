@@ -177,7 +177,7 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find plugins from workflow");
+			PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find tasks from workflow");
 			return false;
 		}
 	}

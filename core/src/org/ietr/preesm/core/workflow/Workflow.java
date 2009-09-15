@@ -43,9 +43,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -70,17 +68,15 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.types.IMapperAbc;
+import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.ietr.preesm.core.ui.Activator;
 
 /**
  * This class provides methods to check and execute a workflow. A workflow
@@ -134,9 +130,10 @@ public class Workflow {
 				}
 
 				if (!workflowOk) {
+					((TaskNode) node).isTaskPossible();
 					PreesmLogger.getLogger().log(
 							Level.SEVERE,
-							"Failed to find plugin "
+							"Failed to find task "
 									+ ((TaskNode) node).getTaskId()
 									+ " from workflow.");
 				}

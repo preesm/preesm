@@ -41,14 +41,11 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.task.IArchiTransformation;
-import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
-import org.sdf4j.model.sdf.visitors.SDFHierarchyFlattening;
 import org.sdf4j.model.visitors.SDF4JException;
 import org.sdf4j.model.visitors.VisitorOutput;
 
@@ -75,8 +72,6 @@ public class HierarchyFlattening implements IArchiTransformation {
 		Logger logger = PreesmLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
-
-		ConsistencyChecker checkConsistent = new ConsistencyChecker();
 
 		logger.log(Level.FINER, "flattening architecture " + archi.getName()
 				+ " at level " + depth);

@@ -49,11 +49,6 @@
             type="org.ietr.preesm.plugin.mapper.exporter.XsltTransform">
       </task>
       <task
-            id="org.ietr.preesm.plugin.mapper.exporter.ArchitectureExportTransform"
-            name="Export Architecture"
-            type="org.ietr.preesm.plugin.mapper.exporter.ArchitectureExportTransform">
-      </task>
-      <task
             id="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformation"
             name="Dynamic Queuing Scheduling"
             type="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformation">

@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.mapper.exporter;
+package org.ietr.preesm.plugin.architransfo.transforms;
 
 import java.util.logging.Level;
 
@@ -54,7 +54,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  * 
  */
-public class ArchitectureExportTransform implements IExporter {
+public class ArchitectureExporter implements IExporter {
 
 	@Override
 	public boolean isDAGExporter() {

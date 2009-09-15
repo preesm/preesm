@@ -75,7 +75,7 @@ public final class ImplementationPropertyNames {
 	public static final String Vertex_Operator = "Operator";
 	
 	/**
-	 * {@link Operators} on which the vertex can be mapped.
+	 * {@link Operator} on which the vertex can be mapped.
 	 */
 	public static final String Vertex_Available_Operators = "availableOperators";
 	

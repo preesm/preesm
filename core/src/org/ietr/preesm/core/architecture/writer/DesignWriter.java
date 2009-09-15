@@ -46,6 +46,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.HierarchyPort;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
@@ -111,10 +112,13 @@ public class DesignWriter {
 		addID(root);
 		addComponentInstances(root);
 		addInterconnections(root);
+		if (!archi.getHierarchyPorts().isEmpty()) {
+			addHierarchicalPorts(root);
+		}
 
 		return dom;
 	}
-	
+
 	public void writeDom(String fileName) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -182,7 +186,7 @@ public class DesignWriter {
 			Element displayName = dom.createElement("spirit:displayName");
 			intElt.appendChild(displayName);
 			displayName.setTextContent("setup");
-			
+
 			Operator o = (Operator) intc.getSource();
 			Element descElt = dom.createElement("spirit:description");
 			intElt.appendChild(descElt);
@@ -191,8 +195,7 @@ public class DesignWriter {
 				Dma d = (Dma) intc.getTarget();
 				DmaDefinition dd = (DmaDefinition) d.getDefinition();
 				descElt.setTextContent(Long.toString(dd.getSetupTime(o)));
-			}
-			else if (intc.getTarget() instanceof Ram) {
+			} else if (intc.getTarget() instanceof Ram) {
 				Ram d = (Ram) intc.getTarget();
 				RamDefinition dd = (RamDefinition) d.getDefinition();
 				descElt.setTextContent(Long.toString(dd.getSetupTime(o)));
@@ -202,14 +205,42 @@ public class DesignWriter {
 		// Writing the interfaces
 		Element intf1Elt = dom.createElement("spirit:activeInterface");
 		intElt.appendChild(intf1Elt);
-		intf1Elt.setAttribute("spirit:busRef", intc.getSrcIf().getBusReference().getId());
-		intf1Elt.setAttribute("spirit:componentRef", intc.getSource().getName());
-		
+		intf1Elt.setAttribute("spirit:busRef", intc.getSrcIf()
+				.getBusReference().getId());
+		intf1Elt
+				.setAttribute("spirit:componentRef", intc.getSource().getName());
+
 		Element intf2Elt = dom.createElement("spirit:activeInterface");
 		intElt.appendChild(intf2Elt);
-		intf2Elt.setAttribute("spirit:busRef", intc.getTgtIf().getBusReference().getId());
-		intf2Elt.setAttribute("spirit:componentRef", intc.getTarget().getName());
+		intf2Elt.setAttribute("spirit:busRef", intc.getTgtIf()
+				.getBusReference().getId());
+		intf2Elt
+				.setAttribute("spirit:componentRef", intc.getTarget().getName());
+
+	}
+
+	private void addHierarchicalPorts(Element parent) {
+
+		Element hiersElt = dom.createElement("spirit:hierConnections");
+		parent.appendChild(hiersElt);
+
+		for (HierarchyPort p : archi.getHierarchyPorts()) {
+			addHierarchicalPort(hiersElt, p);
+		}
+	}
+
+	private void addHierarchicalPort(Element parent, HierarchyPort p) {
+
+		Element hierElt = dom.createElement("spirit:hierConnection");
+		parent.appendChild(hierElt);
 		
+		hierElt.setAttribute("spirit:interfaceRef", p.getName());
+
+		Element intfElt = dom.createElement("spirit:activeInterface");
+		hierElt.appendChild(intfElt);
+		
+		intfElt.setAttribute("spirit:busRef", p.getBusReference());
+		intfElt.setAttribute("spirit:componentRef", p.getConnectedOperator());
 	}
 
 	private void addID(Element parent) {
@@ -271,28 +302,36 @@ public class DesignWriter {
 				.createElement("spirit:configurableElementValues");
 		parent.appendChild(confsElt);
 
-		addParameter(confsElt,"componentType",cmp.getType().getName());
-		addParameter(confsElt,"refinement",cmp.getRefinementName());
+		addParameter(confsElt, "componentType", cmp.getType().getName());
+		addParameter(confsElt, "refinement", cmp.getRefinementName());
 
 		// Writing component parameters depending on their type
 		if (cmp instanceof ContentionNode) {
-			ContentionNodeDefinition def = (ContentionNodeDefinition)((ContentionNode)cmp).getDefinition();
-			addParameter(confsElt,"node_dataRate",Float.toString(def.getDataRate()));
+			ContentionNodeDefinition def = (ContentionNodeDefinition) ((ContentionNode) cmp)
+					.getDefinition();
+			addParameter(confsElt, "node_dataRate", Float.toString(def
+					.getDataRate()));
 		} else if (cmp instanceof ParallelNode) {
-			ParallelNodeDefinition def = (ParallelNodeDefinition)((ParallelNode)cmp).getDefinition();
-			addParameter(confsElt,"node_dataRate",Float.toString(def.getDataRate()));
+			ParallelNodeDefinition def = (ParallelNodeDefinition) ((ParallelNode) cmp)
+					.getDefinition();
+			addParameter(confsElt, "node_dataRate", Float.toString(def
+					.getDataRate()));
 		} else if (cmp instanceof Medium) {
-			MediumDefinition def = (MediumDefinition)((Medium)cmp).getDefinition();
-			addParameter(confsElt,"medium_dataRate",Float.toString(def.getDataRate()));
-			addParameter(confsElt,"medium_overhead",Integer.toString(def.getOverheadTime()));
+			MediumDefinition def = (MediumDefinition) ((Medium) cmp)
+					.getDefinition();
+			addParameter(confsElt, "medium_dataRate", Float.toString(def
+					.getDataRate()));
+			addParameter(confsElt, "medium_overhead", Integer.toString(def
+					.getOverheadTime()));
 		} else if (cmp instanceof Operator) {
-			OperatorDefinition def = (OperatorDefinition)((Operator)cmp).getDefinition();
-			addParameter(confsElt,"dataCopySpeed",Float.toString(def.getDataCopySpeed()));
+			OperatorDefinition def = (OperatorDefinition) ((Operator) cmp)
+					.getDefinition();
+			addParameter(confsElt, "dataCopySpeed", Float.toString(def
+					.getDataCopySpeed()));
 		}
 	}
 
-	private void addParameter(Element parent,
-			String name, String value) {
+	private void addParameter(Element parent, String name, String value) {
 
 		Element paramElt = dom.createElement("spirit:configurableElementValue");
 		parent.appendChild(paramElt);
