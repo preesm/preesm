@@ -37,6 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.ui;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -123,5 +127,17 @@ public class Activator extends AbstractUIPlugin {
 		}
 
 		return image;
+	}
+
+	public static void updateWorkspace() {
+
+		try {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+			workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE,
+					new NullProgressMonitor());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

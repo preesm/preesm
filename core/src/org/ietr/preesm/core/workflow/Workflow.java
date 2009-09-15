@@ -45,6 +45,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -79,6 +80,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.core.ui.Activator;
 
 /**
  * This class provides methods to check and execute a workflow. A workflow
@@ -90,15 +92,16 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class Workflow {
 
-	private class WorkflowEdgeFactory implements org.jgrapht.EdgeFactory<IWorkflowNode, WorkflowEdge>{
+	private class WorkflowEdgeFactory implements
+			org.jgrapht.EdgeFactory<IWorkflowNode, WorkflowEdge> {
 
 		@Override
 		public WorkflowEdge createEdge(IWorkflowNode arg0, IWorkflowNode arg1) {
 			return new WorkflowEdge();
 		}
-		
+
 	}
-	
+
 	private DirectedGraph<IWorkflowNode, WorkflowEdge> workflow;
 
 	/**
@@ -318,7 +321,7 @@ public class Workflow {
 
 						// Updating workspace so that the exported file can be
 						// easily opened
-						updateWorkspace(monitor);
+						Activator.updateWorkspace();
 
 						if (parameters.getBooleanVariable("openFile")) {
 							openFile(parameters.getVariable("path"), monitor);
@@ -395,21 +398,6 @@ public class Workflow {
 		if (resource != null) {
 			FileEditorInput input = new FileEditorInput((IFile) resource);
 			openEditor(((IFile) resource).getName(), input);
-		}
-	}
-
-	private void updateWorkspace(IProgressMonitor monitor) {
-
-		try {
-			// to avoid automatic cancellation
-			if (!monitor.isCanceled()) {
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-				workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE,
-						monitor);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }

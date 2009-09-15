@@ -349,14 +349,6 @@ public class PFastAlgorithm extends Observable {
 		// step 5/7/8
 		while (totalsearchcount < pFastParams.getFastNumber()) {
 
-			// Mode Pause
-			while (costPlotter.getActionType() == 2)
-				;
-
-			// Mode stop
-			if (costPlotter.getActionType() == 1)
-				return mappedDAGSet.first().clone();
-
 			// step 11
 
 			// create ExecutorService to manage threads
@@ -397,6 +389,7 @@ public class PFastAlgorithm extends Observable {
 
 					mappedDAGSet.pollLast();
 				}
+				
 				// step 12
 				if (!population) {
 					dag = mappedDAGSet.first().clone();
@@ -404,6 +397,14 @@ public class PFastAlgorithm extends Observable {
 					iBest = dag.getScheduleCost();
 					setChanged();
 					notifyObservers(iBest);
+
+					// Mode Pause
+					while (costPlotter.getActionType() == 2)
+						;
+
+					// Mode stop
+					if (costPlotter.getActionType() == 1)
+						break;
 
 				}
 

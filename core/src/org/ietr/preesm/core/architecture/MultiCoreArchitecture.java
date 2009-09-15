@@ -515,7 +515,7 @@ public class MultiCoreArchitecture extends
 
 	@Override
 	public MultiCoreArchitecture clone() {
-		// super.clone();
+
 
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
@@ -550,6 +550,12 @@ public class MultiCoreArchitecture extends
 			newEdge.setDirected(edge.isDirected());
 			newEdge.setSetup(edge.isSetup());
 		}
+
+		/**
+		 * main operator and medium.
+		 */
+		newArchi.setMainOperator(mainOperator.getName());
+		newArchi.setMainMedium(mainMedium.getName());
 
 		return newArchi;
 	}

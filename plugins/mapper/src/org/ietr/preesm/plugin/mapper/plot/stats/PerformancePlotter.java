@@ -40,7 +40,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Frame;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -151,6 +157,7 @@ public class PerformancePlotter extends ApplicationFrame {
 		XYSplineRenderer renderer = new XYSplineRenderer();
 		final XYPlot subplot = new XYPlot(this.speedups, null, xAxis,
 				renderer);
+		
 		subplot.setBackgroundPaint(Color.white);
 		subplot.setDomainGridlinePaint(Color.lightGray);
 		subplot.setRangeGridlinePaint(Color.lightGray);
@@ -193,9 +200,16 @@ public class PerformancePlotter extends ApplicationFrame {
 	public void setData(long workLength, long spanLength, long resultTime,
 			int resultNbCores, int resultNbMainCores) {
 
+		
 		double absoluteBestSpeedup = ((double) workLength)
 				/ ((double) spanLength);
 		int maxCoreNumber = (int) Math.ceil(absoluteBestSpeedup) + 10;
+
+		// Creating point for current speedup
+		double[][] currentSpeedup = new double[2][1];
+		currentSpeedup[0][0] = resultNbMainCores;
+		currentSpeedup[1][0] = ((double) workLength) / ((double) resultTime);
+		this.speedups.addSeries("Currently obtained speedup", currentSpeedup);
 
 		// Creating curve for best speedups
 		// The speedup is limited y the span length
@@ -226,12 +240,6 @@ public class PerformancePlotter extends ApplicationFrame {
 
 		this.speedups.addSeries("Greedy-Scheduling Theorem bound",
 				reachableSpeedups);
-
-		// Creating point for current speedup
-		double[][] currentSpeedup = new double[2][1];
-		currentSpeedup[0][0] = resultNbMainCores;
-		currentSpeedup[1][0] = ((double) workLength) / ((double) resultTime);
-		this.speedups.addSeries("Currently obtained speedup", currentSpeedup);
 	}
 
 	public void windowClosing(WindowEvent event) {

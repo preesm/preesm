@@ -23,6 +23,7 @@ import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.core.ui.Activator;
 
 /**
  * This class defines a method to load a new scenario and optionally change some
@@ -73,6 +74,11 @@ public class ScenarioGenerator implements IScenarioTransformation {
 						"cannot retrieve architecture");
 				return null;
 			} else {
+				// Setting main core and medium
+				archiR.getArchitecture().setMainOperator(scenario.getSimulationManager()
+						.getMainOperatorName());
+				archiR.getArchitecture().setMainMedium(scenario.getSimulationManager()
+						.getMainMediumName());
 				result.setArchitecture(archiR.getArchitecture());
 			}
 		}
@@ -93,6 +99,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
 						relativePath);
 
+				Activator.updateWorkspace();
 				SDFGraph graph = importer
 						.parse(file.getContents(), dagFileName);
 				graph = importer.parse(file.getContents(), dagFileName);

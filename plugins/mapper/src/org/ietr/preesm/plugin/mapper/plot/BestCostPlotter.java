@@ -69,7 +69,19 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.ClusteredXYBarRenderer;
+import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
+import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.VectorRenderer;
+import org.jfree.chart.renderer.xy.WindItemRenderer;
+import org.jfree.chart.renderer.xy.XYBlockRenderer;
+import org.jfree.chart.renderer.xy.XYBoxAndWhiskerRenderer;
+import org.jfree.chart.renderer.xy.XYBubbleRenderer;
+import org.jfree.chart.renderer.xy.XYLine3DRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYStepRenderer;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -188,7 +200,8 @@ public class BestCostPlotter extends ApplicationFrame implements
 			final NumberAxis rangeAxis = new NumberAxis("Schedule");
 			rangeAxis.setAutoRangeIncludesZero(false);
 			final XYPlot subplot = new XYPlot(this.datasets[i], null,
-					rangeAxis, new StandardXYItemRenderer());
+					rangeAxis, new XYLineAndShapeRenderer());
+			
 			subplot.setBackgroundPaint(Color.white);
 			subplot.setDomainGridlinePaint(Color.lightGray);
 			subplot.setRangeGridlinePaint(Color.lightGray);
