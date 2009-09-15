@@ -72,6 +72,7 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
+import org.ietr.preesm.core.expression.PreesmEvaluator;
 import org.ietr.preesm.core.scenario.editor.simu.HierarchicalArchiCmp;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
@@ -157,7 +158,7 @@ public class DesignParser {
 							PreesmLogger.getLogger().log(Level.SEVERE,
 									"enter a name in the architecture");
 						}
-						
+
 						if (type.equals("spirit:id")) {
 							archi.setId(elt.getTextContent());
 						} else if (type.equals("spirit:componentInstances")) {
@@ -206,8 +207,7 @@ public class DesignParser {
 		String intRef = callElt.getAttribute("spirit:interfaceRef");
 		String busRef = null;
 		String componentRef = null;
-		
-		
+
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -216,16 +216,16 @@ public class DesignParser {
 				String type = elt.getTagName();
 				if (type.equals("spirit:activeInterface")) {
 					busRef = elt.getAttribute("spirit:busRef");
-					componentRef = elt
-							.getAttribute("spirit:componentRef");
+					componentRef = elt.getAttribute("spirit:componentRef");
 					break;
 				}
 			}
 			node = node.getNextSibling();
 		}
-		
-		if(intRef != null && busRef != null && componentRef != null ){
-			HierarchyPort hierPort = new HierarchyPort(intRef, componentRef, busRef);
+
+		if (intRef != null && busRef != null && componentRef != null) {
+			HierarchyPort hierPort = new HierarchyPort(intRef, componentRef,
+					busRef);
 			archi.addHierarchyPort(hierPort);
 		}
 
@@ -311,8 +311,8 @@ public class DesignParser {
 					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
 							configElt);
 				} else if (type == ArchitectureComponentType.operator) {
-					OperatorParser.parse((OperatorDefinition) cmp.getDefinition(),
-							configElt);
+					OperatorParser.parse((OperatorDefinition) cmp
+							.getDefinition(), configElt);
 				} else if (type == ArchitectureComponentType.contentionNode) {
 					ContentionNodeParser.parse((ContentionNodeDefinition) cmp
 							.getDefinition(), configElt);
@@ -425,10 +425,18 @@ public class DesignParser {
 
 			String fileExt = "component";
 			IResource resource = workspace.getRoot().findMember(
-					currentFile.getFullPath().removeLastSegments(1) + "/"
-							+ name + "." + fileExt);
-			if (resource instanceof IFile) {
+					currentFile.getFullPath());
+
+			if (resource != null && resource instanceof IFile
+					&& resource.getFileExtension().equals(fileExt)) {
 				file = ((IFile) resource);
+			} else {
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"The refinement of a component must have the extension ."
+								+ fileExt
+								+ ". The following file is not usable: "
+								+ resource.getFullPath());
 			}
 		}
 

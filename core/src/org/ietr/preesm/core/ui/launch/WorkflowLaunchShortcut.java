@@ -86,10 +86,13 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 			
 		ILaunchConfigurationWorkingCopy workingCopy;
 		try {
-			workingCopy = type.newInstance(null, DebugPlugin.getDefault()
+			/*workingCopy = type.newInstance(null, DebugPlugin.getDefault()
 					.getLaunchManager()
 					.generateUniqueLaunchConfigurationNameFrom(
-							file.getName() + "__" + scenarioName));
+							file.getName() + "__" + scenarioName));*/
+			
+			// Reusing the launch configuration name without creating new names
+			workingCopy = type.newInstance(null, file.getName() + "__" + scenarioName);
 		} catch (CoreException e) {
 			return null;
 		}

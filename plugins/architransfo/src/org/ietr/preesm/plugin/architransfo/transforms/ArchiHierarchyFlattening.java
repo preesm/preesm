@@ -117,6 +117,17 @@ public class ArchiHierarchyFlattening extends AbstractHierarchyFlattening<MultiC
 	 * @throws SDF4JException
 	 */
 	public void flattenGraph(MultiCoreArchitecture archi, int depth) throws SDF4JException {
+		
+		if (depth > 0) {
+
+			int newDepth = depth - 1;
+			for (ArchitectureComponent cmp : archi.vertexSet()) {
+				if (cmp.getRefinement() != null) {
+
+					cmp.toString();
+				}
+			}
+		}
 		/*
 		if (depth > 0) {
 			int newDepth = depth - 1;
@@ -165,176 +176,11 @@ public class ArchiHierarchyFlattening extends AbstractHierarchyFlattening<MultiC
 	@SuppressWarnings("unchecked")
 	protected void treatSinkInterface(AbstractVertex port,
 			AbstractGraph parentGraph, int depth) throws InvalidExpressionException {
-		/*
-		if(! (port instanceof SDFSinkInterfaceVertex)){
-			return ;
-		}
-		SDFSinkInterfaceVertex vertex = (SDFSinkInterfaceVertex) port;
-		boolean needRoundBuffer = false;
-		boolean needImplode = false;
-		Vector<SDFEdge> inEdges = new Vector<SDFEdge>(parentGraph
-				.incomingEdgesOf(vertex));
-		for (SDFEdge inEdge : inEdges) {
-			if (inEdge.getCons().intValue() < (inEdge.getProd().intValue() * inEdge
-					.getSource().getNbRepeat())) {
-				needRoundBuffer = true;
-				break;
-			} else if (inEdge.getCons().intValue() > (inEdge.getProd()
-					.intValue())) {
-				needImplode = true;
-			}
-		}
-		if (needRoundBuffer) {
-			SDFRoundBufferVertex roundBuffer = new SDFRoundBufferVertex();
-			SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
-			input.setName("in");
-			SDFSinkInterfaceVertex output = new SDFSinkInterfaceVertex();
-			output.setName("out");
-			roundBuffer.setName("roundBuffer_" + vertex.getName());
-			parentGraph.addVertex(roundBuffer);
-			SDFEdge edge = (SDFEdge) parentGraph.addEdge(roundBuffer, vertex);
-			edge.copyProperties(inEdges.get(0));
-			edge.setProd(new SDFIntEdgePropertyType(inEdges.get(0).getCons()
-					.intValue()));
-			edge.setCons(new SDFIntEdgePropertyType(inEdges.get(0).getCons()
-					.intValue()));
-			edge.setSourceInterface(output);
-			while (inEdges.size() > 0) {
-				SDFEdge treatEdge = inEdges.get(0);
-				SDFAbstractVertex source = treatEdge.getSource();
-				SDFEdge newEdge = (SDFEdge) parentGraph.addEdge(source, roundBuffer);
-				newEdge.copyProperties(treatEdge);
-				newEdge.setProd(new SDFIntEdgePropertyType(treatEdge.getProd()
-						.intValue()));
-				newEdge.setCons(new SDFIntEdgePropertyType(treatEdge.getProd()
-						.intValue()
-						* treatEdge.getSource().getNbRepeat()));
-				newEdge.setTargetInterface(input);
-				newEdge.setSourceInterface(treatEdge.getSourceInterface());
-				parentGraph.removeEdge(treatEdge);
-				inEdges.remove(0);
-			}
-		} else if (needImplode && depth == 0) {
-			SDFJoinVertex implodeBuffer = new SDFJoinVertex();
-			SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
-			input.setName("in");
-			SDFSinkInterfaceVertex output = new SDFSinkInterfaceVertex();
-			output.setName("out");
-			implodeBuffer.setName("implode_" + vertex.getName());
-			parentGraph.addVertex(implodeBuffer);
-			SDFEdge edge = (SDFEdge) parentGraph.addEdge(implodeBuffer, vertex);
-			edge.copyProperties(inEdges.get(0));
-			edge.setProd(new SDFIntEdgePropertyType(inEdges.get(0).getCons()
-					.intValue()));
-			edge.setCons(new SDFIntEdgePropertyType(inEdges.get(0).getCons()
-					.intValue()));
-			edge.setSourceInterface(output);
-			while (inEdges.size() > 0) {
-				SDFEdge treatEdge = inEdges.get(0);
-				SDFAbstractVertex source = treatEdge.getSource();
-				SDFEdge newEdge = (SDFEdge)parentGraph.addEdge(source, implodeBuffer);
-				newEdge.copyProperties(treatEdge);
-				newEdge.setProd(new SDFIntEdgePropertyType(treatEdge.getProd()
-						.intValue()));
-				newEdge.setCons(new SDFIntEdgePropertyType(treatEdge.getProd()
-						.intValue()
-						* source.getNbRepeat()));
-				newEdge.setTargetInterface(input);
-				newEdge.setSourceInterface(treatEdge.getSourceInterface());
-				parentGraph.removeEdge(treatEdge);
-				inEdges.remove(0);
-			}
-		}*/
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void treatSourceInterface(AbstractVertex port,
 			AbstractGraph parentGraph, int depth) throws InvalidExpressionException {
-		/*if(! (port instanceof SDFSourceInterfaceVertex)){
-			return ;
-		}
-		SDFSourceInterfaceVertex vertex = (SDFSourceInterfaceVertex) port;
-		boolean needBroadcast = false;
-		boolean needExplode = false;
-		Vector<SDFEdge> outEdges = new Vector<SDFEdge>(parentGraph
-				.outgoingEdgesOf(vertex));
-		if(outEdges.size() > 1){
-			needBroadcast = true;
-		}else{
-			for (SDFEdge outEdge : outEdges) {
-				if (outEdge.getProd().intValue() < (outEdge.getCons().intValue() * outEdge
-						.getTarget().getNbRepeat())) {
-					needBroadcast = true;
-					break;
-				} else if (outEdge.getProd().intValue() > (outEdge.getCons()
-						.intValue())) {
-					needExplode = true;
-				}
-			}
-		}
-		if (needBroadcast) {
-			SDFBroadcastVertex broadcast = new SDFBroadcastVertex();
-			SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
-			input.setName("in");
-			SDFSinkInterfaceVertex output = new SDFSinkInterfaceVertex();
-			output.setName("out");
-			broadcast.setName("broadcast_" + vertex.getName());
-			parentGraph.addVertex(broadcast);
-			SDFEdge edge = (SDFEdge) parentGraph.addEdge(vertex, broadcast);
-			edge.copyProperties(outEdges.get(0));
-			edge.setProd(new SDFIntEdgePropertyType(outEdges.get(0).getProd()
-					.intValue()));
-			edge.setCons(new SDFIntEdgePropertyType(outEdges.get(0).getProd()
-					.intValue()));
-			edge.setTargetInterface(input);
-			while (outEdges.size() > 0) {
-				SDFEdge treatEdge = outEdges.get(0);
-				SDFAbstractVertex target = treatEdge.getTarget();
-				SDFEdge newEdge = (SDFEdge) parentGraph.addEdge(broadcast, target);
-				newEdge.copyProperties(treatEdge);
-				newEdge.setCons(new SDFIntEdgePropertyType(treatEdge.getCons()
-						.intValue()));
-				newEdge.setProd(new SDFIntEdgePropertyType(treatEdge.getCons()
-						.intValue()
-						* target.getNbRepeat()));
-				newEdge.setSourceInterface(output);
-				newEdge.setTargetInterface(treatEdge.getTargetInterface());
-				parentGraph.removeEdge(treatEdge);
-				outEdges.remove(0);
-			}
-
-		} else if (needExplode && depth == 0) {
-			SDFForkVertex explode = new SDFForkVertex();
-			SDFSourceInterfaceVertex input = new SDFSourceInterfaceVertex();
-			input.setName("in");
-			SDFSinkInterfaceVertex output = new SDFSinkInterfaceVertex();
-			output.setName("out");
-			explode.setName("explode_" + vertex.getName());
-			parentGraph.addVertex(explode);
-			SDFEdge edge = (SDFEdge) parentGraph.addEdge(vertex, explode);
-			edge.copyProperties(outEdges.get(0));
-			edge.setProd(new SDFIntEdgePropertyType(outEdges.get(0).getProd()
-					.intValue()));
-			edge.setCons(new SDFIntEdgePropertyType(outEdges.get(0).getProd()
-					.intValue()));
-			edge.setTargetInterface(input);
-			while (outEdges.size() > 0) {
-				SDFEdge treatEdge = outEdges.get(0);
-				SDFAbstractVertex target = treatEdge.getTarget();
-				SDFEdge newEdge = (SDFEdge) parentGraph.addEdge(explode, target);
-				newEdge.copyProperties(treatEdge);
-				newEdge.setCons(new SDFIntEdgePropertyType(treatEdge.getCons()
-						.intValue()));
-				newEdge.setProd(new SDFIntEdgePropertyType(treatEdge.getCons()
-						.intValue()
-						* treatEdge.getTarget().getNbRepeat()));
-				newEdge.setSourceInterface(output);
-				newEdge.setTargetInterface(treatEdge.getTargetInterface());
-				parentGraph.removeEdge(treatEdge);
-				outEdges.remove(0);
-			}
-
-		}*/
 	}
 
 
