@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Parameters for list scheduling
@@ -49,9 +50,12 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 public class ListSchedulingParameters {
 
 	public ListSchedulingParameters(TextParameters textParameters) {
+		PreesmLogger.getLogger().log(Level.INFO,
+				"There is no list scheduling parameter");
+
 	}
 
-	public ListSchedulingParameters(AbcType simulatorType, EdgeSchedType edgeSchedType) {
+	public ListSchedulingParameters() {
 	}
 
 }

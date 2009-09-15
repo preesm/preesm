@@ -83,7 +83,7 @@ public class PFASTTransformation extends AbstractMapping {
 				monitor);
 		TaskResult result = new TaskResult();
 
-		PFastAlgoParameters parameters = new PFastAlgoParameters(textParameters);
+		PFastAlgoParameters pFastParams = new PFastAlgoParameters(textParameters);
 		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
@@ -111,10 +111,7 @@ public class PFASTTransformation extends AbstractMapping {
 
 		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-		dag = pfastAlgorithm.map(dag, architecture, scenario, parameters
-				.getProcNumber(), parameters.getNodesmin(), initial, parameters
-				.getMaxCount(), parameters.getMaxStep(),
-				parameters.getMargIn(), abcParameters, false, 0, parameters
+		dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false, 0, pFastParams
 						.isDisplaySolutions(), null, taskSched);
 
 		simu2.setDAG(dag);

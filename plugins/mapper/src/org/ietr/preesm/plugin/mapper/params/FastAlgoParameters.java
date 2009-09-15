@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm
@@ -50,39 +51,31 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 public class FastAlgoParameters {
 
 	protected TextParameters textParameters = null;
-	
-	/**
-	 * This is the number of probabilistic local jump which the user want. The
-	 * PFast, as the Fast, does probabilistic jump on the critical path which
-	 * modify totally the mapping. The margIn parameter is the number you want
-	 * to try probabilistic jump PER vertex to refine the solution locally.
-	 */
-	private int margIn;
-
-	/**
-	 * MaxCount is the number of iteration (big probabilistic jump) the
-	 * algorithm does. An iteration is a probabilistic jump on the critical path
-	 * to find a better solution.
-	 */
-	private int maxCount;
-
-	/**
-	 * MaxStep determines the number of vertices chosen to do the local
-	 * refinement.
-	 */
-	private int maxStep;
 
 	/**
 	 * true if we need to display the intermediate solutions
 	 */
 	private boolean displaySolutions;
 
+	/**
+	 * Time in seconds we want to run FAST
+	 */
+	private int fastTime = -1;
+
 	public FastAlgoParameters(TextParameters textParameters) {
-		
-		this.maxCount = textParameters.getIntVariable("maxCount");
-		this.maxStep = textParameters.getIntVariable("maxStep");
-		this.margIn = textParameters.getIntVariable("margIn");
-		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
+
+		this.displaySolutions = textParameters
+				.getBooleanVariable("displaySolutions");
+		if (textParameters.getIntVariable("fastTime") > 0) {
+			this.fastTime = textParameters
+					.getIntVariable("fastTime");
+		}
+
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds");
 	}
 
 	/**
@@ -91,16 +84,11 @@ public class FastAlgoParameters {
 	 * 
 	 */
 
-	public FastAlgoParameters(int maxCount, int maxStep, int margIn, boolean displaySolutions,
-			AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		textParameters.addVariable("maxCount",maxCount);
-		textParameters.addVariable("maxStep",maxStep);
-		textParameters.addVariable("margIn",margIn);
-		
-		this.maxCount = maxCount;
-		this.maxStep = maxStep;
-		this.margIn = margIn;
+	public FastAlgoParameters(int fastTime,
+			boolean displaySolutions) {
+
 		this.displaySolutions = displaySolutions;
+		this.fastTime = fastTime;
 	}
 
 	/**
@@ -109,18 +97,6 @@ public class FastAlgoParameters {
 	 * 
 	 */
 
-	public int getMargIn() {
-		return margIn;
-	}
-
-	public int getMaxCount() {
-		return maxCount;
-	}
-
-	public int getMaxStep() {
-		return maxStep;
-	}
-
 	public boolean isDisplaySolutions() {
 		return displaySolutions;
 	}
@@ -128,17 +104,12 @@ public class FastAlgoParameters {
 	public void setDisplaySolutions(boolean displaySolutions) {
 		this.displaySolutions = displaySolutions;
 	}
-	
-	public void setMargIn(int margIn) {
-		this.margIn = margIn;
-	}
 
-	public void setMaxCount(int maxCount) {
-		this.maxCount = maxCount;
+	/**
+	 * Returns the time in seconds between two FAST probabilistic hops in the
+	 * critical path
+	 */
+	public int getFastTime() {
+		return fastTime;
 	}
-
-	public void setMaxStep(int maxStep) {
-		this.maxStep = maxStep;
-	}
-
 }

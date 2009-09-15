@@ -36,7 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
@@ -53,12 +56,12 @@ public class AbcParameters {
 	 * Simulator type
 	 */
 	private AbcType simulatorType = null;
-	
+
 	/**
 	 * Edge scheduling type
 	 */
 	private EdgeSchedType edgeSchedType = null;
-	
+
 	/**
 	 * true if loads are minimized while minimizing other parameters
 	 */
@@ -67,35 +70,43 @@ public class AbcParameters {
 	/**
 	 * Constructor creating a new text parameter
 	 */
-	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType,boolean balanceLoads) {
+	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType,
+			boolean balanceLoads) {
 		textParameters = new TextParameters();
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
 		this.balanceLoads = balanceLoads;
-		
+
 		textParameters.addVariable("simulatorType", simulatorType.toString());
 		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
 		textParameters.addVariable("balanceLoads", balanceLoads);
 	}
-	
+
 	/**
 	 * Constructor from textual parameters
 	 */
 	public AbcParameters(TextParameters textParameters) {
 		this.textParameters = textParameters;
-		this.simulatorType = AbcType.fromString(textParameters.getVariable("simulatorType"));
-		this.edgeSchedType = EdgeSchedType.fromString(textParameters.getVariable("edgeSchedType"));
+		this.simulatorType = AbcType.fromString(textParameters
+				.getVariable("simulatorType"));
+		this.edgeSchedType = EdgeSchedType.fromString(textParameters
+				.getVariable("edgeSchedType"));
 		this.balanceLoads = textParameters.getBooleanVariable("balanceLoads");
+
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
 	}
-	
-	
+
 	/**
 	 * Generates textual parameters from its internal parameters
 	 */
-	public TextParameters textParameters(){
+	public TextParameters textParameters() {
 		return textParameters;
 	}
-	
+
 	public AbcType getSimulatorType() {
 		return simulatorType;
 	}

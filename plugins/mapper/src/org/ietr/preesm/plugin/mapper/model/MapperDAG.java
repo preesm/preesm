@@ -68,9 +68,9 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	private SDFGraph sdfGraph;
 
 	/**
-	 * The latency of the implementation
+	 * The cost of the implementation
 	 */
-	private long ScheduleLatency;
+	private long ScheduleCost;
 	
 	/**
 	 * Creactor of a DAG from a edge factory and a converted graph
@@ -78,7 +78,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public MapperDAG(MapperEdgeFactory factory,SDFGraph graph) {
 		super(factory);
 		this.sdfGraph = graph;
-		this.ScheduleLatency = 0;
+		this.ScheduleCost = 0;
 	}
 
 	/**
@@ -99,12 +99,12 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		}
 	}
 
-	public long getScheduleLatency() {
-		return ScheduleLatency;
+	public long getScheduleCost() {
+		return ScheduleCost;
 	}
 
-	public void setScheduleLatency(long scheduleLatency) {
-		ScheduleLatency = scheduleLatency;
+	public void setScheduleCost(long scheduleLatency) {
+		ScheduleCost = scheduleLatency;
 	}
 
 	public SDFGraph getReferenceSdfGraph() {
@@ -124,7 +124,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		// create clone
 		MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), this
 				.getReferenceSdfGraph());
-		newDAG.setScheduleLatency(this.getScheduleLatency());
+		newDAG.setScheduleCost(this.getScheduleCost());
 		
 		// add vertex
 		Iterator<DAGVertex> iterV = this.vertexSet().iterator();

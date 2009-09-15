@@ -3,8 +3,6 @@
  */
 package org.ietr.preesm.plugin.mapper.scenariogen;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
@@ -23,11 +21,6 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
-import org.sdf4j.importer.GMLDAGImporter;
-import org.sdf4j.importer.GMLSDFImporter;
-import org.sdf4j.importer.InvalidFileException;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 

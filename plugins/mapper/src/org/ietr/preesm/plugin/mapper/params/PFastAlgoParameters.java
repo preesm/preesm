@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread
@@ -59,27 +60,6 @@ public class PFastAlgoParameters {
 	private int nodesMin;
 
 	/**
-	 * This is the number of probabilistic local jump which the user want. The
-	 * PFast, as the Fast, does probabilistic jump on the critical path which
-	 * modify totally the mapping. The margIn parameter is the number you want
-	 * to try probabilistic jump PER vertex to refine the solution locally.
-	 */
-	private int margIn;
-
-	/**
-	 * MaxCount is the number of iteration (big probabilistic jump) the
-	 * algorithm does. An iteration is a probabilistic jump on the critical path
-	 * to find a better solution.
-	 */
-	private int maxCount;// number of iteration in the algorithm
-
-	/**
-	 * MaxStep determines the number of vertices chosen to do the local
-	 * refinement.
-	 */
-	private int maxStep;// number of search steps in an iteration
-
-	/**
 	 * Number of processors available
 	 */
 	private int procNumber;
@@ -90,33 +70,51 @@ public class PFastAlgoParameters {
 	private boolean displaySolutions;
 
 	/**
+	 * Time in seconds to run one FAST
+	 */
+	private int fastTime = -1;
+
+	/**
+	 * Number of fast iterations to execute before stopping PFast
+	 */
+	private int fastNumber = 100;
+
+	/**
 	 * Constructors
 	 */
 
 	public PFastAlgoParameters(TextParameters textParameters) {
-		this.maxCount = textParameters.getIntVariable("maxCount");
-		this.maxStep = textParameters.getIntVariable("maxStep");
-		this.margIn = textParameters.getIntVariable("margIn");
 		this.nodesMin = textParameters.getIntVariable("nodesMin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
 		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
+		if (textParameters.getIntVariable("fastTime") > 0) {
+			this.fastTime = textParameters
+					.getIntVariable("fastTime");
+		}
+		if (textParameters.getIntVariable("fastNumber") != 0) {
+			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		}
+		
+		PreesmLogger
+		.getLogger()
+		.log(
+				Level.INFO,
+				"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastNumber");
+
 	}
 
-	public PFastAlgoParameters(int margIn, int maxCount, int maxStep, boolean displaySolutions,
-			int nodesmin, int procNumber,
-			AbcType simulatorType, EdgeSchedType edgeSchedType) {
-		textParameters.addVariable("margIn", margIn);
-		textParameters.addVariable("maxCount", maxCount);
-		textParameters.addVariable("maxStep", maxStep);
+	public PFastAlgoParameters(int fastNumber, int fastTime, boolean displaySolutions,
+			int nodesmin, int procNumber) {
 		textParameters.addVariable("nodesMin", nodesmin);
 		textParameters.addVariable("procNumber", procNumber);
+		textParameters.addVariable("fastTime", fastTime);
+		textParameters.addVariable("fastNumber", fastNumber);
 		
-		this.margIn = margIn;
-		this.maxCount = maxCount;
-		this.maxStep = maxStep;
 		this.nodesMin = nodesmin;
 		this.procNumber = procNumber;
 		this.displaySolutions = displaySolutions;
+		this.fastTime = fastTime;
+		this.fastNumber = fastNumber;
 	}
 
 	/**
@@ -131,18 +129,6 @@ public class PFastAlgoParameters {
 		this.procNumber = procNumber;
 	}
 
-	public int getMargIn() {
-		return margIn;
-	}
-
-	public int getMaxCount() {
-		return maxCount;
-	}
-
-	public int getMaxStep() {
-		return maxStep;
-	}
-
 	public boolean isDisplaySolutions() {
 		return displaySolutions;
 	}
@@ -151,24 +137,27 @@ public class PFastAlgoParameters {
 		this.displaySolutions = displaySolutions;
 	}
 
-	public void setMargIn(int margIn) {
-		this.margIn = margIn;
-	}
-
-	public void setMaxCount(int maxCount) {
-		this.maxCount = maxCount;
-	}
-
-	public void setMaxStep(int maxStep) {
-		this.maxStep = maxStep;
-	}
-
 	public int getNodesmin() {
 		return nodesMin;
 	}
 
 	public void setNodesmin(int nodesmin) {
 		this.nodesMin = nodesmin;
+	}
+
+	/**
+	 * Returns the Number of fast iterations to execute before stopping PFast
+	 */
+	public int getFastNumber() {
+		return fastNumber;
+	}
+
+	/**
+	 * Returns the time in seconds between two FAST probabilistic hops in the
+	 * critical path
+	 */
+	public int getFastTime() {
+		return fastTime;
 	}
 
 }

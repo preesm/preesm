@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Specific parameters of genetic algorithm
@@ -46,10 +47,11 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  * @author pmenuet
  * @author mpelcat
  */
+
 public class GeneticAlgoParameters {
 
 	protected TextParameters textParameters = null;
-	
+
 	// Number of individuals in the population
 	private int populationSize;
 
@@ -60,27 +62,58 @@ public class GeneticAlgoParameters {
 	private boolean pfastused2makepopulation;
 
 	/**
+	 * Time in seconds between two FAST probabilistic hops in the critical path
+	 */
+	private int fastTime = -1;
+
+	/**
+	 * Number of fast iterations to execute before stopping PFast
+	 */
+	private int fastNumber = 100;
+
+	/**
 	 * Constructors
 	 * 
 	 */
-	public GeneticAlgoParameters(int generationNumber, int populationSize,
-			AbcType simulatorType, EdgeSchedType edgeSchedType,
+	public GeneticAlgoParameters(int fastNumber, int fastTime,
+			int generationNumber, int populationSize,
 			boolean pfastused2makepopulation) {
-		
+
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
-		textParameters.addVariable("pfastused2makepopulation", pfastused2makepopulation);
-		
+		textParameters.addVariable("pfastused2makepopulation",
+				pfastused2makepopulation);
+		textParameters.addVariable("fastTime",
+				fastTime);
+		textParameters.addVariable("fastNumber", fastNumber);
+
 		this.generationNumber = generationNumber;
 		this.populationSize = populationSize;
 		this.pfastused2makepopulation = pfastused2makepopulation;
+		this.fastTime = fastTime;
+		this.fastNumber = fastNumber;
 	}
 
 	public GeneticAlgoParameters(TextParameters textParameters) {
-		
-		this.generationNumber = textParameters.getIntVariable("generationNumber");
+
+		this.generationNumber = textParameters
+				.getIntVariable("generationNumber");
 		this.populationSize = textParameters.getIntVariable("populationSize");
-		this.pfastused2makepopulation = textParameters.getBooleanVariable("pfastused2makepopulation");
+		this.pfastused2makepopulation = textParameters
+				.getBooleanVariable("pfastused2makepopulation");
+		if (textParameters.getIntVariable("fastTime") != 0) {
+			this.fastTime = textParameters
+					.getIntVariable("fastTime");
+		}
+		if (textParameters.getIntVariable("fastNumber") != 0) {
+			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		}
+
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"The Genetic algo parameters are: generationNumber; populationSize; pfastused2makepopulation=true/false; fastTime in seconds; fastNumber");
 	}
 
 	/**
@@ -110,6 +143,21 @@ public class GeneticAlgoParameters {
 
 	public void setGenerationNumber(int generationNumber) {
 		this.generationNumber = generationNumber;
+	}
+
+	/**
+	 * Returns the Number of fast iterations to execute before stopping PFast
+	 */
+	public int getFastNumber() {
+		return fastNumber;
+	}
+
+	/**
+	 * Returns the time in seconds between two FAST probabilistic hops in the
+	 * critical path
+	 */
+	public int getFastTime() {
+		return fastTime;
 	}
 
 }

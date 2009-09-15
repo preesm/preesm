@@ -88,10 +88,10 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		TaskResult transfoResult = new TaskResult();
-		PGeneticAlgoParameters pGenParameters;
+		PGeneticAlgoParameters pGenParams;
 		
 
-		pGenParameters = new PGeneticAlgoParameters(textParameters);
+		pGenParams = new PGeneticAlgoParameters(textParameters);
 		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm,architecture,scenario, false);
@@ -113,29 +113,23 @@ public class PGeneticTransformation extends AbstractMapping {
 
 		List<MapperDAG> populationDAG = new ArrayList<MapperDAG>();
 
-		if (pGenParameters.isPfastused2makepopulation()) {
+		if (pGenParams.isPfastused2makepopulation()) {
 			PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-			PFastAlgoParameters parameter = new PFastAlgoParameters(8, 20, 16, true, 5,
-					pGenParameters.getProcessorNumber(), abcParameters
-							.getSimulatorType(), abcParameters.getEdgeSchedType());
+			PFastAlgoParameters pFastParams = new PFastAlgoParameters(pGenParams.getFastNumber(), pGenParams.getFastTime(), true, 5,
+					pGenParams.getProcessorNumber());
 
-			dag = pfastAlgorithm.map(dag, architecture, scenario, parameter
-					.getProcNumber(), parameter.getNodesmin(), initial,
-					parameter.getMaxCount(), parameter.getMaxStep(), parameter
-							.getMargIn(), abcParameters, true,
-					pGenParameters.getPopulationSize(), true, populationDAG, taskSched);
+			dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, true,
+					pGenParams.getPopulationSize(), true, populationDAG, taskSched);
 
 		} else {
 
-			FastPopulation population = new FastPopulation(pGenParameters
+			FastPopulation population = new FastPopulation(pGenParams
 					.getPopulationSize(), populationDAG, abcParameters, architecture);
 
-			FastAlgoParameters fastParams = new FastAlgoParameters(50, 50, 8, false,
-					abcParameters.getSimulatorType(), abcParameters.getEdgeSchedType());
+			FastAlgoParameters fastParams = new FastAlgoParameters(pGenParams.getFastTime(), false);
 
-			population.constructPopulation(dag, fastParams.getMaxCount(),
-					fastParams.getMaxStep(), fastParams.getMargIn(), scenario);
+			population.constructPopulation(dag, scenario,fastParams);
 		}
 
 		IAbc simu2 = AbstractAbc
@@ -144,8 +138,8 @@ public class PGeneticTransformation extends AbstractMapping {
 		PGeneticAlgo geneticAlgorithm = new PGeneticAlgo();
 
 		List<Chromosome> result;
-		result = geneticAlgorithm.map(populationDAG, architecture,scenario, abcParameters, pGenParameters.getPopulationSize(), pGenParameters
-				.getGenerationNumber(), pGenParameters.getProcessorNumber());
+		result = geneticAlgorithm.map(populationDAG, architecture,scenario, abcParameters, pGenParams.getPopulationSize(), pGenParams
+				.getGenerationNumber(), pGenParams.getProcessorNumber());
 
 		Chromosome chromosome = result.get(0).clone();
 

@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.algo.fast;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -62,12 +61,12 @@ import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorInput;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorRunnable;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * Fast Algorithm
@@ -94,9 +93,8 @@ public class FastAlgorithm extends Observable {
 		this.scenario = scenario;
 	}
 
-	public MapperDAG map(String threadName, AbcParameters abcParams,
-			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
-			int maxstep, int margin, boolean alreadyimplanted,
+	public MapperDAG map(String threadName, AbcParameters abcParams,FastAlgoParameters fastParams,
+			MapperDAG dag, MultiCoreArchitecture archi, boolean alreadyimplanted,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, AbstractTaskSched taskSched) {
 
@@ -106,8 +104,7 @@ public class FastAlgorithm extends Observable {
 		List<MapperDAGVertex> finalcriticalpathList = initialLists
 				.getCriticalpath();
 
-		return map(threadName, abcParams, dag, archi, maxcount, maxstep,
-				margin, alreadyimplanted, pfastused, displaySolutions, monitor,
+		return map(threadName, abcParams, fastParams, dag, archi, alreadyimplanted, pfastused, displaySolutions, monitor,
 				cpnDominantList, blockingNodesList, finalcriticalpathList,
 				taskSched);
 	}
@@ -124,9 +121,8 @@ public class FastAlgorithm extends Observable {
 	 *            nb max better solutions found in neighborhood
 	 * 
 	 */
-	public MapperDAG map(String threadName, AbcParameters abcParams,
-			MapperDAG dag, MultiCoreArchitecture archi, int maxcount,
-			int maxstep, int margin, boolean alreadyimplanted,
+	public MapperDAG map(String threadName, AbcParameters abcParams, FastAlgoParameters fastParams,
+			MapperDAG dag, MultiCoreArchitecture archi, boolean alreadyimplanted,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
@@ -202,21 +198,28 @@ public class FastAlgorithm extends Observable {
 		logger.log(Level.FINE, "InitialSP " + initial);
 
 		long SL = initial;
-		dag.setScheduleLatency(initial);
+		dag.setScheduleCost(initial);
 		if (blockingNodesList.size() < 2)
 			return simulator.getDAG().clone();
 		bestSL = initial;
 		Long iBest;
 		MapperDAG dagfinal = simulator.getDAG().clone();
-		dagfinal.setScheduleLatency(bestSL);
+		dagfinal.setScheduleCost(bestSL);
 
 		// A switcher task scheduler is chosen for the fast refinement
 		simulator.setTaskScheduler(new TaskSwitcher());
+		
+		// FAST parameters
+		// FAST is stopped after a time given in seconds
+		long stopTime = System.nanoTime() + 1000000000l * fastParams.getFastTime();
+		// the number of local solutions searched in a neighborhood is the size of the graph
+		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators() * 10;
+		// the number of better solutions found in a neighborhood is limited
+		int margin = Math.max(maxStep / 10,1);
 
 		// step 4/17
-		// FAST is to be stopped manually
-		// PFAST stops after maxcount iterations
-		while (!pfastused || (searchcount <= maxcount)) {
+		// Stopping after the given time in seconds is reached
+		while (fastParams.getFastTime() < 0 || System.nanoTime() < stopTime) {
 
 			searchcount++;
 
@@ -226,26 +229,24 @@ public class FastAlgorithm extends Observable {
 			notifyObservers(iBest);
 
 			// step 5
-			int searchstep = 0;
+			int searchStep = 0;
 			int localCounter = 0;
 			simulator.updateFinalCosts();
 
 			// step 6 : neighborhood search
 			do {
-				if (!pfastused) {
-					// Mode stop
-					if (costPlotter.getActionType() == 1
-							|| (monitor != null && monitor.isCanceled())) {
+				// Mode stop
+				if (costPlotter.getActionType() == 1
+						|| (monitor != null && monitor.isCanceled())) {
 
-						return dagfinal.clone();
-					} else if (costPlotter.getActionType() == 2) {
-						// Mode Pause
-						try {
-							pauseSemaphore.acquire();
-							pauseSemaphore.release();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+					return dagfinal.clone();
+				} else if (costPlotter.getActionType() == 2) {
+					// Mode Pause
+					try {
+						pauseSemaphore.acquire();
+						pauseSemaphore.release();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 
@@ -289,9 +290,9 @@ public class FastAlgorithm extends Observable {
 					SL = newSL;
 				}
 
-				searchstep++;
+				searchStep++;
 				// step 11
-			} while (searchstep < maxstep && localCounter < margin);
+			} while (searchStep < maxStep && localCounter < margin);
 
 			// step 12
 			simulator.updateFinalCosts();
@@ -314,7 +315,7 @@ public class FastAlgorithm extends Observable {
 				PreesmLogger.getLogger().log(Level.INFO,
 						"Found Fast solution; Cost:" + bestSL);
 
-				dagfinal.setScheduleLatency(bestSL);
+				dagfinal.setScheduleCost(bestSL);
 			}
 
 			// step 16

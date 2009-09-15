@@ -1,24 +1,14 @@
 package org.ietr.preesm.plugin.mapper.scenariogen;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 
-import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.factories.SDFEdgeFactory;
 import org.sdf4j.factories.SDFVertexFactory;
 import org.sdf4j.importer.GMLImporter;
-import org.sdf4j.model.AbstractVertex;
-import org.sdf4j.model.CodeRefinement;
-import org.sdf4j.model.InterfaceDirection;
-import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.SDFVertex;
-import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

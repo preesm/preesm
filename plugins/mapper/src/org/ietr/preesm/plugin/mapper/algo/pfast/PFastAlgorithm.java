@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
@@ -65,6 +64,8 @@ import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
+import org.ietr.preesm.plugin.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 
@@ -72,6 +73,7 @@ import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
  * Task scheduling FAST algorithm multithread
  * 
  * @author pmenuet
+ * @author mpelcat
  */
 public class PFastAlgorithm extends Observable {
 
@@ -81,10 +83,7 @@ public class PFastAlgorithm extends Observable {
 	private List<String> bestTotalOrder = null;
 	
 	/**
-	 * FinalTimeComparator : comparator between two different implementation
-	 * 
-	 * @param : void
-	 * @return : void
+	 * FinalTimeComparator : comparator between two different implementation based on
 	 */
 	private class FinalTimeComparator implements Comparator<MapperDAG> {
 
@@ -101,9 +100,9 @@ public class PFastAlgorithm extends Observable {
 
 			long difference = 0;
 
-			difference = o1.getScheduleLatency();
+			difference = o1.getScheduleCost();
 
-			difference -= o2.getScheduleLatency();
+			difference -= o2.getScheduleCost();
 
 			if (difference == 0) {
 				difference = 1;
@@ -272,16 +271,6 @@ public class PFastAlgorithm extends Observable {
 	/**
 	 * map = perform the Pfast Algo (it is the main thread)
 	 * 
-	 * @param dag
-	 * @param archi
-	 * @param nboperator
-	 * @param nodesmin
-	 * @param initialLists
-	 * @param maxCount
-	 * @param maxStep
-	 * @param margIn
-	 * @param simulatorType
-	 * @param population
 	 *            // Determine if we want the Pfast solution or a population of
 	 *            good solution to perform another algorithm
 	 * @param populationsize
@@ -293,18 +282,16 @@ public class PFastAlgorithm extends Observable {
 	 * @return MapperDAG
 	 */
 	@SuppressWarnings("unchecked")
-	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario, int nboperator,
-			int nodesmin, InitialLists initialLists, int maxCount, int maxStep,
-			int margIn, AbcParameters abcParams,
+	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario, InitialLists initialLists, AbcParameters abcParams, PFastAlgoParameters pFastParams,
 			boolean population, int populationsize, boolean isDisplaySolutions, 
 			List<MapperDAG> populationList, AbstractTaskSched taskSched) {
 
-		// Variables
 		int i = 0;
 		if (populationsize < 1)
 			populationsize = 1;
 		int k = 0;
 		int totalsearchcount = 0;
+		
 		Vector<MapperDAGVertex> cpnDominantVector = new Vector<MapperDAGVertex>(
 				initialLists.getCpnDominant());
 		Vector<MapperDAGVertex> blockingnodeVector = new Vector<MapperDAGVertex>(
@@ -316,14 +303,14 @@ public class PFastAlgorithm extends Observable {
 		IAbc archisimu = AbstractAbc
 				.getInstance(abcParams, dag, archi, scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
-		Logger logger = PreesmLogger.getLogger();
 
+		FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(), pFastParams.isDisplaySolutions());
+		
 		// if only one operator the fast must be used
-		if (nboperator == 0) {
+		if (pFastParams.getProcNumber() == 0) {
 			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-			dag = algorithm.map("Fast", abcParams, dag, archi, maxCount,
-					maxStep, margIn, false, false, false, null,
+			dag = algorithm.map("Fast", abcParams, fastParams, dag, archi,false, false, false, null,
 					cpnDominantVector, blockingnodeVector, fcpVector, taskSched);
 			return dag;
 		}
@@ -348,22 +335,20 @@ public class PFastAlgorithm extends Observable {
 		archisimu.updateFinalCosts();
 		long iBest = (Long) archisimu.getFinalCost();
 		
-		long initiale = iBest;
 		setChanged();
 		notifyObservers(iBest);
-		dagfinal.setScheduleLatency(iBest);
-		dag.setScheduleLatency(iBest);
+		dagfinal.setScheduleCost(iBest);
+		dag.setScheduleCost(iBest);
 		// step 3/4
-		int nbCores = chooseNbCores(initialLists, nboperator, nodesmin, subSet);
+		int nbCores = chooseNbCores(initialLists, pFastParams.getProcNumber(), pFastParams.getNodesmin(), subSet);
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
 				new FinalTimeComparator(abcParams, dagfinal, archi, scenario));
 
 		// step 5/7/8
-		for (int j = 2; totalsearchcount < maxCount; j++) {
+		while (totalsearchcount < pFastParams.getFastNumber()) {
 
-			logger.log(Level.FINE, "Itération " + j);
 			// Mode Pause
 			while (costPlotter.getActionType() == 2)
 				;
@@ -373,8 +358,6 @@ public class PFastAlgorithm extends Observable {
 				return mappedDAGSet.first().clone();
 
 			// step 11
-			int maxcounttemp = Math.max(((Double) Math.ceil(((double) maxCount)
-					/ ((double) j) / ((double) nbCores))).intValue(), 1);
 
 			// create ExecutorService to manage threads
 			subiter = subSet.iterator();
@@ -387,8 +370,8 @@ public class PFastAlgorithm extends Observable {
 
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
-						subiter.next(), maxcounttemp, maxStep, margIn, isDisplaySolutions, true,
-						abcParams, scenario);
+						subiter.next(), isDisplaySolutions, true,
+						abcParams, fastParams, scenario);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
 				futureTasks.add(task);
@@ -418,7 +401,7 @@ public class PFastAlgorithm extends Observable {
 				if (!population) {
 					dag = mappedDAGSet.first().clone();
 
-					iBest = dag.getScheduleLatency();
+					iBest = dag.getScheduleCost();
 					setChanged();
 					notifyObservers(iBest);
 
@@ -432,7 +415,7 @@ public class PFastAlgorithm extends Observable {
 				e.printStackTrace();
 			}
 			// step 13
-			totalsearchcount += maxcounttemp;
+			totalsearchcount ++;
 
 		}
 
@@ -448,14 +431,6 @@ public class PFastAlgorithm extends Observable {
 		
 		bestTotalOrder = (List<String>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
-		
-		long finale = dagfinal.getScheduleLatency();
-		logger
-				.log(
-						Level.INFO,
-						"Total PFast Algo Gain : "
-								+ ((((double) initiale - (double) finale) / (double) initiale) * 100)
-								+ " %");
 
 		return dagfinal;
 	}

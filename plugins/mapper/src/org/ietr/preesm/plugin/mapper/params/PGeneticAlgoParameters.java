@@ -36,9 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.plugin.abc.AbcType;
-import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Parameters for task scheduling genetic algorithm multithread
@@ -49,7 +50,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 public class PGeneticAlgoParameters {
 
 	protected TextParameters textParameters = null;
-	
+
 	// Number of individuals the algorithm will keep in the best population
 	private int populationSize;
 
@@ -63,41 +64,61 @@ public class PGeneticAlgoParameters {
 	private boolean pfastused2makepopulation;
 
 	/**
+	 * Time in seconds between two FAST probabilistic hops in the critical path
+	 */
+	private int fastTime = -1;
+
+	/**
+	 * Number of fast iterations to execute before stopping PFast
+	 */
+	private int fastNumber = 100;
+
+	/**
 	 * Constructors
 	 */
 
-	public PGeneticAlgoParameters(TextParameters textParameters) {
-
-		this.generationNumber = textParameters.getIntVariable("generationNumber");
-		this.populationSize = textParameters.getIntVariable("populationSize");
-		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.pfastused2makepopulation = textParameters.getBooleanVariable("pfastused2makepopulation");
-	
-	}
-
-	/**
-	 * 
-	 * @param archi
-	 * @param generationNumber
-	 * @param populationDAG
-	 * @param populationSize
-	 * @param procNumber
-	 * @param type
-	 */
-	public PGeneticAlgoParameters(int generationNumber,
-			int populationSize, int procNumber,
-			AbcType simulatorType, EdgeSchedType edgeSchedType,
-			boolean pfastused2makepopulation) {
+	public PGeneticAlgoParameters(int fastNumber,
+			int fastTime, int generationNumber,
+			int populationSize, int procNumber, boolean pfastused2makepopulation) {
 
 		textParameters.addVariable("generationNumber", generationNumber);
 		textParameters.addVariable("populationSize", populationSize);
 		textParameters.addVariable("processorNumber", procNumber);
-		textParameters.addVariable("pfastused2makepopulation", pfastused2makepopulation);
-		
+		textParameters.addVariable("pfastused2makepopulation",
+				pfastused2makepopulation);
+		textParameters.addVariable("fastTime",
+				fastTime);
+		textParameters.addVariable("fastNumber", fastNumber);
+
 		this.generationNumber = generationNumber;
 		this.populationSize = populationSize;
 		this.procNumber = procNumber;
 		this.pfastused2makepopulation = pfastused2makepopulation;
+		this.fastTime = fastTime;
+		this.fastNumber = fastNumber;
+	}
+
+	public PGeneticAlgoParameters(TextParameters textParameters) {
+
+		this.generationNumber = textParameters
+				.getIntVariable("generationNumber");
+		this.populationSize = textParameters.getIntVariable("populationSize");
+		this.procNumber = textParameters.getIntVariable("procNumber");
+		this.pfastused2makepopulation = textParameters
+				.getBooleanVariable("pfastused2makepopulation");
+		if (textParameters.getIntVariable("fastTime") > 0) {
+			this.fastTime = textParameters
+					.getIntVariable("fastTime");
+		}
+		if (textParameters.getIntVariable("fastNumber") != 0) {
+			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		}
+
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"The Genetic algo parameters are: generationNumber; populationSize; procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastNumber");
 	}
 
 	/**
@@ -158,6 +179,21 @@ public class PGeneticAlgoParameters {
 	 */
 	public void setProcessorNumber(int processorNumber) {
 		this.procNumber = processorNumber;
+	}
+
+	/**
+	 * Returns the Number of fast iterations to execute before stopping PFast
+	 */
+	public int getFastNumber() {
+		return fastNumber;
+	}
+
+	/**
+	 * Returns the time in seconds between two FAST probabilistic hops in the
+	 * critical path
+	 */
+	public int getFastTime() {
+		return fastTime;
 	}
 
 }

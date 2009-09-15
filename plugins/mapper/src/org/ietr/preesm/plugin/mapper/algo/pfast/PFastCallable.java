@@ -51,9 +51,10 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 
 /**
- * One thread of Task scheduling FAST algorithm multithread 
+ * One thread of Task scheduling FAST algorithm multithread
  * 
  * @author pmenuet
  */
@@ -74,23 +75,15 @@ class PFastCallable implements Callable<MapperDAG> {
 	// Set of the nodes upon which we used fast algorithm in the thread
 	private Set<String> blockingNodeNames;
 
-	// number of tries to do locally probabilistic jump maximum authorized
-	private int margIn;
+	// parameters for the fast algorithm
+	private FastAlgoParameters fastParams;
 
-	// number of iteration to do the fast algorithm used here to determine the
-	// number of probabilistic jump we need before the comparison in the main in
-	// the algorithm
-	private int maxCount;
-
-	// number of search steps in an iteration
-	private int maxStep;
-	
 	// True if we want to display the best found solutions
 	private boolean isDisplaySolutions;
 
 	// Variables to know if we have to do the initial scheduling or not
 	private boolean alreadyImplanted;
-	
+
 	private IScenario scenario;
 
 	/**
@@ -108,15 +101,14 @@ class PFastCallable implements Callable<MapperDAG> {
 	 */
 	public PFastCallable(String name, MapperDAG inputDAG,
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
-			int maxCount, int maxStep, int margIn, boolean isDisplaySolutions, boolean alreadyImplanted,
-			AbcParameters abcParams, IScenario scenario) {
+			boolean isDisplaySolutions, boolean alreadyImplanted,
+			AbcParameters abcParams, FastAlgoParameters fastParams,
+			IScenario scenario) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;
 		this.blockingNodeNames = blockingNodeNames;
-		this.maxCount = maxCount;
-		this.maxStep = maxStep;
-		this.margIn = margIn;
+		this.fastParams = fastParams;
 		this.alreadyImplanted = alreadyImplanted;
 		this.abcParams = abcParams;
 		this.isDisplaySolutions = isDisplaySolutions;
@@ -138,7 +130,8 @@ class PFastCallable implements Callable<MapperDAG> {
 		MultiCoreArchitecture callableArchi;
 		List<MapperDAGVertex> callableBlockingNodes = new ArrayList<MapperDAGVertex>();
 
-		// Critical sections where the data from the main thread are copied for this thread
+		// Critical sections where the data from the main thread are copied for
+		// this thread
 		synchronized (inputDAG) {
 			callableDAG = inputDAG.clone();
 		}
@@ -153,24 +146,26 @@ class PFastCallable implements Callable<MapperDAG> {
 		}
 
 		// Create the CPN Dominant Sequence
-		IAbc IHsimu = new InfiniteHomogeneousAbc(abcParams, 
+		IAbc IHsimu = new InfiniteHomogeneousAbc(abcParams,
 				callableDAG.clone(), callableArchi, scenario);
 		InitialLists initialLists = new InitialLists();
 		initialLists.constructInitialLists(callableDAG, IHsimu);
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu.getTotalOrder().toStringList());
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu
+				.getTotalOrder().toStringList());
 		IHsimu.resetDAG();
 
 		// performing the fast algorithm
 		FastAlgorithm algo = new FastAlgorithm(initialLists, scenario);
-		outputDAG = algo.map(threadName, abcParams, callableDAG,
-				callableArchi,
-				maxCount, maxStep, margIn, alreadyImplanted, true, isDisplaySolutions, null, initialLists.getCpnDominant(),
-				callableBlockingNodes, initialLists.getCriticalpath(), taskSched);
+		outputDAG = algo.map(threadName, abcParams, fastParams, callableDAG,
+				callableArchi, alreadyImplanted, true, isDisplaySolutions,
+				null, initialLists.getCpnDominant(), callableBlockingNodes,
+				initialLists.getCriticalpath(), taskSched);
 
 		// Saving best total order for future display
-		outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());
-		
+		outputDAG.getPropertyBean().setValue("bestTotalOrder",
+				algo.getBestTotalOrder());
+
 		return outputDAG;
 
 	}
