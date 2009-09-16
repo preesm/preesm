@@ -61,6 +61,7 @@ public class SchedulingOrderComparator implements Comparator<DAGVertex> {
 		difference -= ((MapperDAGVertex) v2).getImplementationVertexProperty()
 				.getSchedTotalOrder();
 
+		// Avoiding the discard of vertices with same order
 		if (difference == 0) {
 			difference = 1;
 		}

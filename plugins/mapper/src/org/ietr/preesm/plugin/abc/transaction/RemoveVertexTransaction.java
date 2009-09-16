@@ -44,7 +44,6 @@ import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.plugin.mapper.model.impl.SynchroEdge;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
@@ -98,15 +97,6 @@ public class RemoveVertexTransaction extends Transaction {
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
 			PrecedenceEdgeAdder.addPrecedenceEdge(implementation, prev, next);
-		}
-		
-		// Removing synchro edges
-		Set<DAGEdge> precEdges = new HashSet<DAGEdge>(vertex.incomingEdges());
-		precEdges.addAll(vertex.outgoingEdges());
-		for(DAGEdge edge : precEdges){
-			if(edge instanceof SynchroEdge) {
-				implementation.removeEdge(edge);
-			}
 		}
 		
 		// Removing vertex

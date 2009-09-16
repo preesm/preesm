@@ -77,6 +77,7 @@ public class SchedOrderManager extends Observable {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
 		
+		// Adding one schedule per component
 		for(ArchitectureComponent cmp : archi.getComponents()){
 			schedules.put(cmp, new Schedule());
 		}
