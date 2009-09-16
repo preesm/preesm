@@ -110,7 +110,7 @@ public class FASTTransformation extends AbstractMapping {
 
 		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
 		simu.resetDAG();
-		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+		
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
@@ -120,7 +120,8 @@ public class FASTTransformation extends AbstractMapping {
 				, fastParams.isDisplaySolutions(), monitor, taskSched);
 
 		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
-		
+
+		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
 		// Transfer vertices are automatically regenerated
 		simu2.setDAG(dag);
 

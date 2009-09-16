@@ -50,6 +50,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
@@ -422,21 +424,26 @@ public class DesignParser {
 		if (!name.isEmpty()) {
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
 			String fileExt = "component";
-			IResource resource = workspace.getRoot().findMember(
-					currentFile.getFullPath());
 
-			if (resource != null && resource instanceof IFile
-					&& resource.getFileExtension().equals(fileExt)) {
-				file = ((IFile) resource);
-			} else {
-				PreesmLogger.getLogger().log(
-						Level.SEVERE,
-						"The refinement of a component must have the extension ."
-								+ fileExt
-								+ ". The following file is not usable: "
-								+ resource.getFullPath());
+			IPath path = new Path(name);
+			IPath currentPath = currentFile.getFullPath();
+			currentPath = currentPath.removeLastSegments(1);
+			currentPath = currentPath.append(path);
+
+			if(path.getFileExtension() != null
+					&& path.getFileExtension().equals(fileExt)){
+				file = workspace.getRoot().getFile(currentPath);
+			}
+			else {
+				PreesmLogger
+						.getLogger()
+						.log(
+								Level.SEVERE,
+								"The refinement of a component must exist and have the extension ."
+										+ fileExt
+										+ ". The following file is not usable: "
+										+ name);
 			}
 		}
 

@@ -66,29 +66,27 @@ public class KwokListScheduler {
 	 * operatorvertexstarttime: Return the date when the operator is ready to
 	 * process the vertex
 	 * 
-	 * @param : MapperDAG, MapperDAGVertex, Operator, IArchitectureSimulator
-	 * @return : integer
+	 * @param minimizeVStartorOpEnd
+	 *            If true, we minimize the starting date of the vertex; if
+	 *            false, we minimize the current scheduling length on the
+	 *            considered operator
 	 */
-	public long operatorvertexstarttime(MapperDAG dag, MapperDAGVertex vertex,
-			Operator operator, IAbc simu) {
+	public long listImplantationCost(MapperDAG dag, MapperDAGVertex vertex,
+			Operator operator, IAbc simu, boolean minimizeVStartorOpEnd) {
 
 		// check the vertex is into the DAG
 		vertex = dag.getMapperDAGVertex(vertex.getName());
-
-		Logger logger = PreesmLogger.getLogger();
-
-		logger.log(Level.FINEST, " entering operator/vertex start time ");
 
 		// implant the vertex on the operator
 		simu.implant(vertex, operator, true);
 		simu.updateFinalCosts();
 
-		logger
-				.log(Level.FINEST, " implant the vertex on "
-						+ operator.getName());
-
 		// check if the vertex is a source vertex with no predecessors
-		return simu.getFinalCost(vertex);
+		if (minimizeVStartorOpEnd) {
+			return simu.getFinalCost(vertex);
+		} else {
+			return simu.getFinalCost(operator);
+		}
 	}
 
 	/**
@@ -107,6 +105,8 @@ public class KwokListScheduler {
 	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			IAbc archisimu, Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
+		boolean minimizeVStartorOpEnd = true;
+		
 		// Variables
 		Operator chosenoperator = null;
 		Logger logger = PreesmLogger.getLogger();
@@ -120,6 +120,11 @@ public class KwokListScheduler {
 			if (currentvertex.equals(fcpvertex)) {
 				archisimu.implant(currentvertex, operatorfcp, true);
 			} else {
+
+				if (currentvertex.getName().contains("_PreProcessing")) {
+					PreesmLogger.getLogger().log(Level.INFO, "tutu");
+				}
+
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
@@ -131,8 +136,8 @@ public class KwokListScheduler {
 					for (Operator currentoperator : currentvertex
 							.getInitialVertexProperty().getOperatorSet()) {
 
-						long test = operatorvertexstarttime(dag, currentvertex,
-								currentoperator, archisimu);
+						long test = listImplantationCost(dag, currentvertex,
+								currentoperator, archisimu, minimizeVStartorOpEnd);
 						// test the earliest ready operator
 						if (test < time) {
 							chosenoperator = currentoperator;
@@ -158,9 +163,8 @@ public class KwokListScheduler {
 		}
 
 		// archisimu.rescheduleTransfers(orderlist);
-		//archisimu.retrieveTotalOrder();
+		// archisimu.retrieveTotalOrder();
 
 		return dag;
 	}
-
 }

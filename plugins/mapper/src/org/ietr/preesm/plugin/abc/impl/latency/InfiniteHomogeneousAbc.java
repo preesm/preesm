@@ -155,7 +155,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		// Keeps the total order
 		orderManager.remove(vertex, false);
 
-		vertex.getTimingVertexProperty().resetCost();
+		vertex.getTimingVertexProperty().reset();
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 
