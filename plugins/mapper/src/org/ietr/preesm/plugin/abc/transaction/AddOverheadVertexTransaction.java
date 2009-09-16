@@ -157,7 +157,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 				taskSwitcher.setOrderManager(orderManager);
 				taskSwitcher.insertVertexBefore(currentTarget, oVertex);
 			} else {
-				orderManager.insertVertexBefore(currentTarget, oVertex);
+				orderManager.insertBefore(currentTarget, oVertex);
 			}
 
 			// Scheduling overhead vertex

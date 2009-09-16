@@ -140,7 +140,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 				nTimeKeeper.updateTLevels();
 				taskScheduler.insertVertex(vertex);
 			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
+				orderManager.insertInTotalOrder(vertex);
 			}
 
 		}

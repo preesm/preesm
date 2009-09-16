@@ -172,7 +172,7 @@ public class AddSendReceiveTransaction extends Transaction {
 		sendVertex.getTimingVertexProperty().setCost(transferCost);
 		sendVertex.getImplementationVertexProperty()
 				.setEffectiveOperator(senderOperator);
-		orderManager.insertVertexAfter(currentSource, sendVertex);
+		orderManager.insertAfter(currentSource, sendVertex);
 		implementation.addVertex(sendVertex);
 
 		receiveVertex = new ReceiveVertex(receiveVertexID,
@@ -181,7 +181,7 @@ public class AddSendReceiveTransaction extends Transaction {
 		receiveVertex.getTimingVertexProperty().setCost(transferCost);
 		receiveVertex.getImplementationVertexProperty()
 				.setEffectiveOperator(receiverOperator);
-		orderManager.insertVertexAfter(sendVertex, receiveVertex);
+		orderManager.insertAfter(sendVertex, receiveVertex);
 		implementation.addVertex(receiveVertex);
 
 		newEdge1 = (MapperDAGEdge) implementation.addEdge(

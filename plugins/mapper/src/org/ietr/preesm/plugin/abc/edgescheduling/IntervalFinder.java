@@ -40,6 +40,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -127,7 +128,7 @@ public class IntervalFinder {
 		Interval freeInterval = new Interval(-1, -1, 0);
 
 		if (schedule != null) {
-			for (MapperDAGVertex v : schedule.getVervexList()) {
+			for (IScheduleElement v : schedule.getList()) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				
 				// If we have the current vertex tLevel
@@ -211,7 +212,7 @@ public class IntervalFinder {
 				+ availability + ": ";
 
 		if (schedule != null) {
-			for (MapperDAGVertex v : schedule.getVervexList()) {
+			for (IScheduleElement v : schedule.getList()) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if (props.getNewtLevel() >= 0)
 					trace += "<" + props.getNewtLevel() + ","

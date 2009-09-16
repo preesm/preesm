@@ -46,6 +46,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
@@ -93,21 +94,21 @@ public class PrecedenceEdgeAdder {
 
 		// Iterates the schedules
 		while (schedIt.hasNext()) {
-			List<MapperDAGVertex> schedule = orderManager
+			List<IScheduleElement> schedule = orderManager
 					.getScheduleList(schedIt.next());
 
-			Iterator<MapperDAGVertex> schedit = schedule.iterator();
+			Iterator<IScheduleElement> schedit = schedule.iterator();
 
 			MapperDAGVertex src;
 
 			// Iterates all vertices in each schedule
 			if (schedit.hasNext()) {
-				MapperDAGVertex dst = schedit.next();
+				MapperDAGVertex dst = (/*toReview*/MapperDAGVertex)schedit.next();
 
 				while (schedit.hasNext()) {
 
 					src = dst;
-					dst = schedit.next();
+					dst = (/*toReview*/MapperDAGVertex)schedit.next();
 
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
@@ -165,10 +166,10 @@ public class PrecedenceEdgeAdder {
 		for (ArchitectureComponent o : cmpSet) {
 			if (orderManager.getSchedule(o) != null) {
 				MapperDAGVertex pv = null;
-				for (MapperDAGVertex v : orderManager.getSchedule(o).getVervexList()) {
+				for (IScheduleElement v : orderManager.getSchedule(o).getList()) {
 					if (pv != null) {
-						if (implementation.getAllEdges(pv, v) == null
-								|| implementation.getAllEdges(pv, v).isEmpty()) {
+						if (implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v) == null
+								|| implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v).isEmpty()) {
 
 							if (!pv.equals(modifiedVertex)
 									&& !v.equals(modifiedVertex))
@@ -179,7 +180,7 @@ public class PrecedenceEdgeAdder {
 												+ v.toString());
 						}
 					}
-					pv = v;
+					pv = (/*toReview*/MapperDAGVertex)v;
 				}
 			}
 		}
@@ -191,8 +192,8 @@ public class PrecedenceEdgeAdder {
 	public static void scheduleVertex(SchedOrderManager orderManager,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 
-		MapperDAGVertex prev = orderManager.getPreviousVertex(newVertex);
-		MapperDAGVertex next = orderManager.getNextVertex(newVertex);
+		MapperDAGVertex prev = (/*toReview*/MapperDAGVertex)orderManager.getPrevious(newVertex);
+		MapperDAGVertex next = (/*toReview*/MapperDAGVertex)orderManager.getNext(newVertex);
 
 		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
 		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);

@@ -118,10 +118,6 @@ public class LooselyTimedAbc extends LatencyAbc {
 	public EdgeSchedType getEdgeSchedType() {
 		return null;
 	}
-
-	@Override
-	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
-	}
 	
 	
 }

@@ -189,7 +189,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Reschedule all the transfers generated during mapping
 	 */
-	public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
+	//public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
 	
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given

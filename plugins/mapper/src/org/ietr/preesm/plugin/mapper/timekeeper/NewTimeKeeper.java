@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -44,7 +45,7 @@ public class NewTimeKeeper implements Observer {
 	/**
 	 * In order to minimize recalculation, a set of modified vertices is kept
 	 */
-	private Set<DAGVertex> dirtyTLevelVertices;
+	private Set<IScheduleElement> dirtyTLevelVertices;
 
 	/**
 	 * Manager of the vertices ordering
@@ -59,7 +60,7 @@ public class NewTimeKeeper implements Observer {
 
 		this.implementation = implementation;
 		neighborindex = null;
-		dirtyTLevelVertices = new HashSet<DAGVertex>();
+		dirtyTLevelVertices = new HashSet<IScheduleElement>();
 		this.orderManager = orderManager;
 		this.orderManager.addObserver(this);
 	}
@@ -86,9 +87,9 @@ public class NewTimeKeeper implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg1 != null) {
 			if (arg1 instanceof Set) {
-				dirtyTLevelVertices.addAll((Set<DAGVertex>) arg1);
-			} else if (arg1 instanceof MapperDAGVertex) {
-				dirtyTLevelVertices.add((MapperDAGVertex) arg1);
+				dirtyTLevelVertices.addAll((Set<IScheduleElement>) arg1);
+			} else if (arg1 instanceof IScheduleElement) {
+				dirtyTLevelVertices.add((IScheduleElement) arg1);
 			}
 		}
 	}
@@ -103,20 +104,20 @@ public class NewTimeKeeper implements Observer {
 		 * implementation modification or neighbors modification
 		 */
 
-		Iterator<DAGVertex> vIt = dirtyTLevelVertices.iterator();
+		Iterator<IScheduleElement> vIt = dirtyTLevelVertices.iterator();
 		while (vIt.hasNext()) {
-			DAGVertex v = vIt.next();
+			DAGVertex v = (/*toReview*/MapperDAGVertex)vIt.next();
 			if (!implementation.vertexSet().contains(v)) {
 				vIt.remove();
 			}
 		}
 
-		Set<DAGVertex> allDirtyTLevelVertices = new HashSet<DAGVertex>(
+		Set<IScheduleElement> allDirtyTLevelVertices = new HashSet<IScheduleElement>(
 				dirtyTLevelVertices);
 
-		for (DAGVertex v : allDirtyTLevelVertices) {
+		for (IScheduleElement v : allDirtyTLevelVertices) {
 			if (dirtyTLevelVertices.contains(v))
-				calculateTLevel((MapperDAGVertex) v);
+				calculateTLevel((/*toReview*/MapperDAGVertex)v);
 		}
 	}
 
@@ -355,7 +356,7 @@ public class NewTimeKeeper implements Observer {
 	 * If current implementation information is not enough to calculate this
 	 * timing, returns UNAVAILABLE
 	 */
-	public long getFinalTime(MapperDAGVertex vertex) {
+	public long getFinalTime(IScheduleElement vertex) {
 
 		long vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
 		TimingVertexProperty timingproperty = vertex.getTimingVertexProperty();

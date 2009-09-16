@@ -195,7 +195,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 				updateTimings();
 				taskScheduler.insertVertex(vertex);
 			} else {
-				orderManager.insertVertexInTotalOrder(vertex);
+				orderManager.insertInTotalOrder(vertex);
 			}
 
 		}
@@ -421,7 +421,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Reschedule all the transfers generated during mapping
 	 */
-	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
+	/*	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
 
 		if (this.orderManager != null) {
 			ImplementationCleaner cleaner = new ImplementationCleaner(
@@ -430,7 +430,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			for (ArchitectureComponent cmp : archi
 					.getComponents(ArchitectureComponentType.contentionNode)) {
 				for (MapperDAGVertex v : this.orderManager.getSchedule(cmp)
-						.getVervexList()) {
+						.getList()) {
 					cleaner.unscheduleVertex(v);
 				}
 			}
@@ -452,14 +452,14 @@ public abstract class LatencyAbc extends AbstractAbc {
 								return (int) TLevelDifference;
 							}
 						});
-				list.addAll(this.orderManager.getSchedule(cmp).getVervexList());
+				list.addAll(this.orderManager.getSchedule(cmp).getList());
 
 				for (MapperDAGVertex v : list) {
 					TransferVertex tv = (TransferVertex) v;
 					orderManager.insertVertexBefore(tv, tv.getTarget());
 				}
 			}
-		}
+		}*/
 
 		/*
 		 * Schedule totalOrder = this.getTotalOrder(); List<String> orderedNames
@@ -496,8 +496,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		 * orderedNames); } else { //orderedNames.add(v.getName()); } v =
 		 * totalOrder.getPreviousVertex(v); }
 		 */
-		// reorder(orderedNames);
-	}
+		// reorder(orderedNames);}
 
 	@Override
 	public void updateFinalCosts() {

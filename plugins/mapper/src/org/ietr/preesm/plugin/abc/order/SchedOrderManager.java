@@ -80,7 +80,7 @@ public class SchedOrderManager extends Observable {
 	 * Considering that vertex already has a total order, inserts it at the
 	 * appropriate position in its schedule
 	 */
-	public void insertVertexInTotalOrder(MapperDAGVertex vertex) {
+	public void insertInTotalOrder(IScheduleElement vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -97,7 +97,7 @@ public class SchedOrderManager extends Observable {
 			// Iterates the schedule
 			int maxPrec = -1;
 
-			for (MapperDAGVertex current : currentSched.getVervexList()) {
+			for (IScheduleElement current : currentSched.getList()) {
 
 				// Looking for the preceding vertex with maximum total order
 				int currentTotalOrder = totalIndexOf(current);
@@ -109,17 +109,17 @@ public class SchedOrderManager extends Observable {
 
 			// Adds vertex after its chosen predecessor
 			if (maxPrec >= 0) {
-				MapperDAGVertex previous = totalOrder.get(maxPrec);
-				currentSched.insertVertexAfter(previous, vertex);
+				IScheduleElement previous = totalOrder.get(maxPrec);
+				currentSched.insertAfter(previous, vertex);
 			} else {
-				currentSched.addVertexFirst(vertex);
+				currentSched.addFirst(vertex);
 			}
 		}
 
 		// Notifies the time keeper that it should update the successors
-		Set<DAGVertex> vSet = totalOrder.getSuccessors(vertex);
+		Set<IScheduleElement> vSet = totalOrder.getSuccessors(vertex);
 		if (vSet.isEmpty()) {
-			vSet = new HashSet<DAGVertex>();
+			vSet = new HashSet<IScheduleElement>();
 		}
 		vSet.add(vertex);
 		setChanged();
@@ -129,7 +129,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Appends the vertex at the end of a schedule and at the end of total order
 	 */
-	public void addLast(MapperDAGVertex vertex) {
+	public void addLast(IScheduleElement vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -140,12 +140,12 @@ public class SchedOrderManager extends Observable {
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
 
-			currentSchedule.addVertexLast(vertex);
+			currentSchedule.addLast(vertex);
 
 			if (totalOrder.contains(vertex))
 				totalOrder.remove(vertex);
 
-			totalOrder.addVertexLast(vertex);
+			totalOrder.addLast(vertex);
 		}
 
 		// Notifies the time keeper that it should update the vertex
@@ -157,7 +157,7 @@ public class SchedOrderManager extends Observable {
 	 * Appends the vertex at the beginning of a schedule and at the end of total
 	 * order
 	 */
-	public void addFirst(MapperDAGVertex vertex) {
+	public void addFirst(IScheduleElement vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -168,24 +168,24 @@ public class SchedOrderManager extends Observable {
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
 
-			currentSchedule.addVertexFirst(vertex);
+			currentSchedule.addFirst(vertex);
 
 			if (totalOrder.contains(vertex))
 				totalOrder.remove(vertex);
 
-			totalOrder.addVertexFirst(vertex);
+			totalOrder.addFirst(vertex);
 		}
 
 		// Notifies the time keeper that it should update the successors
 		setChanged();
-		notifyObservers(new HashSet<DAGVertex>(totalOrder.getVervexList()));
+		notifyObservers(new HashSet<IScheduleElement>(totalOrder.getList()));
 	}
 
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertVertexAfter(MapperDAGVertex previous,
-			MapperDAGVertex vertex) {
+	public void insertAfter(IScheduleElement previous,
+			IScheduleElement vertex) {
 
 		if (previous == null) {
 			addLast(vertex);
@@ -202,10 +202,10 @@ public class SchedOrderManager extends Observable {
 
 				if (!totalOrder.contains(vertex)) {
 					if (totalOrder.indexOf(previous) >= 0) {
-						totalOrder.insertVertexAfter(previous, vertex);
+						totalOrder.insertAfter(previous, vertex);
 					}
 				}
-				insertVertexInTotalOrder(vertex);
+				insertInTotalOrder(vertex);
 
 			}
 		}
@@ -214,7 +214,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertVertexBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
+	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
 
 		if (next == null) {
 			addFirst(vertex);
@@ -231,10 +231,10 @@ public class SchedOrderManager extends Observable {
 
 				if (!totalOrder.contains(vertex)) {
 					if (totalOrder.indexOf(next) >= 0) {
-						totalOrder.insertVertexBefore(next, vertex);
+						totalOrder.insertBefore(next, vertex);
 					}
 				}
-				insertVertexInTotalOrder(vertex);
+				insertInTotalOrder(vertex);
 
 			}
 		}
@@ -244,11 +244,11 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertVertexAtIndex(int index, MapperDAGVertex vertex) {
+	public void insertAtIndex(int index, IScheduleElement vertex) {
 
-		MapperDAGVertex ref = totalOrder.get(index);
+		IScheduleElement ref = totalOrder.get(index);
 		if (ref != null) {
-			insertVertexBefore(ref, vertex);
+			insertBefore(ref, vertex);
 		} else {
 			addLast(vertex);
 		}
@@ -257,7 +257,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the local scheduling order, -1 if not present
 	 */
-	public int localIndexOf(MapperDAGVertex vertex) {
+	public int localIndexOf(IScheduleElement vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 
@@ -274,14 +274,14 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the total scheduling order
 	 */
-	public int totalIndexOf(MapperDAGVertex vertex) {
+	public int totalIndexOf(IScheduleElement vertex) {
 		return totalOrder.indexOf(vertex);
 	}
 
 	/**
 	 * Gets the vertex with the given total scheduling order
 	 */
-	public MapperDAGVertex getVertex(int totalOrderIndex) {
+	public IScheduleElement get(int totalOrderIndex) {
 		return totalOrder.get(totalOrderIndex);
 	}
 
@@ -297,9 +297,9 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the schedule of a given component
 	 */
-	public List<MapperDAGVertex> getScheduleList(ArchitectureComponent cmp) {
+	public List<IScheduleElement> getScheduleList(ArchitectureComponent cmp) {
 
-		return getSchedule(cmp).getVervexList();
+		return getSchedule(cmp).getList();
 
 	}
 
@@ -341,9 +341,9 @@ public class SchedOrderManager extends Observable {
 		}
 
 		// Notifies the time keeper that it should update the successors
-		Set<DAGVertex> successors = totalOrder.getSuccessors(vertex);
+		Set<IScheduleElement> successors = totalOrder.getSuccessors(vertex);
 		if (successors == null) {
-			successors = new HashSet<DAGVertex>();
+			successors = new HashSet<IScheduleElement>();
 		}
 		successors.add(vertex);
 		setChanged();
@@ -367,7 +367,7 @@ public class SchedOrderManager extends Observable {
 	 * Adds the schedule corresponding to the vertex effective component if not
 	 * present
 	 */
-	private void AddScheduleIfNotPresent(MapperDAGVertex vertex) {
+	private void AddScheduleIfNotPresent(IScheduleElement vertex) {
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -408,7 +408,7 @@ public class SchedOrderManager extends Observable {
 	 */
 	public void tagDAG(MapperDAG dag) {
 
-		for (MapperDAGVertex internalVertex : totalOrder.getVervexList()) {
+		for (IScheduleElement internalVertex : totalOrder.getList()) {
 			MapperDAGVertex vertex = dag.getMapperDAGVertex(internalVertex
 					.getName());
 
@@ -421,7 +421,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Sets the total order of vertex implementation property in DAG
 	 */
-	private void tagVertex(MapperDAGVertex vertex) {
+	private void tagVertex(IScheduleElement vertex) {
 
 		vertex.getImplementationVertexProperty().setSchedTotalOrder(
 				totalOrder.indexOf(vertex));
@@ -430,15 +430,15 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the previous vertex in the same schedule
 	 */
-	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
+	public IScheduleElement getPrevious(IScheduleElement vertex) {
 
-		MapperDAGVertex prevVertex = null;
+		IScheduleElement prevVertex = null;
 
 		Schedule schedule = getSchedule(vertex
 				.getImplementationVertexProperty().getEffectiveComponent());
 
 		if (schedule != null)
-			prevVertex = schedule.getPreviousVertex(vertex);
+			prevVertex = schedule.getPrevious(vertex);
 
 		return prevVertex;
 	}
@@ -446,14 +446,14 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the next vertex in the same schedule
 	 */
-	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
-		MapperDAGVertex nextVertex = null;
+	public IScheduleElement getNext(IScheduleElement vertex) {
+		IScheduleElement nextVertex = null;
 
 		Schedule schedule = getSchedule(vertex
 				.getImplementationVertexProperty().getEffectiveComponent());
 
 		if (schedule != null)
-			nextVertex = schedule.getNextVertex(vertex);
+			nextVertex = schedule.getNext(vertex);
 
 		return nextVertex;
 	}

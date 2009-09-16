@@ -75,7 +75,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 		if (vertex.getTimingVertexProperty().getSynchronizedVertices() != null
 				&& !vertex.getTimingVertexProperty().getSynchronizedVertices()
 						.isEmpty()) {
-			orderManager.insertVertexAfter(source, vertex);
+			orderManager.insertAfter(source, vertex);
 		} else {
 			ArchitectureComponent component = vertex
 					.getImplementationVertexProperty().getEffectiveComponent();
@@ -84,7 +84,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 					component, source, target);
 
 			if (largestInterval.getDuration() > 0) {
-				orderManager.insertVertexAtIndex(largestInterval
+				orderManager.insertAtIndex(largestInterval
 						.getTotalOrderIndex(), vertex);
 			} else {
 				int sourceIndex = intervalFinder.getOrderManager()
@@ -96,10 +96,10 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 					Random r = new Random();
 					int randomVal = Math.abs(r.nextInt());
 					randomVal = randomVal % (targetIndex - sourceIndex);
-					orderManager.insertVertexAtIndex(sourceIndex + randomVal,
+					orderManager.insertAtIndex(sourceIndex + randomVal,
 							vertex);
 				} else {
-					orderManager.insertVertexAfter(source, vertex);
+					orderManager.insertAfter(source, vertex);
 				}
 			}
 		}

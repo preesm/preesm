@@ -157,7 +157,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 					taskSwitcher.setOrderManager(orderManager);
 					taskSwitcher.insertVertexBefore(currentTarget, iVertex);
 				} else {
-					orderManager.insertVertexBefore(currentTarget, iVertex);
+					orderManager.insertBefore(currentTarget, iVertex);
 				}
 			} else {
 				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
@@ -166,7 +166,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 						.clone());
 				newOutEdge.getTimingEdgeProperty().setCost(0);
 
-				orderManager.insertVertexAfter(currentSource, iVertex);
+				orderManager.insertAfter(currentSource, iVertex);
 			}
 
 			// Scheduling involvement vertex

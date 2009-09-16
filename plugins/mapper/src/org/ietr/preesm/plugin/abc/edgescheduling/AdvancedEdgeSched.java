@@ -71,10 +71,10 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(component, source, target);
 		
 		if(earliestInterval.getDuration() >= 0){
-			orderManager.insertVertexAtIndex(earliestInterval.getTotalOrderIndex(), vertex);
+			orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(), vertex);
 		}
 		else{
-			orderManager.insertVertexAfter(source, vertex);
+			orderManager.insertAfter(source, vertex);
 		}
 
 

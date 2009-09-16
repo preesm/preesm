@@ -57,7 +57,7 @@ public class SimpleEdgeSched extends AbstractEdgeSched {
 
 	@Override
 	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
-		orderManager.insertVertexAfter(source, vertex);
+		orderManager.insertAfter(source, vertex);
 
 	}
 

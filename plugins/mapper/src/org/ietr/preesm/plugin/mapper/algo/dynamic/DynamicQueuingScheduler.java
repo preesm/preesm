@@ -37,11 +37,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
@@ -86,10 +88,10 @@ public class DynamicQueuingScheduler {
 		}
 		
 		if (listType.equalsIgnoreCase("optimised")) {
-			LinkedList<MapperDAGVertex> vList = queue.getVervexList();
+			List<IScheduleElement> vList = queue.getList();
 
-			for (MapperDAGVertex v : vList) {
-				MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG()
+			for (IScheduleElement v : vList) {
+				MapperDAGVertex currentvertex = (/*toReview*/MapperDAGVertex) abc.getDAG()
 						.getVertex(v.getName());
 
 				implantOnBestOp(abc, currentvertex);

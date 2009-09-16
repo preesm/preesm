@@ -119,10 +119,10 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		Operator op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
-		MapperDAGVertex source = (latePred == -1) ? null : orderManager
-				.getVertex(latePred);
-		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
-				.getVertex(earlySuc);
+		MapperDAGVertex source = (latePred == -1) ? null : (/*toReview*/MapperDAGVertex)orderManager
+				.get(latePred);
+		MapperDAGVertex target = (earlySuc == -1) ? null : (/*toReview*/MapperDAGVertex)orderManager
+				.get(earlySuc);
 
 		if (op != null) {
 			Interval largestInterval = intervalFinder.findLargestFreeInterval(op, source, target);
@@ -156,9 +156,9 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		int newIndex = getBestIndex(vertex);
 		if (newIndex >= 0) {
-			orderManager.insertVertexAtIndex(newIndex, vertex);
+			orderManager.insertAtIndex(newIndex, vertex);
 		} else {
-			orderManager.insertVertexBefore(successor, vertex);
+			orderManager.insertBefore(successor, vertex);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		int newIndex = getBestIndex(vertex);
 		if (newIndex >= 0) {
-			orderManager.insertVertexAtIndex(newIndex, vertex);
+			orderManager.insertAtIndex(newIndex, vertex);
 		} else {
 			orderManager.addLast(vertex);
 		}

@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
@@ -52,7 +53,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class MapperDAGVertex extends DAGVertex {
+public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 
 	/**
 	 * Properties set by mapper algorithm via architecture model
@@ -114,7 +115,7 @@ public class MapperDAGVertex extends DAGVertex {
 					(MapperDAG) this.getBase());
 		}
 
-		result.setImplantationVertexProperty(this
+		result.setImplementationVertexProperty(this
 				.getImplementationVertexProperty().clone());
 		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(
 				result));
@@ -140,7 +141,7 @@ public class MapperDAGVertex extends DAGVertex {
 		return timingVertexProperty;
 	}
 
-	public void setImplantationVertexProperty(
+	public void setImplementationVertexProperty(
 			ImplementationVertexProperty implementationVertexProperty) {
 		this.implementationVertexProperty = implementationVertexProperty;
 	}

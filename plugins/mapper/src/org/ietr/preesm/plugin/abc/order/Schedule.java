@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class Schedule {
 	/**
 	 * The ordered list of vertices in this schedule
 	 */
-	private LinkedList<MapperDAGVertex> vervexList;
+	private LinkedList<IScheduleElement> vervexList;
 	
 	/**
 	 * The total time of the schedule vertices
@@ -69,14 +70,14 @@ public class Schedule {
 	public Schedule() {
 
 		super();
-		this.vervexList = new LinkedList<MapperDAGVertex>();
+		this.vervexList = new LinkedList<IScheduleElement>();
 		resetBusyTime();
 	}
 
 	/**
 	 * Appends a vertex at the end of the schedule
 	 */
-	public void addVertexLast(MapperDAGVertex vertex) {
+	public void addLast(IScheduleElement vertex) {
 		if(vertex.getTimingVertexProperty().getCost() >= 0){
 			busyTime += vertex.getTimingVertexProperty().getCost();}
 		else{
@@ -90,7 +91,7 @@ public class Schedule {
 	/**
 	 * Inserts a vertex at the beginning of the schedule
 	 */
-	public void addVertexFirst(MapperDAGVertex vertex) {
+	public void addFirst(IScheduleElement vertex) {
 		if(vertex.getTimingVertexProperty().getCost() >= 0){
 			busyTime += vertex.getTimingVertexProperty().getCost();}
 		else{
@@ -104,8 +105,8 @@ public class Schedule {
 	/**
 	 * Inserts a vertex after the given one
 	 */
-	public void insertVertexAfter(MapperDAGVertex previous,
-			MapperDAGVertex vertex) {
+	public void insertAfter(IScheduleElement previous,
+			IScheduleElement vertex) {
 		if(vertex.getTimingVertexProperty().getCost() >= 0){
 			busyTime += vertex.getTimingVertexProperty().getCost();}
 		else{
@@ -115,13 +116,8 @@ public class Schedule {
 		if (!vervexList.contains(vertex))
 			if (vervexList.indexOf(previous) >= 0) {
 				if (vervexList.indexOf(previous) + 1 < vervexList.size()) {
-					MapperDAGVertex next = vervexList.get(vervexList.indexOf(previous) + 1);
-					if(!areSynchronized(previous,next)){
-						vervexList.add(vervexList.indexOf(next), vertex);
-					}
-					else{
-						insertVertexAfter(next,vertex);
-					}
+					IScheduleElement next = vervexList.get(vervexList.indexOf(previous) + 1);
+					vervexList.add(vervexList.indexOf(next), vertex);
 				} else{
 					vervexList.addLast(vertex);
 				}
@@ -131,7 +127,7 @@ public class Schedule {
 	/**
 	 * Inserts a vertex before the given one
 	 */
-	public void insertVertexBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
+	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
 		if(vertex.getTimingVertexProperty().getCost() >= 0){
 			busyTime += vertex.getTimingVertexProperty().getCost();}
 		else{
@@ -140,13 +136,8 @@ public class Schedule {
 
 		if (!vervexList.contains(vertex))
 			if (vervexList.indexOf(next) >= 0) {
-				MapperDAGVertex previous = vervexList.get(vervexList.indexOf(next) - 1);
-				if(!areSynchronized(previous,next)){
-					vervexList.add(vervexList.indexOf(next), vertex);
-				}
-				else{
-					insertVertexAfter(next,vertex);
-				}
+				IScheduleElement previous = vervexList.get(vervexList.indexOf(next) - 1);
+				vervexList.add(vervexList.indexOf(next), vertex);
 			}
 	}
 	
@@ -160,7 +151,7 @@ public class Schedule {
 		busyTime = 0;
 	}
 	
-	public void remove(MapperDAGVertex vertex){
+	public void remove(IScheduleElement vertex){
 		if(vervexList.contains(vertex)){
 			if(vertex.getTimingVertexProperty().getCost() >= 0){
 				busyTime -= vertex.getTimingVertexProperty().getCost();}
@@ -173,32 +164,18 @@ public class Schedule {
 	}
 	
 	// Access without modification
-
-	/**
-	 * Returns true if two vertices are synchronized; i.e. they must have the same starting time
-	 */
-	private boolean areSynchronized(MapperDAGVertex previous, MapperDAGVertex next){
-		boolean areSynchronized = false;
-		List<MapperDAGVertex> synchros = previous.getTimingVertexProperty().getSynchronizedVertices();
-		
-		if(synchros != null && synchros.contains(next)){
-			areSynchronized = true;
-		}
-		
-		return areSynchronized;
-	}
 	
-	public MapperDAGVertex get(int i){
+	public IScheduleElement get(int i){
 		return vervexList.get(i);
 	}
 	
-	public MapperDAGVertex getLast(){
+	public IScheduleElement getLast(){
 		return vervexList.getLast();
 	}
 	/**
 	 * Gets the previous vertex in the current schedule
 	 */
-	public MapperDAGVertex getPreviousVertex(MapperDAGVertex vertex) {
+	public IScheduleElement getPrevious(IScheduleElement vertex) {
 		if (vervexList.indexOf(vertex) <= 0)
 			return null;
 		return (vervexList.get(vervexList.indexOf(vertex) - 1));
@@ -207,7 +184,7 @@ public class Schedule {
 	/**
 	 * Gets the next vertex in the current schedule
 	 */
-	public MapperDAGVertex getNextVertex(MapperDAGVertex vertex) {
+	public IScheduleElement getNext(IScheduleElement vertex) {
 		int currentIndex = vervexList.indexOf(vertex);
 		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size() - 1)
 			return null;
@@ -217,23 +194,23 @@ public class Schedule {
 	/**
 	 * Gets the next vertex in the current schedule
 	 */
-	public Set<DAGVertex> getSuccessors(MapperDAGVertex vertex) {
+	public Set<IScheduleElement> getSuccessors(IScheduleElement vertex) {
 		int currentIndex = vervexList.indexOf(vertex);
 		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size())
 			return null;
 		
-		Set<DAGVertex> vSet = new HashSet<DAGVertex>();
+		Set<IScheduleElement> vSet = new HashSet<IScheduleElement>();
 		for(int i = currentIndex+1;i<vervexList.size();i++){
 			vSet.add(vervexList.get(i));
 		}
 		return vSet;
 	}
 	
-	public int indexOf(MapperDAGVertex v){
+	public int indexOf(IScheduleElement v){
 		return vervexList.indexOf(v);
 	}
 	
-	public boolean contains(MapperDAGVertex v){
+	public boolean contains(IScheduleElement v){
 		return vervexList.contains(v);
 	}
 	
@@ -241,8 +218,8 @@ public class Schedule {
 		return vervexList.isEmpty();
 	}
 
-	public LinkedList<MapperDAGVertex> getVervexList() {
-		return vervexList;
+	public List<IScheduleElement> getList() {
+		return Collections.unmodifiableList(vervexList);
 	}
 
 	@Override
@@ -254,7 +231,7 @@ public class Schedule {
 
 		List<String> order = new ArrayList<String>();
 
-		for (MapperDAGVertex v : vervexList) {
+		for (IScheduleElement v : vervexList) {
 			order.add(v.getName());
 		}
 
