@@ -144,7 +144,7 @@ public abstract class AbstractAbc implements IAbc {
 			AbcType abcType, IScenario scenario) {
 
 		this.abcType = abcType;
-		orderManager = new SchedOrderManager();
+		orderManager = new SchedOrderManager(archi);
 
 		this.dag = dag;
 		// implementation is a duplicate from dag

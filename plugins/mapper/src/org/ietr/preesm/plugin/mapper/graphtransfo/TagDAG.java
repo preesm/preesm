@@ -119,7 +119,7 @@ public class TagDAG {
 
 		// Temporary
 		// TODO: add a scheduling order for Send/Receive.
-		SchedOrderManager orderMgr = new SchedOrderManager();
+		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 
 		CommunicationRouter comRouter = new CommunicationRouter(architecture,

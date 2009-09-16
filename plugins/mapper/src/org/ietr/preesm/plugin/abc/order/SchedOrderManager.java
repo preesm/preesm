@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -71,9 +73,14 @@ public class SchedOrderManager extends Observable {
 	 */
 	Schedule totalOrder = null;
 
-	public SchedOrderManager() {
+	public SchedOrderManager(MultiCoreArchitecture archi) {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
+		
+		for(ArchitectureComponent cmp : archi.getComponents()){
+			schedules.put(cmp, new Schedule());
+		}
+		
 		totalOrder = new Schedule();
 	}
 
@@ -83,7 +90,6 @@ public class SchedOrderManager extends Observable {
 	 */
 	public void insertInTotalOrder(MapperDAGVertex vertex) {
 
-		AddScheduleIfNotPresent(vertex);
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -119,7 +125,7 @@ public class SchedOrderManager extends Observable {
 
 		// Notifies the time keeper that it should update the successors
 		Set<IScheduleElement> vSet = totalOrder.getSuccessors(vertex);
-		if (vSet.isEmpty()) {
+		if (vSet == null || vSet.isEmpty()) {
 			vSet = new HashSet<IScheduleElement>();
 		}
 		vSet.add(vertex);
@@ -128,11 +134,11 @@ public class SchedOrderManager extends Observable {
 	}
 
 	/**
-	 * Appends the vertex at the end of a schedule and at the end of total order
+	 * If the input is a vertex, appends it at the end of one schedule and at
+	 * the end of total order. If the input is synschronizedVertices, appends it
+	 * at the end of all concerned schedules and at the end of total order.
 	 */
 	public void addLast(MapperDAGVertex vertex) {
-
-		AddScheduleIfNotPresent(vertex);
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 			ArchitectureComponent effectiveCmp = vertex
@@ -159,8 +165,6 @@ public class SchedOrderManager extends Observable {
 	 * order
 	 */
 	public void addFirst(MapperDAGVertex vertex) {
-
-		AddScheduleIfNotPresent(vertex);
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 			ArchitectureComponent effectiveCmp = vertex
@@ -190,7 +194,6 @@ public class SchedOrderManager extends Observable {
 		if (previous == null) {
 			addLast(vertex);
 		} else {
-			AddScheduleIfNotPresent(vertex);
 
 			ImplementationVertexProperty prevImpProp = previous
 					.getImplementationVertexProperty();
@@ -219,7 +222,6 @@ public class SchedOrderManager extends Observable {
 		if (next == null) {
 			addFirst(vertex);
 		} else {
-			AddScheduleIfNotPresent(vertex);
 
 			ImplementationVertexProperty prevImpProp = next
 					.getImplementationVertexProperty();
@@ -344,46 +346,56 @@ public class SchedOrderManager extends Observable {
 	 */
 	public void resetTotalOrder() {
 		totalOrder.clear();
-		schedules.clear();
-	}
-
-	/**
-	 * Adds the schedule corresponding to the vertex effective component if not
-	 * present
-	 */
-	private void AddScheduleIfNotPresent(MapperDAGVertex vertex) {
-
-		ImplementationVertexProperty currImpProp = vertex
-				.getImplementationVertexProperty();
-
-		// Gets the component corresponding to the vertex
-		if (currImpProp.hasEffectiveComponent()) {
-			ArchitectureComponent effectiveCmp = currImpProp
-					.getEffectiveComponent();
-
-			// If no schedule exists for this component,
-			// adds a schedule for it
-			if (getSchedule(effectiveCmp) == null)
-				schedules.put(effectiveCmp, new Schedule());
+		
+		for(Schedule s : schedules.values()){
+			s.clear();
 		}
-
 	}
 
 	/**
-	 * Reconstructs the total order using the total order stored in DAG
+	 * Reconstructs the total order using the total order stored in DAG. Creates
+	 * synchronized vertices when several vertices have the same order
 	 */
 	public void reconstructTotalOrderFromDAG(MapperDAG dag) {
 
 		resetTotalOrder();
 
-		ConcurrentSkipListSet<DAGVertex> newTotalOrder = new ConcurrentSkipListSet<DAGVertex>(
-				new SchedulingOrderComparator());
+		List<DAGVertex> newTotalOrder = new ArrayList<DAGVertex>(dag
+				.vertexSet());
 
-		newTotalOrder.addAll(dag.vertexSet());
+		Collections.sort(newTotalOrder, new SchedulingOrderComparator());
 
+		int currentOrder = ((MapperDAGVertex) newTotalOrder.get(0))
+				.getImplementationVertexProperty().getSchedTotalOrder();
+		List<MapperDAGVertex> verticesToSynchro = new ArrayList<MapperDAGVertex>();
+
+		// If the current vertex has a greater order than its predecessor, we
+		// add its predecessor in the schedules and we store the new vertex. If
+		// the current vertex has the same order as its predecessor, we add it
+		// to the vertices to synchro.
 		for (DAGVertex vertex : newTotalOrder) {
+			MapperDAGVertex mVertex = (MapperDAGVertex) vertex;
+			int mVOrder = mVertex.getImplementationVertexProperty()
+					.getSchedTotalOrder();
+			if (mVOrder > currentOrder) {
+				// Adding the preceding element
+				if (verticesToSynchro.size() == 1) {
+					addLast(verticesToSynchro.get(0));
+				} else if (verticesToSynchro.size() > 1) {
+					//addLast(new SynchronizedVertices(verticesToSynchro));
+				}
+				verticesToSynchro.clear();
+				currentOrder = mVOrder;
+			} 
+			
+			verticesToSynchro.add((MapperDAGVertex) vertex);
+		}
 
-			addLast((MapperDAGVertex) vertex);
+		// Adding the last element
+		if (verticesToSynchro.size() == 1) {
+			addLast(verticesToSynchro.get(0));
+		} else if (verticesToSynchro.size() > 1) {
+			//addLast(new SynchronizedVertices(verticesToSynchro));
 		}
 	}
 

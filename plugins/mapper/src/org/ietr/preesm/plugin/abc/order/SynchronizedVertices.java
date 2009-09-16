@@ -19,6 +19,11 @@ public class SynchronizedVertices implements IScheduleElement {
 
 	private List<MapperDAGVertex> vertices = null;
 
+	public SynchronizedVertices(List<MapperDAGVertex> vertices) {
+		super();
+		this.vertices = vertices;
+	}
+
 	@Override
 	public String getName() {
 		return null;

@@ -46,8 +46,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * 
  * @author mpelcat
  */
-public class SchedulingOrderComparator implements
-Comparator<DAGVertex> {
+public class SchedulingOrderComparator implements Comparator<DAGVertex> {
 
 	/**
 	 * @Override compare
@@ -57,10 +56,14 @@ Comparator<DAGVertex> {
 
 		int difference = 0;
 
-		difference = (Integer) ((MapperDAGVertex)v1).getImplementationVertexProperty().getSchedTotalOrder();
+		difference = ((MapperDAGVertex) v1).getImplementationVertexProperty()
+				.getSchedTotalOrder();
+		difference -= ((MapperDAGVertex) v2).getImplementationVertexProperty()
+				.getSchedTotalOrder();
 
-		difference -= (Integer) ((MapperDAGVertex)v2).getImplementationVertexProperty().getSchedTotalOrder();
-
+		if (difference == 0) {
+			difference = 1;
+		}
 		return difference;
 	}
 
