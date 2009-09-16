@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.edgescheduling;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -102,7 +103,7 @@ public class IntervalFinder {
 	public Interval findInterval(ArchitectureComponent component,
 			MapperDAGVertex minVertex, MapperDAGVertex maxVertex, FindType type) {
 
-		Schedule schedule = orderManager.getSchedule(component);
+		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
 		long minIndexVertexEndTime = -1;
 		int minIndex = -1;
@@ -128,7 +129,7 @@ public class IntervalFinder {
 		Interval freeInterval = new Interval(-1, -1, 0);
 
 		if (schedule != null) {
-			for (IScheduleElement v : schedule.getList()) {
+			for (MapperDAGVertex v : schedule) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				
 				// If we have the current vertex tLevel
@@ -201,7 +202,7 @@ public class IntervalFinder {
 
 		ArchitectureComponent component = vertex
 				.getImplementationVertexProperty().getEffectiveComponent();
-		Schedule schedule = orderManager.getSchedule(component);
+		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
 		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
 		long availability = sourceProps.getNewtLevel() + sourceProps.getCost();
@@ -212,7 +213,7 @@ public class IntervalFinder {
 				+ availability + ": ";
 
 		if (schedule != null) {
-			for (IScheduleElement v : schedule.getList()) {
+			for (IScheduleElement v : schedule) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
 				if (props.getNewtLevel() >= 0)
 					trace += "<" + props.getNewtLevel() + ","

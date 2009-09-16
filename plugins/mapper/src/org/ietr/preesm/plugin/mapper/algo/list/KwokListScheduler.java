@@ -120,11 +120,7 @@ public class KwokListScheduler {
 			if (currentvertex.equals(fcpvertex)) {
 				archisimu.implant(currentvertex, operatorfcp, true);
 			} else {
-
-				if (currentvertex.getName().contains("_PreProcessing")) {
-					PreesmLogger.getLogger().log(Level.INFO, "tutu");
-				}
-
+				
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 

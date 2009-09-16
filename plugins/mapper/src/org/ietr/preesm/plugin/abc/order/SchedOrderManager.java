@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -80,7 +81,7 @@ public class SchedOrderManager extends Observable {
 	 * Considering that vertex already has a total order, inserts it at the
 	 * appropriate position in its schedule
 	 */
-	public void insertInTotalOrder(IScheduleElement vertex) {
+	public void insertInTotalOrder(MapperDAGVertex vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -129,7 +130,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Appends the vertex at the end of a schedule and at the end of total order
 	 */
-	public void addLast(IScheduleElement vertex) {
+	public void addLast(MapperDAGVertex vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -157,7 +158,7 @@ public class SchedOrderManager extends Observable {
 	 * Appends the vertex at the beginning of a schedule and at the end of total
 	 * order
 	 */
-	public void addFirst(IScheduleElement vertex) {
+	public void addFirst(MapperDAGVertex vertex) {
 
 		AddScheduleIfNotPresent(vertex);
 
@@ -184,8 +185,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertAfter(IScheduleElement previous,
-			IScheduleElement vertex) {
+	public void insertAfter(MapperDAGVertex previous, MapperDAGVertex vertex) {
 
 		if (previous == null) {
 			addLast(vertex);
@@ -212,9 +212,9 @@ public class SchedOrderManager extends Observable {
 	}
 
 	/**
-	 * Inserts vertex after previous
+	 * Inserts vertex before next
 	 */
-	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
+	public void insertBefore(IScheduleElement next, MapperDAGVertex vertex) {
 
 		if (next == null) {
 			addFirst(vertex);
@@ -244,10 +244,10 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertAtIndex(int index, IScheduleElement vertex) {
+	public void insertAtIndex(int index, MapperDAGVertex vertex) {
 
-		IScheduleElement ref = totalOrder.get(index);
-		if (ref != null) {
+		if (index < totalOrder.size() && index >= 0) {
+			IScheduleElement ref = totalOrder.get(index);
 			insertBefore(ref, vertex);
 		} else {
 			addLast(vertex);
@@ -257,7 +257,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the local scheduling order, -1 if not present
 	 */
-	public int localIndexOf(IScheduleElement vertex) {
+	public int localIndexOf(MapperDAGVertex vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 
@@ -275,14 +275,21 @@ public class SchedOrderManager extends Observable {
 	 * Gets the total scheduling order
 	 */
 	public int totalIndexOf(IScheduleElement vertex) {
+
 		return totalOrder.indexOf(vertex);
 	}
 
 	/**
 	 * Gets the vertex with the given total scheduling order
 	 */
-	public IScheduleElement get(int totalOrderIndex) {
-		return totalOrder.get(totalOrderIndex);
+	public MapperDAGVertex get(int totalOrderIndex) {
+		IScheduleElement elt = totalOrder.get(totalOrderIndex);
+		if (elt instanceof MapperDAGVertex) {
+			return (MapperDAGVertex) elt;
+		} else if (elt instanceof SynchronizedVertices) {
+			return ((SynchronizedVertices) elt).getVertices().get(0);
+		}
+		return null;
 	}
 
 	/**
@@ -292,29 +299,6 @@ public class SchedOrderManager extends Observable {
 
 		return schedules.keySet();
 
-	}
-
-	/**
-	 * Gets the schedule of a given component
-	 */
-	public List<IScheduleElement> getScheduleList(ArchitectureComponent cmp) {
-
-		return getSchedule(cmp).getList();
-
-	}
-
-	/**
-	 * Gets the schedule of a given component
-	 */
-	public Schedule getSchedule(ArchitectureComponent cmp) {
-
-		// Preventing from creating several schedules with same name
-		for (ArchitectureComponent o : schedules.keySet()) {
-			if (o.equals(cmp)) {
-				return schedules.get(o);
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -367,7 +351,7 @@ public class SchedOrderManager extends Observable {
 	 * Adds the schedule corresponding to the vertex effective component if not
 	 * present
 	 */
-	private void AddScheduleIfNotPresent(IScheduleElement vertex) {
+	private void AddScheduleIfNotPresent(MapperDAGVertex vertex) {
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -421,24 +405,33 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Sets the total order of vertex implementation property in DAG
 	 */
-	private void tagVertex(IScheduleElement vertex) {
+	private void tagVertex(MapperDAGVertex vertex) {
 
 		vertex.getImplementationVertexProperty().setSchedTotalOrder(
 				totalOrder.indexOf(vertex));
 	}
 
 	/**
-	 * Gets the previous vertex in the same schedule
+	 * Gets the previous vertex in the same schedule. Searches in the
+	 * synchronized vertices if any
 	 */
-	public IScheduleElement getPrevious(IScheduleElement vertex) {
+	public MapperDAGVertex getPrevious(MapperDAGVertex vertex) {
 
-		IScheduleElement prevVertex = null;
+		IScheduleElement prevElt = null;
+		MapperDAGVertex prevVertex = null;
+		ArchitectureComponent cmp = vertex.getImplementationVertexProperty()
+				.getEffectiveComponent();
+		Schedule schedule = getSchedule(cmp);
 
-		Schedule schedule = getSchedule(vertex
-				.getImplementationVertexProperty().getEffectiveComponent());
+		if (schedule != null) {
+			prevElt = schedule.getPrevious(vertex);
 
-		if (schedule != null)
-			prevVertex = schedule.getPrevious(vertex);
+			if (prevElt instanceof MapperDAGVertex) {
+				prevVertex = (MapperDAGVertex) prevElt;
+			} else if (prevElt instanceof SynchronizedVertices) {
+				prevVertex = ((SynchronizedVertices) prevElt).getVertex(cmp);
+			}
+		}
 
 		return prevVertex;
 	}
@@ -446,14 +439,24 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the next vertex in the same schedule
 	 */
-	public IScheduleElement getNext(IScheduleElement vertex) {
-		IScheduleElement nextVertex = null;
+	public MapperDAGVertex getNext(MapperDAGVertex vertex) {
+		IScheduleElement nextElement = null;
+		MapperDAGVertex nextVertex = null;
 
-		Schedule schedule = getSchedule(vertex
-				.getImplementationVertexProperty().getEffectiveComponent());
+		ArchitectureComponent cmp = vertex.getImplementationVertexProperty()
+				.getEffectiveComponent();
+		Schedule schedule = getSchedule(cmp);
 
-		if (schedule != null)
-			nextVertex = schedule.getNext(vertex);
+		if (schedule != null) {
+			nextElement = schedule.getNext(vertex);
+
+			if (nextElement instanceof MapperDAGVertex) {
+				nextVertex = (MapperDAGVertex) nextElement;
+			} else if (nextElement instanceof SynchronizedVertices) {
+				nextVertex = ((SynchronizedVertices) nextElement)
+						.getVertex(cmp);
+			}
+		}
 
 		return nextVertex;
 	}
@@ -467,4 +470,54 @@ public class SchedOrderManager extends Observable {
 		return totalOrder.toString();
 	}
 
+	/**
+	 * Gets the schedule of a given component
+	 */
+	private Schedule getSchedule(ArchitectureComponent cmp) {
+
+		// Preventing from creating several schedules with same name
+		for (ArchitectureComponent o : schedules.keySet()) {
+			if (o.equals(cmp)) {
+				return schedules.get(o);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the schedule of a given component
+	 */
+	public List<MapperDAGVertex> getVertexList(ArchitectureComponent cmp) {
+
+		Schedule s = null;
+		List<MapperDAGVertex> vList = new ArrayList<MapperDAGVertex>();
+
+		// Preventing from creating several schedules with same name
+		for (ArchitectureComponent o : schedules.keySet()) {
+			if (o.equals(cmp)) {
+				s = schedules.get(o);
+			}
+		}
+
+		if (s != null) {
+			for (IScheduleElement elt : s.getList()) {
+				if (elt instanceof MapperDAGVertex) {
+					vList.add((MapperDAGVertex) elt);
+				} else if (elt instanceof SynchronizedVertices) {
+					vList.addAll(((SynchronizedVertices) elt).getVertices());
+				}
+			}
+		}
+
+		return vList;
+	}
+
+	public long getBusyTime(ArchitectureComponent c) {
+		Schedule sched = getSchedule(c);
+		if (sched != null) {
+			return sched.getBusyTime();
+		}
+
+		return 0l;
+	}
 }

@@ -397,12 +397,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	public final long getLoad(ArchitectureComponent component) {
 
-		long load2 = 0;
-		Schedule sched = orderManager.getSchedule(component);
-
-		if (sched != null) {
-			load2 = sched.getBusyTime();
-		}
+		long load2 = orderManager.getBusyTime(component);
 
 		/*
 		long load = 0;

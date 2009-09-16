@@ -102,9 +102,9 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 	public void execute(List<Object> resultList) {
 		super.execute(resultList);
 
-		for (MapperDAGVertex v : verticesToSynchronize){
+		/*for (MapperDAGVertex v : verticesToSynchronize){
 			v.getTimingVertexProperty().setSynchronizedVertices(verticesToSynchronize);
-		}
+		}*/
 	}
 
 	@Override

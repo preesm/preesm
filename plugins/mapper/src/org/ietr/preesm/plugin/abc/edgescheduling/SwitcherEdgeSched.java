@@ -70,14 +70,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		// Synchronized vertices should not be moved in order to stay
-		// synchronized
-		if (vertex.getTimingVertexProperty().getSynchronizedVertices() != null
-				&& !vertex.getTimingVertexProperty().getSynchronizedVertices()
-						.isEmpty()) {
-			orderManager.insertAfter(source, vertex);
-		} else {
-			ArchitectureComponent component = vertex
+		ArchitectureComponent component = vertex
 					.getImplementationVertexProperty().getEffectiveComponent();
 			// intervalFinder.displayCurrentSchedule(vertex, source);
 			Interval largestInterval = intervalFinder.findLargestFreeInterval(
@@ -103,7 +96,6 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 				}
 			}
 		}
-	}
 
 	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Switcher;

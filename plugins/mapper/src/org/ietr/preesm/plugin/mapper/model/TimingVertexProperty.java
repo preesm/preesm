@@ -50,26 +50,9 @@ public class TimingVertexProperty {
 	static public final long UNAVAILABLE = -1;
 
 	/**
-	 * B Level is the time between the vertex start and the total end of
-	 * execution. Valid only with infinite homogeneous architecture simulator
-	 */
-	//private long bLevel;
-
-	/**
-	 * T Level is the time between the start of execution and the vertex start
-	 */
-	//private long tLevel;
-
-	/**
 	 * time to execute the vertex
 	 */
 	private long cost;
-
-	/**
-	 * Vertices that must appear in the Gantt at the exact same time as the
-	 * current vertex.
-	 */
-	private List<MapperDAGVertex> synchronizedVertices = null;
 
 	/**
 	 * B Level is the time between the vertex start and the total end of
@@ -90,52 +73,17 @@ public class TimingVertexProperty {
 	@Override
 	public TimingVertexProperty clone() {
 		TimingVertexProperty property = new TimingVertexProperty();
-		//property.setBlevel(this.getBlevel());
-		//property.setTlevel(this.getTlevel());
 		property.setNewbLevel(this.getNewbLevel());
 		property.setNewtLevel(this.getNewtLevel());
 		property.setCost(this.getCost());
 		return property;
 	}
 
-	/*public long getBlevel() {
-
-		return bLevel;
-	}
-
-	public long getTlevel() {
-		return tLevel;
-	}
-
-	public boolean hasBlevel() {
-		return bLevel != UNAVAILABLE;
-	}
-
-	public boolean hasTlevel() {
-		return tLevel != UNAVAILABLE;
-	}*/
-
 	public void reset() {
 		cost = UNAVAILABLE;
-		//tLevel = UNAVAILABLE;
-		//bLevel = UNAVAILABLE;
 		newtLevel = UNAVAILABLE;
 		newbLevel = UNAVAILABLE;
-		
-		synchronizedVertices = null;
 	}
-
-	/*public void setBlevel(long blevel) {
-		this.bLevel = blevel;
-	}
-
-	public void setTlevel(long tlevel) {
-		this.tLevel = tlevel;
-	}
-
-	public void resetTLevel() {
-		this.tLevel = UNAVAILABLE;
-	}*/
 
 	public String toString() {
 		return "";
@@ -155,15 +103,6 @@ public class TimingVertexProperty {
 
 	public void resetCost() {
 		setCost(UNAVAILABLE);
-	}
-
-	public List<MapperDAGVertex> getSynchronizedVertices() {
-		return synchronizedVertices;
-	}
-
-	public void setSynchronizedVertices(
-			List<MapperDAGVertex> synchronizedVertices) {
-		this.synchronizedVertices = synchronizedVertices;
 	}
 
 	public long getNewbLevel() {

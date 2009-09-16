@@ -5,6 +5,7 @@ package org.ietr.preesm.plugin.mapper.timekeeper;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -356,7 +357,7 @@ public class NewTimeKeeper implements Observer {
 	 * If current implementation information is not enough to calculate this
 	 * timing, returns UNAVAILABLE
 	 */
-	public long getFinalTime(IScheduleElement vertex) {
+	public long getFinalTime(MapperDAGVertex vertex) {
 
 		long vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
 		TimingVertexProperty timingproperty = vertex.getTimingVertexProperty();
@@ -411,10 +412,10 @@ public class NewTimeKeeper implements Observer {
 		}
 
 		if (finalTimeRefCmp != null) {
-			Schedule sched = orderManager.getSchedule(finalTimeRefCmp);
+			List<MapperDAGVertex> sched = orderManager.getVertexList(finalTimeRefCmp);
 
 			if (sched != null && !sched.isEmpty()) {
-				finaltime = getFinalTime(sched.getLast());
+				finaltime = getFinalTime(sched.get(sched.size()-1));
 			} else {
 				finaltime = 0;
 			}

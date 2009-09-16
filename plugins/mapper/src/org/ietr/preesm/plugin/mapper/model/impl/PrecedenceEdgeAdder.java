@@ -89,21 +89,21 @@ public class PrecedenceEdgeAdder {
 			MapperDAG implementation) {
 
 		TransactionManager localTransactionManager = new TransactionManager();
-		Iterator<ArchitectureComponent> schedIt = orderManager
+		Iterator<ArchitectureComponent> opIt = orderManager
 				.getArchitectureComponents().iterator();
 
 		// Iterates the schedules
-		while (schedIt.hasNext()) {
-			List<IScheduleElement> schedule = orderManager
-					.getScheduleList(schedIt.next());
+		while (opIt.hasNext()) {
+			List<MapperDAGVertex> schedule = orderManager
+					.getVertexList(opIt.next());
 
-			Iterator<IScheduleElement> schedit = schedule.iterator();
+			Iterator<MapperDAGVertex> schedit = schedule.iterator();
 
 			MapperDAGVertex src;
 
 			// Iterates all vertices in each schedule
 			if (schedit.hasNext()) {
-				MapperDAGVertex dst = (/*toReview*/MapperDAGVertex)schedit.next();
+				MapperDAGVertex dst = schedit.next();
 
 				while (schedit.hasNext()) {
 
@@ -164,9 +164,10 @@ public class PrecedenceEdgeAdder {
 		cmpSet.addAll(archi.getComponents(ArchitectureComponentType.operator));
 
 		for (ArchitectureComponent o : cmpSet) {
-			if (orderManager.getSchedule(o) != null) {
+			List<MapperDAGVertex> schedule = orderManager.getVertexList(o);
+			if (schedule != null) {
 				MapperDAGVertex pv = null;
-				for (IScheduleElement v : orderManager.getSchedule(o).getList()) {
+				for (IScheduleElement v : schedule) {
 					if (pv != null) {
 						if (implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v) == null
 								|| implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v).isEmpty()) {

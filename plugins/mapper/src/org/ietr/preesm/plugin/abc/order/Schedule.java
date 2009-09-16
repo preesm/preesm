@@ -61,7 +61,7 @@ public class Schedule {
 	 * The ordered list of vertices in this schedule
 	 */
 	private LinkedList<IScheduleElement> vervexList;
-	
+
 	/**
 	 * The total time of the schedule vertices
 	 */
@@ -78,12 +78,12 @@ public class Schedule {
 	 * Appends a vertex at the end of the schedule
 	 */
 	public void addLast(IScheduleElement vertex) {
-		if(vertex.getTimingVertexProperty().getCost() >= 0){
-			busyTime += vertex.getTimingVertexProperty().getCost();}
-		else{
-			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 1.");
-			}
-		
+		if (vertex.getTimingVertexProperty().getCost() >= 0) {
+			busyTime += vertex.getTimingVertexProperty().getCost();
+		} else {
+			// PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 1.");
+		}
+
 		if (!vervexList.contains(vertex))
 			vervexList.addLast(vertex);
 	}
@@ -92,12 +92,12 @@ public class Schedule {
 	 * Inserts a vertex at the beginning of the schedule
 	 */
 	public void addFirst(IScheduleElement vertex) {
-		if(vertex.getTimingVertexProperty().getCost() >= 0){
-			busyTime += vertex.getTimingVertexProperty().getCost();}
-		else{
-			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 2.");
+		if (vertex.getTimingVertexProperty().getCost() >= 0) {
+			busyTime += vertex.getTimingVertexProperty().getCost();
+		} else {
+			// PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 2.");
 		}
-		
+
 		if (!vervexList.contains(vertex))
 			vervexList.addFirst(vertex);
 	}
@@ -105,20 +105,20 @@ public class Schedule {
 	/**
 	 * Inserts a vertex after the given one
 	 */
-	public void insertAfter(IScheduleElement previous,
-			IScheduleElement vertex) {
-		if(vertex.getTimingVertexProperty().getCost() >= 0){
-			busyTime += vertex.getTimingVertexProperty().getCost();}
-		else{
-			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 3.");
+	public void insertAfter(IScheduleElement previous, IScheduleElement vertex) {
+		if (vertex.getTimingVertexProperty().getCost() >= 0) {
+			busyTime += vertex.getTimingVertexProperty().getCost();
+		} else {
+			// PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 3.");
 		}
 
 		if (!vervexList.contains(vertex))
 			if (vervexList.indexOf(previous) >= 0) {
 				if (vervexList.indexOf(previous) + 1 < vervexList.size()) {
-					IScheduleElement next = vervexList.get(vervexList.indexOf(previous) + 1);
+					IScheduleElement next = vervexList.get(vervexList
+							.indexOf(previous) + 1);
 					vervexList.add(vervexList.indexOf(next), vertex);
-				} else{
+				} else {
 					vervexList.addLast(vertex);
 				}
 			}
@@ -128,50 +128,52 @@ public class Schedule {
 	 * Inserts a vertex before the given one
 	 */
 	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
-		if(vertex.getTimingVertexProperty().getCost() >= 0){
-			busyTime += vertex.getTimingVertexProperty().getCost();}
-		else{
-			//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 4.");
+		if (vertex.getTimingVertexProperty().getCost() >= 0) {
+			busyTime += vertex.getTimingVertexProperty().getCost();
+		} else {
+			// PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 4.");
 		}
 
 		if (!vervexList.contains(vertex))
 			if (vervexList.indexOf(next) >= 0) {
-				IScheduleElement previous = vervexList.get(vervexList.indexOf(next) - 1);
+				IScheduleElement previous = vervexList.get(vervexList
+						.indexOf(next) - 1);
 				vervexList.add(vervexList.indexOf(next), vertex);
 			}
 	}
-	
-	public void clear(){
+
+	public void clear() {
 		resetBusyTime();
-		
+
 		vervexList.clear();
 	}
-	
-	public void resetBusyTime(){
+
+	public void resetBusyTime() {
 		busyTime = 0;
 	}
-	
-	public void remove(IScheduleElement vertex){
-		if(vervexList.contains(vertex)){
-			if(vertex.getTimingVertexProperty().getCost() >= 0){
-				busyTime -= vertex.getTimingVertexProperty().getCost();}
-			else{
-				//PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 5.");
+
+	public void remove(IScheduleElement vertex) {
+		if (vervexList.contains(vertex)) {
+			if (vertex.getTimingVertexProperty().getCost() >= 0) {
+				busyTime -= vertex.getTimingVertexProperty().getCost();
+			} else {
+				// PreesmLogger.getLogger().log(Level.SEVERE,"problem in schedule busy time calculation 5.");
 			}
 		}
-		
+
 		vervexList.remove(vertex);
 	}
-	
+
 	// Access without modification
-	
-	public IScheduleElement get(int i){
+
+	public IScheduleElement get(int i) {
 		return vervexList.get(i);
 	}
-	
-	public IScheduleElement getLast(){
+
+	public IScheduleElement getLast() {
 		return vervexList.getLast();
 	}
+
 	/**
 	 * Gets the previous vertex in the current schedule
 	 */
@@ -186,7 +188,8 @@ public class Schedule {
 	 */
 	public IScheduleElement getNext(IScheduleElement vertex) {
 		int currentIndex = vervexList.indexOf(vertex);
-		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size() - 1)
+		if (currentIndex < 0
+				|| vervexList.indexOf(vertex) >= vervexList.size() - 1)
 			return null;
 		return (vervexList.get(currentIndex + 1));
 	}
@@ -198,28 +201,44 @@ public class Schedule {
 		int currentIndex = vervexList.indexOf(vertex);
 		if (currentIndex < 0 || vervexList.indexOf(vertex) >= vervexList.size())
 			return null;
-		
+
 		Set<IScheduleElement> vSet = new HashSet<IScheduleElement>();
-		for(int i = currentIndex+1;i<vervexList.size();i++){
+		for (int i = currentIndex + 1; i < vervexList.size(); i++) {
 			vSet.add(vervexList.get(i));
 		}
 		return vSet;
 	}
-	
-	public int indexOf(IScheduleElement v){
-		return vervexList.indexOf(v);
+
+	/**
+	 * Giving the index of the vertex if present in the list or in a syncronized
+	 * vertex from the list
+	 */
+	public int indexOf(IScheduleElement v) {
+		int index = vervexList.indexOf(v);
+
+		if (index == -1) {
+			for (IScheduleElement sElt : vervexList) {
+				if (sElt instanceof SynchronizedVertices
+						&& ((SynchronizedVertices) sElt).getVertices()
+								.contains(v)) {
+					return vervexList.indexOf(sElt);
+				}
+			}
+		}
+
+		return index;
 	}
-	
-	public boolean contains(IScheduleElement v){
-		return vervexList.contains(v);
+
+	public boolean contains(IScheduleElement v) {
+		return indexOf(v) != -1;
 	}
-	
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return vervexList.isEmpty();
 	}
 
 	public List<IScheduleElement> getList() {
-		return Collections.unmodifiableList(vervexList);
+		return vervexList;
 	}
 
 	@Override
@@ -244,5 +263,5 @@ public class Schedule {
 
 	public int size() {
 		return vervexList.size();
-	}	
+	}
 }
