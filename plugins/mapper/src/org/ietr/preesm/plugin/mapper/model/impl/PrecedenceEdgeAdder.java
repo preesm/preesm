@@ -156,8 +156,7 @@ public class PrecedenceEdgeAdder {
 	 * present
 	 */
 	public static void checkPrecedences(SchedOrderManager orderManager,
-			MapperDAG implementation, MultiCoreArchitecture archi,
-			MapperDAGVertex modifiedVertex) {
+			MapperDAG implementation, MultiCoreArchitecture archi) {
 
 		Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>();
 		cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
@@ -172,8 +171,6 @@ public class PrecedenceEdgeAdder {
 						if (implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v) == null
 								|| implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v).isEmpty()) {
 
-							if (!pv.equals(modifiedVertex)
-									&& !v.equals(modifiedVertex))
 								PreesmLogger.getLogger().log(
 										Level.SEVERE,
 										"Lacking precedence edge between "

@@ -40,7 +40,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
@@ -54,7 +57,7 @@ import org.sdf4j.model.dag.DAGVertex;
  */
 public class TopologicalTaskSched extends AbstractTaskSched {
 
-	private List<String> initList = null;
+	private VertexOrderList initList = null;
 	private List<MapperDAGVertex> topolist = null;
 
 	private static class TopoComparator implements Comparator<MapperDAGVertex> {
@@ -78,9 +81,9 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 	private static class InitListComparator implements
 			Comparator<MapperDAGVertex> {
 
-		private List<String> initList = null;
+		private VertexOrderList initList = null;
 
-		public InitListComparator(List<String> initlist) {
+		public InitListComparator(VertexOrderList initlist) {
 			super();
 			this.initList = initlist;
 		}
@@ -89,15 +92,15 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 		public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
 			int compare;
 
-			compare = initList.indexOf(v0.getName())
-					- initList.indexOf(v1.getName());
+			compare = initList.orderOf(v0.getName())
+					- initList.orderOf(v1.getName());
 
 			return compare;
 		}
 
 	}
 
-	public TopologicalTaskSched(List<String> initlist) {
+	public TopologicalTaskSched(VertexOrderList initlist) {
 		this.initList = initlist;
 	}
 
@@ -144,7 +147,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 			topolist.add((MapperDAGVertex) v);
 			
 			if (!initList.contains(v.getName())) {
-				initList.add(v.getName());
+				PreesmLogger.getLogger().log(Level.SEVERE,"problem with topological ordering.");
 			}
 		}
 

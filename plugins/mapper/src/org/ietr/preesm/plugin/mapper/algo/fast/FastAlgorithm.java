@@ -54,12 +54,14 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
@@ -79,7 +81,7 @@ public class FastAlgorithm extends Observable {
 	/**
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
-	private List<String> bestTotalOrder = null;
+	private VertexOrderList bestTotalOrder = null;
 
 	private InitialLists initialLists = null;
 	private IScenario scenario = null;
@@ -185,7 +187,7 @@ public class FastAlgorithm extends Observable {
 		simulator.updateFinalCosts();
 		long initial = simulator.getFinalCost();
 
-		bestTotalOrder = simulator.getTotalOrder().toStringList();
+		bestTotalOrder = simulator.getTotalOrder();
 
 		if (displaySolutions) {
 			createEditor(simulator, abcParams, getBestTotalOrder(), "Cost:"
@@ -213,9 +215,12 @@ public class FastAlgorithm extends Observable {
 		// FAST is stopped after a time given in seconds
 		long stopTime = System.nanoTime() + 1000000000l * fastParams.getFastTime();
 		// the number of local solutions searched in a neighborhood is the size of the graph
-		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
+		//int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
 		// the number of better solutions found in a neighborhood is limited
-		int margin = Math.max(maxStep / 10,1);
+		//int margin = Math.max(maxStep / 10,1);
+		
+		int maxStep = 30;
+		int margin = 10;
 
 		// step 4/17
 		// Stopping after the given time in seconds is reached
@@ -305,7 +310,7 @@ public class FastAlgorithm extends Observable {
 
 				bestSL = simulator.getFinalCost();
 
-				bestTotalOrder = simulator.getTotalOrder().toStringList();
+				bestTotalOrder = simulator.getTotalOrder();
 
 				if (displaySolutions) {
 					createEditor(simulator, abcParams, getBestTotalOrder(),
@@ -357,12 +362,12 @@ public class FastAlgorithm extends Observable {
 		return dagfinal;
 	}
 
-	public List<String> getBestTotalOrder() {
+	public VertexOrderList getBestTotalOrder() {
 		return bestTotalOrder;
 	}
 
 	public void createEditor(IAbc abc, AbcParameters abcParams,
-			List<String> bestTotalOrder, String name) {
+			VertexOrderList bestTotalOrder, String name) {
 
 		MapperDAG dag = abc.getDAG().clone();
 		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc

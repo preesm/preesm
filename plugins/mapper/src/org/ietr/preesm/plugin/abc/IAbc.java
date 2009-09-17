@@ -45,7 +45,9 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -109,14 +111,14 @@ public interface IAbc extends IMapperAbc {
 	public int getSchedTotalOrder(MapperDAGVertex vertex);
 	
 	/**
-	 * Gets the current total schedule of the ABC
+	 * Gets the current total order of the ABC
 	 */
-	public Schedule getTotalOrder();
+	public VertexOrderList getTotalOrder();
 
 	/**
 	 * Reorders the implementation using the given total order or trying to find the best schedule
 	 */
-	public void reschedule(List<String> totalOrder);
+	public void reschedule(VertexOrderList totalOrder);
 	public void reschedule();
 
 	/**

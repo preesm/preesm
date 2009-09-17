@@ -166,7 +166,7 @@ public class FastPopulation {
 			InitialLists initialLists = new InitialLists();
 			initialLists.constructInitialLists(tempdag, simu);
 
-			TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
+			TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 			simu.resetDAG();
 
 			// perform the fast algo

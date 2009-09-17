@@ -62,7 +62,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * @author mpelcat
  */
 public class SchedOrderManager extends Observable {
-
+	
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
@@ -76,12 +76,12 @@ public class SchedOrderManager extends Observable {
 	public SchedOrderManager(MultiCoreArchitecture archi) {
 
 		schedules = new HashMap<ArchitectureComponent, Schedule>();
-		
+
 		// Adding one schedule per component
-		for(ArchitectureComponent cmp : archi.getComponents()){
+		for (ArchitectureComponent cmp : archi.getComponents()) {
 			schedules.put(cmp, new Schedule());
 		}
-		
+
 		totalOrder = new Schedule();
 	}
 
@@ -90,7 +90,6 @@ public class SchedOrderManager extends Observable {
 	 * appropriate position in its schedule
 	 */
 	public void insertInTotalOrder(MapperDAGVertex vertex) {
-
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -347,8 +346,8 @@ public class SchedOrderManager extends Observable {
 	 */
 	public void resetTotalOrder() {
 		totalOrder.clear();
-		
-		for(Schedule s : schedules.values()){
+
+		for (Schedule s : schedules.values()) {
 			s.clear();
 		}
 	}
@@ -383,12 +382,12 @@ public class SchedOrderManager extends Observable {
 				if (verticesToSynchro.size() == 1) {
 					addLast(verticesToSynchro.get(0));
 				} else if (verticesToSynchro.size() > 1) {
-					//addLast(new SynchronizedVertices(verticesToSynchro));
+					// addLast(new SynchronizedVertices(verticesToSynchro));
 				}
 				verticesToSynchro.clear();
 				currentOrder = mVOrder;
-			} 
-			
+			}
+
 			verticesToSynchro.add((MapperDAGVertex) vertex);
 		}
 
@@ -396,7 +395,7 @@ public class SchedOrderManager extends Observable {
 		if (verticesToSynchro.size() == 1) {
 			addLast(verticesToSynchro.get(0));
 		} else if (verticesToSynchro.size() > 1) {
-			//addLast(new SynchronizedVertices(verticesToSynchro));
+			// addLast(new SynchronizedVertices(verticesToSynchro));
 		}
 	}
 
@@ -498,7 +497,8 @@ public class SchedOrderManager extends Observable {
 	}
 
 	/**
-	 * Gets the schedule of a given component
+	 * Gets the mapperdag vertex list of a given component. Splits the
+	 * synchronized vertices objects into their components
 	 */
 	public List<MapperDAGVertex> getVertexList(ArchitectureComponent cmp) {
 

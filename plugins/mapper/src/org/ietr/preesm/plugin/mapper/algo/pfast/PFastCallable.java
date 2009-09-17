@@ -152,7 +152,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		initialLists.constructInitialLists(callableDAG, IHsimu);
 
 		TopologicalTaskSched taskSched = new TopologicalTaskSched(IHsimu
-				.getTotalOrder().toStringList());
+				.getTotalOrder());
 		IHsimu.resetDAG();
 
 		// performing the fast algorithm

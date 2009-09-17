@@ -57,6 +57,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
@@ -80,7 +81,7 @@ public class PFastAlgorithm extends Observable {
 	/**
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
-	private List<String> bestTotalOrder = null;
+	private VertexOrderList bestTotalOrder = null;
 	
 	/**
 	 * FinalTimeComparator : comparator between two different implementation based on
@@ -331,7 +332,7 @@ public class PFastAlgorithm extends Observable {
 		// step 2
 		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
 
-		bestTotalOrder = archisimu.getTotalOrder().toStringList();
+		bestTotalOrder = archisimu.getTotalOrder();
 		archisimu.updateFinalCosts();
 		long iBest = (Long) archisimu.getFinalCost();
 		
@@ -430,13 +431,13 @@ public class PFastAlgorithm extends Observable {
 
 		}
 		
-		bestTotalOrder = (List<String>) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
+		bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
 
 		return dagfinal;
 	}
 
-	public List<String> getBestTotalOrder() {
+	public VertexOrderList getBestTotalOrder() {
 		return bestTotalOrder;
 	}
 }

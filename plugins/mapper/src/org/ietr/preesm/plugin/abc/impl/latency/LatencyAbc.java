@@ -58,6 +58,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
@@ -502,23 +503,23 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Reorders the implementation using the given total order
 	 */
 	@Override
-	public void reschedule(List<String> totalOrder) {
+	public void reschedule(VertexOrderList totalOrder) {
 
 		if (implementation != null && dag != null) {
 
 			// Sets the order in the implementation
-			for (String vName : totalOrder) {
+			for (VertexOrderList.OrderProperty vP : totalOrder.elements()) {
 				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
-						.getVertex(vName);
+						.getVertex(vP.getName());
 				if (ImplVertex != null)
 					ImplVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.indexOf(vName));
+							.setSchedTotalOrder(vP.getOrder());
 
 				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
-						.getVertex(vName);
+						.getVertex(vP.getName());
 				if (dagVertex != null)
 					dagVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(totalOrder.indexOf(vName));
+							.setSchedTotalOrder(vP.getOrder());
 
 			}
 

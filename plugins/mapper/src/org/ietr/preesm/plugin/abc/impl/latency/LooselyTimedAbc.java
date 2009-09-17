@@ -82,6 +82,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 			// Adding precedence edges for an automatic graph timings calculation
 			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
 		}
+
 	}
 
 	/**

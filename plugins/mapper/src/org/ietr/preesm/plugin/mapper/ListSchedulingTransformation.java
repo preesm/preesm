@@ -118,7 +118,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		// Using topological task scheduling in list scheduling: the t-level
 		// order of the infinite homogeneous simulation
 		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu
-				.getTotalOrder().toStringList());
+				.getTotalOrder());
 		simu.resetDAG();
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);

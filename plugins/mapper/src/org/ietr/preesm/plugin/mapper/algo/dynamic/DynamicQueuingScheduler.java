@@ -45,6 +45,7 @@ import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 
@@ -58,7 +59,7 @@ public class DynamicQueuingScheduler {
 	/**
 	 * The queue of vertices to map
 	 */
-	private Schedule queue;
+	private VertexOrderList orderList;
 
 	/**
 	 * Parameters of the workflow
@@ -68,9 +69,9 @@ public class DynamicQueuingScheduler {
 	/**
 	 * constructor
 	 */
-	public DynamicQueuingScheduler(Schedule queue, TextParameters textParameters) {
+	public DynamicQueuingScheduler(VertexOrderList orderList, TextParameters textParameters) {
 		super();
-		this.queue = queue;
+		this.orderList = orderList;
 		this.textParameters = textParameters;
 	}
 
@@ -88,11 +89,10 @@ public class DynamicQueuingScheduler {
 		}
 		
 		if (listType.equalsIgnoreCase("optimised")) {
-			List<IScheduleElement> vList = queue.getList();
 
-			for (IScheduleElement v : vList) {
+			for (VertexOrderList.OrderProperty vP : orderList.elements()) {
 				MapperDAGVertex currentvertex = (/*toReview*/MapperDAGVertex) abc.getDAG()
-						.getVertex(v.getName());
+						.getVertex(vP.getName());
 
 				implantOnBestOp(abc, currentvertex);
 

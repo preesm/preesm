@@ -36,19 +36,72 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
-import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
-import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Element containing either a simple vertex or a group of synchronized elements that have the same total order.
+ * Association of a rank and a vertex name to export a graph total ordering
  * 
  * @author mpelcat
  */
-public interface IScheduleElement {
+public class VertexOrderList {
+	public class OrderProperty {
+		private String name;
+		private int order;
 
-	public String getName();
+		public OrderProperty(String name, int order) {
+			super();
+			this.name = name;
+			this.order = order;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getOrder() {
+			return order;
+		}
+
+		public boolean correspondsTo(MapperDAGVertex v) {
+			return v.getName().equals(name);
+		}
+	}
 	
-	public TimingVertexProperty getTimingVertexProperty();
+	// Maintaining a list of the properties for iterating purpose in the given order
+	private List<OrderProperty> orderedList;
+	// Maintaining a map of the properties for research purpose of a given name
+	private Map<String,OrderProperty> nameMap;
+
+	public VertexOrderList() {
+		super();
+		orderedList = new ArrayList<OrderProperty>();
+		nameMap = new HashMap<String, OrderProperty>();
+	}
 	
-	public ImplementationVertexProperty getImplementationVertexProperty();
+	public int indexOf(OrderProperty p){
+		return orderedList.indexOf(p);
+	}
+
+	public List<OrderProperty> elements(){
+		return Collections.unmodifiableList(orderedList);
+	}
+	
+	public int orderOf(String name){
+		return nameMap.get(name).getOrder();
+	}
+	
+	public boolean contains(String name){
+		return nameMap.containsKey(name);
+	}
+	
+	public void addLast(OrderProperty p){
+		orderedList.add(p);
+		nameMap.put(p.getName(), p);
+	}
 }

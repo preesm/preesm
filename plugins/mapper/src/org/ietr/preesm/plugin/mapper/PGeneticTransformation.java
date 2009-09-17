@@ -108,7 +108,7 @@ public class PGeneticTransformation extends AbstractMapping {
 		if(!initial.constructInitialLists(dag, simu))
 				return null;
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 		simu.resetDAG();
 
 		List<MapperDAG> populationDAG = new ArrayList<MapperDAG>();

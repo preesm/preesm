@@ -108,7 +108,7 @@ public class FASTTransformation extends AbstractMapping {
 			return result;
 		}
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 		simu.resetDAG();
 		
 

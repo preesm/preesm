@@ -104,7 +104,7 @@ public class PFASTTransformation extends AbstractMapping {
 		if (!initial.constructInitialLists(dag, simu))
 			return null;
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder().toStringList());
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
 		simu.resetDAG();
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture, scenario);
