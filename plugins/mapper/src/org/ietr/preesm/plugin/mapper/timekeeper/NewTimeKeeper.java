@@ -16,6 +16,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.Schedule;
+import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -46,7 +47,7 @@ public class NewTimeKeeper implements Observer {
 	/**
 	 * In order to minimize recalculation, a set of modified vertices is kept
 	 */
-	private Set<IScheduleElement> dirtyTLevelVertices;
+	private Set<IScheduleElement> dirtyTLevelElts;
 
 	/**
 	 * Manager of the vertices ordering
@@ -61,7 +62,7 @@ public class NewTimeKeeper implements Observer {
 
 		this.implementation = implementation;
 		neighborindex = null;
-		dirtyTLevelVertices = new HashSet<IScheduleElement>();
+		dirtyTLevelElts = new HashSet<IScheduleElement>();
 		this.orderManager = orderManager;
 		this.orderManager.addObserver(this);
 	}
@@ -88,9 +89,9 @@ public class NewTimeKeeper implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg1 != null) {
 			if (arg1 instanceof Set) {
-				dirtyTLevelVertices.addAll((Set<IScheduleElement>) arg1);
+				dirtyTLevelElts.addAll((Set<IScheduleElement>) arg1);
 			} else if (arg1 instanceof IScheduleElement) {
-				dirtyTLevelVertices.add((IScheduleElement) arg1);
+				dirtyTLevelElts.add((IScheduleElement) arg1);
 			}
 		}
 	}
@@ -105,20 +106,30 @@ public class NewTimeKeeper implements Observer {
 		 * implementation modification or neighbors modification
 		 */
 
-		Iterator<IScheduleElement> vIt = dirtyTLevelVertices.iterator();
-		while (vIt.hasNext()) {
-			DAGVertex v = (/*toReview*/MapperDAGVertex)vIt.next();
-			if (!implementation.vertexSet().contains(v)) {
-				vIt.remove();
+		Iterator<IScheduleElement> eltIt = dirtyTLevelElts.iterator();
+		while (eltIt.hasNext()) {
+			IScheduleElement elt = eltIt.next();
+			if (elt instanceof MapperDAGVertex
+					&& !implementation.vertexSet().contains(elt)) {
+				eltIt.remove();
+			} else if (elt instanceof SynchronizedVertices) {
+				for (MapperDAGVertex v : ((SynchronizedVertices) elt)
+						.getVertices()) {
+					if (!implementation.vertexSet().contains(v)) {
+						eltIt.remove();
+						break;
+					}
+				}
 			}
 		}
 
 		Set<IScheduleElement> allDirtyTLevelVertices = new HashSet<IScheduleElement>(
-				dirtyTLevelVertices);
+				dirtyTLevelElts);
 
 		for (IScheduleElement v : allDirtyTLevelVertices) {
-			if (dirtyTLevelVertices.contains(v))
-				calculateTLevel((/*toReview*/MapperDAGVertex)v);
+			if (dirtyTLevelElts.contains(v)) {
+				calculateTLevel(v);
+			}
 		}
 	}
 
@@ -126,17 +137,24 @@ public class NewTimeKeeper implements Observer {
 	 * calculating top time (or tLevel) of modified vertex and all its
 	 * successors.
 	 */
-	private void calculateTLevel(MapperDAGVertex modifiedvertex) {
+	private void calculateTLevel(IScheduleElement modifiedElt) {
 
-		TimingVertexProperty currenttimingproperty = modifiedvertex
+		TimingVertexProperty currenttimingproperty = modifiedElt
 				.getTimingVertexProperty();
 
 		// If the current vertex has an effective component
-		if (modifiedvertex.getImplementationVertexProperty()
+		if (modifiedElt.getImplementationVertexProperty()
 				.hasEffectiveComponent()) {
 
-			Set<DAGVertex> predset = neighborindex
-					.predecessorsOf(modifiedvertex);
+			Set<DAGVertex> predset = new HashSet<DAGVertex>();
+
+/*			for (DAGEdge edge : modifiedElt.incomingEdges()) {
+				DAGVertex pred = edge.getSource();
+				if (pred != null) {
+					predset.add(edge.getSource());
+				}
+			}*/
+			predset = neighborindex.predecessorsOf((MapperDAGVertex)modifiedElt);
 
 			// If the vertex has no predecessor, ALAP=ASAP=0;
 			// t-level = ASAP
@@ -144,7 +162,7 @@ public class NewTimeKeeper implements Observer {
 				currenttimingproperty.setNewtLevel(0);
 			} else {
 				// The T level is the time of the longest preceding path
-				long l = getLongestPrecedingPath(predset, modifiedvertex);
+				long l = getLongestPrecedingPath(predset, modifiedElt);
 				currenttimingproperty.setNewtLevel(l);
 			}
 
@@ -154,7 +172,7 @@ public class NewTimeKeeper implements Observer {
 					.setNewtLevel(TimingVertexProperty.UNAVAILABLE);
 		}
 
-		dirtyTLevelVertices.remove(modifiedvertex);
+		dirtyTLevelElts.remove(modifiedElt);
 	}
 
 	/**
@@ -164,15 +182,14 @@ public class NewTimeKeeper implements Observer {
 	 * @return last finishing time
 	 */
 	private long getLongestPrecedingPath(Set<DAGVertex> graphset,
-			MapperDAGVertex inputvertex) {
+			IScheduleElement inputElt) {
 
 		long timing = TimingVertexProperty.UNAVAILABLE;
 
-		if (!inputvertex.getImplementationVertexProperty()
-				.hasEffectiveComponent()) {
+		if (!inputElt.getImplementationVertexProperty().hasEffectiveComponent()) {
 			PreesmLogger.getLogger().log(
 					Level.INFO,
-					"tLevel unavailable for vertex " + inputvertex
+					"tLevel unavailable for vertex " + inputElt
 							+ ". No effective component.");
 			return TimingVertexProperty.UNAVAILABLE;
 		}
@@ -185,7 +202,7 @@ public class NewTimeKeeper implements Observer {
 
 			// If we lack information on predecessors, path calculation fails
 			// No recalculation of predecessor T Level if already calculated
-			if (dirtyTLevelVertices.contains(vertex)) {
+			if (dirtyTLevelElts.contains(vertex)) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
 					calculateTLevel(vertex);
@@ -194,18 +211,17 @@ public class NewTimeKeeper implements Observer {
 
 			// If we could not calculate the T level of the predecessor,
 			// calculation fails
-			if (!vertexTProperty.hasCost()
-					|| dirtyTLevelVertices.contains(vertex)) {
+			if (!vertexTProperty.hasCost() || dirtyTLevelElts.contains(vertex)) {
 				PreesmLogger.getLogger().log(
 						Level.INFO,
-						"tLevel unavailable for vertex " + inputvertex
+						"tLevel unavailable for vertex " + inputElt
 								+ ". Lacking information on predecessor "
 								+ vertex + ".");
 				return TimingVertexProperty.UNAVAILABLE;
 			}
 
 			long newPathLength = getVertexTLevelFromPredecessor(vertex,
-					inputvertex);
+					inputElt);
 
 			// Keeping the longest preceding path
 			if (timing < newPathLength) {
@@ -217,10 +233,15 @@ public class NewTimeKeeper implements Observer {
 	}
 
 	private long getVertexTLevelFromPredecessor(MapperDAGVertex pred,
-			MapperDAGVertex current) {
-
-		MapperDAGEdge edge = (MapperDAGEdge) implementation.getEdge(pred,
-				current);
+			IScheduleElement current) {
+		MapperDAGEdge edge = null;
+		 edge = (MapperDAGEdge)implementation.getEdge(pred,
+		 (MapperDAGVertex)current);
+		/*for (DAGEdge e : current.incomingEdges()) {
+			if (e.getSource() != null && e.getSource().equals(pred)) {
+				edge = (MapperDAGEdge) e;
+			}
+		}*/
 		TimingVertexProperty predTProperty = pred.getTimingVertexProperty();
 		long edgeCost = edge.getTimingEdgeProperty().getCost();
 		long newPathLength = predTProperty.getNewtLevel()
@@ -362,7 +383,7 @@ public class NewTimeKeeper implements Observer {
 		long vertexfinaltime = TimingVertexProperty.UNAVAILABLE;
 		TimingVertexProperty timingproperty = vertex.getTimingVertexProperty();
 		if (vertex.getTimingVertexProperty().hasCost()) {
-			if (!dirtyTLevelVertices.contains(vertex)) {
+			if (!dirtyTLevelElts.contains(vertex)) {
 				// Returns, if possible, TLevel + vertex timing
 				vertexfinaltime = vertex.getTimingVertexProperty().getCost()
 						+ timingproperty.getNewtLevel();
@@ -412,10 +433,11 @@ public class NewTimeKeeper implements Observer {
 		}
 
 		if (finalTimeRefCmp != null) {
-			List<MapperDAGVertex> sched = orderManager.getVertexList(finalTimeRefCmp);
+			List<MapperDAGVertex> sched = orderManager
+					.getVertexList(finalTimeRefCmp);
 
 			if (sched != null && !sched.isEmpty()) {
-				finaltime = getFinalTime(sched.get(sched.size()-1));
+				finaltime = getFinalTime(sched.get(sched.size() - 1));
 			} else {
 				finaltime = 0;
 			}
@@ -426,50 +448,38 @@ public class NewTimeKeeper implements Observer {
 
 	public void updateTLevels() {
 		calculateTLevel();
-		dirtyTLevelVertices.clear();
+		dirtyTLevelElts.clear();
 
 		// compareResults();
 	}
 
 	public void updateTandBLevels() {
 		calculateTLevel();
-		dirtyTLevelVertices.clear();
+		dirtyTLevelElts.clear();
 		calculateBLevel();
 
 		// compareResults();
 	}
 
 	/*
-	private void compareResults() {
-
-		Iterator<DAGVertex> it = implementation.vertexSet().iterator();
-
-		while (it.hasNext()) {
-			MapperDAGVertex v = ((MapperDAGVertex) it.next());
-
-			TimingVertexProperty tProp = v.getTimingVertexProperty();
-
-			if (tProp.getNewbLevel() != tProp.getNewbLevel()) {
-				PreesmLogger.getLogger().log(Level.SEVERE,
-						"false bL " + v.getName());
-				int i = 0;
-				i++;
-			} else if (tProp.getNewbLevel() != -1) {
-				int i = 1;
-				i++;
-			}
-
-			if (tProp.getNewtLevel() != tProp.getNewtLevel()) {
-
-				PreesmLogger.getLogger().log(Level.SEVERE,
-						"false tL " + v.getName());
-
-				int i = 0;
-				i++;
-			} else if (tProp.getNewtLevel() != -1) {
-				int i = 1;
-				i++;
-			}
-		}
-	}*/
+	 * private void compareResults() {
+	 * 
+	 * Iterator<DAGVertex> it = implementation.vertexSet().iterator();
+	 * 
+	 * while (it.hasNext()) { MapperDAGVertex v = ((MapperDAGVertex) it.next());
+	 * 
+	 * TimingVertexProperty tProp = v.getTimingVertexProperty();
+	 * 
+	 * if (tProp.getNewbLevel() != tProp.getNewbLevel()) {
+	 * PreesmLogger.getLogger().log(Level.SEVERE, "false bL " + v.getName());
+	 * int i = 0; i++; } else if (tProp.getNewbLevel() != -1) { int i = 1; i++;
+	 * }
+	 * 
+	 * if (tProp.getNewtLevel() != tProp.getNewtLevel()) {
+	 * 
+	 * PreesmLogger.getLogger().log(Level.SEVERE, "false tL " + v.getName());
+	 * 
+	 * int i = 0; i++; } else if (tProp.getNewtLevel() != -1) { int i = 1; i++;
+	 * } } }
+	 */
 }

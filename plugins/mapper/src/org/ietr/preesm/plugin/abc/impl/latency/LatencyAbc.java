@@ -196,7 +196,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 				updateTimings();
 				taskScheduler.insertVertex(vertex);
 			} else {
-				orderManager.insertInTotalOrder(vertex);
+				orderManager.insertGivenTotalOrder(vertex);
 			}
 
 		}

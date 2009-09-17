@@ -62,7 +62,7 @@ import org.sdf4j.model.dag.DAGVertex;
  * @author mpelcat
  */
 public class SchedOrderManager extends Observable {
-	
+
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
@@ -86,10 +86,10 @@ public class SchedOrderManager extends Observable {
 	}
 
 	/**
-	 * Considering that vertex already has a total order, inserts it at the
-	 * appropriate position in its schedule
+	 * Considering that vertex already has a total order (is already in total
+	 * order list), inserts it at the appropriate position in its schedule
 	 */
-	public void insertInTotalOrder(MapperDAGVertex vertex) {
+	public void insertGivenTotalOrder(MapperDAGVertex vertex) {
 
 		ImplementationVertexProperty currImpProp = vertex
 				.getImplementationVertexProperty();
@@ -101,26 +101,50 @@ public class SchedOrderManager extends Observable {
 
 			int newSchedulingTotalOrder = totalIndexOf(vertex);
 
-			// Iterates the schedule
+			// Iterates the schedule to find the latest predecessor
 			int maxPrec = -1;
-
 			for (IScheduleElement current : currentSched.getList()) {
 
-				// Looking for the preceding vertex with maximum total order
+				// Looking for the preceding vertex with maximum total order in
+				// vertex schedule
 				int currentTotalOrder = totalIndexOf(current);
 
-				if (currentTotalOrder < newSchedulingTotalOrder
-						&& currentTotalOrder > maxPrec)
+				if (currentTotalOrder < newSchedulingTotalOrder) {
 					maxPrec = currentTotalOrder;
+				}
 			}
 
-			// Adds vertex after its chosen predecessor
+			// Testing a possible synchronized vertex
+			IScheduleElement elt = get(newSchedulingTotalOrder);
+			if (elt == null || elt.equals(vertex)) {
+				elt = vertex;
+			} else {
+				if (elt instanceof SynchronizedVertices) {
+					((SynchronizedVertices) elt).add(vertex);
+				} else if (elt instanceof MapperDAGVertex) {
+					// Replacing the vertex in schedule by a synchronized object
+					SynchronizedVertices newSynch = new SynchronizedVertices();
+					MapperDAGVertex oldVertex = (MapperDAGVertex) elt;
+					ArchitectureComponent oCmp = oldVertex
+							.getImplementationVertexProperty()
+							.getEffectiveComponent();
+					newSynch.add(oldVertex);
+					newSynch.add(vertex);
+					totalOrder.insertAfter(oldVertex, newSynch);
+					getSchedule(oCmp).insertAfter(oldVertex, newSynch);
+					remove(oldVertex, true);
+					elt = newSynch;
+				}
+			}
+
+			// Adds vertex or synchro vertices after its chosen predecessor
 			if (maxPrec >= 0) {
 				IScheduleElement previous = totalOrder.get(maxPrec);
-				currentSched.insertAfter(previous, vertex);
+				currentSched.insertAfter(previous, elt);
 			} else {
-				currentSched.addFirst(vertex);
+				currentSched.addFirst(elt);
 			}
+
 		}
 
 		// Notifies the time keeper that it should update the successors
@@ -208,7 +232,7 @@ public class SchedOrderManager extends Observable {
 						totalOrder.insertAfter(previous, vertex);
 					}
 				}
-				insertInTotalOrder(vertex);
+				insertGivenTotalOrder(vertex);
 
 			}
 		}
@@ -236,7 +260,7 @@ public class SchedOrderManager extends Observable {
 						totalOrder.insertBefore(next, vertex);
 					}
 				}
-				insertInTotalOrder(vertex);
+				insertGivenTotalOrder(vertex);
 
 			}
 		}
@@ -284,14 +308,9 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the vertex with the given total scheduling order
 	 */
-	public MapperDAGVertex get(int totalOrderIndex) {
+	public IScheduleElement get(int totalOrderIndex) {
 		IScheduleElement elt = totalOrder.get(totalOrderIndex);
-		if (elt instanceof MapperDAGVertex) {
-			return (MapperDAGVertex) elt;
-		} else if (elt instanceof SynchronizedVertices) {
-			return ((SynchronizedVertices) elt).getVertices().get(0);
-		}
-		return null;
+		return elt;
 	}
 
 	/**

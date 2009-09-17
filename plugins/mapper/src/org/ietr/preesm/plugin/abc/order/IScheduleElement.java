@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
+import java.util.Set;
+
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Element containing either a simple vertex or a group of synchronized elements that have the same total order.
@@ -51,4 +54,6 @@ public interface IScheduleElement {
 	public TimingVertexProperty getTimingVertexProperty();
 	
 	public ImplementationVertexProperty getImplementationVertexProperty();
+	
+	public Set<DAGEdge> incomingEdges();
 }

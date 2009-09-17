@@ -81,7 +81,7 @@ public class IntervalFinder {
 	 * Finds the largest free interval in a schedule
 	 */
 	public Interval findLargestFreeInterval(ArchitectureComponent component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex) {
+			IScheduleElement minVertex, IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.largestFreeInterval);
@@ -101,7 +101,7 @@ public class IntervalFinder {
 	 * Finds the largest free interval in a schedule between a minVertex and a maxVertex
 	 */
 	public Interval findInterval(ArchitectureComponent component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex, FindType type) {
+			IScheduleElement minVertex, IScheduleElement maxVertex, FindType type) {
 
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 

@@ -78,7 +78,7 @@ public class Schedule {
 	 * Appends a vertex at the end of the schedule
 	 */
 	public void addLast(IScheduleElement vertex) {
-		if (!elementList.contains(vertex)) {
+		if (!contains(vertex)) {
 			if (vertex.getTimingVertexProperty().getCost() >= 0) {
 				busyTime += vertex.getTimingVertexProperty().getCost();
 			}
@@ -90,7 +90,7 @@ public class Schedule {
 	 * Inserts a vertex at the beginning of the schedule
 	 */
 	public void addFirst(IScheduleElement vertex) {
-		if (!elementList.contains(vertex)) {
+		if (!contains(vertex)) {
 			if (vertex.getTimingVertexProperty().getCost() >= 0) {
 				busyTime += vertex.getTimingVertexProperty().getCost();
 			}
@@ -102,16 +102,16 @@ public class Schedule {
 	 * Inserts a vertex after the given one
 	 */
 	public void insertAfter(IScheduleElement previous, IScheduleElement vertex) {
-		if (!elementList.contains(vertex)) {
+		if (!contains(vertex)) {
 			if (vertex.getTimingVertexProperty().getCost() >= 0) {
 				busyTime += vertex.getTimingVertexProperty().getCost();
 			}
 
-			if (elementList.indexOf(previous) >= 0) {
-				if (elementList.indexOf(previous) + 1 < elementList.size()) {
-					IScheduleElement next = elementList.get(elementList
-							.indexOf(previous) + 1);
-					elementList.add(elementList.indexOf(next), vertex);
+			int prevIndex = indexOf(previous);
+			if (prevIndex >= 0) {
+				if (prevIndex + 1 < elementList.size()) {
+					IScheduleElement next = elementList.get(prevIndex + 1);
+					elementList.add(indexOf(next), vertex);
 				} else {
 					elementList.addLast(vertex);
 				}
@@ -123,13 +123,14 @@ public class Schedule {
 	 * Inserts a vertex before the given one
 	 */
 	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
-		if (!elementList.contains(vertex)) {
+		if (!contains(vertex)) {
 			if (vertex.getTimingVertexProperty().getCost() >= 0) {
 				busyTime += vertex.getTimingVertexProperty().getCost();
 			}
 
-			if (elementList.indexOf(next) >= 0) {
-				elementList.add(elementList.indexOf(next), vertex);
+			int nextIndex = indexOf(next);
+			if (nextIndex >= 0) {
+				elementList.add(nextIndex, vertex);
 			}
 		}
 	}
@@ -145,12 +146,22 @@ public class Schedule {
 	}
 
 	public void remove(IScheduleElement vertex) {
-		if (elementList.contains(vertex)) {
+		int index = indexOf(vertex);
+		if (index != -1) {
 			if (vertex.getTimingVertexProperty().getCost() >= 0) {
 				busyTime -= vertex.getTimingVertexProperty().getCost();
 			}
 
-			elementList.remove(vertex);
+			// Removing vertex from the synchronized vertices or directly from
+			// the list
+			IScheduleElement element = elementList.get(index);
+			if (element instanceof SynchronizedVertices
+					&& vertex instanceof MapperDAGVertex) {
+				((SynchronizedVertices) element)
+						.remove((MapperDAGVertex) vertex);
+			} else {
+				elementList.remove(element);
+			}
 		}
 	}
 
@@ -168,10 +179,11 @@ public class Schedule {
 	 * Gets the previous vertex in the current schedule
 	 */
 	public IScheduleElement getPrevious(IScheduleElement vertex) {
-		if (elementList.indexOf(vertex) <= 0) {
+		int index = indexOf(vertex);
+		if (index <= 0) {
 			return null;
 		} else {
-			return (elementList.get(elementList.indexOf(vertex) - 1));
+			return (elementList.get(index - 1));
 		}
 	}
 
@@ -179,9 +191,8 @@ public class Schedule {
 	 * Gets the next vertex in the current schedule
 	 */
 	public IScheduleElement getNext(IScheduleElement vertex) {
-		int currentIndex = elementList.indexOf(vertex);
-		if (currentIndex < 0
-				|| (elementList.indexOf(vertex) >= elementList.size() - 1)) {
+		int currentIndex = indexOf(vertex);
+		if (currentIndex < 0 || (currentIndex >= elementList.size() - 1)) {
 			return null;
 		} else {
 			return (elementList.get(currentIndex + 1));
@@ -193,9 +204,8 @@ public class Schedule {
 	 */
 	public Set<IScheduleElement> getSuccessors(IScheduleElement vertex) {
 		Set<IScheduleElement> vSet = new HashSet<IScheduleElement>();
-		int currentIndex = elementList.indexOf(vertex);
-		if (currentIndex < 0
-				|| elementList.indexOf(vertex) >= elementList.size()) {
+		int currentIndex = indexOf(vertex);
+		if (currentIndex < 0 || currentIndex >= elementList.size()) {
 			return null;
 		}
 
@@ -226,6 +236,9 @@ public class Schedule {
 		return index;
 	}
 
+	/**
+	 * Looks into the synchronized vertices to extract the vertex
+	 */
 	public boolean contains(IScheduleElement v) {
 		return indexOf(v) != -1;
 	}
@@ -235,12 +248,12 @@ public class Schedule {
 	}
 
 	public List<IScheduleElement> getList() {
-		return elementList;
+		return Collections.unmodifiableList(elementList);
 	}
 
 	@Override
 	public String toString() {
-		return "{" + super.toString() + "}";
+		return elementList.toString();
 	}
 
 	public VertexOrderList toOrderList() {

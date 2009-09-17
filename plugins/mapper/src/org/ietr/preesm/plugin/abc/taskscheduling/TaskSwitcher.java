@@ -41,6 +41,7 @@ import java.util.Random;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.edgescheduling.Interval;
 import org.ietr.preesm.plugin.abc.edgescheduling.IntervalFinder;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
@@ -119,9 +120,9 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		Operator op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
-		MapperDAGVertex source = (latePred == -1) ? null : (/*toReview*/MapperDAGVertex)orderManager
+		IScheduleElement source = (latePred == -1) ? null : orderManager
 				.get(latePred);
-		MapperDAGVertex target = (earlySuc == -1) ? null : (/*toReview*/MapperDAGVertex)orderManager
+		IScheduleElement target = (earlySuc == -1) ? null : orderManager
 				.get(earlySuc);
 
 		if (op != null) {

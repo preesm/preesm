@@ -215,13 +215,12 @@ public class FastAlgorithm extends Observable {
 		// FAST is stopped after a time given in seconds
 		long stopTime = System.nanoTime() + 1000000000l * fastParams.getFastTime();
 		// the number of local solutions searched in a neighborhood is the size of the graph
-		//int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
+		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
 		// the number of better solutions found in a neighborhood is limited
-		//int margin = Math.max(maxStep / 10,1);
-		
-		int maxStep = 30;
-		int margin = 10;
+		int margin = Math.max(maxStep / 10,1);
 
+		maxStep = 30;
+		margin = 10;
 		// step 4/17
 		// Stopping after the given time in seconds is reached
 		while (fastParams.getFastTime() < 0 || System.nanoTime() < stopTime) {

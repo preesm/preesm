@@ -36,13 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * A group of vertices that have the same total order and the same T-Level
@@ -53,9 +56,9 @@ public class SynchronizedVertices implements IScheduleElement {
 
 	private List<MapperDAGVertex> vertices = null;
 
-	public SynchronizedVertices(List<MapperDAGVertex> vertices) {
+	public SynchronizedVertices() {
 		super();
-		this.vertices = vertices;
+		this.vertices = new ArrayList<MapperDAGVertex>();
 	}
 
 	@Override
@@ -82,13 +85,32 @@ public class SynchronizedVertices implements IScheduleElement {
 	public List<MapperDAGVertex> getVertices() {
 		return Collections.unmodifiableList(vertices);
 	}
-	
-	public MapperDAGVertex getVertex(ArchitectureComponent cmp){
-		for(MapperDAGVertex v : vertices){
-			if(v.getImplementationVertexProperty().getEffectiveComponent().equals(cmp)){
+
+	public MapperDAGVertex getVertex(ArchitectureComponent cmp) {
+		for (MapperDAGVertex v : vertices) {
+			if (v.getImplementationVertexProperty().getEffectiveComponent()
+					.equals(cmp)) {
 				return v;
 			}
 		}
 		return null;
 	}
+
+	public void remove(MapperDAGVertex v) {
+		vertices.remove(v);
+	}
+
+	public void add(MapperDAGVertex v) {
+		if (!vertices.contains(v)) {
+			vertices.add(v);
+		}
+	}
+
+	@Override
+	public Set<DAGEdge> incomingEdges() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 }
