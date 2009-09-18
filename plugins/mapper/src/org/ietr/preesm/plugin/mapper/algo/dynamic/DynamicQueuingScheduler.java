@@ -91,7 +91,7 @@ public class DynamicQueuingScheduler {
 		if (listType.equalsIgnoreCase("optimised")) {
 
 			for (VertexOrderList.OrderProperty vP : orderList.elements()) {
-				MapperDAGVertex currentvertex = (/*toReview*/MapperDAGVertex) abc.getDAG()
+				MapperDAGVertex currentvertex = (MapperDAGVertex) abc.getDAG()
 						.getVertex(vP.getName());
 
 				implantOnBestOp(abc, currentvertex);

@@ -219,8 +219,6 @@ public class FastAlgorithm extends Observable {
 		// the number of better solutions found in a neighborhood is limited
 		int margin = Math.max(maxStep / 10,1);
 
-		maxStep = 30;
-		margin = 10;
 		// step 4/17
 		// Stopping after the given time in seconds is reached
 		while (fastParams.getFastTime() < 0 || System.nanoTime() < stopTime) {

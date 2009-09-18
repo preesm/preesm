@@ -108,7 +108,7 @@ public class PrecedenceEdgeAdder {
 				while (schedit.hasNext()) {
 
 					src = dst;
-					dst = (/*toReview*/MapperDAGVertex)schedit.next();
+					dst = schedit.next();
 
 					if (implementation.getAllEdges(src, dst).isEmpty()) {
 						// Adds a transaction
@@ -155,7 +155,7 @@ public class PrecedenceEdgeAdder {
 	 * For Debug purposes, checks that all necessary precedence edges are
 	 * present
 	 */
-	public static void checkPrecedences(SchedOrderManager orderManager,
+	/*public static void checkPrecedences(SchedOrderManager orderManager,
 			MapperDAG implementation, MultiCoreArchitecture archi) {
 
 		Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>();
@@ -168,8 +168,8 @@ public class PrecedenceEdgeAdder {
 				MapperDAGVertex pv = null;
 				for (IScheduleElement v : schedule) {
 					if (pv != null) {
-						if (implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v) == null
-								|| implementation.getAllEdges(pv, (/*toReview*/MapperDAGVertex)v).isEmpty()) {
+						if (implementation.getAllEdges(pv, (MapperDAGVertex)v) == null
+								|| implementation.getAllEdges(pv, (MapperDAGVertex)v).isEmpty()) {
 
 								PreesmLogger.getLogger().log(
 										Level.SEVERE,
@@ -178,11 +178,11 @@ public class PrecedenceEdgeAdder {
 												+ v.toString());
 						}
 					}
-					pv = (/*toReview*/MapperDAGVertex)v;
+					pv = (MapperDAGVertex)v;
 				}
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Schedules a given vertex
@@ -190,8 +190,8 @@ public class PrecedenceEdgeAdder {
 	public static void scheduleVertex(SchedOrderManager orderManager,
 			MapperDAG implementation, MapperDAGVertex newVertex) {
 
-		MapperDAGVertex prev = (/*toReview*/MapperDAGVertex)orderManager.getPrevious(newVertex);
-		MapperDAGVertex next = (/*toReview*/MapperDAGVertex)orderManager.getNext(newVertex);
+		MapperDAGVertex prev = orderManager.getPrevious(newVertex);
+		MapperDAGVertex next = orderManager.getNext(newVertex);
 
 		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
 		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);

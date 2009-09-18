@@ -147,14 +147,23 @@ public class NewTimeKeeper implements Observer {
 				.hasEffectiveComponent()) {
 
 			Set<DAGVertex> predset = new HashSet<DAGVertex>();
-
-/*			for (DAGEdge edge : modifiedElt.incomingEdges()) {
-				DAGVertex pred = edge.getSource();
+			for (DAGEdge edge : modifiedElt.incomingEdges()) {
+				DAGVertex pred = implementation.getEdgeSource(edge);
 				if (pred != null) {
-					predset.add(edge.getSource());
+					predset.add(pred);
 				}
-			}*/
-			predset = neighborindex.predecessorsOf((MapperDAGVertex)modifiedElt);
+			}
+
+			/*
+			 * Set<DAGVertex> predset2 = new HashSet<DAGVertex>(); predset2 =
+			 * neighborindex.predecessorsOf((MapperDAGVertex)modifiedElt);
+			 * 
+			 * for(DAGVertex v : predset2){ if(!predset.contains(v)){ return; }
+			 * }
+			 * 
+			 * for(DAGVertex v : predset){ if(!predset2.contains(v)){ return; }
+			 * }
+			 */
 
 			// If the vertex has no predecessor, ALAP=ASAP=0;
 			// t-level = ASAP
@@ -235,13 +244,14 @@ public class NewTimeKeeper implements Observer {
 	private long getVertexTLevelFromPredecessor(MapperDAGVertex pred,
 			IScheduleElement current) {
 		MapperDAGEdge edge = null;
-		 edge = (MapperDAGEdge)implementation.getEdge(pred,
-		 (MapperDAGVertex)current);
-		/*for (DAGEdge e : current.incomingEdges()) {
-			if (e.getSource() != null && e.getSource().equals(pred)) {
+		// edge = (MapperDAGEdge)implementation.getEdge(pred,
+		// (MapperDAGVertex)current);
+		for (DAGEdge e : current.incomingEdges()) {
+			DAGVertex v = implementation.getEdgeSource(e);
+			if (v != null && v.equals(pred)) {
 				edge = (MapperDAGEdge) e;
 			}
-		}*/
+		}
 		TimingVertexProperty predTProperty = pred.getTimingVertexProperty();
 		long edgeCost = edge.getTimingEdgeProperty().getCost();
 		long newPathLength = predTProperty.getNewtLevel()

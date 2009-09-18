@@ -134,8 +134,8 @@ public class ImplementationCleaner {
 	 */
 	public void unscheduleVertex(MapperDAGVertex vertex) {
 
-		MapperDAGVertex prev = (/*toReview*/MapperDAGVertex)orderManager.getPrevious(vertex);
-		MapperDAGVertex next = (/*toReview*/MapperDAGVertex)orderManager.getNext(vertex);
+		MapperDAGVertex prev = orderManager.getPrevious(vertex);
+		MapperDAGVertex next = orderManager.getNext(vertex);
 
 		if (prev != null) {
 			PrecedenceEdgeAdder.removePrecedenceEdge(implementation, prev, vertex);

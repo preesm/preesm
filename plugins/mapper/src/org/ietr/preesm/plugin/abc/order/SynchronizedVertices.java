@@ -38,6 +38,7 @@ package org.ietr.preesm.plugin.abc.order;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -98,19 +99,33 @@ public class SynchronizedVertices implements IScheduleElement {
 
 	public void remove(MapperDAGVertex v) {
 		vertices.remove(v);
+		
+		// Desynchronizes the timing props
+		if (!vertices.isEmpty()) {
+			v.setTimingVertexProperty(vertices.get(0)
+					.getTimingVertexProperty().clone());
+		}
 	}
 
 	public void add(MapperDAGVertex v) {
 		if (!vertices.contains(v)) {
+			// All synchronize vertices share the same timing vertex property
+			if (!vertices.isEmpty()) {
+				v.setTimingVertexProperty(vertices.get(0)
+						.getTimingVertexProperty());
+			}
+			
 			vertices.add(v);
 		}
 	}
 
 	@Override
 	public Set<DAGEdge> incomingEdges() {
-		// TODO Auto-generated method stub
-		return null;
+		Set<DAGEdge> incomingEdges = new HashSet<DAGEdge>();
+		for (MapperDAGVertex v : vertices) {
+			incomingEdges.addAll(v.incomingEdges());
+		}
+		return incomingEdges;
 	}
-	
-	
+
 }
