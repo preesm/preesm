@@ -10,6 +10,8 @@ import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
+import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
+import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
@@ -21,6 +23,7 @@ import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
@@ -85,23 +88,24 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			} else if (type == CommunicationRouter.involvementType) {
 				// Adding the involvement
 				MapperDAGEdge incomingEdge = null;
-				//TransferVertex correspondingTransfer = null;
+				// TransferVertex correspondingTransfer = null;
 
 				for (Object o : alreadyCreatedVertices) {
 					if (o instanceof TransferVertex) {
 						TransferVertex v = (TransferVertex) o;
 						if (v.getSource().equals(edge.getSource())
 								&& v.getTarget().equals(edge.getTarget())
-								&& v.getRouteStep() == routeStep && v.getNodeIndex() == 0) {
-								// Finding the edge where to add an involvement
-								incomingEdge = (MapperDAGEdge) v
-										.incomingEdges().toArray()[0];
-								//correspondingTransfer = v;
+								&& v.getRouteStep() == routeStep
+								&& v.getNodeIndex() == 0) {
+							// Finding the edge where to add an involvement
+							incomingEdge = (MapperDAGEdge) v.incomingEdges()
+									.toArray()[0];
+							// correspondingTransfer = v;
 						}
 
 					}
 				}
-				
+
 				if (incomingEdge != null) {
 					transactions.add(new AddInvolvementVertexTransaction(true,
 							incomingEdge, getImplementation(), routeStep,
@@ -128,20 +132,27 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 								&& v.getTarget().equals(edge.getTarget())
 								&& v.getRouteStep() == routeStep) {
 							toSynchronize.add(v);
-							
-							if(v.getInvolvementVertex() != null)
+
+							if (v.getInvolvementVertex() != null)
 								toSynchronize.add(v.getInvolvementVertex());
 						}
 
 					}
 				}
 
-				if (!toSynchronize.isEmpty()) {
-					transactions
-							.add(new SynchronizeTransferVerticesTransaction(
-									getImplementation(), toSynchronize,
-									getEdgeScheduler(), getOrderManager()));
-				}
+				/*if (toSynchronize.size() > 1) {
+					ImplementationCleaner cleaner = new ImplementationCleaner(
+							getOrderManager(), getImplementation());
+					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(
+							getOrderManager(), getImplementation());
+					int index = getOrderManager().totalIndexOf(
+							toSynchronize.get(0));
+					for (MapperDAGVertex v : toSynchronize) {
+						cleaner.unscheduleVertex(v);
+						// getOrderManager().insertAtIndex(index, v, true);
+						adder.scheduleVertex(v);
+					}
+				}*/
 			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(

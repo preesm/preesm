@@ -58,45 +58,17 @@ public class SynchronizeTransferVerticesTransaction extends Transaction {
 	private List<MapperDAGVertex> verticesToSynchronize = null;
 
 	/**
-	 * Scheduling the transfer vertices on the media
-	 */
-	protected IEdgeSched edgeScheduler = null;
-
-	/**
-	 * Implementation DAG
-	 */
-	//private MapperDAG implementation = null;
-
-	/**
 	 * Vertices order manager
 	 */
-	//private SchedOrderManager orderManager;
+	private SchedOrderManager orderManager;
 
 	public SynchronizeTransferVerticesTransaction(MapperDAG implementation,
-			List<MapperDAGVertex> verticesToSynchronize,
-			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
+			List<MapperDAGVertex> verticesToSynchronize,SchedOrderManager orderManager) {
 		super();
 		this.verticesToSynchronize = verticesToSynchronize;
-		this.edgeScheduler = edgeScheduler;
-		//this.implementation = implementation;
-		//this.orderManager = orderManager;
+		this.orderManager = orderManager;
 
 	}
-
-	/*private MapperDAGVertex getLatestPredecessor(MapperDAGVertex input) {
-		MapperDAGVertex latestPredecessor = null;
-		Set<DAGEdge> edges = input.incomingEdges();
-
-		for (DAGEdge edge : edges) {
-			MapperDAGVertex v = (MapperDAGVertex) edge.getSource();
-			if (latestPredecessor == null
-					|| orderManager.totalIndexOf(v) > orderManager.totalIndexOf(latestPredecessor)) {
-				latestPredecessor = v;
-			}
-		}
-
-		return latestPredecessor;
-	}*/
 
 	@Override
 	public void execute(List<Object> resultList) {

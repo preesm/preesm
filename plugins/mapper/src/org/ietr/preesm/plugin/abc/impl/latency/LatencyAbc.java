@@ -526,11 +526,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 			// Retrieves the new order in order manager
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
-			TransactionManager localTransactionManager = new TransactionManager();
-			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
-					localTransactionManager);
-			PrecedenceEdgeAdder
-					.addPrecedenceEdges(orderManager, implementation);
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
+			adder.removePrecedenceEdges();
+			adder
+					.addPrecedenceEdges();
 
 		}
 	}
@@ -542,9 +541,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void reschedule() {
 
 		if (implementation != null && dag != null) {
-
-			PrecedenceEdgeAdder.removePrecedenceEdges(implementation,
-					new TransactionManager());
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
+			adder.removePrecedenceEdges();
 			updateTimings();
 			this.plotImplementation(null);
 			
@@ -575,8 +573,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 			// Retrieves the new order in order manager
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
-			PrecedenceEdgeAdder
-					.addPrecedenceEdges(orderManager, implementation);
+			adder
+					.addPrecedenceEdges();
 
 		}
 	}

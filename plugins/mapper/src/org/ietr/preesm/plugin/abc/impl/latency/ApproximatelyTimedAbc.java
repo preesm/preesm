@@ -91,7 +91,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
 
-			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
+			new PrecedenceEdgeAdder(orderManager, implementation)
+			.scheduleVertex(vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}

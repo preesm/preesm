@@ -12,6 +12,7 @@ import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
+import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
@@ -23,6 +24,7 @@ import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
@@ -136,11 +138,16 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
-				if (!toSynchronize.isEmpty()) {
+				if (toSynchronize.size() > 1) {
+					ImplementationCleaner cleaner = new ImplementationCleaner(getOrderManager(),getImplementation());
+					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(getOrderManager(),getImplementation());
+					for(MapperDAGVertex v : toSynchronize){
+						cleaner.unscheduleVertex(v);
+						adder.scheduleVertex(v);
+					}
 					transactions
 							.add(new SynchronizeTransferVerticesTransaction(
-									getImplementation(), toSynchronize,
-									getEdgeScheduler(), getOrderManager()));
+									getImplementation(), toSynchronize, getOrderManager()));
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 

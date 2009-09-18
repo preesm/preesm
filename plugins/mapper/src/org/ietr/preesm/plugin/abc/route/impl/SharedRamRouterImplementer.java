@@ -160,11 +160,10 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
-				if (!toSynchronize.isEmpty()) {
+				if (toSynchronize.size() > 1) {
 					transactions
 							.add(new SynchronizeTransferVerticesTransaction(
-									getImplementation(), toSynchronize,
-									getEdgeScheduler(), getOrderManager()));
+									getImplementation(), toSynchronize, getOrderManager()));
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 

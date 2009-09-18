@@ -144,7 +144,7 @@ public class NewTimeKeeper implements Observer {
 
 		// If the current vertex has an effective component
 		if (modifiedElt.getImplementationVertexProperty()
-				.hasEffectiveComponent()) {
+				.hasEffectiveComponent() || modifiedElt instanceof SynchronizedVertices) {
 
 			Set<DAGVertex> predset = new HashSet<DAGVertex>();
 			for (DAGEdge edge : modifiedElt.incomingEdges()) {

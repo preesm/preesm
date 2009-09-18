@@ -46,9 +46,11 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -85,6 +87,27 @@ public class SchedOrderManager extends Observable {
 		totalOrder = new Schedule();
 	}
 
+	public int findLastestPredIndexForOp(ArchitectureComponent cmp, int refIndex) {
+
+		// Retrieves the schedule corresponding to the component
+		Schedule currentSched = getSchedule(cmp);
+
+		// Iterates the schedule to find the latest predecessor
+		int maxPrec = -1;
+		for (IScheduleElement current : currentSched.getList()) {
+
+			// Looking for the preceding vertex with maximum total order in
+			// vertex schedule
+			int currentTotalOrder = totalIndexOf(current);
+
+			if (currentTotalOrder < refIndex) {
+				maxPrec = currentTotalOrder;
+			}
+		}
+
+		return maxPrec;
+	}
+
 	/**
 	 * Considering that vertex already has a total order (is already in total
 	 * order list), inserts it at the appropriate position in its schedule
@@ -95,25 +118,11 @@ public class SchedOrderManager extends Observable {
 				.getImplementationVertexProperty();
 
 		if (currImpProp.hasEffectiveComponent()) {
-			// Retrieves the schedule corresponding to the vertex
-			Schedule currentSched = getSchedule(currImpProp
-					.getEffectiveComponent());
 
+			ArchitectureComponent cmp = currImpProp.getEffectiveComponent();
 			int newSchedulingTotalOrder = totalIndexOf(vertex);
-
-			// Iterates the schedule to find the latest predecessor
-			int maxPrec = -1;
-			for (IScheduleElement current : currentSched.getList()) {
-
-				// Looking for the preceding vertex with maximum total order in
-				// vertex schedule
-				int currentTotalOrder = totalIndexOf(current);
-
-				if (currentTotalOrder < newSchedulingTotalOrder) {
-					maxPrec = currentTotalOrder;
-				}
-			}
-
+			int maxPrec = findLastestPredIndexForOp(currImpProp
+					.getEffectiveComponent(), newSchedulingTotalOrder);
 			// Testing a possible synchronized vertex
 			IScheduleElement elt = get(newSchedulingTotalOrder);
 			if (elt == null || elt.equals(vertex)) {
@@ -121,28 +130,18 @@ public class SchedOrderManager extends Observable {
 			} else {
 				if (elt instanceof SynchronizedVertices) {
 					((SynchronizedVertices) elt).add(vertex);
-				} else if (elt instanceof MapperDAGVertex) {
-					// Replacing the vertex in schedule by a synchronized object
-					SynchronizedVertices newSynch = new SynchronizedVertices();
-					MapperDAGVertex oldVertex = (MapperDAGVertex) elt;
-					ArchitectureComponent oCmp = oldVertex
-							.getImplementationVertexProperty()
-							.getEffectiveComponent();
-					newSynch.add(oldVertex);
-					newSynch.add(vertex);
-					totalOrder.insertAfter(oldVertex, newSynch);
-					getSchedule(oCmp).insertAfter(oldVertex, newSynch);
-					remove(oldVertex, true);
-					elt = newSynch;
+				} else {
+					PreesmLogger.getLogger().log(Level.SEVERE,
+							"Error in sched order!!");
 				}
 			}
 
 			// Adds vertex or synchro vertices after its chosen predecessor
 			if (maxPrec >= 0) {
 				IScheduleElement previous = totalOrder.get(maxPrec);
-				currentSched.insertAfter(previous, elt);
+				getSchedule(cmp).insertAfter(previous, elt);
 			} else {
-				currentSched.addFirst(elt);
+				getSchedule(cmp).addFirst(elt);
 			}
 
 		}
@@ -270,13 +269,39 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertAtIndex(int index, MapperDAGVertex vertex) {
+	public void insertAtIndex(int index, MapperDAGVertex vertex, boolean synchro) {
 
-		if (index < totalOrder.size() && index >= 0) {
-			IScheduleElement ref = totalOrder.get(index);
-			insertBefore(ref, vertex);
+		if (synchro) {
+			IScheduleElement elt = totalOrder.get(index);
+			if (!elt.equals(vertex) && elt instanceof MapperDAGVertex) {
+				// Replacing the vertex in schedule by a synchronized object
+				SynchronizedVertices newSynch = new SynchronizedVertices();
+				MapperDAGVertex oldVertex = (MapperDAGVertex) elt;
+				ArchitectureComponent oCmp = oldVertex
+						.getImplementationVertexProperty()
+						.getEffectiveComponent();
+				ArchitectureComponent nCmp = vertex
+						.getImplementationVertexProperty()
+						.getEffectiveComponent();
+				newSynch.add(oldVertex);
+				newSynch.add(vertex);
+				totalOrder.insertAfter(oldVertex, newSynch);
+				getSchedule(oCmp).insertAfter(oldVertex, newSynch);
+				remove(oldVertex, true);
+				elt = newSynch;
+				getSchedule(nCmp).insertAfter(
+						totalOrder.get(findLastestPredIndexForOp(nCmp,
+								totalIndexOf(newSynch))), newSynch);
+			} else if (elt instanceof SynchronizedVertices) {
+				((SynchronizedVertices) elt).add(vertex);
+			}
 		} else {
-			addLast(vertex);
+			if (index < totalOrder.size() && index >= 0) {
+				IScheduleElement ref = totalOrder.get(index);
+				insertBefore(ref, vertex);
+			} else {
+				addLast(vertex);
+			}
 		}
 	}
 

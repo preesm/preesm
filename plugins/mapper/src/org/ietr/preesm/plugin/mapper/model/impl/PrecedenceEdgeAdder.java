@@ -66,11 +66,22 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class PrecedenceEdgeAdder {
 
+	private SchedOrderManager orderManager;
+	private MapperDAG implementation;
+	private TransactionManager transactionManager;
+
+	public PrecedenceEdgeAdder(SchedOrderManager orderManager,
+			MapperDAG implementation) {
+		super();
+		this.orderManager = orderManager;
+		this.implementation = implementation;
+		this.transactionManager = new TransactionManager();
+	}
+	
 	/**
 	 * Removes all schedule edges
 	 */
-	public static void removePrecedenceEdges(MapperDAG implementation,
-			TransactionManager transactionManager) {
+	public void removePrecedenceEdges() {
 
 		for (DAGEdge e : implementation.edgeSet()) {
 			if (e instanceof PrecedenceEdge) {
@@ -79,14 +90,14 @@ public class PrecedenceEdgeAdder {
 			}
 		}
 		transactionManager.execute();
+		transactionManager.clear();
 	}
 
 	/**
 	 * Adds all necessary precedence edges to an implementation respecting the
 	 * order given by the scheduling order manager.
 	 */
-	public static void addPrecedenceEdges(SchedOrderManager orderManager,
-			MapperDAG implementation) {
+	public void addPrecedenceEdges() {
 
 		TransactionManager localTransactionManager = new TransactionManager();
 		Iterator<ArchitectureComponent> opIt = orderManager
@@ -124,7 +135,7 @@ public class PrecedenceEdgeAdder {
 		localTransactionManager.execute();
 	}
 
-	public static PrecedenceEdge addPrecedenceEdge(MapperDAG implementation,
+	public PrecedenceEdge addPrecedenceEdge(
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
 		precedenceEdge.getTimingEdgeProperty().setCost(0);
@@ -132,7 +143,7 @@ public class PrecedenceEdgeAdder {
 		return precedenceEdge;
 	}
 
-	public static void removePrecedenceEdge(MapperDAG implementation,
+	public void removePrecedenceEdge(
 			MapperDAGVertex v1, MapperDAGVertex v2) {
 		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
 
@@ -187,8 +198,7 @@ public class PrecedenceEdgeAdder {
 	/**
 	 * Schedules a given vertex
 	 */
-	public static void scheduleVertex(SchedOrderManager orderManager,
-			MapperDAG implementation, MapperDAGVertex newVertex) {
+	public void scheduleVertex(MapperDAGVertex newVertex) {
 
 		MapperDAGVertex prev = orderManager.getPrevious(newVertex);
 		MapperDAGVertex next = orderManager.getNext(newVertex);
@@ -200,17 +210,17 @@ public class PrecedenceEdgeAdder {
 		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
 
 		if ((prev != null && newVertex != null) && !prevAndNewLinked) {
-			addPrecedenceEdge(implementation, prev, newVertex);
+			addPrecedenceEdge(prev, newVertex);
 			prevAndNewLinked = true;
 		}
 
 		if ((newVertex != null && next != null) && !newAndNextLinked) {
-			addPrecedenceEdge(implementation, newVertex, next);
+			addPrecedenceEdge(newVertex, next);
 			newAndNextLinked = true;
 		}
 
 		if (prevAndNewLinked && newAndNextLinked) {
-			removePrecedenceEdge(implementation, prev, next);
+			removePrecedenceEdge(prev, next);
 		}
 	}
 }

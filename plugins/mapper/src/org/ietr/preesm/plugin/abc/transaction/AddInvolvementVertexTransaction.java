@@ -146,8 +146,8 @@ public class AddInvolvementVertexTransaction extends Transaction {
 			implementation.addVertex(iVertex);
 
 			if (isSender) {
-				MapperDAGEdge newInEdge = (MapperDAGEdge) implementation.addEdge(
-						currentSource, iVertex);
+				MapperDAGEdge newInEdge = (MapperDAGEdge) implementation
+						.addEdge(currentSource, iVertex);
 				newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
 						.clone());
 				newInEdge.getTimingEdgeProperty().setCost(0);
@@ -160,8 +160,8 @@ public class AddInvolvementVertexTransaction extends Transaction {
 					orderManager.insertBefore(currentTarget, iVertex);
 				}
 			} else {
-				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation.addEdge(iVertex,
-						currentTarget);
+				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation
+						.addEdge(iVertex, currentTarget);
 				newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
 						.clone());
 				newOutEdge.getTimingEdgeProperty().setCost(0);
@@ -170,8 +170,8 @@ public class AddInvolvementVertexTransaction extends Transaction {
 			}
 
 			// Scheduling involvement vertex
-			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation,
-					iVertex);
+			new PrecedenceEdgeAdder(orderManager, implementation)
+					.scheduleVertex(iVertex);
 
 			if (resultList != null) {
 				resultList.add(iVertex);

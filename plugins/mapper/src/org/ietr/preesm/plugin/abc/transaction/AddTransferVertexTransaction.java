@@ -224,7 +224,8 @@ public class AddTransferVertexTransaction extends Transaction {
 				// Scheduling transfer vertex
 				edgeScheduler.schedule(tVertex, currentSource, currentTarget);
 				
-				PrecedenceEdgeAdder.scheduleVertex(orderManager,implementation, tVertex);
+				new PrecedenceEdgeAdder(orderManager, implementation)
+				.scheduleVertex(tVertex);
 			}
 
 			if (resultList != null) {

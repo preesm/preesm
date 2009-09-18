@@ -78,7 +78,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 
 			if (largestInterval.getDuration() > 0) {
 				orderManager.insertAtIndex(largestInterval
-						.getTotalOrderIndex(), vertex);
+						.getTotalOrderIndex(), vertex, false);
 			} else {
 				int sourceIndex = intervalFinder.getOrderManager()
 						.totalIndexOf(source) + 1;
@@ -90,7 +90,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 					int randomVal = Math.abs(r.nextInt());
 					randomVal = randomVal % (targetIndex - sourceIndex);
 					orderManager.insertAtIndex(sourceIndex + randomVal,
-							vertex);
+							vertex, false);
 				} else {
 					orderManager.insertAfter(source, vertex);
 				}

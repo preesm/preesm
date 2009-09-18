@@ -95,8 +95,9 @@ public class FastAlgorithm extends Observable {
 		this.scenario = scenario;
 	}
 
-	public MapperDAG map(String threadName, AbcParameters abcParams,FastAlgoParameters fastParams,
-			MapperDAG dag, MultiCoreArchitecture archi, boolean alreadyimplanted,
+	public MapperDAG map(String threadName, AbcParameters abcParams,
+			FastAlgoParameters fastParams, MapperDAG dag,
+			MultiCoreArchitecture archi, boolean alreadyimplanted,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, AbstractTaskSched taskSched) {
 
@@ -106,7 +107,8 @@ public class FastAlgorithm extends Observable {
 		List<MapperDAGVertex> finalcriticalpathList = initialLists
 				.getCriticalpath();
 
-		return map(threadName, abcParams, fastParams, dag, archi, alreadyimplanted, pfastused, displaySolutions, monitor,
+		return map(threadName, abcParams, fastParams, dag, archi,
+				alreadyimplanted, pfastused, displaySolutions, monitor,
 				cpnDominantList, blockingNodesList, finalcriticalpathList,
 				taskSched);
 	}
@@ -123,8 +125,9 @@ public class FastAlgorithm extends Observable {
 	 *            nb max better solutions found in neighborhood
 	 * 
 	 */
-	public MapperDAG map(String threadName, AbcParameters abcParams, FastAlgoParameters fastParams,
-			MapperDAG dag, MultiCoreArchitecture archi, boolean alreadyimplanted,
+	public MapperDAG map(String threadName, AbcParameters abcParams,
+			FastAlgoParameters fastParams, MapperDAG dag,
+			MultiCoreArchitecture archi, boolean alreadyimplanted,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
@@ -210,18 +213,21 @@ public class FastAlgorithm extends Observable {
 
 		// A switcher task scheduler is chosen for the fast refinement
 		simulator.setTaskScheduler(new TaskSwitcher());
-		
+
 		// FAST parameters
 		// FAST is stopped after a time given in seconds
-		long fastStopTime = System.currentTimeMillis() + 1000 * fastParams.getFastTime();
-		// the number of local solutions searched in a neighborhood is the size of the graph
+		long fastStopTime = System.currentTimeMillis() + 1000
+				* fastParams.getFastTime();
+		// the number of local solutions searched in a neighborhood is the size
+		// of the graph
 		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
 		// the number of better solutions found in a neighborhood is limited
-		int margin = Math.max(maxStep / 10,1);
+		int margin = Math.max(maxStep / 10, 1);
 
 		// step 4/17
 		// Stopping after the given time in seconds is reached
-		while (fastParams.getFastTime() < 0 || System.currentTimeMillis() < fastStopTime) {
+		while (fastParams.getFastTime() < 0
+				|| System.currentTimeMillis() < fastStopTime) {
 
 			searchcount++;
 
@@ -236,8 +242,9 @@ public class FastAlgorithm extends Observable {
 			simulator.updateFinalCosts();
 
 			// FAST local search is stopped after a time given in seconds
-			long fastLocalSearchStopTime = System.currentTimeMillis() + 1000 * fastParams.getFastLocalSearchTime();
-			
+			long fastLocalSearchStopTime = System.currentTimeMillis() + 1000
+					* fastParams.getFastLocalSearchTime();
+
 			// step 6 : neighborhood search
 			do {
 				// Mode stop
@@ -297,7 +304,8 @@ public class FastAlgorithm extends Observable {
 
 				searchStep++;
 				// step 11
-			} while (searchStep < maxStep && localCounter < margin && System.currentTimeMillis() < fastLocalSearchStopTime);
+			} while (/* searchStep < maxStep && localCounter < margin && */System
+					.currentTimeMillis() < fastLocalSearchStopTime);
 
 			// step 12
 			simulator.updateFinalCosts();
@@ -344,15 +352,15 @@ public class FastAlgorithm extends Observable {
 			do {
 				int randomIndex = randomGenerator.nextInt(operatorSet.size());
 				operatorfcp = (Operator) operatorSet.toArray()[randomIndex];
-			} while (operatorfcp.equals(currentOp));
-
+			} while (operatorfcp.equals(currentOp) && operatorSet.size() > 1);
 
 			// step 15
 			List<MapperDAGVertex> toRemapList = cpnDominantList;
-			toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex), toRemapList.size());
-			
+			toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex),
+					toRemapList.size());
+
 			simulator.resetDAG();
-			
+
 			// Reschedule the whole dag
 			listscheduler.schedule(dag, cpnDominantList, simulator,
 					operatorfcp, fcpvertex);

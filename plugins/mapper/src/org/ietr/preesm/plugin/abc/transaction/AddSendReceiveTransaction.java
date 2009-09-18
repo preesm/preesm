@@ -213,8 +213,9 @@ public class AddSendReceiveTransaction extends Transaction {
 		
 		if (false) {
 			// Scheduling transfer vertex
-			PrecedenceEdgeAdder.scheduleVertex(orderManager,implementation, sendVertex);
-			PrecedenceEdgeAdder.scheduleVertex(orderManager,implementation, receiveVertex);
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation);
+			adder.scheduleVertex(sendVertex);
+			adder.scheduleVertex(receiveVertex);
 		}
 		
 		if(resultList != null){

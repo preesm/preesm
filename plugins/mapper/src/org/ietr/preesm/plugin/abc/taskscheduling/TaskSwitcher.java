@@ -157,7 +157,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		int newIndex = getBestIndex(vertex);
 		if (newIndex >= 0) {
-			orderManager.insertAtIndex(newIndex, vertex);
+			orderManager.insertAtIndex(newIndex, vertex, false);
 		} else {
 			orderManager.insertBefore(successor, vertex);
 		}
@@ -172,7 +172,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 
 		int newIndex = getBestIndex(vertex);
 		if (newIndex >= 0) {
-			orderManager.insertAtIndex(newIndex, vertex);
+			orderManager.insertAtIndex(newIndex, vertex, false);
 		} else {
 			orderManager.addLast(vertex);
 		}

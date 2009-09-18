@@ -159,6 +159,7 @@ public class Schedule {
 					&& vertex instanceof MapperDAGVertex) {
 				((SynchronizedVertices) element)
 						.remove((MapperDAGVertex) vertex);
+				elementList.remove(element);
 			} else {
 				elementList.remove(element);
 			}

@@ -87,7 +87,8 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			PrecedenceEdgeAdder.scheduleVertex(orderManager, implementation, vertex);
+			new PrecedenceEdgeAdder(orderManager, implementation)
+			.scheduleVertex(vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}
