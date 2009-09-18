@@ -72,7 +72,12 @@ public class PFastAlgoParameters {
 	/**
 	 * Time in seconds to run one FAST
 	 */
-	private int fastTime = -1;
+	private int fastTime = 200;
+
+	/**
+	 * Time in seconds spent in one FAST local neighborhood
+	 */
+	private int fastLocalSearchTime = 10;
 
 	/**
 	 * Number of fast iterations to execute before stopping PFast
@@ -91,6 +96,10 @@ public class PFastAlgoParameters {
 			this.fastTime = textParameters
 					.getIntVariable("fastTime");
 		}
+		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
+			this.fastLocalSearchTime = textParameters
+					.getIntVariable("fastLocalSearchTime");
+		}
 		if (textParameters.getIntVariable("fastNumber") != 0) {
 			this.fastNumber = textParameters.getIntVariable("fastNumber");
 		}
@@ -99,11 +108,11 @@ public class PFastAlgoParameters {
 		.getLogger()
 		.log(
 				Level.INFO,
-				"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastNumber");
+				"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 
 	}
 
-	public PFastAlgoParameters(int fastNumber, int fastTime, boolean displaySolutions,
+	public PFastAlgoParameters(int fastNumber, int fastTime,int fastLocalSearchTime, boolean displaySolutions,
 			int nodesmin, int procNumber) {
 		textParameters.addVariable("nodesMin", nodesmin);
 		textParameters.addVariable("procNumber", procNumber);
@@ -114,6 +123,7 @@ public class PFastAlgoParameters {
 		this.procNumber = procNumber;
 		this.displaySolutions = displaySolutions;
 		this.fastTime = fastTime;
+		this.fastLocalSearchTime = fastLocalSearchTime;
 		this.fastNumber = fastNumber;
 	}
 
@@ -153,11 +163,17 @@ public class PFastAlgoParameters {
 	}
 
 	/**
-	 * Returns the time in seconds between two FAST probabilistic hops in the
-	 * critical path
+	 * Returns the time in seconds for one whole FAST process
 	 */
 	public int getFastTime() {
 		return fastTime;
+	}
+
+	/**
+	 * Returns the time in seconds spent in one FAST local neighborhood
+	 */
+	public int getFastLocalSearchTime() {
+		return fastLocalSearchTime;
 	}
 
 }

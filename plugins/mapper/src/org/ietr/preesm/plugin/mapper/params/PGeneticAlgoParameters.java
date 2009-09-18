@@ -66,7 +66,12 @@ public class PGeneticAlgoParameters {
 	/**
 	 * Time in seconds between two FAST probabilistic hops in the critical path
 	 */
-	private int fastTime = -1;
+	private int fastTime = 200;
+
+	/**
+	 * Time in seconds spent in one FAST local neighborhood
+	 */
+	private int fastLocalSearchTime = 10;
 
 	/**
 	 * Number of fast iterations to execute before stopping PFast
@@ -77,8 +82,35 @@ public class PGeneticAlgoParameters {
 	 * Constructors
 	 */
 
+	public PGeneticAlgoParameters(TextParameters textParameters) {
+
+		this.generationNumber = textParameters
+				.getIntVariable("generationNumber");
+		this.populationSize = textParameters.getIntVariable("populationSize");
+		this.procNumber = textParameters.getIntVariable("procNumber");
+		this.pfastused2makepopulation = textParameters
+				.getBooleanVariable("pfastused2makepopulation");
+		if (textParameters.getIntVariable("fastTime") > 0) {
+			this.fastTime = textParameters
+					.getIntVariable("fastTime");
+		}
+		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
+			this.fastLocalSearchTime = textParameters
+					.getIntVariable("fastLocalSearchTime");
+		}
+		if (textParameters.getIntVariable("fastNumber") != 0) {
+			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		}
+
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"The Genetic algo parameters are: generationNumber; populationSize; procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+	}
+
 	public PGeneticAlgoParameters(int fastNumber,
-			int fastTime, int generationNumber,
+			int fastTime,int fastLocalSearchTime, int generationNumber,
 			int populationSize, int procNumber, boolean pfastused2makepopulation) {
 
 		textParameters.addVariable("generationNumber", generationNumber);
@@ -95,30 +127,8 @@ public class PGeneticAlgoParameters {
 		this.procNumber = procNumber;
 		this.pfastused2makepopulation = pfastused2makepopulation;
 		this.fastTime = fastTime;
+		this.fastLocalSearchTime = fastLocalSearchTime;
 		this.fastNumber = fastNumber;
-	}
-
-	public PGeneticAlgoParameters(TextParameters textParameters) {
-
-		this.generationNumber = textParameters
-				.getIntVariable("generationNumber");
-		this.populationSize = textParameters.getIntVariable("populationSize");
-		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.pfastused2makepopulation = textParameters
-				.getBooleanVariable("pfastused2makepopulation");
-		if (textParameters.getIntVariable("fastTime") > 0) {
-			this.fastTime = textParameters
-					.getIntVariable("fastTime");
-		}
-		if (textParameters.getIntVariable("fastNumber") != 0) {
-			this.fastNumber = textParameters.getIntVariable("fastNumber");
-		}
-
-		PreesmLogger
-				.getLogger()
-				.log(
-						Level.INFO,
-						"The Genetic algo parameters are: generationNumber; populationSize; procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastNumber");
 	}
 
 	/**
@@ -189,11 +199,17 @@ public class PGeneticAlgoParameters {
 	}
 
 	/**
-	 * Returns the time in seconds between two FAST probabilistic hops in the
-	 * critical path
+	 * Returns the time in seconds for one whole FAST process
 	 */
 	public int getFastTime() {
 		return fastTime;
+	}
+
+	/**
+	 * Returns the time in seconds spent in one FAST local neighborhood
+	 */
+	public int getFastLocalSearchTime() {
+		return fastLocalSearchTime;
 	}
 
 }

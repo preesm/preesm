@@ -114,7 +114,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 		if (genParams.isPfastused2makepopulation()) {
 			PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
 
-			PFastAlgoParameters pFastParams = new PFastAlgoParameters(genParams.getFastNumber(), genParams.getFastTime(), true, 5,
+			PFastAlgoParameters pFastParams = new PFastAlgoParameters(genParams.getFastNumber(), genParams.getFastTime(), genParams.getFastLocalSearchTime(), true, 5,
 					3);
 
 			dag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, true,
@@ -125,7 +125,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 			FastPopulation population = new FastPopulation(genParams
 					.getPopulationSize(), populationDAG, abcParameters, architecture);
 
-			FastAlgoParameters fastParams = new FastAlgoParameters(genParams.getFastTime(), false);
+			FastAlgoParameters fastParams = new FastAlgoParameters(genParams.getFastTime(), genParams.getFastLocalSearchTime(), false);
 
 			population.constructPopulation(dag, scenario, fastParams);
 		}

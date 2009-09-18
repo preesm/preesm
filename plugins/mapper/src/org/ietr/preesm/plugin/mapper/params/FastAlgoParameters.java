@@ -60,7 +60,12 @@ public class FastAlgoParameters {
 	/**
 	 * Time in seconds we want to run FAST
 	 */
-	private int fastTime = -1;
+	private int fastTime = 200;
+
+	/**
+	 * Time in seconds spent in one FAST local neighborhood
+	 */
+	private int fastLocalSearchTime = 10;
 
 	public FastAlgoParameters(TextParameters textParameters) {
 
@@ -70,12 +75,16 @@ public class FastAlgoParameters {
 			this.fastTime = textParameters
 					.getIntVariable("fastTime");
 		}
+		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
+			this.fastLocalSearchTime = textParameters
+					.getIntVariable("fastLocalSearchTime");
+		}
 
 		PreesmLogger
 				.getLogger()
 				.log(
 						Level.INFO,
-						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds");
+						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");
 	}
 
 	/**
@@ -84,11 +93,12 @@ public class FastAlgoParameters {
 	 * 
 	 */
 
-	public FastAlgoParameters(int fastTime,
+	public FastAlgoParameters(int fastTime,int fastLocalSearchTime,
 			boolean displaySolutions) {
 
 		this.displaySolutions = displaySolutions;
 		this.fastTime = fastTime;
+		this.fastLocalSearchTime = fastLocalSearchTime;
 	}
 
 	/**
@@ -106,10 +116,16 @@ public class FastAlgoParameters {
 	}
 
 	/**
-	 * Returns the time in seconds between two FAST probabilistic hops in the
-	 * critical path
+	 * Returns the time in seconds for the whole FAST process
 	 */
 	public int getFastTime() {
 		return fastTime;
+	}
+
+	/**
+	 * Returns the time in seconds spent in one FAST local neighborhood
+	 */
+	public int getFastLocalSearchTime() {
+		return fastLocalSearchTime;
 	}
 }

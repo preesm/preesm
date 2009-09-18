@@ -213,7 +213,7 @@ public class FastAlgorithm extends Observable {
 		
 		// FAST parameters
 		// FAST is stopped after a time given in seconds
-		long stopTime = System.nanoTime() + 1000000000l * fastParams.getFastTime();
+		long fastStopTime = System.currentTimeMillis() + 1000 * fastParams.getFastTime();
 		// the number of local solutions searched in a neighborhood is the size of the graph
 		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
 		// the number of better solutions found in a neighborhood is limited
@@ -221,7 +221,7 @@ public class FastAlgorithm extends Observable {
 
 		// step 4/17
 		// Stopping after the given time in seconds is reached
-		while (fastParams.getFastTime() < 0 || System.nanoTime() < stopTime) {
+		while (fastParams.getFastTime() < 0 || System.currentTimeMillis() < fastStopTime) {
 
 			searchcount++;
 
@@ -235,6 +235,9 @@ public class FastAlgorithm extends Observable {
 			int localCounter = 0;
 			simulator.updateFinalCosts();
 
+			// FAST local search is stopped after a time given in seconds
+			long fastLocalSearchStopTime = System.currentTimeMillis() + 1000 * fastParams.getFastLocalSearchTime();
+			
 			// step 6 : neighborhood search
 			do {
 				// Mode stop
@@ -294,7 +297,7 @@ public class FastAlgorithm extends Observable {
 
 				searchStep++;
 				// step 11
-			} while (searchStep < maxStep && localCounter < margin);
+			} while (searchStep < maxStep && localCounter < margin && System.currentTimeMillis() < fastLocalSearchStopTime);
 
 			// step 12
 			simulator.updateFinalCosts();

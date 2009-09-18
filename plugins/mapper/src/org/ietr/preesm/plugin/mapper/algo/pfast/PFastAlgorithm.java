@@ -82,9 +82,10 @@ public class PFastAlgorithm extends Observable {
 	 * The scheduling (total order of tasks) for the best found solution.
 	 */
 	private VertexOrderList bestTotalOrder = null;
-	
+
 	/**
-	 * FinalTimeComparator : comparator between two different implementation based on
+	 * FinalTimeComparator : comparator between two different implementation
+	 * based on
 	 */
 	private class FinalTimeComparator implements Comparator<MapperDAG> {
 
@@ -109,7 +110,7 @@ public class PFastAlgorithm extends Observable {
 				difference = 1;
 			}
 
-			return (int)difference;
+			return (int) difference;
 		}
 
 		/**
@@ -118,11 +119,11 @@ public class PFastAlgorithm extends Observable {
 		 * @param : ArchitectureSimulatorType, MapperDAG, IArchitecture
 		 * 
 		 */
-		public FinalTimeComparator(AbcParameters abcParams,
-				MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario) {
+		public FinalTimeComparator(AbcParameters abcParams, MapperDAG dag,
+				MultiCoreArchitecture archi, IScenario scenario) {
 			super();
-			this.simulator = AbstractAbc.getInstance(abcParams,
-					dag, archi, scenario);
+			this.simulator = AbstractAbc.getInstance(abcParams, dag, archi,
+					scenario);
 		}
 
 	}
@@ -165,13 +166,17 @@ public class PFastAlgorithm extends Observable {
 		// find number of thread possible
 		nbsubsets = setThreadNumber(BNlist, nboperator, nodesmin);
 
-		if(nbsubsets == 0){
-			PreesmLogger.getLogger().log(Level.SEVERE,"Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
+		if (nbsubsets == 0) {
+			PreesmLogger
+					.getLogger()
+					.log(
+							Level.SEVERE,
+							"Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
 		}
-		
+
 		// find number of nodes per thread
 		nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
-		
+
 		Iterator<MapperDAGVertex> riter = BNlist.iterator();
 		Iterator<Set<String>> itera = subSet.iterator();
 		subSet.add(new HashSet<String>());
@@ -191,7 +196,7 @@ public class PFastAlgorithm extends Observable {
 				}
 			}
 		}
-		
+
 		return nbsubsets;
 	}
 
@@ -272,8 +277,9 @@ public class PFastAlgorithm extends Observable {
 	/**
 	 * map = perform the Pfast Algo (it is the main thread)
 	 * 
-	 *            // Determine if we want the Pfast solution or a population of
-	 *            good solution to perform another algorithm
+	 * // Determine if we want the Pfast solution or a population of good
+	 * solution to perform another algorithm
+	 * 
 	 * @param populationsize
 	 *            // if we want a population this parameter determine how many
 	 *            individuals we want in the population
@@ -283,8 +289,10 @@ public class PFastAlgorithm extends Observable {
 	 * @return MapperDAG
 	 */
 	@SuppressWarnings("unchecked")
-	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi, IScenario scenario, InitialLists initialLists, AbcParameters abcParams, PFastAlgoParameters pFastParams,
-			boolean population, int populationsize, boolean isDisplaySolutions, 
+	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi,
+			IScenario scenario, InitialLists initialLists,
+			AbcParameters abcParams, PFastAlgoParameters pFastParams,
+			boolean population, int populationsize, boolean isDisplaySolutions,
 			List<MapperDAG> populationList, AbstractTaskSched taskSched) {
 
 		int i = 0;
@@ -292,7 +300,7 @@ public class PFastAlgorithm extends Observable {
 			populationsize = 1;
 		int k = 0;
 		int totalsearchcount = 0;
-		
+
 		Vector<MapperDAGVertex> cpnDominantVector = new Vector<MapperDAGVertex>(
 				initialLists.getCpnDominant());
 		Vector<MapperDAGVertex> blockingnodeVector = new Vector<MapperDAGVertex>(
@@ -301,28 +309,32 @@ public class PFastAlgorithm extends Observable {
 				initialLists.getCriticalpath());
 		MapperDAG dagfinal;
 		KwokListScheduler scheduler = new KwokListScheduler();
-		IAbc archisimu = AbstractAbc
-				.getInstance(abcParams, dag, archi, scenario);
+		IAbc archisimu = AbstractAbc.getInstance(abcParams, dag, archi,
+				scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 
-		FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(), pFastParams.isDisplaySolutions());
-		
+		FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams
+				.getFastTime(), pFastParams.getFastLocalSearchTime(),
+				pFastParams.isDisplaySolutions());
+
 		// if only one operator the fast must be used
 		if (pFastParams.getProcNumber() == 0) {
 			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-			dag = algorithm.map("Fast", abcParams, fastParams, dag, archi,false, false, false, null,
-					cpnDominantVector, blockingnodeVector, fcpVector, taskSched);
+			dag = algorithm.map("Fast", abcParams, fastParams, dag, archi,
+					false, false, false, null, cpnDominantVector,
+					blockingnodeVector, fcpVector, taskSched);
 			return dag;
 		}
 
 		// Data window set
 		Semaphore pauseSemaphore = new Semaphore(1);
-		final BestCostPlotter costPlotter = new BestCostPlotter("PFast Algorithm", pauseSemaphore);
+		final BestCostPlotter costPlotter = new BestCostPlotter(
+				"PFast Algorithm", pauseSemaphore);
 
 		if (!population) {
 			costPlotter.setSUBPLOT_COUNT(1);
-			//demo.display();
+			// demo.display();
 			BestCostEditor.createEditor(costPlotter);
 
 			this.addObserver(costPlotter);
@@ -330,18 +342,20 @@ public class PFastAlgorithm extends Observable {
 
 		// step 1
 		// step 2
-		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null, null).clone();
+		dagfinal = scheduler.schedule(dag, cpnDominantVector, archisimu, null,
+				null).clone();
 
 		bestTotalOrder = archisimu.getTotalOrder();
 		archisimu.updateFinalCosts();
 		long iBest = (Long) archisimu.getFinalCost();
-		
+
 		setChanged();
 		notifyObservers(iBest);
 		dagfinal.setScheduleCost(iBest);
 		dag.setScheduleCost(iBest);
 		// step 3/4
-		int nbCores = chooseNbCores(initialLists, pFastParams.getProcNumber(), pFastParams.getNodesmin(), subSet);
+		int nbCores = chooseNbCores(initialLists, pFastParams.getProcNumber(),
+				pFastParams.getNodesmin(), subSet);
 
 		Iterator<Set<String>> subiter = subSet.iterator();
 		ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<MapperDAG>(
@@ -363,8 +377,8 @@ public class PFastAlgorithm extends Observable {
 
 				// step 9/11
 				PFastCallable thread = new PFastCallable(name, dag, archi,
-						subiter.next(), isDisplaySolutions, true,
-						abcParams, fastParams, scenario);
+						subiter.next(), isDisplaySolutions, true, abcParams,
+						fastParams, scenario);
 
 				FutureTask<MapperDAG> task = new FutureTask<MapperDAG>(thread);
 				futureTasks.add(task);
@@ -390,7 +404,7 @@ public class PFastAlgorithm extends Observable {
 
 					mappedDAGSet.pollLast();
 				}
-				
+
 				// step 12
 				if (!population) {
 					dag = mappedDAGSet.first().clone();
@@ -417,7 +431,7 @@ public class PFastAlgorithm extends Observable {
 				e.printStackTrace();
 			}
 			// step 13
-			totalsearchcount ++;
+			totalsearchcount++;
 
 		}
 
@@ -430,8 +444,9 @@ public class PFastAlgorithm extends Observable {
 			}
 
 		}
-		
-		bestTotalOrder = (VertexOrderList) mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
+
+		bestTotalOrder = (VertexOrderList) mappedDAGSet.first()
+				.getPropertyBean().getValue("bestTotalOrder");
 		dagfinal = mappedDAGSet.first().clone();
 
 		return dagfinal;
