@@ -139,7 +139,7 @@ public class FASTTransformation extends AbstractMapping {
 			throw(new PreesmException(e.getMessage()));
 		}
 		
-		result.setDAG(dag);
+		result.setDAG(dag); 
 		// A simple task scheduler avoids new task swaps and ensures reuse of previous order.
 		simu2.setTaskScheduler(new SimpleTaskSched());
 		result.setAbc(simu2);

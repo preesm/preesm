@@ -138,7 +138,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 			throw (new PreesmException(e.getMessage()));
-		}
+		} 
 		
 		result.setDAG(dag);
 		result.setAbc(simu2);

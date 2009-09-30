@@ -71,18 +71,18 @@ public class NewTimeKeeper implements Observer {
 	 * Returns the element corresponding to the vertex in DirtyVertices, if any
 	 */
 	public IScheduleElement getDirtyScheduleElt(MapperDAGVertex vertex) {
-		if(dirtyTLevelElts.contains(vertex)){
+		if (dirtyTLevelElts.contains(vertex)) {
 			return vertex;
 		}
-		
+
 		for (IScheduleElement elt : dirtyTLevelElts) {
 			if (elt instanceof SynchronizedVertices) {
-				if(((SynchronizedVertices)elt).vertices().contains(vertex)){
+				if (((SynchronizedVertices) elt).vertices().contains(vertex)) {
 					return elt;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -125,7 +125,7 @@ public class NewTimeKeeper implements Observer {
 		 * We remove the not usable dirty vertices -> the duplicated ones
 		 * including in synchro vertices and the ones not in implementation
 		 */
-		//Getting all SynchronizedVertices
+		// Getting all SynchronizedVertices
 		Set<IScheduleElement> synchros = new HashSet<IScheduleElement>();
 		for (IScheduleElement elt : dirtyTLevelElts) {
 			if (elt instanceof SynchronizedVertices) {
@@ -186,13 +186,13 @@ public class NewTimeKeeper implements Observer {
 						.getEdgeSource(edge);
 				if (pred != null) {
 					predset.add(pred);
-					
-					if(pred instanceof TransferVertex){
-						inducedPredset.add(((TransferVertex)pred).getSource());
+
+					if (pred instanceof TransferVertex) {
+						inducedPredset.add(((TransferVertex) pred).getSource());
 					}
 				}
 			}
-			
+
 			predset.removeAll(inducedPredset);
 			inducedPredset.clear();
 
@@ -225,6 +225,8 @@ public class NewTimeKeeper implements Observer {
 					.setNewtLevel(TimingVertexProperty.UNAVAILABLE);
 		}
 
+		// The synchro vertices object may have been recreated and thus may be
+		// different. Tests are needed to remove it
 		dirtyTLevelElts.remove(modifiedElt);
 	}
 
@@ -264,7 +266,9 @@ public class NewTimeKeeper implements Observer {
 
 			// If we could not calculate the T level of the predecessor,
 			// calculation fails
-			if (!vertexTProperty.hasCost() || getDirtyScheduleElt(vertex) != null) {
+			if (!vertexTProperty.hasCost()) {
+
+				calculateTLevel(dirtyElt);
 				PreesmLogger.getLogger().log(
 						Level.INFO,
 						"tLevel unavailable for vertex " + inputElt

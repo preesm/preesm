@@ -61,7 +61,7 @@ public class SynchronizedVertices implements IScheduleElement {
 		super();
 		this.vertices = new ArrayList<MapperDAGVertex>();
 	}
-	
+
 	public SynchronizedVertices(List<MapperDAGVertex> vertices) {
 		super();
 		this.vertices = new ArrayList<MapperDAGVertex>(vertices);
@@ -91,8 +91,8 @@ public class SynchronizedVertices implements IScheduleElement {
 	public List<MapperDAGVertex> vertices() {
 		return Collections.unmodifiableList(vertices);
 	}
-	
-	public boolean contains(MapperDAGVertex vertex){
+
+	public boolean contains(MapperDAGVertex vertex) {
 		return vertices.contains(vertex);
 	}
 
@@ -108,15 +108,15 @@ public class SynchronizedVertices implements IScheduleElement {
 
 	public void remove(MapperDAGVertex v) {
 		vertices.remove(v);
-		
+
 		// Desynchronizes the timing props
 		if (!vertices.isEmpty()) {
-			v.setTimingVertexProperty(vertices.get(0)
-					.getTimingVertexProperty().clone());
+			v.setTimingVertexProperty(vertices.get(0).getTimingVertexProperty()
+					.clone());
+		} else {
+			int i = 0;
+			i++;
 		}
-		else{
-				int i = 0 ; i++;
-			}
 	}
 
 	public void add(MapperDAGVertex v) {
@@ -126,7 +126,7 @@ public class SynchronizedVertices implements IScheduleElement {
 				v.setTimingVertexProperty(vertices.get(0)
 						.getTimingVertexProperty());
 			}
-			
+
 			vertices.add(v);
 		}
 	}
@@ -145,7 +145,34 @@ public class SynchronizedVertices implements IScheduleElement {
 		return "#synch " + vertices.toString() + " #";
 	}
 
-	public boolean isEmpty(){
+	public boolean isEmpty() {
 		return vertices.isEmpty();
+	}
+
+	/**
+	 * Two synchro vertices objects are equivalent if they contain the same
+	 * vertices
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if(obj instanceof SynchronizedVertices){
+			SynchronizedVertices newS = (SynchronizedVertices)obj;
+			if(this==obj){
+				return true;
+			}
+			if(newS.vertices().size() != vertices().size()){
+				return false;
+			}
+			
+			for(MapperDAGVertex v : newS.vertices()){
+				if(!contains(v)){
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		 return false;
 	}
 }
