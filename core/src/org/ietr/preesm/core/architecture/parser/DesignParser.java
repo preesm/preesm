@@ -46,7 +46,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -74,8 +73,6 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-import org.ietr.preesm.core.expression.PreesmEvaluator;
-import org.ietr.preesm.core.scenario.editor.simu.HierarchicalArchiCmp;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

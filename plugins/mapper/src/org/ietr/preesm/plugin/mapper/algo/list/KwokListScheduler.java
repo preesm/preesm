@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.list;
 
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,7 +104,7 @@ public class KwokListScheduler {
 	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			IAbc archisimu, Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
-		boolean minimizeVStartorOpEnd = true;
+		boolean minimizeVStartorOpEnd = false;
 		
 		// Variables
 		Operator chosenoperator = null;
@@ -124,13 +123,12 @@ public class KwokListScheduler {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				Set<Operator> opSet = currentvertex.getInitialVertexProperty()
-						.getOperatorSet();
-				if (opSet.size() == 1) {
-					chosenoperator = (Operator) opSet.toArray()[0];
+				List<Operator> opList = currentvertex.getInitialVertexProperty()
+						.getOperatorList();
+				if (opList.size() == 1) {
+					chosenoperator = (Operator) opList.toArray()[0];
 				} else {
-					for (Operator currentoperator : currentvertex
-							.getInitialVertexProperty().getOperatorSet()) {
+					for (Operator currentoperator : opList) {
 
 						long test = listImplantationCost(dag, currentvertex,
 								currentoperator, archisimu, minimizeVStartorOpEnd);
@@ -157,7 +155,7 @@ public class KwokListScheduler {
 
 			}
 		}
-
+		
 		// archisimu.rescheduleTransfers(orderlist);
 		// archisimu.retrieveTotalOrder();
 

@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.order;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,7 +44,6 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGVertex;
 
 /**
  * A schedule represents the consecutive tasks mapped on a single
@@ -120,6 +118,21 @@ public class Schedule {
 	}
 
 	/**
+	 * Inserts a vertex at the given index
+	 */
+	public void insertAtIndex(IScheduleElement vertex, int index) {
+		if (!contains(vertex)) {
+			if (vertex.getTimingVertexProperty().getCost() >= 0) {
+				busyTime += vertex.getTimingVertexProperty().getCost();
+			}
+
+			if (index >= 0) {
+				elementList.add(index, vertex);
+			}
+		}
+	}
+
+	/**
 	 * Inserts a vertex before the given one
 	 */
 	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
@@ -145,24 +158,13 @@ public class Schedule {
 		busyTime = 0;
 	}
 
-	public void remove(IScheduleElement vertex) {
-		int index = indexOf(vertex);
-		if (index != -1) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime -= vertex.getTimingVertexProperty().getCost();
+	public void remove(IScheduleElement element) {
+		if (elementList.contains(element)) {
+			if (element.getTimingVertexProperty().getCost() >= 0) {
+				busyTime -= element.getTimingVertexProperty().getCost();
 			}
 
-			// Removing vertex from the synchronized vertices or directly from
-			// the list
-			IScheduleElement element = elementList.get(index);
-			if (element instanceof SynchronizedVertices
-					&& vertex instanceof MapperDAGVertex) {
-				((SynchronizedVertices) element)
-						.remove((MapperDAGVertex) vertex);
-				elementList.remove(element);
-			} else {
-				elementList.remove(element);
-			}
+			elementList.remove(element);
 		}
 	}
 
@@ -179,7 +181,7 @@ public class Schedule {
 	/**
 	 * Gets the previous vertex in the current schedule
 	 */
-	public IScheduleElement getPrevious(IScheduleElement vertex) {
+	public IScheduleElement getPrevious(MapperDAGVertex vertex) {
 		int index = indexOf(vertex);
 		if (index <= 0) {
 			return null;
@@ -191,7 +193,7 @@ public class Schedule {
 	/**
 	 * Gets the next vertex in the current schedule
 	 */
-	public IScheduleElement getNext(IScheduleElement vertex) {
+	public IScheduleElement getNext(MapperDAGVertex vertex) {
 		int currentIndex = indexOf(vertex);
 		if (currentIndex < 0 || (currentIndex >= elementList.size() - 1)) {
 			return null;
@@ -221,27 +223,37 @@ public class Schedule {
 	 * synchronized vertex from the list
 	 */
 	public int indexOf(IScheduleElement v) {
+		return elementList.indexOf(getScheduleElt(v));
+	}
+
+	/**
+	 * Giving the vertex if present in the list or the synchro
+	 */
+	public IScheduleElement getScheduleElt(IScheduleElement v) {
 		int index = elementList.indexOf(v);
 
 		// Searching in synchronized vertices
-		if (index == -1) {
+		if(index != -1){
+			return v;
+		}
+		else if (v instanceof MapperDAGVertex) {
 			for (IScheduleElement sElt : elementList) {
 				if (sElt instanceof SynchronizedVertices
-						&& ((SynchronizedVertices) sElt).getVertices()
+						&& ((SynchronizedVertices) sElt).vertices()
 								.contains(v)) {
-					return elementList.indexOf(sElt);
+					return sElt;
 				}
 			}
 		}
 
-		return index;
+		return null;
 	}
 
 	/**
 	 * Looks into the synchronized vertices to extract the vertex
 	 */
 	public boolean contains(IScheduleElement v) {
-		return indexOf(v) != -1;
+		return getScheduleElt(v) != null;
 	}
 
 	public boolean isEmpty() {
@@ -257,6 +269,9 @@ public class Schedule {
 		return elementList.toString();
 	}
 
+	/**
+	 * Converts this schedule to a list associating a vertex to its rank
+	 */
 	public VertexOrderList toOrderList() {
 
 		VertexOrderList order = new VertexOrderList();
@@ -269,7 +284,7 @@ public class Schedule {
 				order.addLast(op);
 			} else if (elt instanceof SynchronizedVertices) {
 				for (MapperDAGVertex v : ((SynchronizedVertices) elt)
-						.getVertices()) {
+						.vertices()) {
 					VertexOrderList.OrderProperty op = order.new OrderProperty(
 							v.getName(), indexOf(v));
 					order.addLast(op);

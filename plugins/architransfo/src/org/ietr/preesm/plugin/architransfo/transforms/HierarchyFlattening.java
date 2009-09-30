@@ -45,7 +45,6 @@ import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
 import org.sdf4j.model.visitors.SDF4JException;
 import org.sdf4j.model.visitors.VisitorOutput;
 

@@ -36,15 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
-import org.ietr.preesm.plugin.abc.order.IScheduleElement;
-import org.ietr.preesm.plugin.abc.order.Schedule;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
@@ -112,8 +108,8 @@ public class DynamicQueuingScheduler {
 	}
 
 	public void implantOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
-		Set<Operator> adequateOps = currentvertex.getInitialVertexProperty()
-				.getOperatorSet();
+		List<Operator> adequateOps = currentvertex.getInitialVertexProperty()
+				.getOperatorList();
 		long currentMinCost = Long.MAX_VALUE;
 		Operator currentMinOp = null;
 

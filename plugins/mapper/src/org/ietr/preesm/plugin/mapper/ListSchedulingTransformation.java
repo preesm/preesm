@@ -55,6 +55,7 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.sdf4j.demo.SDFtoDAGDemo;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -138,7 +139,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 			e.printStackTrace();
 			throw (new PreesmException(e.getMessage()));
 		}
-
+		
 		result.setDAG(dag);
 		result.setAbc(simu2);
 

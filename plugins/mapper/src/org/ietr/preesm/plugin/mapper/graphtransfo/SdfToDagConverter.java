@@ -372,7 +372,7 @@ public class SdfToDagConverter {
 		for (DAGVertex dv : vList) {
 			MapperDAGVertex v = (MapperDAGVertex) dv;
 			
-			if(v.getInitialVertexProperty().getOperatorSet().isEmpty()){
+			if(v.getInitialVertexProperty().getOperatorList().isEmpty()){
 				for (ArchitectureComponent o : specialCmps) {
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator((Operator) o);

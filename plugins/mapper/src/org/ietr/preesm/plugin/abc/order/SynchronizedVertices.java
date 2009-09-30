@@ -61,6 +61,11 @@ public class SynchronizedVertices implements IScheduleElement {
 		super();
 		this.vertices = new ArrayList<MapperDAGVertex>();
 	}
+	
+	public SynchronizedVertices(List<MapperDAGVertex> vertices) {
+		super();
+		this.vertices = new ArrayList<MapperDAGVertex>(vertices);
+	}
 
 	@Override
 	public String getName() {
@@ -83,8 +88,12 @@ public class SynchronizedVertices implements IScheduleElement {
 		return null;
 	}
 
-	public List<MapperDAGVertex> getVertices() {
+	public List<MapperDAGVertex> vertices() {
 		return Collections.unmodifiableList(vertices);
+	}
+	
+	public boolean contains(MapperDAGVertex vertex){
+		return vertices.contains(vertex);
 	}
 
 	public MapperDAGVertex getVertex(ArchitectureComponent cmp) {
@@ -105,6 +114,9 @@ public class SynchronizedVertices implements IScheduleElement {
 			v.setTimingVertexProperty(vertices.get(0)
 					.getTimingVertexProperty().clone());
 		}
+		else{
+				int i = 0 ; i++;
+			}
 	}
 
 	public void add(MapperDAGVertex v) {
@@ -128,4 +140,12 @@ public class SynchronizedVertices implements IScheduleElement {
 		return incomingEdges;
 	}
 
+	@Override
+	public String toString() {
+		return "#synch " + vertices.toString() + " #";
+	}
+
+	public boolean isEmpty(){
+		return vertices.isEmpty();
+	}
 }

@@ -186,7 +186,7 @@ public class GanttPlotter extends ApplicationFrame implements
 		// Creating the Operator lines
 		List<ArchitectureComponent> cmps = archi.getComponents();
 		Collections.sort(cmps,
-				new ArchitectureComponent.ArchitectureComponentComparator());
+				new ArchitectureComponent.CmpComparator());
 
 		for (ArchitectureComponent cmp : cmps) {
 			currenttask = new Task(cmp.getName(), new SimpleTimePeriod(0, 1));

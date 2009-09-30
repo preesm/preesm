@@ -70,7 +70,7 @@ import org.sdf4j.model.AbstractVertex;
 public abstract class ArchitectureComponent extends
 		AbstractVertex<MultiCoreArchitecture> {
 
-	public static class ArchitectureComponentComparator implements
+	public static class CmpComparator implements
 			Comparator<ArchitectureComponent> {
 		@Override
 		public int compare(ArchitectureComponent o1, ArchitectureComponent o2) {

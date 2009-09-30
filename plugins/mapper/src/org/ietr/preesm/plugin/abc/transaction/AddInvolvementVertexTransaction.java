@@ -61,7 +61,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	// Inputs
 	/**
 	 * Determining if the current involvement is executed by the sender or by
-	 * the receiver
+	 * the receiver of the transfer
 	 */
 	private boolean isSender;
 
@@ -152,7 +152,23 @@ public class AddInvolvementVertexTransaction extends Transaction {
 						.clone());
 				newInEdge.getTimingEdgeProperty().setCost(0);
 
-				if (true) {
+				MapperDAGVertex receiverVertex = currentTarget; 
+				do{
+					for(MapperDAGVertex next : receiverVertex.getSuccessorSet()){
+						if(next != null){
+							receiverVertex = next;
+						}
+					}
+				}
+				while(receiverVertex instanceof TransferVertex);
+
+				MapperDAGEdge newoutEdge = (MapperDAGEdge) implementation
+						.addEdge(iVertex, receiverVertex);
+				newoutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+						.clone());
+				newoutEdge.getTimingEdgeProperty().setCost(0);
+				
+				if (false) {
 					TaskSwitcher taskSwitcher = new TaskSwitcher();
 					taskSwitcher.setOrderManager(orderManager);
 					taskSwitcher.insertVertexBefore(currentTarget, iVertex);

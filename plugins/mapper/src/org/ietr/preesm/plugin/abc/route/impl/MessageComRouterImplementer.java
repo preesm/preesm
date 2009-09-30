@@ -11,14 +11,13 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
-import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.AddInvolvementVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -140,19 +139,22 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 					}
 				}
 
-				/*if (toSynchronize.size() > 1) {
+				// Synchronizing the vertices in order manager (they will all have the same total order).
+				if (toSynchronize.size() > 1) {
 					ImplementationCleaner cleaner = new ImplementationCleaner(
 							getOrderManager(), getImplementation());
 					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(
 							getOrderManager(), getImplementation());
-					int index = getOrderManager().totalIndexOf(
-							toSynchronize.get(0));
+					IScheduleElement last = null;
+					last = null;
+					
 					for (MapperDAGVertex v : toSynchronize) {
 						cleaner.unscheduleVertex(v);
-						// getOrderManager().insertAtIndex(index, v, true);
+						last = getOrderManager().synchronize(last, v);
 						adder.scheduleVertex(v);
 					}
-				}*/
+					
+				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(

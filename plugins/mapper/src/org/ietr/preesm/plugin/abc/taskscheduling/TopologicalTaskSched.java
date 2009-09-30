@@ -168,7 +168,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				MapperDAGVertex previousCandidate = topolist.get(topoOrder);
 				int totalOrder = orderManager.totalIndexOf(previousCandidate);
 				if (totalOrder >= 0) {
-					orderManager.insertAtIndex(totalOrder+1, vertex, false);
+					orderManager.insertAtIndex(totalOrder+1, vertex);
 					inserted = true;
 					break;
 				}

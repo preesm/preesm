@@ -37,10 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -71,7 +69,7 @@ public class InitialVertexProperty {
 	/**
 	 * Available operators
 	 */
-	private Set<Operator> operators;
+	private List<Operator> operators;
 
 	/**
 	 * Number of repetitions that ponderates the timing
@@ -92,7 +90,7 @@ public class InitialVertexProperty {
 		timings = new ArrayList<Timing>();
 		this.nbRepeat = 1;
 		parentVertex = null;
-		operators = new HashSet<Operator>();
+		operators = new ArrayList<Operator>();
 		this.topologicalLevel = -1;
 	}
 
@@ -164,12 +162,12 @@ public class InitialVertexProperty {
 	 * are originally enabled on every operator but their status is updated
 	 * depending on the implantation of their neighbors
 	 */
-	public Set<Operator> getOperatorSet() {
-		Set<Operator> localOperators = null;
+	public List<Operator> getOperatorList() {
+		List<Operator> localOperators = null;
 		if (!SpecialVertexManager.isSpecial(parentVertex)) {
 			localOperators = operators;
 		} else {
-			localOperators = new HashSet<Operator>();
+			localOperators = new ArrayList<Operator>();
 			for (Operator o : operators) {
 				if (isImplantable(o)) {
 					localOperators.add(o);

@@ -40,12 +40,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -161,26 +159,56 @@ public class SchedOrderManager extends Observable {
 	 * the end of total order. If the input is synschronizedVertices, appends it
 	 * at the end of all concerned schedules and at the end of total order.
 	 */
-	public void addLast(MapperDAGVertex vertex) {
+	public void addLast(IScheduleElement elt) {
 
-		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
-			ArchitectureComponent effectiveCmp = vertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+		if (elt instanceof MapperDAGVertex) {
+			MapperDAGVertex vertex = (MapperDAGVertex) elt;
+			if (vertex.getImplementationVertexProperty()
+					.hasEffectiveComponent()) {
+				ArchitectureComponent effectiveCmp = vertex
+						.getImplementationVertexProperty()
+						.getEffectiveComponent();
 
-			// Gets the schedule of vertex
-			Schedule currentSchedule = getSchedule(effectiveCmp);
+				// Gets the schedule of vertex
+				Schedule currentSchedule = getSchedule(effectiveCmp);
 
-			currentSchedule.addLast(vertex);
+				currentSchedule.addLast(vertex);
 
-			if (totalOrder.contains(vertex))
-				totalOrder.remove(vertex);
+				if (totalOrder.contains(vertex)) {
+					totalOrder.remove(vertex);
+				}
 
-			totalOrder.addLast(vertex);
+				totalOrder.addLast(vertex);
+			}
+
+			// Notifies the time keeper that it should update the vertex
+			setChanged();
+			notifyObservers(vertex);
 		}
+		else if(elt instanceof SynchronizedVertices){
+			SynchronizedVertices synchros = (SynchronizedVertices)elt;
+			
+			for(MapperDAGVertex vertex : synchros.vertices()){
+				if (vertex.getImplementationVertexProperty()
+						.hasEffectiveComponent()) {
+					ArchitectureComponent effectiveCmp = vertex
+							.getImplementationVertexProperty()
+							.getEffectiveComponent();
 
-		// Notifies the time keeper that it should update the vertex
-		setChanged();
-		notifyObservers(vertex);
+					// Gets the schedule of vertex
+					Schedule currentSchedule = getSchedule(effectiveCmp);
+
+					currentSchedule.addLast(synchros);
+
+				}
+			}
+
+			totalOrder.addLast(synchros);
+			
+			// Notifies the time keeper that it should update the vertex
+			setChanged();
+			notifyObservers(synchros);
+		}
 	}
 
 	/**
@@ -198,8 +226,9 @@ public class SchedOrderManager extends Observable {
 
 			currentSchedule.addFirst(vertex);
 
-			if (totalOrder.contains(vertex))
+			if (totalOrder.contains(vertex)) {
 				totalOrder.remove(vertex);
+			}
 
 			totalOrder.addFirst(vertex);
 		}
@@ -269,40 +298,50 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Inserts vertex after previous
 	 */
-	public void insertAtIndex(int index, MapperDAGVertex vertex, boolean synchro) {
+	public void insertAtIndex(int index, MapperDAGVertex vertex) {
 
-		if (synchro) {
-			IScheduleElement elt = totalOrder.get(index);
-			if (!elt.equals(vertex) && elt instanceof MapperDAGVertex) {
-				// Replacing the vertex in schedule by a synchronized object
-				SynchronizedVertices newSynch = new SynchronizedVertices();
-				MapperDAGVertex oldVertex = (MapperDAGVertex) elt;
-				ArchitectureComponent oCmp = oldVertex
-						.getImplementationVertexProperty()
-						.getEffectiveComponent();
-				ArchitectureComponent nCmp = vertex
-						.getImplementationVertexProperty()
-						.getEffectiveComponent();
-				newSynch.add(oldVertex);
-				newSynch.add(vertex);
-				totalOrder.insertAfter(oldVertex, newSynch);
-				getSchedule(oCmp).insertAfter(oldVertex, newSynch);
-				remove(oldVertex, true);
-				elt = newSynch;
-				getSchedule(nCmp).insertAfter(
-						totalOrder.get(findLastestPredIndexForOp(nCmp,
-								totalIndexOf(newSynch))), newSynch);
-			} else if (elt instanceof SynchronizedVertices) {
-				((SynchronizedVertices) elt).add(vertex);
-			}
+		if (index < totalOrder.size() && index >= 0) {
+			IScheduleElement ref = totalOrder.get(index);
+			insertBefore(ref, vertex);
 		} else {
-			if (index < totalOrder.size() && index >= 0) {
-				IScheduleElement ref = totalOrder.get(index);
-				insertBefore(ref, vertex);
+			addLast(vertex);
+		}
+	}
+
+	/**
+	 * Synchronizes vertex with refElt
+	 */
+	public SynchronizedVertices synchronize(IScheduleElement refElt,
+			MapperDAGVertex vertex) {
+
+		SynchronizedVertices synchroVs = null;
+		ArchitectureComponent nCmp = vertex.getImplementationVertexProperty()
+				.getEffectiveComponent();
+		Schedule sched = getSchedule(nCmp);
+
+		if (refElt == null) {
+			// Replacing the vertex in schedule by a synchronized object
+			synchroVs = new SynchronizedVertices();
+			synchroVs.add(vertex);
+			int vIndex = sched.indexOf(vertex);
+			int vTIndex = totalOrder.indexOf(vertex);
+			remove(vertex, true);
+			sched.insertAtIndex(synchroVs, vIndex);
+			totalOrder.insertAtIndex(synchroVs, vTIndex);
+		} else if (refElt instanceof SynchronizedVertices) {
+			synchroVs = (SynchronizedVertices) refElt;
+			synchroVs.add(vertex);
+			remove(vertex, true);
+			int predIndex = findLastestPredIndexForOp(nCmp,
+					totalIndexOf(synchroVs));
+			if (predIndex == -1) {
+				sched.addFirst(synchroVs);
 			} else {
-				addLast(vertex);
+				sched.insertAfter(get(predIndex), synchroVs);
 			}
 		}
+
+		return synchroVs;
 	}
 
 	/**
@@ -352,24 +391,6 @@ public class SchedOrderManager extends Observable {
 	 */
 	public void remove(MapperDAGVertex vertex, boolean removeFromTotalOrder) {
 
-		// If the vertex has an effective component,
-		// removes it from the corresponding scheduling
-		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
-			ArchitectureComponent cmp = vertex
-					.getImplementationVertexProperty().getEffectiveComponent();
-			Schedule sch = getSchedule(cmp);
-
-			if (sch != null) {
-				sch.remove(vertex);
-			}
-		} else { // Looks for the right scheduling to remove the vertex
-			Iterator<Schedule> it = schedules.values().iterator();
-
-			while (it.hasNext()) {
-				it.next().remove(vertex);
-			}
-		}
-
 		// Notifies the time keeper that it should update the successors
 		Set<IScheduleElement> successors = totalOrder.getSuccessors(vertex);
 		if (successors == null) {
@@ -379,8 +400,44 @@ public class SchedOrderManager extends Observable {
 		setChanged();
 		notifyObservers(successors);
 
+		// If the vertex has an effective component,
+		// removes it from the corresponding scheduling
+		Schedule sch = null;
+		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
+
+			ArchitectureComponent cmp = vertex
+					.getImplementationVertexProperty().getEffectiveComponent();
+			sch = getSchedule(cmp);
+		} else { // Looks for the right scheduling to remove the vertex
+			for (Schedule locSched : schedules.values()) {
+				if (locSched.contains(vertex)) {
+					sch = locSched;
+					break;
+				}
+			}
+		}
+
+		if (sch != null) {
+			IScheduleElement elt = sch.getScheduleElt(vertex);
+			if (elt != null) {
+				if (elt.equals(vertex)) {
+					sch.remove(elt);
+				} else if (elt instanceof SynchronizedVertices) {
+					sch.remove(elt);
+					if (((SynchronizedVertices) elt).vertices().size() == 1) {
+						totalOrder.remove(elt);
+					}
+					((SynchronizedVertices) elt).remove(vertex);
+				}
+			}
+		}
+
 		if (removeFromTotalOrder) {
-			totalOrder.remove(vertex);
+			IScheduleElement elt = totalOrder.getScheduleElt(vertex);
+
+			if (elt != null) {
+				totalOrder.remove(elt);
+			}
 		}
 
 	}
@@ -426,7 +483,7 @@ public class SchedOrderManager extends Observable {
 				if (verticesToSynchro.size() == 1) {
 					addLast(verticesToSynchro.get(0));
 				} else if (verticesToSynchro.size() > 1) {
-					// addLast(new SynchronizedVertices(verticesToSynchro));
+					addLast(new SynchronizedVertices(verticesToSynchro));
 				}
 				verticesToSynchro.clear();
 				currentOrder = mVOrder;
@@ -561,7 +618,11 @@ public class SchedOrderManager extends Observable {
 				if (elt instanceof MapperDAGVertex) {
 					vList.add((MapperDAGVertex) elt);
 				} else if (elt instanceof SynchronizedVertices) {
-					vList.addAll(((SynchronizedVertices) elt).getVertices());
+					for(MapperDAGVertex sVertex : ((SynchronizedVertices) elt).vertices()){
+						if(sVertex.getImplementationVertexProperty().getEffectiveComponent().equals(cmp)){
+							vList.add(sVertex);
+						}
+					}
 				}
 			}
 		}

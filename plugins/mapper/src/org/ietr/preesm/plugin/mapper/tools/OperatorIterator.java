@@ -79,11 +79,11 @@ public class OperatorIterator implements Iterator<Operator> {
 
 	public void createList(MapperDAGVertex vertex, MultiCoreArchitecture archi) {
 
-		Set<Operator> defset = vertex.getInitialVertexProperty()
-				.getOperatorSet();
+		List<Operator> opList = vertex.getInitialVertexProperty()
+				.getOperatorList();
 
 		Set<Operator> operatorlist = new ConcurrentSkipListSet<Operator>(new OpNameComparator());
-		operatorlist.addAll(defset);
+		operatorlist.addAll(opList);
 		
 		this.operatorlist = new ArrayList<Operator>(operatorlist);
 	}

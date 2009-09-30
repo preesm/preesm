@@ -36,17 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.impl;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
@@ -205,7 +201,7 @@ public class PrecedenceEdgeAdder {
 
 		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
 		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
-
+		
 		boolean prevAndNewLinked = (prevEdges != null && !prevEdges.isEmpty());
 		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
 

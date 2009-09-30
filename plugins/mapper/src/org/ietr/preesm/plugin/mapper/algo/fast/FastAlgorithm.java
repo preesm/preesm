@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +60,6 @@ import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
@@ -159,8 +157,6 @@ public class FastAlgorithm extends Observable {
 		// the same level, in alphabetical name order
 		simulator.setTaskScheduler(taskSched);
 
-		KwokListScheduler listscheduler = new KwokListScheduler();
-
 		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
 				blockingNodesList, randomGenerator);
 
@@ -180,6 +176,8 @@ public class FastAlgorithm extends Observable {
 		long bestSL = Long.MAX_VALUE;
 		int searchcount = 0;
 
+		KwokListScheduler listscheduler = new KwokListScheduler();
+		
 		// step 1
 		if (!alreadyimplanted) {
 			listscheduler.schedule(dag, cpnDominantList, simulator, null, null);
@@ -264,15 +262,15 @@ public class FastAlgorithm extends Observable {
 
 				// step 7
 				// Selecting random vertex with operator set of size > 1
-				Set<Operator> operatorSet = null;
+				List<Operator> operatorList = null;
 				int nonBlockingIndex = 0;
 
 				do {
 					nonBlockingIndex++;
 					currentvertex = (MapperDAGVertex) vertexiter.next();
-					operatorSet = currentvertex.getInitialVertexProperty()
-							.getOperatorSet();
-				} while (operatorSet.size() < 2 && nonBlockingIndex < 100);
+					operatorList = currentvertex.getInitialVertexProperty()
+							.getOperatorList();
+				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 				SL = simulator.getFinalCost();
 
@@ -280,8 +278,8 @@ public class FastAlgorithm extends Observable {
 
 				// The mapping can reaffect the same operator as before,
 				// refining the edge scheduling
-				int randomIndex = randomGenerator.nextInt(operatorSet.size());
-				operatortest = (Operator) operatorSet.toArray()[randomIndex];
+				int randomIndex = randomGenerator.nextInt(operatorList.size());
+				operatortest = (Operator) operatorList.toArray()[randomIndex];
 
 				operatorprec = (Operator) simulator
 						.getEffectiveComponent(currentvertex);
@@ -304,8 +302,8 @@ public class FastAlgorithm extends Observable {
 
 				searchStep++;
 				// step 11
-			} while (/* searchStep < maxStep && localCounter < margin && */System
-					.currentTimeMillis() < fastLocalSearchStopTime);
+			} while (searchStep < maxStep && localCounter < margin
+					&& System.currentTimeMillis() < fastLocalSearchStopTime);
 
 			// step 12
 			simulator.updateFinalCosts();
@@ -334,15 +332,15 @@ public class FastAlgorithm extends Observable {
 			// step 16
 			// Choosing a vertex in critical path with an operator set of more
 			// than 1 element
-			Set<Operator> operatorSet = null;
+			List<Operator> operatorList = null;
 			int nonBlockingIndex = 0;
 
 			do {
 				nonBlockingIndex++;
 				fcpvertex = (MapperDAGVertex) iter.next();
-				operatorSet = fcpvertex.getInitialVertexProperty()
-						.getOperatorSet();
-			} while (operatorSet.size() < 2 && nonBlockingIndex < 100);
+				operatorList = fcpvertex.getInitialVertexProperty()
+						.getOperatorList();
+			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 			// Choosing an operator different from the current vertex operator
 			Operator currentOp = dagfinal.getMapperDAGVertex(
@@ -350,9 +348,9 @@ public class FastAlgorithm extends Observable {
 					.getEffectiveOperator();
 
 			do {
-				int randomIndex = randomGenerator.nextInt(operatorSet.size());
-				operatorfcp = (Operator) operatorSet.toArray()[randomIndex];
-			} while (operatorfcp.equals(currentOp) && operatorSet.size() > 1);
+				int randomIndex = randomGenerator.nextInt(operatorList.size());
+				operatorfcp = (Operator) operatorList.toArray()[randomIndex];
+			} while (operatorfcp.equals(currentOp) && operatorList.size() > 1);
 
 			// step 15
 			List<MapperDAGVertex> toRemapList = cpnDominantList;

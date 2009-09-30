@@ -155,7 +155,7 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			opsElt.setAttribute("key",ImplementationPropertyNames.Vertex_Available_Operators);
 			opsElt.setTextContent(
 					((MapperDAGVertex) vertex)
-							.getInitialVertexProperty().getOperatorSet().toString());
+							.getInitialVertexProperty().getOperatorList().toString());
 			
 		}
 	}

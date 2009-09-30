@@ -36,6 +36,8 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.logging.Level;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -50,6 +52,7 @@ import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
@@ -130,6 +133,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		} catch (PreesmException e) {
 			throw (e);
 		} catch (Exception e) {
+			PreesmLogger.getLogger().log(Level.SEVERE,"Error in codegen graph creation");
 			e.printStackTrace();
 		}
 

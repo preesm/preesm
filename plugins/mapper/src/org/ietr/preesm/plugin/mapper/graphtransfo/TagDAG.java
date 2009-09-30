@@ -117,8 +117,6 @@ public class TagDAG {
 	public void addSendReceive(MapperDAG dag,
 			MultiCoreArchitecture architecture, IAbc simu, IScenario scenario) {
 
-		// Temporary
-		// TODO: add a scheduling order for Send/Receive.
 		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 

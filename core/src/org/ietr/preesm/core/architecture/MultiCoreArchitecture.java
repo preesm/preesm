@@ -53,7 +53,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.AbstractVertex;
 
 /**
  * Architecture based on a fixed number of cores
@@ -414,7 +413,7 @@ public class MultiCoreArchitecture extends
 	public Set<ArchitectureComponent> getComponents(
 			ArchitectureComponentType type) {
 		Set<ArchitectureComponent> ops = new ConcurrentSkipListSet<ArchitectureComponent>(
-				new ArchitectureComponent.ArchitectureComponentComparator());
+				new ArchitectureComponent.CmpComparator());
 
 		Iterator<ArchitectureComponent> iterator = vertexSet().iterator();
 

@@ -13,13 +13,13 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.AddOverheadVertexTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddSendReceiveTransaction;
 import org.ietr.preesm.plugin.abc.transaction.AddTransferVertexTransaction;
-import org.ietr.preesm.plugin.abc.transaction.SynchronizeTransferVerticesTransaction;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
 import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -138,16 +138,21 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
+				// Synchronizing the vertices in order manager (they will all have the same total order).
 				if (toSynchronize.size() > 1) {
-					ImplementationCleaner cleaner = new ImplementationCleaner(getOrderManager(),getImplementation());
-					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(getOrderManager(),getImplementation());
-					for(MapperDAGVertex v : toSynchronize){
+					ImplementationCleaner cleaner = new ImplementationCleaner(
+							getOrderManager(), getImplementation());
+					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(
+							getOrderManager(), getImplementation());
+					IScheduleElement last = null;
+					last = null;
+					
+					for (MapperDAGVertex v : toSynchronize) {
 						cleaner.unscheduleVertex(v);
+						last = getOrderManager().synchronize(last, v);
 						adder.scheduleVertex(v);
 					}
-					transactions
-							.add(new SynchronizeTransferVerticesTransaction(
-									getImplementation(), toSynchronize, getOrderManager()));
+					
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 
