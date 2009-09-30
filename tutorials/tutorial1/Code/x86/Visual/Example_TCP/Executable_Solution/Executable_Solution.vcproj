@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ..\..\..\..\Lib_com\lib\Os_Com.lib"
+				AdditionalDependencies="ws2_32.lib ..\..\Lib_com\lib\Os_Com.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBCMTD"
 				GenerateDebugInformation="true"

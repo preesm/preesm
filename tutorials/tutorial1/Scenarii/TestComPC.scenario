@@ -8,92 +8,36 @@
     </files>
     <constraints>
         <constraintGroup>
-            <operator name="Core7"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core1"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
             <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core6"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
             <task name="Sensor"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
             <task name="Copy"/>
-            <task name="Sensor"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="Sensor2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Actuator"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest"/>
-            <task name="Gen_int"/>
             <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="ParallelTest"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
             <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Copy"/>
-            <task name="Sensor"/>
         </constraintGroup>
     </constraints>
     <timings>
@@ -111,5 +55,6 @@
         <mainMedium>tcp</mainMedium>
         <averageDataSize>1000</averageDataSize>
         <dataTypes/>
+        <specialVertexOperators/>
     </simuParams>
 </scenario>

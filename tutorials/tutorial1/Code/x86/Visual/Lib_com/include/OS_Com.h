@@ -1,19 +1,13 @@
-/*#ifndef _OS_LIB_COM
+#ifndef _OS_LIB_COM
 #define _OS_LIB_COM
-
-
 
 typedef struct {
 	void* medium;
 }Medium;
 
-#define MEDIA_NR 4
-Medium Media[MEDIA_NR][MEDIA_NR];
-semaphore sem_init[MEDIA_NR][MEDIA_NR];
-
-#endif /* #ifndef _OS_LIB_COM*/
-#ifndef _OS_LIB_COM
-#define _OS_LIB_COM
+#define semaphore HANDLE
+#define MEDIUM_SEND 0
+#define MEDIUM_RCV 1
 
 #define		TCP		100
 #define		PCI		101
@@ -29,9 +23,6 @@ semaphore sem_init[MEDIA_NR][MEDIA_NR];
 #define     RECEIVE		1
 
 
-typedef struct {
-	void* medium;
-}Medium;
 
 #ifdef _MVS
 
@@ -42,9 +33,6 @@ int receiveData		(int I_param, int I_senderID, int I_receiverID, void *PV_buffer
 
 semaphore sem_init1;
 semaphore sem_init2;
-
-extern Medium Media[MEDIA_NR][MEDIA_NR];
-extern semaphore sem_init[MEDIA_NR][MEDIA_NR];
 
 #endif
 

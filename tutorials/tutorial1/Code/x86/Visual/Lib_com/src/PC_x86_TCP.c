@@ -9,7 +9,7 @@
 \***********************************************************************************/
 
 
-#include "PC_X86_TCP.h"
+#include "../include/PC_X86_TCP.h"
 
 
 int begin_socklib ( void )
@@ -45,6 +45,7 @@ unsigned int init_TCP_server ( Media_TCP MediaName )
 		end_socklib();
 		exit( -12);
 	}
+
 	local.sin_family = AF_INET ;
 	local.sin_addr.s_addr = INADDR_ANY ;
 
@@ -168,7 +169,7 @@ void Receive_TCP ( Media_TCP MediaName, unsigned int *Buffer, const int NB_bytes
 	while ( retval != NB_bytes ) 
 	{
 		retval += recv(MediaName.socket, (char *)Buffer + retval, NB_bytes - retval , 0);
-		printf("Received %d bytes, data from client\n",retval);
+		//printf("Received %d bytes, data from client\n",retval);
 	}
 }
 
@@ -178,5 +179,5 @@ void Send_TCP ( Media_TCP MediaName, unsigned int *Buffer, const int NB_bytes )
 
 	retval = send(MediaName.socket, (char *)Buffer, NB_bytes, 0);
 
-	printf("Sent Data %d\n",retval);
+	//printf("Sent Data %d\n",retval);
 }

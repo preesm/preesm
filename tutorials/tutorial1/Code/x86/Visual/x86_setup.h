@@ -1,12 +1,9 @@
-/*
- * x86.h
- *
- *  Created on: 4 mars 2009
- *      Author: mpelcat
- */
+#ifndef X86SETUP
+#define X86SETUP
 
-#ifndef X86_H_
-#define X86_H_
+#include <windows.h>
+#include "../Visual/Lib_com/include/OS_Com.h"
+#include "../Visual/Lib_com/include/PC_x86_SEM.h"
 
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -28,12 +25,10 @@
 #define Core6 	6
 #define Core7 	7
 
-#define MEDIA_NR 	10
-
+#define MEDIA_NR 	8
 #define CORE_NUMBER 8
 
-#include "OS_Com.h"
-#include "PC_x86_SEM.h"
+Medium Media[MEDIA_NR][MEDIA_NR];
+semaphore sem_init[MEDIA_NR][MEDIA_NR];
 
-
-#endif /* X86_H_ */
+#endif

@@ -7,7 +7,7 @@ Copyright   : Calling a PREESM generated code
 Description :
 ============================================================================
 */
-#include "x86.h"
+#include "../../x86_setup.h"
 
 /*
 DWORD WINAPI ThreadFunc( LPVOID lpParam )

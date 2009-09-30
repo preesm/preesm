@@ -1,4 +1,4 @@
-#include "x86.h"
+#include "windows.h"
 
 void semaphoreInit(HANDLE* semaphores, int semNumber,int ID) {
 	int cpt;

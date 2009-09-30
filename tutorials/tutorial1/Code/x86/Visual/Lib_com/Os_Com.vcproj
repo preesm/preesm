@@ -68,7 +68,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\..\Lib_com\lib\Os_Com.lib"
+				LinkLibraryDependencies="false"
+				OutputFile="lib/Os_Com.lib"
 				IgnoreAllDefaultLibraries="true"
 				IgnoreDefaultLibraryNames=""
 			/>
@@ -924,15 +925,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\Lib_com\src\OS_Com.c"
+				RelativePath=".\src\OS_Com.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Lib_com\src\PC_x86_SEM.c"
+				RelativePath=".\src\PC_x86_SEM.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Lib_com\src\PC_x86_TCP.c"
+				RelativePath=".\src\PC_x86_TCP.c"
 				>
 			</File>
 		</Filter>
@@ -941,22 +942,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\..\Lib_com\include\OS_Com.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Lib_com\include\PC_x86_SEM.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Lib_com\include\PC_x86_TCP.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Lib_com\include\x86.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
