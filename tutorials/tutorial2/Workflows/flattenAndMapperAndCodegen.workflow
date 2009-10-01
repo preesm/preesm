@@ -18,18 +18,6 @@
             <variable name="path" value="/tutorial2/DAG/outDAG.xml"/>
         </data>
     </preesm:task>
-    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
-        <data key="variables">
-            <variable name="displaySolutions" value="false"/>
-            <variable name="edgeSchedType" value="Switcher"/>
-            <variable name="margIn" value="100"/>
-            <variable name="maxCount" value="200"/>
-            <variable name="maxStep" value="200"/>
-            <variable name="nodesMin" value="5"/>
-            <variable name="procNumber" value="1"/>
-            <variable name="simulatorType" value="AccuratelyTimed"/>
-        </data>
-    </preesm:task>
     <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
         <data key="variables"/>
     </preesm:task>
@@ -42,6 +30,16 @@
         pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
         <data key="variables">
             <variable name="depth" value="2"/>
+        </data>
+    </preesm:task>
+    <preesm:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST mapper">
+        <data key="variables">
+            <variable name="balanceLoads" value="false"/>
+            <variable name="displaySolutions" value="true"/>
+            <variable name="edgeSchedType" value="Simple"/>
+            <variable name="fastLocalSearchTime" value="5"/>
+            <variable name="fastTime" value="200"/>
+            <variable name="simulatorType" value="AccuratelyTimed"/>
         </data>
     </preesm:task>
     <preesm:dataTransfer from="__scenario" sourceport=""
@@ -58,20 +56,20 @@
         targetport="architecture" to="ImplementationExporter"/>
     <preesm:dataTransfer from="__scenario" sourceport=""
         targetport="scenario" to="ImplementationExporter"/>
-    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG"
-        targetport="DAG" to="codegen"/>
-    <preesm:dataTransfer from="FAST scheduler" sourceport="DAG"
-        targetport="DAG" to="ImplementationExporter"/>
-    <preesm:dataTransfer from="FAST scheduler" sourceport="ABC"
-        targetport="ABC" to="DAG Plotter"/>
-    <preesm:dataTransfer from="__architecture" sourceport=""
-        targetport="architecture" to="FAST scheduler"/>
-    <preesm:dataTransfer from="__scenario" sourceport=""
-        targetport="scenario" to="FAST scheduler"/>
     <preesm:dataTransfer from="__algorithm" sourceport="SDF"
         targetport="SDF" to="HierarchyFlattening"/>
     <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF"
         targetport="SDF" to="Exporter"/>
     <preesm:dataTransfer from="HierarchyFlattening" sourceport="SDF"
-        targetport="SDF" to="FAST scheduler"/>
+        targetport="SDF" to="FAST mapper"/>
+    <preesm:dataTransfer from="FAST mapper" sourceport="DAG"
+        targetport="DAG" to="ImplementationExporter"/>
+    <preesm:dataTransfer from="FAST mapper" sourceport="DAG"
+        targetport="DAG" to="codegen"/>
+    <preesm:dataTransfer from="FAST mapper" sourceport="ABC"
+        targetport="ABC" to="DAG Plotter"/>
+    <preesm:dataTransfer from="__scenario" sourceport=""
+        targetport="scenario" to="FAST mapper"/>
+    <preesm:dataTransfer from="__architecture" sourceport=""
+        targetport="architecture" to="FAST mapper"/>
 </preesm:workflow>
