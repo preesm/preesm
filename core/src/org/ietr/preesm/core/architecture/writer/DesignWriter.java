@@ -239,8 +239,8 @@ public class DesignWriter {
 		Element intfElt = dom.createElement("spirit:activeInterface");
 		hierElt.appendChild(intfElt);
 		
-		intfElt.setAttribute("spirit:busRef", p.getBusReference());
-		intfElt.setAttribute("spirit:componentRef", p.getConnectedOperator());
+		intfElt.setAttribute("spirit:busRef", p.getBusRefName());
+		intfElt.setAttribute("spirit:componentRef", p.getConnectedCmpId());
 	}
 
 	private void addID(Element parent) {

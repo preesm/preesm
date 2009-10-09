@@ -49,8 +49,8 @@ import org.ietr.preesm.core.architecture.IOperator;
  */
 public class Operator extends ArchitectureComponent implements IOperator {
 	
-	public Operator(String name, OperatorDefinition type) {
-		super(name, type);
+	public Operator(String id, OperatorDefinition type) {
+		super(id, type);
 
 	}
 	

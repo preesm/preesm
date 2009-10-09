@@ -33,67 +33,52 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-
+ 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
- * A hierarchical connection joins one interface of a component to one port of
- * its design component
+ * As defined in IP-XACT, a bus type defines a way to interconnect components
  * 
  * @author mpelcat
  */
-public class HierarchyPort {
+public class BusType {
 
-	/**
-	 * A HierarchyPort has only one connection to a given component
-	 */
-	private String connectedCmpId = null;
 
-	/**
-	 * A the connection has a given bus reference
-	 */
-	private String busRefName = null;
+	private String id;
 
-	/**
-	 * Hierarchical connection name
-	 */
-	private String name = null;
+	private VLNV vlnv;
 
-	public HierarchyPort(String name, String connectedComponent,
-			String busReference) {
+	public BusType(String id, VLNV vlnv) {
 		super();
-		this.name = name;
-		this.connectedCmpId = connectedComponent;
-		this.busRefName = busReference;
+		this.id = id;
+		this.vlnv = vlnv;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public VLNV getVlnv() {
+		return vlnv;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public HierarchyPort clone() {
-		HierarchyPort newHC = new HierarchyPort(this.getName(),
-				getConnectedCmpId(), getBusRefName());
-		return newHC;
-	}
+	protected Object clone() {
 
-	public String getConnectedCmpId() {
-		return connectedCmpId;
-	}
-
-	public void setConnectedCmpId(String id) {
-		connectedCmpId = id;
-	}
-
-	public String getBusRefName() {
-		return busRefName;
-	}
-
-	public String getName() {
-		return name;
+		BusType newRef = new BusType(this.id, this.vlnv);
+		return newRef;
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	public boolean equals(Object obj) {
+		
+		if(obj instanceof BusType)
+			if(((BusType) obj).getId().equals(getId()) && ((BusType) obj).getVlnv().equals(getVlnv()))
+				return true;
+		
+		return false;
 	}
+	
 }

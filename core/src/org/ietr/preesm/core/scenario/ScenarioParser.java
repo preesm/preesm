@@ -175,7 +175,7 @@ public class ScenarioParser {
 				String content = elt.getTextContent();
 				if (type.equals("mainCore")) {
 					scenario.getSimulationManager()
-							.setMainOperatorName(content);
+							.setMainOperatorId(content);
 				} else if (type.equals("mainMedium")) {
 					scenario.getSimulationManager().setMainMediumName(content);
 				} else if (type.equals("averageDataSize")) {

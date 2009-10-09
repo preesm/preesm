@@ -91,11 +91,11 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 		this.tgtIf = tgtIf;
 	}
 
-	public ArchitectureInterface getInterface(ArchitectureComponentType type) {
+	public ArchitectureInterface getInterface(ArchitectureComponent cmp) {
 
-		if (getSource().getType() == type)
+		if (getSource().equals(cmp))
 			return srcIf;
-		else if (getTarget().getType() == type)
+		else if (getTarget().equals(cmp))
 			return tgtIf;
 		else
 			return null;

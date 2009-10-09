@@ -46,8 +46,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class Ram extends ArchitectureComponent {
 	
-	public Ram(String name, RamDefinition type) {
-		super(name, type);
+	public Ram(String id, RamDefinition type) {
+		super(id, type);
 	}
 	
 	public ArchitectureComponentType getType(){

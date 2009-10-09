@@ -46,8 +46,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class ContentionNode extends AbstractNode {
 
-	public ContentionNode(String name, ContentionNodeDefinition type) {
-		super(name, type);
+	public ContentionNode(String id, ContentionNodeDefinition type) {
+		super(id, type);
 	}
 	
 	public ArchitectureComponentType getType(){

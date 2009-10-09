@@ -95,7 +95,7 @@ public class SimulationManager {
 		return mainOperatorName;
 	}
 
-	public void setMainOperatorName(String mainOperatorName) {
+	public void setMainOperatorId(String mainOperatorName) {
 		this.mainOperatorName = mainOperatorName;
 	}
 

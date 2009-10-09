@@ -52,8 +52,8 @@ public class Bus extends ArchitectureComponent implements ILink {
 	 */
 	public static final String propertyBeanName = "bus";
 
-	public Bus(String name, BusDefinition type) {
-		super(name, type);
+	public Bus(String id, BusDefinition type) {
+		super(id, type);
 
 	}
 

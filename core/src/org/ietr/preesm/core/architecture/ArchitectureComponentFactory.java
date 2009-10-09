@@ -70,52 +70,52 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  */
 public class ArchitectureComponentFactory {
 	
-	public static ArchitectureComponent createElement(ArchitectureComponentDefinition type,String name){
+	public static ArchitectureComponent createElement(ArchitectureComponentDefinition type,String id){
 
 		ArchitectureComponent result = null;
 		
 		if(type != null){
 			// Simple model
 			if(type instanceof MediumDefinition){
-				result = new Medium(name,(MediumDefinition)type);
+				result = new Medium(id,(MediumDefinition)type);
 			}
 			else if(type instanceof OperatorDefinition){
-				result = new Operator(name,(OperatorDefinition)type);
+				result = new Operator(id,(OperatorDefinition)type);
 			}
 			else if(type instanceof ContentionNodeDefinition){
-				result = new ContentionNode(name,(ContentionNodeDefinition)type);
+				result = new ContentionNode(id,(ContentionNodeDefinition)type);
 			}
 			else if(type instanceof DmaDefinition){
-				result = new Dma(name,(DmaDefinition)type);
+				result = new Dma(id,(DmaDefinition)type);
 			}
 			else if(type instanceof ParallelNodeDefinition){
-				result = new ParallelNode(name,(ParallelNodeDefinition)type);
+				result = new ParallelNode(id,(ParallelNodeDefinition)type);
 			}
 			else if(type instanceof RamDefinition){
-				result = new Ram(name,(RamDefinition)type);
+				result = new Ram(id,(RamDefinition)type);
 			}
 			
 			// Advanced model
 			else if(type instanceof CommunicationNodeDefinition){
-				result = new CommunicationNode(name,(CommunicationNodeDefinition)type);
+				result = new CommunicationNode(id,(CommunicationNodeDefinition)type);
 			}
 			else if(type instanceof CommunicatorDefinition){
-				result = new Communicator(name,(CommunicatorDefinition)type);
+				result = new Communicator(id,(CommunicatorDefinition)type);
 			}
 			else if(type instanceof MemoryDefinition){
-				result = new Memory(name,(MemoryDefinition)type);
+				result = new Memory(id,(MemoryDefinition)type);
 			}
 			else if(type instanceof BusDefinition){
-				result = new Bus(name,(BusDefinition)type);
+				result = new Bus(id,(BusDefinition)type);
 			}
 			else if(type instanceof ProcessorDefinition){
-				result = new Processor(name,(ProcessorDefinition)type);
+				result = new Processor(id,(ProcessorDefinition)type);
 			}
 			else if(type instanceof IpCoprocessorDefinition){
-				result = new IpCoprocessor(name,(IpCoprocessorDefinition)type);
+				result = new IpCoprocessor(id,(IpCoprocessorDefinition)type);
 			}
 			else if(type instanceof FifoDefinition){
-				result = new Fifo(name,(FifoDefinition)type);
+				result = new Fifo(id,(FifoDefinition)type);
 			}
 		}
 		

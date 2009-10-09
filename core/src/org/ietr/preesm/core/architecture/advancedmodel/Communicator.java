@@ -65,8 +65,8 @@ public class Communicator extends ArchitectureComponent implements
 
 	private Set<String> accessTerminalNames;
 
-	public Communicator(String name, CommunicatorDefinition type) {
-		super(name, type);
+	public Communicator(String id, CommunicatorDefinition type) {
+		super(id, type);
 		setupTimes = new HashMap<String, Double>();
 		accessTerminalNames = new HashSet<String>();
 	}

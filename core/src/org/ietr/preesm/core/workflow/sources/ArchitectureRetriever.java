@@ -61,8 +61,7 @@ public class ArchitectureRetriever {
 		Path relativePath = new Path(filename);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 		
-		parser.parseXmlFile(file);
-		architecture = parser.parseDocument();
+		architecture = parser.parseXmlFile(file);
 		
 		addVertexPathProperties(architecture,"");
 	}

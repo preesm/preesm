@@ -37,8 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 /**
- * As defined in IP-XACT, a bus definition characterizes interfaces and defines
- * their interconnectability 
+ * As defined in IP-XACT, a bus reference characterizes interfaces and defines
+ * their interconnectability. It is a reference to a bus type
  * 
  * @author mpelcat
  */
@@ -47,13 +47,13 @@ public class BusReference {
 
 	private String id;
 
-	public String getId() {
-		return id;
-	}
-
 	public BusReference(String id) {
 		super();
 		this.id = id;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	@Override

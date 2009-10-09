@@ -53,6 +53,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
+import org.sdf4j.model.AbstractVertex;
 
 /**
  * Architecture based on a fixed number of cores
@@ -197,14 +198,40 @@ public class MultiCoreArchitecture extends
 	}
 
 	/**
+	 * Creates and adds a component
+	 */
+	public ArchitectureComponent addComponent(ArchitectureComponent component) {
+		if (getVertex(component.getName()) != null) {
+			return getVertex(component.getName());
+		} else {
+			addComponentDefinition(component.getDefinition());
+			addVertex(component);
+			return component;
+		}
+	}
+
+	/**
 	 * Adds a hierarchy port with its corresponding component
 	 */
-	public void addHierarchyPort(HierarchyPort hierarchyPort){
+	public void addHierarchyPort(HierarchyPort hierarchyPort) {
 		hierarchyPorts.add(hierarchyPort);
 	}
-	
+
 	public Set<HierarchyPort> getHierarchyPorts() {
 		return hierarchyPorts;
+	}
+
+	public void removeHierarchyPort(HierarchyPort port) {
+		hierarchyPorts.remove(port);
+	}
+
+	public HierarchyPort getHierarchyPort(String name) {
+		for (HierarchyPort port : hierarchyPorts) {
+			if (port.getName().equals(name)) {
+				return port;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -385,25 +412,20 @@ public class MultiCoreArchitecture extends
 	 */
 	public ArchitectureComponent getComponent(ArchitectureComponentType type,
 			String name) {
-		Iterator<ArchitectureComponent> iterator = getComponents(type)
-				.iterator();
-
-		while (iterator.hasNext()) {
-			ArchitectureComponent currentcmp = iterator.next();
-
-			if (currentcmp.getName().compareTo(name) == 0) {
-				return (currentcmp);
-			}
-		}
-
-		return null;
+		return(getVertex(name));
 	}
 
 	/**
 	 * Returns the Component with the given name
 	 */
-	public ArchitectureComponent getComponent(String name) {
-		return getVertex(name);
+	public ArchitectureComponent getComponent(String id) {
+		for(ArchitectureComponent component : getComponents()){
+			if(component.getName().equals(id)){
+				return component;
+			}
+		}
+		
+		return null;
 	}
 
 	/**
@@ -550,6 +572,9 @@ public class MultiCoreArchitecture extends
 		for (ArchitectureComponent vertex : vertexSet()) {
 			ArchitectureComponent newVertex = (ArchitectureComponent) vertex
 					.clone();
+
+			newVertex.getPropertyBean().setValue(AbstractVertex.BASE, this);
+
 			newVertex.fill(vertex, newArchi);
 			newArchi.addVertex(newVertex);
 			matchCopies.put(vertex, newVertex);
@@ -566,8 +591,8 @@ public class MultiCoreArchitecture extends
 			newEdge.setDirected(edge.isDirected());
 			newEdge.setSetup(edge.isSetup());
 		}
-		
-		for(HierarchyPort hierPort : hierarchyPorts){
+
+		for (HierarchyPort hierPort : hierarchyPorts) {
 			newArchi.addHierarchyPort(hierPort);
 		}
 
@@ -579,6 +604,11 @@ public class MultiCoreArchitecture extends
 		}
 		if (mainMedium != null) {
 			newArchi.setMainMedium(mainMedium.getName());
+		}
+
+		for (String key : getPropertyBean().keys()) {
+			newArchi.getPropertyBean().setValue(key,
+					getPropertyBean().getValue(key));
 		}
 
 		return newArchi;

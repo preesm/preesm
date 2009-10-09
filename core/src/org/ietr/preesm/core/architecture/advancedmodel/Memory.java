@@ -60,8 +60,8 @@ public class Memory extends ArchitectureComponent implements ITerminal {
 	 */
 	private Set<String> commPerformerNames;
 
-	public Memory(String name, MemoryDefinition type) {
-		super(name, type);
+	public Memory(String id, MemoryDefinition type) {
+		super(id, type);
 		commPerformerNames = new HashSet<String>();
 	}
 

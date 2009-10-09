@@ -1,7 +1,21 @@
 package org.ietr.preesm.plugin.architransfo.transforms;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.ArchitectureInterface;
+import org.ietr.preesm.core.architecture.BusReference;
+import org.ietr.preesm.core.architecture.HierarchyPort;
+import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.simplemodel.Dma;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -14,7 +28,8 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author mpelcat
  * 
  */
-public class ArchiHierarchyFlattening extends AbstractHierarchyFlattening<MultiCoreArchitecture>{
+public class ArchiHierarchyFlattening extends
+		AbstractHierarchyFlattening<MultiCoreArchitecture> {
 
 	/**
 	 * Flatten one vertex given it's parent
@@ -23,86 +38,124 @@ public class ArchiHierarchyFlattening extends AbstractHierarchyFlattening<MultiC
 	 *            The vertex to flatten
 	 * @param parentGraph
 	 *            The new parent graph
-	 * @throws InvalidExpressionException 
+	 * @throws InvalidExpressionException
 	 */
-	@SuppressWarnings("unchecked")
-	private void treatVertex(ArchitectureComponent vertex, MultiCoreArchitecture parentGraph,
-			int depth) throws InvalidExpressionException {
-		/*
-		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
-				vertex.getGraphDescription().vertexSet());
-		HashMap<SDFAbstractVertex, SDFAbstractVertex> matchCopies = new HashMap<SDFAbstractVertex, SDFAbstractVertex>();
-		for (int i = 0; i < vertices.size(); i++) {
-			if (!(vertices.get(i) instanceof SDFInterfaceVertex)) {
-				SDFAbstractVertex trueVertex = vertices.get(i);
-				SDFAbstractVertex cloneVertex = vertices.get(i).clone();
-				parentGraph.addVertex(cloneVertex);
-				matchCopies.put(trueVertex, cloneVertex);
-				cloneVertex.copyProperties(trueVertex);
-				cloneVertex.setName(vertex.getName() + "_"
-						+ cloneVertex.getName());
-				if (trueVertex.getArguments() != null) {
-					for (Argument arg : trueVertex.getArguments().values()) {
-						arg.setExpressionSolver(trueVertex.getBase());
-						Integer valueOfArg = arg.intValue();
-						cloneVertex.getArgument(arg.getName()).setValue(
-								String.valueOf(valueOfArg));
-					}
-				}
+	private void treatSubDesign(ArchitectureComponent subDesignCmp,
+			MultiCoreArchitecture parentGraph)
+			throws InvalidExpressionException {
+		MultiCoreArchitecture subDesign = (MultiCoreArchitecture) subDesignCmp
+				.getRefinement();
+		// We work on a clone of the subDesign to move directly its components
+		// to the parent design
+		subDesign = subDesign.clone();
+
+		// An interface in the component of the upper design corresponds to a
+		// hierarchy port in the subDesign.
+		Map<ArchitectureInterface, HierarchyPort> refSubdesignPorts = new HashMap<ArchitectureInterface, HierarchyPort>();
+
+		String prefix = subDesignCmp.getName() + "_";
+
+		// Checking correct component definition and linking hierarchy with
+		// parent graph
+		for (ArchitectureInterface intf : subDesignCmp.getInterfaces()) {
+			if (subDesignCmp.getBusType(intf.getBusReference().getId()) == null) {
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"The component " + subDesignCmp.getName()
+								+ " should contain the port with id: "
+								+ intf.getBusReference().getId());
+				return;
+			}
+
+			HierarchyPort port = subDesign.getHierarchyPort(intf
+					.getBusReference().getId());
+			if (port == null) {
+				PreesmLogger
+						.getLogger()
+						.log(
+								Level.SEVERE,
+								"The subdesign "
+										+ subDesign.getId()
+										+ " should contain a hierarchical port with id: "
+										+ intf.getBusReference().getId());
+				return;
+			} else {
+				port.setConnectedCmpId(prefix + port.getConnectedCmpId());
+				refSubdesignPorts.put(intf, port);
 			}
 		}
-		Vector<SDFEdge> edges = new Vector<SDFEdge>(vertex
-				.getGraphDescription().edgeSet());
-		for (int i = 0; i < edges.size(); i++) {
-			SDFAbstractVertex sourceVertex = null;
-			SDFAbstractVertex targetVertex = null;
-			int delayValue = 0;
-			if (edges.get(i).getSource() instanceof SDFInterfaceVertex) {
-				SDFInterfaceVertex sourceInterface = (SDFInterfaceVertex) edges
-						.get(i).getSource();
-				if (vertex.getAssociatedEdge(sourceInterface) != null) {
-					sourceVertex = vertex.getAssociatedEdge(sourceInterface)
-							.getSource();
-					delayValue = vertex.getAssociatedEdge(sourceInterface)
-							.getDelay().intValue();
-					edges.get(i).setSourceInterface(
-							vertex.getAssociatedEdge(sourceInterface)
-									.getSourceInterface());
-				}
 
-			} else {
-				sourceVertex = matchCopies.get(edges.get(i).getSource());
-			}
-			if (edges.get(i).getTarget() instanceof SDFInterfaceVertex) {
-				SDFInterfaceVertex targetInterface = (SDFInterfaceVertex) edges
-						.get(i).getTarget();
-				if (vertex.getAssociatedEdge(targetInterface) != null) {
-					targetVertex = vertex.getAssociatedEdge(targetInterface)
-							.getTarget();
-					delayValue = vertex.getAssociatedEdge(targetInterface)
-							.getDelay().intValue();
-					edges.get(i).setTargetInterface(
-							vertex.getAssociatedEdge(targetInterface)
-									.getTargetInterface());
-				}
+		// Adding the subgraphs components
+		for (ArchitectureComponent component : subDesign.getComponents()) {
+			component.setName(prefix + component.getName());
+			parentGraph.addComponent(component);
+		}
 
-			} else {
-				targetVertex = matchCopies.get(edges.get(i).getTarget());
-			}
-			if (sourceVertex != null && targetVertex != null) {
-				SDFEdge newEdge = parentGraph.addEdge(sourceVertex,
-						targetVertex);
-				newEdge.copyProperties(edges.get(i));
-				newEdge.setCons(new SDFIntEdgePropertyType(edges.get(i)
-						.getCons().intValue()));
-				newEdge.setProd(new SDFIntEdgePropertyType(edges.get(i)
-						.getProd().intValue()));
-				if (delayValue != 0) {
-					newEdge.setDelay(new SDFIntEdgePropertyType(delayValue));
+		// Adding the subgraphs interconnections
+		for (Interconnection intercon : subDesign.getInterconnections()) {
+			Interconnection newI = parentGraph.addEdge(intercon.getSource(),
+					intercon.getTarget());
+			newI.setSrcIf(intercon.getSrcIf());
+			newI.setTgtIf(intercon.getTgtIf());
+			newI.setDirected(intercon.isDirected());
+			newI.setSetup(intercon.isSetup());
+		}
+
+		// Retrieving the upper graph input connections
+		for (Interconnection i : parentGraph.incomingEdgesOf(subDesignCmp)) {
+			ArchitectureInterface sourceIntf = i.getInterface(i.getSource());
+			HierarchyPort targetHPort = refSubdesignPorts.get(i.getInterface(i
+					.getTarget()));
+
+			ArchitectureComponent target = parentGraph.getComponent(targetHPort
+					.getConnectedCmpId());
+			BusReference busRef = parentGraph.getBusReference(targetHPort
+					.getBusRefName());
+			Interconnection newI = parentGraph.addEdge(i.getSource(), target);
+			newI.setSrcIf(sourceIntf);
+			newI.setTgtIf(new ArchitectureInterface(busRef, target));
+			newI.setDirected(i.isDirected());
+			newI.setSetup(i.isSetup());
+		}
+
+		// Retrieving the upper graph output connections
+		for (Interconnection i : parentGraph.outgoingEdgesOf(subDesignCmp)) {
+			ArchitectureInterface targetIntf = i.getInterface(i.getTarget());
+			HierarchyPort sourceHPort = refSubdesignPorts.get(i.getInterface(i
+					.getSource()));
+
+			ArchitectureComponent source = parentGraph.getComponent(sourceHPort
+					.getConnectedCmpId());
+			BusReference busRef = parentGraph.createBusReference(sourceHPort
+					.getBusRefName());
+			Interconnection newI = parentGraph.addEdge(source, i.getTarget());
+			newI.setSrcIf(new ArchitectureInterface(busRef, source));
+			newI.setTgtIf(targetIntf);
+			newI.setDirected(i.isDirected());
+			newI.setSetup(i.isSetup());
+
+			// Retrieving Dma setup times
+			if (newI.isSetup() && i.getTarget() instanceof Dma) {
+				DmaDefinition def = ((DmaDefinition) i.getTarget()
+						.getDefinition());
+				long setupTime = 0;
+				if (subDesignCmp instanceof Operator) {
+					setupTime = def.getSetupTime((Operator) subDesignCmp);
+					def.removeSetupTime((Operator) subDesignCmp);
 				}
+				def.addSetupTime(newI.getSource().getName(), setupTime);
 			}
 		}
-*/
+
+		// Connecting hierarchical ports to subdesign
+		for (HierarchyPort port : new HashSet<HierarchyPort>(parentGraph.getHierarchyPorts())) {
+			if (port.getConnectedCmpId().equals(subDesignCmp.getName())) {
+				parentGraph.addHierarchyPort(new HierarchyPort(port.getName(),
+						prefix + subDesign.getHierarchyPort(port.getBusRefName())
+								.getConnectedCmpId(), port.getBusRefName()));
+			}
+		}
+
 	}
 
 	/**
@@ -116,73 +169,66 @@ public class ArchiHierarchyFlattening extends AbstractHierarchyFlattening<MultiC
 	 *            The logger in which output information
 	 * @throws SDF4JException
 	 */
-	public void flattenGraph(MultiCoreArchitecture archi, int depth) throws SDF4JException {
-		
+	public void flattenGraph(MultiCoreArchitecture archi, int depth)
+			throws SDF4JException {
+
+		// Treating each component with subgraph
+		Set<ArchitectureComponent> subDesignCmps = new HashSet<ArchitectureComponent>();
 		if (depth > 0) {
 
 			int newDepth = depth - 1;
-			for (ArchitectureComponent cmp : archi.vertexSet()) {
-				if (cmp.getRefinement() != null) {
+			Set<ArchitectureComponent> originalComponents = new HashSet<ArchitectureComponent>(
+					archi.vertexSet());
+			for (ArchitectureComponent cmp : originalComponents) {
+				if (cmp.getRefinement() != null
+						&& cmp.getRefinement() instanceof MultiCoreArchitecture) {
+					MultiCoreArchitecture subDesign = (MultiCoreArchitecture) cmp
+							.getRefinement();
 
-					cmp.toString();
+					flattenGraph(subDesign, newDepth);
+					
+					try {
+						treatSubDesign(cmp, archi);
+					} catch (InvalidExpressionException e) {
+						e.printStackTrace();
+						throw (new SDF4JException(e.getMessage()));
+					}
+					subDesignCmps.add(cmp);
 				}
 			}
 		}
-		/*
-		if (depth > 0) {
-			int newDepth = depth - 1;
-			for (SDFAbstractVertex vertex : sdf.vertexSet()) {
-				if (vertex.getGraphDescription() != null) {
-					try {
-						prepareHierarchy(vertex, newDepth);
-					} catch (InvalidExpressionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						throw(new SDF4JException(e.getMessage()));
-					}
+
+		for (HierarchyPort port : new HashSet<HierarchyPort>(archi
+				.getHierarchyPorts())) {
+			for (ArchitectureComponent cmp : subDesignCmps) {
+				if (cmp.getName().equals(port.getConnectedCmpId())) {
+					archi.removeHierarchyPort(port);
 				}
 			}
-			SDFHierarchyInstanciation instantiate = new SDFHierarchyInstanciation();
-			sdf.accept(instantiate);
-			output = instantiate.getOutput();
-			if (!output.isSchedulable()) {
-				throw (new SDF4JException("graph not schedulable"));
-			}
-			Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
-					output.vertexSet());
-			for (int i = 0; i < vertices.size(); i++) {
-				if (vertices.get(i).getGraphDescription() != null) {
-					try {
-						treatVertex(vertices.get(i), output, newDepth);
-					} catch (InvalidExpressionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						throw(new SDF4JException(e.getMessage()));
-					}
-					
-					output.removeVertex(vertices.get(i));
-				}
-			}
+		}
 
-			output.getPropertyBean().setValue("schedulable", true);
-			flattenGraph(output, newDepth);
+		// Removing original vertices with subgraph and corresponding edges
+		for (ArchitectureComponent cmp : subDesignCmps) {
+			for (Interconnection i : new HashSet<Interconnection>(archi
+					.edgesOf(cmp))) {
+				archi.removeEdge(i);
+			}
+			archi.removeVertex(cmp);
+		}
 
-		} else {
-			return;
-		}*/
 		output = archi;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void treatSinkInterface(AbstractVertex port,
-			AbstractGraph parentGraph, int depth) throws InvalidExpressionException {
+			AbstractGraph parentGraph, int depth)
+			throws InvalidExpressionException {
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void treatSourceInterface(AbstractVertex port,
-			AbstractGraph parentGraph, int depth) throws InvalidExpressionException {
+			AbstractGraph parentGraph, int depth)
+			throws InvalidExpressionException {
 	}
-
-
 
 }

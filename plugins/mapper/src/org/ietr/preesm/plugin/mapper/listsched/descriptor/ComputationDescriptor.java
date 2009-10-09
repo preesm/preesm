@@ -226,6 +226,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		super(id);
 		vertex = new DAGVertex();
 		vertex.setName(id);
+		vertex.setId(id);
 		vertex.setNbRepeat(new DAGVertexPropertyType(1));
 		vertex.setTime(new DAGVertexPropertyType(0));
 		this.algorithm = algorithm;
@@ -253,6 +254,7 @@ public class ComputationDescriptor extends OperationDescriptor implements
 		super(id);
 		vertex = new DAGVertex();
 		vertex.setName(id);
+		vertex.setId(id);
 		vertex.setNbRepeat(new DAGVertexPropertyType(1));
 		vertex.setTime(new DAGVertexPropertyType(0));
 		operatorSet = new HashSet<String>();

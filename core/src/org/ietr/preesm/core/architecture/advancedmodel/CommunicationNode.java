@@ -51,8 +51,8 @@ public class CommunicationNode extends ArchitectureComponent {
 	 */
 	public static final String propertyBeanName = "communicationNode";
 
-	public CommunicationNode(String name, CommunicationNodeDefinition type) {
-		super(name, type);
+	public CommunicationNode(String id, CommunicationNodeDefinition type) {
+		super(id, type);
 	}
 
 	public ArchitectureComponentType getType() {

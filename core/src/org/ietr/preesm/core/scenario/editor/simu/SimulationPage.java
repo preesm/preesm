@@ -119,7 +119,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 					Operator mainOp = (Operator) archi.getComponent(
 							ArchitectureComponentType.operator, item);
 
-					scenario.getSimulationManager().setMainOperatorName(
+					scenario.getSimulationManager().setMainOperatorId(
 							mainOp.getName());
 				} else if (type.equals("medium")) {
 					Medium mainMed = (Medium) archi.getComponent(

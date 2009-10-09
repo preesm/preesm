@@ -73,8 +73,8 @@ public class Processor extends ArchitectureComponent implements IOperator,
 
 	private Set<String> accessTerminalNames;
 
-	public Processor(String name, ProcessorDefinition definition) {
-		super(name, definition);
+	public Processor(String id, ProcessorDefinition definition) {
+		super(id, definition);
 		setupTimes = new HashMap<String, Double>();
 		commPerformerNames = new HashSet<String>();
 		accessTerminalNames = new HashSet<String>();

@@ -109,7 +109,7 @@ public class DesignParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public void parseXmlFile(IFile file) {
+	public MultiCoreArchitecture parseXmlFile(IFile file) {
 
 		currentFile = file;
 		// get the factory
@@ -132,12 +132,14 @@ public class DesignParser {
 		} catch (CoreException e) {
 			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
+		
+		return parseDocument();
 	}
 
 	/**
 	 * Parses the first level of hierarchy
 	 */
-	public MultiCoreArchitecture parseDocument() {
+	private MultiCoreArchitecture parseDocument() {
 		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
@@ -344,7 +346,6 @@ public class DesignParser {
 			if (refinementFile != null) {
 				ComponentParser cmpParser = new ComponentParser(archi, cmp);
 				cmpParser.parseXmlFile(refinementFile);
-				cmpParser.parseDocument();
 			}
 		}
 	}

@@ -75,8 +75,8 @@ public class Fifo extends ArchitectureComponent implements ILink {
 	// dataRate = 0;
 	// }
 
-	public Fifo(String name, FifoDefinition type) {
-		super(name, type);
+	public Fifo(String id, FifoDefinition type) {
+		super(id, type);
 	}
 
 	// public Fifo(String name, FifoDefinition type, ArchitectureComponent

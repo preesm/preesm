@@ -62,8 +62,8 @@ public class IpCoprocessor extends ArchitectureComponent implements IOperator,
 	 */
 	private Set<String> commPerformerNames;
 
-	public IpCoprocessor(String name, IpCoprocessorDefinition definition) {
-		super(name, definition);
+	public IpCoprocessor(String id, IpCoprocessorDefinition definition) {
+		super(id, definition);
 		commPerformerNames = new HashSet<String>();
 	}
 

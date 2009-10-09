@@ -47,8 +47,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class Medium extends AbstractNode {
 	
-	public Medium(String name, MediumDefinition def) {
-		super(name, def);
+	public Medium(String id, MediumDefinition def) {
+		super(id, def);
 	}
 	
 	public ArchitectureComponentType getType(){

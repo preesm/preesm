@@ -156,11 +156,11 @@ public class GenericPrinter {
 	public XMLPrinter getPrinter(IOperator opRef) {
 		XMLPrinter printer = null;
 		String opRefId = ((ArchitectureComponent)opRef).getDefinition().getVlnv().getName();
-		String opName = ((ArchitectureComponent)opRef).getName();
+		String opId = ((ArchitectureComponent)opRef).getName();
 
 		printer = new XMLPrinter();
 		printer.setCoreType(opRefId);
-		printer.setCoreName(opName);
+		printer.setCoreName(opId);
 
 		return printer;
 	}

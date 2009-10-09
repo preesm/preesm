@@ -13,8 +13,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
  */
 public abstract class AbstractNode extends ArchitectureComponent {
 
-	public AbstractNode(String name, ArchitectureComponentDefinition definition) {
-		super(name, definition);
+	public AbstractNode(String id, ArchitectureComponentDefinition definition) {
+		super(id, definition);
 		// TODO Auto-generated constructor stub
 	}
 	

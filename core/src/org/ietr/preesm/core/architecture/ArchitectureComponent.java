@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
@@ -81,8 +82,14 @@ public abstract class ArchitectureComponent extends
 	public static final ArchitectureComponent NO_COMPONENT = null;
 
 	/**
+	 * Types of bus that can be connected to the current component. Can be
+	 * omitted if the component has no hierarchy
+	 */
+	protected List<BusType> busTypes;
+
+	/**
 	 * media interfaces available in this architecture component. Interfaces are
-	 * be connected via interconnections
+	 * connected via interconnections
 	 */
 	protected List<ArchitectureInterface> availableInterfaces;
 
@@ -99,11 +106,6 @@ public abstract class ArchitectureComponent extends
 	private String refinementName = "";
 
 	/**
-	 * Name of the component instance
-	 */
-	private String name;
-
-	/**
 	 * Base address of the component memory map (example: 0x08000000)
 	 */
 	private String baseAddress = "0x00000000";
@@ -111,9 +113,11 @@ public abstract class ArchitectureComponent extends
 	/**
 	 * Constructor from a type and a name
 	 */
-	public ArchitectureComponent(String name,
+	public ArchitectureComponent(String id,
 			ArchitectureComponentDefinition definition) {
-		this.name = new String(name);
+		setId(id);
+		setName(id);
+		this.busTypes = new ArrayList<BusType>();
 		this.definition = definition;
 
 		availableInterfaces = new ArrayList<ArchitectureInterface>();
@@ -148,7 +152,7 @@ public abstract class ArchitectureComponent extends
 	}
 
 	/**
-	 * Gets the interface for the given bus type
+	 * Gets the interface for the given bus reference
 	 * 
 	 * @return the interface or null if it does not exist
 	 */
@@ -173,13 +177,11 @@ public abstract class ArchitectureComponent extends
 		return searchedIntf;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String toString() {
-		return name;
+	/**
+	 * Gets the interfaces
+	 */
+	public List<ArchitectureInterface> getInterfaces() {
+		return Collections.unmodifiableList(availableInterfaces);
 	}
 
 	public abstract ArchitectureComponentType getType();
@@ -214,16 +216,17 @@ public abstract class ArchitectureComponent extends
 
 		this.setBaseAddress(cmp.getBaseAddress());
 		this.setRefinementName(cmp.getRefinementName());
-		
+
 		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition()
 				.getType(), cmp.getDefinition().getVlnv()));
 
 		for (ArchitectureInterface itf : cmp.availableInterfaces) {
-			
-			if(itf.getBusReference().getId().isEmpty()){
-				PreesmLogger.getLogger().log(Level.SEVERE, "Dangerous unnamed ports in architecture.");
+
+			if (itf.getBusReference().getId().isEmpty()) {
+				PreesmLogger.getLogger().log(Level.SEVERE,
+						"Dangerous unnamed ports in architecture.");
 			}
-			
+
 			ArchitectureInterface newItf = new ArchitectureInterface(newArchi
 					.createBusReference(itf.getBusReference().getId()), this);
 			this.getAvailableInterfaces().add(newItf);
@@ -238,6 +241,27 @@ public abstract class ArchitectureComponent extends
 
 	public void setRefinementName(String refinementName) {
 		this.refinementName = refinementName;
+	}
+
+	public List<BusType> getBusTypes() {
+		return busTypes;
+	}
+
+	public void setBusTypes(List<BusType> busTypes) {
+		this.busTypes = busTypes;
+	}
+
+	public void addBusType(BusType busType) {
+		busTypes.add(busType);
+	}
+
+	public BusType getBusType(String id) {
+		for (BusType type : busTypes) {
+			if (type.getId().equals(id)) {
+				return type;
+			}
+		}
+		return null;
 	}
 
 	public final ArchitectureComponent clone() {
@@ -284,7 +308,42 @@ public abstract class ArchitectureComponent extends
 					"Cloning unknown type archi component.");
 		}
 
+		newCmp.setBusTypes(getBusTypes());
+
+		Object o = getPropertyBean().getValue(REFINEMENT);
+		if (o != null && o instanceof MultiCoreArchitecture) {
+			newCmp.getPropertyBean().setValue(REFINEMENT,
+					((MultiCoreArchitecture) o).clone());
+		}
+
+		String name = (String) getPropertyBean().getValue(NAME);
+		newCmp.getPropertyBean().setValue(NAME, name);
+
 		return newCmp;
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
+	public String getName() {
+		return super.getName();
+	}
+
+	@Override
+	public void setId(String id) {
+		super.setId(id);
+	}
+
+	@Override
+	public void setName(String name) {
+		super.setName(name);
+	}
+
+	@Override
+	public String getId() {
+		return super.getId();
+	}
 }

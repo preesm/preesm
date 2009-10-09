@@ -46,8 +46,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  */
 public class Dma extends ArchitectureComponent {
 	
-	public Dma(String name, DmaDefinition type) {
-		super(name, type);
+	public Dma(String id, DmaDefinition type) {
+		super(id, type);
 	}
 	
 	public ArchitectureComponentType getType(){
