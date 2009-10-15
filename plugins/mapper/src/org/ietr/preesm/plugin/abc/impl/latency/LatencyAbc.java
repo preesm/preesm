@@ -537,10 +537,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if (implementation != null && dag != null) {
 			PreesmLogger.getLogger().log(Level.INFO,"Reordering");
+			this.plotImplementation(null);
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
 			adder.removePrecedenceEdges();
 			updateTimings();
-			this.plotImplementation(null);
 			
 			/*TopologicalTaskSched taskSched = new TopologicalTaskSched(orderManager);
 			List<MapperDAGVertex> vList = taskSched.createTopology(implementation);

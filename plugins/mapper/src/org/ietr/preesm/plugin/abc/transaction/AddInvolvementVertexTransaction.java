@@ -154,7 +154,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
 				MapperDAGVertex receiverVertex = currentTarget; 
 				do{
-					for(MapperDAGVertex next : receiverVertex.getSuccessorSet()){
+					for(MapperDAGVertex next : receiverVertex.getSuccessorSet(false)){
 						if(next != null){
 							receiverVertex = next;
 						}

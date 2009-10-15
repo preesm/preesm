@@ -155,7 +155,7 @@ public class KwokListScheduler {
 			}
 		}
 		
-		//archisimu.reschedule();
+		archisimu.reschedule();
 		// archisimu.rescheduleTransfers(orderlist);
 		// archisimu.retrieveTotalOrder();
 

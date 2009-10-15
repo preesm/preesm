@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -148,12 +150,13 @@ public class ImplementationVertexProperty {
 
 			localOperators = parentVertex.getInitialVertexProperty()
 					.getInitialOperatorList();
-			
+
 			if (precedingJoins.isEmpty()) {
 				localOperators = parentVertex.getInitialVertexProperty()
 						.getInitialOperatorList();
 			} else {
-				// If we follow at least one implode, the implode fixes the mapping of the current vertex
+				// If we follow at least one implode, the implode fixes the
+				// mapping of the current vertex
 				Operator o = null;
 				for (MapperDAGVertex precJoin : precedingJoins) {
 					Operator newO = precJoin.getImplementationVertexProperty()
@@ -178,11 +181,14 @@ public class ImplementationVertexProperty {
 			// as their predecessor.
 		} else if (SpecialVertexManager.isFork(parentVertex)
 				|| SpecialVertexManager.isBroadCast(parentVertex)) {
-			Operator predO = getPredImplantation();
+			Set<Operator> predOs = getPredImplantations();
 			localOperators = new ArrayList<Operator>();
-			if (predO != null && initProp.isImplantable(predO)) {
-				localOperators.add(predO);
-			} else {
+			for (Operator o : predOs) {
+				if (initProp.isImplantable(o)) {
+					localOperators.add(o);
+				}
+			}
+			if (localOperators.isEmpty()) {
 				localOperators = parentVertex.getInitialVertexProperty()
 						.getInitialOperatorList();
 			}
@@ -205,48 +211,42 @@ public class ImplementationVertexProperty {
 					.getInitialOperatorList();
 		}
 
-		if(parentVertex.getName().contains("bit_proc")){
-			int i=0;i++;
+		if (parentVertex.getName().contains("bit_proc")) {
+			int i = 0;
+			i++;
 		}
-		
+
 		return localOperators;
 	}
 
 	/**
 	 * Returns the operator of the first non special predecessor
 	 */
-	public Operator getPredImplantation() {
+	public Set<Operator> getPredImplantations() {
 
-		Operator predImplantation = null;
+		Set<Operator> predImplantations = new HashSet<Operator>();
 
-		for (DAGEdge edge : parentVertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
-				if (pred == null) {
-					return null;
-				} else if (SpecialVertexManager.isSpecial(pred)) {
-					predImplantation = pred.getImplementationVertexProperty()
-							.getPredImplantation();
-				} else {
-					predImplantation = pred.getImplementationVertexProperty()
-							.getEffectiveOperator();
-				}
+		for (MapperDAGVertex pred : parentVertex.getPredecessorSet(true)) {
+			if (pred == null) {
+			} else if (SpecialVertexManager.isSpecial(pred)) {
+				predImplantations.addAll(pred.getImplementationVertexProperty()
+						.getPredImplantations());
+			} else {
+				predImplantations.add(pred.getImplementationVertexProperty()
+						.getEffectiveOperator());
 			}
 		}
 
-		return predImplantation;
+		return predImplantations;
 	}
 
 	public List<MapperDAGVertex> getPrecedingJoins() {
 
 		List<MapperDAGVertex> precedingJoins = new ArrayList<MapperDAGVertex>();
 
-		for (DAGEdge edge : parentVertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
-				if (pred != null && SpecialVertexManager.isJoin(pred)) {
-					precedingJoins.add(pred);
-				}
+		for (MapperDAGVertex pred : parentVertex.getPredecessorSet(true)) {
+			if (pred != null && SpecialVertexManager.isJoin(pred)) {
+				precedingJoins.add(pred);
 			}
 		}
 

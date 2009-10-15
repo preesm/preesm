@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
@@ -87,7 +88,8 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		this.setName(name);
 		this.initialVertexProperty = new InitialVertexProperty();
 		this.initialVertexProperty.setParentVertex(this);
-		this.implementationVertexProperty = new ImplementationVertexProperty(this);
+		this.implementationVertexProperty = new ImplementationVertexProperty(
+				this);
 		this.timingVertexProperty = new TimingVertexProperty();
 
 		this.setBase(base);
@@ -106,20 +108,20 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		} else if (this instanceof ReceiveVertex) {
 			result = new ReceiveVertex(this.getId(), (MapperDAG) this.getBase());
 		} else if (this instanceof TransferVertex) {
-			TransferVertex t = (TransferVertex)this;
+			TransferVertex t = (TransferVertex) this;
 			result = new TransferVertex(this.getId(), (MapperDAG) this
-					.getBase(), t.getSource(),
-					t.getTarget(), t.getRouteStepIndex(), t.getNodeIndex());
+					.getBase(), t.getSource(), t.getTarget(), t
+					.getRouteStepIndex(), t.getNodeIndex());
 		} else {
 			result = new MapperDAGVertex(this.getId(), this.getName(),
 					(MapperDAG) this.getBase());
 		}
 
 		ImplementationVertexProperty impProp = this
-		.getImplementationVertexProperty().clone();
+				.getImplementationVertexProperty().clone();
 		impProp.setParentVertex(result);
 		result.setImplementationVertexProperty(impProp);
-		
+
 		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(
 				result));
 		result.setTimingVertexProperty(this.getTimingVertexProperty().clone());
@@ -192,32 +194,55 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		return toString;
 	}
 
-	public Set<MapperDAGVertex> getPredecessorSet() {
+	public Set<MapperDAGVertex> getPredecessorSet(boolean ignorePrecedence) {
 
-		Set<MapperDAGVertex> temp = new HashSet<MapperDAGVertex>();
-		Set<DAGEdge> incomingedgeset = this.incomingEdges();
-		Iterator<DAGEdge> iter = incomingedgeset.iterator();
+		Set<MapperDAGVertex> predSet = new HashSet<MapperDAGVertex>();
+		Set<DAGEdge> incomingSet = this.incomingEdges();
 
-		while (iter.hasNext()) {
-
-			MapperDAGEdge edge = (MapperDAGEdge) iter.next();
-			temp.add((MapperDAGVertex) edge.getSource());
-
+		if (ignorePrecedence) {
+			for (DAGEdge edge : incomingSet) {
+				if (!(edge instanceof PrecedenceEdge)) {
+					predSet.add((MapperDAGVertex) edge.getSource());
+				}
+			}
+		} else {
+			for (DAGEdge edge : incomingSet) {
+				predSet.add((MapperDAGVertex) edge.getSource());
+			}
 		}
-		return temp;
+		return predSet;
 	}
 
-	public Set<MapperDAGVertex> getSuccessorSet() {
+	public Set<MapperDAGVertex> getSuccessorSet(boolean ignorePrecedence) {
 
-		Set<MapperDAGVertex> temp = new HashSet<MapperDAGVertex>();
+		Set<MapperDAGVertex> succSet = new HashSet<MapperDAGVertex>();
 		Set<DAGEdge> outgoingSet = this.outgoingEdges();
-		Iterator<DAGEdge> iter = outgoingSet.iterator();
 
-		while (iter.hasNext()) {
-
-			MapperDAGEdge edge = (MapperDAGEdge) iter.next();
-			temp.add((MapperDAGVertex) edge.getTarget());
+		if (ignorePrecedence) {
+			for (DAGEdge edge : outgoingSet) {
+				if (!(edge instanceof PrecedenceEdge)) {
+					succSet.add((MapperDAGVertex) edge.getTarget());
+				}
+			}
+		} else {
+			for (DAGEdge edge : outgoingSet) {
+				succSet.add((MapperDAGVertex) edge.getTarget());
+			}
 		}
-		return temp;
+		return succSet;
 	}
+
+	@Override
+	public Set<DAGEdge> incomingEdges() {
+		// TODO Auto-generated method stub
+		return super.incomingEdges();
+	}
+
+	@Override
+	public Set<DAGEdge> outgoingEdges() {
+		// TODO Auto-generated method stub
+		return super.outgoingEdges();
+	}
+	
+	
 }

@@ -176,7 +176,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 			}
 
 			if (!inserted
-					&& vertex.getPredecessorSet().isEmpty()) {
+					&& vertex.getPredecessorSet(false).isEmpty()) {
 				orderManager.addFirst(vertex);
 			}
 		} else {

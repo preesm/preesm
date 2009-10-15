@@ -321,18 +321,15 @@ public class InitialVertexProperty {
 
 		boolean predImplantable = false;
 
-		for (DAGEdge edge : parentVertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
-				if (pred == null) {
-					return false;
-				} else if (SpecialVertexManager.isSpecial(pred)) {
-					predImplantable |= pred.getInitialVertexProperty()
-							.isPredImplantable(operator);
-				} else {
-					predImplantable |= pred.getInitialVertexProperty()
-							.isImplantable(operator);
-				}
+		for (MapperDAGVertex pred : parentVertex.getPredecessorSet(true)) {
+			if (pred == null) {
+				return false;
+			} else if (SpecialVertexManager.isSpecial(pred)) {
+				predImplantable |= pred.getInitialVertexProperty()
+						.isPredImplantable(operator);
+			} else {
+				predImplantable |= pred.getInitialVertexProperty()
+						.isImplantable(operator);
 			}
 		}
 

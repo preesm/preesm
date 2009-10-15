@@ -75,14 +75,9 @@ public class TaskSwitcher extends AbstractTaskSched{
 	private int getLatestPredecessorIndex(MapperDAGVertex testVertex) {
 		int index = -1;
 
-		for (DAGEdge edge : testVertex.incomingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
+		for (MapperDAGVertex v : testVertex.getPredecessorSet(true)) {
 				index = Math.max(index, orderManager
-						.totalIndexOf((MapperDAGVertex) edge.getSource()));
-			} else {
-				int i = 0;
-				i++;
-			}
+						.totalIndexOf(v));
 		}
 
 		return index;
