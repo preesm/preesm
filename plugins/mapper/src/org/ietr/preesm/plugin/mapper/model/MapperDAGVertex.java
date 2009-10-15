@@ -87,7 +87,7 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		this.setName(name);
 		this.initialVertexProperty = new InitialVertexProperty();
 		this.initialVertexProperty.setParentVertex(this);
-		this.implementationVertexProperty = new ImplementationVertexProperty();
+		this.implementationVertexProperty = new ImplementationVertexProperty(this);
 		this.timingVertexProperty = new TimingVertexProperty();
 
 		this.setBase(base);
@@ -115,8 +115,11 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 					(MapperDAG) this.getBase());
 		}
 
-		result.setImplementationVertexProperty(this
-				.getImplementationVertexProperty().clone());
+		ImplementationVertexProperty impProp = this
+		.getImplementationVertexProperty().clone();
+		impProp.setParentVertex(result);
+		result.setImplementationVertexProperty(impProp);
+		
 		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(
 				result));
 		result.setTimingVertexProperty(this.getTimingVertexProperty().clone());

@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -266,7 +267,8 @@ public abstract class AbstractAbc implements IAbc {
 				unimplant(dagvertex);
 			}
 
-			if (isImplantable(impvertex, operator)
+			// If the rank is not updated, the implantability is not checked
+			if (isImplantable(impvertex, operator) || !updateRank
 					|| impvertex instanceof TransferVertex) {
 
 				// Implementation property is set in both DAG and implementation
@@ -276,6 +278,8 @@ public abstract class AbstractAbc implements IAbc {
 				fireNewMappedVertex(impvertex, updateRank);
 
 			} else {
+				boolean b = isImplantable(impvertex, operator);
+				Operator op = findOperator(impvertex, operator);
 				PreesmLogger.getLogger().log(
 						Level.SEVERE,
 						impvertex.toString() + " can not be implanted on "
@@ -305,6 +309,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		boolean possible = true;
 		MapperDAGVertex currentvertex;
+		
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
 		/*
@@ -343,14 +348,14 @@ public abstract class AbstractAbc implements IAbc {
 			Operator preferedOperator) {
 
 		Operator adequateOp = null;
+		List<Operator> opList = currentvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
 
-		if (isImplantable(currentvertex, preferedOperator)) {
+		if (Operator.contains(opList, preferedOperator)) {
 			adequateOp = preferedOperator;
 		} else {
 
 			// Search among the operators with same type than the prefered one
-			for (Operator op : currentvertex.getInitialVertexProperty()
-					.getOperatorList()) {
+			for (Operator op : opList) {
 				if (op.getDefinition().equals(preferedOperator.getDefinition())) {
 					adequateOp = op;
 				}
@@ -358,8 +363,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Search among the operators with other type than the prefered one
 			if (adequateOp == null) {
-				for (Operator op : currentvertex.getInitialVertexProperty()
-						.getOperatorList()) {
+				for (Operator op : opList) {
 					adequateOp = op;
 				}
 			}
@@ -376,7 +380,8 @@ public abstract class AbstractAbc implements IAbc {
 	public boolean isImplantable(MapperDAGVertex vertex, Operator operator) {
 
 		vertex = translateInImplementationVertex(vertex);
-		return vertex.getInitialVertexProperty().isImplantable(operator);
+		
+		return Operator.contains(vertex.getImplementationVertexProperty().getAdaptiveOperatorList(),operator);
 	}
 
 	/**

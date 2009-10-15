@@ -268,8 +268,7 @@ public class FastAlgorithm extends Observable {
 				do {
 					nonBlockingIndex++;
 					currentvertex = (MapperDAGVertex) vertexiter.next();
-					operatorList = currentvertex.getInitialVertexProperty()
-							.getOperatorList();
+					operatorList = currentvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
 				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 				SL = simulator.getFinalCost();
@@ -338,8 +337,7 @@ public class FastAlgorithm extends Observable {
 			do {
 				nonBlockingIndex++;
 				fcpvertex = (MapperDAGVertex) iter.next();
-				operatorList = fcpvertex.getInitialVertexProperty()
-						.getOperatorList();
+				operatorList = fcpvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
 			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 			// Choosing an operator different from the current vertex operator

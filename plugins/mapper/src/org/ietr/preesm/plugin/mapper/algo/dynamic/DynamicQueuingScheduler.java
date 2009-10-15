@@ -108,8 +108,7 @@ public class DynamicQueuingScheduler {
 	}
 
 	public void implantOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
-		List<Operator> adequateOps = currentvertex.getInitialVertexProperty()
-				.getOperatorList();
+		List<Operator> adequateOps = currentvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
 		long currentMinCost = Long.MAX_VALUE;
 		Operator currentMinOp = null;
 

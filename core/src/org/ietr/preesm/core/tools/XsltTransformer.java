@@ -138,12 +138,16 @@ public class XsltTransformer {
 
 		} catch (ParserConfigurationException pce) {
 			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());
+			return;
 		} catch (SAXException se) {
 			PreesmLogger.getLogger().log(Level.SEVERE,se.getMessage());
+			return;
 		} catch (IOException ioe) {
 			PreesmLogger.getLogger().log(Level.SEVERE,ioe.getMessage());
+			return;
 		} catch (CoreException e) {
 			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+			return;
 		}
 
 		IFile outputIFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(destFilePath));

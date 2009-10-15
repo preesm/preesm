@@ -48,6 +48,9 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
+import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.plugin.abc.taskscheduling.SimpleTaskSched;
+import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
@@ -118,8 +121,11 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		// Using topological task scheduling in list scheduling: the t-level
 		// order of the infinite homogeneous simulation
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu
+		AbstractTaskSched taskSched = new TopologicalTaskSched(simu
 				.getTotalOrder());
+		
+		//AbstractTaskSched taskSched = new TaskSwitcher();
+		
 		simu.resetDAG();
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);

@@ -34,53 +34,41 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.architecture.simplemodel;
+package org.ietr.preesm.plugin.mapper.tools;
 
-import java.util.List;
-
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperator;
-
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * an operator is a hardware calculation entity able to process data.
- * Operators are connected with media
+ * Iterates the graph in ascending or descending order of the highest TLevel of
+ * its predecessors without taking precedence into account
  * 
  * @author mpelcat
  */
-public class Operator extends ArchitectureComponent implements IOperator {
-	
-	public Operator(String id, OperatorDefinition type) {
-		super(id, type);
+public class LastPredTLevelIterator extends ImplementationIterator {
 
+	public LastPredTLevelIterator(MapperDAG dag, boolean directOrder) {
+		super(dag, directOrder);
 	}
-	
-	public ArchitectureComponentType getType(){
-		return ArchitectureComponentType.operator;
-	}
-/*
+
 	@Override
-	public ArchitectureComponent clone() {
-		return new Operator(getName(),(OperatorDefinition)getDefinition());
-	}*/
-	
-	public boolean isNode(){
-		return false;
-	}
-	
-	/**
-	 * Checking if a list of operators contains one element equals to operator.
-	 * Necessary because the method contains of the list only checks object equality but
-	 * not object content equality.
-	 */
-	public static boolean contains(List<Operator> opList,Operator operator){
+	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		for(Operator o : opList){
-			if(o.equals(operator)){
-				return true;
+		long TLevelDifference = (arg0.getTimingVertexProperty().getNewtLevel() - arg1
+				.getTimingVertexProperty().getNewtLevel());
+
+		if (!directOrder)
+			TLevelDifference = -TLevelDifference;
+
+		if (TLevelDifference == 0) {
+			TLevelDifference = arg0.getName().compareTo(arg1.getName());
+
+			if (TLevelDifference == 0) {
+				TLevelDifference++;
 			}
 		}
-		return false;
+
+		return (int) TLevelDifference;
 	}
+
 }

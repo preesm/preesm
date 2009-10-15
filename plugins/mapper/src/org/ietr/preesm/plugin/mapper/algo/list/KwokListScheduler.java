@@ -123,8 +123,7 @@ public class KwokListScheduler {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				List<Operator> opList = currentvertex.getInitialVertexProperty()
-						.getOperatorList();
+				List<Operator> opList = currentvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
 				if (opList.size() == 1) {
 					chosenoperator = (Operator) opList.toArray()[0];
 				} else {
@@ -156,6 +155,7 @@ public class KwokListScheduler {
 			}
 		}
 		
+		//archisimu.reschedule();
 		// archisimu.rescheduleTransfers(orderlist);
 		// archisimu.retrieveTotalOrder();
 

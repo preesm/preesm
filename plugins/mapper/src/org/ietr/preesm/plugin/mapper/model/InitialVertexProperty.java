@@ -162,19 +162,8 @@ public class InitialVertexProperty {
 	 * are originally enabled on every operator but their status is updated
 	 * depending on the implantation of their neighbors
 	 */
-	public List<Operator> getOperatorList() {
-		List<Operator> localOperators = null;
-		if (!SpecialVertexManager.isSpecial(parentVertex)) {
-			localOperators = operators;
-		} else {
-			localOperators = new ArrayList<Operator>();
-			for (Operator o : operators) {
-				if (isImplantable(o)) {
-					localOperators.add(o);
-				}
-			}
-		}
-		return localOperators;
+	public List<Operator> getInitialOperatorList() {
+		return operators;
 	}
 
 	public MapperDAGVertex getParentVertex() {

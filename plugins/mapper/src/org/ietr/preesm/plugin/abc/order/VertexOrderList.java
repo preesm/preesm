@@ -71,6 +71,11 @@ public class VertexOrderList {
 		public boolean correspondsTo(MapperDAGVertex v) {
 			return v.getName().equals(name);
 		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
 	}
 	
 	// Maintaining a list of the properties for iterating purpose in the given order
@@ -103,5 +108,9 @@ public class VertexOrderList {
 	public void addLast(OrderProperty p){
 		orderedList.add(p);
 		nameMap.put(p.getName(), p);
+	}
+	
+	public List<OrderProperty> getOrderedList(){
+		return Collections.unmodifiableList(orderedList);
 	}
 }

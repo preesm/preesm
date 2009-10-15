@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.exporter;
 
+import java.util.logging.Level;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -44,6 +46,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -75,7 +78,13 @@ public class ImplExportTransform implements IExporter{
 		MapperDAG clone = mapperDag.clone() ;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iGraphMLFile = workspace.getRoot().getFile(path);
+		
+		if(iGraphMLFile.getLocation() != null){
 		exporter.export(clone, iGraphMLFile.getLocation().toOSString());
+		}
+		else{
+			PreesmLogger.getLogger().log(Level.SEVERE,"The output file " + path + " can not be written.");
+		}
 	}
 
 	@Override

@@ -536,6 +536,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void reschedule() {
 
 		if (implementation != null && dag != null) {
+			PreesmLogger.getLogger().log(Level.INFO,"Reordering");
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
 			adder.removePrecedenceEdges();
 			updateTimings();

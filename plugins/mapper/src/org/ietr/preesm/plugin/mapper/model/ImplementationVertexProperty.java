@@ -36,8 +36,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.codegen.BroadcastCall;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
+import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Properties of an implanted vertex
@@ -52,25 +61,35 @@ public class ImplementationVertexProperty {
 	private ArchitectureComponent effectiveComponent;
 
 	/**
+	 * Corresponding vertex
+	 */
+	private MapperDAGVertex parentVertex;
+
+	/**
 	 * The order in the schedule of a processor is determined by the order of
 	 * the calls to implant() method.
 	 */
 	private int schedulingTotalOrder;
 
-	public ImplementationVertexProperty() {
+	public ImplementationVertexProperty(MapperDAGVertex parentVertex) {
 		super();
 		effectiveComponent = Operator.NO_COMPONENT;
-
+		this.parentVertex = parentVertex;
 		schedulingTotalOrder = -1;
 	}
 
 	@Override
 	public ImplementationVertexProperty clone() {
 
-		ImplementationVertexProperty property = new ImplementationVertexProperty();
+		ImplementationVertexProperty property = new ImplementationVertexProperty(
+				null);
 		property.setEffectiveComponent(this.getEffectiveComponent());
 		property.setSchedTotalOrder(this.schedulingTotalOrder);
 		return property;
+	}
+
+	public void setParentVertex(MapperDAGVertex parentVertex) {
+		this.parentVertex = parentVertex;
 	}
 
 	/**
@@ -114,4 +133,123 @@ public class ImplementationVertexProperty {
 		this.schedulingTotalOrder = schedulingTotalOrder;
 	}
 
+	/**
+	 * Returns all the operators that can execute the vertex at the given time
+	 */
+	public List<Operator> getAdaptiveOperatorList() {
+		List<Operator> localOperators = null;
+		InitialVertexProperty initProp = parentVertex
+				.getInitialVertexProperty();
+
+		// For a non special vertex, the available operators are simply the ones
+		// allowed in scenario
+		if (!SpecialVertexManager.isSpecial(parentVertex)) {
+			List<MapperDAGVertex> precedingJoins = getPrecedingJoins();
+
+			localOperators = parentVertex.getInitialVertexProperty()
+					.getInitialOperatorList();
+			
+			if (precedingJoins.isEmpty()) {
+				localOperators = parentVertex.getInitialVertexProperty()
+						.getInitialOperatorList();
+			} else {
+				// If we follow at least one implode, the implode fixes the mapping of the current vertex
+				Operator o = null;
+				for (MapperDAGVertex precJoin : precedingJoins) {
+					Operator newO = precJoin.getImplementationVertexProperty()
+							.getEffectiveOperator();
+					if (o != null && !newO.equals(o)) {
+						o = null;
+						break;
+					}
+					o = newO;
+				}
+
+				if (o != null) {
+					localOperators = new ArrayList<Operator>();
+					localOperators.add(o);
+				} else {
+					localOperators = parentVertex.getInitialVertexProperty()
+							.getInitialOperatorList();
+				}
+			}
+
+			// forks and broadcasts are mapped if possible on the same operator
+			// as their predecessor.
+		} else if (SpecialVertexManager.isFork(parentVertex)
+				|| SpecialVertexManager.isBroadCast(parentVertex)) {
+			Operator predO = getPredImplantation();
+			localOperators = new ArrayList<Operator>();
+			if (predO != null && initProp.isImplantable(predO)) {
+				localOperators.add(predO);
+			} else {
+				localOperators = parentVertex.getInitialVertexProperty()
+						.getInitialOperatorList();
+			}
+			// The operator set of an implode is calculated depending on its
+			// successor operator set. It compels its successor mapping
+		} else if (SpecialVertexManager.isJoin(parentVertex)) {
+			localOperators = new ArrayList<Operator>();
+			for (Operator o : initProp.getInitialOperatorList()) {
+				if (initProp.isSuccImplantable(o)) {
+					localOperators.add(o);
+				}
+			}
+
+			if (localOperators.isEmpty()) {
+				localOperators = parentVertex.getInitialVertexProperty()
+						.getInitialOperatorList();
+			}
+		} else {
+			localOperators = parentVertex.getInitialVertexProperty()
+					.getInitialOperatorList();
+		}
+
+		if(parentVertex.getName().contains("bit_proc")){
+			int i=0;i++;
+		}
+		
+		return localOperators;
+	}
+
+	/**
+	 * Returns the operator of the first non special predecessor
+	 */
+	public Operator getPredImplantation() {
+
+		Operator predImplantation = null;
+
+		for (DAGEdge edge : parentVertex.incomingEdges()) {
+			if (!(edge instanceof PrecedenceEdge)) {
+				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
+				if (pred == null) {
+					return null;
+				} else if (SpecialVertexManager.isSpecial(pred)) {
+					predImplantation = pred.getImplementationVertexProperty()
+							.getPredImplantation();
+				} else {
+					predImplantation = pred.getImplementationVertexProperty()
+							.getEffectiveOperator();
+				}
+			}
+		}
+
+		return predImplantation;
+	}
+
+	public List<MapperDAGVertex> getPrecedingJoins() {
+
+		List<MapperDAGVertex> precedingJoins = new ArrayList<MapperDAGVertex>();
+
+		for (DAGEdge edge : parentVertex.incomingEdges()) {
+			if (!(edge instanceof PrecedenceEdge)) {
+				MapperDAGVertex pred = (MapperDAGVertex) edge.getSource();
+				if (pred != null && SpecialVertexManager.isJoin(pred)) {
+					precedingJoins.add(pred);
+				}
+			}
+		}
+
+		return precedingJoins;
+	}
 }
