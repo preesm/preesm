@@ -45,6 +45,7 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -131,7 +132,7 @@ public class CommContenAbc extends AbstractAbc {
 	}
 
 	@Override
-	public void reschedule() {
+	public void reschedule(List<IScheduleElement> alreadyRescheduled) {
 		// TODO Auto-generated method stub
 		
 	}

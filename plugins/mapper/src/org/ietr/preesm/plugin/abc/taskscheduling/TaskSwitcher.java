@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
 import java.util.Random;
@@ -53,11 +53,11 @@ import org.sdf4j.model.dag.DAGEdge;
  * 
  * @author mpelcat
  */
-public class TaskSwitcher extends AbstractTaskSched{
+public class TaskSwitcher extends AbstractTaskSched {
 
 	private IntervalFinder intervalFinder;
 	private Random random;
-	
+
 	public TaskSwitcher() {
 		super();
 		random = new Random(System.nanoTime());
@@ -69,88 +69,14 @@ public class TaskSwitcher extends AbstractTaskSched{
 		intervalFinder = new IntervalFinder(orderManager);
 	}
 
-	/**
-	 * Returns the highest index of vertex predecessors
-	 */
-	private int getLatestPredecessorIndex(MapperDAGVertex testVertex) {
-		int index = -1;
-
-		for (MapperDAGVertex v : testVertex.getPredecessorSet(true)) {
-				index = Math.max(index, orderManager
-						.totalIndexOf(v));
-		}
-
-		return index;
-	}
-
-	/**
-	 * Returns the lowest index of vertex successors
-	 */
-	private int getEarliestsuccessorIndex(MapperDAGVertex testVertex) {
-		int index = Integer.MAX_VALUE;
-
-		for (DAGEdge edge : testVertex.outgoingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				index = Math.min(index, orderManager
-						.totalIndexOf((MapperDAGVertex) edge.getTarget()));
-			} else {
-				int i = 0;
-				i++;
-			}
-		}
-
-		if (index == Integer.MAX_VALUE)
-			index = -1;
-
-		return index;
-	}
-
-	/**
-	 * Returns the best index to schedule vertex in total order
-	 */
-	public int getBestIndex(MapperDAGVertex vertex) {
-		int index = -1;
-		int latePred = getLatestPredecessorIndex(vertex);
-		int earlySuc = getEarliestsuccessorIndex(vertex);
-
-		Operator op = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
-		IScheduleElement source = (latePred == -1) ? null : orderManager
-				.get(latePred);
-		IScheduleElement target = (earlySuc == -1) ? null : orderManager
-				.get(earlySuc);
-
-		if (op != null) {
-			Interval largestInterval = intervalFinder.findLargestFreeInterval(op, source, target);
-			
-			if(largestInterval.getDuration()>0){
-				index = largestInterval.getTotalOrderIndex();
-			}
-			else if(latePred != -1){
-				int sourceIndex = latePred+1;
-				int targetIndex = earlySuc;
-				if(targetIndex == -1){
-					targetIndex = orderManager.getTotalOrder().size();
-				}
-				
-				if(targetIndex-sourceIndex > 0){
-					int randomVal = random.nextInt(targetIndex-sourceIndex);
-					index = sourceIndex+randomVal;
-				}
-			}
-			
-		}
-
-		return index;
-	}
-
-	public void insertVertexBefore(MapperDAGVertex successor, MapperDAGVertex vertex) {
+	public void insertVertexBefore(MapperDAGVertex successor,
+			MapperDAGVertex vertex) {
 
 		// Removing the vertex if necessary before inserting it
 		if (orderManager.totalIndexOf(vertex) != -1)
 			orderManager.remove(vertex, true);
 
-		int newIndex = getBestIndex(vertex);
+		int newIndex = intervalFinder.getBestIndex(vertex, 0);
 		if (newIndex >= 0) {
 			orderManager.insertAtIndex(newIndex, vertex);
 		} else {
@@ -165,7 +91,7 @@ public class TaskSwitcher extends AbstractTaskSched{
 		if (orderManager.totalIndexOf(vertex) != -1)
 			orderManager.remove(vertex, true);
 
-		int newIndex = getBestIndex(vertex);
+		int newIndex = intervalFinder.getBestIndex(vertex, 0);
 		if (newIndex >= 0) {
 			orderManager.insertAtIndex(newIndex, vertex);
 		} else {

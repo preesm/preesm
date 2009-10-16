@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -43,6 +45,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -115,7 +118,7 @@ public interface IAbc extends IMapperAbc {
 	 * Reorders the implementation using the given total order or trying to find the best schedule
 	 */
 	public void reschedule(VertexOrderList totalOrder);
-	public void reschedule();
+	public void reschedule(List<IScheduleElement> alreadyRescheduled);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation

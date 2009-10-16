@@ -193,14 +193,11 @@ public class ImplementationCleaner {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
-		for (DAGEdge edge : vertex.outgoingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex v = (MapperDAGVertex) edge.getTarget();
+		for (MapperDAGVertex v : vertex.getSuccessorSet(true)) {
 				if (v instanceof TransferVertex) {
 					transfers.add(v);
 					transfers.addAll(getFollowingTransfers(v));
 				}
-			}
 		}
 
 		return transfers;

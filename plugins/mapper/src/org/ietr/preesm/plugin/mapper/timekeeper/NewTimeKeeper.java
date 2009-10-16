@@ -328,7 +328,7 @@ public class NewTimeKeeper implements Observer {
 
 			// Starting from end vertices, sets the b-levels of the preceding
 			// tasks
-			if (currentvertex.outgoingEdges().isEmpty())
+			if (currentvertex.getSuccessorSet(false).isEmpty())
 				calculateBLevel(currentvertex);
 
 		}

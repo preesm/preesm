@@ -344,18 +344,15 @@ public class InitialVertexProperty {
 
 		boolean succImplantable = false;
 
-		for (DAGEdge edge : parentVertex.outgoingEdges()) {
-			if (!(edge instanceof PrecedenceEdge)) {
-				MapperDAGVertex succ = (MapperDAGVertex) edge.getTarget();
-				if (succ == null) {
-					return false;
-				} else if (SpecialVertexManager.isSpecial(succ)) {
-					succImplantable |= succ.getInitialVertexProperty()
-							.isSuccImplantable(operator);
-				} else {
-					succImplantable |= succ.getInitialVertexProperty()
-							.isImplantable(operator);
-				}
+		for (MapperDAGVertex succ : parentVertex.getSuccessorSet(true)) {
+			if (succ == null) {
+				return false;
+			} else if (SpecialVertexManager.isSpecial(succ)) {
+				succImplantable |= succ.getInitialVertexProperty()
+						.isSuccImplantable(operator);
+			} else {
+				succImplantable |= succ.getInitialVertexProperty()
+						.isImplantable(operator);
 			}
 		}
 

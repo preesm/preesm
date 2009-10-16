@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.algo.list;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
@@ -105,7 +107,7 @@ public class KwokListScheduler {
 			IAbc archisimu, Operator operatorfcp, MapperDAGVertex fcpvertex) {
 
 		boolean minimizeVStartorOpEnd = false;
-		
+
 		// Variables
 		Operator chosenoperator = null;
 		Logger logger = PreesmLogger.getLogger();
@@ -119,18 +121,21 @@ public class KwokListScheduler {
 			if (currentvertex.equals(fcpvertex)) {
 				archisimu.implant(currentvertex, operatorfcp, true);
 			} else {
-				
+
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				List<Operator> opList = currentvertex.getImplementationVertexProperty().getAdaptiveOperatorList();
+				List<Operator> opList = currentvertex
+						.getImplementationVertexProperty()
+						.getAdaptiveOperatorList();
 				if (opList.size() == 1) {
 					chosenoperator = (Operator) opList.toArray()[0];
 				} else {
 					for (Operator currentoperator : opList) {
 
 						long test = listImplantationCost(dag, currentvertex,
-								currentoperator, archisimu, minimizeVStartorOpEnd);
+								currentoperator, archisimu,
+								minimizeVStartorOpEnd);
 						// test the earliest ready operator
 						if (test < time) {
 							chosenoperator = currentoperator;
@@ -154,8 +159,11 @@ public class KwokListScheduler {
 
 			}
 		}
-		
-		archisimu.reschedule();
+
+		/*List<IScheduleElement> alreadyRescheduled = new ArrayList<IScheduleElement>();
+		for (int i = 0; i < 20; i++) {
+			archisimu.reschedule(alreadyRescheduled);
+		}*/
 		// archisimu.rescheduleTransfers(orderlist);
 		// archisimu.retrieveTotalOrder();
 

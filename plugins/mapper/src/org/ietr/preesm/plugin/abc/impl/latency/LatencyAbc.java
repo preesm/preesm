@@ -40,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.swt.widgets.Composite;
@@ -51,22 +53,30 @@ import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
+import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
+import org.ietr.preesm.plugin.abc.edgescheduling.IntervalFinder;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
+import org.ietr.preesm.plugin.abc.order.IScheduleElement;
+import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
+import org.ietr.preesm.plugin.abc.order.VertexOrderList.OrderProperty;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -337,10 +347,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Plots the current implementation. If delegatedisplay=false, the gantt is
 	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
 	 */
-	public final void plotImplementation(
-			Composite delegateDisplay) {
+	public final void plotImplementation(Composite delegateDisplay) {
 
-		GanttPlotter.plotDeployment(implementation, this.getArchitecture(),delegateDisplay);
+		GanttPlotter.plotDeployment(implementation, this.getArchitecture(),
+				delegateDisplay);
 	}
 
 	public AbstractCommunicationRouter getComRouter() {
@@ -396,8 +406,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long load2 = orderManager.getBusyTime(component);
 
 		/*
-		long load = 0;
-		 * if (implementation != null) { for (DAGVertex v :
+		 * long load = 0; if (implementation != null) { for (DAGVertex v :
 		 * implementation.vertexSet()) { MapperDAGVertex mv = (MapperDAGVertex)
 		 * v; if (mv.getImplementationVertexProperty()
 		 * .getEffectiveComponent().equals(component)) { load += getCost(mv); }
@@ -412,83 +421,69 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Reschedule all the transfers generated during mapping
 	 */
-	/*	public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
+	/*
+	 * public void rescheduleTransfers(List<MapperDAGVertex> cpnDominantList) {
+	 * 
+	 * if (this.orderManager != null) { ImplementationCleaner cleaner = new
+	 * ImplementationCleaner( orderManager, implementation);
+	 * 
+	 * for (ArchitectureComponent cmp : archi
+	 * .getComponents(ArchitectureComponentType.contentionNode)) { for
+	 * (MapperDAGVertex v : this.orderManager.getSchedule(cmp) .getList()) {
+	 * cleaner.unscheduleVertex(v); } }
+	 * 
+	 * updateTimings();
+	 * 
+	 * for (ArchitectureComponent cmp : archi
+	 * .getComponents(ArchitectureComponentType.contentionNode)) {
+	 * ConcurrentSkipListSet<MapperDAGVertex> list = new
+	 * ConcurrentSkipListSet<MapperDAGVertex>( new Comparator<MapperDAGVertex>()
+	 * {
+	 * 
+	 * @Override public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1)
+	 * { long TLevelDifference = (getTLevel(arg0, false) - getTLevel( arg1,
+	 * false)); if (TLevelDifference == 0) TLevelDifference = (arg0.getName()
+	 * .compareTo(arg1.getName())); return (int) TLevelDifference; } });
+	 * list.addAll(this.orderManager.getSchedule(cmp).getList());
+	 * 
+	 * for (MapperDAGVertex v : list) { TransferVertex tv = (TransferVertex) v;
+	 * orderManager.insertVertexBefore(tv, tv.getTarget()); } } }
+	 */
 
-		if (this.orderManager != null) {
-			ImplementationCleaner cleaner = new ImplementationCleaner(
-					orderManager, implementation);
+	/*
+	 * Schedule totalOrder = this.getTotalOrder(); List<String> orderedNames =
+	 * new ArrayList<String>();
+	 * 
+	 * for (MapperDAGVertex v : totalOrder) { if (v instanceof TransferVertex) {
+	 * // addVertexAfterSourceLastTransfer(v, orderedNames); } else if (v
+	 * instanceof OverheadVertex) { addVertexAfterSourceLastOverhead(v,
+	 * orderedNames); } else { orderedNames.add(v.getName()); } }
+	 * 
+	 * for(int index = cpnDominantList.size()-1;index >= 0 ; index--){
+	 * MapperDAGVertex v = cpnDominantList.get(index); for (DAGVertex t :
+	 * ImplementationCleaner
+	 * .getFollowingTransfers(this.translateInImplementationVertex(v))) { if
+	 * (!orderedNames.contains(t.getName())) {
+	 * addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames); } } }
+	 */
+	/*
+	 * for (MapperDAGVertex v : cpnDominantList) { for (DAGVertex t :
+	 * ImplementationCleaner
+	 * .getPrecedingTransfers(this.translateInImplementationVertex(v))) { if
+	 * (!orderedNames.contains(t.getName())) {
+	 * addVertexBeforeTarget((MapperDAGVertex)t, orderedNames); } } }
+	 */
 
-			for (ArchitectureComponent cmp : archi
-					.getComponents(ArchitectureComponentType.contentionNode)) {
-				for (MapperDAGVertex v : this.orderManager.getSchedule(cmp)
-						.getList()) {
-					cleaner.unscheduleVertex(v);
-				}
-			}
-
-			updateTimings();
-
-			for (ArchitectureComponent cmp : archi
-					.getComponents(ArchitectureComponentType.contentionNode)) {
-				ConcurrentSkipListSet<MapperDAGVertex> list = new ConcurrentSkipListSet<MapperDAGVertex>(
-						new Comparator<MapperDAGVertex>() {
-							@Override
-							public int compare(MapperDAGVertex arg0,
-									MapperDAGVertex arg1) {
-								long TLevelDifference = (getTLevel(arg0, false) - getTLevel(
-										arg1, false));
-								if (TLevelDifference == 0)
-									TLevelDifference = (arg0.getName()
-											.compareTo(arg1.getName()));
-								return (int) TLevelDifference;
-							}
-						});
-				list.addAll(this.orderManager.getSchedule(cmp).getList());
-
-				for (MapperDAGVertex v : list) {
-					TransferVertex tv = (TransferVertex) v;
-					orderManager.insertVertexBefore(tv, tv.getTarget());
-				}
-			}
-		}*/
-
-		/*
-		 * Schedule totalOrder = this.getTotalOrder(); List<String> orderedNames
-		 * = new ArrayList<String>();
-		 * 
-		 * for (MapperDAGVertex v : totalOrder) { if (v instanceof
-		 * TransferVertex) { // addVertexAfterSourceLastTransfer(v,
-		 * orderedNames); } else if (v instanceof OverheadVertex) {
-		 * addVertexAfterSourceLastOverhead(v, orderedNames); } else {
-		 * orderedNames.add(v.getName()); } }
-		 * 
-		 * for(int index = cpnDominantList.size()-1;index >= 0 ; index--){
-		 * MapperDAGVertex v = cpnDominantList.get(index); for (DAGVertex t :
-		 * ImplementationCleaner
-		 * .getFollowingTransfers(this.translateInImplementationVertex(v))) { if
-		 * (!orderedNames.contains(t.getName())) {
-		 * addVertexAfterSourceLastTransfer((MapperDAGVertex)t, orderedNames); }
-		 * } }
-		 */
-		/*
-		 * for (MapperDAGVertex v : cpnDominantList) { for (DAGVertex t :
-		 * ImplementationCleaner
-		 * .getPrecedingTransfers(this.translateInImplementationVertex(v))) { if
-		 * (!orderedNames.contains(t.getName())) {
-		 * addVertexBeforeTarget((MapperDAGVertex)t, orderedNames); } } }
-		 */
-
-		/*
-		 * MapperDAGVertex v = totalOrder.getLast();
-		 * 
-		 * while(v!=null){ if (v instanceof TransferVertex) {
-		 * addVertexBeforeTargetFirstTransfer(v, orderedNames); } else if (v
-		 * instanceof OverheadVertex) { //addVertexAfterSourceLastOverhead(v,
-		 * orderedNames); } else { //orderedNames.add(v.getName()); } v =
-		 * totalOrder.getPreviousVertex(v); }
-		 */
-		// reorder(orderedNames);}
-
+	/*
+	 * MapperDAGVertex v = totalOrder.getLast();
+	 * 
+	 * while(v!=null){ if (v instanceof TransferVertex) {
+	 * addVertexBeforeTargetFirstTransfer(v, orderedNames); } else if (v
+	 * instanceof OverheadVertex) { //addVertexAfterSourceLastOverhead(v,
+	 * orderedNames); } else { //orderedNames.add(v.getName()); } v =
+	 * totalOrder.getPreviousVertex(v); }
+	 */
+	// reorder(orderedNames);}
 	@Override
 	public void updateFinalCosts() {
 		updateTimings();
@@ -510,8 +505,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 					ImplVertex.getImplementationVertexProperty()
 							.setSchedTotalOrder(vP.getOrder());
 
-				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
-						.getVertex(vP.getName());
+				MapperDAGVertex dagVertex = (MapperDAGVertex) dag.getVertex(vP
+						.getName());
 				if (dagVertex != null)
 					dagVertex.getImplementationVertexProperty()
 							.setSchedTotalOrder(vP.getOrder());
@@ -521,37 +516,33 @@ public abstract class LatencyAbc extends AbstractAbc {
 			// Retrieves the new order in order manager
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
-			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
+					implementation);
 			adder.removePrecedenceEdges();
-			adder
-					.addPrecedenceEdges();
+			adder.addPrecedenceEdges();
 
 		}
 	}
 
 	/**
-	 * Reorders the implementation using the given total order
+	 * Reorders the implementation
 	 */
-	@Override
-	public void reschedule() {
+	public void reschedule2() {
 
 		if (implementation != null && dag != null) {
-			PreesmLogger.getLogger().log(Level.INFO,"Reordering");
-			this.plotImplementation(null);
-			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
+			PreesmLogger.getLogger().log(Level.INFO, "Reordering");
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
+					implementation);
 			adder.removePrecedenceEdges();
-			updateTimings();
-			
-			/*TopologicalTaskSched taskSched = new TopologicalTaskSched(orderManager);
-			List<MapperDAGVertex> vList = taskSched.createTopology(implementation);
 
-			// Sets the order in the implementation
-			for (MapperDAGVertex implVertex : vList) {*/
-			
+			nTimeKeeper.update(null, implementation.vertexSet());
+			updateTimings();
+			this.plotImplementation(null);
+
 			int index = 0;
-			TLevelIterator iterator = new TLevelIterator(implementation,true);
-			
-			while(iterator.hasNext()){
+			TLevelIterator iterator = new TLevelIterator(implementation, true);
+
+			while (iterator.hasNext()) {
 				MapperDAGVertex implVertex = iterator.next();
 				if (implVertex != null)
 					implVertex.getImplementationVertexProperty()
@@ -569,8 +560,117 @@ public abstract class LatencyAbc extends AbstractAbc {
 			// Retrieves the new order in order manager
 			orderManager.reconstructTotalOrderFromDAG(implementation);
 
-			adder
-					.addPrecedenceEdges();
+			adder.addPrecedenceEdges();
+
+		}
+	}
+
+	private class IshedTLevelComp implements Comparator<IScheduleElement> {
+
+		@Override
+		public int compare(IScheduleElement arg0, IScheduleElement arg1) {
+			MapperDAGVertex v0 = null;
+			MapperDAGVertex v1 = null;
+			if (arg0 instanceof MapperDAGVertex) {
+				v0 = (MapperDAGVertex) arg0;
+			} else if (arg0 instanceof SynchronizedVertices) {
+				v0 = ((SynchronizedVertices) arg0).vertices().get(0);
+			}
+
+			if (arg1 instanceof MapperDAGVertex) {
+				v1 = (MapperDAGVertex) arg1;
+			} else if (arg1 instanceof SynchronizedVertices) {
+				v1 = ((SynchronizedVertices) arg1).vertices().get(0);
+			}
+
+			return (int) (v0.getTimingVertexProperty().getNewtLevel() - v1
+					.getTimingVertexProperty().getNewtLevel());
+		}
+
+	}
+
+	/**
+	 * Reorders the implementation
+	 */
+	@Override
+	public void reschedule(List<IScheduleElement> alreadyRescheduled) {
+
+		if (implementation != null && dag != null) {
+
+			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
+					implementation);
+			adder.removePrecedenceEdges();
+
+			nTimeKeeper.update(null, implementation.vertexSet());
+			updateTimings();
+			// this.plotImplementation(null);
+
+			PreesmLogger.getLogger().log(Level.INFO, "Reordering");
+			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
+					orderManager.getTotalOrder().getList());
+
+			Collections.sort(vList, new IshedTLevelComp());
+
+			Map<IScheduleElement, IScheduleElement> refMap = new HashMap<IScheduleElement, IScheduleElement>();
+			List<IScheduleElement> eltList = new ArrayList<IScheduleElement>();
+
+			IntervalFinder finder = new IntervalFinder(orderManager);
+			for (IScheduleElement elt : vList) {
+				MapperDAGVertex v = null;
+				if (elt instanceof MapperDAGVertex) {
+					v = (MapperDAGVertex) elt;
+				} else if (elt instanceof SynchronizedVertices) {
+					v = ((SynchronizedVertices) elt).vertices().get(0);
+				}
+
+				int index = -1;
+				if (SpecialVertexManager.isSpecial(v)) {
+					index = finder.getIndexOfFirstBigEnoughHole(v, 0);
+				} else {
+					index = finder.getIndexOfFirstBigEnoughHole(v, v
+							.getTimingVertexProperty().getCost());
+				}
+
+				if (index > -1
+						&& index < v.getImplementationVertexProperty()
+								.getSchedTotalOrder()) {
+					IScheduleElement reference = orderManager.get(index);
+					refMap.put(elt, reference);
+					eltList.add(elt);
+				}
+			}
+
+			for (int i = eltList.size() - 1; i >= 0; i--) {
+				IScheduleElement elt = eltList.get(i);
+
+				if (!alreadyRescheduled.contains(elt)) {
+					IScheduleElement ref = refMap.get(elt);
+					int newIndex = vList.indexOf(ref);
+					vList.remove(elt);
+					vList.add(newIndex, elt);
+					alreadyRescheduled.add(elt);
+				}
+			}
+
+			VertexOrderList orderList = new VertexOrderList();
+
+			for (IScheduleElement elt : vList) {
+				if (elt instanceof MapperDAGVertex) {
+					MapperDAGVertex v = (MapperDAGVertex) elt;
+					VertexOrderList.OrderProperty op = orderList.new OrderProperty(
+							v.getName(), vList.indexOf(v));
+					orderList.addLast(op);
+				} else if (elt instanceof SynchronizedVertices) {
+					for (MapperDAGVertex v : ((SynchronizedVertices) elt)
+							.vertices()) {
+						VertexOrderList.OrderProperty op = orderList.new OrderProperty(
+								v.getName(), vList.indexOf(v));
+						orderList.addLast(op);
+					}
+				}
+			}
+
+			reschedule(orderList);
 
 		}
 	}
