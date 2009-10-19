@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm architecture transformation plug-in
 Bundle-SymbolicName: org.ietr.preesm.plugin.architransfo;singleton:=true
-Bundle-Version: 0.4.0
+Bundle-Version: 0.4.2
 Bundle-Activator: org.ietr.preesm.plugin.architransfo.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core;bundle-version="0.0.4",
