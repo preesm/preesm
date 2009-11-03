@@ -203,6 +203,13 @@ public class ImplementationVertexProperty {
 			}
 
 			if (localOperators.isEmpty()) {
+				PreesmLogger
+						.getLogger()
+						.log(
+								Level.SEVERE,
+								"There is a conflict in the constraints of join/implode vertex "
+										+ parentVertex
+										+ "and of its successors. You can for instance add cores for implode/explode/broadcast in the scenario.");
 				localOperators = parentVertex.getInitialVertexProperty()
 						.getInitialOperatorList();
 			}

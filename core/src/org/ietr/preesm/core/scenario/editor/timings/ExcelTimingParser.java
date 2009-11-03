@@ -39,6 +39,7 @@ package org.ietr.preesm.core.scenario.editor.timings;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -59,6 +60,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -78,6 +80,11 @@ public class ExcelTimingParser {
 	}
 
 	public void parse(String url) {
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -111,7 +118,13 @@ public class ExcelTimingParser {
 					.addAll(currentArchi
 							.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor));
 
-			parseTimings(w, currentGraph, opDefs);
+			// Warnings are displayed once for each missing operator or vertex
+			// in the excel sheet
+			Set<String> missingVertices = new HashSet<String>();
+			Set<String> missingOperatorTypes = new HashSet<String>();
+
+			parseTimings(w, currentGraph, opDefs, missingVertices,
+					missingOperatorTypes);
 
 		} catch (BiffException e) {
 			// TODO Auto-generated catch block
@@ -124,40 +137,85 @@ public class ExcelTimingParser {
 			e.printStackTrace();
 		}
 	}
-	
 
-	private void parseTimings(Workbook w, SDFGraph currentGraph, Set<ArchitectureComponentDefinition> opDefs) {
+	private void parseTimings(Workbook w, SDFGraph currentGraph,
+			Set<ArchitectureComponentDefinition> opDefs,
+			Set<String> missingVertices, Set<String> missingOperatorTypes) {
+
 		for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
-			for (ArchitectureComponentDefinition operatorDef : opDefs) {
 
-				String operatorId = ((IOperatorDefinition) operatorDef)
-						.getVlnv().getName();
-				String vertexName = vertex.getName();
+			if (vertex.getGraphDescription() != null) {
+				parseTimings(w, (SDFGraph) vertex.getGraphDescription(),
+						opDefs, missingVertices, missingOperatorTypes);
+			} else if (vertex.getKind() == "vertex") {
+				for (ArchitectureComponentDefinition operatorDef : opDefs) {
 
-				if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
-					Cell vertexCell = w.getSheet(0).findCell(vertexName);
-					Cell operatorCell = w.getSheet(0).findCell(operatorId);
+					String operatorId = ((IOperatorDefinition) operatorDef)
+							.getVlnv().getName();
+					String vertexName = vertex.getName();
 
-					if (vertexCell != null && operatorCell != null) {
-						Cell timingCell = w.getSheet(0).getCell(
-								operatorCell.getColumn(),
-								vertexCell.getRow());
+					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+						Cell vertexCell = w.getSheet(0).findCell(vertexName);
+						Cell operatorCell = w.getSheet(0).findCell(operatorId);
 
-						if (timingCell.getType().equals(CellType.NUMBER)
-								|| timingCell.getType().equals(
-										CellType.NUMBER_FORMULA)) {
-							Timing timing = new Timing(
-									((IOperatorDefinition) operatorDef),
-									vertex, Integer.valueOf(timingCell
-											.getContents()));
-							scenario.getTimingManager().addTiming(timing);
+						if (vertexCell != null && operatorCell != null) {
+							Cell timingCell = w.getSheet(0).getCell(
+									operatorCell.getColumn(),
+									vertexCell.getRow());
+
+							if (timingCell.getType().equals(CellType.NUMBER)
+									|| timingCell.getType().equals(
+											CellType.NUMBER_FORMULA)) {
+
+								String stringTiming = timingCell.getContents();
+								// Removing useless characters (spaces...)
+								stringTiming = stringTiming.replaceAll(" ", "");
+
+								try {
+									Timing timing = new Timing(
+											((IOperatorDefinition) operatorDef),
+											vertex, Integer.valueOf(timingCell
+													.getContents()));
+
+									scenario.getTimingManager().addTiming(
+											timing);
+
+									PreesmLogger.getLogger().log(
+											Level.INFO,
+											"Importing timing: "
+													+ timing.toString());
+								} catch (NumberFormatException e) {
+									PreesmLogger
+											.getLogger()
+											.log(
+													Level.SEVERE,
+													"Problem importing timing of "
+															+ vertexName
+															+ " on "
+															+ operatorId
+															+ ". Integer with no space or special character needed. Be careful on the special number formats.");
+								}
+							}
+						} else {
+							if (vertexCell == null
+									&& !missingVertices.contains(vertexName)) {
+								PreesmLogger.getLogger().log(
+										Level.WARNING,
+										"No line found in excel sheet for vertex: "
+												+ vertexName);
+								missingVertices.add(vertexName);
+							} else if (operatorCell == null
+									&& !missingOperatorTypes
+											.contains(operatorId)) {
+								PreesmLogger.getLogger().log(
+										Level.WARNING,
+										"No column found in excel sheet for operator type: "
+												+ operatorId);
+								missingOperatorTypes.add(operatorId);
+							}
 						}
 					}
 				}
-			}
-			
-			if(vertex.getGraphDescription() != null){
-				parseTimings(w, (SDFGraph)vertex.getGraphDescription(), opDefs);
 			}
 		}
 	}

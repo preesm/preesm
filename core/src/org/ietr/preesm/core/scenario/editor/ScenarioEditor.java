@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.scenario.editor;
 
+import java.util.logging.Level;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -52,6 +54,7 @@ import org.ietr.preesm.core.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
 import org.ietr.preesm.core.scenario.editor.simu.SimulationPage;
 import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
+import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * The scenario editor allows to change all parameters in scenario; i.e. depending
@@ -78,6 +81,10 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
+		
+		// Starting the console
+		PreesmLogger.getLogger().createConsole();
+		PreesmLogger.getLogger().setLevel(Level.INFO);
 		
 		setSite(site);
 		setInput(input);

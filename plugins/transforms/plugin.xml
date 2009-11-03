@@ -23,6 +23,11 @@
             name="SDF4J GML Exporter "
             type="org.ietr.preesm.plugin.exportXml.SDF4JGMLExporter">
       </task>
+      <task
+            id="org.ietr.preesm.plugin.transforms.ReduceExplodeImplode"
+            name="Reduce Explode Implode"
+            type="org.ietr.preesm.plugin.transforms.ReduceExplodeImplode">
+      </task>
    </extension>
 
 </plugin>

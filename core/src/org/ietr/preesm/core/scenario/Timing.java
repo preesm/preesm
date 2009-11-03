@@ -120,4 +120,10 @@ public class Timing {
 		this.time = time;
 	}
 
+	@Override
+	public String toString() {
+		return "{" + vertex + "," + operator.getVlnv().getName() + "," + time + "}";
+	}
+
+	
 }

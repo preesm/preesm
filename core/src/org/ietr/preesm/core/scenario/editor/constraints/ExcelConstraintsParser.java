@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario.editor.constraints;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -58,6 +60,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -98,23 +101,28 @@ public class ExcelConstraintsParser {
 		IFile file = workspace.getRoot().getFile(path);
 
 		scenario.getConstraintGroupManager().removeAll();
+		PreesmLogger
+				.getLogger()
+				.log(
+						Level.INFO,
+						"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
+			// Warnings are displayed once for each missing operator or vertex in the excel sheet
+			Set<String> missingVertices = new HashSet<String>();
+			Set<String> missingOperators = new HashSet<String>();
+
 			for (SDFAbstractVertex vertex : currentGraph
 					.getHierarchicalVertexSet()) {
-				
-				/*for (ArchitectureComponentDefinition operatorDef : currentArchi
-						.getComponentDefinitions(ArchitectureComponentType.operator)) {
-					checkOpDefConstraint(w, (OperatorDefinition) operatorDef,
-							currentArchi, vertex);
-				}*/
 
-				for (ArchitectureComponent operator : currentArchi
-						.getComponents(ArchitectureComponentType.operator)) {
-					checkOpConstraint(w, (Operator) operator, currentArchi,
-							vertex);
+				if (vertex.getKind() == "vertex") {
+					for (ArchitectureComponent operator : currentArchi
+							.getComponents(ArchitectureComponentType.operator)) {
+						checkOpConstraint(w, (Operator) operator, currentArchi,
+								vertex, missingVertices, missingOperators);
+					}
 				}
 			}
 
@@ -131,43 +139,11 @@ public class ExcelConstraintsParser {
 	}
 
 	/**
-	 * Importing constraints from component definition ids
-	 */
-	public void checkOpDefConstraint(Workbook w,
-			OperatorDefinition operatorDef, MultiCoreArchitecture archi,
-			SDFAbstractVertex vertex) {
-		String operatorDefId = operatorDef.getVlnv().getName();
-		String vertexName = vertex.getName();
-
-		if (!operatorDefId.isEmpty() && !vertexName.isEmpty()) {
-			Cell vertexCell = w.getSheet(0).findCell(vertexName);
-			Cell operatorCell = w.getSheet(0).findCell(operatorDefId);
-
-			if (vertexCell != null && operatorCell != null) {
-				Cell timingCell = w.getSheet(0).getCell(
-						operatorCell.getColumn(), vertexCell.getRow());
-
-				if (timingCell.getType().equals(CellType.NUMBER)
-						|| timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
-					Set<ArchitectureComponent> operators = archi
-							.getComponents(ArchitectureComponentType.operator);
-
-					for (ArchitectureComponent operator : operators) {
-						if (operator.getDefinition().getVlnv().getName().equalsIgnoreCase(
-								operatorDefId))
-							scenario.getConstraintGroupManager().addConstraint(
-									(Operator) operator, vertex);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Importing constraints from component names
 	 */
 	private void checkOpConstraint(Workbook w, Operator operator,
-			MultiCoreArchitecture archi, SDFAbstractVertex vertex) {
+			MultiCoreArchitecture archi, SDFAbstractVertex vertex,
+			Set<String> missingVertices, Set<String> missingOperators) {
 		String operatorName = operator.getName();
 		String vertexName = vertex.getName();
 
@@ -184,6 +160,40 @@ public class ExcelConstraintsParser {
 
 					scenario.getConstraintGroupManager().addConstraint(
 							(Operator) operator, vertex);
+
+					PreesmLogger.getLogger().log(
+							Level.FINE,
+							"Importing constraint: {" + operator.getName()
+									+ "," + vertex + ",yes}");
+
+				} else {
+					PreesmLogger.getLogger().log(
+							Level.FINE,
+							"Importing constraint: {" + operator.getName()
+									+ "," + vertex + ",no}");
+				}
+			} else {
+				if (vertexCell == null && !missingVertices.contains(vertexName)) {
+					if (vertex.getGraphDescription() != null){
+						PreesmLogger.getLogger().log(
+								Level.WARNING,
+								"No line found in excel sheet for hierarchical vertex: "
+										+ vertexName);
+					}
+					else{
+						PreesmLogger.getLogger().log(
+								Level.SEVERE,
+								"No line found in excel sheet for atomic vertex: "
+										+ vertexName);
+					}
+					missingVertices.add(vertexName);
+				} else if (operatorCell == null
+						&& !missingOperators.contains(operatorName)) {
+					PreesmLogger.getLogger().log(
+							Level.SEVERE,
+							"No column found in excel sheet for operator: "
+									+ operatorName);
+					missingOperators.add(operatorName);
 				}
 			}
 		}
