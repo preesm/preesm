@@ -69,7 +69,6 @@ public class HierarchyPort {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public HierarchyPort clone() {
 		HierarchyPort newHC = new HierarchyPort(this.getName(),
 				getConnectedCmpId(), getBusRefName());

@@ -36,16 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
-import java.util.Random;
-
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.plugin.abc.edgescheduling.Interval;
 import org.ietr.preesm.plugin.abc.edgescheduling.IntervalFinder;
-import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
-import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * The task switcher adds a processing to the mapping algorithm. When a vertex
@@ -56,11 +49,9 @@ import org.sdf4j.model.dag.DAGEdge;
 public class TaskSwitcher extends AbstractTaskSched {
 
 	private IntervalFinder intervalFinder;
-	private Random random;
 
 	public TaskSwitcher() {
 		super();
-		random = new Random(System.nanoTime());
 	}
 
 	@Override

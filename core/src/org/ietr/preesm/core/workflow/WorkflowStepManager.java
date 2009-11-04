@@ -37,8 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.workflow;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -96,7 +94,8 @@ public class WorkflowStepManager {
 			Collection<Variable> variables = scenario.getVariablesManager()
 					.getVariables().values();
 			for (Variable var : variables) {
-				if (var != null) {
+				// Changing values only of existing variables
+				if (graph.getVariable(var.getName()) != null) {
 					String value = var.getValue();
 					graph.addVariable(new Variable(var.getName(), value));
 					

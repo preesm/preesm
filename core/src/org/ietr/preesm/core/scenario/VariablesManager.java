@@ -1,12 +1,5 @@
 package org.ietr.preesm.core.scenario;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.ietr.preesm.core.scenario.editor.constraints.ExcelConstraintsParser;
 import org.ietr.preesm.core.scenario.editor.variables.ExcelVariablesParser;
 import org.sdf4j.model.parameters.Variable;
 import org.sdf4j.model.parameters.VariableSet;

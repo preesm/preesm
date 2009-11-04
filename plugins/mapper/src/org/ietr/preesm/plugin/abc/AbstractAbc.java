@@ -278,8 +278,6 @@ public abstract class AbstractAbc implements IAbc {
 				fireNewMappedVertex(impvertex, updateRank);
 
 			} else {
-				boolean b = isImplantable(impvertex, operator);
-				Operator op = findOperator(impvertex, operator);
 				PreesmLogger.getLogger().log(
 						Level.SEVERE,
 						impvertex.toString() + " can not be implanted on "

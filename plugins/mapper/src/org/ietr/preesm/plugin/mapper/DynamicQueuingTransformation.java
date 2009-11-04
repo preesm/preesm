@@ -48,15 +48,12 @@ import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.plugin.abc.order.VertexOrderList;
-import org.ietr.preesm.plugin.abc.order.VertexOrderList.OrderProperty;
 import org.ietr.preesm.plugin.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.dynamic.DynamicQueuingScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 

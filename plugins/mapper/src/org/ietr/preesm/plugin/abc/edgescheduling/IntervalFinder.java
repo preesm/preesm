@@ -47,9 +47,7 @@ import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * During edge scheduling, one needs to find intervals to fit the transfers.

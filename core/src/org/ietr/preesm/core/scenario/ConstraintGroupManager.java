@@ -41,7 +41,6 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.scenario.editor.constraints.ExcelConstraintsParser;
-import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**

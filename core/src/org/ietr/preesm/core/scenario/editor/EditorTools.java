@@ -108,10 +108,11 @@ public class EditorTools {
 			ISelectionStatusValidator {
 
 		public IStatus validate(Object[] selection) {
-			if (selection.length == 1 && selection[0] instanceof IFile) {
-				return new Status(IStatus.OK,Activator.PLUGIN_ID,"");
+			if (selection.length == 1
+					&& (selection[0] instanceof IFile || selection[0] instanceof IFolder)) {
+				return new Status(IStatus.OK, Activator.PLUGIN_ID, "");
 			}
-			return new Status(IStatus.ERROR,Activator.PLUGIN_ID,"");
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "");
 		}
 	}
 

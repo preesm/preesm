@@ -44,11 +44,8 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.codegen.BroadcastCall;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
-import org.sdf4j.model.dag.DAGEdge;
 
 /**
  * Properties of an implanted vertex

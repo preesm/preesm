@@ -45,7 +45,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.sdf4j.model.dag.DAGEdge;
 

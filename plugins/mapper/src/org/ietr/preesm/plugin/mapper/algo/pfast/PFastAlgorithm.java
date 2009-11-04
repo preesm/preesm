@@ -288,7 +288,6 @@ public class PFastAlgorithm extends Observable {
 	 * 
 	 * @return MapperDAG
 	 */
-	@SuppressWarnings("unchecked")
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi,
 			IScenario scenario, InitialLists initialLists,
 			AbcParameters abcParams, PFastAlgoParameters pFastParams,
