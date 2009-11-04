@@ -55,6 +55,11 @@ public class Scenario implements IScenario {
 	private SimulationManager simulationManager = null;
 
 	/**
+	 * Manager of graph variables
+	 */
+	private VariablesManager variablesManager = null;
+	
+	/**
 	 * Manager of code generation parameters
 	 */
 	private CodegenManager codegenManager = null;
@@ -75,6 +80,11 @@ public class Scenario implements IScenario {
 		timingmanager = new TimingManager();
 		simulationManager = new SimulationManager();
 		codegenManager = new CodegenManager();
+		variablesManager = new VariablesManager();
+	}
+
+	public VariablesManager getVariablesManager() {
+		return variablesManager;
 	}
 
 	public ConstraintGroupManager getConstraintGroupManager() {

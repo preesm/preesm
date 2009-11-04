@@ -34,12 +34,15 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario.editor.timings;
+package org.ietr.preesm.core.scenario.editor.variables;
 
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -52,6 +55,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -64,7 +68,9 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -79,22 +85,30 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
 import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.codegen.DataType;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.sdf4j.model.parameters.Variable;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Timing editor within the implementation editor
+ * Variables values overriding editor within the scenario editor
  * 
  * @author mpelcat
  */
-public class TimingsPage extends FormPage implements IPropertyListener {
+public class VariablesPage extends FormPage implements IPropertyListener {
 
 	final Scenario scenario;
 	TableViewer tableViewer = null;
 
-	public TimingsPage(Scenario scenario, FormEditor editor, String id,
+	/**
+	 * Current graph in the scenario initialized when the variables page is displayed.
+	 */
+	SDFGraph currentGraph = null;
+
+	public VariablesPage(Scenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 
@@ -111,21 +125,22 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		ScrolledForm form = managedForm.getForm();
 		// FormToolkit toolkit = managedForm.getToolkit();
-		form.setText(Messages.getString("Timings.title"));
+		form.setText(Messages.getString("Variables.title"));
 
 		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
 
 		// Timing file chooser section
-		createFileSection(managedForm,
-				Messages.getString("Timings.timingFile"), Messages
-						.getString("Timings.timingFileDescription"), Messages
-						.getString("Timings.timingFileEdit"), scenario
-						.getTimingManager().getExcelFileURL(), Messages
-						.getString("Timings.timingFileBrowseTitle"), "xls");
+		createFileSection(managedForm, Messages
+				.getString("Variables.excelFile"), Messages
+				.getString("Variables.excelFileDescription"), Messages
+				.getString("Variables.excelFileEdit"), scenario
+				.getVariablesManager().getExcelFileURL(), Messages
+				.getString("Variables.excelFileBrowseTitle"), "xls");
 
-		createTimingsSection(managedForm, Messages.getString("Timings.title"),
-				Messages.getString("Timings.description"));
+		createVariablesSection(managedForm, Messages
+				.getString("Variables.title"), Messages
+				.getString("Variables.description"));
 
 		managedForm.refresh();
 
@@ -134,7 +149,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Creates the section editing timings
 	 */
-	private void createTimingsSection(IManagedForm managedForm, String title,
+	private void createVariablesSection(IManagedForm managedForm, String title,
 			String desc) {
 
 		// Creates the section
@@ -143,8 +158,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		Combo coreCombo = addCoreSelector(container, toolkit);
-		addTable(container, toolkit, coreCombo);
+		addTable(container, toolkit);
 	}
 
 	/**
@@ -176,59 +190,17 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	}
 
 	/**
-	 * Adds a combo box for the core selection
-	 */
-	protected Combo addCoreSelector(Composite parent, FormToolkit toolkit) {
-		Composite combocps = toolkit.createComposite(parent);
-		combocps.setLayout(new FillLayout());
-		combocps.setVisible(true);
-		Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
-		combo.setToolTipText(Messages
-				.getString("Constraints.coreSelectionTooltip"));
-		comboDataInit(combo);
-		combo.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-				comboDataInit((Combo) e.getSource());
-
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-			}
-
-		});
-		return combo;
-	}
-
-	private void comboDataInit(Combo combo) {
-
-		combo.removeAll();
-		MultiCoreArchitecture archi = ScenarioParser.getArchitecture(scenario
-				.getArchitectureURL());
-
-		for (ArchitectureComponentDefinition def : archi
-				.getComponentDefinitions(ArchitectureComponentType.operator)) {
-			combo.add(((OperatorDefinition) def).getVlnv().getName());
-		}
-		for (ArchitectureComponentDefinition def : archi
-				.getComponentDefinitions(ArchitectureComponentType.processor)) {
-			combo.add(((ProcessorDefinition) def).getVlnv().getName());
-		}
-		for (ArchitectureComponentDefinition def : archi
-				.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
-			combo.add(((IpCoprocessorDefinition) def).getVlnv().getName());
-		}
-
-		combo.setData(archi);
-	}
-
-	/**
 	 * Adds a table to edit timings
 	 */
-	protected void addTable(Composite parent, FormToolkit toolkit,
-			Combo coreCombo) {
+	protected void addTable(Composite parent, FormToolkit toolkit) {
+
+		Composite buttonscps = toolkit.createComposite(parent);
+		buttonscps.setLayout(new GridLayout(2, true));
+
+		final Button addButton = toolkit.createButton(buttonscps, Messages
+				.getString("Variables.addVar"), SWT.PUSH);
+		final Button removeButton = toolkit.createButton(buttonscps, Messages
+				.getString("Variables.removeVar"), SWT.PUSH);
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
@@ -241,19 +213,18 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tableViewer.setContentProvider(new SDFListContentProvider());
+		tableViewer.setContentProvider(new VariablesContentProvider());
 
-		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
+		final VariablesLabelProvider labelProvider = new VariablesLabelProvider(
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
-		coreCombo.addSelectionListener(labelProvider);
 
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-		column1.setText(Messages.getString("Timings.taskColumn"));
+		column1.setText(Messages.getString("Variables.variableNameColumn"));
 
 		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-		column2.setText(Messages.getString("Timings.timeColumn"));
+		column2.setText(Messages.getString("Variables.variableValueColumn"));
 
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
@@ -303,6 +274,63 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 			}
 
 		});
+
+		// Adding the new data type on click on add button
+		addButton.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String dialogTitle = Messages
+						.getString("Variables.addVar.dialog.title");
+				String dialogMessage = Messages
+						.getString("Variables.addVar.dialog.message");
+				String init = "newType";
+
+				IInputValidator validator = new IInputValidator() {
+
+					// No verification on data type name
+					public String isValid(String newText) {
+						if (currentGraph != null
+								&& currentGraph.getVariables().keySet()
+										.contains(newText)) {
+							return null;
+						} else {
+							return "the top graph does not contain the variable.";
+						}
+					}
+
+				};
+
+				InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getShell(), dialogTitle,
+						dialogMessage, init, validator);
+				if (dialog.open() == Window.OK) {
+					scenario.getVariablesManager().setVariable(
+							dialog.getValue(), "0");
+					tableViewer.refresh();
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				}
+			}
+
+		});
+
+		// Removing a data type on click on remove button
+		removeButton.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection) tableViewer
+						.getSelection();
+				if (selection != null
+						&& selection.getFirstElement() instanceof Variable) {
+					Variable var = (Variable) selection.getFirstElement();
+					scenario.getVariablesManager()
+							.removeVariable(var.getName());
+					tableViewer.refresh();
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				}
+			}
+		});
 	}
 
 	/**
@@ -310,7 +338,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if (source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
+		if (propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
 
 	}
@@ -346,15 +374,15 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 		text.setData(title);
-		
+
 		// If the text is modified or Enter key pressed, timings are imported
 		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text) e.getSource();
-				scenario.getTimingManager().setExcelFileURL(text.getText());
-				scenario.getTimingManager().importTimings(scenario);
+				scenario.getVariablesManager().setExcelFileURL(text.getText());
+				scenario.getVariablesManager().importVariables(scenario);
 				tableViewer.refresh();
 				firePropertyChange(PROP_DIRTY);
 
@@ -366,13 +394,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.CR) {
 					Text text = (Text) e.getSource();
-					scenario.getTimingManager().setExcelFileURL(
+					scenario.getVariablesManager().setExcelFileURL(
 							text.getText());
-					scenario.getTimingManager().importTimings(scenario);
+					scenario.getVariablesManager().importVariables(scenario);
 					tableViewer.refresh();
 				}
 
 			}
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 
@@ -388,10 +417,17 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				.getShell(), browseTitle, fileExtension);
 		browseButton.addSelectionListener(browseAdapter);
 
-		final Button exportButton = toolkit.createButton(client, Messages
-				.getString("Timings.timingExportExcel"), SWT.PUSH);
-		exportButton.addSelectionListener(new ExcelTimingWriter(scenario));
-		
 		toolkit.paintBordersFor(client);
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+
+		if (active) {
+			// Setting the current graph when the variables tab is shown
+			currentGraph = ScenarioParser.getAlgorithm(scenario
+					.getAlgorithmURL());
+		}
 	}
 }

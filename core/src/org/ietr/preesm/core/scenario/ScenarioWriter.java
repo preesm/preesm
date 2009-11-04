@@ -38,6 +38,9 @@ package org.ietr.preesm.core.scenario;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -45,6 +48,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.DataType;
+import org.sdf4j.model.parameters.Variable;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -95,8 +99,33 @@ public class ScenarioWriter {
 		addConstraints(root);
 		addTimings(root);
 		addSimuParams(root);
+		addVariables(root);
 
 		return dom;
+	}
+
+	private void addVariables(Element parent) {
+
+		Element variables = dom.createElement("variables");
+		parent.appendChild(variables);
+
+		variables.setAttribute("excelUrl", scenario.getVariablesManager()
+				.getExcelFileURL());
+		
+		Collection<Variable> variablesSet = scenario.getVariablesManager()
+				.getVariables().values();
+		for (Variable variable : variablesSet) {
+			addVariable(variables, variable.getName(), variable.getValue());
+		}
+	}
+
+	private void addVariable(Element parent, String variableName,
+			String variableValue) {
+
+		Element variableelt = dom.createElement("variable");
+		parent.appendChild(variableelt);
+		variableelt.setAttribute("name", variableName);
+		variableelt.setAttribute("value", variableValue);
 	}
 
 	private void addSimuParams(Element parent) {
@@ -113,12 +142,12 @@ public class ScenarioWriter {
 		params.appendChild(medium);
 		medium.setTextContent(scenario.getSimulationManager()
 				.getMainMediumName());
-		
+
 		Element dataSize = dom.createElement("averageDataSize");
 		params.appendChild(dataSize);
 		dataSize.setTextContent(String.valueOf(scenario.getSimulationManager()
-			.getAverageDataSize()));
-		
+				.getAverageDataSize()));
+
 		Element dataTypes = dom.createElement("dataTypes");
 		params.appendChild(dataTypes);
 
@@ -126,12 +155,13 @@ public class ScenarioWriter {
 				.values()) {
 			addDataType(dataTypes, dataType);
 		}
-		
+
 		Element sVOperators = dom.createElement("specialVertexOperators");
 		params.appendChild(sVOperators);
 
-		for (ArchitectureComponent cmp : scenario.getSimulationManager().getSpecialVertexOperators()) {
-			addSpecialVertexOperator(sVOperators,cmp);
+		for (ArchitectureComponent cmp : scenario.getSimulationManager()
+				.getSpecialVertexOperators()) {
+			addSpecialVertexOperator(sVOperators, cmp);
 		}
 	}
 
@@ -143,7 +173,8 @@ public class ScenarioWriter {
 		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
 	}
 
-	private void addSpecialVertexOperator(Element parent, ArchitectureComponent cmp) {
+	private void addSpecialVertexOperator(Element parent,
+			ArchitectureComponent cmp) {
 
 		Element dataTypeElt = dom.createElement("specialVertexOperator");
 		parent.appendChild(dataTypeElt);
@@ -187,11 +218,6 @@ public class ScenarioWriter {
 		files.appendChild(archi);
 		archi.setAttribute("url", scenario.getArchitectureURL());
 
-		Element timings = dom.createElement("timingfile");
-		files.appendChild(timings);
-		timings.setAttribute("url", scenario.getTimingManager()
-				.getTimingFileURL());
-
 		Element codeGenDir = dom.createElement("codegenDirectory");
 		files.appendChild(codeGenDir);
 		codeGenDir.setAttribute("url", scenario.getCodegenManager()
@@ -203,6 +229,9 @@ public class ScenarioWriter {
 
 		Element constraints = dom.createElement("constraints");
 		parent.appendChild(constraints);
+		
+		constraints.setAttribute("excelUrl", scenario.getConstraintGroupManager()
+				.getExcelFileURL());
 
 		for (ConstraintGroup cst : scenario.getConstraintGroupManager()
 				.getConstraintGroups()) {
@@ -246,6 +275,9 @@ public class ScenarioWriter {
 		Element timings = dom.createElement("timings");
 		parent.appendChild(timings);
 
+		timings.setAttribute("excelUrl", scenario.getTimingManager()
+				.getExcelFileURL());
+
 		for (Timing timing : scenario.getTimingManager().getTimings()) {
 			addTiming(timings, timing);
 		}
@@ -256,8 +288,8 @@ public class ScenarioWriter {
 		Element timingelt = dom.createElement("timing");
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("vertexname", timing.getVertex().getName());
-		timingelt
-				.setAttribute("opname", timing.getOperatorDefinition().getVlnv().getName());
+		timingelt.setAttribute("opname", timing.getOperatorDefinition()
+				.getVlnv().getName());
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
 	}
 }

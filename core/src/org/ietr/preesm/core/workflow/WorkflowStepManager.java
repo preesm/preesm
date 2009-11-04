@@ -33,9 +33,12 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.workflow;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -47,6 +50,8 @@ import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
+import org.sdf4j.model.parameters.Variable;
+import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Defining the steps called during workflow execution
@@ -73,6 +78,10 @@ public class WorkflowStepManager {
 		monitor.worked(numberOfTasksDone);
 	}
 
+	/**
+	 * Retrieves the algorithm from a file and overrides the variable values
+	 * with the ones defined in the scenario
+	 */
 	public void retrieveAlgorithm(String message, IScenario scenario,
 			TaskResult nodeResult) {
 
@@ -81,7 +90,36 @@ public class WorkflowStepManager {
 		if (scenario != null) {
 			String algorithmPath = scenario.getAlgorithmURL();
 			AlgorithmRetriever retriever = new AlgorithmRetriever(algorithmPath);
-			nodeResult.setSDF(retriever.getAlgorithm());
+			SDFGraph graph = retriever.getAlgorithm();
+
+			// retrieving variable values defined in the scenario
+			Collection<Variable> variables = scenario.getVariablesManager()
+					.getVariables().values();
+			for (Variable var : variables) {
+				if (var != null) {
+					String value = var.getValue();
+					graph.addVariable(new Variable(var.getName(), value));
+					
+					PreesmLogger
+					.getLogger()
+					.log(
+							Level.INFO,
+							"Affecting value " + value + " to the top graph variable "
+									+ var.getName()
+									+ ".");
+
+				} else {
+					PreesmLogger
+							.getLogger()
+							.log(
+									Level.WARNING,
+									"Affecting a value to the unknown top graph variable "
+											+ var.getName()
+											+ " in the scenario. Consider defining it in the graph or removing it from the scenario.");
+				}
+			}
+
+			nodeResult.setSDF(graph);
 		}
 	}
 

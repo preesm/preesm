@@ -96,7 +96,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		createFileSection(managedForm, Messages.getString("Constraints.file"),
 				Messages.getString("Constraints.fileDescription"),
 				Messages.getString("Constraints.fileEdit"),
-				scenario.getTimingManager().getTimingFileURL(),
+				scenario.getConstraintGroupManager().getExcelFileURL(),
 				Messages.getString("Constraints.fileBrowseTitle"),
 				"xls");
 		
@@ -244,8 +244,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	
 	private void importData(Text text){
 
-		ExcelConstraintsParser parser = new ExcelConstraintsParser(scenario);
-		parser.parse(text.getText());
+		scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
+		scenario.getConstraintGroupManager().importConstraints(scenario);
 		
 		firePropertyChange(PROP_DIRTY);
 		

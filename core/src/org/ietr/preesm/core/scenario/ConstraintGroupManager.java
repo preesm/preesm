@@ -40,6 +40,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperator;
+import org.ietr.preesm.core.scenario.editor.constraints.ExcelConstraintsParser;
+import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -54,6 +56,11 @@ public class ConstraintGroupManager {
 	 * List of all constraint groups
 	 */
 	private Set<ConstraintGroup> constraintgroups;
+
+	/**
+	 * Path to a file containing constraints
+	 */
+	private String excelFileURL = "";
 
 	public ConstraintGroupManager() {
 		constraintgroups = new HashSet<ConstraintGroup>();
@@ -156,12 +163,13 @@ public class ConstraintGroupManager {
 		return graphConstraintGroups;
 	}
 
-	public boolean isCompatibleToConstraints(SDFAbstractVertex vertex, IOperator currentOp) {
+	public boolean isCompatibleToConstraints(SDFAbstractVertex vertex,
+			IOperator currentOp) {
 		Set<ConstraintGroup> opGroups = getOpConstraintGroups(currentOp);
 		Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
-		
+
 		opGroups.retainAll(graphGroups);
-		
+
 		return !opGroups.isEmpty();
 	}
 
@@ -173,11 +181,27 @@ public class ConstraintGroupManager {
 	@Override
 	public String toString() {
 		String s = "";
-		
-		for(ConstraintGroup cg : constraintgroups){
+
+		for (ConstraintGroup cg : constraintgroups) {
 			s += cg.toString();
 		}
-		
+
 		return s;
+	}
+
+	public String getExcelFileURL() {
+		return excelFileURL;
+	}
+
+	public void setExcelFileURL(String excelFileURL) {
+		this.excelFileURL = excelFileURL;
+	}
+
+	public void importConstraints(Scenario currentScenario) {
+		if (!excelFileURL.isEmpty() && currentScenario != null) {
+			ExcelConstraintsParser parser = new ExcelConstraintsParser(
+					currentScenario);
+			parser.parse(excelFileURL);
+		}
 	}
 }

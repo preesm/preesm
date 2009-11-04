@@ -150,6 +150,8 @@ public class ScenarioParser {
 						parseTimings(elt);
 					} else if (type.equals("simuParams")) {
 						parseSimuParams(elt);
+					} else if (type.equals("variables")) {
+						parseVariables(elt);
 					}
 				}
 
@@ -158,6 +160,33 @@ public class ScenarioParser {
 		}
 
 		return scenario;
+	}
+
+	/**
+	 * Retrieves the timings
+	 */
+	private void parseVariables(Element varsElt) {
+
+		String excelFileUrl = varsElt.getAttribute("excelUrl");
+		scenario.getVariablesManager().setExcelFileURL(excelFileUrl);
+		
+		Node node = varsElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("variable")) {
+					String name = elt.getAttribute("name");
+					String value = elt.getAttribute("value");
+					
+					scenario.getVariablesManager().setVariable(name, value);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
 	}
 
 	/**
@@ -279,8 +308,6 @@ public class ScenarioParser {
 					} else if (type.equals("architecture")) {
 						scenario.setArchitectureURL(url);
 						archi = getArchitecture(url);
-					} else if (type.equals("timingfile")) {
-						scenario.getTimingManager().setTimingFileURL(url, null);
 					} else if (type.equals("codegenDirectory")) {
 						scenario.getCodegenManager().setCodegenDirectory(url);
 					}
@@ -317,6 +344,9 @@ public class ScenarioParser {
 	 */
 	private void parseConstraintGroups(Element cstGroupsElt) {
 
+		String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
+		scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
+		
 		Node node = cstGroupsElt.getFirstChild();
 
 		while (node != null) {
@@ -386,8 +416,11 @@ public class ScenarioParser {
 	 */
 	private void parseTimings(Element timingsElt) {
 
-		Node node = timingsElt.getFirstChild();
+		String timingFileUrl = timingsElt.getAttribute("excelUrl");
+		scenario.getTimingManager().setExcelFileURL(timingFileUrl);
 
+		Node node = timingsElt.getFirstChild();
+		
 		while (node != null) {
 
 			if (node instanceof Element) {

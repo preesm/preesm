@@ -33,48 +33,45 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
+ 
+package org.ietr.preesm.core.scenario.editor.variables;
 
-package org.ietr.preesm.core.scenario;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.core.scenario.Scenario;
 
 /**
- * Manager of implementation scenario.
+ * Provides the elements contained in the variables editor
  * 
  * @author mpelcat
  */
-public interface IScenario {
+public class VariablesContentProvider implements IStructuredContentProvider{
 
-	/**
-	 * Manager of constraint groups linking vertices to operators.
-	 */
-	public ConstraintGroupManager getConstraintGroupManager();
+	Object[] elementTable = null;
+	
+	@Override
+	public Object[] getElements(Object inputElement) {
 
-	/**
-	 * Manager of implementation timings.
-	 */
-	public TimingManager getTimingManager();
 
-	/**
-	 * Manager of graph variables values.
-	 */
-	public VariablesManager getVariablesManager();
+		if(inputElement instanceof Scenario){
+			Scenario inputScenario = (Scenario)inputElement;
+			
+			// Retrieving the data types from the scenario
+			elementTable = inputScenario.getVariablesManager().getVariables().values().toArray();
+		}
+		return elementTable;
+	}
 
-	/**
-	 * Relative path to algorithm file
-	 */
-	public String getAlgorithmURL();
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
 
-	/**
-	 * Relative path to architecture file
-	 */
-	public String getArchitectureURL();
+	@Override
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		// TODO Auto-generated method stub
+		
+	}
 
-	/**
-	 * Manager of implementation timings.
-	 */
-	public SimulationManager getSimulationManager();
-
-	/**
-	 * Manager of code generation properties.
-	 */
-	public CodegenManager getCodegenManager();
 }

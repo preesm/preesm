@@ -73,7 +73,7 @@ public class TimingManager {
 	/**
 	 * Path to a file containing timings
 	 */
-	private String timingFileURL = "";
+	private String excelFileURL = "";
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
@@ -223,16 +223,18 @@ public class TimingManager {
 		timings.clear();
 	}
 
-	public String getTimingFileURL() {
-		return timingFileURL;
+	public String getExcelFileURL() {
+		return excelFileURL;
 	}
 
-	public void setTimingFileURL(String timingFileURL, Scenario currentScenario) {
-		this.timingFileURL = timingFileURL;
-
-		if (!timingFileURL.isEmpty() && currentScenario != null) {
+	public void setExcelFileURL(String excelFileURL) {
+		this.excelFileURL = excelFileURL;
+	}
+	
+	public void importTimings(Scenario currentScenario){
+		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
-			parser.parse(timingFileURL);
+			parser.parse(excelFileURL);
 		}
 	}
 }

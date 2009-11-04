@@ -54,6 +54,7 @@ import org.ietr.preesm.core.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
 import org.ietr.preesm.core.scenario.editor.simu.SimulationPage;
 import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
+import org.ietr.preesm.core.scenario.editor.variables.VariablesPage;
 import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
@@ -120,6 +121,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		simulationPage.addPropertyListener(this);
 		CodegenPage codegenPage = new CodegenPage(scenario,this, "Codegen","Codegen");
 		codegenPage.addPropertyListener(this);
+		VariablesPage variablesPage = new VariablesPage(scenario,this, "Variables","Variables");
+		variablesPage.addPropertyListener(this);
 		
 		try {
 			addPage(overviewPage);
@@ -127,6 +130,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 			addPage(timingsPage);
 			addPage(simulationPage);
 			addPage(codegenPage);
+			addPage(variablesPage);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -149,7 +149,7 @@ public class AlgorithmRetriever {
 	}
 
 	/**
-	 * Adding an information that keeps the path of each vertex relative to the 
+	 * Adding an information that keeps the path of each vertex relative to the top
 	 */
 	private void addVertexPathProperties(SDFGraph algorithm, String currentPath){
 		
