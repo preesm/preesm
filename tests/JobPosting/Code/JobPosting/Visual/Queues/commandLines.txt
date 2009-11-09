@@ -1,2 +1,0 @@
--master -nbSlaves 4
--slave -id 1
