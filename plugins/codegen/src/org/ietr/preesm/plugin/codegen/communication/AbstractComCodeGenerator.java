@@ -72,17 +72,15 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 	public void createComs(SDFAbstractVertex vertex) {
 		// Creating and adding the inits and calls to send and receive
 		// functions: init phase
-		List<CommunicationFunctionCall> beginningComs = createCalls(comThread,
+		/*List<CommunicationFunctionCall> beginningComs = createCalls(comThread,
 				vertex, CodeSectionType.beginning);
 		
-		createCalls(comThread,
-				vertex, CodeSectionType.beginning);
 		if (beginningComs != null && !beginningComs.isEmpty()) {
 			for (CommunicationFunctionCall call : beginningComs) {
 				comThread.getBeginningCode().addCodeElement(call);
 				createinits(call, comThread.getGlobalContainer(), alreadyInits);
 			}
-		}
+		}*/
 
 		// Creating and adding the inits and calls to send and receive
 		// functions: loop phase
@@ -97,14 +95,14 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 
 		// Creating and adding the inits and calls to send and receive
 		// functions: end phase
-		List<CommunicationFunctionCall> endComs = createCalls(comThread,
+		/*List<CommunicationFunctionCall> endComs = createCalls(comThread,
 				vertex, CodeSectionType.end);
 		if (endComs != null && !endComs.isEmpty()) {
 			for (CommunicationFunctionCall call : endComs) {
 				comThread.getEndCode().addCodeElement(call);
 				createinits(call, comThread.getGlobalContainer(), alreadyInits);
 			}
-		}
+		}*/
 	}
 
 	protected abstract void createinits(CommunicationFunctionCall call,

@@ -530,6 +530,11 @@ public class MultiCoreArchitecture extends
 	}
 
 	public void setMainMedium(String mainMediumName) {
+		if(!(getComponent(ArchitectureComponentType.medium,
+				mainMediumName) instanceof Medium)){
+			this.mainMedium = null;
+			PreesmLogger.getLogger().log(Level.SEVERE,"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");
+		}
 		Medium m = (Medium) getComponent(ArchitectureComponentType.medium,
 				mainMediumName);
 		if (m != null) {

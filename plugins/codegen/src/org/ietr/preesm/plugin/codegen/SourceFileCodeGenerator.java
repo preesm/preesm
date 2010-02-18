@@ -234,6 +234,7 @@ public class SourceFileCodeGenerator {
 			// initializations
 			commCodeGen.addSendsAndReceives(ownCommunicationVertices, file
 					.getGlobalContainer());
+			// The init and end phases need thorough modifications
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
 					CodeSectionType.beginning);
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,

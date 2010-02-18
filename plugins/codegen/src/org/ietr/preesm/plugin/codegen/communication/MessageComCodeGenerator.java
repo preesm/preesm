@@ -101,8 +101,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 	 * creates a send or a receive depending on the vertex type
 	 * 
 	 * Such a call makes sense if the sender vertex has a function call in the
-	 * current code container and if the sender and function call uses
-	 * the data
+	 * current code container and if the sender and function call uses the data
 	 */
 	protected List<CommunicationFunctionCall> createCalls(
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
@@ -131,7 +130,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 			if (type.isSend()) {
 				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (predList
 						.get(0));
-				if (hasCallForCodeContainerType(senderVertex, codeContainerType)) {
+				if (hasCallForCodeContainerType(senderVertex, codeContainerType) || VertexType.isIntermediateReceive(senderVertex)) {
 					List<Buffer> bufferSet = parentContainer
 							.getBuffers(inEdges);
 
@@ -152,7 +151,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// Case of one send per buffer
 					for (Buffer buf : bufferSet) {
 						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
-								codeContainerType, buf,"output")) {
+								codeContainerType, buf,"output") || VertexType.isIntermediateSend(vertex)) {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new SendMsg(parentContainer, vertex,
@@ -166,7 +165,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
 						.predecessorListOf(send).get(0));
 				if (hasCallForCodeContainerType(senderVertex,
-						codeContainerType)) {
+						codeContainerType) || VertexType.isIntermediateReceive(senderVertex)) {
 					List<Buffer> bufferSet = parentContainer
 							.getBuffers(outEdges);
 
@@ -186,12 +185,12 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// Case of one receive per buffer
 					for (Buffer buf : bufferSet) {
 						if (SourceFileCodeGenerator.usesBufferInCodeContainerType(senderVertex,
-								codeContainerType, buf,"output")) {
+								codeContainerType, buf,"output") || VertexType.isIntermediateReceive(senderVertex))  {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new ReceiveMsg(parentContainer, vertex,
 									singleBufferSet, rs, source));
-						}
+							}
 					}
 				}
 			}
