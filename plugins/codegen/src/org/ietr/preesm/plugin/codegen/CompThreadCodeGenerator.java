@@ -49,6 +49,7 @@ import org.ietr.preesm.core.codegen.ForLoop;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.LinearCodeContainer;
 import org.ietr.preesm.core.codegen.UserFunctionCall;
+import org.ietr.preesm.core.codegen.VertexType;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
@@ -134,7 +135,7 @@ public class CompThreadCodeGenerator {
 						 */
 						if (SourceFileCodeGenerator
 								.usesBuffersInCodeContainerType(senderVertex,
-										codeContainerType, buffers, "output")) {
+										codeContainerType, buffers, "output") || VertexType.isIntermediateReceive(senderVertex)) {
 							/*
 							 * Testing for duplicated protection in case of
 							 * multiple buffers
