@@ -52,7 +52,7 @@ import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 /**
- * Block in workflow exporting a DAG that contains all informations of an implementation
+ * Block in workflow exporting a DAG that contains all information of an implementation
  * 
  * @author mpelcat
  * 

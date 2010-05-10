@@ -222,6 +222,9 @@ public class TagDAG {
 				// Setting the vertex type
 				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
 						VertexType.task);
+				
+				bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId,
+						currentVertex.getCorrespondingSDFVertex().getId());
 
 				// Setting the task duration
 				Operator effectiveOperator = currentVertex

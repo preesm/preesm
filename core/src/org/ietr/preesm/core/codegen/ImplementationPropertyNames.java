@@ -95,6 +95,11 @@ public final class ImplementationPropertyNames {
 	 */
 	public static final String Task_duration = "duration";
 
+	/**
+	 * Id of the original vertex with no hierarchy info.
+	 */
+	public static final String Vertex_originalVertexId = "originalId";
+	
 	// Vertex of type send or receive properties
 	/**
 	 * Route step transfering the data.
@@ -111,6 +116,12 @@ public final class ImplementationPropertyNames {
 	 */
 	public static final String SendReceive_Operator_address = "Operator_address";
 
+	/**
+	 * {@link OperatorDefinition} of the operator executing the send or receive.
+	 */
+	public static final String SendReceive_OperatorDef = "OperatorDef";
+	
+	
 	// Vertex of type send properties
 	/**
 	 * Name of the sender vertex.
@@ -122,4 +133,5 @@ public final class ImplementationPropertyNames {
 	 * Name of the receiver vertex.
 	 */
 	public static final String Receive_receiverGraphName = "receiverGraphName";
+
 }

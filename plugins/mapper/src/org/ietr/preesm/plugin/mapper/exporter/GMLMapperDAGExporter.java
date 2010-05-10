@@ -91,6 +91,9 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		addKey(ImplementationPropertyNames.SendReceive_Operator_address,
 				ImplementationPropertyNames.SendReceive_Operator_address,
 				"vertex", "string", DAGDefaultEdgePropertyType.class);
+		addKey(ImplementationPropertyNames.Vertex_originalVertexId,
+				ImplementationPropertyNames.Vertex_originalVertexId,
+				"vertex", "string", DAGDefaultEdgePropertyType.class);
 	}
 
 	@Override
@@ -129,6 +132,16 @@ public class GMLMapperDAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		exportKeys("vertex", vertexElt, vertex.getPropertyBean());
 
 		if (vertex instanceof TransferVertex) {
+			// Adding operator definition type to the newly created element
+			Element opDefElt = domDocument.createElement("data");
+			vertexElt.appendChild(opDefElt);
+			opDefElt.setAttribute("key",ImplementationPropertyNames.SendReceive_OperatorDef);
+			opDefElt.setTextContent(
+					((MapperDAGVertex) vertex)
+							.getImplementationVertexProperty()
+							.getEffectiveOperator().getDefinition()
+							.getVlnv().getName());
+
 			// Adding route step to the node
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
