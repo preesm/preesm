@@ -198,4 +198,5 @@ public interface IAbc extends IMapperAbc {
 	 */
 	public Operator findOperator(MapperDAGVertex currentvertex,
 			Operator preferedOperator);
+
 }

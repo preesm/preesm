@@ -46,7 +46,6 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
-import org.ietr.preesm.plugin.abc.impl.CommContenAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -131,8 +130,6 @@ public abstract class AbstractAbc implements IAbc {
 		} else if (simulatorType == AbcType.AccuratelyTimed) {
 			abc = new AccuratelyTimedAbc(params, dag, archi, simulatorType,
 					scenario);
-		} else if (simulatorType == AbcType.CommConten) {
-			abc = new CommContenAbc(params, dag, archi, simulatorType, scenario);
 		}
 
 		return abc;
@@ -498,7 +495,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Gets the cost of the given vertex in the implementation
+	 * Gets the cost of the given edge in the implementation
 	 */
 	@Override
 	public long getCost(MapperDAGEdge edge) {

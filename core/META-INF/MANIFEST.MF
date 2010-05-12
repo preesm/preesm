@@ -27,7 +27,6 @@ Bundle-ClassPath: .,
  lib/sdf4j.jar
 Export-Package: net.sf.saxon,
  org.ietr.preesm.core.architecture,
- org.ietr.preesm.core.architecture.advancedmodel,
  org.ietr.preesm.core.architecture.parser,
  org.ietr.preesm.core.architecture.route,
  org.ietr.preesm.core.architecture.simplemodel,

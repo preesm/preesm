@@ -111,12 +111,6 @@ public class ExcelTimingParser {
 			opDefs
 					.addAll(currentArchi
 							.getComponentDefinitions(ArchitectureComponentType.operator));
-			opDefs
-					.addAll(currentArchi
-							.getComponentDefinitions(ArchitectureComponentType.processor));
-			opDefs
-					.addAll(currentArchi
-							.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor));
 
 			// Warnings are displayed once for each missing operator or vertex
 			// in the excel sheet

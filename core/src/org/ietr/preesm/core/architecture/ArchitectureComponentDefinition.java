@@ -38,13 +38,6 @@ package org.ietr.preesm.core.architecture;
 
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
@@ -118,16 +111,7 @@ public abstract class ArchitectureComponentDefinition {
 
 		ArchitectureComponentDefinition newdef = null;
 
-		if (getType().equals(ArchitectureComponentType.bus)) {
-			newdef = new BusDefinition(this.getVlnv());
-			((BusDefinition)newdef).setDataRate(((BusDefinition)this).getDataRate());
-		} else if (getType()
-				.equals(ArchitectureComponentType.communicationNode)) {
-			newdef = new CommunicationNodeDefinition(
-					this.getVlnv());
-		} else if (getType().equals(ArchitectureComponentType.communicator)) {
-			newdef = new CommunicatorDefinition(this.getVlnv());
-		} else if (getType().equals(ArchitectureComponentType.contentionNode)) {
+		if (getType().equals(ArchitectureComponentType.contentionNode)) {
 			newdef = new ContentionNodeDefinition(this.getVlnv());
 			((ContentionNodeDefinition)newdef).setDataRate(((ContentionNodeDefinition)this).getDataRate());
 		} else if (getType().equals(ArchitectureComponentType.dma)) {
@@ -136,25 +120,15 @@ public abstract class ArchitectureComponentDefinition {
 			for(String opName : dmaDef.getSetupTimes().keySet()){
 				((DmaDefinition)newdef).addSetupTime(opName, (int)dmaDef.getSetupTime(opName));
 			}
-		} else if (getType().equals(ArchitectureComponentType.fifo)) {
-			newdef = new FifoDefinition(this.getVlnv());
-			((FifoDefinition)newdef).setDataRate(((FifoDefinition)this).getDataRate());
-		} else if (getType().equals(ArchitectureComponentType.ipCoprocessor)) {
-			newdef = new IpCoprocessorDefinition(this
-					.getVlnv());
 		} else if (getType().equals(ArchitectureComponentType.medium)) {
 			MediumDefinition def = (MediumDefinition)this;
 			newdef = new MediumDefinition(this.getVlnv(),def.getDataRate(), def.getOverheadTime());
-		} else if (getType().equals(ArchitectureComponentType.memory)) {
-			newdef = new MemoryDefinition(this.getVlnv());
 		} else if (getType().equals(ArchitectureComponentType.operator)) {
 			newdef = new OperatorDefinition(this.getVlnv());
 			((OperatorDefinition)newdef).setDataCopySpeed(((OperatorDefinition)this).getDataCopySpeed());
 		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
 			newdef = new ParallelNodeDefinition(this.getVlnv());
 			((ParallelNodeDefinition)newdef).setDataRate(((ParallelNodeDefinition)this).getDataRate());
-		} else if (getType().equals(ArchitectureComponentType.processor)) {
-			newdef = new ProcessorDefinition(this.getVlnv());
 		} else if (getType().equals(ArchitectureComponentType.ram)) {
 			RamDefinition ramDef = (RamDefinition)this;
 			newdef = new RamDefinition(this.getVlnv());

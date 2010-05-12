@@ -48,10 +48,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.Processor;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.DataType;
@@ -391,16 +387,6 @@ public class ScenarioParser {
 								ArchitectureComponentType.operator, name);
 						if (def != null)
 							cg.addOperator(def);
-					} else if (type.equals("processor")) {
-						Processor def = (Processor) archi.getComponent(
-								ArchitectureComponentType.processor, name);
-						if (def != null)
-							cg.addOperator(def);
-					} else if (type.equals("ipCoprocessor")) {
-						IpCoprocessor def = (IpCoprocessor) archi.getComponent(
-								ArchitectureComponentType.ipCoprocessor, name);
-						if (def != null)
-							cg.addOperator(def);
 					}
 				}
 
@@ -463,17 +449,7 @@ public class ScenarioParser {
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);
-				if (opdef == null) {
-					opdef = (ProcessorDefinition) archi.getComponentDefinition(
-							ArchitectureComponentType.processor, opdefname);
-				}
-				if (opdef == null) {
-					opdef = (IpCoprocessorDefinition) archi
-							.getComponentDefinition(
-									ArchitectureComponentType.ipCoprocessor,
-									opdefname);
-				}
-
+				
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef, vertex, time);
 				}

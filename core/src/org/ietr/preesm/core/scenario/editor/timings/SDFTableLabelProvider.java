@@ -53,8 +53,6 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
@@ -157,16 +155,6 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 					.getData();
 			currentOpDef = (OperatorDefinition) archi.getComponentDefinition(
 					ArchitectureComponentType.operator, item);
-			if (currentOpDef == null) {
-				currentOpDef = (ProcessorDefinition) archi
-						.getComponentDefinition(
-								ArchitectureComponentType.processor, item);
-			}
-			if (currentOpDef == null) {
-				currentOpDef = (IpCoprocessorDefinition) archi
-						.getComponentDefinition(
-								ArchitectureComponentType.ipCoprocessor, item);
-			}
 			tableViewer.refresh();
 		}
 

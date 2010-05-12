@@ -43,13 +43,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.advancedmodel.Bus;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
-import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
-import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
-import org.ietr.preesm.core.architecture.advancedmodel.Memory;
-import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
@@ -269,38 +262,19 @@ public abstract class ArchitectureComponent extends
 		// Definition is cloned
 		ArchitectureComponent newCmp = null;
 
-		if (this.getType().equals(ArchitectureComponentType.bus)) {
-			newCmp = new Bus(getName(), null);
-		} else if (this.getType().equals(
-				ArchitectureComponentType.communicationNode)) {
-			newCmp = new CommunicationNode(getName(), null);
-		} else if (this.getType()
-				.equals(ArchitectureComponentType.communicator)) {
-			Communicator com = new Communicator(getName(), null);
-			com.getSetupTimes().putAll(((Communicator) this).getSetupTimes());
-			newCmp = com;
-		} else if (this.getType().equals(
+		if (this.getType().equals(
 				ArchitectureComponentType.contentionNode)) {
 			newCmp = new ContentionNode(getName(), null);
 		} else if (this.getType().equals(ArchitectureComponentType.dma)) {
 			newCmp = new Dma(getName(), null);
-		} else if (this.getType().equals(ArchitectureComponentType.fifo)) {
-			newCmp = new Fifo(getName(), null);
-		} else if (this.getType().equals(
-				ArchitectureComponentType.ipCoprocessor)) {
-			newCmp = new IpCoprocessor(getName(), null);
 		} else if (this.getType().equals(ArchitectureComponentType.medium)) {
 			newCmp = new Medium(getName(), (MediumDefinition) getDefinition());
-		} else if (this.getType().equals(ArchitectureComponentType.memory)) {
-			newCmp = new Memory(getName(), null);
 		} else if (this.getType().equals(ArchitectureComponentType.operator)) {
 			newCmp = new Operator(getName(),
 					(OperatorDefinition) getDefinition());
 		} else if (this.getType()
 				.equals(ArchitectureComponentType.parallelNode)) {
 			newCmp = new ParallelNode(getName(), null);
-		} else if (this.getType().equals(ArchitectureComponentType.processor)) {
-			newCmp = new Processor(getName(), null);
 		} else if (this.getType().equals(ArchitectureComponentType.ram)) {
 			newCmp = new Ram(getName(), null);
 		} else {

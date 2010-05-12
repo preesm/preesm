@@ -338,14 +338,6 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				.getComponents(ArchitectureComponentType.operator)) {
 			combo.add(def.getName());
 		}
-		for (ArchitectureComponent def : archi
-				.getComponents(ArchitectureComponentType.processor)) {
-			combo.add(def.getName());
-		}
-		for (ArchitectureComponent def : archi
-				.getComponents(ArchitectureComponentType.ipCoprocessor)) {
-			combo.add(def.getName());
-		}
 
 		combo.setData(archi);
 	}

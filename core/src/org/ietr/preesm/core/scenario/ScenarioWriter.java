@@ -248,16 +248,6 @@ public class ScenarioWriter {
 				constraintGroupElt.appendChild(opdefelt);
 				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
 						.getName());
-			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.processor) {
-				Element opdefelt = dom.createElement("processor");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
-			} else if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.ipCoprocessor) {
-				Element opdefelt = dom.createElement("ipCoprocessor");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
 			}
 		}
 

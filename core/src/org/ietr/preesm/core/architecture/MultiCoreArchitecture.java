@@ -46,8 +46,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
-import org.ietr.preesm.core.architecture.advancedmodel.RouteStepTable;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -96,12 +94,6 @@ public class MultiCoreArchitecture extends
 	private Medium mainMedium = null;
 
 	/**
-	 * A route step table contains all the possible route steps of this
-	 * architecture.
-	 */
-	private RouteStepTable routeStepTable = null;
-
-	/**
 	 * Creating an empty architecture.
 	 */
 	public MultiCoreArchitecture() {
@@ -118,8 +110,6 @@ public class MultiCoreArchitecture extends
 		hierarchyPorts = new HashSet<HierarchyPort>();
 
 		this.name = name;
-
-		routeStepTable = new RouteStepTable();
 	}
 
 	public String getId() {
@@ -264,18 +254,6 @@ public class MultiCoreArchitecture extends
 				itc.setTgtIf(if2);
 				itc.setDirected(isDirected);
 				itc.setSetup(isSetup);
-
-				if (isDirected) {
-					if (cmp1.getType() == ArchitectureComponentType.fifo) {
-						if (((Fifo) cmp1).getOutputInterface() == null) {
-							((Fifo) cmp1).setOutputInterface(if1);
-						}
-					} else if (cmp2.getType() == ArchitectureComponentType.fifo) {
-						if (((Fifo) cmp2).getInputInterface() == null) {
-							((Fifo) cmp2).setInputInterface(if2);
-						}
-					}
-				}
 			}
 		}
 	}
@@ -541,14 +519,6 @@ public class MultiCoreArchitecture extends
 			this.mainMedium = m;
 		}
 
-	}
-
-	public RouteStepTable getRouteStepTable() {
-		return routeStepTable;
-	}
-
-	public void setRouteStepTable(RouteStepTable rsTable) {
-		this.routeStepTable = rsTable;
 	}
 
 	@Override

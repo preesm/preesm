@@ -57,13 +57,6 @@ import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.HierarchyPort;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.advancedmodel.Bus;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
-import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
-import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
-import org.ietr.preesm.core.architecture.advancedmodel.Memory;
-import org.ietr.preesm.core.architecture.advancedmodel.Processor;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
@@ -320,25 +313,6 @@ public class DesignParser {
 				} else if (type == ArchitectureComponentType.parallelNode) {
 					ParallelNodeParser.parse((ParallelNodeDefinition) cmp
 							.getDefinition(), configElt);
-				}
-
-				// Advanced model
-				else if (type == ArchitectureComponentType.processor) {
-					ProcessorParser.parse(archi, (Processor) cmp, configElt);
-				} else if (type == ArchitectureComponentType.ipCoprocessor) {
-					IpCoprocessorParser.parse(archi, (IpCoprocessor) cmp,
-							configElt);
-				} else if (type == ArchitectureComponentType.memory) {
-					MemoryParser.parse(archi, (Memory) cmp, configElt);
-				} else if (type == ArchitectureComponentType.bus) {
-					BusParser.parse((Bus) cmp, configElt);
-				} else if (type == ArchitectureComponentType.fifo) {
-					FifoParser.parse((Fifo) cmp, configElt);
-				} else if (type == ArchitectureComponentType.communicationNode) {
-					CommunicationNodeParser.parse((CommunicationNode) cmp,
-							configElt);
-				} else if (type == ArchitectureComponentType.communicator) {
-					CommunicatorParser.parse((Communicator) cmp, configElt);
 				}
 			}
 

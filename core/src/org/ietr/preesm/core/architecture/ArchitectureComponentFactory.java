@@ -36,20 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.architecture.advancedmodel.Bus;
-import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNode;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.Communicator;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.Fifo;
-import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessor;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.Memory;
-import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.Processor;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
@@ -95,28 +81,6 @@ public class ArchitectureComponentFactory {
 				result = new Ram(id,(RamDefinition)type);
 			}
 			
-			// Advanced model
-			else if(type instanceof CommunicationNodeDefinition){
-				result = new CommunicationNode(id,(CommunicationNodeDefinition)type);
-			}
-			else if(type instanceof CommunicatorDefinition){
-				result = new Communicator(id,(CommunicatorDefinition)type);
-			}
-			else if(type instanceof MemoryDefinition){
-				result = new Memory(id,(MemoryDefinition)type);
-			}
-			else if(type instanceof BusDefinition){
-				result = new Bus(id,(BusDefinition)type);
-			}
-			else if(type instanceof ProcessorDefinition){
-				result = new Processor(id,(ProcessorDefinition)type);
-			}
-			else if(type instanceof IpCoprocessorDefinition){
-				result = new IpCoprocessor(id,(IpCoprocessorDefinition)type);
-			}
-			else if(type instanceof FifoDefinition){
-				result = new Fifo(id,(FifoDefinition)type);
-			}
 		}
 		
 		return result;

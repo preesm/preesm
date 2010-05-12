@@ -76,8 +76,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Scenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
@@ -211,14 +209,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		for (ArchitectureComponentDefinition def : archi
 				.getComponentDefinitions(ArchitectureComponentType.operator)) {
 			combo.add(((OperatorDefinition) def).getVlnv().getName());
-		}
-		for (ArchitectureComponentDefinition def : archi
-				.getComponentDefinitions(ArchitectureComponentType.processor)) {
-			combo.add(((ProcessorDefinition) def).getVlnv().getName());
-		}
-		for (ArchitectureComponentDefinition def : archi
-				.getComponentDefinitions(ArchitectureComponentType.ipCoprocessor)) {
-			combo.add(((IpCoprocessorDefinition) def).getVlnv().getName());
 		}
 
 		combo.setData(archi);

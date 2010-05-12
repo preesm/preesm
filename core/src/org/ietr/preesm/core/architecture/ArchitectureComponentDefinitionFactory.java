@@ -36,13 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.architecture.advancedmodel.BusDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicationNodeDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.CommunicatorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.FifoDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.IpCoprocessorDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.MemoryDefinition;
-import org.ietr.preesm.core.architecture.advancedmodel.ProcessorDefinition;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
@@ -84,28 +77,6 @@ public class ArchitectureComponentDefinitionFactory {
 				result = new RamDefinition(vlnv);
 			}
 			
-			// Advanced model
-			else if(type == ArchitectureComponentType.processor){
-				result = new ProcessorDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.ipCoprocessor){
-				result = new IpCoprocessorDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.communicationNode){
-				result = new CommunicationNodeDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.communicator){
-				result = new CommunicatorDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.memory){
-				result = new MemoryDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.bus){
-				result = new BusDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.fifo){
-				result = new FifoDefinition(vlnv);
-			}
 		}
 		
 		return result;
