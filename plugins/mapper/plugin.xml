@@ -29,11 +29,6 @@
             type="org.ietr.preesm.plugin.mapper.StandardGeneticTransformation">
       </task>
       <task
-            id="org.ietr.preesm.plugin.mapper.commcontenlistsched"
-            name="Communication contentious list scheduling"
-            type="org.ietr.preesm.plugin.mapper.ListSchedTransformation">
-      </task>
-      <task
             id="org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform"
             name="Implementation Exporter"
             type="org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform">
