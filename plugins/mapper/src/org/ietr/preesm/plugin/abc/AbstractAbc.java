@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -153,22 +154,44 @@ public abstract class AbstractAbc implements IAbc {
 
 		this.dag = dag;
 
+		// Set of vertices to ignore while populating new mapping groups
+		Set<MapperDAGVertex> alreadyInMappingGroups = new HashSet<MapperDAGVertex>();
 		this.mappingGroups = new MappingGroupSet();
+		
 		// Initializing the mapping groups. Associating each normal vertex
 		// with its special vertices
 		for (DAGVertex v : dag.vertexSet()) {
 			if (!SpecialVertexManager.isSpecial(v)) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, false));
+				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
 			}
 		}
 
 		// Adds the special vertices that are not in mapping groups
 		for (DAGVertex v : dag.vertexSet()) {
-			if (mappingGroups.getGroup((MapperDAGVertex) v) == null) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, true));
+			if (SpecialVertexManager.isBroadCast(v)) {
+				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
 			}
 		}
 
+		// Adds the special vertices that are not in mapping groups
+		for (DAGVertex v : dag.vertexSet()) {
+			if (SpecialVertexManager.isFork(v)) {
+				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
+			}
+		}
+
+		// Adds the special vertices that are not in mapping groups
+		for (DAGVertex v : dag.vertexSet()) {
+			if (SpecialVertexManager.isJoin(v)) {
+				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
+			}
+		}
+
+		for(DAGVertex v : dag.vertexSet()){
+			if(mappingGroups.getGroup((MapperDAGVertex) v) == null){
+				PreesmLogger.getLogger().log(Level.SEVERE, v.toString());
+			}
+		}
 		PreesmLogger.getLogger().log(Level.FINE, mappingGroups.toString());
 
 		// implementation is a duplicate from dag
@@ -272,7 +295,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Maps the vertex and all vertices in its mapping group on the operator.
 	 */
 	@Override
-	public final void mapWithGroup(MapperDAGVertex dagvertex, Operator operator) {
+	public final void mapWithGroup(MapperDAGVertex dagvertex, Operator operator, boolean updateRank) {
 		MappingGroup currentGroup = mappingGroups.getGroup(dagvertex);
 
 		if (currentGroup == null) {
@@ -288,34 +311,34 @@ public abstract class AbstractAbc implements IAbc {
 			// Inits need to be mapped with the main vertex
 			if (currentGroup.getInits() != null) {
 				for (MapperDAGVertex v : currentGroup.getInits()) {
-					map(v, operator, true);
+					map(v, operator, updateRank);
 				}
 			}
 
 			if (currentGroup.getJoins() != null) {
 				for (MapperDAGVertex v : currentGroup.getJoins()) {
-					map(v, operator, true);
+					map(v, operator, updateRank);
 				}
 			}
 
-			map(dagvertex, operator, true);
+			map(dagvertex, operator, updateRank);
 
 			if (currentGroup.getForks() != null) {
 				for (MapperDAGVertex v : currentGroup.getForks()) {
-					map(v, operator, true);
+					map(v, operator, updateRank);
 				}
 			}
 
 			if (currentGroup.getBroadcasts() != null) {
 				for (MapperDAGVertex v : currentGroup.getBroadcasts()) {
-					map(v, operator, true);
+					map(v, operator, updateRank);
 				}
 			}
 
 			// Ends need to be mapped with the main vertex
 			if (currentGroup.getEnds() != null) {
 				for (MapperDAGVertex v : currentGroup.getEnds()) {
-					map(v, operator, true);
+					map(v, operator, updateRank);
 				}
 			}
 		}
@@ -403,7 +426,7 @@ public abstract class AbstractAbc implements IAbc {
 					operator);
 
 			if (adequateOp != null) {
-				mapWithGroup(currentvertex, adequateOp);
+				mapWithGroup(currentvertex, adequateOp, true);
 			} else {
 				PreesmLogger
 						.getLogger()

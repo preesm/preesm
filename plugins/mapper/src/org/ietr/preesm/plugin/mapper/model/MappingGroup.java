@@ -64,17 +64,19 @@ public class MappingGroup {
 	private List<Operator> operators = null;
 
 	/**
-	 * Constructor. If degenerated = true, the mapping group is forced to
-	 * contain only the main vertex.
+	 * Constructor. Vertices in alreadyInMappingGroups are not added.
 	 */
-	public MappingGroup(MapperDAGVertex mainVertex, boolean degenerated) {
+	public MappingGroup(MapperDAGVertex mainVertex,
+			Set<MapperDAGVertex> alreadyInMappingGroups) {
 
-		this.mainVertex = mainVertex;
-		this.operators = new ArrayList<Operator>();
-		operators.addAll(mainVertex.getInitialVertexProperty()
-				.getInitialOperatorList());
+		if (!alreadyInMappingGroups.contains(mainVertex)) {
+			this.mainVertex = mainVertex;
+			alreadyInMappingGroups.add(mainVertex);
 
-		if (!degenerated) {
+			this.operators = new ArrayList<Operator>();
+			operators.addAll(mainVertex.getInitialVertexProperty()
+					.getInitialOperatorList());
+
 			this.joinSet = new HashSet<MapperDAGVertex>();
 			this.initSet = new HashSet<MapperDAGVertex>();
 			this.forkSet = new HashSet<MapperDAGVertex>();
@@ -83,21 +85,36 @@ public class MappingGroup {
 			this.specialVertices = new ArrayList<MapperDAGVertex>();
 
 			// Inserts the adequate special vertices in the group
-			populateGroup();
+			populateGroup(alreadyInMappingGroups);
 
 			// Retrieves the operators capable of executing all vertices
 			intersectOperators();
 		}
 	}
 
-	private void populateGroup() {
+	private boolean hasInit(MapperDAGVertex vertex){
+		boolean hasInit = false;
+		for(MapperDAGVertex v : mainVertex.getPredecessorSet(true)){
+			if(SpecialVertexManager.isInit(v)){
+				return true;
+			}
+		}
+		return hasInit;
+	}
+	
+	private void populateGroup(Set<MapperDAGVertex> alreadyInMappingGroups) {
 
+		boolean normalMain = !SpecialVertexManager.isSpecial(mainVertex);
+		// Join, fork and broadcast vertices are tested for init prececessor
+		// because if they have one, they should have their own mapping group.
 		for (MapperDAGVertex pred : mainVertex.getPredecessorSet(true)) {
-			if (pred != null && SpecialVertexManager.isJoin(pred)) {
+			if (normalMain && pred != null && SpecialVertexManager.isJoin(pred)
+					&& !alreadyInMappingGroups.contains(pred) && !hasInit(pred)) {
 				joinSet.add(pred);
 			}
 
-			if (pred != null && SpecialVertexManager.isInit(pred)) {
+			if (pred != null && SpecialVertexManager.isInit(pred)
+					&& !alreadyInMappingGroups.contains(pred)) {
 				initSet.add(pred);
 			}
 		}
@@ -114,11 +131,13 @@ public class MappingGroup {
 		}
 
 		for (MapperDAGVertex suc : mainVertex.getSuccessorSet(true)) {
-			if (suc != null && SpecialVertexManager.isFork(suc)) {
+			if (normalMain && suc != null && SpecialVertexManager.isFork(suc)
+					&& !alreadyInMappingGroups.contains(suc) && !hasInit(suc)) {
 				forkSet.add(suc);
 			}
 
-			if (suc != null && SpecialVertexManager.isBroadCast(suc)) {
+			if (normalMain && suc != null && SpecialVertexManager.isBroadCast(suc)
+					&& !alreadyInMappingGroups.contains(suc) && !hasInit(suc)) {
 				broadcastSet.add(suc);
 			}
 		}
@@ -128,6 +147,7 @@ public class MappingGroup {
 		specialVertices.addAll(endSet);
 		specialVertices.addAll(broadcastSet);
 		specialVertices.addAll(forkSet);
+		alreadyInMappingGroups.addAll(specialVertices);
 	}
 
 	private void intersectOperators() {

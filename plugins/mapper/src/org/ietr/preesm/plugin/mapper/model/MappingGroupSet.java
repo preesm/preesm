@@ -21,7 +21,9 @@ public class MappingGroupSet {
 	}
 
 	public void add (MappingGroup group) {
-		mappingGroups.add(group);
+		if(group.getMainVertex() != null){
+			mappingGroups.add(group);
+		}
 	}
 
 	public MappingGroup getGroup(MapperDAGVertex vertex) {

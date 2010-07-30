@@ -140,7 +140,7 @@ public interface IAbc extends IMapperAbc {
 	public void unmap(MapperDAGVertex dagvertex);
 	
 
-	public void mapWithGroup(MapperDAGVertex vertex, Operator operator);
+	public void mapWithGroup(MapperDAGVertex vertex, Operator operator, boolean updateRank);
 
 	/**
 	 * maps all the vertices on the given operator

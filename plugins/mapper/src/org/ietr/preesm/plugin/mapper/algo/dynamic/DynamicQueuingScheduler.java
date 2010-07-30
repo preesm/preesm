@@ -123,7 +123,7 @@ public class DynamicQueuingScheduler {
 
 		// Mapping on operator with minimal final cost
 		if (currentMinOp != null) {
-			abc.mapWithGroup(currentvertex, currentMinOp);
+			abc.mapWithGroup(currentvertex, currentMinOp, true);
 		}
 	}
 }

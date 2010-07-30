@@ -77,7 +77,7 @@ public class KwokListScheduler {
 		vertex = dag.getMapperDAGVertex(vertex.getName());
 
 		// maps the vertex on the operator
-		simu.mapWithGroup(vertex, operator);
+		simu.mapWithGroup(vertex, operator, true);
 		simu.updateFinalCosts();
 
 		// check if the vertex is a source vertex with no predecessors
@@ -117,7 +117,7 @@ public class KwokListScheduler {
 
 			// Mapping forced by the user or the Fast algorithm
 			if (currentvertex.equals(fcpvertex)) {
-				archisimu.mapWithGroup(currentvertex, operatorfcp);
+				archisimu.mapWithGroup(currentvertex, operatorfcp, true);
 			} else {
 
 				long time = Long.MAX_VALUE;
@@ -142,7 +142,7 @@ public class KwokListScheduler {
 				}
 
 				// Map on the chosen operator
-				archisimu.mapWithGroup(currentvertex, chosenoperator);
+				archisimu.mapWithGroup(currentvertex, chosenoperator, true);
 
 				int currentVertexRank = orderlist.indexOf(currentvertex);
 				if ((currentVertexRank % 100) == 0 && (fcpvertex == null)
