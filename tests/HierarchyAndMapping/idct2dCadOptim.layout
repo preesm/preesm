@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="broadcast_signed" x="171" y="70"/>
+      <vertex id="Trigger" x="57" y="82"/>
+      <vertex id="IDCT2D" x="336" y="82"/>
+      <vertex id="Group" x="471" y="91"/>
+   </vertices>
+</layout>

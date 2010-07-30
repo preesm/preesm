@@ -1,0 +1,5 @@
+module Sensor2 {
+    interface loop{
+         void sensor2(out char o1);
+    };
+}; 

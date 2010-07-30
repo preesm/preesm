@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tutorial-image", "tutorial-image.vcproj", "{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{45E9B1B9-0272-4F0A-A7F8-48B734D73A88} = {45E9B1B9-0272-4F0A-A7F8-48B734D73A88}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Os_Com", "Lib_com\Os_Com.vcproj", "{45E9B1B9-0272-4F0A-A7F8-48B734D73A88}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}.Debug|Win32.Build.0 = Debug|Win32
+		{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}.Release|Win32.ActiveCfg = Release|Win32
+		{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}.Release|Win32.Build.0 = Release|Win32
+		{45E9B1B9-0272-4F0A-A7F8-48B734D73A88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{45E9B1B9-0272-4F0A-A7F8-48B734D73A88}.Debug|Win32.Build.0 = Debug|Win32
+		{45E9B1B9-0272-4F0A-A7F8-48B734D73A88}.Release|Win32.ActiveCfg = Release|Win32
+		{45E9B1B9-0272-4F0A-A7F8-48B734D73A88}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

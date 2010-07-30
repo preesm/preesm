@@ -1,0 +1,7 @@
+module Param_MB_I {
+	typedef short int;
+    interface loop{
+		void Param_MB_I(in int VideoPacketHeader_pos,in char data,in char VOP,out char newVOP,out int pos);
+    };
+}; 
+

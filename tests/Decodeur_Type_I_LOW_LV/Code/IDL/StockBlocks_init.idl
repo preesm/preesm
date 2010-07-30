@@ -1,0 +1,9 @@
+module SDX_StockBlocks_init {
+    interface init{
+		void SDX_StockBlocks_init ( in char VOLsimple,out char BuffX2, out char BuffX3, out char BuffX4, out char BuffXCb
+									, out char BuffXCr, out char stock_line_Lum, out char stock_line_Cb, out char stock_line_Cr );
+    };
+ 	interface loop{
+ 	};
+}; 
+

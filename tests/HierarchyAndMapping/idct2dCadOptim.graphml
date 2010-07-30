@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="parameters"/>
+      <data key="variables">=</data>
+      <node id="broadcast_signed" kind="Broadcast"/>
+      <node id="Trigger" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">Trigger</data>
+         <data key="arguments">=</data>
+      </node>
+      <node id="IDCT2D" kind="vertex">
+         <data key="graph_desc">idct2dv2_wp.graphml</data>
+         <data key="name">IDCT2D</data>
+         <data key="arguments">=</data>
+      </node>
+      <node id="Group" kind="vertex">
+         <data key="graph_desc"/>
+         <data key="name">Group</data>
+      </node>
+      <edge source="Trigger" sourceport="MB" target="IDCT2D" targetport="blockIn">
+         <data key="edge_prod">256</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">64</data>
+         <data key="data_type"/>
+      </edge>
+      <edge source="Trigger" sourceport="signed" target="broadcast_signed" targetport="in">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="broadcast_signed" sourceport="out" target="IDCT2D" targetport="signed">
+         <data key="edge_prod">4</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="IDCT2D" sourceport="out" target="Group" targetport="in">
+         <data key="edge_prod">64</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">256</data>
+         <data key="data_type">char</data>
+      </edge>
+   </graph>
+</graphml>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="data" x="203" y="-34"/>
+      <vertex id="pos_o" x="203" y="59"/>
+      <vertex id="VOP" x="203" y="152"/>
+      <vertex id="MB_pos_i" x="203" y="245"/>
+      <vertex id="VOLsimple" x="203" y="338"/>
+      <vertex id="DCT3D_I" x="97" y="644"/>
+      <vertex id="frame_U_o" x="949" y="422"/>
+      <vertex id="frame_V_o" x="953" y="497"/>
+      <vertex id="frame_Y_o" x="940" y="312"/>
+      <vertex id="pos_fin_vlc" x="953" y="716"/>
+      <vertex id="InverseQuant_BlkXn_2" x="78" y="761"/>
+      <vertex id="display" x="532" y="108"/>
+      <vertex id="MB_I(x99)" x="403" y="404"/>
+      <vertex id="Stock_BlockLum_in_pict" x="721" y="311"/>
+      <vertex id="Stock_BlockCb_in_pict" x="720" y="524"/>
+      <vertex id="Stock_BlockCr_in_pict" x="724" y="632"/>
+      <vertex id="InverseQuant_BlkXn_1" x="69" y="418"/>
+      <vertex id="InverseQuant_BlkXn_3" x="78" y="699"/>
+      <vertex id="InverseQuant_BlkXn_0" x="75" y="478"/>
+      <vertex id="InverseQuant_BlkXn_4" x="78" y="533"/>
+      <vertex id="InverseQuant_BlkXn_5" x="79" y="574"/>
+      <vertex id="tab_pos_X" x="275" y="745"/>
+   </vertices>
+</layout>

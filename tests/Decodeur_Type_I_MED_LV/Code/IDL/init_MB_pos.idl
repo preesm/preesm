@@ -1,0 +1,8 @@
+module init_MB_pos {
+    interface init{
+		void init_MB_pos ( out char MB_pos_i );
+    };
+ 	interface loop{
+ 	};
+}; 
+

@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>x86</coreType>
+    <coreName>Core1</coreName>
+    <SourceFile>
+        <bufferContainer>
+            <bufferAllocation name="init_out_frame_U_i" size="342912" type="uchar"/>
+            <bufferAllocation name="init_out_new_buff__0" size="1" type="int"/>
+            <bufferAllocation name="InverseQuant_BlkXn_0" size="16" type="short"/>
+            <bufferAllocation name="out_end_in_3" size="0" type="int"/>
+            <bufferAllocation name="buffer_out_in" size="829440" type="uchar"/>
+            <bufferAllocation name="out_VOLsimple_1" size="0" type="struct_VOLsimple"/>
+            <bufferAllocation name="init_out_buffer_st_0" size="829440" type="uchar"/>
+            <bufferAllocation name="ysize_o_ysize_i" size="1" type="int"/>
+            <bufferAllocation name="init_out_keyframes_0" size="2" type="int"/>
+            <bufferAllocation name="out_data_1" size="0" type="uchar"/>
+            <bufferAllocation name="out_end_in" size="0" type="uchar"/>
+            <bufferAllocation name="out_RefV_i" size="0" type="uchar"/>
+            <bufferAllocation name="InverseQuant_BlkXn_3" size="16" type="short"/>
+            <bufferAllocation name="out_RefU_i" size="0" type="uchar"/>
+            <bufferAllocation name="MB_pos_i_MB_pos_i" size="99" type="int"/>
+            <bufferAllocation name="init_out_frame_Y_i" size="1371648" type="uchar"/>
+            <bufferAllocation name="pos_o_pos_vol" size="1" type="int"/>
+            <bufferAllocation name="init_out_pos_octet" size="1" type="int"/>
+            <bufferAllocation name="out_RefY_i" size="0" type="uchar"/>
+            <bufferAllocation name="VOP_VOP" size="1" type="struct_VOP"/>
+            <bufferAllocation name="tab_pos_X_tab_pos_X" size="4" type="int"/>
+            <bufferAllocation name="init_out_frame_V_i" size="342912" type="uchar"/>
+            <bufferAllocation name="RefV_o_RefV_i" size="1" type="uchar"/>
+            <bufferAllocation name="new_buffer_buffer__0" size="414720" type="uchar"/>
+            <bufferAllocation name="InverseQuant_BlkXn_5" size="16" type="short"/>
+            <bufferAllocation name="keyframes_o_end_in" size="0" type="int"/>
+            <bufferAllocation name="adresse_adresse_pic" size="1" type="int"/>
+            <bufferAllocation name="out_VOLsimple_0" size="0" type="struct_VOLsimple"/>
+            <bufferAllocation name="out_VOLsimple" size="0" type="char"/>
+            <bufferAllocation name="out_data" size="0" type="uchar"/>
+            <bufferAllocation name="pos_fin_vlc_pos" size="1" type="int"/>
+            <bufferAllocation name="DCT3D_I_DCT3D_I" size="4096" type="REVERSE_EVENT"/>
+            <bufferAllocation name="out_end_in_2" size="0" type="uchar"/>
+            <bufferAllocation name="pos_o_pos_o" size="1" type="int"/>
+            <bufferAllocation name="out_end_in_0" size="0" type="uchar"/>
+            <bufferAllocation name="InverseQuant_BlkXn_2" size="16" type="short"/>
+            <bufferAllocation name="frame_V_o_in" size="342912" type="uchar"/>
+            <bufferAllocation name="InverseQuant_BlkXn_4" size="16" type="short"/>
+            <bufferAllocation name="out_data_0" size="0" type="uchar"/>
+            <bufferAllocation name="new_buff_o_in" size="1" type="int"/>
+            <bufferAllocation name="init_out_new_buff_i" size="1" type="int"/>
+            <bufferAllocation name="RefU_o_RefU_i" size="1" type="uchar"/>
+            <bufferAllocation name="out_end_in_4" size="0" type="int"/>
+            <bufferAllocation name="display_display" size="6" type="uchar "/>
+            <bufferAllocation name="pos_pos_i" size="1" type="int"/>
+            <bufferAllocation name="InverseQuant_BlkXn_1" size="16" type="short"/>
+            <bufferAllocation name="xsize_o_xsize_i" size="1" type="int"/>
+            <bufferAllocation name="pos_o_pos_i" size="1" type="int"/>
+            <bufferAllocation name="frame_U_o_in" size="342912" type="uchar"/>
+            <bufferAllocation name="RefY_o_RefY_i" size="1" type="uchar"/>
+            <bufferAllocation name="VOLsimple_in" size="1" type="struct_VOLsimple"/>
+            <bufferAllocation name="frame_Y_o_in" size="1371648" type="uchar"/>
+            <bufferAllocation name="out_end_in_1" size="0" type="uchar"/>
+            <bufferAllocation name="pos_octet_end_in" size="0" type="int"/>
+            <bufferAllocation name="vop_complexity_vop_0" size="5" type="uchar"/>
+            <bufferAllocation name="pos_pos" size="1" type="int"/>
+            <bufferAllocation name="Cr_BuffB_Cr_BuffB" size="16" type="short"/>
+            <bufferAllocation name="Cb_BuffC_Cb_BuffC" size="16" type="short"/>
+            <bufferAllocation name="Cr_BuffC_Cr_BuffC" size="16" type="short"/>
+            <bufferAllocation name="Cr_BuffA_Cr_BuffA" size="16" type="short"/>
+            <bufferAllocation name="newVOP_VOP_0" size="1" type="struct_VOP"/>
+            <bufferAllocation name="Lum_BuffB_Lum_BuffB" size="16" type="short"/>
+            <bufferAllocation name="newVOP_VOP" size="1" type="struct_VOP"/>
+            <bufferAllocation name="Lum_BuffE_Lum_BuffE" size="16" type="short"/>
+            <bufferAllocation name="Cb_BuffB_Cb_BuffB" size="16" type="short"/>
+            <bufferAllocation name="Cb_BuffA_Cb_BuffA" size="16" type="short"/>
+            <bufferAllocation name="Lum_BuffD_Lum_BuffD" size="16" type="short"/>
+            <bufferAllocation name="Lum_BuffC_Lum_BuffC" size="16" type="short"/>
+            <bufferAllocation name="VideoPacketHeader__0" size="1" type="int"/>
+            <bufferAllocation name="resync_marker_" size="1" type="int"/>
+            <bufferAllocation name="Lum_BuffA_Lum_BuffA" size="16" type="short"/>
+        </bufferContainer>
+        <threadDeclaration name="computationThread">
+            <bufferContainer>
+                <variableAllocation name="i" type="long"/>
+            </bufferContainer>
+            <linearCodeContainer>
+                <userFunctionCall name="init_MB_pos">
+                    <buffer name="MB_pos_i_MB_pos_i" size="99" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_init_decode_I_init_frame_U_i">
+                    <buffer name="init_out_frame_U_i" size="342912" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_init_decode_I_init_frame_V_i">
+                    <buffer name="init_out_frame_V_i" size="342912" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_init_decode_I_init_frame_Y_i">
+                    <buffer name="init_out_frame_Y_i" size="1371648" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_init_decode_I_init_keyframes_i">
+                    <buffer name="init_out_keyframes_0" size="2" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_vlc_tables_I">
+                    <buffer name="DCT3D_I_DCT3D_I" size="4096" type="REVERSE_EVENT"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_readm4v_double_buffering_init_buffer_state">
+                    <buffer name="init_out_buffer_st_0" size="829440" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_readm4v_double_buffering_init_new_buff_i">
+                    <buffer name="init_out_new_buff__0" size="1" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_readm4v_double_buffering_init_pos_octet">
+                    <buffer name="init_out_pos_octet" size="1" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_readm4v_init_new_buff_i">
+                    <buffer name="init_out_new_buff_i" size="1" type="int"/>
+                </userFunctionCall>
+                <userFunctionCall name="readm4v_init"/>
+                <userFunctionCall name="Init_SDL">
+                    <constant name="edge" type="int" value="16"/>
+                    <constant name="xpic" type="int" value="720"/>
+                    <constant name="ypic" type="int" value="576"/>
+                </userFunctionCall>
+            </linearCodeContainer>
+            <forLoop>
+                <Assignment var="out_end_in_0">&amp;init_out_frame_U_i[0]</Assignment>
+                <Assignment var="out_end_in_1">&amp;init_out_frame_V_i[0]</Assignment>
+                <Assignment var="out_end_in_2">&amp;init_out_frame_Y_i[0]</Assignment>
+                <Assignment var="keyframes_o_end_in">&amp;init_out_keyframes_0[0]</Assignment>
+                <Assignment var="out_end_in">&amp;init_out_buffer_st_0[0]</Assignment>
+                <Assignment var="out_end_in_4">&amp;init_out_new_buff__0[0]</Assignment>
+                <Assignment var="pos_octet_end_in">&amp;init_out_pos_octet[0]</Assignment>
+                <Assignment var="out_end_in_3">&amp;init_out_new_buff_i[0]</Assignment>
+                <userFunctionCall name="readm4v">
+                    <constant name="nb_octet_to_read" type="int" value="414720"/>
+                    <buffer name="init_out_new_buff_i" size="1" type="int"/>
+                    <buffer name="new_buffer_buffer__0" size="414720" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="readm4v_double_buffering">
+                    <constant name="nb_octet_to_read" type="int" value="414720"/>
+                    <buffer name="init_out_pos_octet" size="1" type="int"/>
+                    <buffer name="init_out_new_buff__0" size="1" type="int"/>
+                    <buffer name="new_buffer_buffer__0" size="414720" type="uchar"/>
+                    <buffer name="init_out_buffer_st_0" size="829440" type="uchar"/>
+                    <buffer name="buffer_out_in" size="829440" type="uchar"/>
+                    <buffer name="pos_o_pos_i" size="1" type="int"/>
+                </userFunctionCall>
+                <CompoundCode name="buffer_out">
+                    <Assignment var="out_data">&amp;buffer_out_in[0]</Assignment>
+                    <Assignment var="out_data_1">&amp;buffer_out_in[0]</Assignment>
+                    <Assignment var="out_data_0">&amp;buffer_out_in[0]</Assignment>
+                    <Assignment var="out_end_in">&amp;buffer_out_in[0]</Assignment>
+                </CompoundCode>
+                <userFunctionCall name="VideoObjectLayer">
+                    <buffer name="pos_o_pos_i" size="1" type="int"/>
+                    <constant name="length" type="int" value="6635520"/>
+                    <buffer name="out_data" size="0" type="uchar"/>
+                    <buffer name="VOLsimple_in" size="1" type="struct_VOLsimple"/>
+                    <buffer name="vop_complexity_vop_0" size="5" type="uchar"/>
+                    <buffer name="pos_o_pos_vol" size="1" type="int"/>
+                    <buffer name="xsize_o_xsize_i" size="1" type="int"/>
+                    <buffer name="ysize_o_ysize_i" size="1" type="int"/>
+                </userFunctionCall>
+                <CompoundCode name="VOPsimple">
+                    <Assignment var="out_VOLsimple_0">&amp;VOLsimple_in[0]</Assignment>
+                    <Assignment var="out_VOLsimple_1">&amp;VOLsimple_in[0]</Assignment>
+                    <Assignment var="out_VOLsimple">&amp;VOLsimple_in[0]</Assignment>
+                </CompoundCode>
+                <userFunctionCall name="VideoObjectPlaneI">
+                    <buffer name="pos_o_pos_vol" size="1" type="int"/>
+                    <buffer name="out_data_1" size="0" type="uchar"/>
+                    <buffer name="out_VOLsimple_0" size="0" type="struct_VOLsimple"/>
+                    <buffer name="vop_complexity_vop_0" size="5" type="uchar"/>
+                    <buffer name="pos_pos_i" size="1" type="int"/>
+                    <buffer name="VOP_VOP" size="1" type="struct_VOP"/>
+                </userFunctionCall>
+                <userFunctionCall name="init_decode_I_frame">
+                    <buffer name="out_VOLsimple_1" size="0" type="struct_VOLsimple"/>
+                    <buffer name="pos_pos_i" size="1" type="int"/>
+                    <buffer name="init_out_frame_Y_i" size="1371648" type="uchar"/>
+                    <buffer name="init_out_frame_U_i" size="342912" type="uchar"/>
+                    <buffer name="init_out_frame_V_i" size="342912" type="uchar"/>
+                    <buffer name="init_out_keyframes_0" size="2" type="int"/>
+                    <buffer name="InverseQuant_BlkXn_0" size="16" type="short"/>
+                    <buffer name="InverseQuant_BlkXn_3" size="16" type="short"/>
+                    <buffer name="InverseQuant_BlkXn_4" size="16" type="short"/>
+                    <buffer name="InverseQuant_BlkXn_2" size="16" type="short"/>
+                    <buffer name="InverseQuant_BlkXn_1" size="16" type="short"/>
+                    <buffer name="InverseQuant_BlkXn_5" size="16" type="short"/>
+                    <buffer name="adresse_adresse_pic" size="1" type="int"/>
+                    <buffer name="display_display" size="6" type="uchar "/>
+                    <buffer name="keyframes_o_end_in" size="0" type="int"/>
+                    <buffer name="pos_o_pos_o" size="1" type="int"/>
+                    <buffer name="tab_pos_X_tab_pos_X" size="4" type="int"/>
+                </userFunctionCall>
+                <CompoundCode name="decode_I">
+                    <finiteForLoop domain="99" index="i">
+                        <CompoundCode name="bidon_decode_I">
+                            <subBufferAllocation
+                                index="((i*(829440))%0)"
+                                name="outSub_i_out_data_0"
+                                parentBuffer="out_data_0" size="829440" type="uchar"/>
+                            <subBufferAllocation index="((i*(1))%99)"
+                                name="outSub_i_MB_pos_i__0"
+                                parentBuffer="MB_pos_i_MB_pos_i"
+                                size="1" type="int"/>
+                            <subBufferAllocation index="((i*(1))%0)"
+                                name="outSub_i_out_VOLsi_0"
+                                parentBuffer="out_VOLsimple" size="1" type="char"/>
+                            <subBufferAllocation index="((0*1)%1)"
+                                name="_resync_marker"
+                                parentBuffer="resync_marker_" size="1" type="int"/>
+                            <subBufferAllocation index="((0*1)%1)"
+                                name="_resync_marker_0"
+                                parentBuffer="resync_marker_" size="1" type="int"/>
+                            <subBufferAllocation index="((0*1)%1)"
+                                name="_resync_marker_1"
+                                parentBuffer="resync_marker_" size="1" type="int"/>
+                            <userFunctionCall name="VideoPacketHeaderI">
+                                <subBuffer index="((i*(829440))%0)"
+                                    name="outSub_i_out_data_0"
+                                    parentBuffer="out_data_0" size="829440"/>
+                                <buffer name="pos_o_pos_o" size="1" type="int"/>
+                                <subBuffer index="((i*(1))%0)"
+                                    name="outSub_i_out_VOLsi_0"
+                                    parentBuffer="out_VOLsimple" size="1"/>
+                                <buffer name="VOP_VOP" size="1" type="struct_VOP"/>
+                                <subBuffer index="((i*(1))%99)"
+                                    name="outSub_i_MB_pos_i__0"
+                                    parentBuffer="MB_pos_i_MB_pos_i" size="1"/>
+                                <buffer name="newVOP_VOP" size="1" type="struct_VOP"/>
+                                <buffer name="VideoPacketHeader__0"
+                                    size="1" type="int"/>
+                                <buffer name="resync_marker_" size="1" type="int"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="Param_MB_I">
+                                <buffer name="VideoPacketHeader__0"
+                                    size="1" type="int"/>
+                                <subBuffer index="((i*(829440))%0)"
+                                    name="outSub_i_out_data_0"
+                                    parentBuffer="out_data_0" size="829440"/>
+                                <buffer name="newVOP_VOP" size="1" type="struct_VOP"/>
+                                <buffer name="newVOP_VOP_0" size="1" type="struct_VOP"/>
+                                <buffer name="pos_pos" size="1" type="int"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="StockBlocksLum">
+                                <subBuffer index="((i*(1))%99)"
+                                    name="outSub_i_MB_pos_i__0"
+                                    parentBuffer="MB_pos_i_MB_pos_i" size="1"/>
+                                <subBuffer index="((0*1)%1)"
+                                    name="_resync_marker"
+                                    parentBuffer="resync_marker_" size="1"/>
+                                <buffer name="InverseQuant_BlkXn_3"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_4"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_2"
+                                    size="16" type="short"/>
+                                <subBuffer index="((i*(1))%0)"
+                                    name="outSub_i_out_VOLsi_0"
+                                    parentBuffer="out_VOLsimple" size="1"/>
+                                <buffer name="Lum_BuffA_Lum_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffB_Lum_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffC_Lum_BuffC"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffD_Lum_BuffD"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffE_Lum_BuffE"
+                                    size="16" type="short"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="StockBlocksCb">
+                                <subBuffer index="((i*(1))%99)"
+                                    name="outSub_i_MB_pos_i__0"
+                                    parentBuffer="MB_pos_i_MB_pos_i" size="1"/>
+                                <buffer name="InverseQuant_BlkXn_1"
+                                    size="16" type="short"/>
+                                <subBuffer index="((i*(1))%0)"
+                                    name="outSub_i_out_VOLsi_0"
+                                    parentBuffer="out_VOLsimple" size="1"/>
+                                <subBuffer index="((0*1)%1)"
+                                    name="_resync_marker_0"
+                                    parentBuffer="resync_marker_" size="1"/>
+                                <buffer name="Cb_BuffA_Cb_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Cb_BuffB_Cb_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Cb_BuffC_Cb_BuffC"
+                                    size="16" type="short"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="StockBlocksCr">
+                                <subBuffer index="((i*(1))%99)"
+                                    name="outSub_i_MB_pos_i__0"
+                                    parentBuffer="MB_pos_i_MB_pos_i" size="1"/>
+                                <buffer name="InverseQuant_BlkXn_5"
+                                    size="16" type="short"/>
+                                <subBuffer index="((i*(1))%0)"
+                                    name="outSub_i_out_VOLsi_0"
+                                    parentBuffer="out_VOLsimple" size="1"/>
+                                <subBuffer index="((0*1)%1)"
+                                    name="_resync_marker_1"
+                                    parentBuffer="resync_marker_" size="1"/>
+                                <buffer name="Cr_BuffA_Cr_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Cr_BuffB_Cr_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Cr_BuffC_Cr_BuffC"
+                                    size="16" type="short"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="decode_I_une_partie">
+                                <subBuffer index="((i*(1))%99)"
+                                    name="outSub_i_MB_pos_i__0"
+                                    parentBuffer="MB_pos_i_MB_pos_i" size="1"/>
+                                <subBuffer index="((i*(1))%0)"
+                                    name="outSub_i_out_VOLsi_0"
+                                    parentBuffer="out_VOLsimple" size="1"/>
+                                <buffer name="newVOP_VOP_0" size="1" type="struct_VOP"/>
+                                <subBuffer index="((i*(829440))%0)"
+                                    name="outSub_i_out_data_0"
+                                    parentBuffer="out_data_0" size="829440"/>
+                                <buffer name="display_display" size="6" type="uchar "/>
+                                <buffer name="pos_pos" size="1" type="int"/>
+                                <buffer name="tab_pos_X_tab_pos_X"
+                                    size="4" type="int"/>
+                                <buffer name="DCT3D_I_DCT3D_I"
+                                    size="4096" type="REVERSE_EVENT"/>
+                                <buffer name="InverseQuant_BlkXn_0"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_3"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_4"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_2"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_1"
+                                    size="16" type="short"/>
+                                <buffer name="InverseQuant_BlkXn_5"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffA_Lum_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffB_Lum_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffC_Lum_BuffC"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffD_Lum_BuffD"
+                                    size="16" type="short"/>
+                                <buffer name="Lum_BuffE_Lum_BuffE"
+                                    size="16" type="short"/>
+                                <buffer name="Cb_BuffA_Cb_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Cb_BuffB_Cb_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Cb_BuffC_Cb_BuffC"
+                                    size="16" type="short"/>
+                                <buffer name="Cr_BuffA_Cr_BuffA"
+                                    size="16" type="short"/>
+                                <buffer name="Cr_BuffB_Cr_BuffB"
+                                    size="16" type="short"/>
+                                <buffer name="Cr_BuffC_Cr_BuffC"
+                                    size="16" type="short"/>
+                                <buffer name="frame_U_o_in"
+                                    size="342912" type="uchar"/>
+                                <buffer name="frame_V_o_in"
+                                    size="342912" type="uchar"/>
+                                <buffer name="frame_Y_o_in"
+                                    size="1371648" type="uchar"/>
+                                <buffer name="pos_fin_vlc_pos" size="1" type="int"/>
+                            </userFunctionCall>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <userFunctionCall name="New_buffer">
+                    <constant name="nb_octet_to_read" type="int" value="414720"/>
+                    <buffer name="pos_fin_vlc_pos" size="1" type="int"/>
+                    <buffer name="new_buff_o_in" size="1" type="int"/>
+                    <buffer name="pos_octet_end_in" size="0" type="int"/>
+                </userFunctionCall>
+                <CompoundCode name="new_buff_o">
+                    <Assignment var="out_end_in_4">&amp;new_buff_o_in[0]</Assignment>
+                    <Assignment var="out_end_in_3">&amp;new_buff_o_in[0]</Assignment>
+                </CompoundCode>
+                <CompoundCode name="frame_U">
+                    <Assignment var="out_RefU_i">&amp;frame_U_o_in[0]</Assignment>
+                    <Assignment var="out_end_in_0">&amp;frame_U_o_in[0]</Assignment>
+                </CompoundCode>
+                <CompoundCode name="frame_V">
+                    <Assignment var="out_RefV_i">&amp;frame_V_o_in[0]</Assignment>
+                    <Assignment var="out_end_in_1">&amp;frame_V_o_in[0]</Assignment>
+                </CompoundCode>
+                <CompoundCode name="frame_Y">
+                    <Assignment var="out_RefY_i">&amp;frame_Y_o_in[0]</Assignment>
+                    <Assignment var="out_end_in_2">&amp;frame_Y_o_in[0]</Assignment>
+                </CompoundCode>
+                <userFunctionCall name="extract_picture">
+                    <buffer name="xsize_o_xsize_i" size="1" type="int"/>
+                    <buffer name="ysize_o_ysize_i" size="1" type="int"/>
+                    <constant name="edge" type="int" value="16"/>
+                    <constant name="crop" type="int" value="0"/>
+                    <buffer name="out_RefY_i" size="0" type="uchar"/>
+                    <buffer name="out_RefU_i" size="0" type="uchar"/>
+                    <buffer name="out_RefV_i" size="0" type="uchar"/>
+                    <buffer name="adresse_adresse_pic" size="1" type="int"/>
+                    <buffer name="RefY_o_RefY_i" size="1" type="uchar"/>
+                    <buffer name="RefU_o_RefU_i" size="1" type="uchar"/>
+                    <buffer name="RefV_o_RefV_i" size="1" type="uchar"/>
+                </userFunctionCall>
+                <userFunctionCall name="SDL_Display">
+                    <constant name="edge" type="int" value="16"/>
+                    <constant name="xpic" type="int" value="720"/>
+                    <constant name="ypic" type="int" value="576"/>
+                    <buffer name="RefY_o_RefY_i" size="1" type="uchar"/>
+                    <buffer name="RefU_o_RefU_i" size="1" type="uchar"/>
+                    <buffer name="RefV_o_RefV_i" size="1" type="uchar"/>
+                </userFunctionCall>
+            </forLoop>
+            <linearCodeContainer>
+                <userFunctionCall name="CloseSDLDisplay"/>
+            </linearCodeContainer>
+        </threadDeclaration>
+    </SourceFile>
+</sourceCode>

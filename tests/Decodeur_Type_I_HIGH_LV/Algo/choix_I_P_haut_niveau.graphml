@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="edge" value="16"/>
+            <variable name="taille_flux" value="720*576"/>
+            <variable name="xpic" value="720"/>
+            <variable name="ypic" value="576"/>
+        </data>
+        <node id="DCT3D_I" kind="port" port_direction="Input"/>
+        <node id="VOLsimple" kind="port" port_direction="Input"/>
+        <node id="VOP" kind="port" port_direction="Input"/>
+        <node id="data" kind="port" port_direction="Input"/>
+        <node id="frame_U_i" kind="port" port_direction="Input"/>
+        <node id="frame_Y_i" kind="port" port_direction="Input"/>
+        <node id="frame_V_i" kind="port" port_direction="Input"/>
+        <node id="keyframes_i" kind="port" port_direction="Input"/>
+        <node id="pos" kind="port" port_direction="Input"/>
+        <node id="vop_coding_type" kind="port" port_direction="Input"/>
+        <node id="decode_I_frame" kind="vertex">
+            <data key="graph_desc">../Code/IDL/decode_I_frame.idl</data>
+            <data key="name">decode_I_frame</data>
+            <data key="arguments"/>
+        </node>
+        <node id="adresse" kind="port" port_direction="Output"/>
+        <node id="frame_U_o" kind="port" port_direction="Output"/>
+        <node id="frame_V_o" kind="port" port_direction="Output"/>
+        <node id="frame_Y_o" kind="port" port_direction="Output"/>
+        <node id="keyframes_o" kind="port" port_direction="Output"/>
+        <node id="pos_fin_vlc" kind="port" port_direction="Output"/>
+        <node id="P_frame" kind="vertex">
+            <data key="graph_desc">../Code/IDL/P_frame.idl</data>
+            <data key="name">P_frame</data>
+            <data key="arguments"/>
+        </node>
+        <node id="diffusion_vop_coding_type" kind="Broadcast"/>
+        <node id="DCT3D_P" kind="port" port_direction="Input"/>
+        <node id="save_mv_o" kind="port" port_direction="Output"/>
+        <node id="save_mv_i" kind="port" port_direction="Input"/>
+        <node id="mux_adresse" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_adresse</data>
+            <data key="arguments"/>
+        </node>
+        <node id="mux_frame_U_o" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_frame_U_o</data>
+            <data key="arguments"/>
+        </node>
+        <node id="mux_frame_Y_o" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_frame_Y_o</data>
+            <data key="arguments"/>
+        </node>
+        <node id="mux_frame_V_o" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_frame_V_o</data>
+            <data key="arguments"/>
+        </node>
+        <node id="mux_keyframes_o" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_keyframes_o</data>
+            <data key="arguments"/>
+        </node>
+        <node id="mux_pos_fin_vlc" kind="vertex">
+            <data key="graph_desc"/>
+            <data key="name">mux_pos_fin_vlc</data>
+            <data key="arguments"/>
+        </node>
+        <edge source="vop_coding_type" sourceport=""
+            target="diffusion_vop_coding_type" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="decode_I_frame" targetport="vop_coding_type">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="P_frame" targetport="vop_coding_type">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="DCT3D_P" sourceport="" target="P_frame" targetport="DCT3D_P">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="P_frame" sourceport="save_mv_o" target="save_mv_o" targetport="">
+            <data key="edge_prod">xpic*ypic/256</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xpic*ypic/256</data>
+            <data key="data_type">vector</data>
+        </edge>
+        <edge source="save_mv_i" sourceport="" target="P_frame" targetport="save_mv_i">
+            <data key="edge_prod">xpic*ypic/256</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xpic*ypic/256</data>
+            <data key="data_type">vector</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="adresse"
+            target="mux_adresse" targetport="in_1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="P_frame" sourceport="adresse" target="mux_adresse" targetport="in_2">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="mux_adresse" sourceport="o" target="adresse" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_adresse" targetport="cond">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="P_frame" sourceport="frame_U_o"
+            target="mux_frame_U_o" targetport="in_2">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="frame_U_o"
+            target="mux_frame_U_o" targetport="in_1">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="mux_frame_U_o" sourceport="o" target="frame_U_o" targetport="">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="P_frame" sourceport="frame_Y_o"
+            target="mux_frame_Y_o" targetport="in_2">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="frame_Y_o"
+            target="mux_frame_Y_o" targetport="in_1">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="mux_frame_Y_o" sourceport="o" target="frame_Y_o" targetport="">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="P_frame" sourceport="frame_V_o"
+            target="mux_frame_V_o" targetport="in_2">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="frame_V_o"
+            target="mux_frame_V_o" targetport="in_1">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="mux_frame_V_o" sourceport="o" target="frame_V_o" targetport="">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="P_frame" sourceport="keyframes_o"
+            target="mux_keyframes_o" targetport="in_2">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="keyframes_o"
+            target="mux_keyframes_o" targetport="in_1">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="mux_keyframes_o" sourceport="o"
+            target="keyframes_o" targetport="">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="P_frame" sourceport="pos_fin_vlc"
+            target="mux_pos_fin_vlc" targetport="in_2">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="decode_I_frame" sourceport="pos_fin_vlc"
+            target="mux_pos_fin_vlc" targetport="in_1">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="mux_pos_fin_vlc" sourceport="o"
+            target="pos_fin_vlc" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_frame_U_o" targetport="cond">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_frame_V_o" targetport="cond">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_frame_Y_o" targetport="cond">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_keyframes_o" targetport="cond">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_vop_coding_type" sourceport=""
+            target="mux_pos_fin_vlc" targetport="cond">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="decode_I_frame" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="P_frame" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="decode_I_frame" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="P_frame" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="decode_I_frame" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="P_frame" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="data" sourceport="" target="decode_I_frame" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="data" sourceport="" target="P_frame" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_U_i" sourceport="" target="decode_I_frame" targetport="frame_U_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_U_i" sourceport="" target="P_frame" targetport="frame_U_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_V_i" sourceport="" target="decode_I_frame" targetport="frame_V_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_V_i" sourceport="" target="P_frame" targetport="frame_V_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_Y_i" sourceport="" target="decode_I_frame" targetport="frame_Y_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_Y_i" sourceport="" target="P_frame" targetport="frame_Y_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="keyframes_i" sourceport="" target="decode_I_frame" targetport="keyframes_i">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="keyframes_i" sourceport="" target="P_frame" targetport="keyframes_i">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="pos" sourceport="" target="decode_I_frame" targetport="pos">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="pos" sourceport="" target="P_frame" targetport="pos">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

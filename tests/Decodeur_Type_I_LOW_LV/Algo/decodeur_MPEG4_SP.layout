@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="readm4v" x="1262" y="421"/>
+      <vertex id="readm4v_double_buffering" x="1365" y="695"/>
+      <vertex id="VideoObjectLayer" x="154" y="592"/>
+      <vertex id="buffer_out" x="22" y="730"/>
+      <vertex id="VOPsimple" x="407" y="517"/>
+      <vertex id="VideoObjectPlane" x="536" y="517"/>
+      <vertex id="init_vlc_tables_I" x="536" y="64"/>
+      <vertex id="frame_Y" x="954" y="221"/>
+      <vertex id="frame_U" x="949" y="487"/>
+      <vertex id="frame_V" x="949" y="613"/>
+      <vertex id="new_buffer" x="949" y="22"/>
+      <vertex id="new_buff_o" x="1109" y="421"/>
+      <vertex id="Extract" x="1109" y="574"/>
+      <vertex id="viewer" x="1236" y="574"/>
+      <vertex id="init_decode_I" x="163" y="248"/>
+      <vertex id="decode_I" x="693" y="185"/>
+      <vertex id="init_MB_pos" x="536" y="196"/>
+   </vertices>
+</layout>

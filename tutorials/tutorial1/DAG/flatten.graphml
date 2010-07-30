@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="variables">
+            <variable name="size" value="1000"/>
+        </data>
+        <node id="Sensor" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Sensor.idl</data>
+        </node>
+        <node id="Gen_int" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Gen_int.idl</data>
+        </node>
+        <node id="Copy" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Copy.idl</data>
+        </node>
+        <node id="Actuator" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Actuator.idl</data>
+            <data key="arguments">
+                <argument name="size" value="1000"/>
+            </data>
+        </node>
+        <node id="ParallelTest" kind="vertex">
+            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+        </node>
+        <node id="ParallelTest2" kind="vertex">
+            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+        </node>
+        <node id="ParallelTest3" kind="vertex">
+            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+        </node>
+        <node id="Sensor2" kind="vertex">
+            <data key="graph_desc">../Code/IDL/Sensor2.idl</data>
+        </node>
+        <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor" sourceport="o3" target="ParallelTest" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest" sourceport="o1"
+            target="ParallelTest2" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor" sourceport="o2" target="Gen_int" targetport="i2">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest3" sourceport="o1" target="Actuator" targetport="i3">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest2" sourceport="o1"
+            target="ParallelTest3" targetport="i1">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor2" sourceport="o1" target="ParallelTest" targetport="i2">
+            <data key="edge_prod">1000</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1000</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>

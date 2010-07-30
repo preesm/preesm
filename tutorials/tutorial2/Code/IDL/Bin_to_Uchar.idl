@@ -1,0 +1,7 @@
+module Bin_to_Uchar {
+	interface loop {
+   	void Bin_to_Uchar ( in char Tab_bin, in long Taille_buffer_i, out char Tab_Uchar,out  long Taille_buffer_o );
+	
+	};
+	
+};

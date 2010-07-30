@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="C64_1" x="586" y="45"/>
+      <vertex id="C64_2" x="638" y="175"/>
+      <vertex id="C64_3" x="597" y="281"/>
+      <vertex id="edma3_1" x="848" y="85"/>
+      <vertex id="SCR2" x="440" y="195"/>
+   </vertices>
+</layout>

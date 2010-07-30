@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>x86</coreType>
+    <coreName>PC</coreName>
+    <SourceFile>
+        <bufferContainer>
+            <bufferAllocation name="Firstout_0" size="16" type="char"/>
+            <bufferAllocation name="explode__0" size="4" type="char"/>
+            <bufferAllocation name="explode__1" size="4" type="char"/>
+            <bufferAllocation name="explode__2" size="4" type="char"/>
+            <bufferAllocation name="explode__3" size="4" type="char"/>
+            <bufferAllocation name="Second_0_0" size="4" type="char"/>
+            <bufferAllocation name="Second_1_0" size="4" type="char"/>
+            <bufferAllocation name="Second_2_0" size="4" type="char"/>
+            <bufferAllocation name="Second_3_0" size="4" type="char"/>
+            <bufferAllocation name="implode__0" size="16" type="char"/>
+        </bufferContainer>
+        <threadDeclaration name="computationThread">
+            <bufferContainer>
+                <variableAllocation name="i" type="long"/>
+            </bufferContainer>
+            <linearCodeContainer/>
+            <forLoop>
+                <userFunctionCall name="first_dummy">
+                    <buffer name="Firstout_0" size="16" type="char"/>
+                    <constant name="firstParam" type="int" value="3"/>
+                </userFunctionCall>
+                <specialBehavior behavior="fork" name="explode_First_output">
+                    <inputBuffers>
+                        <buffer name="Firstout_0" size="16" type="char"/>
+                    </inputBuffers>
+                    <outputBuffers>
+                        <buffer name="explode__3" size="4" type="char"/>
+                        <buffer name="explode__1" size="4" type="char"/>
+                        <buffer name="explode__0" size="4" type="char"/>
+                        <buffer name="explode__2" size="4" type="char"/>
+                    </outputBuffers>
+                </specialBehavior>
+                <CompoundCode>
+                    <bufferAllocation name="outLoopP_0" size="1" type="char"/>
+                    <finiteForLoop domain="4" index="i">
+                        <CompoundCode>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_Se_0"
+                                parentBuffer="Second_0_0" size="1" type="char"/>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_ex_0"
+                                parentBuffer="explode__3" size="1" type="char"/>
+                            <bufferAllocation name="dataOut__0" size="1" type="char"/>
+                            <userFunctionCall name="mux">
+                                <subBuffer index="i" name="sub_i_ex_0"
+                                    parentBuffer="explode__3" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="process_tokens">
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                                <subBuffer index="i" name="sub_i_Se_0"
+                                    parentBuffer="Second_0_0" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                            </userFunctionCall>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <CompoundCode>
+                    <bufferAllocation name="outLoopP_0" size="1" type="char"/>
+                    <finiteForLoop domain="4" index="i">
+                        <CompoundCode>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_Se_0"
+                                parentBuffer="Second_1_0" size="1" type="char"/>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_ex_0"
+                                parentBuffer="explode__1" size="1" type="char"/>
+                            <bufferAllocation name="dataOut__0" size="1" type="char"/>
+                            <userFunctionCall name="mux">
+                                <subBuffer index="i" name="sub_i_ex_0"
+                                    parentBuffer="explode__1" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="process_tokens">
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                                <subBuffer index="i" name="sub_i_Se_0"
+                                    parentBuffer="Second_1_0" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                            </userFunctionCall>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <CompoundCode>
+                    <bufferAllocation name="outLoopP_0" size="1" type="char"/>
+                    <finiteForLoop domain="4" index="i">
+                        <CompoundCode>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_Se_0"
+                                parentBuffer="Second_2_0" size="1" type="char"/>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_ex_0"
+                                parentBuffer="explode__0" size="1" type="char"/>
+                            <bufferAllocation name="dataOut__0" size="1" type="char"/>
+                            <userFunctionCall name="mux">
+                                <subBuffer index="i" name="sub_i_ex_0"
+                                    parentBuffer="explode__0" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="process_tokens">
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                                <subBuffer index="i" name="sub_i_Se_0"
+                                    parentBuffer="Second_2_0" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                            </userFunctionCall>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <CompoundCode>
+                    <bufferAllocation name="outLoopP_0" size="1" type="char"/>
+                    <finiteForLoop domain="4" index="i">
+                        <CompoundCode>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_Se_0"
+                                parentBuffer="Second_3_0" size="1" type="char"/>
+                            <subBufferAllocation index="i" modulo="4"
+                                name="sub_i_ex_0"
+                                parentBuffer="explode__2" size="1" type="char"/>
+                            <bufferAllocation name="dataOut__0" size="1" type="char"/>
+                            <userFunctionCall name="mux">
+                                <subBuffer index="i" name="sub_i_ex_0"
+                                    parentBuffer="explode__2" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                            </userFunctionCall>
+                            <userFunctionCall name="process_tokens">
+                                <buffer name="dataOut__0" size="1" type="char"/>
+                                <subBuffer index="i" name="sub_i_Se_0"
+                                    parentBuffer="Second_3_0" size="1"/>
+                                <buffer name="outLoopP_0" size="1" type="char"/>
+                            </userFunctionCall>
+                        </CompoundCode>
+                    </finiteForLoop>
+                </CompoundCode>
+                <specialBehavior behavior="join" name="implode_Third_input">
+                    <inputBuffers>
+                        <buffer name="Second_0_0" size="4" type="char"/>
+                        <buffer name="Second_1_0" size="4" type="char"/>
+                        <buffer name="Second_2_0" size="4" type="char"/>
+                        <buffer name="Second_3_0" size="4" type="char"/>
+                    </inputBuffers>
+                    <outputBuffers>
+                        <buffer name="implode__0" size="16" type="char"/>
+                    </outputBuffers>
+                </specialBehavior>
+                <userFunctionCall name="third_dummy">
+                    <buffer name="implode__0" size="16" type="char"/>
+                </userFunctionCall>
+            </forLoop>
+            <linearCodeContainer/>
+        </threadDeclaration>
+    </SourceFile>
+</sourceCode>

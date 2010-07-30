@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="VideoPacketHeaderI" x="200" y="184"/>
+      <vertex id="data" x="72" y="127"/>
+      <vertex id="pos_o" x="72" y="220"/>
+      <vertex id="VOP" x="72" y="313"/>
+      <vertex id="MB_pos_i" x="25" y="442"/>
+      <vertex id="VOLsimple" x="72" y="534"/>
+      <vertex id="Param_MB_I" x="433" y="190"/>
+      <vertex id="StockBlocksLum" x="699" y="679"/>
+      <vertex id="diffusion_resync_marker" x="458" y="409"/>
+      <vertex id="StockBlocksCb" x="685" y="248"/>
+      <vertex id="InverseQuant_BlkXn_4" x="458" y="94"/>
+      <vertex id="StockBlocksCr" x="695" y="449"/>
+      <vertex id="InverseQuant_BlkXn_5" x="423" y="550"/>
+      <vertex id="DCT3D_I" x="692" y="27"/>
+      <vertex id="frame_U_o" x="1136" y="348"/>
+      <vertex id="frame_V_o" x="1136" y="441"/>
+      <vertex id="frame_Y_o" x="1136" y="534"/>
+      <vertex id="pos_fin_vlc" x="1136" y="627"/>
+      <vertex id="decode_I_une_partie" x="946" y="262"/>
+      <vertex id="InverseQuant_BlkXn_3" x="430" y="638"/>
+      <vertex id="InverseQuant_BlkXn_2" x="438" y="771"/>
+      <vertex id="InverseQuant_BlkXn_1" x="434" y="840"/>
+      <vertex id="tab_pos_X" x="687" y="71"/>
+      <vertex id="InverseQuant_BlkXn_0" x="662" y="123"/>
+      <vertex id="display" x="719" y="181"/>
+   </vertices>
+</layout>

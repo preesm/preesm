@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="StockBlocksCr" x="245" y="438"/>
+      <vertex id="MB_courant" x="57" y="220"/>
+      <vertex id="InverseQuant_BlkXn_5" x="57" y="406"/>
+      <vertex id="VOLsimple" x="57" y="592"/>
+      <vertex id="resync_marker" x="57" y="499"/>
+      <vertex id="XCr" x="480" y="291"/>
+      <vertex id="VOP" x="247" y="70"/>
+      <vertex id="DCT3D_I" x="247" y="163"/>
+      <vertex id="data" x="247" y="277"/>
+      <vertex id="position" x="247" y="370"/>
+      <vertex id="fcolor" x="850" y="268"/>
+      <vertex id="blkXn" x="820" y="336"/>
+      <vertex id="pos_fin_vlc" x="834" y="414"/>
+      <vertex id="InvDCT_Cr" x="717" y="195"/>
+   </vertices>
+</layout>

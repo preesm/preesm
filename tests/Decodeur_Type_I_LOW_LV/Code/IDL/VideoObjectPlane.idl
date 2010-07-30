@@ -1,0 +1,7 @@
+module VideoObjectPlane {
+	typedef short int;
+    interface loop{
+         void VideoObjectPlaneI (in int pos_vol, in char data, in char VOLsimple,in char vop_complexity, out int pos, out char VOP,out int vop_coding_type);
+    };
+}; 
+

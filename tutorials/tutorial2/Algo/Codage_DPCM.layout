@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="im_tailles" x="57" y="70"/>
+      <vertex id="Global" x="57" y="256"/>
+      <vertex id="im_carres" x="57" y="163"/>
+      <vertex id="im_Quant_o" x="620" y="238"/>
+      <vertex id="DPCM_simple_code" x="185" y="126"/>
+      <vertex id="Create_im_quant" x="400" y="220"/>
+      <vertex id="im_Error_Pred_o" x="400" y="127"/>
+   </vertices>
+</layout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="First" x="57" y="70"/>
+      <vertex id="Second" x="213" y="68"/>
+      <vertex id="Third" x="392" y="69"/>
+   </vertices>
+</layout>

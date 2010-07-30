@@ -1,0 +1,8 @@
+module StockBlocksLum {
+	typedef short int;
+    interface loop{
+         void StockBlocksLum(in int  MB_courant,in int resync_marker,in short InverseQuant_BlkXn_1,in short InverseQuant_BlkXn_2,in short InverseQuant_BlkXn_3
+         						,in char VOLsimple,out short Lum_BuffA,out short Lum_BuffB,out short Lum_BuffC,out short Lum_BuffD,out short Lum_BuffE);
+    };
+}; 
+

@@ -1,0 +1,10 @@
+module StockBlocksCr {
+	typedef short int;
+    interface loop{
+         void StockBlocksCr(in int MB_courant,in short InverseQuant_BlkXn_5,in char VOLsimple,in int resync_marker
+         						,out short BuffA,out short BuffB,out short BuffC);
+
+    };
+}; 
+
+

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <graph edgedefault="directed">
+        <data key="name">testMatMat</data>
+        <data key="variables">
+            <variable name="ysize" value="2"/>
+            <variable name="xsize" value="2"/>
+            <variable name="nbMat" value="2"/>
+        </data>
+        <node id="generateMat1" kind="vertex">
+            <data key="graph_desc">../IDL/generateMatrix.idl</data>
+            <data key="arguments">
+                <argument name="size" value="xsize*ysize"/>
+            </data>
+        </node>
+        <node id="generateMat2" kind="vertex">
+            <data key="graph_desc">../IDL/generateMatrix.idl</data>
+            <data key="arguments">
+                <argument name="size" value="xsize*ysize"/>
+            </data>
+        </node>
+        <node id="viewMatOut" kind="vertex">
+            <data key="graph_desc">../IDL/displayResult.idl</data>
+            <data key="arguments">
+                <argument name="size" value="xsize*ysize"/>
+            </data>
+        </node>
+        <node id="prodMatMat_0" kind="vertex">
+            <data key="graph_desc">prodMatMat.xml</data>
+            <data key="arguments">
+                <argument name="ysize" value="ysize"/>
+                <argument name="xsize" value="xsize"/>
+            </data>
+        </node>
+        <node id="prodMatMat_1" kind="vertex">
+            <data key="graph_desc">prodMatMat.xml</data>
+            <data key="arguments">
+                <argument name="ysize" value="ysize"/>
+                <argument name="xsize" value="xsize"/>
+            </data>
+        </node>
+        <node id="explode_generateMat1_outMat" kind="fork"/>
+        <node id="explode_generateMat2_outMat" kind="fork"/>
+        <node id="implode_viewMatOut_inResult" kind="join"/>
+        <edge source="generateMat1" sourceport="outMat"
+            target="explode_generateMat1_outMat" targetport="Mat1">
+            <data key="edge_prod">8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">8</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_generateMat1_outMat" sourceport="outMat"
+            target="prodMatMat_0" targetport="Mat1">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_generateMat1_outMat" sourceport="outMat"
+            target="prodMatMat_1" targetport="Mat1">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="generateMat2" sourceport="outMat"
+            target="explode_generateMat2_outMat" targetport="Mat2">
+            <data key="edge_prod">8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">8</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_generateMat2_outMat" sourceport="outMat"
+            target="prodMatMat_0" targetport="Mat2">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="explode_generateMat2_outMat" sourceport="outMat"
+            target="prodMatMat_1" targetport="Mat2">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="implode_viewMatOut_inResult" sourceport="MatOut"
+            target="viewMatOut" targetport="inResult">
+            <data key="edge_prod">8</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">8</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="prodMatMat_0" sourceport="MatOut"
+            target="implode_viewMatOut_inResult" targetport="inResult">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="prodMatMat_1" sourceport="MatOut"
+            target="implode_viewMatOut_inResult" targetport="inResult">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

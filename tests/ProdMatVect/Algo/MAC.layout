@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="add" x="431" y="113"/>
+      <vertex id="mult" x="331" y="212"/>
+      <vertex id="acc" x="143" y="102"/>
+      <vertex id="scal1" x="151" y="176"/>
+      <vertex id="scal2" x="149" y="247"/>
+      <vertex id="scalOut" x="648" y="134"/>
+      <vertex id="brScal" x="454" y="287"/>
+      <vertex id="prScal" x="650" y="330"/>
+   </vertices>
+</layout>

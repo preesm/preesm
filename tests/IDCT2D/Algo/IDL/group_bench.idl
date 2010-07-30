@@ -1,0 +1,5 @@
+module group_bench {
+	interface loop {
+		void group_bench(in char MB);
+	};
+};

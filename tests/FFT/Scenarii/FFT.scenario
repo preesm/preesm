@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/FFT/Algo/FFTTestBed.graphml"/>
+        <architecture url="/FFT/Archi/4CoreX86.design"/>
+        <codegenDirectory url="/FFT/Code"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="ComputeFFT/butterflyStep"/>
+            <task name="ComputeFFT/dataCollect"/>
+            <task name="ComputeFFT/dataSort"/>
+            <task name="ComputeFFT/butterflyStep/add"/>
+            <task name="DisplayResult"/>
+            <task name="GenerateTimeSample"/>
+            <task name="ComputeFFT/butterflyStep/sub"/>
+            <task name="ComputeFFT/butterflyStep/paramMult"/>
+            <task name="ComputeFFT/trigger"/>
+            <task name="ComputeFFT"/>
+        </constraintGroup>
+        <constraintGroup>
+            <task name="ComputeFFT/butterflyStep"/>
+            <task name="ComputeFFT/dataCollect"/>
+            <task name="ComputeFFT/dataSort"/>
+            <task name="DisplayResult"/>
+            <task name="GenerateTimeSample"/>
+            <task name="ComputeFFT/trigger"/>
+            <task name="ComputeFFT"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="ComputeFFT/butterflyStep"/>
+            <task name="ComputeFFT/dataCollect"/>
+            <task name="ComputeFFT/dataSort"/>
+            <task name="ComputeFFT/butterflyStep/add"/>
+            <task name="DisplayResult"/>
+            <task name="GenerateTimeSample"/>
+            <task name="ComputeFFT/butterflyStep/sub"/>
+            <task name="ComputeFFT/butterflyStep/paramMult"/>
+            <task name="ComputeFFT/trigger"/>
+            <task name="ComputeFFT"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainMedium>TCP_1</mainMedium>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators/>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

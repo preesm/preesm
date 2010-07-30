@@ -1,0 +1,7 @@
+module block_sat_I {
+	typedef short int;
+    interface loop{
+		void block_sat (in char src, out char dst);
+    };
+}; 
+

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="NB_MB" value="99"/>
+            <variable name="edge" value="16"/>
+            <variable name="taille_flux" value="720*576"/>
+            <variable name="xpic" value="720"/>
+            <variable name="ypic" value="576"/>
+        </data>
+        <node id="data" kind="port" port_direction="Input"/>
+        <node id="pos_o" kind="port" port_direction="Input"/>
+        <node id="VOP" kind="port" port_direction="Input"/>
+        <node id="MB_pos_i" kind="port" port_direction="Input"/>
+        <node id="VOLsimple" kind="port" port_direction="Input"/>
+        <node id="DCT3D_I" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_3" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_2" kind="port" port_direction="Input"/>
+        <node id="bidon_MB_I(x99)" kind="vertex">
+            <data key="graph_desc">MB_I(x99).graphml</data>
+            <data key="name">bidon_MB_I(x99)</data>
+            <data key="arguments"/>
+        </node>
+        <node id="pos_X1" kind="port" port_direction="Output"/>
+        <node id="pos_X2" kind="port" port_direction="Output"/>
+        <node id="pos_X3" kind="port" port_direction="Output"/>
+        <node id="pos_X4" kind="port" port_direction="Output"/>
+        <node id="pos_XCb" kind="port" port_direction="Output"/>
+        <node id="pos_XCr" kind="port" port_direction="Output"/>
+        <node id="X1" kind="port" port_direction="Output"/>
+        <node id="X2" kind="port" port_direction="Output"/>
+        <node id="X3" kind="port" port_direction="Output"/>
+        <node id="X4" kind="port" port_direction="Output"/>
+        <node id="XCb" kind="port" port_direction="Output"/>
+        <node id="XCr" kind="port" port_direction="Output"/>
+        <node id="pos_fin_vlc" kind="port" port_direction="Output"/>
+        <node id="InverseQuant_BlkXn_1" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_0" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_4" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_5" kind="port" port_direction="Input"/>
+        <node id="tab_pos_X" kind="port" port_direction="Input"/>
+        <edge source="DCT3D_I" sourceport="" target="bidon_MB_I(x99)" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="data" sourceport="" target="bidon_MB_I(x99)" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="pos_o" sourceport="" target="bidon_MB_I(x99)" targetport="pos_o">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="bidon_MB_I(x99)" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="MB_pos_i" sourceport="" target="bidon_MB_I(x99)" targetport="MB_pos_i">
+            <data key="edge_prod">NB_MB</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="bidon_MB_I(x99)" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_3" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_3">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_2" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_2">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_X1"
+            target="pos_X1" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_X2"
+            target="pos_X2" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_X3"
+            target="pos_X3" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_X4"
+            target="pos_X4" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_XCb"
+            target="pos_XCb" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_XCr"
+            target="pos_XCr" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="pos_fin_vlc"
+            target="pos_fin_vlc" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="X1" target="X1" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="X2" target="X2" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="X3" target="X3" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="X4" target="X4" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="XCb" target="XCb" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="bidon_MB_I(x99)" sourceport="XCr" target="XCr" targetport="">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB*64</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_1" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_1">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_0" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_4" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_4">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_5" sourceport=""
+            target="bidon_MB_I(x99)" targetport="InverseQuant_BlkXn_5">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="tab_pos_X" sourceport="" target="bidon_MB_I(x99)" targetport="tab_pos_X">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

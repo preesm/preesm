@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="VLCinverseI_X" x="247" y="445"/>
+      <vertex id="InverseACDCpred" x="536" y="463"/>
+      <vertex id="InverseQuanti" x="710" y="628"/>
+      <vertex id="BuffA" x="57" y="70"/>
+      <vertex id="BuffE" x="57" y="163"/>
+      <vertex id="InverseQuant_BlkXn_0" x="57" y="256"/>
+      <vertex id="DCT3D_I" x="57" y="349"/>
+      <vertex id="MB_courant" x="57" y="442"/>
+      <vertex id="VOLsimple" x="536" y="664"/>
+      <vertex id="VOP" x="57" y="721"/>
+      <vertex id="data" x="57" y="535"/>
+      <vertex id="position" x="57" y="628"/>
+      <vertex id="pos_fin_vlc" x="536" y="370"/>
+      <vertex id="F" x="953" y="617"/>
+      <vertex id="InverseQuant_BlkXn_2" x="953" y="710"/>
+   </vertices>
+</layout>

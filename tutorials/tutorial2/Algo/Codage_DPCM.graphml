@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name">CodageDCPM</data>
+        <data key="parameters">
+            <parameter name="xsizeDiv2"/>
+            <parameter name="ysizeDiv2"/>
+        </data>
+        <data key="variables">
+            <variable name="ratio" value="1"/>
+        </data>
+        <node id="im_tailles" kind="port" port_direction="Input"/>
+        <node id="Global" kind="port" port_direction="Input"/>
+        <node id="im_carres" kind="port" port_direction="Input"/>
+        <node id="im_Quant_o" kind="port" port_direction="Output"/>
+        <node id="DPCM_simple_code" kind="vertex">
+            <data key="graph_desc">../Code/IDL/DCPM_simple_code.idl</data>
+            <data key="name">DPCM_simple_code</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Create_im_quant" kind="vertex">
+            <data key="graph_desc">../Code/IDL/creat_quant.idl</data>
+            <data key="name">Create_im_quant</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="im_Error_Pred_o" kind="port" port_direction="Output"/>
+        <edge source="Global" sourceport="" target="DPCM_simple_code" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="Create_im_quant" sourceport="im_Quant_o"
+            target="im_Quant_o" targetport="">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="DPCM_simple_code" sourceport="im_Quant_bord_o"
+            target="Create_im_quant" targetport="im_Quant_bord_i">
+            <data key="edge_prod">(xsizeDiv2+4)*(ysizeDiv2+2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xsizeDiv2+4)*(ysizeDiv2+2)</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="im_carres" sourceport="" target="DPCM_simple_code" targetport="im_carres">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="im_tailles" sourceport=""
+            target="DPCM_simple_code" targetport="im_tailles_i">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">unsigned char</data>
+        </edge>
+        <edge source="Global" sourceport="" target="Create_im_quant" targetport="Global">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">LAR</data>
+        </edge>
+        <edge source="DPCM_simple_code" sourceport="im_Error_Pred"
+            target="im_Error_Pred_o" targetport="">
+            <data key="edge_prod">xsizeDiv2*ysizeDiv2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">xsizeDiv2*ysizeDiv2</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

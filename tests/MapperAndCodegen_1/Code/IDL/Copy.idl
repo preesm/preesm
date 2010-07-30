@@ -1,0 +1,5 @@
+module Copy {
+	interface loop {
+		 void copy( in char i1, out char o1);
+	};
+};

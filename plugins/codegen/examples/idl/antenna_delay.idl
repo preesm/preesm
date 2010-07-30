@@ -1,0 +1,11 @@
+module antenna_delay {
+	const long maxCplxSequenceSize = 8000;
+	typedef long cplx;
+	typedef sequence<cplx, maxCplxSequenceSize> cplxSequence;
+	typedef short parameter ;
+	interface antenna_delay_interface {
+		 void init();
+		 void loop( in cplxSequence antennaIn, in char waitIn, out cplxSequence antennaOut, out char waitOut, in parameter antennaSize);
+         void end();
+	};
+};

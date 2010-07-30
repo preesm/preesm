@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/IDCT2D/Algo/idct2dTop.graphml"/>
+        <architecture url="/IDCT2D/Archi/4CoreX86.design"/>
+        <timingfile url=""/>
+        <codegenDirectory url="/IDCT2D/Code/MultiPc"/>
+    </files>
+    <constraints>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
+            <task name="IDCT2D"/>
+            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="Group"/>
+            <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/clip"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
+            <task name="IDCT2D"/>
+            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="Group"/>
+            <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/clip"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
+            <task name="IDCT2D"/>
+            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="Group"/>
+            <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/clip"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Trigger"/>
+            <task name="IDCT2D/IDCT2D_basic"/>
+            <task name="IDCT2D"/>
+            <task name="IDCT2D/IDCT2D_basic/IDCT1D"/>
+            <task name="IDCT2D/IDCT2D_basic/readBlock"/>
+            <task name="IDCT2D/IDCT2D_basic/Transpose"/>
+            <task name="Group"/>
+            <task name="IDCT2D/IDCT2D_basic/trigger"/>
+            <task name="IDCT2D/clip"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+    </constraints>
+    <timings>
+        <timing opname="x86" time="10" vertexname="Group"/>
+        <timing opname="x86" time="1000" vertexname="IDCT1D"/>
+        <timing opname="x86" time="10" vertexname="Trigger"/>
+        <timing opname="x86" time="1000000000" vertexname="clip"/>
+        <timing opname="x86" time="10" vertexname="readBlock"/>
+        <timing opname="x86" time="1" vertexname="trigger"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core1</mainCore>
+        <mainMedium>TCP_1</mainMedium>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+    </simuParams>
+</scenario>

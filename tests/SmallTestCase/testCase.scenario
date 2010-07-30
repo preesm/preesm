@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/SmallTestCase/Algo/TestCase.graphml"/>
+        <architecture url="/SmallTestCase/Archi/simplex86.ipxactds"/>
+        <timingfile url=""/>
+        <codegenDirectory url="/SmallTestCase/Code"/>
+    </files>
+    <constraints>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="C64_2"/>
+            <task name="Second"/>
+            <task name="First"/>
+            <task name="Third"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="C64_1"/>
+            <task name="Second"/>
+            <task name="First"/>
+            <task name="Third"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="PC"/>
+            <task name="Second/process2"/>
+            <task name="Third"/>
+            <task name="Second"/>
+            <task name="Second/process1"/>
+            <task name="First"/>
+        </constraintGroup>
+    </constraints>
+    <timings>
+        <timing opname="x86" time="10" vertexname="First"/>
+        <timing opname="x86" time="10" vertexname="Third"/>
+    </timings>
+    <simuParams>
+        <mainCore>PC</mainCore>
+        <mainMedium>EDMA3_1</mainMedium>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+    </simuParams>
+</scenario>

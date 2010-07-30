@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="NB_MB" value="20"/>
+            <variable name="edge" value="16"/>
+            <variable name="taille_flux" value="720*576"/>
+            <variable name="xpic" value="720"/>
+            <variable name="ypic" value="576"/>
+        </data>
+        <node id="data" kind="port" port_direction="Input"/>
+        <node id="position" kind="port" port_direction="Input"/>
+        <node id="VOP" kind="port" port_direction="Input"/>
+        <node id="MB_courant" kind="port" port_direction="Input"/>
+        <node id="VOLsimple" kind="port" port_direction="Input"/>
+        <node id="DCT3D_I" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_3" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_2" kind="port" port_direction="Input"/>
+        <node id="InverseQuant_BlkXn_1" kind="port" port_direction="Input"/>
+        <node id="resync_marker" kind="port" port_direction="Input"/>
+        <node id="StockBlockLum" kind="vertex">
+            <data key="graph_desc">../Code/IDL/StockBlocksLum.idl</data>
+            <data key="name">StockBlockLum</data>
+            <data key="arguments"/>
+        </node>
+        <node id="X1" kind="vertex">
+            <data key="graph_desc">X1.graphml</data>
+            <data key="name">X1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="X2" kind="vertex">
+            <data key="graph_desc">X2.graphml</data>
+            <data key="name">X2</data>
+            <data key="arguments"/>
+        </node>
+        <node id="X3" kind="vertex">
+            <data key="graph_desc">X3.graphml</data>
+            <data key="name">X3</data>
+            <data key="arguments"/>
+        </node>
+        <node id="X4" kind="vertex">
+            <data key="graph_desc">X4.graphml</data>
+            <data key="name">X4</data>
+            <data key="arguments"/>
+        </node>
+        <node id="diffusion_BuffC" kind="Broadcast"/>
+        <node id="diffusion_BuffA" kind="Broadcast"/>
+        <node id="InverseQuant_1" kind="port" port_direction="Output"/>
+        <node id="InverseQuant_2" kind="port" port_direction="Output"/>
+        <node id="pos_fin_vlc" kind="port" port_direction="Output"/>
+        <node id="InverseQuant_3" kind="port" port_direction="Output"/>
+        <node id="fx1" kind="port" port_direction="Output"/>
+        <node id="fx2" kind="port" port_direction="Output"/>
+        <node id="fx3" kind="port" port_direction="Output"/>
+        <node id="fx4" kind="port" port_direction="Output"/>
+        <node id="InverseQuant_BlkXn_0" kind="port" port_direction="Input"/>
+        <node id="InvDCT_1" kind="vertex">
+            <data key="graph_desc">../Code/IDL/InverseDCT.idl</data>
+            <data key="name">InvDCT_1</data>
+            <data key="arguments"/>
+        </node>
+        <node id="InvDCT_2" kind="vertex">
+            <data key="graph_desc">../Code/IDL/InverseDCT.idl</data>
+            <data key="name">InvDCT_2</data>
+            <data key="arguments"/>
+        </node>
+        <node id="InvDCT_3" kind="vertex">
+            <data key="graph_desc">../Code/IDL/InverseDCT.idl</data>
+            <data key="name">InvDCT_3</data>
+            <data key="arguments"/>
+        </node>
+        <node id="InvDCT_4" kind="vertex">
+            <data key="graph_desc">../Code/IDL/InverseDCT.idl</data>
+            <data key="name">InvDCT_4</data>
+            <data key="arguments"/>
+        </node>
+        <edge source="MB_courant" sourceport="" target="StockBlockLum" targetport="MB_courant">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="resync_marker" sourceport=""
+            target="StockBlockLum" targetport="resync_marker">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_1" sourceport=""
+            target="StockBlockLum" targetport="InverseQuant_BlkXn_1">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_2" sourceport=""
+            target="StockBlockLum" targetport="InverseQuant_BlkXn_2">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_3" sourceport=""
+            target="StockBlockLum" targetport="InverseQuant_BlkXn_3">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="StockBlockLum" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="StockBlockLum" sourceport="BuffB" target="X1" targetport="BuffB">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="data" sourceport="" target="X1" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="X1" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="position" sourceport="" target="X1" targetport="position">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="X1" sourceport="pos_fin_vlc" target="X2" targetport="position">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diffusion_BuffC" sourceport="" target="X1" targetport="BuffC">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="diffusion_BuffC" sourceport="" target="X2" targetport="BuffC">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="StockBlockLum" sourceport="BuffD" target="X2" targetport="BuffD">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="X2" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="data" sourceport="" target="X2" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="X1" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="X2" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="MB_courant" sourceport="" target="X1" targetport="MB_courant">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="MB_courant" sourceport="" target="X2" targetport="MB_courant">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="X1" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="X2" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="X2" sourceport="pos_fin_vlc" target="X3" targetport="position">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="data" sourceport="" target="X3" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="StockBlockLum" sourceport="BuffE" target="X3" targetport="BuffE">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="StockBlockLum" sourceport="BuffA"
+            target="diffusion_BuffA" targetport="">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="diffusion_BuffA" sourceport="" target="X1" targetport="BuffA">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="diffusion_BuffA" sourceport="" target="X3" targetport="BuffA">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X2" sourceport="InverseQuant_BlkXn_1"
+            target="InverseQuant_1" targetport="">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="X3" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="X3" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="MB_courant" sourceport="" target="X3" targetport="MB_courant">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="X3" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_2" sourceport="" target="X4" targetport="InverseQuant_BlkXn_2">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_1" sourceport="" target="X4" targetport="InverseQuant_BlkXn_1">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X3" sourceport="pos_fin_vlc" target="X4" targetport="position">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="X3" sourceport="InverseQuant_BlkXn_2"
+            target="InverseQuant_2" targetport="">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="DCT3D_I" sourceport="" target="X4" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="VOLsimple" sourceport="" target="X4" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="VOP" sourceport="" target="X4" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="data" sourceport="" target="X4" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="MB_courant" sourceport="" target="X4" targetport="MB_courant">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="X4" sourceport="pos_fin_vlc" target="pos_fin_vlc" targetport="">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="X4" sourceport="InverseQuant_BlkXn_3"
+            target="InverseQuant_3" targetport="">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="StockBlockLum" sourceport="BuffC"
+            target="diffusion_BuffC" targetport="">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_0" sourceport="" target="X1" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X1" sourceport="InverseQuant_BlkXn_0" target="X2" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_0" sourceport="" target="X3" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X1" sourceport="F" target="InvDCT_1" targetport="F_in">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">64</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InvDCT_1" sourceport="f_out" target="fx1" targetport="">
+            <data key="edge_prod">128</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">128</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X2" sourceport="F" target="InvDCT_2" targetport="F_in">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">64</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InvDCT_2" sourceport="f_out" target="fx2" targetport="">
+            <data key="edge_prod">128</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">128</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X3" sourceport="F" target="InvDCT_3" targetport="F_in">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">64</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InvDCT_3" sourceport="f_out" target="fx3" targetport="">
+            <data key="edge_prod">128</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">128</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="X4" sourceport="F" target="InvDCT_4" targetport="F_in">
+            <data key="edge_prod">64</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">64</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InvDCT_4" sourceport="f_out" target="fx4" targetport="">
+            <data key="edge_prod">128</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">128</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="InverseQuant_BlkXn_0" sourceport="" target="X4" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+    </graph>
+</graphml>

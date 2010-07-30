@@ -1,0 +1,11 @@
+module P_frame {
+	typedef short int;
+	typedef short vector;
+    interface loop{
+	void decode_P_frame ( in char data, in char VOLsimple, in int pos , in char VOP, in char DCT3D_I, in char DCT3D_P, out char stock_mb_type_P
+								, out int pos_fin_vlc, out int adresse, in char frame_Y_i, in char frame_U_i, in char frame_V_i, in char keyframes_i
+								, in vector save_mv_i, out char frame_Y_o, out char frame_U_o, out char frame_V_o, out char keyframes_o, out vector save_mv_o
+								, in int vop_coding_type );
+    };
+
+};

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="name">testMatMat</data>
+      <data key="parameters"/>
+      <data key="variables">
+         <variable name="nbMat" value="1"/>
+         <variable name="xsize" value="8"/>
+         <variable name="ysize" value="8"/>
+      </data>
+      <node id="prodMatMat" kind="vertex">
+         <data key="graph_desc">ProdMatMat.graphml</data>
+         <data key="name">prodMatMat</data>
+         <data key="arguments">
+            <argument name="xsize" value="xsize"/>
+            <argument name="ysize" value="ysize"/>
+         </data>
+      </node>
+      <node id="generateMat1" kind="vertex">
+         <data key="graph_desc">../IDL/generateMatrix.idl</data>
+         <data key="name">generateMat1</data>
+         <data key="arguments">
+            <argument name="size" value="xsize*ysize"/>
+         </data>
+      </node>
+      <node id="generateMat2" kind="vertex">
+         <data key="graph_desc">../IDL/generateMatrix.idl</data>
+         <data key="name">generateMat2</data>
+         <data key="arguments">
+            <argument name="size" value="xsize*ysize"/>
+         </data>
+      </node>
+      <node id="viewMatOut" kind="vertex">
+         <data key="graph_desc">../IDL/displayResult.idl</data>
+         <data key="name">viewMatOut</data>
+         <data key="arguments">
+            <argument name="size" value="xsize*ysize"/>
+         </data>
+      </node>
+      <edge source="generateMat1" sourceport="outMat" target="prodMatMat" targetport="Mat1">
+         <data key="edge_prod">xsize*ysize*nbMat</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">xsize*ysize</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="generateMat2" sourceport="outMat" target="prodMatMat" targetport="Mat2">
+         <data key="edge_prod">xsize*ysize*nbMat</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">xsize*ysize</data>
+         <data key="data_type">int</data>
+      </edge>
+      <edge source="prodMatMat" sourceport="MatOut" target="viewMatOut" targetport="inResult">
+         <data key="edge_prod">xsize*ysize</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">xsize*ysize*nbMat</data>
+         <data key="data_type">int</data>
+      </edge>
+   </graph>
+</graphml>

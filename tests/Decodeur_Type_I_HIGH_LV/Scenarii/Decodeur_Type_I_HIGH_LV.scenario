@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/Decodeur_Type_I_HIGH_LV/Algo/test.graphml"/>
+        <architecture url="/Decodeur_Type_I_HIGH_LV/Archi/8CoreX86.design"/>
+        <codegenDirectory url="/Decodeur_Type_I_HIGH_LV/Code/x86/generatedSrc"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="choix_I_P_haut_niveau/mux_frame_Y_o"/>
+            <task name="choix_I_P_haut_niveau/decode_I_frame"/>
+            <task name="Extract"/>
+            <task name="choix_I_P_haut_niveau"/>
+            <task name="viewer"/>
+            <task name="choix_I_P_haut_niveau/mux_frame_V_o"/>
+            <task name="readm4v"/>
+            <task name="readm4v_double_buffering"/>
+            <task name="init_vlc_tables_I"/>
+            <task name="VideoObjectLayer"/>
+            <task name="VideoObjectPlane"/>
+            <task name="choix_I_P_haut_niveau/mux_frame_U_o"/>
+            <task name="choix_I_P_haut_niveau/mux_pos_fin_vlc"/>
+            <task name="init_vlc_tables_P"/>
+            <task name="new_buffer"/>
+            <task name="choix_I_P_haut_niveau/mux_adresse"/>
+            <task name="choix_I_P_haut_niveau/decode_P_frame"/>
+            <task name="choix_I_P_haut_niveau/mux_keyframes_o"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core1</mainCore>
+        <mainMedium/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

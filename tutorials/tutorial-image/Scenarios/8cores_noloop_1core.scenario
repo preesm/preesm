@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/tutorial-image/Algo/top_noloop.graphml"/>
+        <architecture url="/tutorial-image/Archi/8CoreX86.design"/>
+        <codegenDirectory url="/tutorial-image/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core7"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="substract_pic_slices"/>
+            <task name="display_pic2"/>
+            <task name="substract_pic_slices/substract_pic"/>
+            <task name="Read_YUV"/>
+            <task name="display_pic"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core4"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainMedium>tcp</mainMedium>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

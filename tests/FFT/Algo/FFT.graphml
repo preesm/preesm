@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="parameters">
+            <parameter name="fftSize"/>
+        </data>
+        <data key="variables"/>
+        <node id="fftData" kind="port" port_direction="Output"/>
+        <node id="timeData" kind="port" port_direction="Input"/>
+        <node id="butterflyStep" kind="vertex">
+            <data key="graph_desc">Butterflyl.graphml</data>
+            <data key="name">butterflyStep</data>
+            <data key="arguments"/>
+        </node>
+        <node id="dataSort" kind="vertex">
+            <data key="graph_desc">IDL/dataSort.idl</data>
+            <data key="name">dataSort</data>
+            <data key="arguments">
+                <argument name="size" value="fftSize"/>
+            </data>
+        </node>
+        <node id="dataCollect" kind="vertex">
+            <data key="graph_desc">IDL/DataCollect.idl</data>
+            <data key="name">dataCollect</data>
+            <data key="arguments">
+                <argument name="size" value="fftSize"/>
+            </data>
+        </node>
+        <node id="brSamples" kind="Broadcast"/>
+        <node id="trigger_in" kind="port" port_direction="Input"/>
+        <edge source="timeData" sourceport="out" target="dataSort" targetport="initIn">
+            <data key="edge_prod">fftSize</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">fftSize</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="dataSort" sourceport="data1Out"
+            target="butterflyStep" targetport="data1In">
+            <data key="edge_prod">fftSize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="dataSort" sourceport="data2Out"
+            target="butterflyStep" targetport="data2In">
+            <data key="edge_prod">fftSize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="butterflyStep" sourceport="data1Out"
+            target="dataCollect" targetport="data1In">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">fftSize/2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="butterflyStep" sourceport="data2Out"
+            target="dataCollect" targetport="data2In">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">fftSize/2</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="dataSort" sourceport="weights"
+            target="butterflyStep" targetport="W">
+            <data key="edge_prod">fftSize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="dataCollect" sourceport="dataOut"
+            target="brSamples" targetport="in">
+            <data key="edge_prod">fftSize</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">fftSize</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="brSamples" sourceport="out" target="fftData" targetport="in">
+            <data key="edge_prod">fftSize</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">fftSize</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="brSamples" sourceport="out" target="dataSort" targetport="iterateIn">
+            <data key="edge_prod">fftSize</data>
+            <data key="edge_delay">fftSize</data>
+            <data key="edge_cons">fftSize</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="trigger_in" sourceport="out" target="dataSort" targetport="trig">
+            <data key="edge_prod">10</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>

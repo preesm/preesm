@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<spirit:busDefinition xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd">
+  <spirit:vendor>TexasInstruments</spirit:vendor>
+  <spirit:library>TCI6487TLM</spirit:library>
+  <spirit:name>EDMA3bus</spirit:name>
+  <spirit:version>1.4</spirit:version>
+  <spirit:directConnection>true</spirit:directConnection> 
+  <spirit:isAddressable>false</spirit:isAddressable> 
+</spirit:busDefinition>

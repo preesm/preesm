@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+   <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+   <key attr.name="name" attr.type="string" for="graph" id="name"/>
+   <key attr.name="name" attr.type="string" for="node" id="name"/>
+   <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+   <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+   <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+   <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+      <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+   </key>
+   <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+      <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+   </key>
+   <graph edgedefault="directed">
+      <data key="name"/>
+      <data key="parameters">
+         <parameter name="testParam"/>
+      </data>
+      <data key="variables"/>
+      <node id="input" kind="port" port_direction="Input"/>
+      <node id="output" kind="port" port_direction="Output"/>
+      <node id="process1" kind="vertex">
+         <data key="graph_desc">../IDL/process_loop.idl</data>
+         <data key="name">process1</data>
+         <data key="arguments"/>
+      </node>
+      <node id="process2" kind="vertex">
+         <data key="graph_desc">../IDL/process.idl</data>
+         <data key="name">process2</data>
+         <data key="arguments"/>
+      </node>
+      <edge source="input" sourceport="input" target="process1" targetport="dataIn">
+         <data key="edge_prod">4</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="process1" sourceport="dataOut" target="process2" targetport="dataIn">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="process2" sourceport="dataOut" target="output" targetport="output">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">0</data>
+         <data key="edge_cons">4</data>
+         <data key="data_type">char</data>
+      </edge>
+      <edge source="process2" sourceport="loopOut" target="process1" targetport="loopIn">
+         <data key="edge_prod">1</data>
+         <data key="edge_delay">1</data>
+         <data key="edge_cons">1</data>
+         <data key="data_type">char</data>
+      </edge>
+   </graph>
+</graphml>

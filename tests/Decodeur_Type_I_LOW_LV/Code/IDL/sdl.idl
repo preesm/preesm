@@ -1,0 +1,13 @@
+module extract_picture {
+	typedef short int;
+	interface init{
+		int Init_SDL(in int edge,in int xpic,in int ypic);
+	};
+    interface loop{
+		void SDL_Display(in int edge,in int xpic,in int ypic,in char Y, in char U, in char V);
+    };
+    interface end{
+    	void CloseSDLDisplay();
+    };
+}; 
+
