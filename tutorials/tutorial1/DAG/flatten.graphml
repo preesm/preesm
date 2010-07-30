@@ -17,7 +17,7 @@
     <key attr.name="name" attr.type="string" for="graph" id="name"/>
     <key attr.name="parameters" for="graph" id="parameters"/>
     <key attr.name="variables" for="graph" id="variables"/>
-    <graph edgedefault="directed">
+    <graph edgedefault="directed" kind="sdf">
         <data key="name"/>
         <data key="variables">
             <variable name="size" value="1000"/>
