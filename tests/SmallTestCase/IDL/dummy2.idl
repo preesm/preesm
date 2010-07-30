@@ -1,5 +1,0 @@
-module dummy2 {
-	interface loop{
-		 void second_dummy(in char input, out char output);
-	};
-};

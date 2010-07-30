@@ -1,5 +1,0 @@
-module n8 {
-	interface loop {
-		 void n8(in char i1, in char i2, out char o1);
-	};
-};

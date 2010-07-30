@@ -1,5 +1,0 @@
-module trigger {
-	interface loop {
-		 void trigger(out boolean trig);
-	};
-};

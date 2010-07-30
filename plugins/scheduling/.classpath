@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry exported="true" kind="lib" path="lib/jfreechart.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcommon-1.0.13.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry excluding=".svn/|org/.svn/|org/ietr/.svn/|org/ietr/preesm/.svn/|org/ietr/preesm/plugin/.svn/|org/ietr/preesm/plugin/scheduling/.svn/|org/ietr/preesm/plugin/scheduling/listsched/.svn/|org/ietr/preesm/plugin/scheduling/listsched/descriptor/.svn/|org/ietr/preesm/plugin/scheduling/listsched/parser/.svn/|org/ietr/preesm/plugin/scheduling/listsched/plotter/.svn/|org/ietr/preesm/plugin/scheduling/listsched/scheduler/.svn/" kind="src" path="src"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

@@ -1,5 +1,0 @@
-module ParallelTest {
-	interface loop {
-		 void parallel( in char i1, out char o1);
-	};
-};

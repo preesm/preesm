@@ -1,7 +1,0 @@
-module creat_quant {
-	typedef long parameter ;
-	interface loop { 	                     
-	    void Create_im_quant( in any Global, in parameter ratio , in  char im_Quant_bord_i, out  char im_Quant_o);	
-	};
-	
-};

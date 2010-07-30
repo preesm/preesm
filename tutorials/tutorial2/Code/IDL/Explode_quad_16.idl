@@ -1,9 +1,0 @@
-module Explode_stream_quad_16 {
-	interface loop{
-	void Explode_stream_quad_16 ( in char  stream_quad_i
-							 , out char buffer_level1, out long indice_level1
-							 , out char buffer_level2, out long indice_level2
-							 , out char buffer_level3, out long indice_level3);
-	};
-	
-};

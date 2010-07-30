@@ -1,5 +1,0 @@
-module accumulate {
-	interface loop {
-		 void add(in long accumulateIn1, in long accumulateIn2, out long outAcc, out long outLoop);
-	};
-};

@@ -1,5 +1,0 @@
-module process {
-	interface loop{
-		 void process_tokens(in char dataIn, out char dataOut, out char loopOut);
-	};
-};

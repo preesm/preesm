@@ -1,7 +1,0 @@
-module Init_im_taille {
-	typedef long parameter ;
-    interface loop{
- 		void Init_im_taille( in any Global, in parameter ratio, out long taille_max_o , out char im_tailles_o);
-    };
-	
-};

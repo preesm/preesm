@@ -1,9 +1,0 @@
-module Decode_rice_buff_error {
-	typedef long parameter;
-	interface loop{
-	void Decode_Rice_Code ( in parameter xPR, in parameter yPR, in parameter SizeLevel, in parameter TailleOctet, in char  TabRice , in long TailleTabRice , out char TabUchar , out long TailleUchar);
-	
-	};
-
-	
-};

@@ -1,6 +1,0 @@
-module im_error_not_used {
-	typedef long parameter ;
-	interface init { 
-		void bidon();
-	};	
-};
