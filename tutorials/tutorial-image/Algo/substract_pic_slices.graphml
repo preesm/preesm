@@ -30,7 +30,6 @@
             <data key="graph_desc">../Code/IDL/substractPic.idl</data>
             <data key="name">substract_pic</data>
             <data key="arguments">
-                <argument name="nb_slices" value="nb_slices"/>
                 <argument name="xsize" value="xsize"/>
                 <argument name="ysize" value="ysize/nb_slices"/>
             </data>
