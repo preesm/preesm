@@ -1,0 +1,23 @@
+grammar org.ietr.preesm.editor.IDLLanguage with org.eclipse.xtext.common.Terminals
+
+generate iDLLanguage "http://www.ietr.org/preesm/editor/IDLLanguage"
+
+IDL:
+	(elements+=Type)*;
+
+Type:
+  DataType | Entity;
+  
+DataType:
+  'datatype' name=ID;
+
+Entity:
+	'entity' name=ID ('extends' superType=[Entity])? '{'
+	(features+=Feature)*
+	'}';
+	
+Feature:
+  name=ID ':' type=TypeRef;
+  
+TypeRef :
+  referenced=[Type] (multi?='*')?;
