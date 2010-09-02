@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.model.idl;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -51,41 +50,23 @@ import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.editor.IDLLanguageStandaloneSetup;
 import org.ietr.preesm.editor.iDLLanguage.Direction;
+import org.ietr.preesm.editor.iDLLanguage.Function;
 import org.ietr.preesm.editor.iDLLanguage.IDL;
+import org.ietr.preesm.editor.iDLLanguage.Interface;
 import org.ietr.preesm.editor.iDLLanguage.InterfaceName;
+import org.ietr.preesm.editor.iDLLanguage.Module;
 import org.ietr.preesm.editor.iDLLanguage.Parameter;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
-import org.jacorb.idl.AliasTypeSpec;
-import org.jacorb.idl.ConstrTypeSpec;
-import org.jacorb.idl.Declaration;
-import org.jacorb.idl.Definition;
-import org.jacorb.idl.Definitions;
-import org.jacorb.idl.EnumType;
-import org.jacorb.idl.IDLTreeVisitor;
-import org.jacorb.idl.IdlSymbol;
-import org.jacorb.idl.Interface;
-import org.jacorb.idl.InterfaceBody;
-import org.jacorb.idl.Method;
-import org.jacorb.idl.Module;
-import org.jacorb.idl.NativeType;
-import org.jacorb.idl.OpDecl;
-import org.jacorb.idl.Operation;
-import org.jacorb.idl.ParamDecl;
-import org.jacorb.idl.SimpleTypeSpec;
-import org.jacorb.idl.Spec;
-import org.jacorb.idl.StructType;
-import org.jacorb.idl.TypeDeclaration;
-import org.jacorb.idl.TypeDef;
-import org.jacorb.idl.UnionType;
-import org.jacorb.idl.Value;
-import org.jacorb.idl.VectorType;
 
 /**
  * Retrieving prototype data from an idl file
  * 
+ * Modified to use the XText-generated parser
+ * 
  * @author jpiat
+ * @author mpelcat
  */
-public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
+public class IDLFunctionFactory implements IFunctionFactory {
 
 	public HashMap<String, FunctionCall> createdIdl;
 	private FunctionCall finalCall;
@@ -119,9 +100,9 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 			EObject eobject = resource.getContents().get(0);
 
 			if(eobject instanceof IDL){
-				org.ietr.preesm.editor.iDLLanguage.Module module = ((IDL) eobject).getElements().get(0);
+				Module module = ((IDL) eobject).getElements().get(0);
 				
-				for(org.ietr.preesm.editor.iDLLanguage.Interface intf : module.getInterfaces()){
+				for(Interface intf : module.getInterfaces()){
 					if(intf.getName().equals(InterfaceName.LOOP)){
 						currentCall = finalCall;
 					}
@@ -134,7 +115,7 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 						finalCall.setEndCall(currentCall);
 					}
 					
-					org.ietr.preesm.editor.iDLLanguage.Function function = intf.getFunction();
+					Function function = intf.getFunction();
 					currentCall.setFunctionName(function.getName());
 					
 					for(Parameter param : function.getParameters()){
@@ -187,143 +168,4 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 		
 		return createdIdl.get(idlPath);
 	}
-
-	@Override
-	public void visitAlias(AliasTypeSpec arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitConstrTypeSpec(ConstrTypeSpec arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitDeclaration(Declaration arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitDefinition(Definition arg0) {
-		arg0.get_declaration().accept(this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void visitDefinitions(Definitions arg0) {
-		Enumeration e = arg0.getElements();
-		while (e.hasMoreElements()) {
-			IdlSymbol s = (IdlSymbol) e.nextElement();
-			s.accept(this);
-		}
-
-	}
-
-	@Override
-	public void visitEnum(EnumType arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitInterface(Interface arg0) {
-		if (arg0.name().equals("init")) {
-			currentCall = new FunctionCall();
-			arg0.body.accept(this);
-			finalCall.setInitCall(currentCall);
-		} else if (arg0.name().equals("loop")) {
-			currentCall = finalCall;
-			arg0.body.accept(this);
-		} else if (arg0.name().equals("end")) {
-			currentCall = new FunctionCall();
-			arg0.body.accept(this);
-			finalCall.setEndCall(currentCall);
-		}
-	}
-
-	@Override
-	public void visitInterfaceBody(InterfaceBody arg0) {
-		Operation[] ops = arg0.getMethods();
-		for (int i = 0; i < ops.length; i++) {
-			ops[i].accept(this);
-		}
-	}
-
-	@Override
-	public void visitMethod(Method arg0) {
-		currentCall.setFunctionName(arg0.name());
-		arg0.parameterType.accept(this);
-	}
-
-	@Override
-	public void visitModule(Module arg0) {
-		arg0.getDefinitions().accept(this);
-		System.out.println(arg0.toString());
-	}
-
-	@Override
-	public void visitNative(NativeType arg0) {
-		// TODO Auto-generated method stub
-		System.out.println(arg0.toString());
-	}
-
-	@Override
-	public void visitOpDecl(OpDecl arg0) {
-		currentCall.setFunctionName(arg0.name());
-		for (Object param : arg0.paramDecls) {
-			((ParamDecl) param).accept(this);
-		}
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitParamDecl(ParamDecl arg0) {
-		
-	}
-
-	@Override
-	public void visitSimpleTypeSpec(SimpleTypeSpec arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void visitSpec(Spec arg0) {
-		Enumeration e = arg0.definitions.elements();
-		while (e.hasMoreElements()) {
-			IdlSymbol s = (IdlSymbol) e.nextElement();
-			s.accept(this);
-		}
-	}
-
-	@Override
-	public void visitStruct(StructType arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitTypeDeclaration(TypeDeclaration arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitTypeDef(TypeDef arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitUnion(UnionType arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitValue(Value arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitVectorType(VectorType arg0) {
-		// TODO Auto-generated method stub
-	}
-
-
 }

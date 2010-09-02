@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding=".svn/|org/.svn/|org/ietr/.svn/|org/ietr/preesm/.svn/|org/ietr/preesm/plugin/.svn/|org/ietr/preesm/plugin/codegen/.svn/|org/ietr/preesm/plugin/codegen/print/.svn/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
-	<classpathentry kind="lib" path="lib/idl.jar"/>
 	<classpathentry kind="lib" path="lib/logkit-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
