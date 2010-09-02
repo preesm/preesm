@@ -198,10 +198,10 @@ public class IDLLanguageGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cSemicolonKeyword_6 = (Keyword)cGroup.eContents().get(6);
 		
 		//Function:
-		//	"void" name=ID "(" parameters+=Parameter ("," parameters+=Parameter)* ")" ";";
+		//	"void" name=ID "(" parameters+=Parameter? ("," parameters+=Parameter)* ")" ";";
 		public ParserRule getRule() { return rule; }
 
-		//"void" name=ID "(" parameters+=Parameter ("," parameters+=Parameter)* ")" ";"
+		//"void" name=ID "(" parameters+=Parameter? ("," parameters+=Parameter)* ")" ";"
 		public Group getGroup() { return cGroup; }
 
 		//"void"
@@ -216,7 +216,7 @@ public class IDLLanguageGrammarAccess extends AbstractGrammarElementFinder {
 		//"("
 		public Keyword getLeftParenthesisKeyword_2() { return cLeftParenthesisKeyword_2; }
 
-		//parameters+=Parameter
+		//parameters+=Parameter?
 		public Assignment getParametersAssignment_3() { return cParametersAssignment_3; }
 
 		//Parameter
@@ -503,7 +503,7 @@ public class IDLLanguageGrammarAccess extends AbstractGrammarElementFinder {
 	}
 
 	//Function:
-	//	"void" name=ID "(" parameters+=Parameter ("," parameters+=Parameter)* ")" ";";
+	//	"void" name=ID "(" parameters+=Parameter? ("," parameters+=Parameter)* ")" ";";
 	public FunctionElements getFunctionAccess() {
 		return (pFunction != null) ? pFunction : (pFunction = new FunctionElements());
 	}

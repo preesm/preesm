@@ -2806,26 +2806,37 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
     // $ANTLR start rule__Function__Group__3__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1093:1: rule__Function__Group__3__Impl : ( ( rule__Function__ParametersAssignment_3 ) ) ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1093:1: rule__Function__Group__3__Impl : ( ( rule__Function__ParametersAssignment_3 )? ) ;
     public final void rule__Function__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1097:1: ( ( ( rule__Function__ParametersAssignment_3 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1097:1: ( ( ( rule__Function__ParametersAssignment_3 )? ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 )? )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1099:1: ( rule__Function__ParametersAssignment_3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 )? )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1099:1: ( rule__Function__ParametersAssignment_3 )?
             {
              before(grammarAccess.getFunctionAccess().getParametersAssignment_3()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:1: ( rule__Function__ParametersAssignment_3 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:2: rule__Function__ParametersAssignment_3
-            {
-            pushFollow(FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192);
-            rule__Function__ParametersAssignment_3();
-            _fsp--;
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:1: ( rule__Function__ParametersAssignment_3 )?
+            int alt8=2;
+            int LA8_0 = input.LA(1);
 
+            if ( ((LA8_0>=17 && LA8_0<=18)) ) {
+                alt8=1;
+            }
+            switch (alt8) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:2: rule__Function__ParametersAssignment_3
+                    {
+                    pushFollow(FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192);
+                    rule__Function__ParametersAssignment_3();
+                    _fsp--;
+
+
+                    }
+                    break;
 
             }
 
@@ -2861,11 +2872,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1114:1: ( rule__Function__Group__4__Impl rule__Function__Group__5 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1115:2: rule__Function__Group__4__Impl rule__Function__Group__5
             {
-            pushFollow(FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42222);
+            pushFollow(FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42223);
             rule__Function__Group__4__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42225);
+            pushFollow(FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42226);
             rule__Function__Group__5();
             _fsp--;
 
@@ -2902,21 +2913,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
              before(grammarAccess.getFunctionAccess().getGroup_4()); 
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1129:1: ( rule__Function__Group_4__0 )*
-            loop8:
+            loop9:
             do {
-                int alt8=2;
-                int LA8_0 = input.LA(1);
+                int alt9=2;
+                int LA9_0 = input.LA(1);
 
-                if ( (LA8_0==28) ) {
-                    alt8=1;
+                if ( (LA9_0==28) ) {
+                    alt9=1;
                 }
 
 
-                switch (alt8) {
+                switch (alt9) {
             	case 1 :
             	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1129:2: rule__Function__Group_4__0
             	    {
-            	    pushFollow(FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2252);
+            	    pushFollow(FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2253);
             	    rule__Function__Group_4__0();
             	    _fsp--;
 
@@ -2925,7 +2936,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             	    break;
 
             	default :
-            	    break loop8;
+            	    break loop9;
                 }
             } while (true);
 
@@ -2961,11 +2972,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1143:1: ( rule__Function__Group__5__Impl rule__Function__Group__6 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1144:2: rule__Function__Group__5__Impl rule__Function__Group__6
             {
-            pushFollow(FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52283);
+            pushFollow(FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52284);
             rule__Function__Group__5__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52286);
+            pushFollow(FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52287);
             rule__Function__Group__6();
             _fsp--;
 
@@ -3001,7 +3012,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1157:1: ')'
             {
              before(grammarAccess.getFunctionAccess().getRightParenthesisKeyword_5()); 
-            match(input,27,FOLLOW_27_in_rule__Function__Group__5__Impl2314); 
+            match(input,27,FOLLOW_27_in_rule__Function__Group__5__Impl2315); 
              after(grammarAccess.getFunctionAccess().getRightParenthesisKeyword_5()); 
 
             }
@@ -3034,7 +3045,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1174:1: ( rule__Function__Group__6__Impl )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1175:2: rule__Function__Group__6__Impl
             {
-            pushFollow(FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62345);
+            pushFollow(FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62346);
             rule__Function__Group__6__Impl();
             _fsp--;
 
@@ -3070,7 +3081,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1187:1: ';'
             {
              before(grammarAccess.getFunctionAccess().getSemicolonKeyword_6()); 
-            match(input,22,FOLLOW_22_in_rule__Function__Group__6__Impl2373); 
+            match(input,22,FOLLOW_22_in_rule__Function__Group__6__Impl2374); 
              after(grammarAccess.getFunctionAccess().getSemicolonKeyword_6()); 
 
             }
@@ -3103,11 +3114,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1218:1: ( rule__Function__Group_4__0__Impl rule__Function__Group_4__1 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1219:2: rule__Function__Group_4__0__Impl rule__Function__Group_4__1
             {
-            pushFollow(FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02418);
+            pushFollow(FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02419);
             rule__Function__Group_4__0__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02421);
+            pushFollow(FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02422);
             rule__Function__Group_4__1();
             _fsp--;
 
@@ -3143,7 +3154,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1232:1: ','
             {
              before(grammarAccess.getFunctionAccess().getCommaKeyword_4_0()); 
-            match(input,28,FOLLOW_28_in_rule__Function__Group_4__0__Impl2449); 
+            match(input,28,FOLLOW_28_in_rule__Function__Group_4__0__Impl2450); 
              after(grammarAccess.getFunctionAccess().getCommaKeyword_4_0()); 
 
             }
@@ -3176,7 +3187,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1249:1: ( rule__Function__Group_4__1__Impl )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1250:2: rule__Function__Group_4__1__Impl
             {
-            pushFollow(FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12480);
+            pushFollow(FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12481);
             rule__Function__Group_4__1__Impl();
             _fsp--;
 
@@ -3215,7 +3226,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1263:1: ( rule__Function__ParametersAssignment_4_1 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1263:2: rule__Function__ParametersAssignment_4_1
             {
-            pushFollow(FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2507);
+            pushFollow(FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2508);
             rule__Function__ParametersAssignment_4_1();
             _fsp--;
 
@@ -3254,11 +3265,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1281:1: ( rule__Parameter__Group__0__Impl rule__Parameter__Group__1 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1282:2: rule__Parameter__Group__0__Impl rule__Parameter__Group__1
             {
-            pushFollow(FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02541);
+            pushFollow(FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02542);
             rule__Parameter__Group__0__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02544);
+            pushFollow(FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02545);
             rule__Parameter__Group__1();
             _fsp--;
 
@@ -3297,7 +3308,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1296:1: ( rule__Parameter__DirectionAssignment_0 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1296:2: rule__Parameter__DirectionAssignment_0
             {
-            pushFollow(FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2571);
+            pushFollow(FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2572);
             rule__Parameter__DirectionAssignment_0();
             _fsp--;
 
@@ -3336,11 +3347,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1310:1: ( rule__Parameter__Group__1__Impl rule__Parameter__Group__2 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1311:2: rule__Parameter__Group__1__Impl rule__Parameter__Group__2
             {
-            pushFollow(FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12601);
+            pushFollow(FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12602);
             rule__Parameter__Group__1__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12604);
+            pushFollow(FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12605);
             rule__Parameter__Group__2();
             _fsp--;
 
@@ -3379,7 +3390,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1325:1: ( rule__Parameter__TypeAssignment_1 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1325:2: rule__Parameter__TypeAssignment_1
             {
-            pushFollow(FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2631);
+            pushFollow(FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2632);
             rule__Parameter__TypeAssignment_1();
             _fsp--;
 
@@ -3418,7 +3429,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1339:1: ( rule__Parameter__Group__2__Impl )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1340:2: rule__Parameter__Group__2__Impl
             {
-            pushFollow(FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22661);
+            pushFollow(FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22662);
             rule__Parameter__Group__2__Impl();
             _fsp--;
 
@@ -3457,7 +3468,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1353:1: ( rule__Parameter__NameAssignment_2 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1353:2: rule__Parameter__NameAssignment_2
             {
-            pushFollow(FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2688);
+            pushFollow(FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2689);
             rule__Parameter__NameAssignment_2();
             _fsp--;
 
@@ -3500,7 +3511,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1376:1: ruleModule
             {
              before(grammarAccess.getIDLAccess().getElementsModuleParserRuleCall_0()); 
-            pushFollow(FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2729);
+            pushFollow(FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2730);
             ruleModule();
             _fsp--;
 
@@ -3540,7 +3551,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1391:1: RULE_ID
             {
              before(grammarAccess.getModuleAccess().getNameIDTerminalRuleCall_1_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12760); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12761); 
              after(grammarAccess.getModuleAccess().getNameIDTerminalRuleCall_1_0()); 
 
             }
@@ -3577,7 +3588,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1406:1: ruleDataType
             {
              before(grammarAccess.getModuleAccess().getTypesDataTypeParserRuleCall_3_0()); 
-            pushFollow(FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32791);
+            pushFollow(FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32792);
             ruleDataType();
             _fsp--;
 
@@ -3617,7 +3628,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1421:1: ruleInterface
             {
              before(grammarAccess.getModuleAccess().getInterfacesInterfaceParserRuleCall_4_0()); 
-            pushFollow(FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42822);
+            pushFollow(FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42823);
             ruleInterface();
             _fsp--;
 
@@ -3657,7 +3668,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1436:1: ruleBaseType
             {
              before(grammarAccess.getDataTypeAccess().getBtypeBaseTypeEnumRuleCall_1_0_0()); 
-            pushFollow(FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02853);
+            pushFollow(FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02854);
             ruleBaseType();
             _fsp--;
 
@@ -3701,7 +3712,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1453:1: RULE_ID
             {
              before(grammarAccess.getDataTypeAccess().getCtypeDataTypeIDTerminalRuleCall_1_1_0_1()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12888); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12889); 
              after(grammarAccess.getDataTypeAccess().getCtypeDataTypeIDTerminalRuleCall_1_1_0_1()); 
 
             }
@@ -3742,7 +3753,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1470:1: RULE_ID
             {
              before(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_2_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22923); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22924); 
              after(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_2_0()); 
 
             }
@@ -3779,7 +3790,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1485:1: ruleInterfaceName
             {
              before(grammarAccess.getInterfaceAccess().getNameInterfaceNameEnumRuleCall_1_0()); 
-            pushFollow(FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12954);
+            pushFollow(FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12955);
             ruleInterfaceName();
             _fsp--;
 
@@ -3819,7 +3830,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1500:1: ruleFunction
             {
              before(grammarAccess.getInterfaceAccess().getFunctionFunctionParserRuleCall_3_0()); 
-            pushFollow(FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32985);
+            pushFollow(FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32986);
             ruleFunction();
             _fsp--;
 
@@ -3859,7 +3870,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1515:1: RULE_ID
             {
              before(grammarAccess.getFunctionAccess().getNameIDTerminalRuleCall_1_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13016); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13017); 
              after(grammarAccess.getFunctionAccess().getNameIDTerminalRuleCall_1_0()); 
 
             }
@@ -3896,7 +3907,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1530:1: ruleParameter
             {
              before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0()); 
-            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33047);
+            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33048);
             ruleParameter();
             _fsp--;
 
@@ -3936,7 +3947,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1545:1: ruleParameter
             {
              before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0()); 
-            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13078);
+            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13079);
             ruleParameter();
             _fsp--;
 
@@ -3976,7 +3987,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1560:1: ruleDirection
             {
              before(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0()); 
-            pushFollow(FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03109);
+            pushFollow(FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03110);
             ruleDirection();
             _fsp--;
 
@@ -4016,7 +4027,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1575:1: ruleTypeStar
             {
              before(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0()); 
-            pushFollow(FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13140);
+            pushFollow(FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13141);
             ruleTypeStar();
             _fsp--;
 
@@ -4056,7 +4067,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1590:1: RULE_ID
             {
              before(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_2_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23171); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23172); 
              after(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_2_0()); 
 
             }
@@ -4093,7 +4104,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1605:1: ruleBaseType
             {
              before(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0()); 
-            pushFollow(FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03202);
+            pushFollow(FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03203);
             ruleBaseType();
             _fsp--;
 
@@ -4137,7 +4148,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1622:1: RULE_ID
             {
              before(grammarAccess.getTypeStarAccess().getCtypeDataTypeIDTerminalRuleCall_1_0_1()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13237); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13238); 
              after(grammarAccess.getTypeStarAccess().getCtypeDataTypeIDTerminalRuleCall_1_0_1()); 
 
             }
@@ -4256,49 +4267,49 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     public static final BitSet FOLLOW_rule__Function__Group__1__Impl_in_rule__Function__Group__12040 = new BitSet(new long[]{0x0000000004000000L});
     public static final BitSet FOLLOW_rule__Function__Group__2_in_rule__Function__Group__12043 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Function__NameAssignment_1_in_rule__Function__Group__1__Impl2070 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100 = new BitSet(new long[]{0x0000000000060000L});
+    public static final BitSet FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100 = new BitSet(new long[]{0x0000000018060000L});
     public static final BitSet FOLLOW_rule__Function__Group__3_in_rule__Function__Group__22103 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_26_in_rule__Function__Group__2__Impl2131 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162 = new BitSet(new long[]{0x0000000018000000L});
     public static final BitSet FOLLOW_rule__Function__Group__4_in_rule__Function__Group__32165 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42222 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42225 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2252 = new BitSet(new long[]{0x0000000010000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52283 = new BitSet(new long[]{0x0000000000400000L});
-    public static final BitSet FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52286 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_27_in_rule__Function__Group__5__Impl2314 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62345 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_22_in_rule__Function__Group__6__Impl2373 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02418 = new BitSet(new long[]{0x0000000000060000L});
-    public static final BitSet FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02421 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_28_in_rule__Function__Group_4__0__Impl2449 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12480 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2507 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02541 = new BitSet(new long[]{0x0000000000003810L});
-    public static final BitSet FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02544 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2571 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12601 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12604 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2631 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22661 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2688 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2729 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12760 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32791 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42822 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02853 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12888 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22923 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12954 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32985 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13016 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33047 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13078 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03109 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13140 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23171 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03202 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13237 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42223 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42226 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2253 = new BitSet(new long[]{0x0000000010000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52284 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52287 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_27_in_rule__Function__Group__5__Impl2315 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62346 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_rule__Function__Group__6__Impl2374 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02419 = new BitSet(new long[]{0x0000000000060000L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02422 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_28_in_rule__Function__Group_4__0__Impl2450 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12481 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2508 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02542 = new BitSet(new long[]{0x0000000000003810L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02545 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12602 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12605 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2632 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2689 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2730 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12761 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32792 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42823 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02854 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12889 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22924 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12955 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32986 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13017 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33048 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13079 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03110 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13141 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23172 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03203 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13238 = new BitSet(new long[]{0x0000000000000002L});
 
 }

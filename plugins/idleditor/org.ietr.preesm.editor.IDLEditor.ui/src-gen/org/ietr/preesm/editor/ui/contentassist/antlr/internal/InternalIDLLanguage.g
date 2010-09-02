@@ -1097,7 +1097,7 @@ rule__Function__Group__3__Impl
 :
 (
 { before(grammarAccess.getFunctionAccess().getParametersAssignment_3()); }
-(rule__Function__ParametersAssignment_3)
+(rule__Function__ParametersAssignment_3)?
 { after(grammarAccess.getFunctionAccess().getParametersAssignment_3()); }
 )
 

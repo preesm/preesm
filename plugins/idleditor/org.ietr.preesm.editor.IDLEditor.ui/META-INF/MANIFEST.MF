@@ -14,6 +14,6 @@ Require-Bundle: org.ietr.preesm.editor.IDLEditor;visibility:=reexport,
  org.eclipse.xtext.builder,
  org.antlr.runtime
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.ietr.preesm.editor.ui.contentassist.antlr
 Bundle-Activator: org.ietr.preesm.editor.ui.internal.IDLLanguageActivator

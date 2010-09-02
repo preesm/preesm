@@ -30,7 +30,7 @@ Interface:
 
 Function:
 	'void' name=ID '('
-		(parameters+=Parameter) (',' parameters+=Parameter)*
+		(parameters+=Parameter)? (',' parameters+=Parameter)*
 	')' ';';
 
 Parameter:

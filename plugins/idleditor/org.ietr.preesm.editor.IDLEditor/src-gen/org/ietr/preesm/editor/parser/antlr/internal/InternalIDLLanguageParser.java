@@ -817,7 +817,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start ruleFunction
-    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:426:1: ruleFunction returns [EObject current=null] : ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) ) ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' ) ;
+    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:426:1: ruleFunction returns [EObject current=null] : ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) )? ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' ) ;
     public final EObject ruleFunction() throws RecognitionException {
         EObject current = null;
 
@@ -830,11 +830,11 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
          EObject temp=null; setCurrentLookahead(); resetLookahead(); 
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:431:6: ( ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) ) ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' ) )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:1: ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) ) ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:431:6: ( ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) )? ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' ) )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:1: ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) )? ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:1: ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) ) ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:3: 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) ) ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:1: ( 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) )? ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:432:3: 'void' ( (lv_name_1_0= RULE_ID ) ) '(' ( (lv_parameters_3_0= ruleParameter ) )? ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )* ')' ';'
             {
             match(input,17,FOLLOW_17_in_ruleFunction700); 
 
@@ -877,58 +877,69 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
 
                     createLeafNode(grammarAccess.getFunctionAccess().getLeftParenthesisKeyword_2(), null); 
                 
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:464:1: ( (lv_parameters_3_0= ruleParameter ) )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:465:1: (lv_parameters_3_0= ruleParameter )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:465:1: (lv_parameters_3_0= ruleParameter )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:466:3: lv_parameters_3_0= ruleParameter
-            {
-             
-            	        currentNode=createCompositeNode(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0(), currentNode); 
-            	    
-            pushFollow(FOLLOW_ruleParameter_in_ruleFunction753);
-            lv_parameters_3_0=ruleParameter();
-            _fsp--;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:464:1: ( (lv_parameters_3_0= ruleParameter ) )?
+            int alt4=2;
+            int LA4_0 = input.LA(1);
+
+            if ( ((LA4_0>=27 && LA4_0<=28)) ) {
+                alt4=1;
+            }
+            switch (alt4) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:465:1: (lv_parameters_3_0= ruleParameter )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:465:1: (lv_parameters_3_0= ruleParameter )
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:466:3: lv_parameters_3_0= ruleParameter
+                    {
+                     
+                    	        currentNode=createCompositeNode(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0(), currentNode); 
+                    	    
+                    pushFollow(FOLLOW_ruleParameter_in_ruleFunction753);
+                    lv_parameters_3_0=ruleParameter();
+                    _fsp--;
 
 
-            	        if (current==null) {
-            	            current = factory.create(grammarAccess.getFunctionRule().getType().getClassifier());
-            	            associateNodeWithAstElement(currentNode.getParent(), current);
-            	        }
-            	        try {
-            	       		add(
-            	       			current, 
-            	       			"parameters",
-            	        		lv_parameters_3_0, 
-            	        		"Parameter", 
-            	        		currentNode);
-            	        } catch (ValueConverterException vce) {
-            				handleValueConverterException(vce);
-            	        }
-            	        currentNode = currentNode.getParent();
-            	    
+                    	        if (current==null) {
+                    	            current = factory.create(grammarAccess.getFunctionRule().getType().getClassifier());
+                    	            associateNodeWithAstElement(currentNode.getParent(), current);
+                    	        }
+                    	        try {
+                    	       		add(
+                    	       			current, 
+                    	       			"parameters",
+                    	        		lv_parameters_3_0, 
+                    	        		"Parameter", 
+                    	        		currentNode);
+                    	        } catch (ValueConverterException vce) {
+                    				handleValueConverterException(vce);
+                    	        }
+                    	        currentNode = currentNode.getParent();
+                    	    
+
+                    }
+
+
+                    }
+                    break;
 
             }
 
-
-            }
-
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:488:2: ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )*
-            loop4:
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:488:3: ( ',' ( (lv_parameters_5_0= ruleParameter ) ) )*
+            loop5:
             do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
+                int alt5=2;
+                int LA5_0 = input.LA(1);
 
-                if ( (LA4_0==19) ) {
-                    alt4=1;
+                if ( (LA5_0==19) ) {
+                    alt5=1;
                 }
 
 
-                switch (alt4) {
+                switch (alt5) {
             	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:488:4: ',' ( (lv_parameters_5_0= ruleParameter ) )
+            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:488:5: ',' ( (lv_parameters_5_0= ruleParameter ) )
             	    {
-            	    match(input,19,FOLLOW_19_in_ruleFunction764); 
+            	    match(input,19,FOLLOW_19_in_ruleFunction765); 
 
             	            createLeafNode(grammarAccess.getFunctionAccess().getCommaKeyword_4_0(), null); 
             	        
@@ -941,7 +952,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             	     
             	    	        currentNode=createCompositeNode(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0(), currentNode); 
             	    	    
-            	    pushFollow(FOLLOW_ruleParameter_in_ruleFunction785);
+            	    pushFollow(FOLLOW_ruleParameter_in_ruleFunction786);
             	    lv_parameters_5_0=ruleParameter();
             	    _fsp--;
 
@@ -973,15 +984,15 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             	    break;
 
             	default :
-            	    break loop4;
+            	    break loop5;
                 }
             } while (true);
 
-            match(input,20,FOLLOW_20_in_ruleFunction797); 
+            match(input,20,FOLLOW_20_in_ruleFunction798); 
 
                     createLeafNode(grammarAccess.getFunctionAccess().getRightParenthesisKeyword_5(), null); 
                 
-            match(input,14,FOLLOW_14_in_ruleFunction807); 
+            match(input,14,FOLLOW_14_in_ruleFunction808); 
 
                     createLeafNode(grammarAccess.getFunctionAccess().getSemicolonKeyword_6(), null); 
                 
@@ -1020,12 +1031,12 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:534:2: iv_ruleParameter= ruleParameter EOF
             {
              currentNode = createCompositeNode(grammarAccess.getParameterRule(), currentNode); 
-            pushFollow(FOLLOW_ruleParameter_in_entryRuleParameter843);
+            pushFollow(FOLLOW_ruleParameter_in_entryRuleParameter844);
             iv_ruleParameter=ruleParameter();
             _fsp--;
 
              current =iv_ruleParameter; 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleParameter853); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleParameter854); 
 
             }
 
@@ -1071,7 +1082,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
              
             	        currentNode=createCompositeNode(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0(), currentNode); 
             	    
-            pushFollow(FOLLOW_ruleDirection_in_ruleParameter899);
+            pushFollow(FOLLOW_ruleDirection_in_ruleParameter900);
             lv_direction_0_0=ruleDirection();
             _fsp--;
 
@@ -1107,7 +1118,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
              
             	        currentNode=createCompositeNode(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0(), currentNode); 
             	    
-            pushFollow(FOLLOW_ruleTypeStar_in_ruleParameter920);
+            pushFollow(FOLLOW_ruleTypeStar_in_ruleParameter921);
             lv_type_1_0=ruleTypeStar();
             _fsp--;
 
@@ -1141,7 +1152,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:597:3: lv_name_2_0= RULE_ID
             {
             lv_name_2_0=(Token)input.LT(1);
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_ruleParameter937); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_ruleParameter938); 
 
             			createLeafNode(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_2_0(), "name"); 
             		
@@ -1202,12 +1213,12 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:629:2: iv_ruleTypeStar= ruleTypeStar EOF
             {
              currentNode = createCompositeNode(grammarAccess.getTypeStarRule(), currentNode); 
-            pushFollow(FOLLOW_ruleTypeStar_in_entryRuleTypeStar978);
+            pushFollow(FOLLOW_ruleTypeStar_in_entryRuleTypeStar979);
             iv_ruleTypeStar=ruleTypeStar();
             _fsp--;
 
              current =iv_ruleTypeStar; 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleTypeStar988); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleTypeStar989); 
 
             }
 
@@ -1239,22 +1250,22 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:642:1: ( ( (lv_btype_0_0= ruleBaseType ) ) | ( ( RULE_ID ) ) )
             {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:642:1: ( ( (lv_btype_0_0= ruleBaseType ) ) | ( ( RULE_ID ) ) )
-            int alt5=2;
-            int LA5_0 = input.LA(1);
+            int alt6=2;
+            int LA6_0 = input.LA(1);
 
-            if ( ((LA5_0>=21 && LA5_0<=23)) ) {
-                alt5=1;
+            if ( ((LA6_0>=21 && LA6_0<=23)) ) {
+                alt6=1;
             }
-            else if ( (LA5_0==RULE_ID) ) {
-                alt5=2;
+            else if ( (LA6_0==RULE_ID) ) {
+                alt6=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("642:1: ( ( (lv_btype_0_0= ruleBaseType ) ) | ( ( RULE_ID ) ) )", 5, 0, input);
+                    new NoViableAltException("642:1: ( ( (lv_btype_0_0= ruleBaseType ) ) | ( ( RULE_ID ) ) )", 6, 0, input);
 
                 throw nvae;
             }
-            switch (alt5) {
+            switch (alt6) {
                 case 1 :
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:642:2: ( (lv_btype_0_0= ruleBaseType ) )
                     {
@@ -1267,7 +1278,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                      
                     	        currentNode=createCompositeNode(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0(), currentNode); 
                     	    
-                    pushFollow(FOLLOW_ruleBaseType_in_ruleTypeStar1034);
+                    pushFollow(FOLLOW_ruleBaseType_in_ruleTypeStar1035);
                     lv_btype_0_0=ruleBaseType();
                     _fsp--;
 
@@ -1312,7 +1323,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     	            associateNodeWithAstElement(currentNode, current);
                     	        }
                             
-                    match(input,RULE_ID,FOLLOW_RULE_ID_in_ruleTypeStar1058); 
+                    match(input,RULE_ID,FOLLOW_RULE_ID_in_ruleTypeStar1059); 
 
                     		createLeafNode(grammarAccess.getTypeStarAccess().getCtypeDataTypeCrossReference_1_0(), "ctype"); 
                     	
@@ -1358,38 +1369,38 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:694:1: ( ( 'int' ) | ( 'long' ) | ( 'char' ) )
             {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:694:1: ( ( 'int' ) | ( 'long' ) | ( 'char' ) )
-            int alt6=3;
+            int alt7=3;
             switch ( input.LA(1) ) {
             case 21:
                 {
-                alt6=1;
+                alt7=1;
                 }
                 break;
             case 22:
                 {
-                alt6=2;
+                alt7=2;
                 }
                 break;
             case 23:
                 {
-                alt6=3;
+                alt7=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("694:1: ( ( 'int' ) | ( 'long' ) | ( 'char' ) )", 6, 0, input);
+                    new NoViableAltException("694:1: ( ( 'int' ) | ( 'long' ) | ( 'char' ) )", 7, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt6) {
+            switch (alt7) {
                 case 1 :
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:694:2: ( 'int' )
                     {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:694:2: ( 'int' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:694:4: 'int'
                     {
-                    match(input,21,FOLLOW_21_in_ruleBaseType1106); 
+                    match(input,21,FOLLOW_21_in_ruleBaseType1107); 
 
                             current = grammarAccess.getBaseTypeAccess().getIntEnumLiteralDeclaration_0().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getBaseTypeAccess().getIntEnumLiteralDeclaration_0(), null); 
@@ -1406,7 +1417,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:700:6: ( 'long' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:700:8: 'long'
                     {
-                    match(input,22,FOLLOW_22_in_ruleBaseType1121); 
+                    match(input,22,FOLLOW_22_in_ruleBaseType1122); 
 
                             current = grammarAccess.getBaseTypeAccess().getLongEnumLiteralDeclaration_1().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getBaseTypeAccess().getLongEnumLiteralDeclaration_1(), null); 
@@ -1423,7 +1434,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:706:6: ( 'char' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:706:8: 'char'
                     {
-                    match(input,23,FOLLOW_23_in_ruleBaseType1136); 
+                    match(input,23,FOLLOW_23_in_ruleBaseType1137); 
 
                             current = grammarAccess.getBaseTypeAccess().getCharEnumLiteralDeclaration_2().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getBaseTypeAccess().getCharEnumLiteralDeclaration_2(), null); 
@@ -1467,38 +1478,38 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:721:1: ( ( 'init' ) | ( 'loop' ) | ( 'end' ) )
             {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:721:1: ( ( 'init' ) | ( 'loop' ) | ( 'end' ) )
-            int alt7=3;
+            int alt8=3;
             switch ( input.LA(1) ) {
             case 24:
                 {
-                alt7=1;
+                alt8=1;
                 }
                 break;
             case 25:
                 {
-                alt7=2;
+                alt8=2;
                 }
                 break;
             case 26:
                 {
-                alt7=3;
+                alt8=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("721:1: ( ( 'init' ) | ( 'loop' ) | ( 'end' ) )", 7, 0, input);
+                    new NoViableAltException("721:1: ( ( 'init' ) | ( 'loop' ) | ( 'end' ) )", 8, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt7) {
+            switch (alt8) {
                 case 1 :
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:721:2: ( 'init' )
                     {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:721:2: ( 'init' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:721:4: 'init'
                     {
-                    match(input,24,FOLLOW_24_in_ruleInterfaceName1179); 
+                    match(input,24,FOLLOW_24_in_ruleInterfaceName1180); 
 
                             current = grammarAccess.getInterfaceNameAccess().getInitEnumLiteralDeclaration_0().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getInterfaceNameAccess().getInitEnumLiteralDeclaration_0(), null); 
@@ -1515,7 +1526,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:727:6: ( 'loop' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:727:8: 'loop'
                     {
-                    match(input,25,FOLLOW_25_in_ruleInterfaceName1194); 
+                    match(input,25,FOLLOW_25_in_ruleInterfaceName1195); 
 
                             current = grammarAccess.getInterfaceNameAccess().getLoopEnumLiteralDeclaration_1().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getInterfaceNameAccess().getLoopEnumLiteralDeclaration_1(), null); 
@@ -1532,7 +1543,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:733:6: ( 'end' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:733:8: 'end'
                     {
-                    match(input,26,FOLLOW_26_in_ruleInterfaceName1209); 
+                    match(input,26,FOLLOW_26_in_ruleInterfaceName1210); 
 
                             current = grammarAccess.getInterfaceNameAccess().getEndEnumLiteralDeclaration_2().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getInterfaceNameAccess().getEndEnumLiteralDeclaration_2(), null); 
@@ -1576,29 +1587,29 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:748:1: ( ( 'in' ) | ( 'out' ) )
             {
             // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:748:1: ( ( 'in' ) | ( 'out' ) )
-            int alt8=2;
-            int LA8_0 = input.LA(1);
+            int alt9=2;
+            int LA9_0 = input.LA(1);
 
-            if ( (LA8_0==27) ) {
-                alt8=1;
+            if ( (LA9_0==27) ) {
+                alt9=1;
             }
-            else if ( (LA8_0==28) ) {
-                alt8=2;
+            else if ( (LA9_0==28) ) {
+                alt9=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("748:1: ( ( 'in' ) | ( 'out' ) )", 8, 0, input);
+                    new NoViableAltException("748:1: ( ( 'in' ) | ( 'out' ) )", 9, 0, input);
 
                 throw nvae;
             }
-            switch (alt8) {
+            switch (alt9) {
                 case 1 :
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:748:2: ( 'in' )
                     {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:748:2: ( 'in' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:748:4: 'in'
                     {
-                    match(input,27,FOLLOW_27_in_ruleDirection1252); 
+                    match(input,27,FOLLOW_27_in_ruleDirection1253); 
 
                             current = grammarAccess.getDirectionAccess().getInEnumLiteralDeclaration_0().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getDirectionAccess().getInEnumLiteralDeclaration_0(), null); 
@@ -1615,7 +1626,7 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:754:6: ( 'out' )
                     // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:754:8: 'out'
                     {
-                    match(input,28,FOLLOW_28_in_ruleDirection1267); 
+                    match(input,28,FOLLOW_28_in_ruleDirection1268); 
 
                             current = grammarAccess.getDirectionAccess().getOutEnumLiteralDeclaration_1().getEnumLiteral().getInstance();
                             createLeafNode(grammarAccess.getDirectionAccess().getOutEnumLiteralDeclaration_1(), null); 
@@ -1681,28 +1692,28 @@ public class InternalIDLLanguageParser extends AbstractInternalAntlrParser {
     public static final BitSet FOLLOW_EOF_in_entryRuleFunction665 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_17_in_ruleFunction700 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_RULE_ID_in_ruleFunction717 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_ruleFunction732 = new BitSet(new long[]{0x0000000018000000L});
+    public static final BitSet FOLLOW_18_in_ruleFunction732 = new BitSet(new long[]{0x0000000018180000L});
     public static final BitSet FOLLOW_ruleParameter_in_ruleFunction753 = new BitSet(new long[]{0x0000000000180000L});
-    public static final BitSet FOLLOW_19_in_ruleFunction764 = new BitSet(new long[]{0x0000000018000000L});
-    public static final BitSet FOLLOW_ruleParameter_in_ruleFunction785 = new BitSet(new long[]{0x0000000000180000L});
-    public static final BitSet FOLLOW_20_in_ruleFunction797 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_ruleFunction807 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleParameter_in_entryRuleParameter843 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleParameter853 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleDirection_in_ruleParameter899 = new BitSet(new long[]{0x0000000000E00010L});
-    public static final BitSet FOLLOW_ruleTypeStar_in_ruleParameter920 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_RULE_ID_in_ruleParameter937 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleTypeStar_in_entryRuleTypeStar978 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleTypeStar988 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleBaseType_in_ruleTypeStar1034 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_ruleTypeStar1058 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_21_in_ruleBaseType1106 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_22_in_ruleBaseType1121 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_23_in_ruleBaseType1136 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_24_in_ruleInterfaceName1179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_25_in_ruleInterfaceName1194 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_26_in_ruleInterfaceName1209 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_27_in_ruleDirection1252 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_28_in_ruleDirection1267 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_19_in_ruleFunction765 = new BitSet(new long[]{0x0000000018000000L});
+    public static final BitSet FOLLOW_ruleParameter_in_ruleFunction786 = new BitSet(new long[]{0x0000000000180000L});
+    public static final BitSet FOLLOW_20_in_ruleFunction798 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_14_in_ruleFunction808 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_entryRuleParameter844 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleParameter854 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDirection_in_ruleParameter900 = new BitSet(new long[]{0x0000000000E00010L});
+    public static final BitSet FOLLOW_ruleTypeStar_in_ruleParameter921 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_RULE_ID_in_ruleParameter938 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleTypeStar_in_entryRuleTypeStar979 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleTypeStar989 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleBaseType_in_ruleTypeStar1035 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_ruleTypeStar1059 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_ruleBaseType1107 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_ruleBaseType1122 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_23_in_ruleBaseType1137 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_24_in_ruleInterfaceName1180 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_25_in_ruleInterfaceName1195 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_26_in_ruleInterfaceName1210 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_27_in_ruleDirection1253 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_28_in_ruleDirection1268 = new BitSet(new long[]{0x0000000000000002L});
 
 }

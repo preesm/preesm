@@ -485,7 +485,7 @@ ruleFunction returns [EObject current=null]
 	    }
 
 )
-)(	',' 
+)?(	',' 
     {
         createLeafNode(grammarAccess.getFunctionAccess().getCommaKeyword_4_0(), null); 
     }

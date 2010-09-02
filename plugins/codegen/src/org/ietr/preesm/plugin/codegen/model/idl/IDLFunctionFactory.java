@@ -38,10 +38,22 @@ package org.ietr.preesm.plugin.codegen.model.idl;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
 import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.editor.IDLLanguageStandaloneSetup;
+import org.ietr.preesm.editor.iDLLanguage.Direction;
+import org.ietr.preesm.editor.iDLLanguage.IDL;
+import org.ietr.preesm.editor.iDLLanguage.InterfaceName;
+import org.ietr.preesm.editor.iDLLanguage.Parameter;
 import org.ietr.preesm.plugin.codegen.model.IFunctionFactory;
 import org.jacorb.idl.AliasTypeSpec;
 import org.jacorb.idl.ConstrTypeSpec;
@@ -67,7 +79,6 @@ import org.jacorb.idl.TypeDef;
 import org.jacorb.idl.UnionType;
 import org.jacorb.idl.Value;
 import org.jacorb.idl.VectorType;
-import org.jacorb.idl.parser;
 
 /**
  * Retrieving prototype data from an idl file
@@ -96,20 +107,84 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	@Override
 	public FunctionCall create(String idlPath) {
 		if (createdIdl.get(idlPath) == null) {
+			
 			currentCall = null;
-			parser.setGenerator(this);
+			finalCall = new FunctionCall();
+			
+			new IDLLanguageStandaloneSetup().createInjectorAndDoEMFRegistration();
+			ResourceSet rs = new ResourceSetImpl();
+			
+			Resource resource = rs.getResource(URI.createURI("file:/"+idlPath), true);
+			
+			EObject eobject = resource.getContents().get(0);
 
-			try {
-				finalCall = new FunctionCall();
-				IDLParser.parse(idlPath, this);
-				createdIdl.put(idlPath, finalCall);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(eobject instanceof IDL){
+				org.ietr.preesm.editor.iDLLanguage.Module module = ((IDL) eobject).getElements().get(0);
+				
+				for(org.ietr.preesm.editor.iDLLanguage.Interface intf : module.getInterfaces()){
+					if(intf.getName().equals(InterfaceName.LOOP)){
+						currentCall = finalCall;
+					}
+					else if(intf.getName().equals(InterfaceName.INIT)){
+						currentCall = new FunctionCall();
+						finalCall.setInitCall(currentCall);
+					}
+					else if(intf.getName().equals(InterfaceName.END)){
+						currentCall = new FunctionCall();
+						finalCall.setEndCall(currentCall);
+					}
+					
+					org.ietr.preesm.editor.iDLLanguage.Function function = intf.getFunction();
+					currentCall.setFunctionName(function.getName());
+					
+					for(Parameter param : function.getParameters()){
+						String stype = null;
+						if(param.getType().getBtype()== null){
+							stype = param.getType().getCtype().getName();
+						}
+						else{
+							stype = param.getType().getBtype().getName();
+						}
+						
+						if(param.getDirection().equals(Direction.IN)){
+							if(stype.equals("parameter")){
+								CodeGenParameter parameter = new CodeGenParameter(
+										param.getName(), 0);
+								currentCall.addParameter(parameter);
+							}
+							else{
+								CodeGenArgument argument = new CodeGenArgument(
+										param.getName(), CodeGenArgument.INPUT);
+								argument.setType(stype);
+								currentCall.addArgument(argument);
+							}
+						}
+						else if(param.getDirection().equals(Direction.OUT)){
+							if(stype.equals("parameter")){
+								CodeGenParameter parameter = new CodeGenParameter(
+										param.getName(), 1);
+								currentCall.addParameter(parameter);
+							}
+							else{
+								CodeGenArgument argument = new CodeGenArgument(
+										param.getName(), CodeGenArgument.OUTPUT);
+								argument.setType(stype);
+								currentCall.addArgument(argument);
+							}
+						}
+					}
+				}
 			}
+			else{
+				PreesmLogger.getLogger().log(Level.SEVERE,"wrong IDL file content: idlPath");
+			}
+			
+			/////////////////////
 
+			createdIdl.put(idlPath, finalCall);
 			currentCall = null;
 		}
+		
 		return createdIdl.get(idlPath);
 	}
 
@@ -202,29 +277,7 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 
 	@Override
 	public void visitParamDecl(ParamDecl arg0) {
-		if (arg0.paramAttribute == ParamDecl.MODE_IN) {
-			if (arg0.paramTypeSpec.name().equals("parameter")) {
-				CodeGenParameter parameter = new CodeGenParameter(
-						arg0.simple_declarator.name(), 0);
-				currentCall.addParameter(parameter);
-			} else {
-				CodeGenArgument argument = new CodeGenArgument(
-						arg0.simple_declarator.name(), CodeGenArgument.INPUT);
-				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				currentCall.addArgument(argument);
-			}
-		} else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
-			if (arg0.paramTypeSpec.name().equals("parameter")) {
-				CodeGenParameter parameter = new CodeGenParameter(
-						arg0.simple_declarator.name(), 1);
-				currentCall.addParameter(parameter);
-			} else {
-				CodeGenArgument argument = new CodeGenArgument(
-						arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
-				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				currentCall.addArgument(argument);
-			}
-		}
+		
 	}
 
 	@Override
@@ -272,14 +325,5 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 		// TODO Auto-generated method stub
 	}
 
-	public static void main(String[] args) {
-		if (args.length != 1) {
-			return;
-		}
-		IDLFunctionFactory factory = new IDLFunctionFactory();
-		@SuppressWarnings("unused")
-		FunctionCall call = factory.create(args[0]);
-		System.out.println("creation done");
-	}
 
 }

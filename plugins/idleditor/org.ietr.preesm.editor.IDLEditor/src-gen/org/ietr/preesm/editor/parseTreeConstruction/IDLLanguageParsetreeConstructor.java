@@ -781,11 +781,11 @@ protected class Interface_SemicolonKeyword_5 extends KeywordToken  {
 /************ begin Rule Function ****************
  *
  * Function:
- * 	"void" name=ID "(" parameters+=Parameter ("," parameters+=Parameter)* ")" ";";
+ * 	"void" name=ID "(" parameters+=Parameter? ("," parameters+=Parameter)* ")" ";";
  *
  **/
 
-// "void" name=ID "(" parameters+=Parameter ("," parameters+=Parameter)* ")" ";"
+// "void" name=ID "(" parameters+=Parameter? ("," parameters+=Parameter)* ")" ";"
 protected class Function_Group extends GroupToken {
 	
 	public Function_Group(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -891,7 +891,7 @@ protected class Function_LeftParenthesisKeyword_2 extends KeywordToken  {
 
 }
 
-// parameters+=Parameter
+// parameters+=Parameter?
 protected class Function_ParametersAssignment_3 extends AssignmentToken  {
 	
 	public Function_ParametersAssignment_3(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -913,7 +913,7 @@ protected class Function_ParametersAssignment_3 extends AssignmentToken  {
 
     @Override	
 	public IEObjectConsumer tryConsume() {
-		if((value = eObjectConsumer.getConsumable("parameters",true)) == null) return null;
+		if((value = eObjectConsumer.getConsumable("parameters",false)) == null) return null;
 		IEObjectConsumer obj = eObjectConsumer.cloneAndConsume("parameters");
 		if(value instanceof EObject) { // org::eclipse::xtext::impl::RuleCallImpl
 			IEObjectConsumer param = createEObjectConsumer((EObject)value);
@@ -976,6 +976,7 @@ protected class Function_CommaKeyword_4_0 extends KeywordToken  {
 		switch(index) {
 			case 0: return new Function_Group_4(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new Function_ParametersAssignment_3(lastRuleCallOrigin, this, 1, inst);
+			case 2: return new Function_LeftParenthesisKeyword_2(lastRuleCallOrigin, this, 2, inst);
 			default: return null;
 		}	
 	}
@@ -1046,6 +1047,7 @@ protected class Function_RightParenthesisKeyword_5 extends KeywordToken  {
 		switch(index) {
 			case 0: return new Function_Group_4(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new Function_ParametersAssignment_3(lastRuleCallOrigin, this, 1, inst);
+			case 2: return new Function_LeftParenthesisKeyword_2(lastRuleCallOrigin, this, 2, inst);
 			default: return null;
 		}	
 	}
