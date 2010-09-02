@@ -5,6 +5,11 @@ package org.ietr.preesm.editor.ui.labeling;
 
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider;
+import org.ietr.preesm.editor.iDLLanguage.DataType;
+import org.ietr.preesm.editor.iDLLanguage.Function;
+import org.ietr.preesm.editor.iDLLanguage.Interface;
+import org.ietr.preesm.editor.iDLLanguage.Module;
+import org.ietr.preesm.editor.iDLLanguage.Parameter;
 
 import com.google.inject.Inject;
 
@@ -19,16 +24,45 @@ public class IDLLanguageLabelProvider extends DefaultEObjectLabelProvider {
 	public IDLLanguageLabelProvider(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
 	}
+	 
+    String image(Function ele) {
+      return "preesm2mini.PNG";
+    }
 
-/*
-	//Labels and icons can be computed like this:
-	
-	String text(MyModel ele) {
-	  return "my "+ele.getName();
+	String text(Function ele) {
+	  return ele.getName();
 	}
 	 
-    String image(MyModel ele) {
-      return "MyModel.gif";
+    String image(Interface ele) {
+      return "preesm3mini.PNG";
     }
-*/
+
+	String text(Interface ele) {
+	  return ele.getName().getLiteral();
+	}
+	 
+    String image(Module ele) {
+      return "preesm1mini.PNG";
+    }
+
+	String text(Module ele) {
+	  return ele.getName();
+	}
+	 
+    String image(DataType ele) {
+      return "preesm4mini.PNG";
+    }
+
+	String text(DataType ele) {
+	  return ele.getName();
+	}
+	 
+    String image(Parameter ele) {
+      return "preesm4mini.PNG";
+    }
+
+	String text(Parameter ele) {
+	  return ele.getName();
+	}
+	
 }
