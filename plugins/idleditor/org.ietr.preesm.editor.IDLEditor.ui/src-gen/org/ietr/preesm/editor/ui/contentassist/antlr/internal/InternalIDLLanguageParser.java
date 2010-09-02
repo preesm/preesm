@@ -23,7 +23,7 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalIDLLanguageParser extends AbstractInternalContentAssistParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'datatype'", "'entity'", "'{'", "'}'", "'extends'", "':'", "'*'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'int'", "'long'", "'char'", "'init'", "'loop'", "'end'", "'in'", "'out'", "'module'", "'{'", "'}'", "';'", "'typedef'", "'interface'", "'void'", "'('", "')'", "','"
     };
     public static final int RULE_ID=4;
     public static final int RULE_STRING=6;
@@ -93,46 +93,28 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
     // $ANTLR start ruleIDL
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:70:1: ruleIDL : ( ( rule__IDL__ElementsAssignment )* ) ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:70:1: ruleIDL : ( ( rule__IDL__ElementsAssignment ) ) ;
     public final void ruleIDL() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:74:2: ( ( ( rule__IDL__ElementsAssignment )* ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:75:1: ( ( rule__IDL__ElementsAssignment )* )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:74:2: ( ( ( rule__IDL__ElementsAssignment ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:75:1: ( ( rule__IDL__ElementsAssignment ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:75:1: ( ( rule__IDL__ElementsAssignment )* )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:76:1: ( rule__IDL__ElementsAssignment )*
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:75:1: ( ( rule__IDL__ElementsAssignment ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:76:1: ( rule__IDL__ElementsAssignment )
             {
              before(grammarAccess.getIDLAccess().getElementsAssignment()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:77:1: ( rule__IDL__ElementsAssignment )*
-            loop1:
-            do {
-                int alt1=2;
-                int LA1_0 = input.LA(1);
-
-                if ( ((LA1_0>=11 && LA1_0<=12)) ) {
-                    alt1=1;
-                }
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:77:1: ( rule__IDL__ElementsAssignment )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:77:2: rule__IDL__ElementsAssignment
+            {
+            pushFollow(FOLLOW_rule__IDL__ElementsAssignment_in_ruleIDL94);
+            rule__IDL__ElementsAssignment();
+            _fsp--;
 
 
-                switch (alt1) {
-            	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:77:2: rule__IDL__ElementsAssignment
-            	    {
-            	    pushFollow(FOLLOW_rule__IDL__ElementsAssignment_in_ruleIDL94);
-            	    rule__IDL__ElementsAssignment();
-            	    _fsp--;
-
-
-            	    }
-            	    break;
-
-            	default :
-            	    break loop1;
-                }
-            } while (true);
+            }
 
              after(grammarAccess.getIDLAccess().getElementsAssignment()); 
 
@@ -156,20 +138,20 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     // $ANTLR end ruleIDL
 
 
-    // $ANTLR start entryRuleType
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:89:1: entryRuleType : ruleType EOF ;
-    public final void entryRuleType() throws RecognitionException {
+    // $ANTLR start entryRuleModule
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:89:1: entryRuleModule : ruleModule EOF ;
+    public final void entryRuleModule() throws RecognitionException {
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:90:1: ( ruleType EOF )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:91:1: ruleType EOF
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:90:1: ( ruleModule EOF )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:91:1: ruleModule EOF
             {
-             before(grammarAccess.getTypeRule()); 
-            pushFollow(FOLLOW_ruleType_in_entryRuleType122);
-            ruleType();
+             before(grammarAccess.getModuleRule()); 
+            pushFollow(FOLLOW_ruleModule_in_entryRuleModule121);
+            ruleModule();
             _fsp--;
 
-             after(grammarAccess.getTypeRule()); 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleType129); 
+             after(grammarAccess.getModuleRule()); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleModule128); 
 
             }
 
@@ -182,34 +164,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleType
+    // $ANTLR end entryRuleModule
 
 
-    // $ANTLR start ruleType
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:98:1: ruleType : ( ( rule__Type__Alternatives ) ) ;
-    public final void ruleType() throws RecognitionException {
+    // $ANTLR start ruleModule
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:98:1: ruleModule : ( ( rule__Module__Group__0 ) ) ;
+    public final void ruleModule() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:102:2: ( ( ( rule__Type__Alternatives ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:103:1: ( ( rule__Type__Alternatives ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:102:2: ( ( ( rule__Module__Group__0 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:103:1: ( ( rule__Module__Group__0 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:103:1: ( ( rule__Type__Alternatives ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:104:1: ( rule__Type__Alternatives )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:103:1: ( ( rule__Module__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:104:1: ( rule__Module__Group__0 )
             {
-             before(grammarAccess.getTypeAccess().getAlternatives()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:105:1: ( rule__Type__Alternatives )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:105:2: rule__Type__Alternatives
+             before(grammarAccess.getModuleAccess().getGroup()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:105:1: ( rule__Module__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:105:2: rule__Module__Group__0
             {
-            pushFollow(FOLLOW_rule__Type__Alternatives_in_ruleType155);
-            rule__Type__Alternatives();
+            pushFollow(FOLLOW_rule__Module__Group__0_in_ruleModule154);
+            rule__Module__Group__0();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getTypeAccess().getAlternatives()); 
+             after(grammarAccess.getModuleAccess().getGroup()); 
 
             }
 
@@ -228,7 +210,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleType
+    // $ANTLR end ruleModule
 
 
     // $ANTLR start entryRuleDataType
@@ -239,12 +221,12 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:119:1: ruleDataType EOF
             {
              before(grammarAccess.getDataTypeRule()); 
-            pushFollow(FOLLOW_ruleDataType_in_entryRuleDataType182);
+            pushFollow(FOLLOW_ruleDataType_in_entryRuleDataType181);
             ruleDataType();
             _fsp--;
 
              after(grammarAccess.getDataTypeRule()); 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleDataType189); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleDataType188); 
 
             }
 
@@ -277,7 +259,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:133:1: ( rule__DataType__Group__0 )
             // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:133:2: rule__DataType__Group__0
             {
-            pushFollow(FOLLOW_rule__DataType__Group__0_in_ruleDataType215);
+            pushFollow(FOLLOW_rule__DataType__Group__0_in_ruleDataType214);
             rule__DataType__Group__0();
             _fsp--;
 
@@ -306,20 +288,20 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     // $ANTLR end ruleDataType
 
 
-    // $ANTLR start entryRuleEntity
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:145:1: entryRuleEntity : ruleEntity EOF ;
-    public final void entryRuleEntity() throws RecognitionException {
+    // $ANTLR start entryRuleInterface
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:145:1: entryRuleInterface : ruleInterface EOF ;
+    public final void entryRuleInterface() throws RecognitionException {
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:146:1: ( ruleEntity EOF )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:147:1: ruleEntity EOF
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:146:1: ( ruleInterface EOF )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:147:1: ruleInterface EOF
             {
-             before(grammarAccess.getEntityRule()); 
-            pushFollow(FOLLOW_ruleEntity_in_entryRuleEntity242);
-            ruleEntity();
+             before(grammarAccess.getInterfaceRule()); 
+            pushFollow(FOLLOW_ruleInterface_in_entryRuleInterface241);
+            ruleInterface();
             _fsp--;
 
-             after(grammarAccess.getEntityRule()); 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleEntity249); 
+             after(grammarAccess.getInterfaceRule()); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleInterface248); 
 
             }
 
@@ -332,34 +314,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleEntity
+    // $ANTLR end entryRuleInterface
 
 
-    // $ANTLR start ruleEntity
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:154:1: ruleEntity : ( ( rule__Entity__Group__0 ) ) ;
-    public final void ruleEntity() throws RecognitionException {
+    // $ANTLR start ruleInterface
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:154:1: ruleInterface : ( ( rule__Interface__Group__0 ) ) ;
+    public final void ruleInterface() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:158:2: ( ( ( rule__Entity__Group__0 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:159:1: ( ( rule__Entity__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:158:2: ( ( ( rule__Interface__Group__0 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:159:1: ( ( rule__Interface__Group__0 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:159:1: ( ( rule__Entity__Group__0 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:160:1: ( rule__Entity__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:159:1: ( ( rule__Interface__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:160:1: ( rule__Interface__Group__0 )
             {
-             before(grammarAccess.getEntityAccess().getGroup()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:161:1: ( rule__Entity__Group__0 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:161:2: rule__Entity__Group__0
+             before(grammarAccess.getInterfaceAccess().getGroup()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:161:1: ( rule__Interface__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:161:2: rule__Interface__Group__0
             {
-            pushFollow(FOLLOW_rule__Entity__Group__0_in_ruleEntity275);
-            rule__Entity__Group__0();
+            pushFollow(FOLLOW_rule__Interface__Group__0_in_ruleInterface274);
+            rule__Interface__Group__0();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getEntityAccess().getGroup()); 
+             after(grammarAccess.getInterfaceAccess().getGroup()); 
 
             }
 
@@ -378,23 +360,23 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleEntity
+    // $ANTLR end ruleInterface
 
 
-    // $ANTLR start entryRuleFeature
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:173:1: entryRuleFeature : ruleFeature EOF ;
-    public final void entryRuleFeature() throws RecognitionException {
+    // $ANTLR start entryRuleFunction
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:173:1: entryRuleFunction : ruleFunction EOF ;
+    public final void entryRuleFunction() throws RecognitionException {
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:174:1: ( ruleFeature EOF )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:175:1: ruleFeature EOF
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:174:1: ( ruleFunction EOF )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:175:1: ruleFunction EOF
             {
-             before(grammarAccess.getFeatureRule()); 
-            pushFollow(FOLLOW_ruleFeature_in_entryRuleFeature302);
-            ruleFeature();
+             before(grammarAccess.getFunctionRule()); 
+            pushFollow(FOLLOW_ruleFunction_in_entryRuleFunction301);
+            ruleFunction();
             _fsp--;
 
-             after(grammarAccess.getFeatureRule()); 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleFeature309); 
+             after(grammarAccess.getFunctionRule()); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleFunction308); 
 
             }
 
@@ -407,34 +389,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleFeature
+    // $ANTLR end entryRuleFunction
 
 
-    // $ANTLR start ruleFeature
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:182:1: ruleFeature : ( ( rule__Feature__Group__0 ) ) ;
-    public final void ruleFeature() throws RecognitionException {
+    // $ANTLR start ruleFunction
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:182:1: ruleFunction : ( ( rule__Function__Group__0 ) ) ;
+    public final void ruleFunction() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:186:2: ( ( ( rule__Feature__Group__0 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:187:1: ( ( rule__Feature__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:186:2: ( ( ( rule__Function__Group__0 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:187:1: ( ( rule__Function__Group__0 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:187:1: ( ( rule__Feature__Group__0 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:188:1: ( rule__Feature__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:187:1: ( ( rule__Function__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:188:1: ( rule__Function__Group__0 )
             {
-             before(grammarAccess.getFeatureAccess().getGroup()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:189:1: ( rule__Feature__Group__0 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:189:2: rule__Feature__Group__0
+             before(grammarAccess.getFunctionAccess().getGroup()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:189:1: ( rule__Function__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:189:2: rule__Function__Group__0
             {
-            pushFollow(FOLLOW_rule__Feature__Group__0_in_ruleFeature335);
-            rule__Feature__Group__0();
+            pushFollow(FOLLOW_rule__Function__Group__0_in_ruleFunction334);
+            rule__Function__Group__0();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getFeatureAccess().getGroup()); 
+             after(grammarAccess.getFunctionAccess().getGroup()); 
 
             }
 
@@ -453,23 +435,23 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleFeature
+    // $ANTLR end ruleFunction
 
 
-    // $ANTLR start entryRuleTypeRef
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:201:1: entryRuleTypeRef : ruleTypeRef EOF ;
-    public final void entryRuleTypeRef() throws RecognitionException {
+    // $ANTLR start entryRuleParameter
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:201:1: entryRuleParameter : ruleParameter EOF ;
+    public final void entryRuleParameter() throws RecognitionException {
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:202:1: ( ruleTypeRef EOF )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:203:1: ruleTypeRef EOF
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:202:1: ( ruleParameter EOF )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:203:1: ruleParameter EOF
             {
-             before(grammarAccess.getTypeRefRule()); 
-            pushFollow(FOLLOW_ruleTypeRef_in_entryRuleTypeRef362);
-            ruleTypeRef();
+             before(grammarAccess.getParameterRule()); 
+            pushFollow(FOLLOW_ruleParameter_in_entryRuleParameter361);
+            ruleParameter();
             _fsp--;
 
-             after(grammarAccess.getTypeRefRule()); 
-            match(input,EOF,FOLLOW_EOF_in_entryRuleTypeRef369); 
+             after(grammarAccess.getParameterRule()); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleParameter368); 
 
             }
 
@@ -482,34 +464,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleTypeRef
+    // $ANTLR end entryRuleParameter
 
 
-    // $ANTLR start ruleTypeRef
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:210:1: ruleTypeRef : ( ( rule__TypeRef__Group__0 ) ) ;
-    public final void ruleTypeRef() throws RecognitionException {
+    // $ANTLR start ruleParameter
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:210:1: ruleParameter : ( ( rule__Parameter__Group__0 ) ) ;
+    public final void ruleParameter() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:214:2: ( ( ( rule__TypeRef__Group__0 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:215:1: ( ( rule__TypeRef__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:214:2: ( ( ( rule__Parameter__Group__0 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:215:1: ( ( rule__Parameter__Group__0 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:215:1: ( ( rule__TypeRef__Group__0 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:216:1: ( rule__TypeRef__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:215:1: ( ( rule__Parameter__Group__0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:216:1: ( rule__Parameter__Group__0 )
             {
-             before(grammarAccess.getTypeRefAccess().getGroup()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:217:1: ( rule__TypeRef__Group__0 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:217:2: rule__TypeRef__Group__0
+             before(grammarAccess.getParameterAccess().getGroup()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:217:1: ( rule__Parameter__Group__0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:217:2: rule__Parameter__Group__0
             {
-            pushFollow(FOLLOW_rule__TypeRef__Group__0_in_ruleTypeRef395);
-            rule__TypeRef__Group__0();
+            pushFollow(FOLLOW_rule__Parameter__Group__0_in_ruleParameter394);
+            rule__Parameter__Group__0();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getTypeRefAccess().getGroup()); 
+             after(grammarAccess.getParameterAccess().getGroup()); 
 
             }
 
@@ -528,45 +510,264 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleTypeRef
+    // $ANTLR end ruleParameter
 
 
-    // $ANTLR start rule__Type__Alternatives
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:229:1: rule__Type__Alternatives : ( ( ruleDataType ) | ( ruleEntity ) );
-    public final void rule__Type__Alternatives() throws RecognitionException {
+    // $ANTLR start entryRuleTypeStar
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:229:1: entryRuleTypeStar : ruleTypeStar EOF ;
+    public final void entryRuleTypeStar() throws RecognitionException {
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:230:1: ( ruleTypeStar EOF )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:231:1: ruleTypeStar EOF
+            {
+             before(grammarAccess.getTypeStarRule()); 
+            pushFollow(FOLLOW_ruleTypeStar_in_entryRuleTypeStar421);
+            ruleTypeStar();
+            _fsp--;
+
+             after(grammarAccess.getTypeStarRule()); 
+            match(input,EOF,FOLLOW_EOF_in_entryRuleTypeStar428); 
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end entryRuleTypeStar
+
+
+    // $ANTLR start ruleTypeStar
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:238:1: ruleTypeStar : ( ( rule__TypeStar__Alternatives ) ) ;
+    public final void ruleTypeStar() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:233:1: ( ( ruleDataType ) | ( ruleEntity ) )
-            int alt2=2;
-            int LA2_0 = input.LA(1);
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:242:2: ( ( ( rule__TypeStar__Alternatives ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:243:1: ( ( rule__TypeStar__Alternatives ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:243:1: ( ( rule__TypeStar__Alternatives ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:244:1: ( rule__TypeStar__Alternatives )
+            {
+             before(grammarAccess.getTypeStarAccess().getAlternatives()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:245:1: ( rule__TypeStar__Alternatives )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:245:2: rule__TypeStar__Alternatives
+            {
+            pushFollow(FOLLOW_rule__TypeStar__Alternatives_in_ruleTypeStar454);
+            rule__TypeStar__Alternatives();
+            _fsp--;
 
-            if ( (LA2_0==11) ) {
-                alt2=1;
+
             }
-            else if ( (LA2_0==12) ) {
-                alt2=2;
+
+             after(grammarAccess.getTypeStarAccess().getAlternatives()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end ruleTypeStar
+
+
+    // $ANTLR start ruleBaseType
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:258:1: ruleBaseType : ( ( rule__BaseType__Alternatives ) ) ;
+    public final void ruleBaseType() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:262:1: ( ( ( rule__BaseType__Alternatives ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:263:1: ( ( rule__BaseType__Alternatives ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:263:1: ( ( rule__BaseType__Alternatives ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:264:1: ( rule__BaseType__Alternatives )
+            {
+             before(grammarAccess.getBaseTypeAccess().getAlternatives()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:265:1: ( rule__BaseType__Alternatives )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:265:2: rule__BaseType__Alternatives
+            {
+            pushFollow(FOLLOW_rule__BaseType__Alternatives_in_ruleBaseType491);
+            rule__BaseType__Alternatives();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getBaseTypeAccess().getAlternatives()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end ruleBaseType
+
+
+    // $ANTLR start ruleInterfaceName
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:277:1: ruleInterfaceName : ( ( rule__InterfaceName__Alternatives ) ) ;
+    public final void ruleInterfaceName() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:281:1: ( ( ( rule__InterfaceName__Alternatives ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:282:1: ( ( rule__InterfaceName__Alternatives ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:282:1: ( ( rule__InterfaceName__Alternatives ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:283:1: ( rule__InterfaceName__Alternatives )
+            {
+             before(grammarAccess.getInterfaceNameAccess().getAlternatives()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:284:1: ( rule__InterfaceName__Alternatives )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:284:2: rule__InterfaceName__Alternatives
+            {
+            pushFollow(FOLLOW_rule__InterfaceName__Alternatives_in_ruleInterfaceName527);
+            rule__InterfaceName__Alternatives();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getInterfaceNameAccess().getAlternatives()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end ruleInterfaceName
+
+
+    // $ANTLR start ruleDirection
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:296:1: ruleDirection : ( ( rule__Direction__Alternatives ) ) ;
+    public final void ruleDirection() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:300:1: ( ( ( rule__Direction__Alternatives ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:301:1: ( ( rule__Direction__Alternatives ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:301:1: ( ( rule__Direction__Alternatives ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:302:1: ( rule__Direction__Alternatives )
+            {
+             before(grammarAccess.getDirectionAccess().getAlternatives()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:303:1: ( rule__Direction__Alternatives )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:303:2: rule__Direction__Alternatives
+            {
+            pushFollow(FOLLOW_rule__Direction__Alternatives_in_ruleDirection563);
+            rule__Direction__Alternatives();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getDirectionAccess().getAlternatives()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end ruleDirection
+
+
+    // $ANTLR start rule__DataType__Alternatives_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:314:1: rule__DataType__Alternatives_1 : ( ( ( rule__DataType__BtypeAssignment_1_0 ) ) | ( ( rule__DataType__CtypeAssignment_1_1 ) ) );
+    public final void rule__DataType__Alternatives_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:318:1: ( ( ( rule__DataType__BtypeAssignment_1_0 ) ) | ( ( rule__DataType__CtypeAssignment_1_1 ) ) )
+            int alt1=2;
+            int LA1_0 = input.LA(1);
+
+            if ( ((LA1_0>=11 && LA1_0<=13)) ) {
+                alt1=1;
+            }
+            else if ( (LA1_0==RULE_ID) ) {
+                alt1=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("229:1: rule__Type__Alternatives : ( ( ruleDataType ) | ( ruleEntity ) );", 2, 0, input);
+                    new NoViableAltException("314:1: rule__DataType__Alternatives_1 : ( ( ( rule__DataType__BtypeAssignment_1_0 ) ) | ( ( rule__DataType__CtypeAssignment_1_1 ) ) );", 1, 0, input);
 
                 throw nvae;
             }
-            switch (alt2) {
+            switch (alt1) {
                 case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:234:1: ( ruleDataType )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:319:1: ( ( rule__DataType__BtypeAssignment_1_0 ) )
                     {
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:234:1: ( ruleDataType )
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:235:1: ruleDataType
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:319:1: ( ( rule__DataType__BtypeAssignment_1_0 ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:320:1: ( rule__DataType__BtypeAssignment_1_0 )
                     {
-                     before(grammarAccess.getTypeAccess().getDataTypeParserRuleCall_0()); 
-                    pushFollow(FOLLOW_ruleDataType_in_rule__Type__Alternatives431);
-                    ruleDataType();
+                     before(grammarAccess.getDataTypeAccess().getBtypeAssignment_1_0()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:321:1: ( rule__DataType__BtypeAssignment_1_0 )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:321:2: rule__DataType__BtypeAssignment_1_0
+                    {
+                    pushFollow(FOLLOW_rule__DataType__BtypeAssignment_1_0_in_rule__DataType__Alternatives_1598);
+                    rule__DataType__BtypeAssignment_1_0();
                     _fsp--;
 
-                     after(grammarAccess.getTypeAccess().getDataTypeParserRuleCall_0()); 
+
+                    }
+
+                     after(grammarAccess.getDataTypeAccess().getBtypeAssignment_1_0()); 
 
                     }
 
@@ -574,17 +775,23 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     }
                     break;
                 case 2 :
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:240:6: ( ruleEntity )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:325:6: ( ( rule__DataType__CtypeAssignment_1_1 ) )
                     {
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:240:6: ( ruleEntity )
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:241:1: ruleEntity
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:325:6: ( ( rule__DataType__CtypeAssignment_1_1 ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:326:1: ( rule__DataType__CtypeAssignment_1_1 )
                     {
-                     before(grammarAccess.getTypeAccess().getEntityParserRuleCall_1()); 
-                    pushFollow(FOLLOW_ruleEntity_in_rule__Type__Alternatives448);
-                    ruleEntity();
+                     before(grammarAccess.getDataTypeAccess().getCtypeAssignment_1_1()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:327:1: ( rule__DataType__CtypeAssignment_1_1 )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:327:2: rule__DataType__CtypeAssignment_1_1
+                    {
+                    pushFollow(FOLLOW_rule__DataType__CtypeAssignment_1_1_in_rule__DataType__Alternatives_1616);
+                    rule__DataType__CtypeAssignment_1_1();
                     _fsp--;
 
-                     after(grammarAccess.getTypeAccess().getEntityParserRuleCall_1()); 
+
+                    }
+
+                     after(grammarAccess.getDataTypeAccess().getCtypeAssignment_1_1()); 
 
                     }
 
@@ -605,24 +812,992 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Type__Alternatives
+    // $ANTLR end rule__DataType__Alternatives_1
+
+
+    // $ANTLR start rule__TypeStar__Alternatives
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:336:1: rule__TypeStar__Alternatives : ( ( ( rule__TypeStar__BtypeAssignment_0 ) ) | ( ( rule__TypeStar__CtypeAssignment_1 ) ) );
+    public final void rule__TypeStar__Alternatives() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:340:1: ( ( ( rule__TypeStar__BtypeAssignment_0 ) ) | ( ( rule__TypeStar__CtypeAssignment_1 ) ) )
+            int alt2=2;
+            int LA2_0 = input.LA(1);
+
+            if ( ((LA2_0>=11 && LA2_0<=13)) ) {
+                alt2=1;
+            }
+            else if ( (LA2_0==RULE_ID) ) {
+                alt2=2;
+            }
+            else {
+                NoViableAltException nvae =
+                    new NoViableAltException("336:1: rule__TypeStar__Alternatives : ( ( ( rule__TypeStar__BtypeAssignment_0 ) ) | ( ( rule__TypeStar__CtypeAssignment_1 ) ) );", 2, 0, input);
+
+                throw nvae;
+            }
+            switch (alt2) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:341:1: ( ( rule__TypeStar__BtypeAssignment_0 ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:341:1: ( ( rule__TypeStar__BtypeAssignment_0 ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:342:1: ( rule__TypeStar__BtypeAssignment_0 )
+                    {
+                     before(grammarAccess.getTypeStarAccess().getBtypeAssignment_0()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:343:1: ( rule__TypeStar__BtypeAssignment_0 )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:343:2: rule__TypeStar__BtypeAssignment_0
+                    {
+                    pushFollow(FOLLOW_rule__TypeStar__BtypeAssignment_0_in_rule__TypeStar__Alternatives649);
+                    rule__TypeStar__BtypeAssignment_0();
+                    _fsp--;
+
+
+                    }
+
+                     after(grammarAccess.getTypeStarAccess().getBtypeAssignment_0()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 2 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:347:6: ( ( rule__TypeStar__CtypeAssignment_1 ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:347:6: ( ( rule__TypeStar__CtypeAssignment_1 ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:348:1: ( rule__TypeStar__CtypeAssignment_1 )
+                    {
+                     before(grammarAccess.getTypeStarAccess().getCtypeAssignment_1()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:349:1: ( rule__TypeStar__CtypeAssignment_1 )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:349:2: rule__TypeStar__CtypeAssignment_1
+                    {
+                    pushFollow(FOLLOW_rule__TypeStar__CtypeAssignment_1_in_rule__TypeStar__Alternatives667);
+                    rule__TypeStar__CtypeAssignment_1();
+                    _fsp--;
+
+
+                    }
+
+                     after(grammarAccess.getTypeStarAccess().getCtypeAssignment_1()); 
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__TypeStar__Alternatives
+
+
+    // $ANTLR start rule__BaseType__Alternatives
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:358:1: rule__BaseType__Alternatives : ( ( ( 'int' ) ) | ( ( 'long' ) ) | ( ( 'char' ) ) );
+    public final void rule__BaseType__Alternatives() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:362:1: ( ( ( 'int' ) ) | ( ( 'long' ) ) | ( ( 'char' ) ) )
+            int alt3=3;
+            switch ( input.LA(1) ) {
+            case 11:
+                {
+                alt3=1;
+                }
+                break;
+            case 12:
+                {
+                alt3=2;
+                }
+                break;
+            case 13:
+                {
+                alt3=3;
+                }
+                break;
+            default:
+                NoViableAltException nvae =
+                    new NoViableAltException("358:1: rule__BaseType__Alternatives : ( ( ( 'int' ) ) | ( ( 'long' ) ) | ( ( 'char' ) ) );", 3, 0, input);
+
+                throw nvae;
+            }
+
+            switch (alt3) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:363:1: ( ( 'int' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:363:1: ( ( 'int' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:364:1: ( 'int' )
+                    {
+                     before(grammarAccess.getBaseTypeAccess().getIntEnumLiteralDeclaration_0()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:365:1: ( 'int' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:365:3: 'int'
+                    {
+                    match(input,11,FOLLOW_11_in_rule__BaseType__Alternatives701); 
+
+                    }
+
+                     after(grammarAccess.getBaseTypeAccess().getIntEnumLiteralDeclaration_0()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 2 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:370:6: ( ( 'long' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:370:6: ( ( 'long' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:371:1: ( 'long' )
+                    {
+                     before(grammarAccess.getBaseTypeAccess().getLongEnumLiteralDeclaration_1()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:372:1: ( 'long' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:372:3: 'long'
+                    {
+                    match(input,12,FOLLOW_12_in_rule__BaseType__Alternatives722); 
+
+                    }
+
+                     after(grammarAccess.getBaseTypeAccess().getLongEnumLiteralDeclaration_1()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 3 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:377:6: ( ( 'char' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:377:6: ( ( 'char' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:378:1: ( 'char' )
+                    {
+                     before(grammarAccess.getBaseTypeAccess().getCharEnumLiteralDeclaration_2()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:379:1: ( 'char' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:379:3: 'char'
+                    {
+                    match(input,13,FOLLOW_13_in_rule__BaseType__Alternatives743); 
+
+                    }
+
+                     after(grammarAccess.getBaseTypeAccess().getCharEnumLiteralDeclaration_2()); 
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__BaseType__Alternatives
+
+
+    // $ANTLR start rule__InterfaceName__Alternatives
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:389:1: rule__InterfaceName__Alternatives : ( ( ( 'init' ) ) | ( ( 'loop' ) ) | ( ( 'end' ) ) );
+    public final void rule__InterfaceName__Alternatives() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:393:1: ( ( ( 'init' ) ) | ( ( 'loop' ) ) | ( ( 'end' ) ) )
+            int alt4=3;
+            switch ( input.LA(1) ) {
+            case 14:
+                {
+                alt4=1;
+                }
+                break;
+            case 15:
+                {
+                alt4=2;
+                }
+                break;
+            case 16:
+                {
+                alt4=3;
+                }
+                break;
+            default:
+                NoViableAltException nvae =
+                    new NoViableAltException("389:1: rule__InterfaceName__Alternatives : ( ( ( 'init' ) ) | ( ( 'loop' ) ) | ( ( 'end' ) ) );", 4, 0, input);
+
+                throw nvae;
+            }
+
+            switch (alt4) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:394:1: ( ( 'init' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:394:1: ( ( 'init' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:395:1: ( 'init' )
+                    {
+                     before(grammarAccess.getInterfaceNameAccess().getInitEnumLiteralDeclaration_0()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:396:1: ( 'init' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:396:3: 'init'
+                    {
+                    match(input,14,FOLLOW_14_in_rule__InterfaceName__Alternatives779); 
+
+                    }
+
+                     after(grammarAccess.getInterfaceNameAccess().getInitEnumLiteralDeclaration_0()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 2 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:401:6: ( ( 'loop' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:401:6: ( ( 'loop' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:402:1: ( 'loop' )
+                    {
+                     before(grammarAccess.getInterfaceNameAccess().getLoopEnumLiteralDeclaration_1()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:403:1: ( 'loop' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:403:3: 'loop'
+                    {
+                    match(input,15,FOLLOW_15_in_rule__InterfaceName__Alternatives800); 
+
+                    }
+
+                     after(grammarAccess.getInterfaceNameAccess().getLoopEnumLiteralDeclaration_1()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 3 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:408:6: ( ( 'end' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:408:6: ( ( 'end' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:409:1: ( 'end' )
+                    {
+                     before(grammarAccess.getInterfaceNameAccess().getEndEnumLiteralDeclaration_2()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:410:1: ( 'end' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:410:3: 'end'
+                    {
+                    match(input,16,FOLLOW_16_in_rule__InterfaceName__Alternatives821); 
+
+                    }
+
+                     after(grammarAccess.getInterfaceNameAccess().getEndEnumLiteralDeclaration_2()); 
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__InterfaceName__Alternatives
+
+
+    // $ANTLR start rule__Direction__Alternatives
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:420:1: rule__Direction__Alternatives : ( ( ( 'in' ) ) | ( ( 'out' ) ) );
+    public final void rule__Direction__Alternatives() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:424:1: ( ( ( 'in' ) ) | ( ( 'out' ) ) )
+            int alt5=2;
+            int LA5_0 = input.LA(1);
+
+            if ( (LA5_0==17) ) {
+                alt5=1;
+            }
+            else if ( (LA5_0==18) ) {
+                alt5=2;
+            }
+            else {
+                NoViableAltException nvae =
+                    new NoViableAltException("420:1: rule__Direction__Alternatives : ( ( ( 'in' ) ) | ( ( 'out' ) ) );", 5, 0, input);
+
+                throw nvae;
+            }
+            switch (alt5) {
+                case 1 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:425:1: ( ( 'in' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:425:1: ( ( 'in' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:426:1: ( 'in' )
+                    {
+                     before(grammarAccess.getDirectionAccess().getInEnumLiteralDeclaration_0()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:427:1: ( 'in' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:427:3: 'in'
+                    {
+                    match(input,17,FOLLOW_17_in_rule__Direction__Alternatives857); 
+
+                    }
+
+                     after(grammarAccess.getDirectionAccess().getInEnumLiteralDeclaration_0()); 
+
+                    }
+
+
+                    }
+                    break;
+                case 2 :
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:432:6: ( ( 'out' ) )
+                    {
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:432:6: ( ( 'out' ) )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:433:1: ( 'out' )
+                    {
+                     before(grammarAccess.getDirectionAccess().getOutEnumLiteralDeclaration_1()); 
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:434:1: ( 'out' )
+                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:434:3: 'out'
+                    {
+                    match(input,18,FOLLOW_18_in_rule__Direction__Alternatives878); 
+
+                    }
+
+                     after(grammarAccess.getDirectionAccess().getOutEnumLiteralDeclaration_1()); 
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Direction__Alternatives
+
+
+    // $ANTLR start rule__Module__Group__0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:446:1: rule__Module__Group__0 : rule__Module__Group__0__Impl rule__Module__Group__1 ;
+    public final void rule__Module__Group__0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:450:1: ( rule__Module__Group__0__Impl rule__Module__Group__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:451:2: rule__Module__Group__0__Impl rule__Module__Group__1
+            {
+            pushFollow(FOLLOW_rule__Module__Group__0__Impl_in_rule__Module__Group__0911);
+            rule__Module__Group__0__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__1_in_rule__Module__Group__0914);
+            rule__Module__Group__1();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__0
+
+
+    // $ANTLR start rule__Module__Group__0__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:458:1: rule__Module__Group__0__Impl : ( 'module' ) ;
+    public final void rule__Module__Group__0__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:462:1: ( ( 'module' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:463:1: ( 'module' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:463:1: ( 'module' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:464:1: 'module'
+            {
+             before(grammarAccess.getModuleAccess().getModuleKeyword_0()); 
+            match(input,19,FOLLOW_19_in_rule__Module__Group__0__Impl942); 
+             after(grammarAccess.getModuleAccess().getModuleKeyword_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__0__Impl
+
+
+    // $ANTLR start rule__Module__Group__1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:477:1: rule__Module__Group__1 : rule__Module__Group__1__Impl rule__Module__Group__2 ;
+    public final void rule__Module__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:481:1: ( rule__Module__Group__1__Impl rule__Module__Group__2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:482:2: rule__Module__Group__1__Impl rule__Module__Group__2
+            {
+            pushFollow(FOLLOW_rule__Module__Group__1__Impl_in_rule__Module__Group__1973);
+            rule__Module__Group__1__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__2_in_rule__Module__Group__1976);
+            rule__Module__Group__2();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__1
+
+
+    // $ANTLR start rule__Module__Group__1__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:489:1: rule__Module__Group__1__Impl : ( ( rule__Module__NameAssignment_1 ) ) ;
+    public final void rule__Module__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:493:1: ( ( ( rule__Module__NameAssignment_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:494:1: ( ( rule__Module__NameAssignment_1 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:494:1: ( ( rule__Module__NameAssignment_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:495:1: ( rule__Module__NameAssignment_1 )
+            {
+             before(grammarAccess.getModuleAccess().getNameAssignment_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:496:1: ( rule__Module__NameAssignment_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:496:2: rule__Module__NameAssignment_1
+            {
+            pushFollow(FOLLOW_rule__Module__NameAssignment_1_in_rule__Module__Group__1__Impl1003);
+            rule__Module__NameAssignment_1();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getModuleAccess().getNameAssignment_1()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__1__Impl
+
+
+    // $ANTLR start rule__Module__Group__2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:506:1: rule__Module__Group__2 : rule__Module__Group__2__Impl rule__Module__Group__3 ;
+    public final void rule__Module__Group__2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:510:1: ( rule__Module__Group__2__Impl rule__Module__Group__3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:511:2: rule__Module__Group__2__Impl rule__Module__Group__3
+            {
+            pushFollow(FOLLOW_rule__Module__Group__2__Impl_in_rule__Module__Group__21033);
+            rule__Module__Group__2__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__3_in_rule__Module__Group__21036);
+            rule__Module__Group__3();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__2
+
+
+    // $ANTLR start rule__Module__Group__2__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:518:1: rule__Module__Group__2__Impl : ( '{' ) ;
+    public final void rule__Module__Group__2__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:522:1: ( ( '{' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:523:1: ( '{' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:523:1: ( '{' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:524:1: '{'
+            {
+             before(grammarAccess.getModuleAccess().getLeftCurlyBracketKeyword_2()); 
+            match(input,20,FOLLOW_20_in_rule__Module__Group__2__Impl1064); 
+             after(grammarAccess.getModuleAccess().getLeftCurlyBracketKeyword_2()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__2__Impl
+
+
+    // $ANTLR start rule__Module__Group__3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:537:1: rule__Module__Group__3 : rule__Module__Group__3__Impl rule__Module__Group__4 ;
+    public final void rule__Module__Group__3() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:541:1: ( rule__Module__Group__3__Impl rule__Module__Group__4 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:542:2: rule__Module__Group__3__Impl rule__Module__Group__4
+            {
+            pushFollow(FOLLOW_rule__Module__Group__3__Impl_in_rule__Module__Group__31095);
+            rule__Module__Group__3__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__4_in_rule__Module__Group__31098);
+            rule__Module__Group__4();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__3
+
+
+    // $ANTLR start rule__Module__Group__3__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:549:1: rule__Module__Group__3__Impl : ( ( rule__Module__TypesAssignment_3 )* ) ;
+    public final void rule__Module__Group__3__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:553:1: ( ( ( rule__Module__TypesAssignment_3 )* ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:554:1: ( ( rule__Module__TypesAssignment_3 )* )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:554:1: ( ( rule__Module__TypesAssignment_3 )* )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:555:1: ( rule__Module__TypesAssignment_3 )*
+            {
+             before(grammarAccess.getModuleAccess().getTypesAssignment_3()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:556:1: ( rule__Module__TypesAssignment_3 )*
+            loop6:
+            do {
+                int alt6=2;
+                int LA6_0 = input.LA(1);
+
+                if ( (LA6_0==23) ) {
+                    alt6=1;
+                }
+
+
+                switch (alt6) {
+            	case 1 :
+            	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:556:2: rule__Module__TypesAssignment_3
+            	    {
+            	    pushFollow(FOLLOW_rule__Module__TypesAssignment_3_in_rule__Module__Group__3__Impl1125);
+            	    rule__Module__TypesAssignment_3();
+            	    _fsp--;
+
+
+            	    }
+            	    break;
+
+            	default :
+            	    break loop6;
+                }
+            } while (true);
+
+             after(grammarAccess.getModuleAccess().getTypesAssignment_3()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__3__Impl
+
+
+    // $ANTLR start rule__Module__Group__4
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:566:1: rule__Module__Group__4 : rule__Module__Group__4__Impl rule__Module__Group__5 ;
+    public final void rule__Module__Group__4() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:570:1: ( rule__Module__Group__4__Impl rule__Module__Group__5 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:571:2: rule__Module__Group__4__Impl rule__Module__Group__5
+            {
+            pushFollow(FOLLOW_rule__Module__Group__4__Impl_in_rule__Module__Group__41156);
+            rule__Module__Group__4__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__5_in_rule__Module__Group__41159);
+            rule__Module__Group__5();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__4
+
+
+    // $ANTLR start rule__Module__Group__4__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:578:1: rule__Module__Group__4__Impl : ( ( rule__Module__InterfacesAssignment_4 )* ) ;
+    public final void rule__Module__Group__4__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:582:1: ( ( ( rule__Module__InterfacesAssignment_4 )* ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:583:1: ( ( rule__Module__InterfacesAssignment_4 )* )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:583:1: ( ( rule__Module__InterfacesAssignment_4 )* )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:584:1: ( rule__Module__InterfacesAssignment_4 )*
+            {
+             before(grammarAccess.getModuleAccess().getInterfacesAssignment_4()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:585:1: ( rule__Module__InterfacesAssignment_4 )*
+            loop7:
+            do {
+                int alt7=2;
+                int LA7_0 = input.LA(1);
+
+                if ( (LA7_0==24) ) {
+                    alt7=1;
+                }
+
+
+                switch (alt7) {
+            	case 1 :
+            	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:585:2: rule__Module__InterfacesAssignment_4
+            	    {
+            	    pushFollow(FOLLOW_rule__Module__InterfacesAssignment_4_in_rule__Module__Group__4__Impl1186);
+            	    rule__Module__InterfacesAssignment_4();
+            	    _fsp--;
+
+
+            	    }
+            	    break;
+
+            	default :
+            	    break loop7;
+                }
+            } while (true);
+
+             after(grammarAccess.getModuleAccess().getInterfacesAssignment_4()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__4__Impl
+
+
+    // $ANTLR start rule__Module__Group__5
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:595:1: rule__Module__Group__5 : rule__Module__Group__5__Impl rule__Module__Group__6 ;
+    public final void rule__Module__Group__5() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:599:1: ( rule__Module__Group__5__Impl rule__Module__Group__6 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:600:2: rule__Module__Group__5__Impl rule__Module__Group__6
+            {
+            pushFollow(FOLLOW_rule__Module__Group__5__Impl_in_rule__Module__Group__51217);
+            rule__Module__Group__5__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Module__Group__6_in_rule__Module__Group__51220);
+            rule__Module__Group__6();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__5
+
+
+    // $ANTLR start rule__Module__Group__5__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:607:1: rule__Module__Group__5__Impl : ( '}' ) ;
+    public final void rule__Module__Group__5__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:611:1: ( ( '}' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:612:1: ( '}' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:612:1: ( '}' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:613:1: '}'
+            {
+             before(grammarAccess.getModuleAccess().getRightCurlyBracketKeyword_5()); 
+            match(input,21,FOLLOW_21_in_rule__Module__Group__5__Impl1248); 
+             after(grammarAccess.getModuleAccess().getRightCurlyBracketKeyword_5()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__5__Impl
+
+
+    // $ANTLR start rule__Module__Group__6
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:626:1: rule__Module__Group__6 : rule__Module__Group__6__Impl ;
+    public final void rule__Module__Group__6() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:630:1: ( rule__Module__Group__6__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:631:2: rule__Module__Group__6__Impl
+            {
+            pushFollow(FOLLOW_rule__Module__Group__6__Impl_in_rule__Module__Group__61279);
+            rule__Module__Group__6__Impl();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__6
+
+
+    // $ANTLR start rule__Module__Group__6__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:637:1: rule__Module__Group__6__Impl : ( ';' ) ;
+    public final void rule__Module__Group__6__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:641:1: ( ( ';' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:642:1: ( ';' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:642:1: ( ';' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:643:1: ';'
+            {
+             before(grammarAccess.getModuleAccess().getSemicolonKeyword_6()); 
+            match(input,22,FOLLOW_22_in_rule__Module__Group__6__Impl1307); 
+             after(grammarAccess.getModuleAccess().getSemicolonKeyword_6()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Module__Group__6__Impl
 
 
     // $ANTLR start rule__DataType__Group__0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:253:1: rule__DataType__Group__0 : rule__DataType__Group__0__Impl rule__DataType__Group__1 ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:670:1: rule__DataType__Group__0 : rule__DataType__Group__0__Impl rule__DataType__Group__1 ;
     public final void rule__DataType__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:257:1: ( rule__DataType__Group__0__Impl rule__DataType__Group__1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:258:2: rule__DataType__Group__0__Impl rule__DataType__Group__1
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:674:1: ( rule__DataType__Group__0__Impl rule__DataType__Group__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:675:2: rule__DataType__Group__0__Impl rule__DataType__Group__1
             {
-            pushFollow(FOLLOW_rule__DataType__Group__0__Impl_in_rule__DataType__Group__0478);
+            pushFollow(FOLLOW_rule__DataType__Group__0__Impl_in_rule__DataType__Group__01352);
             rule__DataType__Group__0__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__DataType__Group__1_in_rule__DataType__Group__0481);
+            pushFollow(FOLLOW_rule__DataType__Group__1_in_rule__DataType__Group__01355);
             rule__DataType__Group__1();
             _fsp--;
 
@@ -645,21 +1820,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
     // $ANTLR start rule__DataType__Group__0__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:265:1: rule__DataType__Group__0__Impl : ( 'datatype' ) ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:682:1: rule__DataType__Group__0__Impl : ( 'typedef' ) ;
     public final void rule__DataType__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:269:1: ( ( 'datatype' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:270:1: ( 'datatype' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:686:1: ( ( 'typedef' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:687:1: ( 'typedef' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:270:1: ( 'datatype' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:271:1: 'datatype'
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:687:1: ( 'typedef' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:688:1: 'typedef'
             {
-             before(grammarAccess.getDataTypeAccess().getDatatypeKeyword_0()); 
-            match(input,11,FOLLOW_11_in_rule__DataType__Group__0__Impl509); 
-             after(grammarAccess.getDataTypeAccess().getDatatypeKeyword_0()); 
+             before(grammarAccess.getDataTypeAccess().getTypedefKeyword_0()); 
+            match(input,23,FOLLOW_23_in_rule__DataType__Group__0__Impl1383); 
+             after(grammarAccess.getDataTypeAccess().getTypedefKeyword_0()); 
 
             }
 
@@ -682,17 +1857,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
     // $ANTLR start rule__DataType__Group__1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:284:1: rule__DataType__Group__1 : rule__DataType__Group__1__Impl ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:701:1: rule__DataType__Group__1 : rule__DataType__Group__1__Impl rule__DataType__Group__2 ;
     public final void rule__DataType__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:288:1: ( rule__DataType__Group__1__Impl )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:289:2: rule__DataType__Group__1__Impl
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:705:1: ( rule__DataType__Group__1__Impl rule__DataType__Group__2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:706:2: rule__DataType__Group__1__Impl rule__DataType__Group__2
             {
-            pushFollow(FOLLOW_rule__DataType__Group__1__Impl_in_rule__DataType__Group__1540);
+            pushFollow(FOLLOW_rule__DataType__Group__1__Impl_in_rule__DataType__Group__11414);
             rule__DataType__Group__1__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__DataType__Group__2_in_rule__DataType__Group__11417);
+            rule__DataType__Group__2();
             _fsp--;
 
 
@@ -714,30 +1893,30 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
     // $ANTLR start rule__DataType__Group__1__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:295:1: rule__DataType__Group__1__Impl : ( ( rule__DataType__NameAssignment_1 ) ) ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:713:1: rule__DataType__Group__1__Impl : ( ( rule__DataType__Alternatives_1 ) ) ;
     public final void rule__DataType__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:299:1: ( ( ( rule__DataType__NameAssignment_1 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:300:1: ( ( rule__DataType__NameAssignment_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:717:1: ( ( ( rule__DataType__Alternatives_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:718:1: ( ( rule__DataType__Alternatives_1 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:300:1: ( ( rule__DataType__NameAssignment_1 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:301:1: ( rule__DataType__NameAssignment_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:718:1: ( ( rule__DataType__Alternatives_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:719:1: ( rule__DataType__Alternatives_1 )
             {
-             before(grammarAccess.getDataTypeAccess().getNameAssignment_1()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:302:1: ( rule__DataType__NameAssignment_1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:302:2: rule__DataType__NameAssignment_1
+             before(grammarAccess.getDataTypeAccess().getAlternatives_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:720:1: ( rule__DataType__Alternatives_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:720:2: rule__DataType__Alternatives_1
             {
-            pushFollow(FOLLOW_rule__DataType__NameAssignment_1_in_rule__DataType__Group__1__Impl567);
-            rule__DataType__NameAssignment_1();
+            pushFollow(FOLLOW_rule__DataType__Alternatives_1_in_rule__DataType__Group__1__Impl1444);
+            rule__DataType__Alternatives_1();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getDataTypeAccess().getNameAssignment_1()); 
+             after(grammarAccess.getDataTypeAccess().getAlternatives_1()); 
 
             }
 
@@ -759,22 +1938,22 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     // $ANTLR end rule__DataType__Group__1__Impl
 
 
-    // $ANTLR start rule__Entity__Group__0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:316:1: rule__Entity__Group__0 : rule__Entity__Group__0__Impl rule__Entity__Group__1 ;
-    public final void rule__Entity__Group__0() throws RecognitionException {
+    // $ANTLR start rule__DataType__Group__2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:730:1: rule__DataType__Group__2 : rule__DataType__Group__2__Impl rule__DataType__Group__3 ;
+    public final void rule__DataType__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:320:1: ( rule__Entity__Group__0__Impl rule__Entity__Group__1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:321:2: rule__Entity__Group__0__Impl rule__Entity__Group__1
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:734:1: ( rule__DataType__Group__2__Impl rule__DataType__Group__3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:735:2: rule__DataType__Group__2__Impl rule__DataType__Group__3
             {
-            pushFollow(FOLLOW_rule__Entity__Group__0__Impl_in_rule__Entity__Group__0601);
-            rule__Entity__Group__0__Impl();
+            pushFollow(FOLLOW_rule__DataType__Group__2__Impl_in_rule__DataType__Group__21474);
+            rule__DataType__Group__2__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Entity__Group__1_in_rule__Entity__Group__0604);
-            rule__Entity__Group__1();
+            pushFollow(FOLLOW_rule__DataType__Group__3_in_rule__DataType__Group__21477);
+            rule__DataType__Group__3();
             _fsp--;
 
 
@@ -792,107 +1971,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__0
+    // $ANTLR end rule__DataType__Group__2
 
 
-    // $ANTLR start rule__Entity__Group__0__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:328:1: rule__Entity__Group__0__Impl : ( 'entity' ) ;
-    public final void rule__Entity__Group__0__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:332:1: ( ( 'entity' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:333:1: ( 'entity' )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:333:1: ( 'entity' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:334:1: 'entity'
-            {
-             before(grammarAccess.getEntityAccess().getEntityKeyword_0()); 
-            match(input,12,FOLLOW_12_in_rule__Entity__Group__0__Impl632); 
-             after(grammarAccess.getEntityAccess().getEntityKeyword_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group__0__Impl
-
-
-    // $ANTLR start rule__Entity__Group__1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:347:1: rule__Entity__Group__1 : rule__Entity__Group__1__Impl rule__Entity__Group__2 ;
-    public final void rule__Entity__Group__1() throws RecognitionException {
+    // $ANTLR start rule__DataType__Group__2__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:742:1: rule__DataType__Group__2__Impl : ( ( rule__DataType__NameAssignment_2 ) ) ;
+    public final void rule__DataType__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:351:1: ( rule__Entity__Group__1__Impl rule__Entity__Group__2 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:352:2: rule__Entity__Group__1__Impl rule__Entity__Group__2
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:746:1: ( ( ( rule__DataType__NameAssignment_2 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:747:1: ( ( rule__DataType__NameAssignment_2 ) )
             {
-            pushFollow(FOLLOW_rule__Entity__Group__1__Impl_in_rule__Entity__Group__1663);
-            rule__Entity__Group__1__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__Entity__Group__2_in_rule__Entity__Group__1666);
-            rule__Entity__Group__2();
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:747:1: ( ( rule__DataType__NameAssignment_2 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:748:1: ( rule__DataType__NameAssignment_2 )
+            {
+             before(grammarAccess.getDataTypeAccess().getNameAssignment_2()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:749:1: ( rule__DataType__NameAssignment_2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:749:2: rule__DataType__NameAssignment_2
+            {
+            pushFollow(FOLLOW_rule__DataType__NameAssignment_2_in_rule__DataType__Group__2__Impl1504);
+            rule__DataType__NameAssignment_2();
             _fsp--;
 
 
             }
 
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group__1
-
-
-    // $ANTLR start rule__Entity__Group__1__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:359:1: rule__Entity__Group__1__Impl : ( ( rule__Entity__NameAssignment_1 ) ) ;
-    public final void rule__Entity__Group__1__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:363:1: ( ( ( rule__Entity__NameAssignment_1 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:364:1: ( ( rule__Entity__NameAssignment_1 ) )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:364:1: ( ( rule__Entity__NameAssignment_1 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:365:1: ( rule__Entity__NameAssignment_1 )
-            {
-             before(grammarAccess.getEntityAccess().getNameAssignment_1()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:366:1: ( rule__Entity__NameAssignment_1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:366:2: rule__Entity__NameAssignment_1
-            {
-            pushFollow(FOLLOW_rule__Entity__NameAssignment_1_in_rule__Entity__Group__1__Impl693);
-            rule__Entity__NameAssignment_1();
-            _fsp--;
-
-
-            }
-
-             after(grammarAccess.getEntityAccess().getNameAssignment_1()); 
+             after(grammarAccess.getDataTypeAccess().getNameAssignment_2()); 
 
             }
 
@@ -911,25 +2017,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__1__Impl
+    // $ANTLR end rule__DataType__Group__2__Impl
 
 
-    // $ANTLR start rule__Entity__Group__2
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:376:1: rule__Entity__Group__2 : rule__Entity__Group__2__Impl rule__Entity__Group__3 ;
-    public final void rule__Entity__Group__2() throws RecognitionException {
+    // $ANTLR start rule__DataType__Group__3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:759:1: rule__DataType__Group__3 : rule__DataType__Group__3__Impl ;
+    public final void rule__DataType__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:380:1: ( rule__Entity__Group__2__Impl rule__Entity__Group__3 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:381:2: rule__Entity__Group__2__Impl rule__Entity__Group__3
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:763:1: ( rule__DataType__Group__3__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:764:2: rule__DataType__Group__3__Impl
             {
-            pushFollow(FOLLOW_rule__Entity__Group__2__Impl_in_rule__Entity__Group__2723);
-            rule__Entity__Group__2__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__Entity__Group__3_in_rule__Entity__Group__2726);
-            rule__Entity__Group__3();
+            pushFollow(FOLLOW_rule__DataType__Group__3__Impl_in_rule__DataType__Group__31534);
+            rule__DataType__Group__3__Impl();
             _fsp--;
 
 
@@ -947,45 +2049,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__2
+    // $ANTLR end rule__DataType__Group__3
 
 
-    // $ANTLR start rule__Entity__Group__2__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:388:1: rule__Entity__Group__2__Impl : ( ( rule__Entity__Group_2__0 )? ) ;
-    public final void rule__Entity__Group__2__Impl() throws RecognitionException {
+    // $ANTLR start rule__DataType__Group__3__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:770:1: rule__DataType__Group__3__Impl : ( ';' ) ;
+    public final void rule__DataType__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:392:1: ( ( ( rule__Entity__Group_2__0 )? ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:393:1: ( ( rule__Entity__Group_2__0 )? )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:774:1: ( ( ';' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:775:1: ( ';' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:393:1: ( ( rule__Entity__Group_2__0 )? )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:394:1: ( rule__Entity__Group_2__0 )?
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:775:1: ( ';' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:776:1: ';'
             {
-             before(grammarAccess.getEntityAccess().getGroup_2()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:395:1: ( rule__Entity__Group_2__0 )?
-            int alt3=2;
-            int LA3_0 = input.LA(1);
-
-            if ( (LA3_0==15) ) {
-                alt3=1;
-            }
-            switch (alt3) {
-                case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:395:2: rule__Entity__Group_2__0
-                    {
-                    pushFollow(FOLLOW_rule__Entity__Group_2__0_in_rule__Entity__Group__2__Impl753);
-                    rule__Entity__Group_2__0();
-                    _fsp--;
-
-
-                    }
-                    break;
-
-            }
-
-             after(grammarAccess.getEntityAccess().getGroup_2()); 
+             before(grammarAccess.getDataTypeAccess().getSemicolonKeyword_3()); 
+            match(input,22,FOLLOW_22_in_rule__DataType__Group__3__Impl1562); 
+             after(grammarAccess.getDataTypeAccess().getSemicolonKeyword_3()); 
 
             }
 
@@ -1004,98 +2086,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__2__Impl
+    // $ANTLR end rule__DataType__Group__3__Impl
 
 
-    // $ANTLR start rule__Entity__Group__3
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:405:1: rule__Entity__Group__3 : rule__Entity__Group__3__Impl rule__Entity__Group__4 ;
-    public final void rule__Entity__Group__3() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:409:1: ( rule__Entity__Group__3__Impl rule__Entity__Group__4 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:410:2: rule__Entity__Group__3__Impl rule__Entity__Group__4
-            {
-            pushFollow(FOLLOW_rule__Entity__Group__3__Impl_in_rule__Entity__Group__3784);
-            rule__Entity__Group__3__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__Entity__Group__4_in_rule__Entity__Group__3787);
-            rule__Entity__Group__4();
-            _fsp--;
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group__3
-
-
-    // $ANTLR start rule__Entity__Group__3__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:417:1: rule__Entity__Group__3__Impl : ( '{' ) ;
-    public final void rule__Entity__Group__3__Impl() throws RecognitionException {
+    // $ANTLR start rule__Interface__Group__0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:797:1: rule__Interface__Group__0 : rule__Interface__Group__0__Impl rule__Interface__Group__1 ;
+    public final void rule__Interface__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:421:1: ( ( '{' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:422:1: ( '{' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:801:1: ( rule__Interface__Group__0__Impl rule__Interface__Group__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:802:2: rule__Interface__Group__0__Impl rule__Interface__Group__1
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:422:1: ( '{' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:423:1: '{'
-            {
-             before(grammarAccess.getEntityAccess().getLeftCurlyBracketKeyword_3()); 
-            match(input,13,FOLLOW_13_in_rule__Entity__Group__3__Impl815); 
-             after(grammarAccess.getEntityAccess().getLeftCurlyBracketKeyword_3()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group__3__Impl
-
-
-    // $ANTLR start rule__Entity__Group__4
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:436:1: rule__Entity__Group__4 : rule__Entity__Group__4__Impl rule__Entity__Group__5 ;
-    public final void rule__Entity__Group__4() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:440:1: ( rule__Entity__Group__4__Impl rule__Entity__Group__5 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:441:2: rule__Entity__Group__4__Impl rule__Entity__Group__5
-            {
-            pushFollow(FOLLOW_rule__Entity__Group__4__Impl_in_rule__Entity__Group__4846);
-            rule__Entity__Group__4__Impl();
+            pushFollow(FOLLOW_rule__Interface__Group__0__Impl_in_rule__Interface__Group__01601);
+            rule__Interface__Group__0__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Entity__Group__5_in_rule__Entity__Group__4849);
-            rule__Entity__Group__5();
+            pushFollow(FOLLOW_rule__Interface__Group__1_in_rule__Interface__Group__01604);
+            rule__Interface__Group__1();
             _fsp--;
 
 
@@ -1113,40 +2122,802 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__4
+    // $ANTLR end rule__Interface__Group__0
 
 
-    // $ANTLR start rule__Entity__Group__4__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:448:1: rule__Entity__Group__4__Impl : ( ( rule__Entity__FeaturesAssignment_4 )* ) ;
-    public final void rule__Entity__Group__4__Impl() throws RecognitionException {
+    // $ANTLR start rule__Interface__Group__0__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:809:1: rule__Interface__Group__0__Impl : ( 'interface' ) ;
+    public final void rule__Interface__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:452:1: ( ( ( rule__Entity__FeaturesAssignment_4 )* ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:453:1: ( ( rule__Entity__FeaturesAssignment_4 )* )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:813:1: ( ( 'interface' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:814:1: ( 'interface' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:453:1: ( ( rule__Entity__FeaturesAssignment_4 )* )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:454:1: ( rule__Entity__FeaturesAssignment_4 )*
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:814:1: ( 'interface' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:815:1: 'interface'
             {
-             before(grammarAccess.getEntityAccess().getFeaturesAssignment_4()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:455:1: ( rule__Entity__FeaturesAssignment_4 )*
-            loop4:
+             before(grammarAccess.getInterfaceAccess().getInterfaceKeyword_0()); 
+            match(input,24,FOLLOW_24_in_rule__Interface__Group__0__Impl1632); 
+             after(grammarAccess.getInterfaceAccess().getInterfaceKeyword_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__0__Impl
+
+
+    // $ANTLR start rule__Interface__Group__1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:828:1: rule__Interface__Group__1 : rule__Interface__Group__1__Impl rule__Interface__Group__2 ;
+    public final void rule__Interface__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:832:1: ( rule__Interface__Group__1__Impl rule__Interface__Group__2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:833:2: rule__Interface__Group__1__Impl rule__Interface__Group__2
+            {
+            pushFollow(FOLLOW_rule__Interface__Group__1__Impl_in_rule__Interface__Group__11663);
+            rule__Interface__Group__1__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Interface__Group__2_in_rule__Interface__Group__11666);
+            rule__Interface__Group__2();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__1
+
+
+    // $ANTLR start rule__Interface__Group__1__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:840:1: rule__Interface__Group__1__Impl : ( ( rule__Interface__NameAssignment_1 ) ) ;
+    public final void rule__Interface__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:844:1: ( ( ( rule__Interface__NameAssignment_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:845:1: ( ( rule__Interface__NameAssignment_1 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:845:1: ( ( rule__Interface__NameAssignment_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:846:1: ( rule__Interface__NameAssignment_1 )
+            {
+             before(grammarAccess.getInterfaceAccess().getNameAssignment_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:847:1: ( rule__Interface__NameAssignment_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:847:2: rule__Interface__NameAssignment_1
+            {
+            pushFollow(FOLLOW_rule__Interface__NameAssignment_1_in_rule__Interface__Group__1__Impl1693);
+            rule__Interface__NameAssignment_1();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getInterfaceAccess().getNameAssignment_1()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__1__Impl
+
+
+    // $ANTLR start rule__Interface__Group__2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:857:1: rule__Interface__Group__2 : rule__Interface__Group__2__Impl rule__Interface__Group__3 ;
+    public final void rule__Interface__Group__2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:861:1: ( rule__Interface__Group__2__Impl rule__Interface__Group__3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:862:2: rule__Interface__Group__2__Impl rule__Interface__Group__3
+            {
+            pushFollow(FOLLOW_rule__Interface__Group__2__Impl_in_rule__Interface__Group__21723);
+            rule__Interface__Group__2__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Interface__Group__3_in_rule__Interface__Group__21726);
+            rule__Interface__Group__3();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__2
+
+
+    // $ANTLR start rule__Interface__Group__2__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:869:1: rule__Interface__Group__2__Impl : ( '{' ) ;
+    public final void rule__Interface__Group__2__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:873:1: ( ( '{' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:874:1: ( '{' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:874:1: ( '{' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:875:1: '{'
+            {
+             before(grammarAccess.getInterfaceAccess().getLeftCurlyBracketKeyword_2()); 
+            match(input,20,FOLLOW_20_in_rule__Interface__Group__2__Impl1754); 
+             after(grammarAccess.getInterfaceAccess().getLeftCurlyBracketKeyword_2()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__2__Impl
+
+
+    // $ANTLR start rule__Interface__Group__3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:888:1: rule__Interface__Group__3 : rule__Interface__Group__3__Impl rule__Interface__Group__4 ;
+    public final void rule__Interface__Group__3() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:892:1: ( rule__Interface__Group__3__Impl rule__Interface__Group__4 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:893:2: rule__Interface__Group__3__Impl rule__Interface__Group__4
+            {
+            pushFollow(FOLLOW_rule__Interface__Group__3__Impl_in_rule__Interface__Group__31785);
+            rule__Interface__Group__3__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Interface__Group__4_in_rule__Interface__Group__31788);
+            rule__Interface__Group__4();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__3
+
+
+    // $ANTLR start rule__Interface__Group__3__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:900:1: rule__Interface__Group__3__Impl : ( ( rule__Interface__FunctionAssignment_3 ) ) ;
+    public final void rule__Interface__Group__3__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:904:1: ( ( ( rule__Interface__FunctionAssignment_3 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:905:1: ( ( rule__Interface__FunctionAssignment_3 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:905:1: ( ( rule__Interface__FunctionAssignment_3 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:906:1: ( rule__Interface__FunctionAssignment_3 )
+            {
+             before(grammarAccess.getInterfaceAccess().getFunctionAssignment_3()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:907:1: ( rule__Interface__FunctionAssignment_3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:907:2: rule__Interface__FunctionAssignment_3
+            {
+            pushFollow(FOLLOW_rule__Interface__FunctionAssignment_3_in_rule__Interface__Group__3__Impl1815);
+            rule__Interface__FunctionAssignment_3();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getInterfaceAccess().getFunctionAssignment_3()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__3__Impl
+
+
+    // $ANTLR start rule__Interface__Group__4
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:917:1: rule__Interface__Group__4 : rule__Interface__Group__4__Impl rule__Interface__Group__5 ;
+    public final void rule__Interface__Group__4() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:921:1: ( rule__Interface__Group__4__Impl rule__Interface__Group__5 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:922:2: rule__Interface__Group__4__Impl rule__Interface__Group__5
+            {
+            pushFollow(FOLLOW_rule__Interface__Group__4__Impl_in_rule__Interface__Group__41845);
+            rule__Interface__Group__4__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Interface__Group__5_in_rule__Interface__Group__41848);
+            rule__Interface__Group__5();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__4
+
+
+    // $ANTLR start rule__Interface__Group__4__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:929:1: rule__Interface__Group__4__Impl : ( '}' ) ;
+    public final void rule__Interface__Group__4__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:933:1: ( ( '}' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:934:1: ( '}' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:934:1: ( '}' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:935:1: '}'
+            {
+             before(grammarAccess.getInterfaceAccess().getRightCurlyBracketKeyword_4()); 
+            match(input,21,FOLLOW_21_in_rule__Interface__Group__4__Impl1876); 
+             after(grammarAccess.getInterfaceAccess().getRightCurlyBracketKeyword_4()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__4__Impl
+
+
+    // $ANTLR start rule__Interface__Group__5
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:948:1: rule__Interface__Group__5 : rule__Interface__Group__5__Impl ;
+    public final void rule__Interface__Group__5() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:952:1: ( rule__Interface__Group__5__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:953:2: rule__Interface__Group__5__Impl
+            {
+            pushFollow(FOLLOW_rule__Interface__Group__5__Impl_in_rule__Interface__Group__51907);
+            rule__Interface__Group__5__Impl();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__5
+
+
+    // $ANTLR start rule__Interface__Group__5__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:959:1: rule__Interface__Group__5__Impl : ( ';' ) ;
+    public final void rule__Interface__Group__5__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:963:1: ( ( ';' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:964:1: ( ';' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:964:1: ( ';' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:965:1: ';'
+            {
+             before(grammarAccess.getInterfaceAccess().getSemicolonKeyword_5()); 
+            match(input,22,FOLLOW_22_in_rule__Interface__Group__5__Impl1935); 
+             after(grammarAccess.getInterfaceAccess().getSemicolonKeyword_5()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__Group__5__Impl
+
+
+    // $ANTLR start rule__Function__Group__0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:990:1: rule__Function__Group__0 : rule__Function__Group__0__Impl rule__Function__Group__1 ;
+    public final void rule__Function__Group__0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:994:1: ( rule__Function__Group__0__Impl rule__Function__Group__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:995:2: rule__Function__Group__0__Impl rule__Function__Group__1
+            {
+            pushFollow(FOLLOW_rule__Function__Group__0__Impl_in_rule__Function__Group__01978);
+            rule__Function__Group__0__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__1_in_rule__Function__Group__01981);
+            rule__Function__Group__1();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__0
+
+
+    // $ANTLR start rule__Function__Group__0__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1002:1: rule__Function__Group__0__Impl : ( 'void' ) ;
+    public final void rule__Function__Group__0__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1006:1: ( ( 'void' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1007:1: ( 'void' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1007:1: ( 'void' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1008:1: 'void'
+            {
+             before(grammarAccess.getFunctionAccess().getVoidKeyword_0()); 
+            match(input,25,FOLLOW_25_in_rule__Function__Group__0__Impl2009); 
+             after(grammarAccess.getFunctionAccess().getVoidKeyword_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__0__Impl
+
+
+    // $ANTLR start rule__Function__Group__1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1021:1: rule__Function__Group__1 : rule__Function__Group__1__Impl rule__Function__Group__2 ;
+    public final void rule__Function__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1025:1: ( rule__Function__Group__1__Impl rule__Function__Group__2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1026:2: rule__Function__Group__1__Impl rule__Function__Group__2
+            {
+            pushFollow(FOLLOW_rule__Function__Group__1__Impl_in_rule__Function__Group__12040);
+            rule__Function__Group__1__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__2_in_rule__Function__Group__12043);
+            rule__Function__Group__2();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__1
+
+
+    // $ANTLR start rule__Function__Group__1__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1033:1: rule__Function__Group__1__Impl : ( ( rule__Function__NameAssignment_1 ) ) ;
+    public final void rule__Function__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1037:1: ( ( ( rule__Function__NameAssignment_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1038:1: ( ( rule__Function__NameAssignment_1 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1038:1: ( ( rule__Function__NameAssignment_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1039:1: ( rule__Function__NameAssignment_1 )
+            {
+             before(grammarAccess.getFunctionAccess().getNameAssignment_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1040:1: ( rule__Function__NameAssignment_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1040:2: rule__Function__NameAssignment_1
+            {
+            pushFollow(FOLLOW_rule__Function__NameAssignment_1_in_rule__Function__Group__1__Impl2070);
+            rule__Function__NameAssignment_1();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getFunctionAccess().getNameAssignment_1()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__1__Impl
+
+
+    // $ANTLR start rule__Function__Group__2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1050:1: rule__Function__Group__2 : rule__Function__Group__2__Impl rule__Function__Group__3 ;
+    public final void rule__Function__Group__2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1054:1: ( rule__Function__Group__2__Impl rule__Function__Group__3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1055:2: rule__Function__Group__2__Impl rule__Function__Group__3
+            {
+            pushFollow(FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100);
+            rule__Function__Group__2__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__3_in_rule__Function__Group__22103);
+            rule__Function__Group__3();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__2
+
+
+    // $ANTLR start rule__Function__Group__2__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1062:1: rule__Function__Group__2__Impl : ( '(' ) ;
+    public final void rule__Function__Group__2__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1066:1: ( ( '(' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1067:1: ( '(' )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1067:1: ( '(' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1068:1: '('
+            {
+             before(grammarAccess.getFunctionAccess().getLeftParenthesisKeyword_2()); 
+            match(input,26,FOLLOW_26_in_rule__Function__Group__2__Impl2131); 
+             after(grammarAccess.getFunctionAccess().getLeftParenthesisKeyword_2()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__2__Impl
+
+
+    // $ANTLR start rule__Function__Group__3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1081:1: rule__Function__Group__3 : rule__Function__Group__3__Impl rule__Function__Group__4 ;
+    public final void rule__Function__Group__3() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1085:1: ( rule__Function__Group__3__Impl rule__Function__Group__4 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1086:2: rule__Function__Group__3__Impl rule__Function__Group__4
+            {
+            pushFollow(FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162);
+            rule__Function__Group__3__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__4_in_rule__Function__Group__32165);
+            rule__Function__Group__4();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__3
+
+
+    // $ANTLR start rule__Function__Group__3__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1093:1: rule__Function__Group__3__Impl : ( ( rule__Function__ParametersAssignment_3 ) ) ;
+    public final void rule__Function__Group__3__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1097:1: ( ( ( rule__Function__ParametersAssignment_3 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1098:1: ( ( rule__Function__ParametersAssignment_3 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1099:1: ( rule__Function__ParametersAssignment_3 )
+            {
+             before(grammarAccess.getFunctionAccess().getParametersAssignment_3()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:1: ( rule__Function__ParametersAssignment_3 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1100:2: rule__Function__ParametersAssignment_3
+            {
+            pushFollow(FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192);
+            rule__Function__ParametersAssignment_3();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getFunctionAccess().getParametersAssignment_3()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__3__Impl
+
+
+    // $ANTLR start rule__Function__Group__4
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1110:1: rule__Function__Group__4 : rule__Function__Group__4__Impl rule__Function__Group__5 ;
+    public final void rule__Function__Group__4() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1114:1: ( rule__Function__Group__4__Impl rule__Function__Group__5 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1115:2: rule__Function__Group__4__Impl rule__Function__Group__5
+            {
+            pushFollow(FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42222);
+            rule__Function__Group__4__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42225);
+            rule__Function__Group__5();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__Group__4
+
+
+    // $ANTLR start rule__Function__Group__4__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1122:1: rule__Function__Group__4__Impl : ( ( rule__Function__Group_4__0 )* ) ;
+    public final void rule__Function__Group__4__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1126:1: ( ( ( rule__Function__Group_4__0 )* ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1127:1: ( ( rule__Function__Group_4__0 )* )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1127:1: ( ( rule__Function__Group_4__0 )* )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1128:1: ( rule__Function__Group_4__0 )*
+            {
+             before(grammarAccess.getFunctionAccess().getGroup_4()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1129:1: ( rule__Function__Group_4__0 )*
+            loop8:
             do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
+                int alt8=2;
+                int LA8_0 = input.LA(1);
 
-                if ( (LA4_0==RULE_ID) ) {
-                    alt4=1;
+                if ( (LA8_0==28) ) {
+                    alt8=1;
                 }
 
 
-                switch (alt4) {
+                switch (alt8) {
             	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:455:2: rule__Entity__FeaturesAssignment_4
+            	    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1129:2: rule__Function__Group_4__0
             	    {
-            	    pushFollow(FOLLOW_rule__Entity__FeaturesAssignment_4_in_rule__Entity__Group__4__Impl876);
-            	    rule__Entity__FeaturesAssignment_4();
+            	    pushFollow(FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2252);
+            	    rule__Function__Group_4__0();
             	    _fsp--;
 
 
@@ -1154,11 +2925,11 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             	    break;
 
             	default :
-            	    break loop4;
+            	    break loop8;
                 }
             } while (true);
 
-             after(grammarAccess.getEntityAccess().getFeaturesAssignment_4()); 
+             after(grammarAccess.getFunctionAccess().getGroup_4()); 
 
             }
 
@@ -1177,21 +2948,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__4__Impl
+    // $ANTLR end rule__Function__Group__4__Impl
 
 
-    // $ANTLR start rule__Entity__Group__5
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:465:1: rule__Entity__Group__5 : rule__Entity__Group__5__Impl ;
-    public final void rule__Entity__Group__5() throws RecognitionException {
+    // $ANTLR start rule__Function__Group__5
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1139:1: rule__Function__Group__5 : rule__Function__Group__5__Impl rule__Function__Group__6 ;
+    public final void rule__Function__Group__5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:469:1: ( rule__Entity__Group__5__Impl )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:470:2: rule__Entity__Group__5__Impl
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1143:1: ( rule__Function__Group__5__Impl rule__Function__Group__6 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1144:2: rule__Function__Group__5__Impl rule__Function__Group__6
             {
-            pushFollow(FOLLOW_rule__Entity__Group__5__Impl_in_rule__Entity__Group__5907);
-            rule__Entity__Group__5__Impl();
+            pushFollow(FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52283);
+            rule__Function__Group__5__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52286);
+            rule__Function__Group__6();
             _fsp--;
 
 
@@ -1209,25 +2984,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__5
+    // $ANTLR end rule__Function__Group__5
 
 
-    // $ANTLR start rule__Entity__Group__5__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:476:1: rule__Entity__Group__5__Impl : ( '}' ) ;
-    public final void rule__Entity__Group__5__Impl() throws RecognitionException {
+    // $ANTLR start rule__Function__Group__5__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1151:1: rule__Function__Group__5__Impl : ( ')' ) ;
+    public final void rule__Function__Group__5__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:480:1: ( ( '}' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:481:1: ( '}' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1155:1: ( ( ')' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1156:1: ( ')' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:481:1: ( '}' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:482:1: '}'
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1156:1: ( ')' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1157:1: ')'
             {
-             before(grammarAccess.getEntityAccess().getRightCurlyBracketKeyword_5()); 
-            match(input,14,FOLLOW_14_in_rule__Entity__Group__5__Impl935); 
-             after(grammarAccess.getEntityAccess().getRightCurlyBracketKeyword_5()); 
+             before(grammarAccess.getFunctionAccess().getRightParenthesisKeyword_5()); 
+            match(input,27,FOLLOW_27_in_rule__Function__Group__5__Impl2314); 
+             after(grammarAccess.getFunctionAccess().getRightParenthesisKeyword_5()); 
 
             }
 
@@ -1246,25 +3021,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group__5__Impl
+    // $ANTLR end rule__Function__Group__5__Impl
 
 
-    // $ANTLR start rule__Entity__Group_2__0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:507:1: rule__Entity__Group_2__0 : rule__Entity__Group_2__0__Impl rule__Entity__Group_2__1 ;
-    public final void rule__Entity__Group_2__0() throws RecognitionException {
+    // $ANTLR start rule__Function__Group__6
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1170:1: rule__Function__Group__6 : rule__Function__Group__6__Impl ;
+    public final void rule__Function__Group__6() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:511:1: ( rule__Entity__Group_2__0__Impl rule__Entity__Group_2__1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:512:2: rule__Entity__Group_2__0__Impl rule__Entity__Group_2__1
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1174:1: ( rule__Function__Group__6__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1175:2: rule__Function__Group__6__Impl
             {
-            pushFollow(FOLLOW_rule__Entity__Group_2__0__Impl_in_rule__Entity__Group_2__0978);
-            rule__Entity__Group_2__0__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__Entity__Group_2__1_in_rule__Entity__Group_2__0981);
-            rule__Entity__Group_2__1();
+            pushFollow(FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62345);
+            rule__Function__Group__6__Impl();
             _fsp--;
 
 
@@ -1282,103 +3053,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group_2__0
+    // $ANTLR end rule__Function__Group__6
 
 
-    // $ANTLR start rule__Entity__Group_2__0__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:519:1: rule__Entity__Group_2__0__Impl : ( 'extends' ) ;
-    public final void rule__Entity__Group_2__0__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:523:1: ( ( 'extends' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:524:1: ( 'extends' )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:524:1: ( 'extends' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:525:1: 'extends'
-            {
-             before(grammarAccess.getEntityAccess().getExtendsKeyword_2_0()); 
-            match(input,15,FOLLOW_15_in_rule__Entity__Group_2__0__Impl1009); 
-             after(grammarAccess.getEntityAccess().getExtendsKeyword_2_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group_2__0__Impl
-
-
-    // $ANTLR start rule__Entity__Group_2__1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:538:1: rule__Entity__Group_2__1 : rule__Entity__Group_2__1__Impl ;
-    public final void rule__Entity__Group_2__1() throws RecognitionException {
+    // $ANTLR start rule__Function__Group__6__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1181:1: rule__Function__Group__6__Impl : ( ';' ) ;
+    public final void rule__Function__Group__6__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:542:1: ( rule__Entity__Group_2__1__Impl )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:543:2: rule__Entity__Group_2__1__Impl
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1185:1: ( ( ';' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1186:1: ( ';' )
             {
-            pushFollow(FOLLOW_rule__Entity__Group_2__1__Impl_in_rule__Entity__Group_2__11040);
-            rule__Entity__Group_2__1__Impl();
-            _fsp--;
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__Group_2__1
-
-
-    // $ANTLR start rule__Entity__Group_2__1__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:549:1: rule__Entity__Group_2__1__Impl : ( ( rule__Entity__SuperTypeAssignment_2_1 ) ) ;
-    public final void rule__Entity__Group_2__1__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:553:1: ( ( ( rule__Entity__SuperTypeAssignment_2_1 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:554:1: ( ( rule__Entity__SuperTypeAssignment_2_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1186:1: ( ';' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1187:1: ';'
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:554:1: ( ( rule__Entity__SuperTypeAssignment_2_1 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:555:1: ( rule__Entity__SuperTypeAssignment_2_1 )
-            {
-             before(grammarAccess.getEntityAccess().getSuperTypeAssignment_2_1()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:556:1: ( rule__Entity__SuperTypeAssignment_2_1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:556:2: rule__Entity__SuperTypeAssignment_2_1
-            {
-            pushFollow(FOLLOW_rule__Entity__SuperTypeAssignment_2_1_in_rule__Entity__Group_2__1__Impl1067);
-            rule__Entity__SuperTypeAssignment_2_1();
-            _fsp--;
-
-
-            }
-
-             after(grammarAccess.getEntityAccess().getSuperTypeAssignment_2_1()); 
+             before(grammarAccess.getFunctionAccess().getSemicolonKeyword_6()); 
+            match(input,22,FOLLOW_22_in_rule__Function__Group__6__Impl2373); 
+             after(grammarAccess.getFunctionAccess().getSemicolonKeyword_6()); 
 
             }
 
@@ -1397,25 +3090,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__Group_2__1__Impl
+    // $ANTLR end rule__Function__Group__6__Impl
 
 
-    // $ANTLR start rule__Feature__Group__0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:570:1: rule__Feature__Group__0 : rule__Feature__Group__0__Impl rule__Feature__Group__1 ;
-    public final void rule__Feature__Group__0() throws RecognitionException {
+    // $ANTLR start rule__Function__Group_4__0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1214:1: rule__Function__Group_4__0 : rule__Function__Group_4__0__Impl rule__Function__Group_4__1 ;
+    public final void rule__Function__Group_4__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:574:1: ( rule__Feature__Group__0__Impl rule__Feature__Group__1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:575:2: rule__Feature__Group__0__Impl rule__Feature__Group__1
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1218:1: ( rule__Function__Group_4__0__Impl rule__Function__Group_4__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1219:2: rule__Function__Group_4__0__Impl rule__Function__Group_4__1
             {
-            pushFollow(FOLLOW_rule__Feature__Group__0__Impl_in_rule__Feature__Group__01101);
-            rule__Feature__Group__0__Impl();
+            pushFollow(FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02418);
+            rule__Function__Group_4__0__Impl();
             _fsp--;
 
-            pushFollow(FOLLOW_rule__Feature__Group__1_in_rule__Feature__Group__01104);
-            rule__Feature__Group__1();
+            pushFollow(FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02421);
+            rule__Function__Group_4__1();
             _fsp--;
 
 
@@ -1433,107 +3126,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Feature__Group__0
+    // $ANTLR end rule__Function__Group_4__0
 
 
-    // $ANTLR start rule__Feature__Group__0__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:582:1: rule__Feature__Group__0__Impl : ( ( rule__Feature__NameAssignment_0 ) ) ;
-    public final void rule__Feature__Group__0__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:586:1: ( ( ( rule__Feature__NameAssignment_0 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:587:1: ( ( rule__Feature__NameAssignment_0 ) )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:587:1: ( ( rule__Feature__NameAssignment_0 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:588:1: ( rule__Feature__NameAssignment_0 )
-            {
-             before(grammarAccess.getFeatureAccess().getNameAssignment_0()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:589:1: ( rule__Feature__NameAssignment_0 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:589:2: rule__Feature__NameAssignment_0
-            {
-            pushFollow(FOLLOW_rule__Feature__NameAssignment_0_in_rule__Feature__Group__0__Impl1131);
-            rule__Feature__NameAssignment_0();
-            _fsp--;
-
-
-            }
-
-             after(grammarAccess.getFeatureAccess().getNameAssignment_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Feature__Group__0__Impl
-
-
-    // $ANTLR start rule__Feature__Group__1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:599:1: rule__Feature__Group__1 : rule__Feature__Group__1__Impl rule__Feature__Group__2 ;
-    public final void rule__Feature__Group__1() throws RecognitionException {
+    // $ANTLR start rule__Function__Group_4__0__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1226:1: rule__Function__Group_4__0__Impl : ( ',' ) ;
+    public final void rule__Function__Group_4__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:603:1: ( rule__Feature__Group__1__Impl rule__Feature__Group__2 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:604:2: rule__Feature__Group__1__Impl rule__Feature__Group__2
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1230:1: ( ( ',' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1231:1: ( ',' )
             {
-            pushFollow(FOLLOW_rule__Feature__Group__1__Impl_in_rule__Feature__Group__11161);
-            rule__Feature__Group__1__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__Feature__Group__2_in_rule__Feature__Group__11164);
-            rule__Feature__Group__2();
-            _fsp--;
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Feature__Group__1
-
-
-    // $ANTLR start rule__Feature__Group__1__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:611:1: rule__Feature__Group__1__Impl : ( ':' ) ;
-    public final void rule__Feature__Group__1__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:615:1: ( ( ':' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:616:1: ( ':' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1231:1: ( ',' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1232:1: ','
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:616:1: ( ':' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:617:1: ':'
-            {
-             before(grammarAccess.getFeatureAccess().getColonKeyword_1()); 
-            match(input,16,FOLLOW_16_in_rule__Feature__Group__1__Impl1192); 
-             after(grammarAccess.getFeatureAccess().getColonKeyword_1()); 
+             before(grammarAccess.getFunctionAccess().getCommaKeyword_4_0()); 
+            match(input,28,FOLLOW_28_in_rule__Function__Group_4__0__Impl2449); 
+             after(grammarAccess.getFunctionAccess().getCommaKeyword_4_0()); 
 
             }
 
@@ -1552,21 +3163,21 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Feature__Group__1__Impl
+    // $ANTLR end rule__Function__Group_4__0__Impl
 
 
-    // $ANTLR start rule__Feature__Group__2
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:630:1: rule__Feature__Group__2 : rule__Feature__Group__2__Impl ;
-    public final void rule__Feature__Group__2() throws RecognitionException {
+    // $ANTLR start rule__Function__Group_4__1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1245:1: rule__Function__Group_4__1 : rule__Function__Group_4__1__Impl ;
+    public final void rule__Function__Group_4__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:634:1: ( rule__Feature__Group__2__Impl )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:635:2: rule__Feature__Group__2__Impl
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1249:1: ( rule__Function__Group_4__1__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1250:2: rule__Function__Group_4__1__Impl
             {
-            pushFollow(FOLLOW_rule__Feature__Group__2__Impl_in_rule__Feature__Group__21223);
-            rule__Feature__Group__2__Impl();
+            pushFollow(FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12480);
+            rule__Function__Group_4__1__Impl();
             _fsp--;
 
 
@@ -1584,116 +3195,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Feature__Group__2
+    // $ANTLR end rule__Function__Group_4__1
 
 
-    // $ANTLR start rule__Feature__Group__2__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:641:1: rule__Feature__Group__2__Impl : ( ( rule__Feature__TypeAssignment_2 ) ) ;
-    public final void rule__Feature__Group__2__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:645:1: ( ( ( rule__Feature__TypeAssignment_2 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:646:1: ( ( rule__Feature__TypeAssignment_2 ) )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:646:1: ( ( rule__Feature__TypeAssignment_2 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:647:1: ( rule__Feature__TypeAssignment_2 )
-            {
-             before(grammarAccess.getFeatureAccess().getTypeAssignment_2()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:648:1: ( rule__Feature__TypeAssignment_2 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:648:2: rule__Feature__TypeAssignment_2
-            {
-            pushFollow(FOLLOW_rule__Feature__TypeAssignment_2_in_rule__Feature__Group__2__Impl1250);
-            rule__Feature__TypeAssignment_2();
-            _fsp--;
-
-
-            }
-
-             after(grammarAccess.getFeatureAccess().getTypeAssignment_2()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Feature__Group__2__Impl
-
-
-    // $ANTLR start rule__TypeRef__Group__0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:664:1: rule__TypeRef__Group__0 : rule__TypeRef__Group__0__Impl rule__TypeRef__Group__1 ;
-    public final void rule__TypeRef__Group__0() throws RecognitionException {
+    // $ANTLR start rule__Function__Group_4__1__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1256:1: rule__Function__Group_4__1__Impl : ( ( rule__Function__ParametersAssignment_4_1 ) ) ;
+    public final void rule__Function__Group_4__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:668:1: ( rule__TypeRef__Group__0__Impl rule__TypeRef__Group__1 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:669:2: rule__TypeRef__Group__0__Impl rule__TypeRef__Group__1
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1260:1: ( ( ( rule__Function__ParametersAssignment_4_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1261:1: ( ( rule__Function__ParametersAssignment_4_1 ) )
             {
-            pushFollow(FOLLOW_rule__TypeRef__Group__0__Impl_in_rule__TypeRef__Group__01286);
-            rule__TypeRef__Group__0__Impl();
-            _fsp--;
-
-            pushFollow(FOLLOW_rule__TypeRef__Group__1_in_rule__TypeRef__Group__01289);
-            rule__TypeRef__Group__1();
-            _fsp--;
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__TypeRef__Group__0
-
-
-    // $ANTLR start rule__TypeRef__Group__0__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:676:1: rule__TypeRef__Group__0__Impl : ( ( rule__TypeRef__ReferencedAssignment_0 ) ) ;
-    public final void rule__TypeRef__Group__0__Impl() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:680:1: ( ( ( rule__TypeRef__ReferencedAssignment_0 ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:681:1: ( ( rule__TypeRef__ReferencedAssignment_0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1261:1: ( ( rule__Function__ParametersAssignment_4_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1262:1: ( rule__Function__ParametersAssignment_4_1 )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:681:1: ( ( rule__TypeRef__ReferencedAssignment_0 ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:682:1: ( rule__TypeRef__ReferencedAssignment_0 )
+             before(grammarAccess.getFunctionAccess().getParametersAssignment_4_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1263:1: ( rule__Function__ParametersAssignment_4_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1263:2: rule__Function__ParametersAssignment_4_1
             {
-             before(grammarAccess.getTypeRefAccess().getReferencedAssignment_0()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:683:1: ( rule__TypeRef__ReferencedAssignment_0 )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:683:2: rule__TypeRef__ReferencedAssignment_0
-            {
-            pushFollow(FOLLOW_rule__TypeRef__ReferencedAssignment_0_in_rule__TypeRef__Group__0__Impl1316);
-            rule__TypeRef__ReferencedAssignment_0();
+            pushFollow(FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2507);
+            rule__Function__ParametersAssignment_4_1();
             _fsp--;
 
 
             }
 
-             after(grammarAccess.getTypeRefAccess().getReferencedAssignment_0()); 
+             after(grammarAccess.getFunctionAccess().getParametersAssignment_4_1()); 
 
             }
 
@@ -1712,21 +3241,25 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeRef__Group__0__Impl
+    // $ANTLR end rule__Function__Group_4__1__Impl
 
 
-    // $ANTLR start rule__TypeRef__Group__1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:693:1: rule__TypeRef__Group__1 : rule__TypeRef__Group__1__Impl ;
-    public final void rule__TypeRef__Group__1() throws RecognitionException {
+    // $ANTLR start rule__Parameter__Group__0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1277:1: rule__Parameter__Group__0 : rule__Parameter__Group__0__Impl rule__Parameter__Group__1 ;
+    public final void rule__Parameter__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:697:1: ( rule__TypeRef__Group__1__Impl )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:698:2: rule__TypeRef__Group__1__Impl
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1281:1: ( rule__Parameter__Group__0__Impl rule__Parameter__Group__1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1282:2: rule__Parameter__Group__0__Impl rule__Parameter__Group__1
             {
-            pushFollow(FOLLOW_rule__TypeRef__Group__1__Impl_in_rule__TypeRef__Group__11346);
-            rule__TypeRef__Group__1__Impl();
+            pushFollow(FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02541);
+            rule__Parameter__Group__0__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02544);
+            rule__Parameter__Group__1();
             _fsp--;
 
 
@@ -1744,45 +3277,34 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeRef__Group__1
+    // $ANTLR end rule__Parameter__Group__0
 
 
-    // $ANTLR start rule__TypeRef__Group__1__Impl
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:704:1: rule__TypeRef__Group__1__Impl : ( ( rule__TypeRef__MultiAssignment_1 )? ) ;
-    public final void rule__TypeRef__Group__1__Impl() throws RecognitionException {
+    // $ANTLR start rule__Parameter__Group__0__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1289:1: rule__Parameter__Group__0__Impl : ( ( rule__Parameter__DirectionAssignment_0 ) ) ;
+    public final void rule__Parameter__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:708:1: ( ( ( rule__TypeRef__MultiAssignment_1 )? ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:709:1: ( ( rule__TypeRef__MultiAssignment_1 )? )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1293:1: ( ( ( rule__Parameter__DirectionAssignment_0 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1294:1: ( ( rule__Parameter__DirectionAssignment_0 ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:709:1: ( ( rule__TypeRef__MultiAssignment_1 )? )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:710:1: ( rule__TypeRef__MultiAssignment_1 )?
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1294:1: ( ( rule__Parameter__DirectionAssignment_0 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1295:1: ( rule__Parameter__DirectionAssignment_0 )
             {
-             before(grammarAccess.getTypeRefAccess().getMultiAssignment_1()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:711:1: ( rule__TypeRef__MultiAssignment_1 )?
-            int alt5=2;
-            int LA5_0 = input.LA(1);
+             before(grammarAccess.getParameterAccess().getDirectionAssignment_0()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1296:1: ( rule__Parameter__DirectionAssignment_0 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1296:2: rule__Parameter__DirectionAssignment_0
+            {
+            pushFollow(FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2571);
+            rule__Parameter__DirectionAssignment_0();
+            _fsp--;
 
-            if ( (LA5_0==17) ) {
-                alt5=1;
-            }
-            switch (alt5) {
-                case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:711:2: rule__TypeRef__MultiAssignment_1
-                    {
-                    pushFollow(FOLLOW_rule__TypeRef__MultiAssignment_1_in_rule__TypeRef__Group__1__Impl1373);
-                    rule__TypeRef__MultiAssignment_1();
-                    _fsp--;
-
-
-                    }
-                    break;
 
             }
 
-             after(grammarAccess.getTypeRefAccess().getMultiAssignment_1()); 
+             after(grammarAccess.getParameterAccess().getDirectionAssignment_0()); 
 
             }
 
@@ -1801,28 +3323,188 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeRef__Group__1__Impl
+    // $ANTLR end rule__Parameter__Group__0__Impl
+
+
+    // $ANTLR start rule__Parameter__Group__1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1306:1: rule__Parameter__Group__1 : rule__Parameter__Group__1__Impl rule__Parameter__Group__2 ;
+    public final void rule__Parameter__Group__1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1310:1: ( rule__Parameter__Group__1__Impl rule__Parameter__Group__2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1311:2: rule__Parameter__Group__1__Impl rule__Parameter__Group__2
+            {
+            pushFollow(FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12601);
+            rule__Parameter__Group__1__Impl();
+            _fsp--;
+
+            pushFollow(FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12604);
+            rule__Parameter__Group__2();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__Group__1
+
+
+    // $ANTLR start rule__Parameter__Group__1__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1318:1: rule__Parameter__Group__1__Impl : ( ( rule__Parameter__TypeAssignment_1 ) ) ;
+    public final void rule__Parameter__Group__1__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1322:1: ( ( ( rule__Parameter__TypeAssignment_1 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1323:1: ( ( rule__Parameter__TypeAssignment_1 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1323:1: ( ( rule__Parameter__TypeAssignment_1 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1324:1: ( rule__Parameter__TypeAssignment_1 )
+            {
+             before(grammarAccess.getParameterAccess().getTypeAssignment_1()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1325:1: ( rule__Parameter__TypeAssignment_1 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1325:2: rule__Parameter__TypeAssignment_1
+            {
+            pushFollow(FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2631);
+            rule__Parameter__TypeAssignment_1();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getParameterAccess().getTypeAssignment_1()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__Group__1__Impl
+
+
+    // $ANTLR start rule__Parameter__Group__2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1335:1: rule__Parameter__Group__2 : rule__Parameter__Group__2__Impl ;
+    public final void rule__Parameter__Group__2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1339:1: ( rule__Parameter__Group__2__Impl )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1340:2: rule__Parameter__Group__2__Impl
+            {
+            pushFollow(FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22661);
+            rule__Parameter__Group__2__Impl();
+            _fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__Group__2
+
+
+    // $ANTLR start rule__Parameter__Group__2__Impl
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1346:1: rule__Parameter__Group__2__Impl : ( ( rule__Parameter__NameAssignment_2 ) ) ;
+    public final void rule__Parameter__Group__2__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1350:1: ( ( ( rule__Parameter__NameAssignment_2 ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1351:1: ( ( rule__Parameter__NameAssignment_2 ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1351:1: ( ( rule__Parameter__NameAssignment_2 ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1352:1: ( rule__Parameter__NameAssignment_2 )
+            {
+             before(grammarAccess.getParameterAccess().getNameAssignment_2()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1353:1: ( rule__Parameter__NameAssignment_2 )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1353:2: rule__Parameter__NameAssignment_2
+            {
+            pushFollow(FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2688);
+            rule__Parameter__NameAssignment_2();
+            _fsp--;
+
+
+            }
+
+             after(grammarAccess.getParameterAccess().getNameAssignment_2()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__Group__2__Impl
 
 
     // $ANTLR start rule__IDL__ElementsAssignment
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:726:1: rule__IDL__ElementsAssignment : ( ruleType ) ;
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1370:1: rule__IDL__ElementsAssignment : ( ruleModule ) ;
     public final void rule__IDL__ElementsAssignment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:730:1: ( ( ruleType ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:731:1: ( ruleType )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1374:1: ( ( ruleModule ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1375:1: ( ruleModule )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:731:1: ( ruleType )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:732:1: ruleType
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1375:1: ( ruleModule )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1376:1: ruleModule
             {
-             before(grammarAccess.getIDLAccess().getElementsTypeParserRuleCall_0()); 
-            pushFollow(FOLLOW_ruleType_in_rule__IDL__ElementsAssignment1413);
-            ruleType();
+             before(grammarAccess.getIDLAccess().getElementsModuleParserRuleCall_0()); 
+            pushFollow(FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2729);
+            ruleModule();
             _fsp--;
 
-             after(grammarAccess.getIDLAccess().getElementsTypeParserRuleCall_0()); 
+             after(grammarAccess.getIDLAccess().getElementsModuleParserRuleCall_0()); 
 
             }
 
@@ -1844,22 +3526,22 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     // $ANTLR end rule__IDL__ElementsAssignment
 
 
-    // $ANTLR start rule__DataType__NameAssignment_1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:741:1: rule__DataType__NameAssignment_1 : ( RULE_ID ) ;
-    public final void rule__DataType__NameAssignment_1() throws RecognitionException {
+    // $ANTLR start rule__Module__NameAssignment_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1385:1: rule__Module__NameAssignment_1 : ( RULE_ID ) ;
+    public final void rule__Module__NameAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:745:1: ( ( RULE_ID ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:746:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1389:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1390:1: ( RULE_ID )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:746:1: ( RULE_ID )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:747:1: RULE_ID
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1390:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1391:1: RULE_ID
             {
-             before(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_1_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_11444); 
-             after(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_1_0()); 
+             before(grammarAccess.getModuleAccess().getNameIDTerminalRuleCall_1_0()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12760); 
+             after(grammarAccess.getModuleAccess().getNameIDTerminalRuleCall_1_0()); 
 
             }
 
@@ -1878,110 +3560,28 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__NameAssignment_1
+    // $ANTLR end rule__Module__NameAssignment_1
 
 
-    // $ANTLR start rule__Entity__NameAssignment_1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:756:1: rule__Entity__NameAssignment_1 : ( RULE_ID ) ;
-    public final void rule__Entity__NameAssignment_1() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:760:1: ( ( RULE_ID ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:761:1: ( RULE_ID )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:761:1: ( RULE_ID )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:762:1: RULE_ID
-            {
-             before(grammarAccess.getEntityAccess().getNameIDTerminalRuleCall_1_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Entity__NameAssignment_11475); 
-             after(grammarAccess.getEntityAccess().getNameIDTerminalRuleCall_1_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__NameAssignment_1
-
-
-    // $ANTLR start rule__Entity__SuperTypeAssignment_2_1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:771:1: rule__Entity__SuperTypeAssignment_2_1 : ( ( RULE_ID ) ) ;
-    public final void rule__Entity__SuperTypeAssignment_2_1() throws RecognitionException {
+    // $ANTLR start rule__Module__TypesAssignment_3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1400:1: rule__Module__TypesAssignment_3 : ( ruleDataType ) ;
+    public final void rule__Module__TypesAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:775:1: ( ( ( RULE_ID ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:776:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1404:1: ( ( ruleDataType ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1405:1: ( ruleDataType )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:776:1: ( ( RULE_ID ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:777:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1405:1: ( ruleDataType )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1406:1: ruleDataType
             {
-             before(grammarAccess.getEntityAccess().getSuperTypeEntityCrossReference_2_1_0()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:778:1: ( RULE_ID )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:779:1: RULE_ID
-            {
-             before(grammarAccess.getEntityAccess().getSuperTypeEntityIDTerminalRuleCall_2_1_0_1()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Entity__SuperTypeAssignment_2_11510); 
-             after(grammarAccess.getEntityAccess().getSuperTypeEntityIDTerminalRuleCall_2_1_0_1()); 
-
-            }
-
-             after(grammarAccess.getEntityAccess().getSuperTypeEntityCrossReference_2_1_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Entity__SuperTypeAssignment_2_1
-
-
-    // $ANTLR start rule__Entity__FeaturesAssignment_4
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:790:1: rule__Entity__FeaturesAssignment_4 : ( ruleFeature ) ;
-    public final void rule__Entity__FeaturesAssignment_4() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:794:1: ( ( ruleFeature ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:795:1: ( ruleFeature )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:795:1: ( ruleFeature )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:796:1: ruleFeature
-            {
-             before(grammarAccess.getEntityAccess().getFeaturesFeatureParserRuleCall_4_0()); 
-            pushFollow(FOLLOW_ruleFeature_in_rule__Entity__FeaturesAssignment_41545);
-            ruleFeature();
+             before(grammarAccess.getModuleAccess().getTypesDataTypeParserRuleCall_3_0()); 
+            pushFollow(FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32791);
+            ruleDataType();
             _fsp--;
 
-             after(grammarAccess.getEntityAccess().getFeaturesFeatureParserRuleCall_4_0()); 
+             after(grammarAccess.getModuleAccess().getTypesDataTypeParserRuleCall_3_0()); 
 
             }
 
@@ -2000,65 +3600,28 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Entity__FeaturesAssignment_4
+    // $ANTLR end rule__Module__TypesAssignment_3
 
 
-    // $ANTLR start rule__Feature__NameAssignment_0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:805:1: rule__Feature__NameAssignment_0 : ( RULE_ID ) ;
-    public final void rule__Feature__NameAssignment_0() throws RecognitionException {
-
-        		int stackSize = keepStackSize();
-            
-        try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:809:1: ( ( RULE_ID ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:810:1: ( RULE_ID )
-            {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:810:1: ( RULE_ID )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:811:1: RULE_ID
-            {
-             before(grammarAccess.getFeatureAccess().getNameIDTerminalRuleCall_0_0()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Feature__NameAssignment_01576); 
-             after(grammarAccess.getFeatureAccess().getNameIDTerminalRuleCall_0_0()); 
-
-            }
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-
-            	restoreStackSize(stackSize);
-
-        }
-        return ;
-    }
-    // $ANTLR end rule__Feature__NameAssignment_0
-
-
-    // $ANTLR start rule__Feature__TypeAssignment_2
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:820:1: rule__Feature__TypeAssignment_2 : ( ruleTypeRef ) ;
-    public final void rule__Feature__TypeAssignment_2() throws RecognitionException {
+    // $ANTLR start rule__Module__InterfacesAssignment_4
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1415:1: rule__Module__InterfacesAssignment_4 : ( ruleInterface ) ;
+    public final void rule__Module__InterfacesAssignment_4() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:824:1: ( ( ruleTypeRef ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:825:1: ( ruleTypeRef )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1419:1: ( ( ruleInterface ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1420:1: ( ruleInterface )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:825:1: ( ruleTypeRef )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:826:1: ruleTypeRef
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1420:1: ( ruleInterface )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1421:1: ruleInterface
             {
-             before(grammarAccess.getFeatureAccess().getTypeTypeRefParserRuleCall_2_0()); 
-            pushFollow(FOLLOW_ruleTypeRef_in_rule__Feature__TypeAssignment_21607);
-            ruleTypeRef();
+             before(grammarAccess.getModuleAccess().getInterfacesInterfaceParserRuleCall_4_0()); 
+            pushFollow(FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42822);
+            ruleInterface();
             _fsp--;
 
-             after(grammarAccess.getFeatureAccess().getTypeTypeRefParserRuleCall_2_0()); 
+             after(grammarAccess.getModuleAccess().getInterfacesInterfaceParserRuleCall_4_0()); 
 
             }
 
@@ -2077,33 +3640,28 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Feature__TypeAssignment_2
+    // $ANTLR end rule__Module__InterfacesAssignment_4
 
 
-    // $ANTLR start rule__TypeRef__ReferencedAssignment_0
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:835:1: rule__TypeRef__ReferencedAssignment_0 : ( ( RULE_ID ) ) ;
-    public final void rule__TypeRef__ReferencedAssignment_0() throws RecognitionException {
+    // $ANTLR start rule__DataType__BtypeAssignment_1_0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1430:1: rule__DataType__BtypeAssignment_1_0 : ( ruleBaseType ) ;
+    public final void rule__DataType__BtypeAssignment_1_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:839:1: ( ( ( RULE_ID ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:840:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1434:1: ( ( ruleBaseType ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1435:1: ( ruleBaseType )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:840:1: ( ( RULE_ID ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:841:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1435:1: ( ruleBaseType )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1436:1: ruleBaseType
             {
-             before(grammarAccess.getTypeRefAccess().getReferencedTypeCrossReference_0_0()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:842:1: ( RULE_ID )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:843:1: RULE_ID
-            {
-             before(grammarAccess.getTypeRefAccess().getReferencedTypeIDTerminalRuleCall_0_0_1()); 
-            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__TypeRef__ReferencedAssignment_01642); 
-             after(grammarAccess.getTypeRefAccess().getReferencedTypeIDTerminalRuleCall_0_0_1()); 
+             before(grammarAccess.getDataTypeAccess().getBtypeBaseTypeEnumRuleCall_1_0_0()); 
+            pushFollow(FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02853);
+            ruleBaseType();
+            _fsp--;
 
-            }
-
-             after(grammarAccess.getTypeRefAccess().getReferencedTypeCrossReference_0_0()); 
+             after(grammarAccess.getDataTypeAccess().getBtypeBaseTypeEnumRuleCall_1_0_0()); 
 
             }
 
@@ -2122,33 +3680,33 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeRef__ReferencedAssignment_0
+    // $ANTLR end rule__DataType__BtypeAssignment_1_0
 
 
-    // $ANTLR start rule__TypeRef__MultiAssignment_1
-    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:854:1: rule__TypeRef__MultiAssignment_1 : ( ( '*' ) ) ;
-    public final void rule__TypeRef__MultiAssignment_1() throws RecognitionException {
+    // $ANTLR start rule__DataType__CtypeAssignment_1_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1445:1: rule__DataType__CtypeAssignment_1_1 : ( ( RULE_ID ) ) ;
+    public final void rule__DataType__CtypeAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
             
         try {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:858:1: ( ( ( '*' ) ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:859:1: ( ( '*' ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1449:1: ( ( ( RULE_ID ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1450:1: ( ( RULE_ID ) )
             {
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:859:1: ( ( '*' ) )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:860:1: ( '*' )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1450:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1451:1: ( RULE_ID )
             {
-             before(grammarAccess.getTypeRefAccess().getMultiAsteriskKeyword_1_0()); 
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:861:1: ( '*' )
-            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:862:1: '*'
+             before(grammarAccess.getDataTypeAccess().getCtypeDataTypeCrossReference_1_1_0()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1452:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1453:1: RULE_ID
             {
-             before(grammarAccess.getTypeRefAccess().getMultiAsteriskKeyword_1_0()); 
-            match(input,17,FOLLOW_17_in_rule__TypeRef__MultiAssignment_11682); 
-             after(grammarAccess.getTypeRefAccess().getMultiAsteriskKeyword_1_0()); 
+             before(grammarAccess.getDataTypeAccess().getCtypeDataTypeIDTerminalRuleCall_1_1_0_1()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12888); 
+             after(grammarAccess.getDataTypeAccess().getCtypeDataTypeIDTerminalRuleCall_1_1_0_1()); 
 
             }
 
-             after(grammarAccess.getTypeRefAccess().getMultiAsteriskKeyword_1_0()); 
+             after(grammarAccess.getDataTypeAccess().getCtypeDataTypeCrossReference_1_1_0()); 
 
             }
 
@@ -2167,79 +3725,580 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeRef__MultiAssignment_1
+    // $ANTLR end rule__DataType__CtypeAssignment_1_1
+
+
+    // $ANTLR start rule__DataType__NameAssignment_2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1464:1: rule__DataType__NameAssignment_2 : ( RULE_ID ) ;
+    public final void rule__DataType__NameAssignment_2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1468:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1469:1: ( RULE_ID )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1469:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1470:1: RULE_ID
+            {
+             before(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_2_0()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22923); 
+             after(grammarAccess.getDataTypeAccess().getNameIDTerminalRuleCall_2_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__DataType__NameAssignment_2
+
+
+    // $ANTLR start rule__Interface__NameAssignment_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1479:1: rule__Interface__NameAssignment_1 : ( ruleInterfaceName ) ;
+    public final void rule__Interface__NameAssignment_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1483:1: ( ( ruleInterfaceName ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1484:1: ( ruleInterfaceName )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1484:1: ( ruleInterfaceName )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1485:1: ruleInterfaceName
+            {
+             before(grammarAccess.getInterfaceAccess().getNameInterfaceNameEnumRuleCall_1_0()); 
+            pushFollow(FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12954);
+            ruleInterfaceName();
+            _fsp--;
+
+             after(grammarAccess.getInterfaceAccess().getNameInterfaceNameEnumRuleCall_1_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__NameAssignment_1
+
+
+    // $ANTLR start rule__Interface__FunctionAssignment_3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1494:1: rule__Interface__FunctionAssignment_3 : ( ruleFunction ) ;
+    public final void rule__Interface__FunctionAssignment_3() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1498:1: ( ( ruleFunction ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1499:1: ( ruleFunction )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1499:1: ( ruleFunction )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1500:1: ruleFunction
+            {
+             before(grammarAccess.getInterfaceAccess().getFunctionFunctionParserRuleCall_3_0()); 
+            pushFollow(FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32985);
+            ruleFunction();
+            _fsp--;
+
+             after(grammarAccess.getInterfaceAccess().getFunctionFunctionParserRuleCall_3_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Interface__FunctionAssignment_3
+
+
+    // $ANTLR start rule__Function__NameAssignment_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1509:1: rule__Function__NameAssignment_1 : ( RULE_ID ) ;
+    public final void rule__Function__NameAssignment_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1513:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1514:1: ( RULE_ID )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1514:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1515:1: RULE_ID
+            {
+             before(grammarAccess.getFunctionAccess().getNameIDTerminalRuleCall_1_0()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13016); 
+             after(grammarAccess.getFunctionAccess().getNameIDTerminalRuleCall_1_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__NameAssignment_1
+
+
+    // $ANTLR start rule__Function__ParametersAssignment_3
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1524:1: rule__Function__ParametersAssignment_3 : ( ruleParameter ) ;
+    public final void rule__Function__ParametersAssignment_3() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1528:1: ( ( ruleParameter ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1529:1: ( ruleParameter )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1529:1: ( ruleParameter )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1530:1: ruleParameter
+            {
+             before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0()); 
+            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33047);
+            ruleParameter();
+            _fsp--;
+
+             after(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__ParametersAssignment_3
+
+
+    // $ANTLR start rule__Function__ParametersAssignment_4_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1539:1: rule__Function__ParametersAssignment_4_1 : ( ruleParameter ) ;
+    public final void rule__Function__ParametersAssignment_4_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1543:1: ( ( ruleParameter ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1544:1: ( ruleParameter )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1544:1: ( ruleParameter )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1545:1: ruleParameter
+            {
+             before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0()); 
+            pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13078);
+            ruleParameter();
+            _fsp--;
+
+             after(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Function__ParametersAssignment_4_1
+
+
+    // $ANTLR start rule__Parameter__DirectionAssignment_0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1554:1: rule__Parameter__DirectionAssignment_0 : ( ruleDirection ) ;
+    public final void rule__Parameter__DirectionAssignment_0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1558:1: ( ( ruleDirection ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1559:1: ( ruleDirection )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1559:1: ( ruleDirection )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1560:1: ruleDirection
+            {
+             before(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0()); 
+            pushFollow(FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03109);
+            ruleDirection();
+            _fsp--;
+
+             after(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__DirectionAssignment_0
+
+
+    // $ANTLR start rule__Parameter__TypeAssignment_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1569:1: rule__Parameter__TypeAssignment_1 : ( ruleTypeStar ) ;
+    public final void rule__Parameter__TypeAssignment_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1573:1: ( ( ruleTypeStar ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1574:1: ( ruleTypeStar )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1574:1: ( ruleTypeStar )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1575:1: ruleTypeStar
+            {
+             before(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0()); 
+            pushFollow(FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13140);
+            ruleTypeStar();
+            _fsp--;
+
+             after(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__TypeAssignment_1
+
+
+    // $ANTLR start rule__Parameter__NameAssignment_2
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1584:1: rule__Parameter__NameAssignment_2 : ( RULE_ID ) ;
+    public final void rule__Parameter__NameAssignment_2() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1588:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1589:1: ( RULE_ID )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1589:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1590:1: RULE_ID
+            {
+             before(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_2_0()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23171); 
+             after(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_2_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__Parameter__NameAssignment_2
+
+
+    // $ANTLR start rule__TypeStar__BtypeAssignment_0
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1599:1: rule__TypeStar__BtypeAssignment_0 : ( ruleBaseType ) ;
+    public final void rule__TypeStar__BtypeAssignment_0() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1603:1: ( ( ruleBaseType ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1604:1: ( ruleBaseType )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1604:1: ( ruleBaseType )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1605:1: ruleBaseType
+            {
+             before(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0()); 
+            pushFollow(FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03202);
+            ruleBaseType();
+            _fsp--;
+
+             after(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__TypeStar__BtypeAssignment_0
+
+
+    // $ANTLR start rule__TypeStar__CtypeAssignment_1
+    // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1614:1: rule__TypeStar__CtypeAssignment_1 : ( ( RULE_ID ) ) ;
+    public final void rule__TypeStar__CtypeAssignment_1() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+            
+        try {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1618:1: ( ( ( RULE_ID ) ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1619:1: ( ( RULE_ID ) )
+            {
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1619:1: ( ( RULE_ID ) )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1620:1: ( RULE_ID )
+            {
+             before(grammarAccess.getTypeStarAccess().getCtypeDataTypeCrossReference_1_0()); 
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1621:1: ( RULE_ID )
+            // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1622:1: RULE_ID
+            {
+             before(grammarAccess.getTypeStarAccess().getCtypeDataTypeIDTerminalRuleCall_1_0_1()); 
+            match(input,RULE_ID,FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13237); 
+             after(grammarAccess.getTypeStarAccess().getCtypeDataTypeIDTerminalRuleCall_1_0_1()); 
+
+            }
+
+             after(grammarAccess.getTypeStarAccess().getCtypeDataTypeCrossReference_1_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end rule__TypeStar__CtypeAssignment_1
 
 
  
 
     public static final BitSet FOLLOW_ruleIDL_in_entryRuleIDL61 = new BitSet(new long[]{0x0000000000000000L});
     public static final BitSet FOLLOW_EOF_in_entryRuleIDL68 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__IDL__ElementsAssignment_in_ruleIDL94 = new BitSet(new long[]{0x0000000000001802L});
-    public static final BitSet FOLLOW_ruleType_in_entryRuleType122 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleType129 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Type__Alternatives_in_ruleType155 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleDataType_in_entryRuleDataType182 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleDataType189 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__DataType__Group__0_in_ruleDataType215 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleEntity_in_entryRuleEntity242 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleEntity249 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__0_in_ruleEntity275 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleFeature_in_entryRuleFeature302 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleFeature309 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__Group__0_in_ruleFeature335 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleTypeRef_in_entryRuleTypeRef362 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_entryRuleTypeRef369 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__TypeRef__Group__0_in_ruleTypeRef395 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleDataType_in_rule__Type__Alternatives431 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleEntity_in_rule__Type__Alternatives448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__DataType__Group__0__Impl_in_rule__DataType__Group__0478 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_rule__DataType__Group__1_in_rule__DataType__Group__0481 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_11_in_rule__DataType__Group__0__Impl509 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__DataType__Group__1__Impl_in_rule__DataType__Group__1540 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__DataType__NameAssignment_1_in_rule__DataType__Group__1__Impl567 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__0__Impl_in_rule__Entity__Group__0601 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_rule__Entity__Group__1_in_rule__Entity__Group__0604 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_12_in_rule__Entity__Group__0__Impl632 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__1__Impl_in_rule__Entity__Group__1663 = new BitSet(new long[]{0x000000000000A000L});
-    public static final BitSet FOLLOW_rule__Entity__Group__2_in_rule__Entity__Group__1666 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__NameAssignment_1_in_rule__Entity__Group__1__Impl693 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__2__Impl_in_rule__Entity__Group__2723 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_rule__Entity__Group__3_in_rule__Entity__Group__2726 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group_2__0_in_rule__Entity__Group__2__Impl753 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__3__Impl_in_rule__Entity__Group__3784 = new BitSet(new long[]{0x0000000000004010L});
-    public static final BitSet FOLLOW_rule__Entity__Group__4_in_rule__Entity__Group__3787 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_13_in_rule__Entity__Group__3__Impl815 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group__4__Impl_in_rule__Entity__Group__4846 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_rule__Entity__Group__5_in_rule__Entity__Group__4849 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__FeaturesAssignment_4_in_rule__Entity__Group__4__Impl876 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_rule__Entity__Group__5__Impl_in_rule__Entity__Group__5907 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_14_in_rule__Entity__Group__5__Impl935 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group_2__0__Impl_in_rule__Entity__Group_2__0978 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_rule__Entity__Group_2__1_in_rule__Entity__Group_2__0981 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_15_in_rule__Entity__Group_2__0__Impl1009 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__Group_2__1__Impl_in_rule__Entity__Group_2__11040 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Entity__SuperTypeAssignment_2_1_in_rule__Entity__Group_2__1__Impl1067 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__Group__0__Impl_in_rule__Feature__Group__01101 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_rule__Feature__Group__1_in_rule__Feature__Group__01104 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__NameAssignment_0_in_rule__Feature__Group__0__Impl1131 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__Group__1__Impl_in_rule__Feature__Group__11161 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_rule__Feature__Group__2_in_rule__Feature__Group__11164 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_16_in_rule__Feature__Group__1__Impl1192 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__Group__2__Impl_in_rule__Feature__Group__21223 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Feature__TypeAssignment_2_in_rule__Feature__Group__2__Impl1250 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__TypeRef__Group__0__Impl_in_rule__TypeRef__Group__01286 = new BitSet(new long[]{0x0000000000020002L});
-    public static final BitSet FOLLOW_rule__TypeRef__Group__1_in_rule__TypeRef__Group__01289 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__TypeRef__ReferencedAssignment_0_in_rule__TypeRef__Group__0__Impl1316 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__TypeRef__Group__1__Impl_in_rule__TypeRef__Group__11346 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__TypeRef__MultiAssignment_1_in_rule__TypeRef__Group__1__Impl1373 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleType_in_rule__IDL__ElementsAssignment1413 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_11444 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Entity__NameAssignment_11475 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Entity__SuperTypeAssignment_2_11510 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleFeature_in_rule__Entity__FeaturesAssignment_41545 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__Feature__NameAssignment_01576 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ruleTypeRef_in_rule__Feature__TypeAssignment_21607 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RULE_ID_in_rule__TypeRef__ReferencedAssignment_01642 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_17_in_rule__TypeRef__MultiAssignment_11682 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__IDL__ElementsAssignment_in_ruleIDL94 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleModule_in_entryRuleModule121 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleModule128 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__0_in_ruleModule154 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDataType_in_entryRuleDataType181 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleDataType188 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Group__0_in_ruleDataType214 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleInterface_in_entryRuleInterface241 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleInterface248 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__0_in_ruleInterface274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleFunction_in_entryRuleFunction301 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleFunction308 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__0_in_ruleFunction334 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_entryRuleParameter361 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleParameter368 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__0_in_ruleParameter394 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleTypeStar_in_entryRuleTypeStar421 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_entryRuleTypeStar428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__TypeStar__Alternatives_in_ruleTypeStar454 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__BaseType__Alternatives_in_ruleBaseType491 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__InterfaceName__Alternatives_in_ruleInterfaceName527 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Direction__Alternatives_in_ruleDirection563 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__BtypeAssignment_1_0_in_rule__DataType__Alternatives_1598 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__CtypeAssignment_1_1_in_rule__DataType__Alternatives_1616 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__TypeStar__BtypeAssignment_0_in_rule__TypeStar__Alternatives649 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__TypeStar__CtypeAssignment_1_in_rule__TypeStar__Alternatives667 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_11_in_rule__BaseType__Alternatives701 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_12_in_rule__BaseType__Alternatives722 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_13_in_rule__BaseType__Alternatives743 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_14_in_rule__InterfaceName__Alternatives779 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_15_in_rule__InterfaceName__Alternatives800 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_16_in_rule__InterfaceName__Alternatives821 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_17_in_rule__Direction__Alternatives857 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_18_in_rule__Direction__Alternatives878 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__0__Impl_in_rule__Module__Group__0911 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_rule__Module__Group__1_in_rule__Module__Group__0914 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_19_in_rule__Module__Group__0__Impl942 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__1__Impl_in_rule__Module__Group__1973 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_rule__Module__Group__2_in_rule__Module__Group__1976 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__NameAssignment_1_in_rule__Module__Group__1__Impl1003 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__2__Impl_in_rule__Module__Group__21033 = new BitSet(new long[]{0x0000000001A00000L});
+    public static final BitSet FOLLOW_rule__Module__Group__3_in_rule__Module__Group__21036 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_20_in_rule__Module__Group__2__Impl1064 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__3__Impl_in_rule__Module__Group__31095 = new BitSet(new long[]{0x0000000001200000L});
+    public static final BitSet FOLLOW_rule__Module__Group__4_in_rule__Module__Group__31098 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__TypesAssignment_3_in_rule__Module__Group__3__Impl1125 = new BitSet(new long[]{0x0000000000800002L});
+    public static final BitSet FOLLOW_rule__Module__Group__4__Impl_in_rule__Module__Group__41156 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_rule__Module__Group__5_in_rule__Module__Group__41159 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__InterfacesAssignment_4_in_rule__Module__Group__4__Impl1186 = new BitSet(new long[]{0x0000000001000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__5__Impl_in_rule__Module__Group__51217 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_rule__Module__Group__6_in_rule__Module__Group__51220 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_rule__Module__Group__5__Impl1248 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Module__Group__6__Impl_in_rule__Module__Group__61279 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_rule__Module__Group__6__Impl1307 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Group__0__Impl_in_rule__DataType__Group__01352 = new BitSet(new long[]{0x0000000000003810L});
+    public static final BitSet FOLLOW_rule__DataType__Group__1_in_rule__DataType__Group__01355 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_23_in_rule__DataType__Group__0__Impl1383 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Group__1__Impl_in_rule__DataType__Group__11414 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_rule__DataType__Group__2_in_rule__DataType__Group__11417 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Alternatives_1_in_rule__DataType__Group__1__Impl1444 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Group__2__Impl_in_rule__DataType__Group__21474 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_rule__DataType__Group__3_in_rule__DataType__Group__21477 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__NameAssignment_2_in_rule__DataType__Group__2__Impl1504 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__DataType__Group__3__Impl_in_rule__DataType__Group__31534 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_rule__DataType__Group__3__Impl1562 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__0__Impl_in_rule__Interface__Group__01601 = new BitSet(new long[]{0x000000000001C000L});
+    public static final BitSet FOLLOW_rule__Interface__Group__1_in_rule__Interface__Group__01604 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_24_in_rule__Interface__Group__0__Impl1632 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__1__Impl_in_rule__Interface__Group__11663 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_rule__Interface__Group__2_in_rule__Interface__Group__11666 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__NameAssignment_1_in_rule__Interface__Group__1__Impl1693 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__2__Impl_in_rule__Interface__Group__21723 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_rule__Interface__Group__3_in_rule__Interface__Group__21726 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_20_in_rule__Interface__Group__2__Impl1754 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__3__Impl_in_rule__Interface__Group__31785 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_rule__Interface__Group__4_in_rule__Interface__Group__31788 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__FunctionAssignment_3_in_rule__Interface__Group__3__Impl1815 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__4__Impl_in_rule__Interface__Group__41845 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_rule__Interface__Group__5_in_rule__Interface__Group__41848 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_rule__Interface__Group__4__Impl1876 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Interface__Group__5__Impl_in_rule__Interface__Group__51907 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_rule__Interface__Group__5__Impl1935 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__0__Impl_in_rule__Function__Group__01978 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_rule__Function__Group__1_in_rule__Function__Group__01981 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_25_in_rule__Function__Group__0__Impl2009 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__1__Impl_in_rule__Function__Group__12040 = new BitSet(new long[]{0x0000000004000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__2_in_rule__Function__Group__12043 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__NameAssignment_1_in_rule__Function__Group__1__Impl2070 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100 = new BitSet(new long[]{0x0000000000060000L});
+    public static final BitSet FOLLOW_rule__Function__Group__3_in_rule__Function__Group__22103 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_26_in_rule__Function__Group__2__Impl2131 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162 = new BitSet(new long[]{0x0000000018000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__4_in_rule__Function__Group__32165 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42222 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42225 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2252 = new BitSet(new long[]{0x0000000010000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52283 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52286 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_27_in_rule__Function__Group__5__Impl2314 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62345 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_rule__Function__Group__6__Impl2373 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02418 = new BitSet(new long[]{0x0000000000060000L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_28_in_rule__Function__Group_4__0__Impl2449 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12480 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2507 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02541 = new BitSet(new long[]{0x0000000000003810L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02544 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12601 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12604 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2631 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22661 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2688 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2729 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Module__NameAssignment_12760 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32791 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42822 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02853 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__CtypeAssignment_1_12888 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__DataType__NameAssignment_22923 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12954 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32985 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Function__NameAssignment_13016 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33047 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13078 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03109 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13140 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__Parameter__NameAssignment_23171 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03202 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RULE_ID_in_rule__TypeStar__CtypeAssignment_13237 = new BitSet(new long[]{0x0000000000000002L});
 
 }

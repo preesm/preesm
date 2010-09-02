@@ -5,6 +5,7 @@ package org.ietr.preesm.editor.formatting;
 
 import org.eclipse.xtext.formatting.impl.AbstractDeclarativeFormatter;
 import org.eclipse.xtext.formatting.impl.FormattingConfig;
+import org.ietr.preesm.editor.services.IDLLanguageGrammarAccess;
 
 /**
  * This class contains custom formatting description.
@@ -18,10 +19,32 @@ public class IDLLanguageFormatter extends AbstractDeclarativeFormatter {
 	
 	@Override
 	protected void configureFormatting(FormattingConfig c) {
+		
+		IDLLanguageGrammarAccess f = (IDLLanguageGrammarAccess)getGrammarAccess();
 // It's usually a good idea to activate the following three statements.
 // They will add and preserve newlines around comments
-//		c.setLinewrap(0, 1, 2).before(getGrammarAccess().getSL_COMMENTRule());
-//		c.setLinewrap(0, 1, 2).before(getGrammarAccess().getML_COMMENTRule());
-//		c.setLinewrap(0, 1, 1).after(getGrammarAccess().getML_COMMENTRule());
+		
+		c.setLinewrap().before(f.getModuleRule());
+		c.setLinewrap().before(f.getDataTypeRule());
+		c.setLinewrap().before(f.getInterfaceRule());
+		c.setLinewrap().before(f.getFunctionRule());
+		
+
+	    c.setIndentationIncrement().after(
+	        f.getModuleAccess().getLeftCurlyBracketKeyword_2());
+	    c.setIndentationDecrement().before(
+	        f.getModuleAccess().getRightCurlyBracketKeyword_5());
+
+	    c.setIndentationIncrement().after(
+	        f.getInterfaceAccess().getLeftCurlyBracketKeyword_2());
+	    c.setIndentationDecrement().before(
+	        f.getInterfaceAccess().getRightCurlyBracketKeyword_4());
+	    
+		c.setLinewrap().before(f.getModuleAccess().getRightCurlyBracketKeyword_5());
+		c.setLinewrap().before(f.getInterfaceAccess().getRightCurlyBracketKeyword_4());
+		
+		c.setLinewrap(0, 1, 2).before(f.getSL_COMMENTRule());
+		c.setLinewrap(0, 1, 2).before(f.getML_COMMENTRule());
+		c.setLinewrap(0, 1, 1).after(f.getML_COMMENTRule());
 	}
 }

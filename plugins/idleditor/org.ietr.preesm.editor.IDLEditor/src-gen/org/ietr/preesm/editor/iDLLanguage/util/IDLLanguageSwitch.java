@@ -103,10 +103,10 @@ public class IDLLanguageSwitch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case IDLLanguagePackage.TYPE:
+      case IDLLanguagePackage.MODULE:
       {
-        Type type = (Type)theEObject;
-        T result = caseType(type);
+        Module module = (Module)theEObject;
+        T result = caseModule(module);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -114,29 +114,34 @@ public class IDLLanguageSwitch<T>
       {
         DataType dataType = (DataType)theEObject;
         T result = caseDataType(dataType);
-        if (result == null) result = caseType(dataType);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case IDLLanguagePackage.ENTITY:
+      case IDLLanguagePackage.INTERFACE:
       {
-        Entity entity = (Entity)theEObject;
-        T result = caseEntity(entity);
-        if (result == null) result = caseType(entity);
+        Interface interface_ = (Interface)theEObject;
+        T result = caseInterface(interface_);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case IDLLanguagePackage.FEATURE:
+      case IDLLanguagePackage.FUNCTION:
       {
-        Feature feature = (Feature)theEObject;
-        T result = caseFeature(feature);
+        Function function = (Function)theEObject;
+        T result = caseFunction(function);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case IDLLanguagePackage.TYPE_REF:
+      case IDLLanguagePackage.PARAMETER:
       {
-        TypeRef typeRef = (TypeRef)theEObject;
-        T result = caseTypeRef(typeRef);
+        Parameter parameter = (Parameter)theEObject;
+        T result = caseParameter(parameter);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case IDLLanguagePackage.TYPE_STAR:
+      {
+        TypeStar typeStar = (TypeStar)theEObject;
+        T result = caseTypeStar(typeStar);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -161,17 +166,17 @@ public class IDLLanguageSwitch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Type</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Module</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Type</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Module</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseType(Type object)
+  public T caseModule(Module object)
   {
     return null;
   }
@@ -193,49 +198,65 @@ public class IDLLanguageSwitch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Entity</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Interface</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Entity</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Interface</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseEntity(Entity object)
+  public T caseInterface(Interface object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Feature</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Function</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Feature</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Function</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseFeature(Feature object)
+  public T caseFunction(Function object)
   {
     return null;
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Type Ref</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Parameter</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Type Ref</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Parameter</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseTypeRef(TypeRef object)
+  public T caseParameter(Parameter object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Type Star</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Type Star</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseTypeStar(TypeStar object)
   {
     return null;
   }

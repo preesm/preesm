@@ -8,18 +8,23 @@ package org.ietr.preesm.editor.iDLLanguage.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import org.ietr.preesm.editor.iDLLanguage.BaseType;
 import org.ietr.preesm.editor.iDLLanguage.DataType;
-import org.ietr.preesm.editor.iDLLanguage.Entity;
-import org.ietr.preesm.editor.iDLLanguage.Feature;
+import org.ietr.preesm.editor.iDLLanguage.Direction;
+import org.ietr.preesm.editor.iDLLanguage.Function;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguageFactory;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguagePackage;
-import org.ietr.preesm.editor.iDLLanguage.Type;
-import org.ietr.preesm.editor.iDLLanguage.TypeRef;
+import org.ietr.preesm.editor.iDLLanguage.Interface;
+import org.ietr.preesm.editor.iDLLanguage.InterfaceName;
+import org.ietr.preesm.editor.iDLLanguage.Module;
+import org.ietr.preesm.editor.iDLLanguage.Parameter;
+import org.ietr.preesm.editor.iDLLanguage.TypeStar;
 
 /**
  * <!-- begin-user-doc -->
@@ -41,7 +46,7 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass typeEClass = null;
+  private EClass moduleEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -55,21 +60,49 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass entityEClass = null;
+  private EClass interfaceEClass = null;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass featureEClass = null;
+  private EClass functionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass typeRefEClass = null;
+  private EClass parameterEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass typeStarEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EEnum baseTypeEEnum = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EEnum interfaceNameEEnum = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EEnum directionEEnum = null;
 
   /**
    * Creates an instance of the model <b>Package</b>, registered with
@@ -159,9 +192,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getType()
+  public EClass getModule()
   {
-    return typeEClass;
+    return moduleEClass;
   }
 
   /**
@@ -169,9 +202,29 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getType_Name()
+  public EAttribute getModule_Name()
   {
-    return (EAttribute)typeEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)moduleEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getModule_Types()
+  {
+    return (EReference)moduleEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getModule_Interfaces()
+  {
+    return (EReference)moduleEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -189,9 +242,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getEntity()
+  public EAttribute getDataType_Btype()
   {
-    return entityEClass;
+    return (EAttribute)dataTypeEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -199,9 +252,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getEntity_SuperType()
+  public EReference getDataType_Ctype()
   {
-    return (EReference)entityEClass.getEStructuralFeatures().get(0);
+    return (EReference)dataTypeEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -209,9 +262,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getEntity_Features()
+  public EAttribute getDataType_Name()
   {
-    return (EReference)entityEClass.getEStructuralFeatures().get(1);
+    return (EAttribute)dataTypeEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -219,9 +272,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getFeature()
+  public EClass getInterface()
   {
-    return featureEClass;
+    return interfaceEClass;
   }
 
   /**
@@ -229,9 +282,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getFeature_Name()
+  public EAttribute getInterface_Name()
   {
-    return (EAttribute)featureEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)interfaceEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -239,9 +292,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getFeature_Type()
+  public EReference getInterface_Function()
   {
-    return (EReference)featureEClass.getEStructuralFeatures().get(1);
+    return (EReference)interfaceEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -249,9 +302,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EClass getTypeRef()
+  public EClass getFunction()
   {
-    return typeRefEClass;
+    return functionEClass;
   }
 
   /**
@@ -259,9 +312,9 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getTypeRef_Referenced()
+  public EAttribute getFunction_Name()
   {
-    return (EReference)typeRefEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)functionEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -269,9 +322,109 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getTypeRef_Multi()
+  public EReference getFunction_Parameters()
   {
-    return (EAttribute)typeRefEClass.getEStructuralFeatures().get(1);
+    return (EReference)functionEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getParameter()
+  {
+    return parameterEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getParameter_Direction()
+  {
+    return (EAttribute)parameterEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getParameter_Type()
+  {
+    return (EReference)parameterEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getParameter_Name()
+  {
+    return (EAttribute)parameterEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getTypeStar()
+  {
+    return typeStarEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getTypeStar_Btype()
+  {
+    return (EAttribute)typeStarEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getTypeStar_Ctype()
+  {
+    return (EReference)typeStarEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EEnum getBaseType()
+  {
+    return baseTypeEEnum;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EEnum getInterfaceName()
+  {
+    return interfaceNameEEnum;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EEnum getDirection()
+  {
+    return directionEEnum;
   }
 
   /**
@@ -307,22 +460,37 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
     idlEClass = createEClass(IDL);
     createEReference(idlEClass, IDL__ELEMENTS);
 
-    typeEClass = createEClass(TYPE);
-    createEAttribute(typeEClass, TYPE__NAME);
+    moduleEClass = createEClass(MODULE);
+    createEAttribute(moduleEClass, MODULE__NAME);
+    createEReference(moduleEClass, MODULE__TYPES);
+    createEReference(moduleEClass, MODULE__INTERFACES);
 
     dataTypeEClass = createEClass(DATA_TYPE);
+    createEAttribute(dataTypeEClass, DATA_TYPE__BTYPE);
+    createEReference(dataTypeEClass, DATA_TYPE__CTYPE);
+    createEAttribute(dataTypeEClass, DATA_TYPE__NAME);
 
-    entityEClass = createEClass(ENTITY);
-    createEReference(entityEClass, ENTITY__SUPER_TYPE);
-    createEReference(entityEClass, ENTITY__FEATURES);
+    interfaceEClass = createEClass(INTERFACE);
+    createEAttribute(interfaceEClass, INTERFACE__NAME);
+    createEReference(interfaceEClass, INTERFACE__FUNCTION);
 
-    featureEClass = createEClass(FEATURE);
-    createEAttribute(featureEClass, FEATURE__NAME);
-    createEReference(featureEClass, FEATURE__TYPE);
+    functionEClass = createEClass(FUNCTION);
+    createEAttribute(functionEClass, FUNCTION__NAME);
+    createEReference(functionEClass, FUNCTION__PARAMETERS);
 
-    typeRefEClass = createEClass(TYPE_REF);
-    createEReference(typeRefEClass, TYPE_REF__REFERENCED);
-    createEAttribute(typeRefEClass, TYPE_REF__MULTI);
+    parameterEClass = createEClass(PARAMETER);
+    createEAttribute(parameterEClass, PARAMETER__DIRECTION);
+    createEReference(parameterEClass, PARAMETER__TYPE);
+    createEAttribute(parameterEClass, PARAMETER__NAME);
+
+    typeStarEClass = createEClass(TYPE_STAR);
+    createEAttribute(typeStarEClass, TYPE_STAR__BTYPE);
+    createEReference(typeStarEClass, TYPE_STAR__CTYPE);
+
+    // Create enums
+    baseTypeEEnum = createEEnum(BASE_TYPE);
+    interfaceNameEEnum = createEEnum(INTERFACE_NAME);
+    directionEEnum = createEEnum(DIRECTION);
   }
 
   /**
@@ -354,29 +522,52 @@ public class IDLLanguagePackageImpl extends EPackageImpl implements IDLLanguageP
     // Set bounds for type parameters
 
     // Add supertypes to classes
-    dataTypeEClass.getESuperTypes().add(this.getType());
-    entityEClass.getESuperTypes().add(this.getType());
 
     // Initialize classes and features; add operations and parameters
     initEClass(idlEClass, org.ietr.preesm.editor.iDLLanguage.IDL.class, "IDL", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getIDL_Elements(), this.getType(), null, "elements", null, 0, -1, org.ietr.preesm.editor.iDLLanguage.IDL.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getIDL_Elements(), this.getModule(), null, "elements", null, 0, -1, org.ietr.preesm.editor.iDLLanguage.IDL.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(typeEClass, Type.class, "Type", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getType_Name(), ecorePackage.getEString(), "name", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(moduleEClass, Module.class, "Module", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getModule_Name(), ecorePackage.getEString(), "name", null, 0, 1, Module.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getModule_Types(), this.getDataType(), null, "types", null, 0, -1, Module.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getModule_Interfaces(), this.getInterface(), null, "interfaces", null, 0, -1, Module.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(dataTypeEClass, DataType.class, "DataType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getDataType_Btype(), this.getBaseType(), "btype", null, 0, 1, DataType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getDataType_Ctype(), this.getDataType(), null, "ctype", null, 0, 1, DataType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getDataType_Name(), ecorePackage.getEString(), "name", null, 0, 1, DataType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(entityEClass, Entity.class, "Entity", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getEntity_SuperType(), this.getEntity(), null, "superType", null, 0, 1, Entity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getEntity_Features(), this.getFeature(), null, "features", null, 0, -1, Entity.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(interfaceEClass, Interface.class, "Interface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getInterface_Name(), this.getInterfaceName(), "name", null, 0, 1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getInterface_Function(), this.getFunction(), null, "function", null, 0, 1, Interface.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(featureEClass, Feature.class, "Feature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getFeature_Name(), ecorePackage.getEString(), "name", null, 0, 1, Feature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFeature_Type(), this.getTypeRef(), null, "type", null, 0, 1, Feature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(functionEClass, Function.class, "Function", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getFunction_Name(), ecorePackage.getEString(), "name", null, 0, 1, Function.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getFunction_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, Function.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(typeRefEClass, TypeRef.class, "TypeRef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getTypeRef_Referenced(), this.getType(), null, "referenced", null, 0, 1, TypeRef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getTypeRef_Multi(), ecorePackage.getEBoolean(), "multi", null, 0, 1, TypeRef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getParameter_Direction(), this.getDirection(), "direction", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getParameter_Type(), this.getTypeStar(), null, "type", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(typeStarEClass, TypeStar.class, "TypeStar", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getTypeStar_Btype(), this.getBaseType(), "btype", null, 0, 1, TypeStar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getTypeStar_Ctype(), this.getDataType(), null, "ctype", null, 0, 1, TypeStar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    // Initialize enums and add enum literals
+    initEEnum(baseTypeEEnum, BaseType.class, "BaseType");
+    addEEnumLiteral(baseTypeEEnum, BaseType.INT);
+    addEEnumLiteral(baseTypeEEnum, BaseType.LONG);
+    addEEnumLiteral(baseTypeEEnum, BaseType.CHAR);
+
+    initEEnum(interfaceNameEEnum, InterfaceName.class, "InterfaceName");
+    addEEnumLiteral(interfaceNameEEnum, InterfaceName.INIT);
+    addEEnumLiteral(interfaceNameEEnum, InterfaceName.LOOP);
+    addEEnumLiteral(interfaceNameEEnum, InterfaceName.END);
+
+    initEEnum(directionEEnum, Direction.class, "Direction");
+    addEEnumLiteral(directionEEnum, Direction.IN);
+    addEEnumLiteral(directionEEnum, Direction.OUT);
 
     // Create resource
     createResource(eNS_URI);

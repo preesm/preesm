@@ -14,62 +14,63 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
+import org.ietr.preesm.editor.iDLLanguage.BaseType;
+import org.ietr.preesm.editor.iDLLanguage.DataType;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguagePackage;
-import org.ietr.preesm.editor.iDLLanguage.Type;
-import org.ietr.preesm.editor.iDLLanguage.TypeRef;
+import org.ietr.preesm.editor.iDLLanguage.TypeStar;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Type Ref</b></em>'.
+ * An implementation of the model object '<em><b>Type Star</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl#getReferenced <em>Referenced</em>}</li>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl#isMulti <em>Multi</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl#getBtype <em>Btype</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl#getCtype <em>Ctype</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
+public class TypeStarImpl extends MinimalEObjectImpl.Container implements TypeStar
 {
   /**
-   * The cached value of the '{@link #getReferenced() <em>Referenced</em>}' reference.
+   * The default value of the '{@link #getBtype() <em>Btype</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getReferenced()
+   * @see #getBtype()
    * @generated
    * @ordered
    */
-  protected Type referenced;
+  protected static final BaseType BTYPE_EDEFAULT = BaseType.INT;
 
   /**
-   * The default value of the '{@link #isMulti() <em>Multi</em>}' attribute.
+   * The cached value of the '{@link #getBtype() <em>Btype</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #isMulti()
+   * @see #getBtype()
    * @generated
    * @ordered
    */
-  protected static final boolean MULTI_EDEFAULT = false;
+  protected BaseType btype = BTYPE_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #isMulti() <em>Multi</em>}' attribute.
+   * The cached value of the '{@link #getCtype() <em>Ctype</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #isMulti()
+   * @see #getCtype()
    * @generated
    * @ordered
    */
-  protected boolean multi = MULTI_EDEFAULT;
+  protected DataType ctype;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected TypeRefImpl()
+  protected TypeStarImpl()
   {
     super();
   }
@@ -82,7 +83,7 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
   @Override
   protected EClass eStaticClass()
   {
-    return IDLLanguagePackage.Literals.TYPE_REF;
+    return IDLLanguagePackage.Literals.TYPE_STAR;
   }
 
   /**
@@ -90,19 +91,42 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
    * <!-- end-user-doc -->
    * @generated
    */
-  public Type getReferenced()
+  public BaseType getBtype()
   {
-    if (referenced != null && referenced.eIsProxy())
+    return btype;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setBtype(BaseType newBtype)
+  {
+    BaseType oldBtype = btype;
+    btype = newBtype == null ? BTYPE_EDEFAULT : newBtype;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.TYPE_STAR__BTYPE, oldBtype, btype));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public DataType getCtype()
+  {
+    if (ctype != null && ctype.eIsProxy())
     {
-      InternalEObject oldReferenced = (InternalEObject)referenced;
-      referenced = (Type)eResolveProxy(oldReferenced);
-      if (referenced != oldReferenced)
+      InternalEObject oldCtype = (InternalEObject)ctype;
+      ctype = (DataType)eResolveProxy(oldCtype);
+      if (ctype != oldCtype)
       {
         if (eNotificationRequired())
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, IDLLanguagePackage.TYPE_REF__REFERENCED, oldReferenced, referenced));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, IDLLanguagePackage.TYPE_STAR__CTYPE, oldCtype, ctype));
       }
     }
-    return referenced;
+    return ctype;
   }
 
   /**
@@ -110,9 +134,9 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
    * <!-- end-user-doc -->
    * @generated
    */
-  public Type basicGetReferenced()
+  public DataType basicGetCtype()
   {
-    return referenced;
+    return ctype;
   }
 
   /**
@@ -120,35 +144,12 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setReferenced(Type newReferenced)
+  public void setCtype(DataType newCtype)
   {
-    Type oldReferenced = referenced;
-    referenced = newReferenced;
+    DataType oldCtype = ctype;
+    ctype = newCtype;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.TYPE_REF__REFERENCED, oldReferenced, referenced));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public boolean isMulti()
-  {
-    return multi;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setMulti(boolean newMulti)
-  {
-    boolean oldMulti = multi;
-    multi = newMulti;
-    if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.TYPE_REF__MULTI, oldMulti, multi));
+      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.TYPE_STAR__CTYPE, oldCtype, ctype));
   }
 
   /**
@@ -161,11 +162,11 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.TYPE_REF__REFERENCED:
-        if (resolve) return getReferenced();
-        return basicGetReferenced();
-      case IDLLanguagePackage.TYPE_REF__MULTI:
-        return isMulti();
+      case IDLLanguagePackage.TYPE_STAR__BTYPE:
+        return getBtype();
+      case IDLLanguagePackage.TYPE_STAR__CTYPE:
+        if (resolve) return getCtype();
+        return basicGetCtype();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -180,11 +181,11 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.TYPE_REF__REFERENCED:
-        setReferenced((Type)newValue);
+      case IDLLanguagePackage.TYPE_STAR__BTYPE:
+        setBtype((BaseType)newValue);
         return;
-      case IDLLanguagePackage.TYPE_REF__MULTI:
-        setMulti((Boolean)newValue);
+      case IDLLanguagePackage.TYPE_STAR__CTYPE:
+        setCtype((DataType)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -200,11 +201,11 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.TYPE_REF__REFERENCED:
-        setReferenced((Type)null);
+      case IDLLanguagePackage.TYPE_STAR__BTYPE:
+        setBtype(BTYPE_EDEFAULT);
         return;
-      case IDLLanguagePackage.TYPE_REF__MULTI:
-        setMulti(MULTI_EDEFAULT);
+      case IDLLanguagePackage.TYPE_STAR__CTYPE:
+        setCtype((DataType)null);
         return;
     }
     super.eUnset(featureID);
@@ -220,10 +221,10 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.TYPE_REF__REFERENCED:
-        return referenced != null;
-      case IDLLanguagePackage.TYPE_REF__MULTI:
-        return multi != MULTI_EDEFAULT;
+      case IDLLanguagePackage.TYPE_STAR__BTYPE:
+        return btype != BTYPE_EDEFAULT;
+      case IDLLanguagePackage.TYPE_STAR__CTYPE:
+        return ctype != null;
     }
     return super.eIsSet(featureID);
   }
@@ -239,10 +240,10 @@ public class TypeRefImpl extends MinimalEObjectImpl.Container implements TypeRef
     if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (multi: ");
-    result.append(multi);
+    result.append(" (btype: ");
+    result.append(btype);
     result.append(')');
     return result.toString();
   }
 
-} //TypeRefImpl
+} //TypeStarImpl

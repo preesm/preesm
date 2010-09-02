@@ -8,6 +8,7 @@ package org.ietr.preesm.editor.iDLLanguage;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -89,14 +90,14 @@ public interface IDLLanguagePackage extends EPackage
   int IDL_FEATURE_COUNT = 1;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeImpl <em>Type</em>}' class.
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.ModuleImpl <em>Module</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeImpl
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getType()
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.ModuleImpl
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getModule()
    * @generated
    */
-  int TYPE = 1;
+  int MODULE = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -105,16 +106,34 @@ public interface IDLLanguagePackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE__NAME = 0;
+  int MODULE__NAME = 0;
 
   /**
-   * The number of structural features of the '<em>Type</em>' class.
+   * The feature id for the '<em><b>Types</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TYPE_FEATURE_COUNT = 1;
+  int MODULE__TYPES = 1;
+
+  /**
+   * The feature id for the '<em><b>Interfaces</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MODULE__INTERFACES = 2;
+
+  /**
+   * The number of structural features of the '<em>Module</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int MODULE_FEATURE_COUNT = 3;
 
   /**
    * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.DataTypeImpl <em>Data Type</em>}' class.
@@ -127,13 +146,31 @@ public interface IDLLanguagePackage extends EPackage
   int DATA_TYPE = 2;
 
   /**
+   * The feature id for the '<em><b>Btype</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DATA_TYPE__BTYPE = 0;
+
+  /**
+   * The feature id for the '<em><b>Ctype</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int DATA_TYPE__CTYPE = 1;
+
+  /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int DATA_TYPE__NAME = TYPE__NAME;
+  int DATA_TYPE__NAME = 2;
 
   /**
    * The number of structural features of the '<em>Data Type</em>' class.
@@ -142,63 +179,17 @@ public interface IDLLanguagePackage extends EPackage
    * @generated
    * @ordered
    */
-  int DATA_TYPE_FEATURE_COUNT = TYPE_FEATURE_COUNT + 0;
+  int DATA_TYPE_FEATURE_COUNT = 3;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl <em>Entity</em>}' class.
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl <em>Interface</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getEntity()
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getInterface()
    * @generated
    */
-  int ENTITY = 3;
-
-  /**
-   * The feature id for the '<em><b>Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ENTITY__NAME = TYPE__NAME;
-
-  /**
-   * The feature id for the '<em><b>Super Type</b></em>' reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ENTITY__SUPER_TYPE = TYPE_FEATURE_COUNT + 0;
-
-  /**
-   * The feature id for the '<em><b>Features</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ENTITY__FEATURES = TYPE_FEATURE_COUNT + 1;
-
-  /**
-   * The number of structural features of the '<em>Entity</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ENTITY_FEATURE_COUNT = TYPE_FEATURE_COUNT + 2;
-
-  /**
-   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl <em>Feature</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getFeature()
-   * @generated
-   */
-  int FEATURE = 4;
+  int INTERFACE = 3;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -207,7 +198,81 @@ public interface IDLLanguagePackage extends EPackage
    * @generated
    * @ordered
    */
-  int FEATURE__NAME = 0;
+  int INTERFACE__NAME = 0;
+
+  /**
+   * The feature id for the '<em><b>Function</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int INTERFACE__FUNCTION = 1;
+
+  /**
+   * The number of structural features of the '<em>Interface</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int INTERFACE_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl <em>Function</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getFunction()
+   * @generated
+   */
+  int FUNCTION = 4;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION__NAME = 0;
+
+  /**
+   * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION__PARAMETERS = 1;
+
+  /**
+   * The number of structural features of the '<em>Function</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int FUNCTION_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.ParameterImpl <em>Parameter</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.ParameterImpl
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getParameter()
+   * @generated
+   */
+  int PARAMETER = 5;
+
+  /**
+   * The feature id for the '<em><b>Direction</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int PARAMETER__DIRECTION = 0;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' containment reference.
@@ -216,53 +281,92 @@ public interface IDLLanguagePackage extends EPackage
    * @generated
    * @ordered
    */
-  int FEATURE__TYPE = 1;
+  int PARAMETER__TYPE = 1;
 
   /**
-   * The number of structural features of the '<em>Feature</em>' class.
+   * The feature id for the '<em><b>Name</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int FEATURE_FEATURE_COUNT = 2;
+  int PARAMETER__NAME = 2;
 
   /**
-   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl <em>Type Ref</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl
-   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getTypeRef()
-   * @generated
-   */
-  int TYPE_REF = 5;
-
-  /**
-   * The feature id for the '<em><b>Referenced</b></em>' reference.
+   * The number of structural features of the '<em>Parameter</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TYPE_REF__REFERENCED = 0;
+  int PARAMETER_FEATURE_COUNT = 3;
 
   /**
-   * The feature id for the '<em><b>Multi</b></em>' attribute.
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl <em>Type Star</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getTypeStar()
+   * @generated
+   */
+  int TYPE_STAR = 6;
+
+  /**
+   * The feature id for the '<em><b>Btype</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TYPE_REF__MULTI = 1;
+  int TYPE_STAR__BTYPE = 0;
 
   /**
-   * The number of structural features of the '<em>Type Ref</em>' class.
+   * The feature id for the '<em><b>Ctype</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TYPE_REF_FEATURE_COUNT = 2;
+  int TYPE_STAR__CTYPE = 1;
+
+  /**
+   * The number of structural features of the '<em>Type Star</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE_STAR_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.BaseType <em>Base Type</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.BaseType
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getBaseType()
+   * @generated
+   */
+  int BASE_TYPE = 7;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.InterfaceName <em>Interface Name</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.InterfaceName
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getInterfaceName()
+   * @generated
+   */
+  int INTERFACE_NAME = 8;
+
+  /**
+   * The meta object id for the '{@link org.ietr.preesm.editor.iDLLanguage.Direction <em>Direction</em>}' enum.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see org.ietr.preesm.editor.iDLLanguage.Direction
+   * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getDirection()
+   * @generated
+   */
+  int DIRECTION = 9;
 
 
   /**
@@ -287,25 +391,47 @@ public interface IDLLanguagePackage extends EPackage
   EReference getIDL_Elements();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Type <em>Type</em>}'.
+   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Module <em>Module</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Type</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Type
+   * @return the meta object for class '<em>Module</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Module
    * @generated
    */
-  EClass getType();
+  EClass getModule();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Type#getName <em>Name</em>}'.
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Module#getName <em>Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Name</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Type#getName()
-   * @see #getType()
+   * @see org.ietr.preesm.editor.iDLLanguage.Module#getName()
+   * @see #getModule()
    * @generated
    */
-  EAttribute getType_Name();
+  EAttribute getModule_Name();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.editor.iDLLanguage.Module#getTypes <em>Types</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Types</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Module#getTypes()
+   * @see #getModule()
+   * @generated
+   */
+  EReference getModule_Types();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.editor.iDLLanguage.Module#getInterfaces <em>Interfaces</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Interfaces</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Module#getInterfaces()
+   * @see #getModule()
+   * @generated
+   */
+  EReference getModule_Interfaces();
 
   /**
    * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.DataType <em>Data Type</em>}'.
@@ -318,100 +444,206 @@ public interface IDLLanguagePackage extends EPackage
   EClass getDataType();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Entity <em>Entity</em>}'.
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.DataType#getBtype <em>Btype</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Entity</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Entity
+   * @return the meta object for the attribute '<em>Btype</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.DataType#getBtype()
+   * @see #getDataType()
    * @generated
    */
-  EClass getEntity();
+  EAttribute getDataType_Btype();
 
   /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.editor.iDLLanguage.Entity#getSuperType <em>Super Type</em>}'.
+   * Returns the meta object for the reference '{@link org.ietr.preesm.editor.iDLLanguage.DataType#getCtype <em>Ctype</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the reference '<em>Super Type</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Entity#getSuperType()
-   * @see #getEntity()
+   * @return the meta object for the reference '<em>Ctype</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.DataType#getCtype()
+   * @see #getDataType()
    * @generated
    */
-  EReference getEntity_SuperType();
+  EReference getDataType_Ctype();
 
   /**
-   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.editor.iDLLanguage.Entity#getFeatures <em>Features</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Features</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Entity#getFeatures()
-   * @see #getEntity()
-   * @generated
-   */
-  EReference getEntity_Features();
-
-  /**
-   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Feature <em>Feature</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Feature</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Feature
-   * @generated
-   */
-  EClass getFeature();
-
-  /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Feature#getName <em>Name</em>}'.
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.DataType#getName <em>Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Name</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Feature#getName()
-   * @see #getFeature()
+   * @see org.ietr.preesm.editor.iDLLanguage.DataType#getName()
+   * @see #getDataType()
    * @generated
    */
-  EAttribute getFeature_Name();
+  EAttribute getDataType_Name();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.ietr.preesm.editor.iDLLanguage.Feature#getType <em>Type</em>}'.
+   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Interface <em>Interface</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Interface</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Interface
+   * @generated
+   */
+  EClass getInterface();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Interface#getName <em>Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Name</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Interface#getName()
+   * @see #getInterface()
+   * @generated
+   */
+  EAttribute getInterface_Name();
+
+  /**
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.editor.iDLLanguage.Interface#getFunction <em>Function</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Function</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Interface#getFunction()
+   * @see #getInterface()
+   * @generated
+   */
+  EReference getInterface_Function();
+
+  /**
+   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Function <em>Function</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Function</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Function
+   * @generated
+   */
+  EClass getFunction();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Function#getName <em>Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Name</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Function#getName()
+   * @see #getFunction()
+   * @generated
+   */
+  EAttribute getFunction_Name();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link org.ietr.preesm.editor.iDLLanguage.Function#getParameters <em>Parameters</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Parameters</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Function#getParameters()
+   * @see #getFunction()
+   * @generated
+   */
+  EReference getFunction_Parameters();
+
+  /**
+   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.Parameter <em>Parameter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Parameter</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Parameter
+   * @generated
+   */
+  EClass getParameter();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Parameter#getDirection <em>Direction</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Direction</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Parameter#getDirection()
+   * @see #getParameter()
+   * @generated
+   */
+  EAttribute getParameter_Direction();
+
+  /**
+   * Returns the meta object for the containment reference '{@link org.ietr.preesm.editor.iDLLanguage.Parameter#getType <em>Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the containment reference '<em>Type</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.Feature#getType()
-   * @see #getFeature()
+   * @see org.ietr.preesm.editor.iDLLanguage.Parameter#getType()
+   * @see #getParameter()
    * @generated
    */
-  EReference getFeature_Type();
+  EReference getParameter_Type();
 
   /**
-   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.TypeRef <em>Type Ref</em>}'.
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.Parameter#getName <em>Name</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Type Ref</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.TypeRef
+   * @return the meta object for the attribute '<em>Name</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Parameter#getName()
+   * @see #getParameter()
    * @generated
    */
-  EClass getTypeRef();
+  EAttribute getParameter_Name();
 
   /**
-   * Returns the meta object for the reference '{@link org.ietr.preesm.editor.iDLLanguage.TypeRef#getReferenced <em>Referenced</em>}'.
+   * Returns the meta object for class '{@link org.ietr.preesm.editor.iDLLanguage.TypeStar <em>Type Star</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the reference '<em>Referenced</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.TypeRef#getReferenced()
-   * @see #getTypeRef()
+   * @return the meta object for class '<em>Type Star</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.TypeStar
    * @generated
    */
-  EReference getTypeRef_Referenced();
+  EClass getTypeStar();
 
   /**
-   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.TypeRef#isMulti <em>Multi</em>}'.
+   * Returns the meta object for the attribute '{@link org.ietr.preesm.editor.iDLLanguage.TypeStar#getBtype <em>Btype</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Multi</em>'.
-   * @see org.ietr.preesm.editor.iDLLanguage.TypeRef#isMulti()
-   * @see #getTypeRef()
+   * @return the meta object for the attribute '<em>Btype</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.TypeStar#getBtype()
+   * @see #getTypeStar()
    * @generated
    */
-  EAttribute getTypeRef_Multi();
+  EAttribute getTypeStar_Btype();
+
+  /**
+   * Returns the meta object for the reference '{@link org.ietr.preesm.editor.iDLLanguage.TypeStar#getCtype <em>Ctype</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Ctype</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.TypeStar#getCtype()
+   * @see #getTypeStar()
+   * @generated
+   */
+  EReference getTypeStar_Ctype();
+
+  /**
+   * Returns the meta object for enum '{@link org.ietr.preesm.editor.iDLLanguage.BaseType <em>Base Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Base Type</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.BaseType
+   * @generated
+   */
+  EEnum getBaseType();
+
+  /**
+   * Returns the meta object for enum '{@link org.ietr.preesm.editor.iDLLanguage.InterfaceName <em>Interface Name</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Interface Name</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.InterfaceName
+   * @generated
+   */
+  EEnum getInterfaceName();
+
+  /**
+   * Returns the meta object for enum '{@link org.ietr.preesm.editor.iDLLanguage.Direction <em>Direction</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for enum '<em>Direction</em>'.
+   * @see org.ietr.preesm.editor.iDLLanguage.Direction
+   * @generated
+   */
+  EEnum getDirection();
 
   /**
    * Returns the factory that creates the instances of the model.
@@ -455,14 +687,14 @@ public interface IDLLanguagePackage extends EPackage
     EReference IDL__ELEMENTS = eINSTANCE.getIDL_Elements();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeImpl <em>Type</em>}' class.
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.ModuleImpl <em>Module</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeImpl
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getType()
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.ModuleImpl
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getModule()
      * @generated
      */
-    EClass TYPE = eINSTANCE.getType();
+    EClass MODULE = eINSTANCE.getModule();
 
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -470,7 +702,23 @@ public interface IDLLanguagePackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute TYPE__NAME = eINSTANCE.getType_Name();
+    EAttribute MODULE__NAME = eINSTANCE.getModule_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Types</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MODULE__TYPES = eINSTANCE.getModule_Types();
+
+    /**
+     * The meta object literal for the '<em><b>Interfaces</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference MODULE__INTERFACES = eINSTANCE.getModule_Interfaces();
 
     /**
      * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.DataTypeImpl <em>Data Type</em>}' class.
@@ -483,40 +731,20 @@ public interface IDLLanguagePackage extends EPackage
     EClass DATA_TYPE = eINSTANCE.getDataType();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl <em>Entity</em>}' class.
+     * The meta object literal for the '<em><b>Btype</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getEntity()
      * @generated
      */
-    EClass ENTITY = eINSTANCE.getEntity();
+    EAttribute DATA_TYPE__BTYPE = eINSTANCE.getDataType_Btype();
 
     /**
-     * The meta object literal for the '<em><b>Super Type</b></em>' reference feature.
+     * The meta object literal for the '<em><b>Ctype</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ENTITY__SUPER_TYPE = eINSTANCE.getEntity_SuperType();
-
-    /**
-     * The meta object literal for the '<em><b>Features</b></em>' containment reference list feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EReference ENTITY__FEATURES = eINSTANCE.getEntity_Features();
-
-    /**
-     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl <em>Feature</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getFeature()
-     * @generated
-     */
-    EClass FEATURE = eINSTANCE.getFeature();
+    EReference DATA_TYPE__CTYPE = eINSTANCE.getDataType_Ctype();
 
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -524,7 +752,77 @@ public interface IDLLanguagePackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute FEATURE__NAME = eINSTANCE.getFeature_Name();
+    EAttribute DATA_TYPE__NAME = eINSTANCE.getDataType_Name();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl <em>Interface</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getInterface()
+     * @generated
+     */
+    EClass INTERFACE = eINSTANCE.getInterface();
+
+    /**
+     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute INTERFACE__NAME = eINSTANCE.getInterface_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Function</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference INTERFACE__FUNCTION = eINSTANCE.getInterface_Function();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl <em>Function</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getFunction()
+     * @generated
+     */
+    EClass FUNCTION = eINSTANCE.getFunction();
+
+    /**
+     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute FUNCTION__NAME = eINSTANCE.getFunction_Name();
+
+    /**
+     * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference FUNCTION__PARAMETERS = eINSTANCE.getFunction_Parameters();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.ParameterImpl <em>Parameter</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.ParameterImpl
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getParameter()
+     * @generated
+     */
+    EClass PARAMETER = eINSTANCE.getParameter();
+
+    /**
+     * The meta object literal for the '<em><b>Direction</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute PARAMETER__DIRECTION = eINSTANCE.getParameter_Direction();
 
     /**
      * The meta object literal for the '<em><b>Type</b></em>' containment reference feature.
@@ -532,33 +830,71 @@ public interface IDLLanguagePackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference FEATURE__TYPE = eINSTANCE.getFeature_Type();
+    EReference PARAMETER__TYPE = eINSTANCE.getParameter_Type();
 
     /**
-     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl <em>Type Ref</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeRefImpl
-     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getTypeRef()
-     * @generated
-     */
-    EClass TYPE_REF = eINSTANCE.getTypeRef();
-
-    /**
-     * The meta object literal for the '<em><b>Referenced</b></em>' reference feature.
+     * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference TYPE_REF__REFERENCED = eINSTANCE.getTypeRef_Referenced();
+    EAttribute PARAMETER__NAME = eINSTANCE.getParameter_Name();
 
     /**
-     * The meta object literal for the '<em><b>Multi</b></em>' attribute feature.
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl <em>Type Star</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.TypeStarImpl
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getTypeStar()
+     * @generated
+     */
+    EClass TYPE_STAR = eINSTANCE.getTypeStar();
+
+    /**
+     * The meta object literal for the '<em><b>Btype</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute TYPE_REF__MULTI = eINSTANCE.getTypeRef_Multi();
+    EAttribute TYPE_STAR__BTYPE = eINSTANCE.getTypeStar_Btype();
+
+    /**
+     * The meta object literal for the '<em><b>Ctype</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference TYPE_STAR__CTYPE = eINSTANCE.getTypeStar_Ctype();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.BaseType <em>Base Type</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.BaseType
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getBaseType()
+     * @generated
+     */
+    EEnum BASE_TYPE = eINSTANCE.getBaseType();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.InterfaceName <em>Interface Name</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.InterfaceName
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getInterfaceName()
+     * @generated
+     */
+    EEnum INTERFACE_NAME = eINSTANCE.getInterfaceName();
+
+    /**
+     * The meta object literal for the '{@link org.ietr.preesm.editor.iDLLanguage.Direction <em>Direction</em>}' enum.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.ietr.preesm.editor.iDLLanguage.Direction
+     * @see org.ietr.preesm.editor.iDLLanguage.impl.IDLLanguagePackageImpl#getDirection()
+     * @generated
+     */
+    EEnum DIRECTION = eINSTANCE.getDirection();
 
   }
 

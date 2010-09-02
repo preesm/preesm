@@ -5,24 +5,52 @@
     nsURI="http://www.ietr.org/preesm/editor/IDLLanguage" nsPrefix="iDLLanguage">
   <eClassifiers xsi:type="ecore:EClass" name="IDL">
     <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
-        eType="#//Type" containment="true"/>
+        eType="#//Module" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Type">
+  <eClassifiers xsi:type="ecore:EClass" name="Module">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="types" upperBound="-1"
+        eType="#//DataType" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interfaces" upperBound="-1"
+        eType="#//Interface" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="BaseType">
+    <eLiterals name="int" literal="int"/>
+    <eLiterals name="long" value="1" literal="long"/>
+    <eLiterals name="char" value="2" literal="char"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DataType">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="#//BaseType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="#//DataType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DataType" eSuperTypes="#//Type"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Entity" eSuperTypes="#//Type">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="superType" eType="#//Entity"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="features" upperBound="-1"
-        eType="#//Feature" containment="true"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="InterfaceName">
+    <eLiterals name="init" literal="init"/>
+    <eLiterals name="loop" value="1" literal="loop"/>
+    <eLiterals name="end" value="2" literal="end"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Feature">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//TypeRef"
+  <eClassifiers xsi:type="ecore:EClass" name="Interface">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="#//InterfaceName"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="#//Function"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TypeRef">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="referenced" eType="#//Type"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="multi" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Function">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="#//Direction"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//TypeStar"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Direction">
+    <eLiterals name="in" literal="in"/>
+    <eLiterals name="out" value="1" literal="out"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TypeStar">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="#//BaseType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="#//DataType"/>
   </eClassifiers>
 </ecore:EPackage>

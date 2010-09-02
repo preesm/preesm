@@ -37,21 +37,34 @@ public class IDLLanguageParser extends AbstractContentAssistParser {
 			nameMappings = new HashMap<AbstractElement, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					put(grammarAccess.getTypeAccess().getAlternatives(), "rule__Type__Alternatives");
+					put(grammarAccess.getDataTypeAccess().getAlternatives_1(), "rule__DataType__Alternatives_1");
+					put(grammarAccess.getTypeStarAccess().getAlternatives(), "rule__TypeStar__Alternatives");
+					put(grammarAccess.getBaseTypeAccess().getAlternatives(), "rule__BaseType__Alternatives");
+					put(grammarAccess.getInterfaceNameAccess().getAlternatives(), "rule__InterfaceName__Alternatives");
+					put(grammarAccess.getDirectionAccess().getAlternatives(), "rule__Direction__Alternatives");
+					put(grammarAccess.getModuleAccess().getGroup(), "rule__Module__Group__0");
 					put(grammarAccess.getDataTypeAccess().getGroup(), "rule__DataType__Group__0");
-					put(grammarAccess.getEntityAccess().getGroup(), "rule__Entity__Group__0");
-					put(grammarAccess.getEntityAccess().getGroup_2(), "rule__Entity__Group_2__0");
-					put(grammarAccess.getFeatureAccess().getGroup(), "rule__Feature__Group__0");
-					put(grammarAccess.getTypeRefAccess().getGroup(), "rule__TypeRef__Group__0");
+					put(grammarAccess.getInterfaceAccess().getGroup(), "rule__Interface__Group__0");
+					put(grammarAccess.getFunctionAccess().getGroup(), "rule__Function__Group__0");
+					put(grammarAccess.getFunctionAccess().getGroup_4(), "rule__Function__Group_4__0");
+					put(grammarAccess.getParameterAccess().getGroup(), "rule__Parameter__Group__0");
 					put(grammarAccess.getIDLAccess().getElementsAssignment(), "rule__IDL__ElementsAssignment");
-					put(grammarAccess.getDataTypeAccess().getNameAssignment_1(), "rule__DataType__NameAssignment_1");
-					put(grammarAccess.getEntityAccess().getNameAssignment_1(), "rule__Entity__NameAssignment_1");
-					put(grammarAccess.getEntityAccess().getSuperTypeAssignment_2_1(), "rule__Entity__SuperTypeAssignment_2_1");
-					put(grammarAccess.getEntityAccess().getFeaturesAssignment_4(), "rule__Entity__FeaturesAssignment_4");
-					put(grammarAccess.getFeatureAccess().getNameAssignment_0(), "rule__Feature__NameAssignment_0");
-					put(grammarAccess.getFeatureAccess().getTypeAssignment_2(), "rule__Feature__TypeAssignment_2");
-					put(grammarAccess.getTypeRefAccess().getReferencedAssignment_0(), "rule__TypeRef__ReferencedAssignment_0");
-					put(grammarAccess.getTypeRefAccess().getMultiAssignment_1(), "rule__TypeRef__MultiAssignment_1");
+					put(grammarAccess.getModuleAccess().getNameAssignment_1(), "rule__Module__NameAssignment_1");
+					put(grammarAccess.getModuleAccess().getTypesAssignment_3(), "rule__Module__TypesAssignment_3");
+					put(grammarAccess.getModuleAccess().getInterfacesAssignment_4(), "rule__Module__InterfacesAssignment_4");
+					put(grammarAccess.getDataTypeAccess().getBtypeAssignment_1_0(), "rule__DataType__BtypeAssignment_1_0");
+					put(grammarAccess.getDataTypeAccess().getCtypeAssignment_1_1(), "rule__DataType__CtypeAssignment_1_1");
+					put(grammarAccess.getDataTypeAccess().getNameAssignment_2(), "rule__DataType__NameAssignment_2");
+					put(grammarAccess.getInterfaceAccess().getNameAssignment_1(), "rule__Interface__NameAssignment_1");
+					put(grammarAccess.getInterfaceAccess().getFunctionAssignment_3(), "rule__Interface__FunctionAssignment_3");
+					put(grammarAccess.getFunctionAccess().getNameAssignment_1(), "rule__Function__NameAssignment_1");
+					put(grammarAccess.getFunctionAccess().getParametersAssignment_3(), "rule__Function__ParametersAssignment_3");
+					put(grammarAccess.getFunctionAccess().getParametersAssignment_4_1(), "rule__Function__ParametersAssignment_4_1");
+					put(grammarAccess.getParameterAccess().getDirectionAssignment_0(), "rule__Parameter__DirectionAssignment_0");
+					put(grammarAccess.getParameterAccess().getTypeAssignment_1(), "rule__Parameter__TypeAssignment_1");
+					put(grammarAccess.getParameterAccess().getNameAssignment_2(), "rule__Parameter__NameAssignment_2");
+					put(grammarAccess.getTypeStarAccess().getBtypeAssignment_0(), "rule__TypeStar__BtypeAssignment_0");
+					put(grammarAccess.getTypeStarAccess().getCtypeAssignment_1(), "rule__TypeStar__CtypeAssignment_1");
 				}
 			};
 		}

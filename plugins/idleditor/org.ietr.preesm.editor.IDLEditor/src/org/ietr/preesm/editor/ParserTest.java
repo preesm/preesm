@@ -19,7 +19,7 @@ public class ParserTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//new IDLStandaloneSetup().createInjectorAndDoEMFRegistration();
+		new IDLLanguageStandaloneSetup().createInjectorAndDoEMFRegistration();
 		ResourceSet rs = new ResourceSetImpl();
 		Resource resource = rs.getResource(URI.createURI("file:/D:/testEclipse/Xtext/runtime-EclipseApplication/MyIDLPjt/myIDL.idl"), true);
 		EObject eobject = resource.getContents().get(0);

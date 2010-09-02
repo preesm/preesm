@@ -84,9 +84,9 @@ public class IDLLanguageAdapterFactory extends AdapterFactoryImpl
         return createIDLAdapter();
       }
       @Override
-      public Adapter caseType(Type object)
+      public Adapter caseModule(Module object)
       {
-        return createTypeAdapter();
+        return createModuleAdapter();
       }
       @Override
       public Adapter caseDataType(DataType object)
@@ -94,19 +94,24 @@ public class IDLLanguageAdapterFactory extends AdapterFactoryImpl
         return createDataTypeAdapter();
       }
       @Override
-      public Adapter caseEntity(Entity object)
+      public Adapter caseInterface(Interface object)
       {
-        return createEntityAdapter();
+        return createInterfaceAdapter();
       }
       @Override
-      public Adapter caseFeature(Feature object)
+      public Adapter caseFunction(Function object)
       {
-        return createFeatureAdapter();
+        return createFunctionAdapter();
       }
       @Override
-      public Adapter caseTypeRef(TypeRef object)
+      public Adapter caseParameter(Parameter object)
       {
-        return createTypeRefAdapter();
+        return createParameterAdapter();
+      }
+      @Override
+      public Adapter caseTypeStar(TypeStar object)
+      {
+        return createTypeStarAdapter();
       }
       @Override
       public Adapter defaultCase(EObject object)
@@ -146,16 +151,16 @@ public class IDLLanguageAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Type <em>Type</em>}'.
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Module <em>Module</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.ietr.preesm.editor.iDLLanguage.Type
+   * @see org.ietr.preesm.editor.iDLLanguage.Module
    * @generated
    */
-  public Adapter createTypeAdapter()
+  public Adapter createModuleAdapter()
   {
     return null;
   }
@@ -176,46 +181,61 @@ public class IDLLanguageAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Entity <em>Entity</em>}'.
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Interface <em>Interface</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.ietr.preesm.editor.iDLLanguage.Entity
+   * @see org.ietr.preesm.editor.iDLLanguage.Interface
    * @generated
    */
-  public Adapter createEntityAdapter()
+  public Adapter createInterfaceAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Feature <em>Feature</em>}'.
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Function <em>Function</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.ietr.preesm.editor.iDLLanguage.Feature
+   * @see org.ietr.preesm.editor.iDLLanguage.Function
    * @generated
    */
-  public Adapter createFeatureAdapter()
+  public Adapter createFunctionAdapter()
   {
     return null;
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.TypeRef <em>Type Ref</em>}'.
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.Parameter <em>Parameter</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.ietr.preesm.editor.iDLLanguage.TypeRef
+   * @see org.ietr.preesm.editor.iDLLanguage.Parameter
    * @generated
    */
-  public Adapter createTypeRefAdapter()
+  public Adapter createParameterAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.ietr.preesm.editor.iDLLanguage.TypeStar <em>Type Star</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.ietr.preesm.editor.iDLLanguage.TypeStar
+   * @generated
+   */
+  public Adapter createTypeStarAdapter()
   {
     return null;
   }

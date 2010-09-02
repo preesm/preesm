@@ -17,56 +17,67 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.ietr.preesm.editor.iDLLanguage.Entity;
-import org.ietr.preesm.editor.iDLLanguage.Feature;
+import org.ietr.preesm.editor.iDLLanguage.Function;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguagePackage;
+import org.ietr.preesm.editor.iDLLanguage.Parameter;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Entity</b></em>'.
+ * An implementation of the model object '<em><b>Function</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl#getSuperType <em>Super Type</em>}</li>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.EntityImpl#getFeatures <em>Features</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.FunctionImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class EntityImpl extends TypeImpl implements Entity
+public class FunctionImpl extends MinimalEObjectImpl.Container implements Function
 {
   /**
-   * The cached value of the '{@link #getSuperType() <em>Super Type</em>}' reference.
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getSuperType()
+   * @see #getName()
    * @generated
    * @ordered
    */
-  protected Entity superType;
+  protected static final String NAME_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getFeatures() <em>Features</em>}' containment reference list.
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getFeatures()
+   * @see #getName()
    * @generated
    * @ordered
    */
-  protected EList<Feature> features;
+  protected String name = NAME_EDEFAULT;
+
+  /**
+   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getParameters()
+   * @generated
+   * @ordered
+   */
+  protected EList<Parameter> parameters;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected EntityImpl()
+  protected FunctionImpl()
   {
     super();
   }
@@ -79,7 +90,7 @@ public class EntityImpl extends TypeImpl implements Entity
   @Override
   protected EClass eStaticClass()
   {
-    return IDLLanguagePackage.Literals.ENTITY;
+    return IDLLanguagePackage.Literals.FUNCTION;
   }
 
   /**
@@ -87,19 +98,9 @@ public class EntityImpl extends TypeImpl implements Entity
    * <!-- end-user-doc -->
    * @generated
    */
-  public Entity getSuperType()
+  public String getName()
   {
-    if (superType != null && superType.eIsProxy())
-    {
-      InternalEObject oldSuperType = (InternalEObject)superType;
-      superType = (Entity)eResolveProxy(oldSuperType);
-      if (superType != oldSuperType)
-      {
-        if (eNotificationRequired())
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, IDLLanguagePackage.ENTITY__SUPER_TYPE, oldSuperType, superType));
-      }
-    }
-    return superType;
+    return name;
   }
 
   /**
@@ -107,22 +108,12 @@ public class EntityImpl extends TypeImpl implements Entity
    * <!-- end-user-doc -->
    * @generated
    */
-  public Entity basicGetSuperType()
+  public void setName(String newName)
   {
-    return superType;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setSuperType(Entity newSuperType)
-  {
-    Entity oldSuperType = superType;
-    superType = newSuperType;
+    String oldName = name;
+    name = newName;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.ENTITY__SUPER_TYPE, oldSuperType, superType));
+      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.FUNCTION__NAME, oldName, name));
   }
 
   /**
@@ -130,13 +121,13 @@ public class EntityImpl extends TypeImpl implements Entity
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<Feature> getFeatures()
+  public EList<Parameter> getParameters()
   {
-    if (features == null)
+    if (parameters == null)
     {
-      features = new EObjectContainmentEList<Feature>(Feature.class, this, IDLLanguagePackage.ENTITY__FEATURES);
+      parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, IDLLanguagePackage.FUNCTION__PARAMETERS);
     }
-    return features;
+    return parameters;
   }
 
   /**
@@ -149,8 +140,8 @@ public class EntityImpl extends TypeImpl implements Entity
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.ENTITY__FEATURES:
-        return ((InternalEList<?>)getFeatures()).basicRemove(otherEnd, msgs);
+      case IDLLanguagePackage.FUNCTION__PARAMETERS:
+        return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -165,11 +156,10 @@ public class EntityImpl extends TypeImpl implements Entity
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.ENTITY__SUPER_TYPE:
-        if (resolve) return getSuperType();
-        return basicGetSuperType();
-      case IDLLanguagePackage.ENTITY__FEATURES:
-        return getFeatures();
+      case IDLLanguagePackage.FUNCTION__NAME:
+        return getName();
+      case IDLLanguagePackage.FUNCTION__PARAMETERS:
+        return getParameters();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -185,12 +175,12 @@ public class EntityImpl extends TypeImpl implements Entity
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.ENTITY__SUPER_TYPE:
-        setSuperType((Entity)newValue);
+      case IDLLanguagePackage.FUNCTION__NAME:
+        setName((String)newValue);
         return;
-      case IDLLanguagePackage.ENTITY__FEATURES:
-        getFeatures().clear();
-        getFeatures().addAll((Collection<? extends Feature>)newValue);
+      case IDLLanguagePackage.FUNCTION__PARAMETERS:
+        getParameters().clear();
+        getParameters().addAll((Collection<? extends Parameter>)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -206,11 +196,11 @@ public class EntityImpl extends TypeImpl implements Entity
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.ENTITY__SUPER_TYPE:
-        setSuperType((Entity)null);
+      case IDLLanguagePackage.FUNCTION__NAME:
+        setName(NAME_EDEFAULT);
         return;
-      case IDLLanguagePackage.ENTITY__FEATURES:
-        getFeatures().clear();
+      case IDLLanguagePackage.FUNCTION__PARAMETERS:
+        getParameters().clear();
         return;
     }
     super.eUnset(featureID);
@@ -226,12 +216,29 @@ public class EntityImpl extends TypeImpl implements Entity
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.ENTITY__SUPER_TYPE:
-        return superType != null;
-      case IDLLanguagePackage.ENTITY__FEATURES:
-        return features != null && !features.isEmpty();
+      case IDLLanguagePackage.FUNCTION__NAME:
+        return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+      case IDLLanguagePackage.FUNCTION__PARAMETERS:
+        return parameters != null && !parameters.isEmpty();
     }
     return super.eIsSet(featureID);
   }
 
-} //EntityImpl
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(name);
+    result.append(')');
+    return result.toString();
+  }
+
+} //FunctionImpl

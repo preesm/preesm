@@ -22,7 +22,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.ietr.preesm.editor.iDLLanguage.IDL;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguagePackage;
-import org.ietr.preesm.editor.iDLLanguage.Type;
+import org.ietr.preesm.editor.iDLLanguage.Module;
 
 /**
  * <!-- begin-user-doc -->
@@ -47,7 +47,7 @@ public class IDLImpl extends MinimalEObjectImpl.Container implements IDL
    * @generated
    * @ordered
    */
-  protected EList<Type> elements;
+  protected EList<Module> elements;
 
   /**
    * <!-- begin-user-doc -->
@@ -75,11 +75,11 @@ public class IDLImpl extends MinimalEObjectImpl.Container implements IDL
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<Type> getElements()
+  public EList<Module> getElements()
   {
     if (elements == null)
     {
-      elements = new EObjectContainmentEList<Type>(Type.class, this, IDLLanguagePackage.IDL__ELEMENTS);
+      elements = new EObjectContainmentEList<Module>(Module.class, this, IDLLanguagePackage.IDL__ELEMENTS);
     }
     return elements;
   }
@@ -129,7 +129,7 @@ public class IDLImpl extends MinimalEObjectImpl.Container implements IDL
     {
       case IDLLanguagePackage.IDL__ELEMENTS:
         getElements().clear();
-        getElements().addAll((Collection<? extends Type>)newValue);
+        getElements().addAll((Collection<? extends Module>)newValue);
         return;
     }
     super.eSet(featureID, newValue);

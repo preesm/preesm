@@ -1,23 +1,43 @@
+
 grammar org.ietr.preesm.editor.IDLLanguage with org.eclipse.xtext.common.Terminals
 
 generate iDLLanguage "http://www.ietr.org/preesm/editor/IDLLanguage"
 
+
 IDL:
-	(elements+=Type)*;
+	elements+=Module;
 
-Type:
-  DataType | Entity;
+Module:
+	'module' name=ID '{'
+		(types+=DataType)*
+		(interfaces+=Interface)*
+	'}' ';';
   
-DataType:
-  'datatype' name=ID;
-
-Entity:
-	'entity' name=ID ('extends' superType=[Entity])? '{'
-	(features+=Feature)*
-	'}';
+enum BaseType:
+	int | long | char;
 	
-Feature:
-  name=ID ':' type=TypeRef;
-  
-TypeRef :
-  referenced=[Type] (multi?='*')?;
+	
+DataType:
+  'typedef' (btype=BaseType | ctype=[DataType]) name=ID ';';
+
+enum InterfaceName:
+	init | loop | end;
+	
+Interface:
+  'interface' name=InterfaceName '{'
+		function=Function
+	'}' ';';
+
+Function:
+	'void' name=ID '('
+		(parameters+=Parameter) (',' parameters+=Parameter)*
+	')' ';';
+
+Parameter:
+	direction=Direction type=TypeStar name=ID;
+	
+enum Direction:
+	in | out;
+	
+TypeStar:
+	(btype=BaseType | ctype=[DataType]);

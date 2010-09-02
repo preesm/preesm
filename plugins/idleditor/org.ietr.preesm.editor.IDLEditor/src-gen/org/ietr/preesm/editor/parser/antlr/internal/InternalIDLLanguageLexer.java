@@ -13,21 +13,32 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalIDLLanguageLexer extends Lexer {
     public static final int RULE_ID=4;
-    public static final int RULE_STRING=6;
     public static final int RULE_ANY_OTHER=10;
+    public static final int T28=28;
+    public static final int T27=27;
+    public static final int T26=26;
+    public static final int T25=25;
+    public static final int Tokens=29;
+    public static final int T24=24;
+    public static final int EOF=-1;
+    public static final int RULE_SL_COMMENT=8;
+    public static final int T23=23;
+    public static final int T22=22;
+    public static final int T21=21;
+    public static final int T20=20;
+    public static final int RULE_ML_COMMENT=7;
+    public static final int RULE_STRING=6;
     public static final int RULE_INT=5;
     public static final int T11=11;
     public static final int T12=12;
     public static final int T13=13;
     public static final int T14=14;
-    public static final int T15=15;
     public static final int RULE_WS=9;
-    public static final int Tokens=18;
+    public static final int T15=15;
     public static final int T16=16;
-    public static final int RULE_SL_COMMENT=8;
-    public static final int EOF=-1;
     public static final int T17=17;
-    public static final int RULE_ML_COMMENT=7;
+    public static final int T18=18;
+    public static final int T19=19;
     public InternalIDLLanguageLexer() {;} 
     public InternalIDLLanguageLexer(CharStream input) {
         super(input);
@@ -38,10 +49,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT11() throws RecognitionException {
         try {
             int _type = T11;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:10:5: ( 'datatype' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:10:7: 'datatype'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:10:5: ( 'module' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:10:7: 'module'
             {
-            match("datatype"); 
+            match("module"); 
 
 
             }
@@ -57,11 +68,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT12() throws RecognitionException {
         try {
             int _type = T12;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:11:5: ( 'entity' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:11:7: 'entity'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:11:5: ( '{' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:11:7: '{'
             {
-            match("entity"); 
-
+            match('{'); 
 
             }
 
@@ -76,11 +86,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT13() throws RecognitionException {
         try {
             int _type = T13;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:12:5: ( 'extends' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:12:7: 'extends'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:12:5: ( '}' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:12:7: '}'
             {
-            match("extends"); 
-
+            match('}'); 
 
             }
 
@@ -95,10 +104,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT14() throws RecognitionException {
         try {
             int _type = T14;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:13:5: ( '{' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:13:7: '{'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:13:5: ( ';' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:13:7: ';'
             {
-            match('{'); 
+            match(';'); 
 
             }
 
@@ -113,10 +122,11 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT15() throws RecognitionException {
         try {
             int _type = T15;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:14:5: ( '}' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:14:7: '}'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:14:5: ( 'typedef' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:14:7: 'typedef'
             {
-            match('}'); 
+            match("typedef"); 
+
 
             }
 
@@ -131,10 +141,11 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT16() throws RecognitionException {
         try {
             int _type = T16;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:15:5: ( ':' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:15:7: ':'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:15:5: ( 'interface' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:15:7: 'interface'
             {
-            match(':'); 
+            match("interface"); 
+
 
             }
 
@@ -149,10 +160,11 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mT17() throws RecognitionException {
         try {
             int _type = T17;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:16:5: ( '*' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:16:7: '*'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:16:5: ( 'void' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:16:7: 'void'
             {
-            match('*'); 
+            match("void"); 
+
 
             }
 
@@ -163,14 +175,220 @@ public class InternalIDLLanguageLexer extends Lexer {
     }
     // $ANTLR end T17
 
+    // $ANTLR start T18
+    public final void mT18() throws RecognitionException {
+        try {
+            int _type = T18;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:17:5: ( '(' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:17:7: '('
+            {
+            match('('); 
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T18
+
+    // $ANTLR start T19
+    public final void mT19() throws RecognitionException {
+        try {
+            int _type = T19;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:18:5: ( ',' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:18:7: ','
+            {
+            match(','); 
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T19
+
+    // $ANTLR start T20
+    public final void mT20() throws RecognitionException {
+        try {
+            int _type = T20;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:19:5: ( ')' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:19:7: ')'
+            {
+            match(')'); 
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T20
+
+    // $ANTLR start T21
+    public final void mT21() throws RecognitionException {
+        try {
+            int _type = T21;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:20:5: ( 'int' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:20:7: 'int'
+            {
+            match("int"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T21
+
+    // $ANTLR start T22
+    public final void mT22() throws RecognitionException {
+        try {
+            int _type = T22;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:21:5: ( 'long' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:21:7: 'long'
+            {
+            match("long"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T22
+
+    // $ANTLR start T23
+    public final void mT23() throws RecognitionException {
+        try {
+            int _type = T23;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:22:5: ( 'char' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:22:7: 'char'
+            {
+            match("char"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T23
+
+    // $ANTLR start T24
+    public final void mT24() throws RecognitionException {
+        try {
+            int _type = T24;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:23:5: ( 'init' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:23:7: 'init'
+            {
+            match("init"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T24
+
+    // $ANTLR start T25
+    public final void mT25() throws RecognitionException {
+        try {
+            int _type = T25;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:24:5: ( 'loop' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:24:7: 'loop'
+            {
+            match("loop"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T25
+
+    // $ANTLR start T26
+    public final void mT26() throws RecognitionException {
+        try {
+            int _type = T26;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:25:5: ( 'end' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:25:7: 'end'
+            {
+            match("end"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T26
+
+    // $ANTLR start T27
+    public final void mT27() throws RecognitionException {
+        try {
+            int _type = T27;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:26:5: ( 'in' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:26:7: 'in'
+            {
+            match("in"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T27
+
+    // $ANTLR start T28
+    public final void mT28() throws RecognitionException {
+        try {
+            int _type = T28;
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:27:5: ( 'out' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:27:7: 'out'
+            {
+            match("out"); 
+
+
+            }
+
+            this.type = _type;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end T28
+
     // $ANTLR start RULE_ID
     public final void mRULE_ID() throws RecognitionException {
         try {
             int _type = RULE_ID;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:450:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:450:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:763:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:763:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:450:11: ( '^' )?
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:763:11: ( '^' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -179,7 +397,7 @@ public class InternalIDLLanguageLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:450:11: '^'
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:763:11: '^'
                     {
                     match('^'); 
 
@@ -198,7 +416,7 @@ public class InternalIDLLanguageLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:450:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:763:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop2:
             do {
                 int alt2=2;
@@ -246,10 +464,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_INT() throws RecognitionException {
         try {
             int _type = RULE_INT;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:452:10: ( ( '0' .. '9' )+ )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:452:12: ( '0' .. '9' )+
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:765:10: ( ( '0' .. '9' )+ )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:765:12: ( '0' .. '9' )+
             {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:452:12: ( '0' .. '9' )+
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:765:12: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -263,7 +481,7 @@ public class InternalIDLLanguageLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:452:13: '0' .. '9'
+            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:765:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -293,10 +511,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_STRING() throws RecognitionException {
         try {
             int _type = RULE_STRING;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -308,16 +526,16 @@ public class InternalIDLLanguageLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("454:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )", 6, 0, input);
+                    new NoViableAltException("767:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )", 6, 0, input);
 
                 throw nvae;
             }
             switch (alt6) {
                 case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop4:
                     do {
                         int alt4=3;
@@ -333,7 +551,7 @@ public class InternalIDLLanguageLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
+                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {
@@ -350,7 +568,7 @@ public class InternalIDLLanguageLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:62: ~ ( ( '\\\\' | '\"' ) )
+                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:62: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFE') ) {
                     	        input.consume();
@@ -376,10 +594,10 @@ public class InternalIDLLanguageLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:82: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:82: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:87: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:87: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop5:
                     do {
                         int alt5=3;
@@ -395,7 +613,7 @@ public class InternalIDLLanguageLexer extends Lexer {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:88: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
+                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:88: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {
@@ -412,7 +630,7 @@ public class InternalIDLLanguageLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:454:129: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:767:129: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFE') ) {
                     	        input.consume();
@@ -454,12 +672,12 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_ML_COMMENT() throws RecognitionException {
         try {
             int _type = RULE_ML_COMMENT;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:456:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:456:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:769:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:769:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:456:24: ( options {greedy=false; } : . )*
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:769:24: ( options {greedy=false; } : . )*
             loop7:
             do {
                 int alt7=2;
@@ -484,7 +702,7 @@ public class InternalIDLLanguageLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:456:52: .
+            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:769:52: .
             	    {
             	    matchAny(); 
 
@@ -512,12 +730,12 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_SL_COMMENT() throws RecognitionException {
         try {
             int _type = RULE_SL_COMMENT;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop8:
             do {
                 int alt8=2;
@@ -530,7 +748,7 @@ public class InternalIDLLanguageLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -551,7 +769,7 @@ public class InternalIDLLanguageLexer extends Lexer {
                 }
             } while (true);
 
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:40: ( ( '\\r' )? '\\n' )?
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:40: ( ( '\\r' )? '\\n' )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -560,9 +778,9 @@ public class InternalIDLLanguageLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:41: ( '\\r' )? '\\n'
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:41: ( '\\r' )? '\\n'
                     {
-                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:41: ( '\\r' )?
+                    // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:41: ( '\\r' )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -571,7 +789,7 @@ public class InternalIDLLanguageLexer extends Lexer {
                     }
                     switch (alt9) {
                         case 1 :
-                            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:458:41: '\\r'
+                            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:771:41: '\\r'
                             {
                             match('\r'); 
 
@@ -601,10 +819,10 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_WS() throws RecognitionException {
         try {
             int _type = RULE_WS;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:460:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:460:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:773:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:773:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:460:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:773:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt11=0;
             loop11:
             do {
@@ -657,8 +875,8 @@ public class InternalIDLLanguageLexer extends Lexer {
     public final void mRULE_ANY_OTHER() throws RecognitionException {
         try {
             int _type = RULE_ANY_OTHER;
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:462:16: ( . )
-            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:462:18: .
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:775:16: ( . )
+            // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:775:18: .
             {
             matchAny(); 
 
@@ -672,213 +890,521 @@ public class InternalIDLLanguageLexer extends Lexer {
     // $ANTLR end RULE_ANY_OTHER
 
     public void mTokens() throws RecognitionException {
-        // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:8: ( T11 | T12 | T13 | T14 | T15 | T16 | T17 | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
-        int alt12=14;
+        // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:8: ( T11 | T12 | T13 | T14 | T15 | T16 | T17 | T18 | T19 | T20 | T21 | T22 | T23 | T24 | T25 | T26 | T27 | T28 | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
+        int alt12=25;
         int LA12_0 = input.LA(1);
 
-        if ( (LA12_0=='d') ) {
+        if ( (LA12_0=='m') ) {
             int LA12_1 = input.LA(2);
 
-            if ( (LA12_1=='a') ) {
-                int LA12_15 = input.LA(3);
+            if ( (LA12_1=='o') ) {
+                int LA12_23 = input.LA(3);
 
-                if ( (LA12_15=='t') ) {
-                    int LA12_28 = input.LA(4);
+                if ( (LA12_23=='d') ) {
+                    int LA12_43 = input.LA(4);
 
-                    if ( (LA12_28=='a') ) {
-                        int LA12_31 = input.LA(5);
+                    if ( (LA12_43=='u') ) {
+                        int LA12_54 = input.LA(5);
 
-                        if ( (LA12_31=='t') ) {
-                            int LA12_34 = input.LA(6);
+                        if ( (LA12_54=='l') ) {
+                            int LA12_65 = input.LA(6);
 
-                            if ( (LA12_34=='y') ) {
-                                int LA12_37 = input.LA(7);
+                            if ( (LA12_65=='e') ) {
+                                int LA12_73 = input.LA(7);
 
-                                if ( (LA12_37=='p') ) {
-                                    int LA12_40 = input.LA(8);
-
-                                    if ( (LA12_40=='e') ) {
-                                        int LA12_43 = input.LA(9);
-
-                                        if ( ((LA12_43>='0' && LA12_43<='9')||(LA12_43>='A' && LA12_43<='Z')||LA12_43=='_'||(LA12_43>='a' && LA12_43<='z')) ) {
-                                            alt12=8;
-                                        }
-                                        else {
-                                            alt12=1;}
-                                    }
-                                    else {
-                                        alt12=8;}
+                                if ( ((LA12_73>='0' && LA12_73<='9')||(LA12_73>='A' && LA12_73<='Z')||LA12_73=='_'||(LA12_73>='a' && LA12_73<='z')) ) {
+                                    alt12=19;
                                 }
                                 else {
-                                    alt12=8;}
+                                    alt12=1;}
                             }
                             else {
-                                alt12=8;}
+                                alt12=19;}
                         }
                         else {
-                            alt12=8;}
+                            alt12=19;}
                     }
                     else {
-                        alt12=8;}
+                        alt12=19;}
                 }
                 else {
-                    alt12=8;}
+                    alt12=19;}
             }
             else {
-                alt12=8;}
-        }
-        else if ( (LA12_0=='e') ) {
-            switch ( input.LA(2) ) {
-            case 'n':
-                {
-                int LA12_17 = input.LA(3);
-
-                if ( (LA12_17=='t') ) {
-                    int LA12_29 = input.LA(4);
-
-                    if ( (LA12_29=='i') ) {
-                        int LA12_32 = input.LA(5);
-
-                        if ( (LA12_32=='t') ) {
-                            int LA12_35 = input.LA(6);
-
-                            if ( (LA12_35=='y') ) {
-                                int LA12_38 = input.LA(7);
-
-                                if ( ((LA12_38>='0' && LA12_38<='9')||(LA12_38>='A' && LA12_38<='Z')||LA12_38=='_'||(LA12_38>='a' && LA12_38<='z')) ) {
-                                    alt12=8;
-                                }
-                                else {
-                                    alt12=2;}
-                            }
-                            else {
-                                alt12=8;}
-                        }
-                        else {
-                            alt12=8;}
-                    }
-                    else {
-                        alt12=8;}
-                }
-                else {
-                    alt12=8;}
-                }
-                break;
-            case 'x':
-                {
-                int LA12_18 = input.LA(3);
-
-                if ( (LA12_18=='t') ) {
-                    int LA12_30 = input.LA(4);
-
-                    if ( (LA12_30=='e') ) {
-                        int LA12_33 = input.LA(5);
-
-                        if ( (LA12_33=='n') ) {
-                            int LA12_36 = input.LA(6);
-
-                            if ( (LA12_36=='d') ) {
-                                int LA12_39 = input.LA(7);
-
-                                if ( (LA12_39=='s') ) {
-                                    int LA12_42 = input.LA(8);
-
-                                    if ( ((LA12_42>='0' && LA12_42<='9')||(LA12_42>='A' && LA12_42<='Z')||LA12_42=='_'||(LA12_42>='a' && LA12_42<='z')) ) {
-                                        alt12=8;
-                                    }
-                                    else {
-                                        alt12=3;}
-                                }
-                                else {
-                                    alt12=8;}
-                            }
-                            else {
-                                alt12=8;}
-                        }
-                        else {
-                            alt12=8;}
-                    }
-                    else {
-                        alt12=8;}
-                }
-                else {
-                    alt12=8;}
-                }
-                break;
-            default:
-                alt12=8;}
-
+                alt12=19;}
         }
         else if ( (LA12_0=='{') ) {
-            alt12=4;
+            alt12=2;
         }
         else if ( (LA12_0=='}') ) {
-            alt12=5;
+            alt12=3;
         }
-        else if ( (LA12_0==':') ) {
-            alt12=6;
+        else if ( (LA12_0==';') ) {
+            alt12=4;
         }
-        else if ( (LA12_0=='*') ) {
-            alt12=7;
+        else if ( (LA12_0=='t') ) {
+            int LA12_5 = input.LA(2);
+
+            if ( (LA12_5=='y') ) {
+                int LA12_28 = input.LA(3);
+
+                if ( (LA12_28=='p') ) {
+                    int LA12_44 = input.LA(4);
+
+                    if ( (LA12_44=='e') ) {
+                        int LA12_55 = input.LA(5);
+
+                        if ( (LA12_55=='d') ) {
+                            int LA12_66 = input.LA(6);
+
+                            if ( (LA12_66=='e') ) {
+                                int LA12_74 = input.LA(7);
+
+                                if ( (LA12_74=='f') ) {
+                                    int LA12_77 = input.LA(8);
+
+                                    if ( ((LA12_77>='0' && LA12_77<='9')||(LA12_77>='A' && LA12_77<='Z')||LA12_77=='_'||(LA12_77>='a' && LA12_77<='z')) ) {
+                                        alt12=19;
+                                    }
+                                    else {
+                                        alt12=5;}
+                                }
+                                else {
+                                    alt12=19;}
+                            }
+                            else {
+                                alt12=19;}
+                        }
+                        else {
+                            alt12=19;}
+                    }
+                    else {
+                        alt12=19;}
+                }
+                else {
+                    alt12=19;}
+            }
+            else {
+                alt12=19;}
         }
-        else if ( (LA12_0=='^') ) {
+        else if ( (LA12_0=='i') ) {
+            int LA12_6 = input.LA(2);
+
+            if ( (LA12_6=='n') ) {
+                switch ( input.LA(3) ) {
+                case 't':
+                    {
+                    switch ( input.LA(4) ) {
+                    case 'e':
+                        {
+                        int LA12_56 = input.LA(5);
+
+                        if ( (LA12_56=='r') ) {
+                            int LA12_67 = input.LA(6);
+
+                            if ( (LA12_67=='f') ) {
+                                int LA12_75 = input.LA(7);
+
+                                if ( (LA12_75=='a') ) {
+                                    int LA12_78 = input.LA(8);
+
+                                    if ( (LA12_78=='c') ) {
+                                        int LA12_80 = input.LA(9);
+
+                                        if ( (LA12_80=='e') ) {
+                                            int LA12_81 = input.LA(10);
+
+                                            if ( ((LA12_81>='0' && LA12_81<='9')||(LA12_81>='A' && LA12_81<='Z')||LA12_81=='_'||(LA12_81>='a' && LA12_81<='z')) ) {
+                                                alt12=19;
+                                            }
+                                            else {
+                                                alt12=6;}
+                                        }
+                                        else {
+                                            alt12=19;}
+                                    }
+                                    else {
+                                        alt12=19;}
+                                }
+                                else {
+                                    alt12=19;}
+                            }
+                            else {
+                                alt12=19;}
+                        }
+                        else {
+                            alt12=19;}
+                        }
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                    case 'A':
+                    case 'B':
+                    case 'C':
+                    case 'D':
+                    case 'E':
+                    case 'F':
+                    case 'G':
+                    case 'H':
+                    case 'I':
+                    case 'J':
+                    case 'K':
+                    case 'L':
+                    case 'M':
+                    case 'N':
+                    case 'O':
+                    case 'P':
+                    case 'Q':
+                    case 'R':
+                    case 'S':
+                    case 'T':
+                    case 'U':
+                    case 'V':
+                    case 'W':
+                    case 'X':
+                    case 'Y':
+                    case 'Z':
+                    case '_':
+                    case 'a':
+                    case 'b':
+                    case 'c':
+                    case 'd':
+                    case 'f':
+                    case 'g':
+                    case 'h':
+                    case 'i':
+                    case 'j':
+                    case 'k':
+                    case 'l':
+                    case 'm':
+                    case 'n':
+                    case 'o':
+                    case 'p':
+                    case 'q':
+                    case 'r':
+                    case 's':
+                    case 't':
+                    case 'u':
+                    case 'v':
+                    case 'w':
+                    case 'x':
+                    case 'y':
+                    case 'z':
+                        {
+                        alt12=19;
+                        }
+                        break;
+                    default:
+                        alt12=11;}
+
+                    }
+                    break;
+                case 'i':
+                    {
+                    int LA12_46 = input.LA(4);
+
+                    if ( (LA12_46=='t') ) {
+                        int LA12_58 = input.LA(5);
+
+                        if ( ((LA12_58>='0' && LA12_58<='9')||(LA12_58>='A' && LA12_58<='Z')||LA12_58=='_'||(LA12_58>='a' && LA12_58<='z')) ) {
+                            alt12=19;
+                        }
+                        else {
+                            alt12=14;}
+                    }
+                    else {
+                        alt12=19;}
+                    }
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'L':
+                case 'M':
+                case 'N':
+                case 'O':
+                case 'P':
+                case 'Q':
+                case 'R':
+                case 'S':
+                case 'T':
+                case 'U':
+                case 'V':
+                case 'W':
+                case 'X':
+                case 'Y':
+                case 'Z':
+                case '_':
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'j':
+                case 'k':
+                case 'l':
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                case 'q':
+                case 'r':
+                case 's':
+                case 'u':
+                case 'v':
+                case 'w':
+                case 'x':
+                case 'y':
+                case 'z':
+                    {
+                    alt12=19;
+                    }
+                    break;
+                default:
+                    alt12=17;}
+
+            }
+            else {
+                alt12=19;}
+        }
+        else if ( (LA12_0=='v') ) {
             int LA12_7 = input.LA(2);
 
-            if ( ((LA12_7>='A' && LA12_7<='Z')||LA12_7=='_'||(LA12_7>='a' && LA12_7<='z')) ) {
-                alt12=8;
+            if ( (LA12_7=='o') ) {
+                int LA12_30 = input.LA(3);
+
+                if ( (LA12_30=='i') ) {
+                    int LA12_48 = input.LA(4);
+
+                    if ( (LA12_48=='d') ) {
+                        int LA12_59 = input.LA(5);
+
+                        if ( ((LA12_59>='0' && LA12_59<='9')||(LA12_59>='A' && LA12_59<='Z')||LA12_59=='_'||(LA12_59>='a' && LA12_59<='z')) ) {
+                            alt12=19;
+                        }
+                        else {
+                            alt12=7;}
+                    }
+                    else {
+                        alt12=19;}
+                }
+                else {
+                    alt12=19;}
             }
             else {
-                alt12=14;}
+                alt12=19;}
         }
-        else if ( ((LA12_0>='A' && LA12_0<='Z')||LA12_0=='_'||(LA12_0>='a' && LA12_0<='c')||(LA12_0>='f' && LA12_0<='z')) ) {
+        else if ( (LA12_0=='(') ) {
             alt12=8;
         }
-        else if ( ((LA12_0>='0' && LA12_0<='9')) ) {
+        else if ( (LA12_0==',') ) {
             alt12=9;
         }
-        else if ( (LA12_0=='\"') ) {
-            int LA12_10 = input.LA(2);
-
-            if ( ((LA12_10>='\u0000' && LA12_10<='\uFFFE')) ) {
-                alt12=10;
-            }
-            else {
-                alt12=14;}
+        else if ( (LA12_0==')') ) {
+            alt12=10;
         }
-        else if ( (LA12_0=='\'') ) {
+        else if ( (LA12_0=='l') ) {
             int LA12_11 = input.LA(2);
 
-            if ( ((LA12_11>='\u0000' && LA12_11<='\uFFFE')) ) {
-                alt12=10;
+            if ( (LA12_11=='o') ) {
+                switch ( input.LA(3) ) {
+                case 'n':
+                    {
+                    int LA12_49 = input.LA(4);
+
+                    if ( (LA12_49=='g') ) {
+                        int LA12_60 = input.LA(5);
+
+                        if ( ((LA12_60>='0' && LA12_60<='9')||(LA12_60>='A' && LA12_60<='Z')||LA12_60=='_'||(LA12_60>='a' && LA12_60<='z')) ) {
+                            alt12=19;
+                        }
+                        else {
+                            alt12=12;}
+                    }
+                    else {
+                        alt12=19;}
+                    }
+                    break;
+                case 'o':
+                    {
+                    int LA12_50 = input.LA(4);
+
+                    if ( (LA12_50=='p') ) {
+                        int LA12_61 = input.LA(5);
+
+                        if ( ((LA12_61>='0' && LA12_61<='9')||(LA12_61>='A' && LA12_61<='Z')||LA12_61=='_'||(LA12_61>='a' && LA12_61<='z')) ) {
+                            alt12=19;
+                        }
+                        else {
+                            alt12=15;}
+                    }
+                    else {
+                        alt12=19;}
+                    }
+                    break;
+                default:
+                    alt12=19;}
+
             }
             else {
-                alt12=14;}
+                alt12=19;}
+        }
+        else if ( (LA12_0=='c') ) {
+            int LA12_12 = input.LA(2);
+
+            if ( (LA12_12=='h') ) {
+                int LA12_35 = input.LA(3);
+
+                if ( (LA12_35=='a') ) {
+                    int LA12_51 = input.LA(4);
+
+                    if ( (LA12_51=='r') ) {
+                        int LA12_62 = input.LA(5);
+
+                        if ( ((LA12_62>='0' && LA12_62<='9')||(LA12_62>='A' && LA12_62<='Z')||LA12_62=='_'||(LA12_62>='a' && LA12_62<='z')) ) {
+                            alt12=19;
+                        }
+                        else {
+                            alt12=13;}
+                    }
+                    else {
+                        alt12=19;}
+                }
+                else {
+                    alt12=19;}
+            }
+            else {
+                alt12=19;}
+        }
+        else if ( (LA12_0=='e') ) {
+            int LA12_13 = input.LA(2);
+
+            if ( (LA12_13=='n') ) {
+                int LA12_36 = input.LA(3);
+
+                if ( (LA12_36=='d') ) {
+                    int LA12_52 = input.LA(4);
+
+                    if ( ((LA12_52>='0' && LA12_52<='9')||(LA12_52>='A' && LA12_52<='Z')||LA12_52=='_'||(LA12_52>='a' && LA12_52<='z')) ) {
+                        alt12=19;
+                    }
+                    else {
+                        alt12=16;}
+                }
+                else {
+                    alt12=19;}
+            }
+            else {
+                alt12=19;}
+        }
+        else if ( (LA12_0=='o') ) {
+            int LA12_14 = input.LA(2);
+
+            if ( (LA12_14=='u') ) {
+                int LA12_37 = input.LA(3);
+
+                if ( (LA12_37=='t') ) {
+                    int LA12_53 = input.LA(4);
+
+                    if ( ((LA12_53>='0' && LA12_53<='9')||(LA12_53>='A' && LA12_53<='Z')||LA12_53=='_'||(LA12_53>='a' && LA12_53<='z')) ) {
+                        alt12=19;
+                    }
+                    else {
+                        alt12=18;}
+                }
+                else {
+                    alt12=19;}
+            }
+            else {
+                alt12=19;}
+        }
+        else if ( (LA12_0=='^') ) {
+            int LA12_15 = input.LA(2);
+
+            if ( ((LA12_15>='A' && LA12_15<='Z')||LA12_15=='_'||(LA12_15>='a' && LA12_15<='z')) ) {
+                alt12=19;
+            }
+            else {
+                alt12=25;}
+        }
+        else if ( ((LA12_0>='A' && LA12_0<='Z')||LA12_0=='_'||(LA12_0>='a' && LA12_0<='b')||LA12_0=='d'||(LA12_0>='f' && LA12_0<='h')||(LA12_0>='j' && LA12_0<='k')||LA12_0=='n'||(LA12_0>='p' && LA12_0<='s')||LA12_0=='u'||(LA12_0>='w' && LA12_0<='z')) ) {
+            alt12=19;
+        }
+        else if ( ((LA12_0>='0' && LA12_0<='9')) ) {
+            alt12=20;
+        }
+        else if ( (LA12_0=='\"') ) {
+            int LA12_18 = input.LA(2);
+
+            if ( ((LA12_18>='\u0000' && LA12_18<='\uFFFE')) ) {
+                alt12=21;
+            }
+            else {
+                alt12=25;}
+        }
+        else if ( (LA12_0=='\'') ) {
+            int LA12_19 = input.LA(2);
+
+            if ( ((LA12_19>='\u0000' && LA12_19<='\uFFFE')) ) {
+                alt12=21;
+            }
+            else {
+                alt12=25;}
         }
         else if ( (LA12_0=='/') ) {
             switch ( input.LA(2) ) {
-            case '*':
-                {
-                alt12=11;
-                }
-                break;
             case '/':
                 {
-                alt12=12;
+                alt12=23;
+                }
+                break;
+            case '*':
+                {
+                alt12=22;
                 }
                 break;
             default:
-                alt12=14;}
+                alt12=25;}
 
         }
         else if ( ((LA12_0>='\t' && LA12_0<='\n')||LA12_0=='\r'||LA12_0==' ') ) {
-            alt12=13;
+            alt12=24;
         }
-        else if ( ((LA12_0>='\u0000' && LA12_0<='\b')||(LA12_0>='\u000B' && LA12_0<='\f')||(LA12_0>='\u000E' && LA12_0<='\u001F')||LA12_0=='!'||(LA12_0>='#' && LA12_0<='&')||(LA12_0>='(' && LA12_0<=')')||(LA12_0>='+' && LA12_0<='.')||(LA12_0>=';' && LA12_0<='@')||(LA12_0>='[' && LA12_0<=']')||LA12_0=='`'||LA12_0=='|'||(LA12_0>='~' && LA12_0<='\uFFFE')) ) {
-            alt12=14;
+        else if ( ((LA12_0>='\u0000' && LA12_0<='\b')||(LA12_0>='\u000B' && LA12_0<='\f')||(LA12_0>='\u000E' && LA12_0<='\u001F')||LA12_0=='!'||(LA12_0>='#' && LA12_0<='&')||(LA12_0>='*' && LA12_0<='+')||(LA12_0>='-' && LA12_0<='.')||LA12_0==':'||(LA12_0>='<' && LA12_0<='@')||(LA12_0>='[' && LA12_0<=']')||LA12_0=='`'||LA12_0=='|'||(LA12_0>='~' && LA12_0<='\uFFFE')) ) {
+            alt12=25;
         }
         else {
             NoViableAltException nvae =
-                new NoViableAltException("1:1: Tokens : ( T11 | T12 | T13 | T14 | T15 | T16 | T17 | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );", 12, 0, input);
+                new NoViableAltException("1:1: Tokens : ( T11 | T12 | T13 | T14 | T15 | T16 | T17 | T18 | T19 | T20 | T21 | T22 | T23 | T24 | T25 | T26 | T27 | T28 | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );", 12, 0, input);
 
             throw nvae;
         }
@@ -933,49 +1459,126 @@ public class InternalIDLLanguageLexer extends Lexer {
                 }
                 break;
             case 8 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:38: RULE_ID
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:38: T18
+                {
+                mT18(); 
+
+                }
+                break;
+            case 9 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:42: T19
+                {
+                mT19(); 
+
+                }
+                break;
+            case 10 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:46: T20
+                {
+                mT20(); 
+
+                }
+                break;
+            case 11 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:50: T21
+                {
+                mT21(); 
+
+                }
+                break;
+            case 12 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:54: T22
+                {
+                mT22(); 
+
+                }
+                break;
+            case 13 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:58: T23
+                {
+                mT23(); 
+
+                }
+                break;
+            case 14 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:62: T24
+                {
+                mT24(); 
+
+                }
+                break;
+            case 15 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:66: T25
+                {
+                mT25(); 
+
+                }
+                break;
+            case 16 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:70: T26
+                {
+                mT26(); 
+
+                }
+                break;
+            case 17 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:74: T27
+                {
+                mT27(); 
+
+                }
+                break;
+            case 18 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:78: T28
+                {
+                mT28(); 
+
+                }
+                break;
+            case 19 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:82: RULE_ID
                 {
                 mRULE_ID(); 
 
                 }
                 break;
-            case 9 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:46: RULE_INT
+            case 20 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:90: RULE_INT
                 {
                 mRULE_INT(); 
 
                 }
                 break;
-            case 10 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:55: RULE_STRING
+            case 21 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:99: RULE_STRING
                 {
                 mRULE_STRING(); 
 
                 }
                 break;
-            case 11 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:67: RULE_ML_COMMENT
+            case 22 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:111: RULE_ML_COMMENT
                 {
                 mRULE_ML_COMMENT(); 
 
                 }
                 break;
-            case 12 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:83: RULE_SL_COMMENT
+            case 23 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:127: RULE_SL_COMMENT
                 {
                 mRULE_SL_COMMENT(); 
 
                 }
                 break;
-            case 13 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:99: RULE_WS
+            case 24 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:143: RULE_WS
                 {
                 mRULE_WS(); 
 
                 }
                 break;
-            case 14 :
-                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:107: RULE_ANY_OTHER
+            case 25 :
+                // ../org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/parser/antlr/internal/InternalIDLLanguage.g:1:151: RULE_ANY_OTHER
                 {
                 mRULE_ANY_OTHER(); 
 

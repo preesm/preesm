@@ -36,13 +36,13 @@ public interface IDLLanguageFactory extends EFactory
   IDL createIDL();
 
   /**
-   * Returns a new object of class '<em>Type</em>'.
+   * Returns a new object of class '<em>Module</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Type</em>'.
+   * @return a new object of class '<em>Module</em>'.
    * @generated
    */
-  Type createType();
+  Module createModule();
 
   /**
    * Returns a new object of class '<em>Data Type</em>'.
@@ -54,31 +54,40 @@ public interface IDLLanguageFactory extends EFactory
   DataType createDataType();
 
   /**
-   * Returns a new object of class '<em>Entity</em>'.
+   * Returns a new object of class '<em>Interface</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Entity</em>'.
+   * @return a new object of class '<em>Interface</em>'.
    * @generated
    */
-  Entity createEntity();
+  Interface createInterface();
 
   /**
-   * Returns a new object of class '<em>Feature</em>'.
+   * Returns a new object of class '<em>Function</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Feature</em>'.
+   * @return a new object of class '<em>Function</em>'.
    * @generated
    */
-  Feature createFeature();
+  Function createFunction();
 
   /**
-   * Returns a new object of class '<em>Type Ref</em>'.
+   * Returns a new object of class '<em>Parameter</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Type Ref</em>'.
+   * @return a new object of class '<em>Parameter</em>'.
    * @generated
    */
-  TypeRef createTypeRef();
+  Parameter createParameter();
+
+  /**
+   * Returns a new object of class '<em>Type Star</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Type Star</em>'.
+   * @generated
+   */
+  TypeStar createTypeStar();
 
   /**
    * Returns the package supported by this factory.

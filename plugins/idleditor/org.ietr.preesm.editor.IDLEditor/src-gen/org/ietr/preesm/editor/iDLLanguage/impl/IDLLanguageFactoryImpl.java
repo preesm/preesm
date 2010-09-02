@@ -7,6 +7,7 @@
 package org.ietr.preesm.editor.iDLLanguage.impl;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -69,13 +70,56 @@ public class IDLLanguageFactoryImpl extends EFactoryImpl implements IDLLanguageF
     switch (eClass.getClassifierID())
     {
       case IDLLanguagePackage.IDL: return createIDL();
-      case IDLLanguagePackage.TYPE: return createType();
+      case IDLLanguagePackage.MODULE: return createModule();
       case IDLLanguagePackage.DATA_TYPE: return createDataType();
-      case IDLLanguagePackage.ENTITY: return createEntity();
-      case IDLLanguagePackage.FEATURE: return createFeature();
-      case IDLLanguagePackage.TYPE_REF: return createTypeRef();
+      case IDLLanguagePackage.INTERFACE: return createInterface();
+      case IDLLanguagePackage.FUNCTION: return createFunction();
+      case IDLLanguagePackage.PARAMETER: return createParameter();
+      case IDLLanguagePackage.TYPE_STAR: return createTypeStar();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public Object createFromString(EDataType eDataType, String initialValue)
+  {
+    switch (eDataType.getClassifierID())
+    {
+      case IDLLanguagePackage.BASE_TYPE:
+        return createBaseTypeFromString(eDataType, initialValue);
+      case IDLLanguagePackage.INTERFACE_NAME:
+        return createInterfaceNameFromString(eDataType, initialValue);
+      case IDLLanguagePackage.DIRECTION:
+        return createDirectionFromString(eDataType, initialValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+    }
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String convertToString(EDataType eDataType, Object instanceValue)
+  {
+    switch (eDataType.getClassifierID())
+    {
+      case IDLLanguagePackage.BASE_TYPE:
+        return convertBaseTypeToString(eDataType, instanceValue);
+      case IDLLanguagePackage.INTERFACE_NAME:
+        return convertInterfaceNameToString(eDataType, instanceValue);
+      case IDLLanguagePackage.DIRECTION:
+        return convertDirectionToString(eDataType, instanceValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
     }
   }
 
@@ -95,10 +139,10 @@ public class IDLLanguageFactoryImpl extends EFactoryImpl implements IDLLanguageF
    * <!-- end-user-doc -->
    * @generated
    */
-  public Type createType()
+  public Module createModule()
   {
-    TypeImpl type = new TypeImpl();
-    return type;
+    ModuleImpl module = new ModuleImpl();
+    return module;
   }
 
   /**
@@ -117,10 +161,10 @@ public class IDLLanguageFactoryImpl extends EFactoryImpl implements IDLLanguageF
    * <!-- end-user-doc -->
    * @generated
    */
-  public Entity createEntity()
+  public Interface createInterface()
   {
-    EntityImpl entity = new EntityImpl();
-    return entity;
+    InterfaceImpl interface_ = new InterfaceImpl();
+    return interface_;
   }
 
   /**
@@ -128,10 +172,10 @@ public class IDLLanguageFactoryImpl extends EFactoryImpl implements IDLLanguageF
    * <!-- end-user-doc -->
    * @generated
    */
-  public Feature createFeature()
+  public Function createFunction()
   {
-    FeatureImpl feature = new FeatureImpl();
-    return feature;
+    FunctionImpl function = new FunctionImpl();
+    return function;
   }
 
   /**
@@ -139,10 +183,87 @@ public class IDLLanguageFactoryImpl extends EFactoryImpl implements IDLLanguageF
    * <!-- end-user-doc -->
    * @generated
    */
-  public TypeRef createTypeRef()
+  public Parameter createParameter()
   {
-    TypeRefImpl typeRef = new TypeRefImpl();
-    return typeRef;
+    ParameterImpl parameter = new ParameterImpl();
+    return parameter;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public TypeStar createTypeStar()
+  {
+    TypeStarImpl typeStar = new TypeStarImpl();
+    return typeStar;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public BaseType createBaseTypeFromString(EDataType eDataType, String initialValue)
+  {
+    BaseType result = BaseType.get(initialValue);
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertBaseTypeToString(EDataType eDataType, Object instanceValue)
+  {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public InterfaceName createInterfaceNameFromString(EDataType eDataType, String initialValue)
+  {
+    InterfaceName result = InterfaceName.get(initialValue);
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertInterfaceNameToString(EDataType eDataType, Object instanceValue)
+  {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public Direction createDirectionFromString(EDataType eDataType, String initialValue)
+  {
+    Direction result = Direction.get(initialValue);
+    if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    return result;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String convertDirectionToString(EDataType eDataType, Object instanceValue)
+  {
+    return instanceValue == null ? null : instanceValue.toString();
   }
 
   /**

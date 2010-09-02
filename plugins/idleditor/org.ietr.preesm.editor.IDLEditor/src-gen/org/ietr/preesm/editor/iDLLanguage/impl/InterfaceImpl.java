@@ -15,25 +15,26 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
-import org.ietr.preesm.editor.iDLLanguage.Feature;
+import org.ietr.preesm.editor.iDLLanguage.Function;
 import org.ietr.preesm.editor.iDLLanguage.IDLLanguagePackage;
-import org.ietr.preesm.editor.iDLLanguage.TypeRef;
+import org.ietr.preesm.editor.iDLLanguage.Interface;
+import org.ietr.preesm.editor.iDLLanguage.InterfaceName;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Feature</b></em>'.
+ * An implementation of the model object '<em><b>Interface</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl#getName <em>Name</em>}</li>
- *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.FeatureImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.editor.iDLLanguage.impl.InterfaceImpl#getFunction <em>Function</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
+public class InterfaceImpl extends MinimalEObjectImpl.Container implements Interface
 {
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -43,7 +44,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * @generated
    * @ordered
    */
-  protected static final String NAME_EDEFAULT = null;
+  protected static final InterfaceName NAME_EDEFAULT = InterfaceName.INIT;
 
   /**
    * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -53,24 +54,24 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * @generated
    * @ordered
    */
-  protected String name = NAME_EDEFAULT;
+  protected InterfaceName name = NAME_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getType() <em>Type</em>}' containment reference.
+   * The cached value of the '{@link #getFunction() <em>Function</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getType()
+   * @see #getFunction()
    * @generated
    * @ordered
    */
-  protected TypeRef type;
+  protected Function function;
 
   /**
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    */
-  protected FeatureImpl()
+  protected InterfaceImpl()
   {
     super();
   }
@@ -83,7 +84,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   @Override
   protected EClass eStaticClass()
   {
-    return IDLLanguagePackage.Literals.FEATURE;
+    return IDLLanguagePackage.Literals.INTERFACE;
   }
 
   /**
@@ -91,7 +92,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * <!-- end-user-doc -->
    * @generated
    */
-  public String getName()
+  public InterfaceName getName()
   {
     return name;
   }
@@ -101,12 +102,12 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setName(String newName)
+  public void setName(InterfaceName newName)
   {
-    String oldName = name;
-    name = newName;
+    InterfaceName oldName = name;
+    name = newName == null ? NAME_EDEFAULT : newName;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.FEATURE__NAME, oldName, name));
+      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.INTERFACE__NAME, oldName, name));
   }
 
   /**
@@ -114,9 +115,9 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * <!-- end-user-doc -->
    * @generated
    */
-  public TypeRef getType()
+  public Function getFunction()
   {
-    return type;
+    return function;
   }
 
   /**
@@ -124,13 +125,13 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetType(TypeRef newType, NotificationChain msgs)
+  public NotificationChain basicSetFunction(Function newFunction, NotificationChain msgs)
   {
-    TypeRef oldType = type;
-    type = newType;
+    Function oldFunction = function;
+    function = newFunction;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.FEATURE__TYPE, oldType, newType);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.INTERFACE__FUNCTION, oldFunction, newFunction);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -141,20 +142,20 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setType(TypeRef newType)
+  public void setFunction(Function newFunction)
   {
-    if (newType != type)
+    if (newFunction != function)
     {
       NotificationChain msgs = null;
-      if (type != null)
-        msgs = ((InternalEObject)type).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IDLLanguagePackage.FEATURE__TYPE, null, msgs);
-      if (newType != null)
-        msgs = ((InternalEObject)newType).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IDLLanguagePackage.FEATURE__TYPE, null, msgs);
-      msgs = basicSetType(newType, msgs);
+      if (function != null)
+        msgs = ((InternalEObject)function).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IDLLanguagePackage.INTERFACE__FUNCTION, null, msgs);
+      if (newFunction != null)
+        msgs = ((InternalEObject)newFunction).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IDLLanguagePackage.INTERFACE__FUNCTION, null, msgs);
+      msgs = basicSetFunction(newFunction, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.FEATURE__TYPE, newType, newType));
+      eNotify(new ENotificationImpl(this, Notification.SET, IDLLanguagePackage.INTERFACE__FUNCTION, newFunction, newFunction));
   }
 
   /**
@@ -167,8 +168,8 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.FEATURE__TYPE:
-        return basicSetType(null, msgs);
+      case IDLLanguagePackage.INTERFACE__FUNCTION:
+        return basicSetFunction(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -183,10 +184,10 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.FEATURE__NAME:
+      case IDLLanguagePackage.INTERFACE__NAME:
         return getName();
-      case IDLLanguagePackage.FEATURE__TYPE:
-        return getType();
+      case IDLLanguagePackage.INTERFACE__FUNCTION:
+        return getFunction();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -201,11 +202,11 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.FEATURE__NAME:
-        setName((String)newValue);
+      case IDLLanguagePackage.INTERFACE__NAME:
+        setName((InterfaceName)newValue);
         return;
-      case IDLLanguagePackage.FEATURE__TYPE:
-        setType((TypeRef)newValue);
+      case IDLLanguagePackage.INTERFACE__FUNCTION:
+        setFunction((Function)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -221,11 +222,11 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.FEATURE__NAME:
+      case IDLLanguagePackage.INTERFACE__NAME:
         setName(NAME_EDEFAULT);
         return;
-      case IDLLanguagePackage.FEATURE__TYPE:
-        setType((TypeRef)null);
+      case IDLLanguagePackage.INTERFACE__FUNCTION:
+        setFunction((Function)null);
         return;
     }
     super.eUnset(featureID);
@@ -241,10 +242,10 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
   {
     switch (featureID)
     {
-      case IDLLanguagePackage.FEATURE__NAME:
-        return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-      case IDLLanguagePackage.FEATURE__TYPE:
-        return type != null;
+      case IDLLanguagePackage.INTERFACE__NAME:
+        return name != NAME_EDEFAULT;
+      case IDLLanguagePackage.INTERFACE__FUNCTION:
+        return function != null;
     }
     return super.eIsSet(featureID);
   }
@@ -266,4 +267,4 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
     return result.toString();
   }
 
-} //FeatureImpl
+} //InterfaceImpl
