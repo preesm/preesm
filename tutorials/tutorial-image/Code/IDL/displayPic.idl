@@ -1,9 +1,12 @@
+
 module displayPic {
 	typedef long parameter ;
+	typedef parameter param2 ;
 	interface init {
-		void Display_YUV_init (in parameter index, in parameter xsize, in parameter ysize);
-	};
+		void Display_YUV_init ( in param2 index , in parameter xsize , in parameter
+		ysize ) ;
+	} ;
 	interface loop {
-		void Display_YUV (in parameter index, in char Y, in char U, in char V);
-	};
-};
+		void Display_YUV ( in parameter index , in char Y , in char U , in char V ) ;
+	} ;
+} ;

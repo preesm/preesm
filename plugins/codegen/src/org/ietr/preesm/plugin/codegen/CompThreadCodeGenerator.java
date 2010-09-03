@@ -327,7 +327,7 @@ public class CompThreadCodeGenerator {
 							thread, CodeSectionType.beginning, false);
 					// Adding init call if any
 					beginningCode.addCodeElement(beginningCall);
-					PreesmLogger.getLogger().log(Level.INFO, "");
+					//PreesmLogger.getLogger().log(Level.INFO, "");
 				}else if ((vertexCall != null && vertexCall.getInitCall() != null) ) {
 					ICodeElement beginningCall = new UserFunctionCall(vertex,
 							thread, CodeSectionType.beginning, false);

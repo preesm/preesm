@@ -17,3 +17,5 @@ Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.ietr.preesm.editor.ui.contentassist.antlr
 Bundle-Activator: org.ietr.preesm.editor.ui.internal.IDLLanguageActivator
+Bundle-ClassPath: .,
+ src

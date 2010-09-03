@@ -28,3 +28,5 @@ Export-Package: org.ietr.preesm.editor,
  org.ietr.preesm.editor.parser.antlr,
  org.ietr.preesm.editor.parser.antlr.internal,
  org.ietr.preesm.editor.validation
+Bundle-ClassPath: lib/antlr-generator-3.0.1.jar,
+ .

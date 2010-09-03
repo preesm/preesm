@@ -92,7 +92,7 @@ public class IDLFunctionFactory implements IFunctionFactory {
 			currentCall = null;
 			finalCall = new FunctionCall();
 			
-			new IDLLanguageStandaloneSetup().createInjectorAndDoEMFRegistration();
+			//new IDLLanguageStandaloneSetup().createInjectorAndDoEMFRegistration();
 			ResourceSet rs = new ResourceSetImpl();
 			
 			Resource resource = rs.getResource(URI.createURI("file:/"+idlPath), true);
