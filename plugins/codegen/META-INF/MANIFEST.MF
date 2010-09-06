@@ -11,5 +11,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,
- .
+ .,
+ lib/idl.jar
 Bundle-Vendor: IETR/INSA of Rennes
