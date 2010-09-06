@@ -90,6 +90,10 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	}
 
 	private IDLFunctionFactory() {
+		resetPrototypes ();
+	}
+	
+	public void resetPrototypes () {
 		createdIdl = new HashMap<String, FunctionCall>();
 	}
 

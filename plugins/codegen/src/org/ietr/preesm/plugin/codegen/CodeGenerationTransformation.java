@@ -54,6 +54,7 @@ import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
+import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -102,6 +103,9 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 			MultiCoreArchitecture architecture, IScenario scenario,
 			TextParameters parameters) throws PreesmException {
 
+		// Resets the parsed IDL prototypes
+		IDLFunctionFactory.getInstance().resetPrototypes();
+		
 		// Default source path is given in the workflow
 		String sourcePath = parameters.getVariable("sourcePath");
 
