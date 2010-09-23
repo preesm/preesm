@@ -1,8 +1,8 @@
 module extract_picture {
 	typedef short int;
     interface loop{
-    void extract_picture ( in int xsize_i, in int ysize_i, in int edge,in int crop,in char RefY_i, in char RefU_i,in char RefV_i
-    						, in int adresse_pic, out char RefY_o, out char RefU_o, out char RefV_o);
+    void extract_picture_preesm ( in int xsize_i, in int ysize_i, in int edge,in int crop,in char RefY_i, in char RefU_i,in char RefV_i
+    						, in int adresse_pic, out char Display_Extract_Image);
     };
 }; 
 

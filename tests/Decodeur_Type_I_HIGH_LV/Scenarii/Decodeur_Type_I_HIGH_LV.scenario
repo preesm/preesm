@@ -8,24 +8,23 @@
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="choix_I_P_haut_niveau/mux_frame_Y_o"/>
-            <task name="choix_I_P_haut_niveau/decode_I_frame"/>
-            <task name="Extract"/>
-            <task name="choix_I_P_haut_niveau"/>
-            <task name="viewer"/>
-            <task name="choix_I_P_haut_niveau/mux_frame_V_o"/>
-            <task name="readm4v"/>
-            <task name="readm4v_double_buffering"/>
+            <task name="choix_I_P_haut_niveau/mux_pos_fin_vlc"/>
             <task name="init_vlc_tables_I"/>
+            <task name="readm4v_double_buffering"/>
+            <task name="choix_I_P_haut_niveau/mux_adresse"/>
+            <task name="readm4v"/>
+            <task name="viewer"/>
+            <task name="new_buffer"/>
+            <task name="choix_I_P_haut_niveau/mux_keyframes_o"/>
             <task name="VideoObjectLayer"/>
             <task name="VideoObjectPlane"/>
+            <task name="choix_I_P_haut_niveau/mux_frame_V_o"/>
             <task name="choix_I_P_haut_niveau/mux_frame_U_o"/>
-            <task name="choix_I_P_haut_niveau/mux_pos_fin_vlc"/>
+            <task name="choix_I_P_haut_niveau/decode_I_frame"/>
             <task name="init_vlc_tables_P"/>
-            <task name="new_buffer"/>
-            <task name="choix_I_P_haut_niveau/mux_adresse"/>
-            <task name="choix_I_P_haut_niveau/decode_P_frame"/>
-            <task name="choix_I_P_haut_niveau/mux_keyframes_o"/>
+            <task name="choix_I_P_haut_niveau"/>
+            <task name="Extract"/>
+            <task name="choix_I_P_haut_niveau/mux_frame_Y_o"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl=""/>

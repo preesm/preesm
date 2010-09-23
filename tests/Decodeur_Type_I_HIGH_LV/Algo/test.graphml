@@ -51,7 +51,7 @@
         <node id="buffer_out" kind="Broadcast"/>
         <node id="VOPsimple" kind="Broadcast"/>
         <node id="choix_I_P_haut_niveau" kind="vertex">
-            <data key="graph_desc">choix_I_P_haut_niveau.graphml</data>
+            <data key="graph_desc">../Code/IDL/decode_I_frame.idl</data>
             <data key="name">choix_I_P_haut_niveau</data>
             <data key="arguments"/>
         </node>
@@ -92,11 +92,6 @@
                 <argument name="xpic" value="720"/>
                 <argument name="ypic" value="576"/>
             </data>
-        </node>
-        <node id="init_vlc_tables_P" kind="vertex">
-            <data key="graph_desc"/>
-            <data key="name">init_vlc_tables_P</data>
-            <data key="arguments"/>
         </node>
         <edge source="readm4v" sourceport="new_buffer"
             target="readm4v_double_buffering" targetport="buffer_new">
@@ -311,23 +306,12 @@
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="Extract" sourceport="RefY_o" target="viewer" targetport="RefY_i">
-            <data key="edge_prod">1</data>
+        <edge source="Extract" sourceport="Display_Extract_Image"
+            target="viewer" targetport="Display_Extract_Image">
+            <data key="edge_prod">685832</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="RefU_o" target="viewer" targetport="RefU_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="RefV_o" target="viewer" targetport="RefV_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
+            <data key="edge_cons">685832</data>
+            <data key="data_type">image_type</data>
         </edge>
         <edge source="VideoObjectLayer" sourceport="xsize_o"
             target="Extract" targetport="xsize_i">
@@ -349,20 +333,6 @@
             <data key="edge_delay">2</data>
             <data key="edge_cons">2</data>
             <data key="data_type">int</data>
-        </edge>
-        <edge source="init_vlc_tables_P" sourceport="DCT3D_P"
-            target="choix_I_P_haut_niveau" targetport="DCT3D_P">
-            <data key="edge_prod">4096</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">4096</data>
-            <data key="data_type">REVERSE_EVENT</data>
-        </edge>
-        <edge source="choix_I_P_haut_niveau" sourceport="save_mv_o"
-            target="choix_I_P_haut_niveau" targetport="save_mv_i">
-            <data key="edge_prod">1620</data>
-            <data key="edge_delay">1620</data>
-            <data key="edge_cons">1620</data>
-            <data key="data_type">vector</data>
         </edge>
     </graph>
 </graphml>

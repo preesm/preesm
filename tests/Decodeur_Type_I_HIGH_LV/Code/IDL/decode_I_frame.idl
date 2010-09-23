@@ -1,7 +1,7 @@
 module decode_I_frame {
 	typedef short int;
     interface loop{
-		void decode_I_frame ( in char data, in char VOLsimple, in int pos , in char VOP, in char DCT3D_I, out int pos_fin_vlc
+		void decode_I_frame_preesm ( in char data, in char VOLsimple, in int pos , in char VOP, in char DCT3D_I, out int pos_fin_vlc
 								, out int adresse, in char frame_Y_i, in char frame_U_i, in char frame_V_i, in char keyframes_i
 								, out char frame_Y_o, out char frame_U_o, out char frame_V_o, out char keyframes_o, in int vop_coding_type );
     };
