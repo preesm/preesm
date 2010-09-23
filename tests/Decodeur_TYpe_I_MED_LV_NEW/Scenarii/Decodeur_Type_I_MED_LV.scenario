@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/Decodeur_Type_I_MED_LV/Algo/Decodeur_MPEG4.graphml"/>
+        <architecture url="/Decodeur_Type_I_MED_LV/Archi/8CoreX86.design"/>
+        <codegenDirectory url="/Decodeur_Type_I_MED_LV/Code/x86/generatedSrc"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="readm4v"/>
+            <task name="decode_I/bidon_decode_I"/>
+            <task name="init_vlc_tables_I"/>
+            <task name="decode_I/bidon_decode_I/decode_I_une_partie"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksLum"/>
+            <task name="new_buffer"/>
+            <task name="init_decode_I"/>
+            <task name="decode_I"/>
+            <task name="decode_I/bidon_decode_I/VideoPacketHeaderI"/>
+            <task name="viewer"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksCb"/>
+            <task name="VideoObjectLayer"/>
+            <task name="decode_I/bidon_decode_I/Param_MB_I"/>
+            <task name="Extract"/>
+            <task name="VideoObjectPlane"/>
+            <task name="readm4v_double_buffering"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksCr"/>
+            <task name="init_MB_pos"/>
+        </constraintGroup>
+        <constraintGroup>
+            <task name="decode_I"/>
+            <task name="decode_I/bidon_decode_I/Param_MB_I"/>
+            <task name="init_MB_pos"/>
+            <task name="viewer"/>
+            <task name="init_decode_I"/>
+            <task name="Extract"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksCb"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksCr"/>
+            <task name="decode_I/bidon_decode_I"/>
+            <task name="decode_I/bidon_decode_I/StockBlocksLum"/>
+            <task name="decode_I/bidon_decode_I/VideoPacketHeaderI"/>
+            <task name="decode_I/bidon_decode_I/decode_I_une_partie"/>
+            <task name="init_vlc_tables_I"/>
+            <task name="VideoObjectLayer"/>
+            <task name="VideoObjectPlane"/>
+        </constraintGroup>
+        <constraintGroup/>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core1</mainCore>
+        <mainMedium>TCP</mainMedium>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

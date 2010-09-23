@@ -1,0 +1,7 @@
+module New_buffer {
+	typedef short int;
+    interface loop{
+    void New_buffer_preesm ( in int nb_octet_to_read, in int pos, out int new_buff_o,out int pos_octet);
+    };
+}; 
+

@@ -1,0 +1,5 @@
+module init_vlc_tables_P {
+	interface init{
+		void init_vlc_tables_P (out char DCT3D_P);
+	};
+}; 

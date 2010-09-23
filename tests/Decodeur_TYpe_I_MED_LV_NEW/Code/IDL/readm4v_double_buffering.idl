@@ -1,0 +1,8 @@
+module readm4v_double_buffering {
+	typedef short int;
+    interface loop{
+         void readm4v_double_buffering_preesm(in int nb_octet_to_read,in int pos_octet,in int new_buff_i,in char buffer_new
+         								, in char buffer_state, out char buffer_out, out int pos_o);
+    };
+}; 
+

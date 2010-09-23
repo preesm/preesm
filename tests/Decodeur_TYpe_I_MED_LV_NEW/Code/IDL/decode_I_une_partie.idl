@@ -1,0 +1,11 @@
+module decode_I_une_partie {
+	typedef short int;
+    interface loop{
+		void decode_I_une_partie_preesm (in char MB_pos, in char VOLsimple, in char VOP, in char data , in char display, in char pos, in char tab_pos_X, in char DCT3D_I
+									, in char InverseQuant_BlkXn_0, in char InverseQuant_BlkXn_1, in char InverseQuant_BlkXn_2, in char InverseQuant_BlkXn_3
+									, in char InverseQuant_BlkXn_4, in char InverseQuant_BlkXn_5, in char Lum_BuffA, in char Lum_BuffB, in char Lum_BuffC
+									, in char Lum_BuffD, in char Lum_BuffE, in char Cb_BuffA, in char Cb_BuffB, in char Cb_BuffC, in char Cr_BuffA
+									, in char Cr_BuffB, in char Cr_BuffC, out char frame_U_o, out char frame_V_o, out char frame_Y_o, out char pos_fin_vlc);
+    };
+}; 
+
