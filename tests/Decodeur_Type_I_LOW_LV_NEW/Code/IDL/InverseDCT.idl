@@ -1,0 +1,7 @@
+module InverseDCT {
+	typedef short int;
+    interface loop{
+		void InverseDCT (in char F_in, out char f_out);
+    };
+}; 
+

@@ -1,0 +1,8 @@
+module Increment_I {
+	typedef short int;
+    interface loop{
+		void Increment_I_pour_sdl (in char VOLsimple, in char MB_courant,out char MB_pos_suivant, out char pos_X1, out char pos_X2, out char pos_X3
+    , out char pos_X4, out char pos_XCb, out char pos_XCr , in char tab_pos_X);
+    };
+}; 
+

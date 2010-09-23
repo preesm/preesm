@@ -1,0 +1,8 @@
+module SDX_Stock_blockLum_in_pict {
+	typedef short int;
+    interface loop{
+		void SDX_Stock_blockLum_in_pict(in int NB_MB,in short xpic,in int pos_X1,in int pos_X2,in int pos_X3,in int pos_X4
+										,in char src_X1,in char src_X2,in char src_X3,in char src_X4,out char display);
+    };
+}; 
+

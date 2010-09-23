@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+        <data key="name"/>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="NB_MB" value="99"/>
+            <variable name="edge" value="16"/>
+            <variable name="taille_flux" value="720*576"/>
+            <variable name="xpic" value="720"/>
+            <variable name="ypic" value="576"/>
+        </data>
+        <node id="readm4v" kind="vertex">
+            <data key="graph_desc">../Code/IDL/readm4v.idl</data>
+            <data key="name">readm4v</data>
+            <data key="arguments">
+                <argument name="nb_octet_to_read" value="414720"/>
+            </data>
+        </node>
+        <node id="readm4v_double_buffering" kind="vertex">
+            <data key="graph_desc">../Code/IDL/readm4v_double_buffering.idl</data>
+            <data key="name">readm4v_double_buffering</data>
+            <data key="arguments">
+                <argument name="nb_octet_to_read" value="taille_flux"/>
+            </data>
+        </node>
+        <node id="VideoObjectLayer" kind="vertex">
+            <data key="graph_desc">../Code/IDL/VideoObjectLayer.idl</data>
+            <data key="name">VideoObjectLayer</data>
+            <data key="arguments">
+                <argument name="length" value="taille_flux * 8* 2"/>
+            </data>
+        </node>
+        <node id="buffer_out" kind="Broadcast"/>
+        <node id="VOPsimple" kind="Broadcast"/>
+        <node id="VideoObjectPlane" kind="vertex">
+            <data key="graph_desc">../Code/IDL/VideoObjectPlane.idl</data>
+            <data key="name">VideoObjectPlane</data>
+            <data key="arguments"/>
+        </node>
+        <node id="init_vlc_tables_I" kind="vertex">
+            <data key="graph_desc">../Code/IDL/init_vlc_tables_I.idl</data>
+            <data key="name">init_vlc_tables_I</data>
+            <data key="arguments"/>
+        </node>
+        <node id="frame_Y" kind="Broadcast"/>
+        <node id="frame_U" kind="Broadcast"/>
+        <node id="frame_V" kind="Broadcast"/>
+        <node id="new_buffer" kind="vertex">
+            <data key="graph_desc">../Code/IDL/new_buffer.idl</data>
+            <data key="name">new_buffer</data>
+            <data key="arguments">
+                <argument name="nb_octet_to_read" value="xpic*ypic"/>
+            </data>
+        </node>
+        <node id="new_buff_o" kind="Broadcast"/>
+        <node id="Extract" kind="vertex">
+            <data key="graph_desc">../Code/IDL/extract.idl</data>
+            <data key="name">Extract</data>
+            <data key="arguments">
+                <argument name="crop" value="0"/>
+                <argument name="edge" value="16"/>
+            </data>
+        </node>
+        <node id="viewer" kind="vertex">
+            <data key="graph_desc">../Code/IDL/sdl.idl</data>
+            <data key="name">viewer</data>
+            <data key="arguments">
+                <argument name="edge" value="16"/>
+                <argument name="xpic" value="720"/>
+                <argument name="ypic" value="576"/>
+            </data>
+        </node>
+        <node id="init_decode_I" kind="vertex">
+            <data key="graph_desc">../Code/IDL/init_decode_I.idl</data>
+            <data key="name">init_decode_I</data>
+            <data key="arguments"/>
+        </node>
+        <node id="decode_I" kind="vertex">
+            <data key="graph_desc">decode_I.graphml</data>
+            <data key="name">decode_I</data>
+            <data key="arguments"/>
+        </node>
+        <node id="init_MB_pos" kind="vertex">
+            <data key="graph_desc">../Code/IDL/init_MB_pos.idl</data>
+            <data key="name">init_MB_pos</data>
+            <data key="arguments"/>
+        </node>
+        <node id="diff_adresse" kind="Broadcast"/>
+        <edge source="readm4v" sourceport="new_buffer"
+            target="readm4v_double_buffering" targetport="buffer_new">
+            <data key="edge_prod">taille_flux</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="readm4v_double_buffering" sourceport="buffer_out"
+            target="buffer_out" targetport="in">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="buffer_out" sourceport="out"
+            target="VideoObjectLayer" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="readm4v_double_buffering" sourceport="pos_o"
+            target="VideoObjectLayer" targetport="pos_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="buffer_out" sourceport="out"
+            target="readm4v_double_buffering" targetport="buffer_state">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">taille_flux*2</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="VideoObjectLayer" sourceport="VOLsimple"
+            target="VOPsimple" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="VideoObjectLayer" sourceport="pos_o"
+            target="VideoObjectPlane" targetport="pos_vol">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VideoObjectLayer" sourceport="vop_complexity"
+            target="VideoObjectPlane" targetport="vop_complexity">
+            <data key="edge_prod">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">5</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="VOPsimple" sourceport="out"
+            target="VideoObjectPlane" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="buffer_out" sourceport="out"
+            target="VideoObjectPlane" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="new_buffer" sourceport="new_buff_o"
+            target="new_buff_o" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="new_buff_o" sourceport="out" target="readm4v" targetport="new_buff_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="new_buff_o" sourceport="out"
+            target="readm4v_double_buffering" targetport="new_buff_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="new_buffer" sourceport="pos_octet"
+            target="readm4v_double_buffering" targetport="pos_octet">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">1</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="frame_U" sourceport="out" target="Extract" targetport="RefU_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_V" sourceport="out" target="Extract" targetport="RefV_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_Y" sourceport="out" target="Extract" targetport="RefY_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Extract" sourceport="Y" target="viewer" targetport="Y">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Extract" sourceport="U" target="viewer" targetport="U">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Extract" sourceport="V" target="viewer" targetport="V">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="VideoObjectLayer" sourceport="xsize_o"
+            target="Extract" targetport="xsize_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VideoObjectLayer" sourceport="ysize_o"
+            target="Extract" targetport="ysize_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VideoObjectPlane" sourceport="pos"
+            target="init_decode_I" targetport="pos_i">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VOPsimple" sourceport="out" target="init_decode_I" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="buffer_out" sourceport="out" target="decode_I" targetport="data">
+            <data key="edge_prod">taille_flux*2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">taille_flux*2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="pos_o"
+            target="decode_I" targetport="pos_o">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="VideoObjectPlane" sourceport="VOP"
+            target="decode_I" targetport="VOP">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOP</data>
+        </edge>
+        <edge source="init_vlc_tables_I" sourceport="DCT3D_I"
+            target="decode_I" targetport="DCT3D_I">
+            <data key="edge_prod">4096</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4096</data>
+            <data key="data_type">REVERSE_EVENT</data>
+        </edge>
+        <edge source="VOPsimple" sourceport="out" target="decode_I" targetport="VOLsimple">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">struct_VOLsimple</data>
+        </edge>
+        <edge source="frame_Y" sourceport="out" target="init_decode_I" targetport="frame_Y_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_U" sourceport="out" target="init_decode_I" targetport="frame_U_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="frame_V" sourceport="out" target="init_decode_I" targetport="frame_V_i">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="init_MB_pos" sourceport="MB_pos_i"
+            target="decode_I" targetport="MB_pos_i">
+            <data key="edge_prod">NB_MB</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">NB_MB</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="decode_I" sourceport="frame_U_o" target="frame_U" targetport="in">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I" sourceport="frame_V_o" target="frame_V" targetport="in">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I" sourceport="frame_Y_o" target="frame_Y" targetport="in">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="decode_I" sourceport="pos_fin_vlc"
+            target="new_buffer" targetport="pos">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_2"
+            target="decode_I" targetport="InverseQuant_BlkXn_2">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_3"
+            target="decode_I" targetport="InverseQuant_BlkXn_3">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="tab_pos_X"
+            target="decode_I" targetport="tab_pos_X">
+            <data key="edge_prod">4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">4</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="Y" target="decode_I" targetport="Y">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="U" target="decode_I" targetport="U">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="V" target="decode_I" targetport="V">
+            <data key="edge_prod">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)/4*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="adresse"
+            target="diff_adresse" targetport="in">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diff_adresse" sourceport="out" target="decode_I" targetport="adresse">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="diff_adresse" sourceport="out" target="Extract" targetport="adresse_pic">
+            <data key="edge_prod">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">1</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="keyframes_o"
+            target="decode_I" targetport="keyframes">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+        <edge source="decode_I" sourceport="keyframes_out"
+            target="init_decode_I" targetport="keyframes_i">
+            <data key="edge_prod">2</data>
+            <data key="edge_delay">2</data>
+            <data key="edge_cons">2</data>
+            <data key="data_type">int</data>
+        </edge>
+    </graph>
+</graphml>

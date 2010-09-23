@@ -1,0 +1,9 @@
+module VLCinverseI_X4 {
+	typedef short int;
+    interface loop{
+		void VLCinverseI ( in char N, in char MB_courant, in char position, in char data
+    , in char DCT3D_I, in char InverseQuant_BlkXn_2, in char InverseQuant_BlkXn_0, in char InverseQuant_BlkXn_1, in char VOP, out char pos, out char PQF
+    , out char QFpred, out char F00pred, out char QPpred, out char prediction_direction );
+    };
+}; 
+
