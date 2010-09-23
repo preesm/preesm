@@ -218,23 +218,12 @@
             <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Extract" sourceport="RefY_o" target="viewer" targetport="RefY_i">
-            <data key="edge_prod">1</data>
+        <edge source="Extract" sourceport="Display_Extract_Image"
+            target="viewer" targetport="Display_Extract_Image">
+            <data key="edge_prod">685832</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="RefU_o" target="viewer" targetport="RefU_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="RefV_o" target="viewer" targetport="RefV_i">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
+            <data key="edge_cons">685832</data>
+            <data key="data_type">image_type</data>
         </edge>
         <edge source="VideoObjectLayer" sourceport="xsize_o"
             target="Extract" targetport="xsize_i">
@@ -335,26 +324,12 @@
             <data key="edge_cons">2</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_5"
-            target="decode_I" targetport="InverseQuant_BlkXn_5">
-            <data key="edge_prod">16</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">16</data>
-            <data key="data_type">short</data>
-        </edge>
         <edge source="init_MB_pos" sourceport="MB_pos_i"
             target="decode_I" targetport="MB_pos_i">
             <data key="edge_prod">99</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">99</data>
             <data key="data_type">int</data>
-        </edge>
-        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_4"
-            target="decode_I" targetport="InverseQuant_BlkXn_4">
-            <data key="edge_prod">16</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">16</data>
-            <data key="data_type">short</data>
         </edge>
         <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_3"
             target="decode_I" targetport="InverseQuant_BlkXn_3">
@@ -365,20 +340,6 @@
         </edge>
         <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_2"
             target="decode_I" targetport="InverseQuant_BlkXn_2">
-            <data key="edge_prod">16</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">16</data>
-            <data key="data_type">short</data>
-        </edge>
-        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_1"
-            target="decode_I" targetport="InverseQuant_BlkXn_1">
-            <data key="edge_prod">16</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">16</data>
-            <data key="data_type">short</data>
-        </edge>
-        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_0"
-            target="decode_I" targetport="InverseQuant_BlkXn_0">
             <data key="edge_prod">16</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">16</data>
@@ -415,6 +376,34 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_5"
+            target="decode_I" targetport="InverseQuant_BlkXn_5">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_4"
+            target="decode_I" targetport="InverseQuant_BlkXn_4">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_1"
+            target="decode_I" targetport="InverseQuant_BlkXn_1">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
+        </edge>
+        <edge source="init_decode_I" sourceport="InverseQuant_BlkXn_0"
+            target="decode_I" targetport="InverseQuant_BlkXn_0">
+            <data key="edge_prod">16</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">16</data>
+            <data key="data_type">short</data>
         </edge>
     </graph>
 </graphml>
