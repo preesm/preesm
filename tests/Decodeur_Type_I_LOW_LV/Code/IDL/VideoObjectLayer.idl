@@ -1,7 +1,7 @@
 module VideoObjectLayer{
 	typedef short int;
     interface loop{
-         int VideoObjectLayer (in int pos_i,in int length, in char data, out char VOLsimple, out char vop_complexity
+         int VideoObjectLayer_preesm (in int pos_i,in int length, in char data, out char VOLsimple, out char vop_complexity
          						, out int pos_o, out int xsize_o, out int ysize_o);
     };
 }; 

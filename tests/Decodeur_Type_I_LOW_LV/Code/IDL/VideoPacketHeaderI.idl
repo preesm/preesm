@@ -1,8 +1,8 @@
 module VideoPacketHeaderI {
 	typedef short int;
     interface loop{
-		void VideoPacketHeaderI ( in char data, in int pos_o, in char VOLsimple, in char VOP, in int MB_courant
-								, out char newVOP, out int VideoPacketHeader_pos, out int resync_marker, out int MB_num );
+		void VideoPacketHeaderI_preesm ( in char data, in int pos_o, in char VOLsimple, in char VOP, in int MB_courant
+								, out char newVOP, out int VideoPacketHeader_pos, out int resync_marker);
     };
 }; 
 

@@ -219,23 +219,12 @@
             <data key="edge_cons">(xpic+2*edge)*(ypic+2*edge)*3</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Extract" sourceport="Y" target="viewer" targetport="Y">
-            <data key="edge_prod">1</data>
+        <edge source="Extract" sourceport="Display_Extract_Image"
+            target="viewer" targetport="Display_Extract_Image">
+            <data key="edge_prod">685832</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="U" target="viewer" targetport="U">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Extract" sourceport="V" target="viewer" targetport="V">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">uchar</data>
+            <data key="edge_cons">685832</data>
+            <data key="data_type">image_type</data>
         </edge>
         <edge source="VideoObjectLayer" sourceport="xsize_o"
             target="Extract" targetport="xsize_i">
