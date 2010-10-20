@@ -106,5 +106,17 @@ public class ImplExportTransform implements IExporter{
 		
 	}
 
+	@Override
+	public void transform(MultiCoreArchitecture archi, TextParameters params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isArchiExporter() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }

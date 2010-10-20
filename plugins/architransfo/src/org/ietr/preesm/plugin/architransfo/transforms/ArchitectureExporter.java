@@ -33,26 +33,28 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
-package org.ietr.preesm.plugin.exportXml;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
+package org.ietr.preesm.plugin.architransfo.transforms;
+
+import java.util.logging.Level;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.writer.DesignWriter;
+import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
-import org.sdf4j.exporter.GMLSDFExporter;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-
-public class SDF4JGMLExporter implements IExporter {
+/**
+ * Exporter for IP-XACT multicore architectures
+ * 
+ * @author mpelcat
+ * 
+ */
+public class ArchitectureExporter implements IExporter {
 
 	@Override
 	public boolean isDAGExporter() {
@@ -61,57 +63,40 @@ public class SDF4JGMLExporter implements IExporter {
 
 	@Override
 	public boolean isSDFExporter() {
-		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void transform(AbstractGraph algorithm, TextParameters params) {
-		GMLSDFExporter exporter = new GMLSDFExporter();
-		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		IPath xmlPath = new Path(params.getVariable("path"));
-		if(!xmlPath.getFileExtension().equals(".graphml")){
-			xmlPath.addFileExtension(".graphml");
-		}
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-
-		IFile iFile = workspace.getRoot().getFile(xmlPath);
-		try {
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			exporter.export(clone, iFile.getRawLocation().toOSString());
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
-	}
-	
-	public static void main(String [] args){
-		SDFGraph algorithm = GMLSDFExporter.createTestComGraph();
-		GMLSDFExporter exporter = new GMLSDFExporter();
-		exporter.export(algorithm, "D:\\test.graphml");
-	}
-
-	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi,
-			org.ietr.preesm.core.scenario.IScenario scenario,
-			TextParameters params) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void transform(MultiCoreArchitecture archi, TextParameters params) {
-		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
 	public boolean isArchiExporter() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
+
+	@Override
+	public void transform(MultiCoreArchitecture archi, TextParameters params) {
+		
+		String pathKey = "path";
+		if(params.hasVariable(pathKey)){
+		DesignWriter writer = new DesignWriter(archi);
+		writer.generateArchitectureDOM();
+		writer.writeDom(params.getVariable(pathKey));
+		}
+		else{
+			PreesmLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void transform(AbstractGraph algorithm, TextParameters params) {
+		
+	}
+
+	@Override
+	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
+			MultiCoreArchitecture archi, IScenario scenario,
+			TextParameters params) {
+		
+	}
+
 
 }

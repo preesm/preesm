@@ -302,7 +302,7 @@ public abstract class AbstractAbc implements IAbc {
 			PreesmLogger.getLogger().log(Level.SEVERE,
 					"Empty mapping group for vertex " + dagvertex.getName());
 		}
-
+		
 		// Only the mapping of the main vertex of the group is chosen by the
 		// mapping algorithm.
 		// Other mappings are forced or adviced by the group

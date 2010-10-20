@@ -34,43 +34,62 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.task;
+package org.ietr.preesm.plugin.architransfo.transforms;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
-import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.core.task.IArchiTransformation;
+import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.task.TaskResult;
+import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
+import org.sdf4j.model.visitors.SDF4JException;
+import org.sdf4j.model.visitors.VisitorOutput;
 
+/**
+ * Flattening the hierarchy of a given architecture
+ * 
+ * @author mpelcat
+ * 
+ */
+public class HierarchyFlattening implements IArchiTransformation {
 
-public interface IExporter extends ITask{
+	@Override
+	public TaskResult transform(MultiCoreArchitecture archi,
+			TextParameters params) throws PreesmException {
+		String depthS = params.getVariable("depth");
 
-	/**
-	 * Method to export a given graph using the given parameters
-	 * @param algorithm The algorithm to export
-	 * @param params The parameters rulling the exportation
-	 */
-	@SuppressWarnings("rawtypes") 
-	public void transform(AbstractGraph algorithm, TextParameters params);
+		int depth;
+		if (depthS != null) {
+			depth = Integer.decode(depthS);
+		} else {
+			depth = 1;
+		}
 
-	/**
-	 * Method to export a given architecture using the given parameters
-	 * @param archi The architecture to export
-	 * @param params The parameters rulling the exportation
-	 */
-	public void transform(MultiCoreArchitecture archi, TextParameters params);
+		Logger logger = PreesmLogger.getLogger();
+		logger.setLevel(Level.FINEST);
+		VisitorOutput.setLogger(logger);
 
-	/**
-	 * Method to export a given graph using the given parameters
-	 * @param algorithm The algorithm to export
-	 * @param params The parameters rulling the exportation
-	 */
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, IScenario scenario, TextParameters params);
-	
-	public boolean isSDFExporter();
-	
-	public boolean isDAGExporter();
-	
-	public boolean isArchiExporter();
+		logger.log(Level.FINER, "flattening architecture " + archi.getName()
+				+ " at level " + depth);
+		ArchiHierarchyFlattening flatHier = new ArchiHierarchyFlattening();
+		VisitorOutput.setLogger(logger);
+
+		try {
+			flatHier.flattenGraph(archi.clone(), depth);
+		} catch (SDF4JException e) {
+			throw (new PreesmException(e.getMessage()));
+		}
+
+		logger.log(Level.FINER, "flattening complete");
+		MultiCoreArchitecture resultGraph = (MultiCoreArchitecture) flatHier.getOutput();
+
+		TaskResult result = new TaskResult();
+		result.setArchitecture(resultGraph);
+		// result.setArchitecture(archi);
+		return result;
+	}
 
 }

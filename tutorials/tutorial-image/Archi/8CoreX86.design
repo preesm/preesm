@@ -12,6 +12,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -21,6 +22,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -30,6 +32,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -39,6 +42,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -48,6 +52,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -57,6 +62,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -66,6 +72,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
@@ -75,6 +82,7 @@
             <spirit:configurableElementValues>
                 <spirit:configurableElementValue spirit:referenceId="componentType">operator</spirit:configurableElementValue>
                 <spirit:configurableElementValue spirit:referenceId="refinement"/>
+                <spirit:configurableElementValue spirit:referenceId="dataCopySpeed">-1</spirit:configurableElementValue>
             </spirit:configurableElementValues>
         </spirit:componentInstance>
         <spirit:componentInstance>
