@@ -104,7 +104,6 @@ public class NewTimeKeeper implements Observer {
 	 * timings need recalculation
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void update(Observable arg0, Object arg1) {
 		if (arg1 != null) {
 			if (arg1 instanceof Set) {

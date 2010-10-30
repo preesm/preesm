@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -52,10 +52,12 @@ import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.list.InitialLists;
 import org.ietr.preesm.plugin.mapper.algo.list.KwokListScheduler;
+import org.ietr.preesm.plugin.mapper.exporter.DAGExporter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.plugin.mapper.params.ListSchedulingParameters;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -92,10 +94,14 @@ public class ListSchedulingTransformation extends AbstractMapping {
 				monitor);
 		TaskResult result = new TaskResult();
 
+		ListSchedulingParameters listParams = new ListSchedulingParameters(textParameters);
 		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
+		
+		//DAGExporter exporter = new DAGExporter();
+		//exporter.export(dag, "D:\\Projets\\LTE\\PreesmProjects\\MPEG4P2_Encoder_Preesm\\DAG\\test.graphml");
 
 		// calculates the DAG span length on the architecture main operator (the
 		// tasks that can

@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -107,7 +107,7 @@ public class BestCostEditorInput implements IEditorInput {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked") 
+	@SuppressWarnings("rawtypes") 
 	@Override
 	public Object getAdapter(Class adapter) {
 		// TODO Auto-generated method stub

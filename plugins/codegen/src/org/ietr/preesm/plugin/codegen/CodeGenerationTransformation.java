@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -65,6 +65,7 @@ import org.sdf4j.model.visitors.SDF4JException;
  * Code generation.
  * 
  * @author Matthieu Wipliez
+ * @author mpelcat
  */
 public class CodeGenerationTransformation implements ICodeGeneration {
 
@@ -133,13 +134,13 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		}
 
 		if (!parameters.getBooleanVariable("jobPosting")) {
-			// Classical static code generation
+			// Typical static code generation
 			SourceFileList list = new SourceFileList();
 			CodeGenerator codegen = new CodeGenerator(list);
 			// Generate source files
 			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
 			
-			// Generates the code in xml and translates it to c
+			// Generates the code in xml and translates it to c using XSLT sheets
 			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
 					xslPath);
 			printerChooser.printList(list);

@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -58,12 +58,14 @@ public class PreesmEvaluator implements EvaluatorI {
 				return evaluator.eval((Node) varNode.getVar().getValue());
 			} else if (varNode.getVar().getValue() instanceof Parameter) {
 				Parameter param = (Parameter) varNode.getVar().getValue();
+				
+				if (param == null) {
+					throw new ParseException();
+				}
+				
 				while (param.getValue() != null
 						&& param.getValue() instanceof Parameter) {
 					param = (Parameter) param.getValue();
-				}
-				if (param == null) {
-					throw new ParseException();
 				}
 				return evaluator.eval((Node) param.getValue());
 			} else {

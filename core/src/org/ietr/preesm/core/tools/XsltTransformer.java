@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -58,17 +58,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

@@ -15,7 +15,6 @@ import org.sdf4j.model.psdf.parameters.DynamicParameterRange;
 import org.sdf4j.model.psdf.parameters.PSDFDynamicParameter;
 import org.sdf4j.model.psdf.types.PSDFEdgePropertyType;
 import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.esdf.SDFInitVertex;
 import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
 
 public class BufferToolBox {

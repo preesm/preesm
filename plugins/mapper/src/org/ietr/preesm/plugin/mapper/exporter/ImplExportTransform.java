@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -74,7 +74,7 @@ public class ImplExportTransform implements IExporter{
 
 		MapperDAG mapperDag = (MapperDAG)dag;
 		
-		GMLMapperDAGExporter exporter = new GMLMapperDAGExporter() ;
+		ImplementationExporter exporter = new ImplementationExporter() ;
 		MapperDAG clone = mapperDag.clone() ;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iGraphMLFile = workspace.getRoot().getFile(path);

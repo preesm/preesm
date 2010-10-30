@@ -7,13 +7,9 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.logging.Level;
 
-import org.ietr.preesm.core.tools.PreesmLogger;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 
 /**
  * Listening for mouse events to refresh correctly the awt display

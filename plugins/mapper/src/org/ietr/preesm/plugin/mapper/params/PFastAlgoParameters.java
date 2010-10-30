@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -47,9 +47,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
  * @author pmenuet
  * @author mpelcat
  */
-public class PFastAlgoParameters {
-
-	protected TextParameters textParameters = null;
+public class PFastAlgoParameters extends SchedulingParameters {
 	
 	/**
 	 * This variable is the one which fix the number of Nodes necessary for each
@@ -89,6 +87,8 @@ public class PFastAlgoParameters {
 	 */
 
 	public PFastAlgoParameters(TextParameters textParameters) {
+		super(textParameters);
+		
 		this.nodesMin = textParameters.getIntVariable("nodesMin");
 		this.procNumber = textParameters.getIntVariable("procNumber");
 		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
@@ -114,10 +114,8 @@ public class PFastAlgoParameters {
 
 	public PFastAlgoParameters(int fastNumber, int fastTime,int fastLocalSearchTime, boolean displaySolutions,
 			int nodesmin, int procNumber) {
-		textParameters.addVariable("nodesMin", nodesmin);
-		textParameters.addVariable("procNumber", procNumber);
-		textParameters.addVariable("fastTime", fastTime);
-		textParameters.addVariable("fastNumber", fastNumber);
+		// DAG is not exported now so DAGExportPath = null
+		super((String)null);
 		
 		this.nodesMin = nodesmin;
 		this.procNumber = procNumber;

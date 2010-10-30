@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -47,9 +47,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
  * @author pmenuet
  * @author mpelcat
  */
-public class PGeneticAlgoParameters {
-
-	protected TextParameters textParameters = null;
+public class PGeneticAlgoParameters extends SchedulingParameters {
 
 	// Number of individuals the algorithm will keep in the best population
 	private int populationSize;
@@ -83,6 +81,7 @@ public class PGeneticAlgoParameters {
 	 */
 
 	public PGeneticAlgoParameters(TextParameters textParameters) {
+		super(textParameters);
 
 		this.generationNumber = textParameters
 				.getIntVariable("generationNumber");
@@ -107,28 +106,6 @@ public class PGeneticAlgoParameters {
 				.log(
 						Level.INFO,
 						"The Genetic algo parameters are: generationNumber; populationSize; procNumber; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
-	}
-
-	public PGeneticAlgoParameters(int fastNumber,
-			int fastTime,int fastLocalSearchTime, int generationNumber,
-			int populationSize, int procNumber, boolean pfastused2makepopulation) {
-
-		textParameters.addVariable("generationNumber", generationNumber);
-		textParameters.addVariable("populationSize", populationSize);
-		textParameters.addVariable("processorNumber", procNumber);
-		textParameters.addVariable("pfastused2makepopulation",
-				pfastused2makepopulation);
-		textParameters.addVariable("fastTime",
-				fastTime);
-		textParameters.addVariable("fastNumber", fastNumber);
-
-		this.generationNumber = generationNumber;
-		this.populationSize = populationSize;
-		this.procNumber = procNumber;
-		this.pfastused2makepopulation = pfastused2makepopulation;
-		this.fastTime = fastTime;
-		this.fastLocalSearchTime = fastLocalSearchTime;
-		this.fastNumber = fastNumber;
 	}
 
 	/**

@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -43,10 +43,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
-import org.ietr.preesm.core.codegen.Assignment;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.factories.FunctionArgumentFactory;
 import org.ietr.preesm.core.codegen.model.CodeGenArgument;
 import org.ietr.preesm.core.codegen.model.CodeGenParameter;
@@ -84,7 +82,6 @@ public class UserFunctionCall extends AbstractCodeElement {
 		callParameters = new Vector<FunctionArgument>();
 	}
 
-	@SuppressWarnings("unchecked")
 	public UserFunctionCall(CodeGenSDFTokenInitVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSectionType section,
 			boolean ignoreSendReceive) {

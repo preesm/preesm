@@ -2,8 +2,8 @@ package org.ietr.preesm.core.codegen.buffer;
 
 import java.util.List;
 
-import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
+import org.ietr.preesm.core.codegen.types.DataType;
 import org.sdf4j.model.sdf.SDFEdge;
 
 public interface IBufferAllocator {

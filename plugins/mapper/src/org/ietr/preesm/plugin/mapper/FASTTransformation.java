@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -57,9 +57,6 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.sdf4j.demo.DirectedAcyclicGraphGeneratorDemo;
-import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -94,15 +91,6 @@ public class FASTTransformation extends AbstractMapping {
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
-		
-		// Displays the DAG
-		if(false) {
-			TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
-			
-			while(it.hasNext()){
-				PreesmLogger.getLogger().log(Level.INFO,"topo " + it.next());
-			}
-		}
 		
 		if(dag == null){
 			throw(new PreesmException(" graph can't be scheduled, check console messages"));

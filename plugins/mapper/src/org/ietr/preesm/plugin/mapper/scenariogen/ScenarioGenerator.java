@@ -59,7 +59,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 
 			AlgorithmRetriever algoR = new AlgorithmRetriever(scenario
 					.getAlgorithmURL());
-			if (algoR == null) {
+			if (algoR.getAlgorithm() == null) {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
@@ -69,7 +69,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 
 			ArchitectureRetriever archiR = new ArchitectureRetriever(scenario
 					.getArchitectureURL());
-			if (archiR == null) {
+			if (archiR.getArchitecture() == null) {
 				PreesmLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;

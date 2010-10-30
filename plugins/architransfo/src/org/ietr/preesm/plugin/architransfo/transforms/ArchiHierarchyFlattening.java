@@ -219,13 +219,13 @@ public class ArchiHierarchyFlattening extends
 		output = archi;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void treatSinkInterface(AbstractVertex port,
 			AbstractGraph parentGraph, int depth)
 			throws InvalidExpressionException {
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void treatSourceInterface(AbstractVertex port,
 			AbstractGraph parentGraph, int depth)
 			throws InvalidExpressionException {

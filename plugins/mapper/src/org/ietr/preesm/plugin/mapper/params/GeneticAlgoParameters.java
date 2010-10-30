@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -48,9 +48,7 @@ import org.ietr.preesm.core.tools.PreesmLogger;
  * @author mpelcat
  */
 
-public class GeneticAlgoParameters {
-
-	protected TextParameters textParameters = null;
+public class GeneticAlgoParameters extends SchedulingParameters {
 
 	// Number of individuals in the population
 	private int populationSize;
@@ -82,6 +80,7 @@ public class GeneticAlgoParameters {
 	 */
 
 	public GeneticAlgoParameters(TextParameters textParameters) {
+		super(textParameters);
 
 		this.generationNumber = textParameters
 				.getIntVariable("generationNumber");
@@ -105,26 +104,6 @@ public class GeneticAlgoParameters {
 				.log(
 						Level.INFO,
 						"The Genetic algo parameters are: generationNumber; populationSize; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
-	}
-	
-	public GeneticAlgoParameters(int fastNumber, int fastTime,int fastLocalSearchTime,
-			int generationNumber, int populationSize,
-			boolean pfastused2makepopulation) {
-
-		textParameters.addVariable("generationNumber", generationNumber);
-		textParameters.addVariable("populationSize", populationSize);
-		textParameters.addVariable("pfastused2makepopulation",
-				pfastused2makepopulation);
-		textParameters.addVariable("fastTime",
-				fastTime);
-		textParameters.addVariable("fastNumber", fastNumber);
-
-		this.generationNumber = generationNumber;
-		this.populationSize = populationSize;
-		this.pfastused2makepopulation = pfastused2makepopulation;
-		this.fastTime = fastTime;
-		this.fastLocalSearchTime = fastLocalSearchTime;
-		this.fastNumber = fastNumber;
 	}
 
 	/**

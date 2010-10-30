@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -36,10 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
-import java.util.logging.Level;
-
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
  * Parameters for list scheduling
@@ -47,15 +44,11 @@ import org.ietr.preesm.core.tools.PreesmLogger;
  * @author pmenuet
  * @author mpelcat
  */
-public class ListSchedulingParameters {
+public class ListSchedulingParameters extends SchedulingParameters {
 
 	public ListSchedulingParameters(TextParameters textParameters) {
-		PreesmLogger.getLogger().log(Level.INFO,
-				"There is no list scheduling parameter");
+		super(textParameters);
 
-	}
-
-	public ListSchedulingParameters() {
 	}
 
 }

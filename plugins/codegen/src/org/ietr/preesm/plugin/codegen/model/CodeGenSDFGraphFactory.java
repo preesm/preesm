@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Peng Cheng Mu, Jean-François Nezan, Mickaël Raulet
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
-[mwipliez,jpiat,mpelcat,pmu,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -93,6 +93,9 @@ import org.sdf4j.model.sdf.visitors.DAGTransformation;
 import org.sdf4j.model.visitors.SDF4JException;
 
 /**
+ * Code generation necessitates a specific model preparing the different types of vertices for
+ * code generation
+ *  
  * @author jpiat
  */
 public class CodeGenSDFGraphFactory {
@@ -101,44 +104,6 @@ public class CodeGenSDFGraphFactory {
 
 	public CodeGenSDFGraphFactory(IFile parentAlgoFile) {
 		mainFile = parentAlgoFile;
-	}
-
-	public static void main(String[] args) {
-		SDFtoDAGDemo applet2 = new SDFtoDAGDemo();
-		GMLSDFImporter importer = new GMLSDFImporter();
-		// SDFGraph demoGraph = createTestComGraph();
-		SDFGraph demoGraph;
-		try {
-
-			demoGraph = importer
-					.parse(new File(
-							"D:\\Preesm\\trunk\\tests\\SmallTestCase\\Algo\\TestCase.graphml"));
-
-			/*
-			 * demoGraph = importer.parse(new File(
-			 * "D:\\Preesm\\trunk\\tests\\UMTS\\Tx_UMTS.graphml"));
-			 */
-			DAGTransformation<DirectedAcyclicGraph> dageur = new DAGTransformation<DirectedAcyclicGraph>(
-					new DirectedAcyclicGraph(), new DAGVertexFactory());
-			SDFGraph dag = demoGraph.clone();
-			dag.accept(dageur);
-			applet2.init(dageur.getOutput());
-			/*
-			 * CodeGenSDFGraphFactory codeGenGraphFactory = new
-			 * CodeGenSDFGraphFactory(); CodeGenSDFGraph codeGenGraph =
-			 * codeGenGraphFactory.create(dageur.getOutput());
-			 * System.out.println(codeGenGraph.toString());
-			 */
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SDF4JException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -391,7 +356,7 @@ public class CodeGenSDFGraphFactory {
 		return output;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public CodeGenSDFGraph create(PSDFGraph sdf)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		clusterizeStronglyConnected(sdf); // Clusterize strongly connected
@@ -841,7 +806,7 @@ public class CodeGenSDFGraphFactory {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void treatSinksInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
@@ -888,7 +853,7 @@ public class CodeGenSDFGraphFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void treatSourcesInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
