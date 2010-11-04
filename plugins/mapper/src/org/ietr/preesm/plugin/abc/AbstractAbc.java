@@ -361,6 +361,10 @@ public abstract class AbstractAbc implements IAbc {
 			boolean updateRank) {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
+		PreesmLogger.getLogger().log(
+				Level.FINE, "mapping " + dagvertex.toString() + " on "
+						+ operator.toString());
+		
 		if (operator != Operator.NO_COMPONENT) {
 			ImplementationVertexProperty dagprop = dagvertex
 					.getImplementationVertexProperty();

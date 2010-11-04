@@ -103,8 +103,7 @@ public class XsltTransformer {
 		Path relativePath = new Path(fileName);
 		final IPath folder = relativePath.removeLastSegments(1);
 		IFile file = workspace.getRoot().getFile(relativePath);
-		TransformerFactory factory = TransformerFactory.newInstance(
-				"net.sf.saxon.TransformerFactoryImpl", null);
+		TransformerFactory factory = TransformerFactory.newInstance();
 		StreamSource xsltSource;
 		try {
 			xsltSource = new StreamSource(file.getContents());
