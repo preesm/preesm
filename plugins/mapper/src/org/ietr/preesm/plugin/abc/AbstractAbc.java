@@ -119,7 +119,7 @@ public abstract class AbstractAbc implements IAbc {
 	protected IScenario scenario;
 
 	/**
-	 * Gets the architecture simulator from a simulator type
+	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, IScenario scenario) {
@@ -157,7 +157,7 @@ public abstract class AbstractAbc implements IAbc {
 		// Set of vertices to ignore while populating new mapping groups
 		Set<MapperDAGVertex> alreadyInMappingGroups = new HashSet<MapperDAGVertex>();
 		this.mappingGroups = new MappingGroupSet();
-		
+			
 		// Initializing the mapping groups. Associating each normal vertex
 		// with its special vertices
 		for (DAGVertex v : dag.vertexSet()) {
@@ -192,6 +192,7 @@ public abstract class AbstractAbc implements IAbc {
 				PreesmLogger.getLogger().log(Level.SEVERE, v.toString());
 			}
 		}
+		
 		PreesmLogger.getLogger().log(Level.FINE, mappingGroups.toString());
 
 		// implementation is a duplicate from dag

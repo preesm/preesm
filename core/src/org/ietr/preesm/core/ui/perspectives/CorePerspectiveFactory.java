@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.core.ui.perspectives;
 
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -61,7 +62,7 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 				editorArea);
 			
 			// Adds the files navigator
-			topLeft.addView(IPageLayout.ID_RES_NAV);
+			topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
 
 			// Bottom left: Outline view and Property Sheet view
 			IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.BOTTOM, 0.75f,
@@ -71,6 +72,9 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 			bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
 			
 			bottomRight.addView("org.eclipse.ui.console.ConsoleView");
+			
+			// Adds the Run action set
+			layout.addActionSet("org.eclipse.debug.ui.launchActionSet");
 			
 		}
 

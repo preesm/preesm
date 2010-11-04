@@ -59,6 +59,7 @@
       <wizard
             category="org.ietr.preesm.core.category"
             class="org.ietr.preesm.core.ui.wizards.NewPreesmProjectWizard"
+            finalPerspective="org.ietr.preesm.core.ui.perspective"
             hasPages="true"
             icon="icons/preesmProject.png"
             id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
@@ -171,25 +172,45 @@
       </perspectiveExtension>
    </extension>
    <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            description="Core action set"
-            id="org.ietr.preesm.core.ui.actionSet"
-            label="Core action set"
-            visible="true">
-         <action
-               class="org.eclipse.debug.internal.ui.actions.RunToolbarAction"
-               disabledIcon="icons/preesm3mini.PNG"
-               helpContextId="run_action_context"
-               hoverIcon="icons/preesm3mini.PNG"
-               icon="icons/preesm3mini.PNG"
-               id="org.ietr.preesm.core.ui.action.run"
-               label="Execute PREESM Workflow"
-               mode="FORCE_TEXT"
-               style="pulldown"
-               toolbarPath="debug">
-         </action>
-      </actionSet>
+         id="albert"
+         name="albert"
+         point="org.eclipse.ui.ide.resourceFilters">
+      <filter
+            pattern="*.layout"
+            selected="true">
+         <description>
+            albert
+         </description>
+      </filter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonFilter
+            activeByDefault="true"
+            class="org.ietr.preesm.core.ui.ProjectExplorerFilter"
+            description="Filters the *.layout files"
+            id="org.ietr.preesm.core.layoutfilefilter"
+            name="LayoutFileFilter"
+            visibleInUI="true">
+      </commonFilter>
+   </extension>
+   <extension
+         id="org.ietr.preesm.ui.projectexplorerviewer"
+         name="org.ietr.preesm.ui.projectexplorerviewer"
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.core.layoutfilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
    </extension>
 
 

@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.ui.forms,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
- org.junit
+ org.junit,
+ org.eclipse.ui.navigator
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jgrapht-jdk1.5.jar,
