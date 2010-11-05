@@ -48,7 +48,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorRegistry;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -67,6 +72,7 @@ import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.types.IMapperAbc;
+import org.ietr.preesm.core.workflow.runnables.OpenWorkflowOutput;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
@@ -75,6 +81,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.ietr.preesm.core.workflow.runnables.SaveOpenedFiles;
 
 
 /**
@@ -151,6 +158,10 @@ public class Workflow {
 		IMapperAbc abc = null; // This input type is known from the sender and the receiver
 
 		PreesmLogger.getLogger().log(Level.INFO,"Starting workflow execution");
+		
+		PreesmLogger.getLogger().log(Level.INFO,"Saving all opened files");
+		
+		SaveOpenedFiles();
 		
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -352,5 +363,12 @@ public class Workflow {
 		}
 
 		return workspace;
+	}
+	
+	/**
+	 * Saves all files opened in the workbench
+	 */
+	private void SaveOpenedFiles(){
+		PlatformUI.getWorkbench().getDisplay().syncExec(new SaveOpenedFiles());
 	}
 }

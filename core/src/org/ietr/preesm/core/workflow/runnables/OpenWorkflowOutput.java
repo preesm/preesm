@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
  
-package org.ietr.preesm.core.workflow;
+package org.ietr.preesm.core.workflow.runnables;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;

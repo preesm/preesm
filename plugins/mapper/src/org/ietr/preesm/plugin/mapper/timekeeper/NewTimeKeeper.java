@@ -270,7 +270,7 @@ public class NewTimeKeeper implements Observer {
 
 				calculateTLevel(dirtyElt);
 				PreesmLogger.getLogger().log(
-						Level.INFO,
+						Level.SEVERE,
 						"tLevel unavailable for vertex " + inputElt
 								+ ". Lacking information on predecessor "
 								+ vertex + ".");
