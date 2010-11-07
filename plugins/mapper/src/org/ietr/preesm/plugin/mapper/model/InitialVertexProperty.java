@@ -111,26 +111,6 @@ public class InitialVertexProperty {
 		this.operators.add(operator);
 	}
 
-	/**
-	 * 
-	 */
-	public void removeOperatorIfPredNotMapable(Operator operator) {
-		boolean predMapable = isPredMapable(operator);
-		if (!predMapable) {
-			this.operators.remove(operator);
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public void removeOperatorIfSuccNotMapable(Operator operator) {
-		boolean succMapable = isSuccMapable(operator);
-		if (!succMapable) {
-			this.operators.remove(operator);
-		}
-	}
-
 	public InitialVertexProperty clone(MapperDAGVertex parentVertex) {
 
 		InitialVertexProperty property = new InitialVertexProperty();
@@ -163,6 +143,21 @@ public class InitialVertexProperty {
 	 */
 	public List<Operator> getInitialOperatorList() {
 		return operators;
+	}
+	
+	/**
+	 * Checks in the vertex initial properties if it can be mapped on the
+	 * given operator. For special vertices, the predecessors and successor
+	 * mapping possibilities are studied
+	 */
+	public boolean isMapable(Operator operator) {
+
+		for (Operator op : operators) {
+			if (op.equals(operator))
+				return true;
+		}
+
+		return false;
 	}
 
 	public MapperDAGVertex getParentVertex() {
@@ -295,21 +290,6 @@ public class InitialVertexProperty {
 
 	public List<Timing> getTimings() {
 		return timings;
-	}
-
-	/**
-	 * Checks in the vertex initial properties if it can be mapped on the
-	 * given operator. For special vertices, the predecessors and successor
-	 * mapping possibilities are studied
-	 */
-	public boolean isMapable(Operator operator) {
-
-		for (Operator op : operators) {
-			if (op.equals(operator))
-				return true;
-		}
-
-		return false;
 	}
 
 	/**

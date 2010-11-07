@@ -285,7 +285,7 @@ public class FastAlgorithm extends Observable {
 
 				// step 9 TODO: check if ok to use mapWithGroup
 				//simulator.map(currentvertex, operatortest, false);
-				simulator.mapWithGroup(currentvertex, operatortest,false);
+				simulator.map(currentvertex, operatortest,false);
 
 				// step 10
 				simulator.updateFinalCosts();
@@ -294,7 +294,7 @@ public class FastAlgorithm extends Observable {
 				if (newSL >= SL) {
 					//TODO: check if ok to use mapWithGroup
 					//simulator.map(currentvertex, operatorprec, false);
-					simulator.mapWithGroup(currentvertex, operatorprec,false);
+					simulator.map(currentvertex, operatorprec,false);
 					simulator.updateFinalCosts();
 					localCounter++;
 				} else {

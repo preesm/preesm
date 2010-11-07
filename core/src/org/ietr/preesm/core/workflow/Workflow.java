@@ -81,7 +81,6 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.ietr.preesm.core.workflow.runnables.SaveOpenedFiles;
 
 
 /**
@@ -160,8 +159,6 @@ public class Workflow {
 		PreesmLogger.getLogger().log(Level.INFO,"Starting workflow execution");
 		
 		PreesmLogger.getLogger().log(Level.INFO,"Saving all opened files");
-		
-		SaveOpenedFiles();
 		
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -363,12 +360,5 @@ public class Workflow {
 		}
 
 		return workspace;
-	}
-	
-	/**
-	 * Saves all files opened in the workbench
-	 */
-	private void SaveOpenedFiles(){
-		PlatformUI.getWorkbench().getDisplay().syncExec(new SaveOpenedFiles());
 	}
 }

@@ -127,8 +127,8 @@
             <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:variable |sourceCode:constant | sourceCode:bufferAtIndex"/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
-        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+        <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-2)"/>
+        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special assignment, assign a variable a value -->
@@ -146,8 +146,8 @@
             <xsl:apply-templates select="sourceCode:inputBuffers | sourceCode:outputBuffers "/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
-        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+        <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-1)"/>
+        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special call like broadcast, fork and join -->

@@ -33,11 +33,13 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -61,6 +63,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -70,7 +73,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * This class provides methods to transform an XML file or a DOM element to a string
+ * This class provides methods to transform an XML file or a DOM element to a
+ * string
  * 
  * @author Matthieu Wipliez
  * @author mpelcat
@@ -83,13 +87,13 @@ public class XsltTransformer {
 	/**
 	 * Creates a new {@link XsltTransform}
 	 */
-	public XsltTransformer(){
+	public XsltTransformer() {
 		super();
 	}
 
 	/**
-	 * Sets an XSLT stylesheet contained
-	 * in the file whose name is <code>fileName</code>.
+	 * Sets an XSLT stylesheet contained in the file whose name is
+	 * <code>fileName</code>.
 	 * 
 	 * @param fileName
 	 *            The XSLT stylesheet file name.
@@ -99,102 +103,42 @@ public class XsltTransformer {
 	 */
 	public boolean setXSLFile(String fileName)
 			throws TransformerConfigurationException {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		Path relativePath = new Path(fileName);
-		final IPath folder = relativePath.removeLastSegments(1);
-		IFile file = workspace.getRoot().getFile(relativePath);
+
 		TransformerFactory factory = TransformerFactory.newInstance();
-		StreamSource xsltSource;
-		try {
-			xsltSource = new StreamSource(file.getContents());
-			factory.setURIResolver(new URIResolver() {
-				@Override
-				public Source resolve(String href, String base)
-						throws TransformerException {
-					try {
-						// What we are doing here is solving the "href" URI and get
-						// an InputStream from it.
-						IPath path = new Path(href);
-						InputStream is;
 
-						if (path.isAbsolute()) {
-							// absolute path, we assume it refers to something in
-							// the file system (an absolute path in the workspace
-							// would not make sense anyway).
+		Path xslFilePath = new Path(fileName);
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IFile xslFile = root.getFile(xslFilePath);
+		String xslFileLoc = xslFile.getLocation().toOSString();
+		transformer = factory.newTransformer(new StreamSource(xslFileLoc));
 
-							// Strangely enough, the toString method seems to be the
-							// only one that returns a URI accepted by the URI class
-							String str = path.toString();
-							try {
-								URI uri = new URI(str);
-								is = new FileInputStream(new File(uri));
-							} catch (URISyntaxException e) {
-								throw new TransformerException(e);
-							}
-						} else {
-							// relative path, a file that is relative to the
-							// "folder" path in this bundle.
-							path = folder.append(path);
-							//FileLocator.
-							//is = FileLocator.openStream(bundle, path, false);
-							is = new FileInputStream(ResourcesPlugin.getWorkspace().getRoot().getFile(path).getRawLocation().toFile());
-						}
-
-						return new StreamSource(is);
-					} catch (IOException e) {
-						throw new TransformerException(e);
-					}
-				}
-
-			});
-			transformer = factory.newTransformer(xsltSource);
-		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-			return false;
-		}
-		
 		return true;
 	}
 
 	/**
 	 * Transforms the given input file and generates the output file
 	 */
-	public void transformFileToFile(String sourceFilePath, String destFilePath)  {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	public void transformFileToFile(String sourceFilePath, String destFilePath) {
 
-		Path relativePath = new Path(sourceFilePath);
-		IFile inputFile = null;
-		Document source = null;
-		DocumentBuilder db = null;
-		
+		Path osSourceFilePath = new Path(sourceFilePath);
+		Path osDestFilePath = new Path(destFilePath);
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IFile sourceFile = root.getFile(osSourceFilePath);
+		IFile destFile = root.getFile(osDestFilePath);
+		String sourceFileLoc = sourceFile.getLocation().toOSString();
+		String destFileLoc = destFile.getLocation().toOSString();
+
 		try {
-			ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-			inputFile = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-			// Using factory get an instance of document builder
-			db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			source = db.parse(inputFile.getContents());
-
-		} catch (ParserConfigurationException pce) {
-			PreesmLogger.getLogger().log(Level.SEVERE,pce.getMessage());
-		} catch (SAXException se) {
-			PreesmLogger.getLogger().log(Level.SEVERE,se.getMessage());
-		} catch (IOException ioe) {
-			PreesmLogger.getLogger().log(Level.SEVERE,ioe.getMessage());
-		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-		}
-
-		IFile outputIFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(destFilePath));
-		File outputFile= new File(outputIFile.getLocation().toOSString());
-		Source xmlSource = new DOMSource(source.getDocumentElement());
-		Result outputTarget = new StreamResult(outputFile);
-		
-		try {
-			transformer.transform(xmlSource, outputTarget);
-		} catch (TransformerException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+			transformer.transform(new StreamSource(sourceFileLoc),
+					new StreamResult(new FileOutputStream(destFileLoc)));
+		} catch (FileNotFoundException e1) {
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"Problem finding files for XSL transfo ("
+							+ osSourceFilePath, "," + osDestFilePath + ")");
+		} catch (TransformerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 	}

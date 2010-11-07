@@ -52,6 +52,12 @@ public class ImplementationVertexProperty {
 	private ArchitectureComponent effectiveComponent;
 
 	/**
+	 * This object is shared between all vertices that share relative constraints.
+	 */
+	private RelativeConstraint relativeConstraint = null;
+
+
+	/**
 	 * Corresponding vertex
 	 */
 	private MapperDAGVertex parentVertex;
@@ -69,6 +75,14 @@ public class ImplementationVertexProperty {
 		schedulingTotalOrder = -1;
 	}
 
+	public RelativeConstraint getRelativeConstraint() {
+		return relativeConstraint;
+	}
+
+	public void setRelativeConstraint(RelativeConstraint relativeConstraints) {
+		this.relativeConstraint = relativeConstraints;
+	}
+	
 	@Override
 	public ImplementationVertexProperty clone() {
 

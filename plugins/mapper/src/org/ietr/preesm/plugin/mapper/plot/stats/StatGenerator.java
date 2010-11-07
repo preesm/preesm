@@ -124,7 +124,7 @@ public class StatGenerator {
 
 				// Looks for an operator able to execute currentvertex (preferably
 				// the given operator)
-				Operator adequateOp = abc.findOperatorMappingGroup((MapperDAGVertex)vertex, mainOp);
+				Operator adequateOp = abc.findOperator((MapperDAGVertex)vertex, mainOp);
 				
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
 						.getTime(adequateOp);

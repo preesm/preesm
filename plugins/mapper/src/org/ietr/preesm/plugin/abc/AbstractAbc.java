@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -56,18 +57,19 @@ import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
+import org.ietr.preesm.plugin.mapper.model.RelativeConstraint;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.MappingGroup;
-import org.ietr.preesm.plugin.mapper.model.MappingGroupSet;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.sdf.esdf.SDFEndVertex;
+import org.sdf4j.model.sdf.esdf.SDFInitVertex;
 
 /**
  * An architecture simulator calculates costs for a given partial or total
@@ -91,11 +93,6 @@ public abstract class AbstractAbc implements IAbc {
 	 * Current directed acyclic graph. It is the external dag graph
 	 */
 	protected MapperDAG dag;
-
-	/**
-	 * Groups of vertices. Each group must be mapped on a single operator.
-	 */
-	protected MappingGroupSet mappingGroups;
 
 	/**
 	 * Current implementation: the internal model that will be used to add
@@ -154,49 +151,11 @@ public abstract class AbstractAbc implements IAbc {
 
 		this.dag = dag;
 
-		// Set of vertices to ignore while populating new mapping groups
-		Set<MapperDAGVertex> alreadyInMappingGroups = new HashSet<MapperDAGVertex>();
-		this.mappingGroups = new MappingGroupSet();
-			
-		// Initializing the mapping groups. Associating each normal vertex
-		// with its special vertices
-		for (DAGVertex v : dag.vertexSet()) {
-			if (!SpecialVertexManager.isSpecial(v)) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
-			}
-		}
-
-		// Adds the special vertices that are not in mapping groups
-		for (DAGVertex v : dag.vertexSet()) {
-			if (SpecialVertexManager.isBroadCast(v)) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
-			}
-		}
-
-		// Adds the special vertices that are not in mapping groups
-		for (DAGVertex v : dag.vertexSet()) {
-			if (SpecialVertexManager.isFork(v)) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
-			}
-		}
-
-		// Adds the special vertices that are not in mapping groups
-		for (DAGVertex v : dag.vertexSet()) {
-			if (SpecialVertexManager.isJoin(v)) {
-				mappingGroups.add(new MappingGroup((MapperDAGVertex) v, alreadyInMappingGroups));
-			}
-		}
-
-		for(DAGVertex v : dag.vertexSet()){
-			if(mappingGroups.getGroup((MapperDAGVertex) v) == null){
-				PreesmLogger.getLogger().log(Level.SEVERE, v.toString());
-			}
-		}
-		
-		PreesmLogger.getLogger().log(Level.FINE, mappingGroups.toString());
-
 		// implementation is a duplicate from dag
 		this.implementation = dag.clone();
+
+		// Initializes relative constraints
+		initRelativeConstraints();
 
 		this.archi = archi;
 		this.scenario = scenario;
@@ -204,6 +163,48 @@ public abstract class AbstractAbc implements IAbc {
 		// Schedules the tasks in topological and alphabetical order. Some
 		// better order should be looked for
 		setTaskScheduler(new TaskSwitcher());
+	}
+
+	/**
+	 * Setting common constraints to all non-special vertices and their related
+	 * init and end vertices
+	 */
+	private void initRelativeConstraints() {
+		for (DAGVertex v : implementation.vertexSet()) {
+			populateRelativeConstraint((MapperDAGVertex) v);
+		}
+	}
+
+	/**
+	 * Setting common constraints to a non-special vertex and its related init
+	 * and end vertices
+	 */
+	private void populateRelativeConstraint(MapperDAGVertex vertex) {
+
+		Set<MapperDAGVertex> verticesToAssociate = new HashSet<MapperDAGVertex>();
+		verticesToAssociate.add(vertex);
+
+		if (SpecialVertexManager.isInit(vertex)) {
+			SDFEndVertex sdfEndVertex = (SDFEndVertex) ((SDFInitVertex) vertex
+					.getCorrespondingSDFVertex()).getEndReference();
+			MapperDAGVertex end = (MapperDAGVertex) implementation
+					.getVertex(sdfEndVertex.getName());
+			verticesToAssociate.add(end);
+		}
+
+		RelativeConstraint currentConstraint = new RelativeConstraint();
+
+		for (MapperDAGVertex v : verticesToAssociate) {
+			RelativeConstraint newC = v.getImplementationVertexProperty()
+					.getRelativeConstraint();
+			if (newC == null) {
+				currentConstraint.addVertex(v);
+			} else {
+				currentConstraint.merge(newC);
+			}
+			v.getImplementationVertexProperty()
+			.setRelativeConstraint(currentConstraint);
+		}
 	}
 
 	public final MapperDAG getDAG() {
@@ -293,65 +294,6 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Maps the vertex and all vertices in its mapping group on the operator.
-	 */
-	@Override
-	public final void mapWithGroup(MapperDAGVertex dagvertex, Operator operator, boolean updateRank) {
-		MappingGroup currentGroup = mappingGroups.getGroup(dagvertex);
-
-		if (currentGroup == null) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
-					"Empty mapping group for vertex " + dagvertex.getName());
-		}
-		
-		// Only the mapping of the main vertex of the group is chosen by the
-		// mapping algorithm.
-		// Other mappings are forced or adviced by the group
-		if (dagvertex.getName().equals(currentGroup.getMainVertex().getName())) {
-
-			// Inits need to be mapped with the main vertex
-			if (currentGroup.getInits() != null) {
-				for (MapperDAGVertex v : currentGroup.getInits()) {
-					map(v, operator, updateRank);
-				}
-			}
-
-			if (currentGroup.getJoins() != null) {
-				for (MapperDAGVertex v : currentGroup.getJoins()) {
-					map(v, operator, updateRank);
-				}
-			}
-
-			map(dagvertex, operator, updateRank);
-
-			if (currentGroup.getForks() != null) {
-				for (MapperDAGVertex v : currentGroup.getForks()) {
-					map(v, operator, updateRank);
-				}
-			}
-
-			if (currentGroup.getBroadcasts() != null) {
-				for (MapperDAGVertex v : currentGroup.getBroadcasts()) {
-					map(v, operator, updateRank);
-				}
-			}
-
-			// Ends need to be mapped with the main vertex
-			if (currentGroup.getEnds() != null) {
-				for (MapperDAGVertex v : currentGroup.getEnds()) {
-					map(v, operator, updateRank);
-				}
-			}
-		}
-		/*
-		 * else{
-		 * 
-		 * PreesmLogger.getLogger().log(Level.SEVERE,"Tutu " +
-		 * dagvertex.getName()); }
-		 */
-	}
-
-	/**
 	 * Maps the vertex on the operator. If updaterank is true, finds a new place
 	 * for the vertex in the schedule. Otherwise, use the vertex rank to know
 	 * where to schedule it.
@@ -362,9 +304,10 @@ public abstract class AbstractAbc implements IAbc {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		PreesmLogger.getLogger().log(
-				Level.FINE, "mapping " + dagvertex.toString() + " on "
+				Level.FINE,
+				"mapping " + dagvertex.toString() + " on "
 						+ operator.toString());
-		
+
 		if (operator != Operator.NO_COMPONENT) {
 			ImplementationVertexProperty dagprop = dagvertex
 					.getImplementationVertexProperty();
@@ -377,7 +320,7 @@ public abstract class AbstractAbc implements IAbc {
 				unmap(dagvertex);
 			}
 
-			if (isMapableMappingGroup(impvertex, operator) || !updateRank
+			if (isMapable(impvertex, operator) || !updateRank
 					|| impvertex instanceof TransferVertex) {
 
 				// Implementation property is set in both DAG and implementation
@@ -427,11 +370,10 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Looks for an operator able to execute currentvertex (preferably
 			// the given operator)
-			Operator adequateOp = findOperatorMappingGroup(currentvertex,
-					operator);
+			Operator adequateOp = findOperator(currentvertex, operator);
 
 			if (adequateOp != null) {
-				mapWithGroup(currentvertex, adequateOp, true);
+				map(currentvertex, adequateOp, true);
 			} else {
 				PreesmLogger
 						.getLogger()
@@ -450,27 +392,44 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Looks for operators able to execute currentvertex
 	 */
-	public List<Operator> getCandidateOperators(MapperDAGVertex currentvertex) {
-		MappingGroup currentGroup = mappingGroups.getGroup(currentvertex);
+	public List<Operator> getCandidateOperators(MapperDAGVertex vertex) {
 
-		if (currentGroup == null) {
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"Looking operator list: No mapping group found for vertex: "
-							+ currentvertex.getName());
-			return null;
+		vertex = translateInImplementationVertex(vertex);
+		
+		List<Operator> initOperators = null;
+		RelativeConstraint rc = vertex.getImplementationVertexProperty()
+				.getRelativeConstraint();
+
+		if (rc != null) {
+			initOperators = rc.getOperatorsIntersection();
+			
+			if(rc.getVertices().size()>1){
+				int i=0;i++;
+			}
+		} else {
+			initOperators = vertex.getInitialVertexProperty()
+					.getInitialOperatorList();
 		}
 
-		return currentGroup.getOperators();
+		if (initOperators.isEmpty()) {
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"Empty operator set for a vertex: "
+							+ vertex.getName()
+							+ ". Consider relaxing constraints in scenario.");
+		}
+
+		return initOperators;
 	}
 
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
-	 * operator or an operator with same type). Uses mapping groups
+	 * operator or an operator with same type)
 	 */
+
 	@Override
-	public final Operator findOperatorMappingGroup(
-			MapperDAGVertex currentvertex, Operator preferedOperator) {
+	public final Operator findOperator(MapperDAGVertex currentvertex,
+			Operator preferedOperator) {
 
 		Operator adequateOp = null;
 		List<Operator> opList = getCandidateOperators(currentvertex);
@@ -498,75 +457,16 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Looks for an operator able to execute currentvertex (preferably the given
-	 * operator or an operator with same type)
-	 */
-	/*
-	 * @Override public final Operator findOperator(MapperDAGVertex
-	 * currentvertex, Operator preferedOperator) {
-	 * 
-	 * Operator adequateOp = null; List<Operator> opList =
-	 * currentvertex.getImplementationVertexProperty()
-	 * .getAdaptiveOperatorList();
-	 * 
-	 * if (Operator.contains(opList, preferedOperator)) { adequateOp =
-	 * preferedOperator; } else {
-	 * 
-	 * // Search among the operators with same type than the prefered one for
-	 * (Operator op : opList) { if
-	 * (op.getDefinition().equals(preferedOperator.getDefinition())) {
-	 * adequateOp = op; } }
-	 * 
-	 * // Search among the operators with other type than the prefered one if
-	 * (adequateOp == null) { for (Operator op : opList) { adequateOp = op; } }
-	 * }
-	 * 
-	 * return adequateOp; }
-	 */
-
-	/**
 	 * Checks in the vertex implementation properties if it can be mapped on the
 	 * given operator
 	 */
-	/*
-	 * @Override public final boolean isMapable(MapperDAGVertex vertex, Operator
-	 * operator) {
-	 * 
-	 * vertex = translateInImplementationVertex(vertex);
-	 * 
-	 * return Operator.contains(vertex.getImplementationVertexProperty()
-	 * .getAdaptiveOperatorList(), operator); }
-	 */
 
-	/**
-	 * Checks in the vertex implementation properties if it can be mapped on the
-	 * given operator. Uses mapping groups.
-	 */
 	@Override
-	public final boolean isMapableMappingGroup(MapperDAGVertex vertex,
-			Operator operator) {
-		MappingGroup currentGroup = mappingGroups.getGroup(vertex);
-		boolean isMapable = false;
+	public final boolean isMapable(MapperDAGVertex vertex, Operator operator) {
 
-		if (currentGroup == null) {
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"Mapping: No mapping group found for vertex: "
-							+ vertex.getName());
-			return false;
-		}
+		vertex = translateInImplementationVertex(vertex);
 
-		isMapable = Operator.contains(currentGroup.getOperators(), operator);
-
-		if (!isMapable) {
-			PreesmLogger.getLogger().log(
-					Level.WARNING,
-					"Mapping not possible for vertex: " + vertex.getName()
-							+ " on operator " + operator.getName());
-			return false;
-		}
-
-		return isMapable;
+		return Operator.contains(getCandidateOperators(vertex), operator);
 	}
 
 	/**

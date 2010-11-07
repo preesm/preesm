@@ -138,9 +138,6 @@ public interface IAbc extends IMapperAbc {
 	public void map(MapperDAGVertex vertex, Operator operator,
 			boolean updateRank);
 	public void unmap(MapperDAGVertex dagvertex);
-	
-
-	public void mapWithGroup(MapperDAGVertex vertex, Operator operator, boolean updateRank);
 
 	/**
 	 * maps all the vertices on the given operator
@@ -151,13 +148,7 @@ public interface IAbc extends IMapperAbc {
 	 * Checks in the vertex implementation properties if it can be mapped on
 	 * the given operator
 	 */
-	//public boolean isMapable(MapperDAGVertex vertex, Operator operator);
-
-	/**
-	 * Checks in the vertex implementation properties if it can be mapped on
-	 * the given operator
-	 */
-	public boolean isMapableMappingGroup(MapperDAGVertex vertex, Operator operator);
+	public boolean isMapable(MapperDAGVertex vertex, Operator operator);
 
 	/**
 	 * Plots the current implementation
@@ -205,14 +196,7 @@ public interface IAbc extends IMapperAbc {
 	 * Looks for an operator able to execute currentvertex (preferably the given
 	 * operator)
 	 */
-	/*public Operator findOperator(MapperDAGVertex currentvertex,
-			Operator preferedOperator);*/
-
-	/**
-	 * Looks for an operator able to execute currentvertex (preferably the given
-	 * operator)
-	 */
-	public Operator findOperatorMappingGroup(MapperDAGVertex currentvertex,
+	public Operator findOperator(MapperDAGVertex currentvertex,
 			Operator preferedOperator);
 	
 	/**
