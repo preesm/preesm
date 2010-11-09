@@ -40,6 +40,7 @@ import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.console.IConsoleConstants;
 
 /**
  * This class creates the layout associated with the preesm core perspective.
@@ -71,10 +72,10 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 			// Adds the progress bar and console
 			bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
 			
-			bottomRight.addView("org.eclipse.ui.console.ConsoleView");
+			bottomRight.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 			
 			// Adds the Run action set
-			layout.addActionSet("org.eclipse.debug.ui.launchActionSet");
+			layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
 			
 		}
 
