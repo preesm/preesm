@@ -51,11 +51,10 @@ public class AlgorithmConfiguration {
 	 */
 	public static final String ATTR_ALGORITHM_FILE_NAME = "org.ietr.preesm.core.algorithmFileName";
 
-	
 	private String algorithmFileName = null;
 
-
-	public AlgorithmConfiguration(ILaunchConfiguration configuration) throws CoreException {
+	public AlgorithmConfiguration(ILaunchConfiguration configuration)
+			throws CoreException {
 		super();
 		this.algorithmFileName = configuration.getAttribute(
 				ATTR_ALGORITHM_FILE_NAME, "");

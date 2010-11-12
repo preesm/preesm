@@ -21,22 +21,21 @@ public class VariablesManager {
 	public VariablesManager() {
 		variables = new VariableSet();
 	}
-	
-	public void setVariable(String name,String value){
-		
-		if(variables.keySet().contains(name)){
+
+	public void setVariable(String name, String value) {
+
+		if (variables.keySet().contains(name)) {
 			variables.get(name).setValue(value);
-		}
-		else{
-			variables.put(name,new Variable(name,value));
+		} else {
+			variables.put(name, new Variable(name, value));
 		}
 	}
-	
-	public VariableSet getVariables(){
+
+	public VariableSet getVariables() {
 		return variables;
 	}
-	
-	public void removeVariable(String varName){
+
+	public void removeVariable(String varName) {
 		variables.remove(varName);
 	}
 
@@ -55,5 +54,5 @@ public class VariablesManager {
 			parser.parse(excelFileURL);
 		}
 	}
-	
+
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.tools;
 
 import java.util.Comparator;
@@ -42,18 +42,19 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * @author mpelcat
- *
- * Vertex comparator that helps to order vertices in name alphabetical order
+ * 
+ *         Vertex comparator that helps to order vertices in name alphabetical
+ *         order
  */
-public class NameComparator implements Comparator<SDFAbstractVertex>{
+public class NameComparator implements Comparator<SDFAbstractVertex> {
 
 	@Override
 	public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
 
 		int diff = o1.getName().compareTo(o2.getName());
-		//if(diff == 0) diff = 1;
-		
+		// if(diff == 0) diff = 1;
+
 		return diff;
 	}
-	
+
 }

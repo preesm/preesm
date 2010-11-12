@@ -37,10 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 /**
- * a medium interface is contained by an architecture component.
- * Containing a medium interface of type M and multiplicity N means that
- * this operator can be connected to N media of type M
- *         
+ * a medium interface is contained by an architecture component. Containing a
+ * medium interface of type M and multiplicity N means that this operator can be
+ * connected to N media of type M
+ * 
  * @author mpelcat
  */
 public class ArchitectureInterface {
@@ -79,7 +79,7 @@ public class ArchitectureInterface {
 		// The interface definition is cloned and references the given medium
 		// definition
 		ArchitectureInterface newintf = new ArchitectureInterface(
-				(BusReference)this.busReference.clone(), newOwner);
+				(BusReference) this.busReference.clone(), newOwner);
 
 		newintf.usedSlots = 0; // usedSlot will be incremented when
 		// interconnexions are added
@@ -112,7 +112,5 @@ public class ArchitectureInterface {
 	public ArchitectureComponent getOwner() {
 		return owner;
 	}
-	
-	
 
 }

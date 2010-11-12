@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 /**
@@ -41,20 +41,20 @@ package org.ietr.preesm.core.codegen.model;
  * 
  * @author mpelcat
  */
-public class CodeGenParameter extends CodeGenCallElement{
+public class CodeGenParameter extends CodeGenCallElement {
 
-	private int dir ;
-	
+	private int dir;
+
 	public CodeGenParameter(String name, int dir) {
 		super(name);
-		this.dir = dir ;
+		this.dir = dir;
 	}
-	
-	public boolean isInput(){
-		return dir == 0 ;
+
+	public boolean isInput() {
+		return dir == 0;
 	}
-	
-	public boolean isOutput(){
-		return dir == 1 ;
+
+	public boolean isOutput() {
+		return dir == 1;
 	}
 }

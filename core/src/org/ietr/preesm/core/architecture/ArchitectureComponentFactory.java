@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture;
 
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
@@ -55,34 +55,30 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  * @author mpelcat
  */
 public class ArchitectureComponentFactory {
-	
-	public static ArchitectureComponent createElement(ArchitectureComponentDefinition type,String id){
+
+	public static ArchitectureComponent createElement(
+			ArchitectureComponentDefinition type, String id) {
 
 		ArchitectureComponent result = null;
-		
-		if(type != null){
+
+		if (type != null) {
 			// Simple model
-			if(type instanceof MediumDefinition){
-				result = new Medium(id,(MediumDefinition)type);
+			if (type instanceof MediumDefinition) {
+				result = new Medium(id, (MediumDefinition) type);
+			} else if (type instanceof OperatorDefinition) {
+				result = new Operator(id, (OperatorDefinition) type);
+			} else if (type instanceof ContentionNodeDefinition) {
+				result = new ContentionNode(id, (ContentionNodeDefinition) type);
+			} else if (type instanceof DmaDefinition) {
+				result = new Dma(id, (DmaDefinition) type);
+			} else if (type instanceof ParallelNodeDefinition) {
+				result = new ParallelNode(id, (ParallelNodeDefinition) type);
+			} else if (type instanceof RamDefinition) {
+				result = new Ram(id, (RamDefinition) type);
 			}
-			else if(type instanceof OperatorDefinition){
-				result = new Operator(id,(OperatorDefinition)type);
-			}
-			else if(type instanceof ContentionNodeDefinition){
-				result = new ContentionNode(id,(ContentionNodeDefinition)type);
-			}
-			else if(type instanceof DmaDefinition){
-				result = new Dma(id,(DmaDefinition)type);
-			}
-			else if(type instanceof ParallelNodeDefinition){
-				result = new ParallelNode(id,(ParallelNodeDefinition)type);
-			}
-			else if(type instanceof RamDefinition){
-				result = new Ram(id,(RamDefinition)type);
-			}
-			
+
 		}
-		
+
 		return result;
 	}
 }

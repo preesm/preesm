@@ -57,7 +57,8 @@ import org.sdf4j.model.sdf.visitors.TopologyVisitor;
 import org.sdf4j.model.visitors.SDF4JException;
 
 /**
- * Class used while retrieving the algorithm at the beginning of the workflow execution
+ * Class used while retrieving the algorithm at the beginning of the workflow
+ * execution
  * 
  * @author mpelcat
  */
@@ -67,12 +68,13 @@ public class AlgorithmRetriever {
 	 * SDF Graph algorithm retrieved at the beginning of a workflow
 	 */
 	SDFGraph algorithm = null;
-	
+
 	/**
 	 * Generates a random SDF with DAG properties
 	 */
-	static public SDFGraph randomDAG(int nbVertex, int minInDegree, int maxInDegree,
-			int minOutDegree, int maxOutDegree, int maxDataSize, boolean randomDataSize) {
+	static public SDFGraph randomDAG(int nbVertex, int minInDegree,
+			int maxInDegree, int minOutDegree, int maxOutDegree,
+			int maxDataSize, boolean randomDataSize) {
 
 		DirectedAcyclicGraphGenerator DAGG = new DirectedAcyclicGraphGenerator();
 		TopologyVisitor topo = new TopologyVisitor();
@@ -102,8 +104,8 @@ public class AlgorithmRetriever {
 
 			// Sets random data sizes between 0 and maxDataSize + 1
 			Double datasize = 0.0;
-			
-			if(randomDataSize)
+
+			if (randomDataSize)
 				datasize = (double) edgeSizeRand.nextInt(maxDataSize);
 			else
 				datasize = (double) maxDataSize;
@@ -125,16 +127,18 @@ public class AlgorithmRetriever {
 	 */
 	public AlgorithmRetriever(String algorithmRelativePath) {
 		super();
-		
-		GMLGenericImporter importer = new GMLGenericImporter() ;
-		
+
+		GMLGenericImporter importer = new GMLGenericImporter();
+
 		Path relativePath = new Path(algorithmRelativePath);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
 		try {
-			algorithm = (SDFGraph) importer.parse(file.getContents(), file.getLocation().toOSString());
-			
-			addVertexPathProperties(algorithm,"");
+			algorithm = (SDFGraph) importer.parse(file.getContents(), file
+					.getLocation().toOSString());
+
+			addVertexPathProperties(algorithm, "");
 		} catch (InvalidFileException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
@@ -143,22 +147,23 @@ public class AlgorithmRetriever {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public SDFGraph getAlgorithm() {
 		return algorithm;
 	}
 
 	/**
-	 * Adding an information that keeps the path of each vertex relative to the 
+	 * Adding an information that keeps the path of each vertex relative to the
 	 */
-	private void addVertexPathProperties(SDFGraph algorithm, String currentPath){
-		
-		for(SDFAbstractVertex vertex : algorithm.vertexSet()){
+	private void addVertexPathProperties(SDFGraph algorithm, String currentPath) {
+
+		for (SDFAbstractVertex vertex : algorithm.vertexSet()) {
 			String newPath = currentPath + vertex.getName();
 			vertex.setInfo(newPath);
 			newPath += "/";
-			if(vertex.getGraphDescription() != null){
-				addVertexPathProperties((SDFGraph)vertex.getGraphDescription(), newPath);
+			if (vertex.getGraphDescription() != null) {
+				addVertexPathProperties(
+						(SDFGraph) vertex.getGraphDescription(), newPath);
 			}
 		}
 	}

@@ -33,12 +33,12 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.printer;
 
 /**
- * During code generation, a code element can visit himself several times 
- * Kept until I am sure we do not need it anymore
+ * During code generation, a code element can visit himself several times Kept
+ * until I am sure we do not need it anymore
  * 
  * @author mpelcat
  */

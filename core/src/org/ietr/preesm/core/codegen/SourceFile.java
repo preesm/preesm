@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import java.util.ArrayList;
@@ -95,7 +95,8 @@ public class SourceFile extends AbstractBufferContainer {
 	 * Accepts a printer visitor
 	 */
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 		super.accept(printer, currentLocation); // Accept the buffer allocation
 
 		Iterator<ThreadDeclaration> iterator = threads.iterator();
@@ -167,11 +168,11 @@ public class SourceFile extends AbstractBufferContainer {
 	 */
 	@Override
 	public boolean existBuffer(String name, boolean searchInOtherFiles) {
-		boolean bufferFound = super.existBuffer(name,false);
-		
-		if(!bufferFound && searchInOtherFiles && fileList != null){
-			for(SourceFile file : fileList){
-				bufferFound |= file.existBuffer(name,false);
+		boolean bufferFound = super.existBuffer(name, false);
+
+		if (!bufferFound && searchInOtherFiles && fileList != null) {
+			for (SourceFile file : fileList) {
+				bufferFound |= file.existBuffer(name, false);
 			}
 		}
 

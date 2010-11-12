@@ -102,14 +102,14 @@ public class ExcelConstraintsParser {
 		scenario.getConstraintGroupManager().removeAll();
 		PreesmLogger
 				.getLogger()
-				.log(
-						Level.INFO,
+				.log(Level.INFO,
 						"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
-			// Warnings are displayed once for each missing operator or vertex in the excel sheet
+			// Warnings are displayed once for each missing operator or vertex
+			// in the excel sheet
 			Set<String> missingVertices = new HashSet<String>();
 			Set<String> missingOperators = new HashSet<String>();
 
@@ -173,13 +173,12 @@ public class ExcelConstraintsParser {
 				}
 			} else {
 				if (vertexCell == null && !missingVertices.contains(vertexName)) {
-					if (vertex.getGraphDescription() != null){
+					if (vertex.getGraphDescription() != null) {
 						PreesmLogger.getLogger().log(
 								Level.WARNING,
 								"No line found in excel sheet for hierarchical vertex: "
 										+ vertexName);
-					}
-					else{
+					} else {
 						PreesmLogger.getLogger().log(
 								Level.SEVERE,
 								"No line found in excel sheet for atomic vertex: "

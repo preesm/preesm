@@ -510,9 +510,9 @@ public class NewTimeKeeper implements Observer {
 	public void updateTLevels() {
 
 		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		dirtyTLevelElts.clear();
+		/*dirtyTLevelElts.clear();
 		for(DAGVertex v : implementation.vertexSet())
-			dirtyTLevelElts.add((MapperDAGVertex) v);
+			dirtyTLevelElts.add((MapperDAGVertex) v);*/
 		
 		calculateTLevel();
 		dirtyTLevelElts.clear();
@@ -523,9 +523,9 @@ public class NewTimeKeeper implements Observer {
 	public void updateTandBLevels() {
 
 		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		dirtyTLevelElts.clear();
+		/*dirtyTLevelElts.clear();
 		for(DAGVertex v : implementation.vertexSet())
-			dirtyTLevelElts.add((MapperDAGVertex) v);
+			dirtyTLevelElts.add((MapperDAGVertex) v);*/
 		
 		calculateTLevel();
 		dirtyTLevelElts.clear();

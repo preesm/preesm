@@ -44,8 +44,8 @@ import org.sdf4j.model.sdf.SDFGraph;
 
 public class CodeGenSDFGraph extends SDFGraph {
 
-	public CodeGenSDFInitVertex codeGenSDFInitVertex ;
-	
+	public CodeGenSDFInitVertex codeGenSDFInitVertex;
+
 	/**
 	 * 
 	 */
@@ -75,7 +75,7 @@ public class CodeGenSDFGraph extends SDFGraph {
 				SDFAbstractVertex func = iterator.next();
 				code += func.toString();
 			}
-			
+
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

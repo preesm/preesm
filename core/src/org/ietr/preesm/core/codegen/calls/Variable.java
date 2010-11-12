@@ -33,25 +33,23 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.calls;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-public class Variable extends FunctionArgument{
+public class Variable extends FunctionArgument {
 
 	public Variable(String name, DataType type) {
 		super(name, type);
 	}
 
-
 	@Override
 	public String toString() {
 		return getName();
 	}
-
 
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.task;
 
-
 /**
  * This interface defines methods to load a new scenario and optionally change
  * some constraints from an output DAG.

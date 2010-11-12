@@ -64,10 +64,10 @@ public class BufferAllocation {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 	}
 
-	public int getSize(){
+	public int getSize() {
 		return buffer.getSize();
 	}
-	
+
 	public Buffer getBuffer() {
 		return buffer;
 	}

@@ -33,46 +33,46 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.sdf4j.model.sdf.SDFVertex;
 
-public class CodeGenSDFVertex extends SDFVertex{
+public class CodeGenSDFVertex extends SDFVertex {
 
-	public static final String OPERATOR = ImplementationPropertyNames.Vertex_Operator; 
-	public static final String NB_REPEAT ="nb_repeat";
-	public static final String POS =ImplementationPropertyNames.Vertex_schedulingOrder;
-	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;
-	
-	public CodeGenSDFVertex(){
-		this.getPropertyBean().setValue(TYPE,  VertexType.task);
+	public static final String OPERATOR = ImplementationPropertyNames.Vertex_Operator;
+	public static final String NB_REPEAT = "nb_repeat";
+	public static final String POS = ImplementationPropertyNames.Vertex_schedulingOrder;
+	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
+
+	public CodeGenSDFVertex() {
+		this.getPropertyBean().setValue(TYPE, VertexType.task);
 	}
-	
-	
-	public ArchitectureComponent getOperator(){
-		return (ArchitectureComponent) this.getPropertyBean().getValue(OPERATOR, ArchitectureComponent.class);
+
+	public ArchitectureComponent getOperator() {
+		return (ArchitectureComponent) this.getPropertyBean().getValue(
+				OPERATOR, ArchitectureComponent.class);
 	}
-	
-	public void setOperator(ArchitectureComponent op){
+
+	public void setOperator(ArchitectureComponent op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
-	
-	public int getPos(){
-		if(this.getPropertyBean().getValue(POS) != null){
-			return (Integer) this.getPropertyBean().getValue(POS, Integer.class);
+
+	public int getPos() {
+		if (this.getPropertyBean().getValue(POS) != null) {
+			return (Integer) this.getPropertyBean()
+					.getValue(POS, Integer.class);
 		}
-		return 0 ;
+		return 0;
 	}
-	
-	public void setPos(int pos){
+
+	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
-	
-	
-	public String toString(){
+
+	public String toString() {
 		return this.getName();
 	}
 }

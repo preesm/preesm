@@ -25,11 +25,7 @@ Bundle-ClassPath: .,
  lib/jxl.jar,
  lib/sdf4j.jar,
  lib/jscl.jar,
- lib/xalan/serializer.jar,
- lib/xalan/xalan.jar,
- lib/xalan/xercesImpl.jar,
- lib/xalan/xml-apis.jar,
- lib/xalan/xsltc.jar
+ lib/saxon-B-9_1_0/saxon9.jar
 Export-Package: org.ietr.preesm.core.architecture,
  org.ietr.preesm.core.architecture.parser,
  org.ietr.preesm.core.architecture.route,

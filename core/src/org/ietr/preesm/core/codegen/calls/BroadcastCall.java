@@ -5,9 +5,7 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 public class BroadcastCall extends SpecialBehaviorCall {
 
-	
 	private final String BROADCAST = "broadcast";
-	
 
 	public BroadcastCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer) {

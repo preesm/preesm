@@ -33,15 +33,16 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * This class is used to gather all texts displayed in scenario editor. The strings
- * are stored in message.properties and retrieved through {@link Messages}
+ * This class is used to gather all texts displayed in scenario editor. The
+ * strings are stored in message.properties and retrieved through
+ * {@link Messages}
  * 
  * @author mpelcat
  */

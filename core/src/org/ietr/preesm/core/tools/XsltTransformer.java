@@ -36,45 +36,24 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.tools;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.logging.Level;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
- * This class provides methods to transform an XML file or a DOM element to a
- * string
+ * This class provides methods to transform an XML file via XSLT
  * 
  * @author Matthieu Wipliez
  * @author mpelcat
@@ -110,7 +89,19 @@ public class XsltTransformer {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile xslFile = root.getFile(xslFilePath);
 		String xslFileLoc = xslFile.getLocation().toOSString();
-		transformer = factory.newTransformer(new StreamSource(xslFileLoc));
+		StreamSource source = new StreamSource(xslFileLoc);
+
+		try {
+			transformer = factory.newTransformer(source);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (transformer == null) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"XSL sheet not found or not valid: " + fileName);
+		}
 
 		return true;
 	}
@@ -120,25 +111,27 @@ public class XsltTransformer {
 	 */
 	public void transformFileToFile(String sourceFilePath, String destFilePath) {
 
-		Path osSourceFilePath = new Path(sourceFilePath);
-		Path osDestFilePath = new Path(destFilePath);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IFile sourceFile = root.getFile(osSourceFilePath);
-		IFile destFile = root.getFile(osDestFilePath);
-		String sourceFileLoc = sourceFile.getLocation().toOSString();
-		String destFileLoc = destFile.getLocation().toOSString();
+		if (transformer != null) {
+			Path osSourceFilePath = new Path(sourceFilePath);
+			Path osDestFilePath = new Path(destFilePath);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IFile sourceFile = root.getFile(osSourceFilePath);
+			IFile destFile = root.getFile(osDestFilePath);
+			String sourceFileLoc = sourceFile.getLocation().toOSString();
+			String destFileLoc = destFile.getLocation().toOSString();
 
-		try {
-			transformer.transform(new StreamSource(sourceFileLoc),
-					new StreamResult(new FileOutputStream(destFileLoc)));
-		} catch (FileNotFoundException e1) {
-			PreesmLogger.getLogger().log(
-					Level.SEVERE,
-					"Problem finding files for XSL transfo ("
-							+ osSourceFilePath, "," + osDestFilePath + ")");
-		} catch (TransformerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			try {
+				transformer.transform(new StreamSource(sourceFileLoc),
+						new StreamResult(new FileOutputStream(destFileLoc)));
+			} catch (FileNotFoundException e1) {
+				PreesmLogger.getLogger().log(
+						Level.SEVERE,
+						"Problem finding files for XSL transfo ("
+								+ osSourceFilePath, "," + osDestFilePath + ")");
+			} catch (TransformerException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 	}

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.HashSet;
@@ -60,8 +60,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.Scenario;
 
 /**
- * This page contains general informations of the scenario including
- * current algorithm and current architecture
+ * This page contains general informations of the scenario including current
+ * algorithm and current architecture
  * 
  * @author mpelcat
  */
@@ -71,8 +71,9 @@ public class OverviewPage extends FormPage {
 	 * The current scenario being edited
 	 */
 	private Scenario scenario;
-	
-	public OverviewPage(Scenario scenario, FormEditor editor, String id, String title) {
+
+	public OverviewPage(Scenario scenario, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
 
 		this.scenario = scenario;
@@ -83,9 +84,9 @@ public class OverviewPage extends FormPage {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		
+
 		ScrolledForm form = managedForm.getForm();
-		//FormToolkit toolkit = managedForm.getToolkit();
+		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Overview.title"));
 		ColumnLayout layout = new ColumnLayout();
 		layout.topMargin = 0;
@@ -100,9 +101,10 @@ public class OverviewPage extends FormPage {
 
 		Set<String> algoExtensions = new HashSet<String>();
 		algoExtensions.add("graphml");
-		
+
 		// Algorithm file chooser section
-		createFileSection(managedForm, Messages.getString("Overview.algorithmFile"),
+		createFileSection(managedForm,
+				Messages.getString("Overview.algorithmFile"),
 				Messages.getString("Overview.algorithmDescription"),
 				Messages.getString("Overview.algorithmFileEdit"),
 				scenario.getAlgorithmURL(),
@@ -112,15 +114,16 @@ public class OverviewPage extends FormPage {
 		Set<String> archiExtensions = new HashSet<String>();
 		archiExtensions.add("advds");
 		archiExtensions.add("design");
-		
+
 		// Architecture file chooser section
-		createFileSection(managedForm, Messages.getString("Overview.architectureFile"),
+		createFileSection(managedForm,
+				Messages.getString("Overview.architectureFile"),
 				Messages.getString("Overview.architectureDescription"),
 				Messages.getString("Overview.architectureFileEdit"),
 				scenario.getArchitectureURL(),
 				Messages.getString("Overview.architectureBrowseTitle"),
 				archiExtensions);
-		
+
 	}
 
 	/**
@@ -128,7 +131,7 @@ public class OverviewPage extends FormPage {
 	 */
 	private Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns) {
-		
+
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -151,21 +154,28 @@ public class OverviewPage extends FormPage {
 		return client;
 	}
 
-
 	/**
 	 * Creates a section to edit a file
 	 * 
-	 * @param mform form containing the section
-	 * @param title section title
-	 * @param desc description of the section
-	 * @param fileEdit text to display in text label
-	 * @param initValue initial value of Text
-	 * @param browseTitle title of file browser
+	 * @param mform
+	 *            form containing the section
+	 * @param title
+	 *            section title
+	 * @param desc
+	 *            description of the section
+	 * @param fileEdit
+	 *            text to display in text label
+	 * @param initValue
+	 *            initial value of Text
+	 * @param browseTitle
+	 *            title of file browser
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,Set<String> fileExtensions) {
-		
+	private void createFileSection(IManagedForm mform, String title,
+			String desc, String fileEdit, String initValue, String browseTitle,
+			Set<String> fileExtensions) {
+
 		Composite client = createSection(mform, title, desc, 2);
-		
+
 		FormToolkit toolkit = mform.getToolkit();
 
 		GridData gd = new GridData();
@@ -173,30 +183,34 @@ public class OverviewPage extends FormPage {
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 		text.setData(title);
-		text.addModifyListener(new ModifyListener(){
+		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				Text text = (Text)e.getSource();
-				String type = ((String)text.getData());
-				
-				if(type.equals(Messages.getString("Overview.algorithmFile")))
+				Text text = (Text) e.getSource();
+				String type = ((String) text.getData());
+
+				if (type.equals(Messages.getString("Overview.algorithmFile")))
 					scenario.setAlgorithmURL(text.getText());
-				else if(type.equals(Messages.getString("Overview.architectureFile")))
+				else if (type.equals(Messages
+						.getString("Overview.architectureFile")))
 					scenario.setArchitectureURL(text.getText());
-				
+
 				firePropertyChange(PROP_DIRTY);
-				
-			}});
-		
-		gd.widthHint =400;
+
+			}
+		});
+
+		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtensions);
+		final Button button = toolkit.createButton(client,
+				Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,
+				client.getShell(), browseTitle, fileExtensions);
 		button.addSelectionListener(adapter);
-		
+
 		toolkit.paintBordersFor(client);
 	}
-	
+
 }

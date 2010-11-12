@@ -58,9 +58,11 @@ public class ReceiveDma extends CommunicationFunctionCall {
 	 */
 	Operator source;
 
-	public ReceiveDma(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator source, int callIndex) {
-		super("receive", parentContainer, bufferSet, routeStep, vertex,callIndex);
+	public ReceiveDma(AbstractBufferContainer parentContainer,
+			SDFAbstractVertex vertex, List<Buffer> bufferSet,
+			AbstractRouteStep routeStep, Operator source, int callIndex) {
+		super("receive", parentContainer, bufferSet, routeStep, vertex,
+				callIndex);
 
 		this.source = source;
 	}

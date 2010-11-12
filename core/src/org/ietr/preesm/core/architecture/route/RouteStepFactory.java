@@ -86,7 +86,8 @@ public class RouteStepFactory {
 			if (dma != null) {
 				step = new DmaRouteStep(source, nodes, target, dma);
 			} else if (ram != null) {
-				step = new RamRouteStep(source, nodes, target, ram, getRamNodeIndex(nodes));
+				step = new RamRouteStep(source, nodes, target, ram,
+						getRamNodeIndex(nodes));
 			} else {
 				step = new MessageRouteStep(source, nodes, target);
 			}

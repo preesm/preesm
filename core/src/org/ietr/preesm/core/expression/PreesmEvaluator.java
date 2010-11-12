@@ -58,11 +58,11 @@ public class PreesmEvaluator implements EvaluatorI {
 				return evaluator.eval((Node) varNode.getVar().getValue());
 			} else if (varNode.getVar().getValue() instanceof Parameter) {
 				Parameter param = (Parameter) varNode.getVar().getValue();
-				
+
 				if (param == null) {
 					throw new ParseException();
 				}
-				
+
 				while (param.getValue() != null
 						&& param.getValue() instanceof Parameter) {
 					param = (Parameter) param.getValue();

@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
  * @author mpelcat
  */
 public class ParallelNodeParser {
-	
+
 	/**
 	 * Parsing parallel node specific data from DOM document and filling the
 	 * contention node definition

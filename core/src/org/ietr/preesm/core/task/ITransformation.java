@@ -42,7 +42,6 @@ package org.ietr.preesm.core.task;
  * @author Matthieu Wipliez
  * 
  */
-public interface ITransformation extends ITask{
+public interface ITransformation extends ITask {
 
-	
 }

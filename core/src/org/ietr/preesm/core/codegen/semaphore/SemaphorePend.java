@@ -55,6 +55,7 @@ public class SemaphorePend extends AbstractCodeElement {
 
 	private Semaphore semaphore;
 	private SemaphoreContainer semContainer;
+
 	/**
 	 * Creates a semaphore pend function to protect the data transmitted by a
 	 * communication vertex.
@@ -67,7 +68,8 @@ public class SemaphorePend extends AbstractCodeElement {
 		semContainer = globalContainer.getSemaphoreContainer();
 
 		// The pending semaphore of a full buffer will be put before the send
-		semaphore = semContainer.createSemaphore(protectedBuffers, semType, codeContainerType);
+		semaphore = semContainer.createSemaphore(protectedBuffers, semType,
+				codeContainerType);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

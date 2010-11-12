@@ -17,42 +17,44 @@ import org.sdf4j.model.psdf.types.PSDFEdgePropertyType;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 
-public class CodeGenSDFInitVertex  extends PSDFInitVertex implements ICodeGenSDFVertex{
-	
-	
-	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;
-	
+public class CodeGenSDFInitVertex extends PSDFInitVertex implements
+		ICodeGenSDFVertex {
+
+	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
+
 	public CodeGenSDFInitVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
 	}
-	
-	public ArchitectureComponent getOperator(){
-		return (ArchitectureComponent) this.getPropertyBean().getValue(OPERATOR, ArchitectureComponent.class);
+
+	public ArchitectureComponent getOperator() {
+		return (ArchitectureComponent) this.getPropertyBean().getValue(
+				OPERATOR, ArchitectureComponent.class);
 	}
-	
-	public void setOperator(ArchitectureComponent op){
+
+	public void setOperator(ArchitectureComponent op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
-	
-	public int getPos(){
-		if(this.getPropertyBean().getValue(POS) != null){
-			return (Integer) this.getPropertyBean().getValue(POS, Integer.class);
+
+	public int getPos() {
+		if (this.getPropertyBean().getValue(POS) != null) {
+			return (Integer) this.getPropertyBean()
+					.getValue(POS, Integer.class);
 		}
-		return 0 ;
+		return 0;
 	}
-	
-	public void setPos(int pos){
+
+	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "";
 	}
 
 	@Override
 	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		CompoundCodeElement container = new CompoundCodeElement(
-				this.getName(), parentContainer);
+		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
+				parentContainer);
 		container.setCorrespondingVertex(this);
 		UserFunctionCall call = new UserFunctionCall(this, parentContainer,
 				CodeSectionType.loop, false);
@@ -119,6 +121,5 @@ public class CodeGenSDFInitVertex  extends PSDFInitVertex implements ICodeGenSDF
 		container.setParentContainer(newContainer);
 		return container;
 	}
-	 
 
 }

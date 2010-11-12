@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.calls;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -41,9 +41,7 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 public class JoinCall extends SpecialBehaviorCall {
 
-	
 	private final String JOIN = "join";
-	
 
 	public JoinCall(SDFAbstractVertex vertex,
 			AbstractBufferContainer parentContainer) {

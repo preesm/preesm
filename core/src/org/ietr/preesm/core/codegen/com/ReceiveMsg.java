@@ -58,9 +58,10 @@ public class ReceiveMsg extends CommunicationFunctionCall {
 	 */
 	IOperator source;
 
-	public ReceiveMsg(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, IOperator source) {
-		super("receive", parentContainer, bufferSet, routeStep, vertex,0);
+	public ReceiveMsg(AbstractBufferContainer parentContainer,
+			SDFAbstractVertex vertex, List<Buffer> bufferSet,
+			AbstractRouteStep routeStep, IOperator source) {
+		super("receive", parentContainer, bufferSet, routeStep, vertex, 0);
 
 		this.source = source;
 	}

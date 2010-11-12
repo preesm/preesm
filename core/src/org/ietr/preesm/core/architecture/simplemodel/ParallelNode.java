@@ -33,14 +33,14 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * A parallel node is a communication node which contention
- * is not taken into account during the deployment simulation
+ * A parallel node is a communication node which contention is not taken into
+ * account during the deployment simulation
  * 
  * @author mpelcat
  */
@@ -49,13 +49,13 @@ public class ParallelNode extends AbstractNode {
 	public ParallelNode(String id, ParallelNodeDefinition type) {
 		super(id, type);
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.parallelNode;
 	}
 
-	/*@Override
-	public ArchitectureComponent clone() {
-		return new ParallelNode(getName(),null);
-	}*/
+	/*
+	 * @Override public ArchitectureComponent clone() { return new
+	 * ParallelNode(getName(),null); }
+	 */
 }

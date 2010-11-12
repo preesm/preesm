@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.ui.perspectives;
 
 import org.eclipse.debug.ui.IDebugUIConstants;
@@ -53,31 +53,30 @@ public class CorePerspectiveFactory implements IPerspectiveFactory {
 	public static final String ID = "org.ietr.preesm.core.ui.perspective";
 
 	@Override
-	 public void createInitialLayout(IPageLayout layout) {
-		
-			// Get the editor area.
-			String editorArea = layout.getEditorArea();
-			
-			// Top left: Resource Navigator view and Bookmarks view placeholder
-			IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.20f,
-				editorArea);
-			
-			// Adds the files navigator
-			topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
+	public void createInitialLayout(IPageLayout layout) {
 
-			// Bottom left: Outline view and Property Sheet view
-			IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.BOTTOM, 0.75f,
-					editorArea);
+		// Get the editor area.
+		String editorArea = layout.getEditorArea();
 
-			// Adds the progress bar and console
-			bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
-			
-			bottomRight.addView(IConsoleConstants.ID_CONSOLE_VIEW);
-			
-			// Adds the Run action set
-			layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
-			
-		}
+		// Top left: Resource Navigator view and Bookmarks view placeholder
+		IFolderLayout topLeft = layout.createFolder("topLeft",
+				IPageLayout.LEFT, 0.20f, editorArea);
 
+		// Adds the files navigator
+		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
+
+		// Bottom left: Outline view and Property Sheet view
+		IFolderLayout bottomRight = layout.createFolder("bottomRight",
+				IPageLayout.BOTTOM, 0.75f, editorArea);
+
+		// Adds the progress bar and console
+		bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
+
+		bottomRight.addView(IConsoleConstants.ID_CONSOLE_VIEW);
+
+		// Adds the Run action set
+		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
+
+	}
 
 }

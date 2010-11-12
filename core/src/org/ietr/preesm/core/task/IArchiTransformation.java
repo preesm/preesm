@@ -43,11 +43,12 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
  * 
  * @author mpelcat
  */
-public interface IArchiTransformation extends ITransformation{
-	
+public interface IArchiTransformation extends ITransformation {
+
 	/**
 	 * Transforms an architecture into another architecture.
 	 */
-	public TaskResult transform(MultiCoreArchitecture archi,  TextParameters params) throws PreesmException;
+	public TaskResult transform(MultiCoreArchitecture archi,
+			TextParameters params) throws PreesmException;
 
 }

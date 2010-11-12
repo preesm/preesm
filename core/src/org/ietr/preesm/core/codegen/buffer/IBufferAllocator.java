@@ -19,9 +19,9 @@ public interface IBufferAllocator {
 	public Buffer getBuffer(SDFEdge edge);
 
 	public List<BufferAllocation> getBufferAllocations();
-	
+
 	public boolean removeBufferAllocation(Buffer buff);
-	
+
 	public List<IBufferAllocator> getChildAllocators();
 
 }

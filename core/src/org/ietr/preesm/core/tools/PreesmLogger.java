@@ -120,16 +120,14 @@ public class PreesmLogger extends Logger {
 				// Writes a log in console
 				final MessageConsoleStream stream = console.newMessageStream();
 
-				Activator.getDefault().getWorkbench().getDisplay().asyncExec(
-						new Runnable() {
+				Activator.getDefault().getWorkbench().getDisplay()
+						.asyncExec(new Runnable() {
 							@Override
 							public void run() {
 								if (levelVal < Level.WARNING.intValue())
 									stream.setColor(new Color(null, 0, 0, 0));
 								else if (levelVal == Level.WARNING.intValue())
-									stream
-											.setColor(new Color(null, 255, 150,
-													0));
+									stream.setColor(new Color(null, 255, 150, 0));
 								else if (levelVal > Level.WARNING.intValue())
 									stream.setColor(new Color(null, 255, 0, 0));
 							}
@@ -149,9 +147,9 @@ public class PreesmLogger extends Logger {
 	public static String getFormattedTime() {
 		Calendar cal = Calendar.getInstance();
 
-		String time = String.format("%2d:%2d:%2d ", cal
-				.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
-				.get(Calendar.SECOND));
+		String time = String.format("%2d:%2d:%2d ",
+				cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+				cal.get(Calendar.SECOND));
 		return time;
 	}
 

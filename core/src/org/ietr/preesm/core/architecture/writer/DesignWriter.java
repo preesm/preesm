@@ -207,15 +207,13 @@ public class DesignWriter {
 		intElt.appendChild(intf1Elt);
 		intf1Elt.setAttribute("spirit:busRef", intc.getSrcIf()
 				.getBusReference().getId());
-		intf1Elt
-				.setAttribute("spirit:componentRef", intc.getSource().getName());
+		intf1Elt.setAttribute("spirit:componentRef", intc.getSource().getName());
 
 		Element intf2Elt = dom.createElement("spirit:activeInterface");
 		intElt.appendChild(intf2Elt);
 		intf2Elt.setAttribute("spirit:busRef", intc.getTgtIf()
 				.getBusReference().getId());
-		intf2Elt
-				.setAttribute("spirit:componentRef", intc.getTarget().getName());
+		intf2Elt.setAttribute("spirit:componentRef", intc.getTarget().getName());
 
 	}
 
@@ -233,12 +231,12 @@ public class DesignWriter {
 
 		Element hierElt = dom.createElement("spirit:hierConnection");
 		parent.appendChild(hierElt);
-		
+
 		hierElt.setAttribute("spirit:interfaceRef", p.getName());
 
 		Element intfElt = dom.createElement("spirit:activeInterface");
 		hierElt.appendChild(intfElt);
-		
+
 		intfElt.setAttribute("spirit:busRef", p.getBusRefName());
 		intfElt.setAttribute("spirit:componentRef", p.getConnectedCmpId());
 	}
@@ -309,25 +307,25 @@ public class DesignWriter {
 		if (cmp instanceof ContentionNode) {
 			ContentionNodeDefinition def = (ContentionNodeDefinition) ((ContentionNode) cmp)
 					.getDefinition();
-			addParameter(confsElt, "node_dataRate", Float.toString(def
-					.getDataRate()));
+			addParameter(confsElt, "node_dataRate",
+					Float.toString(def.getDataRate()));
 		} else if (cmp instanceof ParallelNode) {
 			ParallelNodeDefinition def = (ParallelNodeDefinition) ((ParallelNode) cmp)
 					.getDefinition();
-			addParameter(confsElt, "node_dataRate", Float.toString(def
-					.getDataRate()));
+			addParameter(confsElt, "node_dataRate",
+					Float.toString(def.getDataRate()));
 		} else if (cmp instanceof Medium) {
 			MediumDefinition def = (MediumDefinition) ((Medium) cmp)
 					.getDefinition();
-			addParameter(confsElt, "medium_dataRate", Float.toString(def
-					.getDataRate()));
-			addParameter(confsElt, "medium_overhead", Integer.toString(def
-					.getOverheadTime()));
+			addParameter(confsElt, "medium_dataRate",
+					Float.toString(def.getDataRate()));
+			addParameter(confsElt, "medium_overhead",
+					Integer.toString(def.getOverheadTime()));
 		} else if (cmp instanceof Operator) {
 			OperatorDefinition def = (OperatorDefinition) ((Operator) cmp)
 					.getDefinition();
-			addParameter(confsElt, "dataCopySpeed", Float.toString(def
-					.getDataCopySpeed()));
+			addParameter(confsElt, "dataCopySpeed",
+					Float.toString(def.getDataCopySpeed()));
 		}
 	}
 

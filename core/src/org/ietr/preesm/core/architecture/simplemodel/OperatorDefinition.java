@@ -49,12 +49,12 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
 public class OperatorDefinition extends ArchitectureComponentDefinition
 		implements IOperatorDefinition {
 
-	/* 
-	 * a value (typically in byte/cycle) defining the speed of a local
-	 * data copy on an operator
+	/*
+	 * a value (typically in byte/cycle) defining the speed of a local data copy
+	 * on an operator
 	 */
 	private float dataCopySpeed = -1;
-	
+
 	public OperatorDefinition(VLNV vlnv) {
 		super(vlnv, "operator");
 	}
@@ -63,11 +63,11 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 		return ArchitectureComponentType.operator;
 	}
 
-	/*public OperatorDefinition clone() {
-		// A new OperatorDefinition is created with same id
-		OperatorDefinition newdef = new OperatorDefinition(this.getVlnv());
-		return newdef;
-	}*/
+	/*
+	 * public OperatorDefinition clone() { // A new OperatorDefinition is
+	 * created with same id OperatorDefinition newdef = new
+	 * OperatorDefinition(this.getVlnv()); return newdef; }
+	 */
 
 	public float getDataCopySpeed() {
 		return dataCopySpeed;

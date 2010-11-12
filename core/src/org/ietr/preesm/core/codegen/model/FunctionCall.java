@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import java.util.HashMap;
@@ -46,24 +46,24 @@ public class FunctionCall implements IRefinement {
 	private String functionName;
 	public FunctionCall initCall = null;
 	public FunctionCall endCall = null;
-	private int nbArgs ; 
+	private int nbArgs;
 
 	private Map<CodeGenArgument, Integer> arguments;
 
 	private Map<CodeGenParameter, Integer> parameters;
 
-	public FunctionCall(){
+	public FunctionCall() {
 		functionName = "";
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
-		nbArgs = 0 ;
+		nbArgs = 0;
 	}
-	
+
 	public FunctionCall(String name) {
 		functionName = name;
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
-		nbArgs = 0 ;
+		nbArgs = 0;
 	}
 
 	public String getFunctionName() {
@@ -76,12 +76,12 @@ public class FunctionCall implements IRefinement {
 
 	public void addArgument(CodeGenArgument arg) {
 		arguments.put(arg, nbArgs);
-		nbArgs ++ ;
+		nbArgs++;
 	}
 
 	public void addParameter(CodeGenParameter parameterName) {
 		parameters.put(parameterName, nbArgs);
-		nbArgs ++ ;
+		nbArgs++;
 	}
 
 	public FunctionCall getInitCall() {
@@ -99,17 +99,17 @@ public class FunctionCall implements IRefinement {
 	public void setEndCall(FunctionCall end) {
 		endCall = end;
 	}
-	
+
 	public Map<CodeGenArgument, Integer> getArguments() {
 		return arguments;
 	}
-	
+
 	public Map<CodeGenParameter, Integer> getParameters() {
 		return parameters;
 	}
-	
-	public int getNbArgs(){
-		return nbArgs ;
+
+	public int getNbArgs() {
+		return nbArgs;
 	}
 
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.com;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -41,7 +41,6 @@ import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-
 
 /**
  * Function waiting for the availability of a given core
@@ -55,7 +54,8 @@ public class WaitForCore extends AbstractCodeElement {
 	 */
 	private AbstractRouteStep step;
 
-	public WaitForCore(AbstractBufferContainer parentContainer, AbstractRouteStep step) {
+	public WaitForCore(AbstractBufferContainer parentContainer,
+			AbstractRouteStep step) {
 		super("waitForCore", parentContainer, null);
 		this.step = step;
 	}
@@ -65,6 +65,7 @@ public class WaitForCore extends AbstractCodeElement {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
 }

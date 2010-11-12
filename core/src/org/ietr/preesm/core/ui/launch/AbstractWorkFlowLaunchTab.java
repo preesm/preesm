@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 /**
  * 
  */
@@ -81,16 +80,13 @@ public abstract class AbstractWorkFlowLaunchTab extends
 	 * file attribute name to save the entered file
 	 */
 	private String fileAttributeName = null;
-	
-	
+
 	/**
 	 * file path of the current Tab. There can be only one file chooser for the
 	 * moment
 	 */
 	private IPath fileIPath = null;
 	private Text filePath = null;
-
-	
 
 	/**
 	 * Displays a file browser in a shell
@@ -161,13 +157,10 @@ public abstract class AbstractWorkFlowLaunchTab extends
 		});
 
 	}
-	
-	
 
 	protected Composite getCurrentComposite() {
 		return currentComposite;
 	}
-	
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
@@ -180,25 +173,25 @@ public abstract class AbstractWorkFlowLaunchTab extends
 
 		setDirty(false);
 	}
-	
+
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		return true;
 	}
-	
+
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		// Saving the file path chosen in a tab attribute
-		if(filePath != null && fileAttributeName != null){
-			configuration.setAttribute(fileAttributeName,filePath.getText());
+		if (filePath != null && fileAttributeName != null) {
+			configuration.setAttribute(fileAttributeName, filePath.getText());
 		}
 		setDirty(false);
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		
-		configuration.setAttribute(fileAttributeName,"");
+
+		configuration.setAttribute(fileAttributeName, "");
 		setDirty(false);
 	}
-	
+
 }

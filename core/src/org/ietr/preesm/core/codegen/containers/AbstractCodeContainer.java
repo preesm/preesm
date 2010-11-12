@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.containers;
 
 import java.util.ArrayList;
@@ -54,14 +54,14 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  * @author Maxime Pelcat
  * @author Matthieu Wipliez
  */
-public abstract class AbstractCodeContainer extends AbstractBufferContainer{
+public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 
 	/**
 	 * List of the elements that are not included in the main loop
 	 */
 	private List<ICodeElement> codeElements;
-	
-	private int initPos  = 0 ;
+
+	private int initPos = 0;
 
 	public AbstractCodeContainer(AbstractBufferContainer parentContainer) {
 		super(parentContainer);
@@ -70,7 +70,8 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 
 		Iterator<ICodeElement> iterator = codeElements.iterator();
 
@@ -89,10 +90,10 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 	public void addCodeElement(ICodeElement element) {
 		codeElements.add(element);
 	}
-	
-	public void addInitCodeElement(ICodeElement element){
+
+	public void addInitCodeElement(ICodeElement element) {
 		codeElements.add(initPos, element);
-		initPos ++ ;
+		initPos++;
 	}
 
 	/**
@@ -102,7 +103,7 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 	 *            An object implementing {@link ICodeElement}.
 	 */
 	public void addCodeElementFirst(ICodeElement element) {
-		codeElements.add(0,element);
+		codeElements.add(0, element);
 	}
 
 	/**
@@ -152,7 +153,7 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 	 */
 	public List<ICodeElement> getCodeElements(SDFAbstractVertex vertex) {
 		List<ICodeElement> vList = new ArrayList<ICodeElement>();
-		
+
 		for (ICodeElement elt : codeElements) {
 			AbstractVertex<?> currentVertex = elt.getCorrespondingVertex();
 			if (elt.getCorrespondingVertex() != null
@@ -163,11 +164,11 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer{
 
 		return vList;
 	}
-	
-	public int getCodeElementPosition(ICodeElement elt){
+
+	public int getCodeElementPosition(ICodeElement elt) {
 		return codeElements.indexOf(elt);
 	}
-	
+
 	public List<ICodeElement> getCodeElements() {
 		return codeElements;
 	}

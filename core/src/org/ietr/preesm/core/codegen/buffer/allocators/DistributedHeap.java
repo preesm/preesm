@@ -9,12 +9,12 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.sdf4j.model.sdf.SDFEdge;
 
-public class DistributedHeap implements IBufferAllocator{
+public class DistributedHeap implements IBufferAllocator {
 
 	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

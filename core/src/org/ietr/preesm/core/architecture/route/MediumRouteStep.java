@@ -43,9 +43,9 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.tools.PreesmLogger;
 
-
 /**
- * Represents a single step in a route between two operators separated by a medium
+ * Represents a single step in a route between two operators separated by a
+ * medium
  * 
  * @author mpelcat
  */
@@ -62,7 +62,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 	public static final String type = "MediumRouteStep";
 
 	public MediumRouteStep(Operator sender, Medium medium, Operator receiver) {
-		super(sender,receiver);
+		super(sender, receiver);
 		this.medium = medium;
 	}
 
@@ -76,8 +76,8 @@ public class MediumRouteStep extends AbstractRouteStep {
 
 	@Override
 	public String toString() {
-		return "{" + getSender().toString() + " -> " + medium.toString() + " -> "
-				+ getReceiver().toString() + "}";
+		return "{" + getSender().toString() + " -> " + medium.toString()
+				+ " -> " + getReceiver().toString() + "}";
 	}
 
 	/**
@@ -89,7 +89,8 @@ public class MediumRouteStep extends AbstractRouteStep {
 	}
 
 	/**
-	 * The id is given to code generation. It selects the communication functions to use
+	 * The id is given to code generation. It selects the communication
+	 * functions to use
 	 */
 	@Override
 	public String getId() {
@@ -102,8 +103,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 	@Override
 	public long getTransferCost(long transfersSize) {
 		if (medium != null) {
-			MediumDefinition def = (MediumDefinition) medium
-					.getDefinition();
+			MediumDefinition def = (MediumDefinition) medium.getDefinition();
 			return def.getTransferTime(transfersSize);
 		} else {
 
@@ -119,13 +119,13 @@ public class MediumRouteStep extends AbstractRouteStep {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new MediumRouteStep((Operator)getSender().clone(),(Medium)medium.clone(),(Operator)getReceiver().clone());
+		return new MediumRouteStep((Operator) getSender().clone(),
+				(Medium) medium.clone(), (Operator) getReceiver().clone());
 	}
 
 	@Override
 	public long getWorstTransferTime(long transfersSize) {
 		return getTransferCost(transfersSize);
 	}
-	
-	
+
 }

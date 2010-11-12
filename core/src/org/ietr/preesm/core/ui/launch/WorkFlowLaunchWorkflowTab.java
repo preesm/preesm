@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.ui.launch;
 
-
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
@@ -77,19 +76,19 @@ public class WorkFlowLaunchWorkflowTab extends AbstractWorkFlowLaunchTab {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		super.performApply(configuration);
 	}
-	
+
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-	
+
 	}
 
 	@Override
 	public Image getImage() {
 		Image image = Activator.getImage("icons/preesm2mini.png");
-		
-		if(image != null)
+
+		if (image != null)
 			return image;
-		
+
 		return super.getImage();
 	}
 }

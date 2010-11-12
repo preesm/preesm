@@ -65,6 +65,7 @@ public interface ICodeGenSDFVertex {
 
 	public Object getNbRepeat() throws InvalidExpressionException;
 
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) throws InvalidExpressionException;
+	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer)
+			throws InvalidExpressionException;
 
 }

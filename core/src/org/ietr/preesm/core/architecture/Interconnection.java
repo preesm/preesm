@@ -44,7 +44,8 @@ import org.sdf4j.model.AbstractEdge;
  * 
  * @author mpelcat
  */
-public class Interconnection extends AbstractEdge<MultiCoreArchitecture, ArchitectureComponent> {
+public class Interconnection extends
+		AbstractEdge<MultiCoreArchitecture, ArchitectureComponent> {
 
 	private boolean directed = false;
 	private boolean setup = false;
@@ -66,9 +67,12 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 
 		if (obj instanceof Interconnection) {
 			Interconnection intc = (Interconnection) obj;
-			return (intc.getSource().equals(this.getSource()) && intc.getTarget().equals(this.getTarget())
-					&& intc.srcIf.equals(this.srcIf) && intc.tgtIf.equals(this.tgtIf))
-					|| (intc.getTarget().equals(this.getSource()) && intc.getSource().equals(this.getTarget())
+			return (intc.getSource().equals(this.getSource())
+					&& intc.getTarget().equals(this.getTarget())
+					&& intc.srcIf.equals(this.srcIf) && intc.tgtIf
+					.equals(this.tgtIf))
+					|| (intc.getTarget().equals(this.getSource())
+							&& intc.getSource().equals(this.getTarget())
 							&& intc.tgtIf.equals(this.srcIf) && intc.srcIf
 							.equals(this.tgtIf));
 		}
@@ -82,7 +86,7 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 	public ArchitectureInterface getTgtIf() {
 		return tgtIf;
 	}
-	
+
 	public void setSrcIf(ArchitectureInterface srcIf) {
 		this.srcIf = srcIf;
 	}
@@ -119,6 +123,7 @@ public class Interconnection extends AbstractEdge<MultiCoreArchitecture, Archite
 
 	@Override
 	public String toString() {
-		return "(" + getSource().toString() + "," + getTarget().toString() + ")";
+		return "(" + getSource().toString() + "," + getTarget().toString()
+				+ ")";
 	}
 }

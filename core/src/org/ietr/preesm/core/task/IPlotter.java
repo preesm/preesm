@@ -33,12 +33,11 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.scenario.IScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
-
 
 /**
  * This interface defines methods to plot a graph or an implementation
@@ -49,9 +48,13 @@ public interface IPlotter extends ITask {
 
 	/**
 	 * Method to plot a given implementation using the given parameters
-	 * @param algorithm The algorithm to export
-	 * @param params The parameters rulling the exportation
+	 * 
+	 * @param algorithm
+	 *            The algorithm to export
+	 * @param params
+	 *            The parameters rulling the exportation
 	 */
-	public void transform(IMapperAbc simulator, IScenario scenario, TextParameters params);
-	
+	public void transform(IMapperAbc simulator, IScenario scenario,
+			TextParameters params);
+
 }

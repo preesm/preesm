@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-
 public class Scenario implements IScenario {
 
 	/**
@@ -58,7 +57,7 @@ public class Scenario implements IScenario {
 	 * Manager of graph variables
 	 */
 	private VariablesManager variablesManager = null;
-	
+
 	/**
 	 * Manager of code generation parameters
 	 */
@@ -73,7 +72,6 @@ public class Scenario implements IScenario {
 	 * Path to the architecture file
 	 */
 	private String architectureURL = "";
-
 
 	public Scenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
@@ -94,10 +92,10 @@ public class Scenario implements IScenario {
 	public TimingManager getTimingManager() {
 		return timingmanager;
 	}
-	
-	static public Scenario fromFile(){
+
+	static public Scenario fromFile() {
 		Scenario scenario = null;
-		
+
 		return scenario;
 	}
 

@@ -70,7 +70,6 @@ import org.ietr.preesm.core.codegen.semaphore.SemaphorePost;
 import org.ietr.preesm.core.codegen.threads.LaunchThread;
 import org.ietr.preesm.core.codegen.threads.ThreadDeclaration;
 
-
 /**
  * Visitor that prints the code using given rules
  * 
@@ -78,37 +77,101 @@ import org.ietr.preesm.core.codegen.threads.ThreadDeclaration;
  */
 public interface IAbstractPrinter {
 
-	public Object visit(AbstractBufferContainer element, CodeZoneId index, Object currentLocation);
-	public Object visit(AbstractCodeContainer element, CodeZoneId index, Object currentLocation);
+	public Object visit(AbstractBufferContainer element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(AbstractCodeContainer element, CodeZoneId index,
+			Object currentLocation);
+
 	public Object visit(Buffer element, CodeZoneId index, Object currentLocation);
-	public Object visit(Constant element, CodeZoneId index, Object currentLocation);
-	public Object visit(SubBuffer element, CodeZoneId index, Object currentLocation);
-	public Object visit(BufferAtIndex element, CodeZoneId index, Object currentLocation);
-	public Object visit(BufferAllocation element, CodeZoneId index, Object currentLocation);
-	public Object visit(SubBufferAllocation element, CodeZoneId index, Object currentLocation);
-	public Object visit(VariableAllocation element, CodeZoneId index, Object currentLocation);
-	public Object visit(Variable element, CodeZoneId index, Object currentLocation);
-	public Object visit(AbstractCodeElement element, CodeZoneId index, Object currentLocation);
-	public Object visit(CommunicationFunctionCall element, CodeZoneId index, Object currentLocation);
-	public Object visit(CommunicationFunctionInit element, CodeZoneId index, Object currentLocation);
-	public Object visit(ForLoop element, CodeZoneId index, Object currentLocation);
-	public Object visit(LinearCodeContainer element, CodeZoneId index, Object currentLocation);
-	public Object visit(FiniteForLoop element, CodeZoneId index, Object currentLocation);
-	public Object visit(CompoundCodeElement element, CodeZoneId index, Object currentLocation);
-	public Object visit(Semaphore element, CodeZoneId index, Object currentLocation);
-	public Object visit(SemaphorePend element, CodeZoneId index, Object currentLocation);
-	public Object visit(SemaphorePost element, CodeZoneId index, Object currentLocation);
-	public Object visit(SemaphoreInit element, CodeZoneId index, Object currentLocation);
-	public Object visit(SendMsg element, CodeZoneId index, Object currentLocation);
-	public Object visit(ReceiveMsg element, CodeZoneId index, Object currentLocation);
-	public Object visit(SendDma element, CodeZoneId index, Object currentLocation);
-	public Object visit(ReceiveDma element, CodeZoneId index, Object currentLocation);
-	public Object visit(SourceFile element, CodeZoneId index, Object currentLocation);
-	public Object visit(ThreadDeclaration element, CodeZoneId index, Object currentLocation);
-	public Object visit(LaunchThread element, CodeZoneId index, Object currentLocation);
-	public Object visit(UserFunctionCall element, CodeZoneId index, Object currentLocation);
-	public Object visit(SpecialBehaviorCall element, CodeZoneId index, Object currentLocation);
-	public Object visit(WaitForCore element, CodeZoneId index, Object currentLocation);
-	public Object visit(Assignment element, CodeZoneId index, Object currentLocation);
-	public Object visit(PointerOn element, CodeZoneId index, Object currentLocation);
+
+	public Object visit(Constant element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SubBuffer element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(BufferAtIndex element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(BufferAllocation element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SubBufferAllocation element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(VariableAllocation element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(Variable element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(AbstractCodeElement element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(CommunicationFunctionCall element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(CommunicationFunctionInit element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(ForLoop element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(LinearCodeContainer element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(FiniteForLoop element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(CompoundCodeElement element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(Semaphore element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SemaphorePend element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SemaphorePost element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SemaphoreInit element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SendMsg element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(ReceiveMsg element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SendDma element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(ReceiveDma element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SourceFile element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(ThreadDeclaration element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(LaunchThread element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(UserFunctionCall element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(SpecialBehaviorCall element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(WaitForCore element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(Assignment element, CodeZoneId index,
+			Object currentLocation);
+
+	public Object visit(PointerOn element, CodeZoneId index,
+			Object currentLocation);
 }

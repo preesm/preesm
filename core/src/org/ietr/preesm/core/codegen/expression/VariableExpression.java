@@ -33,14 +33,13 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.expression;
 
 import org.ietr.preesm.core.codegen.calls.Variable;
 import org.ietr.preesm.core.codegen.types.DataType;
 
 public class VariableExpression extends Variable implements IExpression {
-
 
 	public VariableExpression(String name, DataType type) {
 		super(name, type);

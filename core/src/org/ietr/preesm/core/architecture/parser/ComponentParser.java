@@ -339,18 +339,18 @@ public class ComponentParser {
 				if (eltType.equals("spirit:name")) {
 					name = elt.getTextContent();
 				} else if (eltType.equals("spirit:busType")) {
-					vlnv = new VLNV(elt.getAttribute("spirit:vendor"), elt
-							.getAttribute("spirit:library"), elt
-							.getAttribute("spirit:name"), elt
-							.getAttribute("spirit:version"));
+					vlnv = new VLNV(elt.getAttribute("spirit:vendor"),
+							elt.getAttribute("spirit:library"),
+							elt.getAttribute("spirit:name"),
+							elt.getAttribute("spirit:version"));
 				}
 			}
 
 			node = node.getNextSibling();
 		}
-		
-		if(name != null && vlnv != null){
-			cmp.addBusType(new BusType(name,vlnv));
+
+		if (name != null && vlnv != null) {
+			cmp.addBusType(new BusType(name, vlnv));
 		}
 	}
 

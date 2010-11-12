@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -53,7 +53,7 @@ public final class ImplementationPropertyNames {
 	 * See {@link AbcType} for available ABC types.
 	 */
 	public static final String Graph_AbcReferenceType = "AbcReferenceType";
-	
+
 	/**
 	 * See {@link EdgeSchedType} for available edge scheduling types.
 	 */
@@ -69,22 +69,22 @@ public final class ImplementationPropertyNames {
 	 * See {@link VertexType} for available vertex types.
 	 */
 	public static final String Vertex_vertexType = "vertexType";
-	
+
 	/**
 	 * {@link Operator} on which the vertex is mapped.
 	 */
 	public static final String Vertex_Operator = "Operator";
-	
+
 	/**
 	 * {@link Operator} on which the vertex can be mapped.
 	 */
 	public static final String Vertex_Available_Operators = "availableOperators";
-	
+
 	/**
 	 * {@link OperatorDefinition} of the vertex operator.
 	 */
 	public static final String Vertex_OperatorDef = "OperatorDef";
-	
+
 	/**
 	 * integer equal to the total order of the vertex.
 	 */
@@ -100,18 +100,18 @@ public final class ImplementationPropertyNames {
 	 * Id of the original vertex with no hierarchy info.
 	 */
 	public static final String Vertex_originalVertexId = "originalId";
-	
+
 	// Vertex of type send or receive properties
 	/**
 	 * Route step transfering the data.
 	 */
 	public static final String SendReceive_routeStep = "routeStep";
-	
+
 	/**
 	 * integer with the data size.
 	 */
 	public static final String SendReceive_dataSize = "dataSize";
-	
+
 	/**
 	 * String with the operator address.
 	 */
@@ -121,14 +121,13 @@ public final class ImplementationPropertyNames {
 	 * {@link OperatorDefinition} of the operator executing the send or receive.
 	 */
 	public static final String SendReceive_OperatorDef = "OperatorDef";
-	
-	
+
 	// Vertex of type send properties
 	/**
 	 * Name of the sender vertex.
 	 */
 	public static final String Send_senderGraphName = "senderGraphName";
-	
+
 	// Vertex of type receive properties
 	/**
 	 * Name of the receiver vertex.

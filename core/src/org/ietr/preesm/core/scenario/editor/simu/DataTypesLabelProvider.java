@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -59,7 +59,7 @@ import org.ietr.preesm.core.scenario.editor.Messages;
 public class DataTypesLabelProvider implements ITableLabelProvider {
 
 	private Scenario scenario = null;
-	
+
 	private TableViewer tableViewer = null;
 
 	/**
@@ -67,7 +67,8 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public DataTypesLabelProvider(Scenario scenario, TableViewer tableViewer, IPropertyListener propertyListener) {
+	public DataTypesLabelProvider(Scenario scenario, TableViewer tableViewer,
+			IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
@@ -147,10 +148,12 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 		if (selection.getFirstElement() instanceof DataType) {
 			DataType dataType = (DataType) selection.getFirstElement();
 
-			String title = Messages.getString("Simulation.DataTypes.dialog.title");
-			String message = Messages.getString("Simulation.DataTypes.dialog.message")
+			String title = Messages
+					.getString("Simulation.DataTypes.dialog.title");
+			String message = Messages
+					.getString("Simulation.DataTypes.dialog.message")
 					+ dataType.getTypeName();
-			
+
 			String init = String.valueOf(dataType.getSize());
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()

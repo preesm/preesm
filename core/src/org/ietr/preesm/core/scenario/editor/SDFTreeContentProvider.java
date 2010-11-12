@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.HashMap;
@@ -54,46 +54,47 @@ import org.sdf4j.model.sdf.SDFVertex;
 import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
 
 /**
- * This class provides the elements displayed in {@link SDFTreeSection}.
- * Each element is a vertex. This tree is used in scenario editor to
- * edit the constraints
+ * This class provides the elements displayed in {@link SDFTreeSection}. Each
+ * element is a vertex. This tree is used in scenario editor to edit the
+ * constraints
  * 
  * @author mpelcat
  */
 public class SDFTreeContentProvider implements ITreeContentProvider {
-	
+
 	private SDFGraph currentGraph = null;
 
 	/**
 	 * This map keeps the VertexWithPath used as a tree content for each vertex.
 	 */
-	private Map<String,HierarchicalSDFVertex> correspondingVertexWithMap = null;
+	private Map<String, HierarchicalSDFVertex> correspondingVertexWithMap = null;
 
 	public SDFTreeContentProvider(CheckboxTreeViewer treeViewer) {
 		super();
 		correspondingVertexWithMap = new HashMap<String, HierarchicalSDFVertex>();
 	}
-	
+
 	@Override
 	public Object[] getChildren(Object parentElement) {
 		Object table[] = null;
-		
-		if(parentElement instanceof SDFGraph){
-			SDFGraph graph = (SDFGraph)parentElement;
-			
+
+		if (parentElement instanceof SDFGraph) {
+			SDFGraph graph = (SDFGraph) parentElement;
+
 			// Some types of vertices are ignored in the constraints view
-			table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
-		}
-		else if(parentElement instanceof HierarchicalSDFVertex){
-			HierarchicalSDFVertex vertex = (HierarchicalSDFVertex)parentElement;
+			table = keepAndConvertAppropriateChildren(graph.vertexSet())
+					.toArray();
+		} else if (parentElement instanceof HierarchicalSDFVertex) {
+			HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
 			IRefinement refinement = vertex.getStoredVertex().getRefinement();
-			
-			if(refinement != null && refinement instanceof SDFGraph){
-				SDFGraph graph = (SDFGraph)refinement;
-				table = keepAndConvertAppropriateChildren(graph.vertexSet()).toArray();
+
+			if (refinement != null && refinement instanceof SDFGraph) {
+				SDFGraph graph = (SDFGraph) refinement;
+				table = keepAndConvertAppropriateChildren(graph.vertexSet())
+						.toArray();
 			}
 		}
-		
+
 		return table;
 	}
 
@@ -107,25 +108,24 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 
 		boolean hasChildren = false;
-		
-		if(element instanceof SDFGraph){
-			SDFGraph graph = (SDFGraph)element;
+
+		if (element instanceof SDFGraph) {
+			SDFGraph graph = (SDFGraph) element;
 			hasChildren = !graph.vertexSet().isEmpty();
-		}
-		else if(element instanceof HierarchicalSDFVertex){
-			SDFAbstractVertex sdfVertex =((HierarchicalSDFVertex) element).getStoredVertex();
-			if(sdfVertex instanceof SDFBroadcastVertex){
-				//SDFAbstractVertex vertex = (SDFAbstractVertex)element;
+		} else if (element instanceof HierarchicalSDFVertex) {
+			SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element)
+					.getStoredVertex();
+			if (sdfVertex instanceof SDFBroadcastVertex) {
+				// SDFAbstractVertex vertex = (SDFAbstractVertex)element;
 				hasChildren = false;
-			}
-			else if(sdfVertex instanceof SDFVertex){
-				SDFVertex vertex = (SDFVertex)sdfVertex;
+			} else if (sdfVertex instanceof SDFVertex) {
+				SDFVertex vertex = (SDFVertex) sdfVertex;
 				IRefinement refinement = vertex.getRefinement();
-				
+
 				hasChildren = (refinement != null);
 			}
 		}
-		
+
 		return hasChildren;
 	}
 
@@ -133,11 +133,12 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Object[] table = new Object[1];
 
-		if(inputElement instanceof Scenario){
-			Scenario inputScenario = (Scenario)inputElement;
-			
+		if (inputElement instanceof Scenario) {
+			Scenario inputScenario = (Scenario) inputElement;
+
 			// Opening algorithm from file
-			currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
+			currentGraph = ScenarioParser.getAlgorithm(inputScenario
+					.getAlgorithmURL());
 			table[0] = currentGraph;
 		}
 		return table;
@@ -161,24 +162,27 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	/**
 	 * Filters the children to display in the tree
 	 */
-	public Set<HierarchicalSDFVertex> keepAndConvertAppropriateChildren(Set<SDFAbstractVertex> children) {
-		
-		ConcurrentSkipListSet<HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<HierarchicalSDFVertex>(new PathComparator());
-		
-		for(SDFAbstractVertex v : children){
-			if(v.getKind() == "vertex"){
+	public Set<HierarchicalSDFVertex> keepAndConvertAppropriateChildren(
+			Set<SDFAbstractVertex> children) {
+
+		ConcurrentSkipListSet<HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<HierarchicalSDFVertex>(
+				new PathComparator());
+
+		for (SDFAbstractVertex v : children) {
+			if (v.getKind() == "vertex") {
 				appropriateChildren.add(convertChild(v));
 			}
 		}
-		
+
 		return appropriateChildren;
 	}
 
-	public HierarchicalSDFVertex convertChild(SDFAbstractVertex child){
-		if(!correspondingVertexWithMap.containsKey(child.getInfo()))
-			correspondingVertexWithMap.put(child.getInfo(), new HierarchicalSDFVertex(child));
-			
+	public HierarchicalSDFVertex convertChild(SDFAbstractVertex child) {
+		if (!correspondingVertexWithMap.containsKey(child.getInfo()))
+			correspondingVertexWithMap.put(child.getInfo(),
+					new HierarchicalSDFVertex(child));
+
 		return correspondingVertexWithMap.get(child.getInfo());
 	}
-	
+
 }

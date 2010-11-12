@@ -118,7 +118,8 @@ public class WorkflowLaunchConfigurationDelegate implements
 						configEnv);
 			} catch (PreesmException e) {
 				e.printStackTrace();
-				PreesmLogger.getLogger().log(Level.WARNING, "workflow aborted :"+ e.getMessage());
+				PreesmLogger.getLogger().log(Level.WARNING,
+						"workflow aborted :" + e.getMessage());
 				monitor.setCanceled(true);
 			}
 		} else {
@@ -130,14 +131,16 @@ public class WorkflowLaunchConfigurationDelegate implements
 		PreesmLogger.getLogger().createConsole();
 		PreesmLogger.getLogger().setLevel(Level.INFO);
 
-		Activator.getDefault().getWorkbench().getDisplay().syncExec(
-				new Runnable() {
+		Activator.getDefault().getWorkbench().getDisplay()
+				.syncExec(new Runnable() {
 					@Override
 					public void run() {
 						IWorkbenchWindow window = Activator.getDefault()
 								.getWorkbench().getActiveWorkbenchWindow();
 						try {
-							Activator.getDefault().getWorkbench()
+							Activator
+									.getDefault()
+									.getWorkbench()
 									.showPerspective(CorePerspectiveFactory.ID,
 											window);
 						} catch (WorkbenchException e) {

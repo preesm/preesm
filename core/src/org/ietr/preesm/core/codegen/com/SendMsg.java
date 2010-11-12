@@ -58,8 +58,9 @@ public class SendMsg extends CommunicationFunctionCall {
 	 */
 	IOperator target;
 
-	public SendMsg(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, IOperator target) {
+	public SendMsg(AbstractBufferContainer parentContainer,
+			SDFAbstractVertex vertex, List<Buffer> bufferSet,
+			AbstractRouteStep routeStep, IOperator target) {
 		super("send", parentContainer, bufferSet, routeStep, vertex, 0);
 
 		this.target = target;

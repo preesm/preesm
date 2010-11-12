@@ -55,12 +55,13 @@ public class SchedulingOrderComparator implements Comparator<SDFAbstractVertex> 
 
 		int difference = 0;
 
-		difference = (Integer) v1.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+		difference = (Integer) v1.getPropertyBean().getValue(
+				ImplementationPropertyNames.Vertex_schedulingOrder);
 
-		difference -= (Integer) v2.getPropertyBean()
-				.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
-		if(difference == 0){
-			return -1 ;
+		difference -= (Integer) v2.getPropertyBean().getValue(
+				ImplementationPropertyNames.Vertex_schedulingOrder);
+		if (difference == 0) {
+			return -1;
 		}
 		return difference;
 	}

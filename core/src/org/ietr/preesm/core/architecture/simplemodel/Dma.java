@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -45,21 +45,21 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
  * @author mpelcat
  */
 public class Dma extends ArchitectureComponent {
-	
+
 	public Dma(String id, DmaDefinition type) {
 		super(id, type);
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.dma;
 	}
 
-	/*@Override
-	public ArchitectureComponent clone() {
-		return new Dma(getName(),null);
-	}*/
-	
-	public boolean isNode(){
+	/*
+	 * @Override public ArchitectureComponent clone() { return new
+	 * Dma(getName(),null); }
+	 */
+
+	public boolean isNode() {
 		return false;
 	}
 }

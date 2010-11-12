@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.com;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -58,7 +58,7 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 	private AbstractRouteStep step;
 
 	/**
-	 * index of the function call  within the calls of same type and route step
+	 * index of the function call within the calls of same type and route step
 	 */
 	private int callIndex = -1;
 
@@ -78,7 +78,7 @@ public class CommunicationFunctionInit extends AbstractCodeElement {
 	public AbstractRouteStep getRouteStep() {
 		return step;
 	}
-	
+
 	public int getCallIndex() {
 		return callIndex;
 	}

@@ -43,8 +43,8 @@ import java.util.Set;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
- * A route contains several Route Steps. It links operators.
- * To operators directly connected have a route with one route step.
+ * A route contains several Route Steps. It links operators. To operators
+ * directly connected have a route with one route step.
  * 
  * @author mpelcat
  */
@@ -66,10 +66,10 @@ public class Route extends ArrayList<AbstractRouteStep> {
 
 	public Route(Route r1, Route r2) {
 		super();
-		for(AbstractRouteStep step : r1){
+		for (AbstractRouteStep step : r1) {
 			this.add(step);
 		}
-		for(AbstractRouteStep step : r2){
+		for (AbstractRouteStep step : r2) {
 			this.add(step);
 		}
 	}
@@ -79,7 +79,8 @@ public class Route extends ArrayList<AbstractRouteStep> {
 	}
 
 	/**
-	 * Evaluates the cost of a data transfer with size transferSize along the route
+	 * Evaluates the cost of a data transfer with size transferSize along the
+	 * route
 	 */
 	public long evaluateTransferCost(long transferSize) {
 		long cost = 0;
@@ -87,7 +88,7 @@ public class Route extends ArrayList<AbstractRouteStep> {
 		for (AbstractRouteStep step : this) {
 			cost += step.getTransferCost(transferSize);
 		}
-		
+
 		return cost;
 	}
 
@@ -99,14 +100,14 @@ public class Route extends ArrayList<AbstractRouteStep> {
 		Set<Operator> opSet = new HashSet<Operator>();
 		// Iterating the route and testing number of occurences in sender
 		for (AbstractRouteStep step : this) {
-			if(opSet.contains(step.getSender())){
+			if (opSet.contains(step.getSender())) {
 				isIt = false;
 			}
 			opSet.add(step.getSender());
 		}
-		
+
 		// Testing last step receiver
-		if(opSet.contains(this.get(this.size()-1).getReceiver())){
+		if (opSet.contains(this.get(this.size() - 1).getReceiver())) {
 			isIt = false;
 		}
 		return isIt;

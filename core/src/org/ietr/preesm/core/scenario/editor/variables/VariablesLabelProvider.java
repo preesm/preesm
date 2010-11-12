@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.variables;
 
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -59,7 +59,7 @@ import org.sdf4j.model.parameters.Variable;
 public class VariablesLabelProvider implements ITableLabelProvider {
 
 	private Scenario scenario = null;
-	
+
 	private TableViewer tableViewer = null;
 
 	/**
@@ -67,7 +67,8 @@ public class VariablesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public VariablesLabelProvider(Scenario scenario, TableViewer tableViewer, IPropertyListener propertyListener) {
+	public VariablesLabelProvider(Scenario scenario, TableViewer tableViewer,
+			IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
@@ -149,7 +150,7 @@ public class VariablesLabelProvider implements ITableLabelProvider {
 			String title = Messages.getString("Variables.dialog.title");
 			String message = Messages.getString("Variables.dialog.message")
 					+ var.getName();
-			
+
 			String init = var.getValue();
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
@@ -159,7 +160,8 @@ public class VariablesLabelProvider implements ITableLabelProvider {
 				String value = dialog.getValue();
 
 				var.setValue(value);
-				scenario.getVariablesManager().setVariable(var.getName(), value);
+				scenario.getVariablesManager()
+						.setVariable(var.getName(), value);
 
 				tableViewer.refresh();
 				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

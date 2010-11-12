@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import java.util.Map;
@@ -60,58 +60,63 @@ import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.esdf.SDFJoinVertex;
 
+public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
+		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {
 
-public class CodeGenSDFJoinVertex extends SDFJoinVertex implements ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex{
+	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
-	
-	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;
-	
 	public CodeGenSDFJoinVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
 		FunctionCall joinCall = new FunctionCall("join");
 		this.setRefinement(joinCall);
 	}
-	
-	public ArchitectureComponent getOperator(){
-		return (ArchitectureComponent) this.getPropertyBean().getValue(OPERATOR, ArchitectureComponent.class);
+
+	public ArchitectureComponent getOperator() {
+		return (ArchitectureComponent) this.getPropertyBean().getValue(
+				OPERATOR, ArchitectureComponent.class);
 	}
-	
-	public void setOperator(ArchitectureComponent op){
+
+	public void setOperator(ArchitectureComponent op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
-	
-	public int getPos(){
-		if(this.getPropertyBean().getValue(POS) != null){
-			return (Integer) this.getPropertyBean().getValue(POS, Integer.class);
+
+	public int getPos() {
+		if (this.getPropertyBean().getValue(POS) != null) {
+			return (Integer) this.getPropertyBean()
+					.getValue(POS, Integer.class);
 		}
-		return 0 ;
+		return 0;
 	}
-	
-	public void setPos(int pos){
+
+	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
-	
-	private void addConnection(SDFEdge newEdge){
-		int i = 0 ;
-		while(getConnections().get(i) != null){
-			i ++ ;
+
+	private void addConnection(SDFEdge newEdge) {
+		int i = 0;
+		while (getConnections().get(i) != null) {
+			i++;
 		}
 		getConnections().put(i, newEdge);
 	}
-	
-	private void removeConnection(SDFEdge newEdge){
+
+	private void removeConnection(SDFEdge newEdge) {
 		getConnections().remove(newEdge);
 	}
-	
-	/** Sets this edge connection index 
-	 * @param edge The edge connected to the vertex
-	 * @param index The index in the connections
+
+	/**
+	 * Sets this edge connection index
+	 * 
+	 * @param edge
+	 *            The edge connected to the vertex
+	 * @param index
+	 *            The index in the connections
 	 */
-	public void setConnectionIndex(SDFEdge edge, int index){
-		Map<Integer, SDFEdge> connections  = getConnections();
+	public void setConnectionIndex(SDFEdge edge, int index) {
+		Map<Integer, SDFEdge> connections = getConnections();
 		connections.put(index, edge);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void connectionAdded(AbstractEdge e) {
@@ -123,23 +128,22 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements ICodeGenSDFVe
 	public void connectionRemoved(AbstractEdge e) {
 		removeConnection((SDFEdge) e);
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "";
 	}
 
 	@Override
 	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
 		SDFEdge outgoingEdge = null;
-		CompoundCodeElement container = new CompoundCodeElement(
-				this.getName(), parentContainer);
+		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
+				parentContainer);
 		container.setCorrespondingVertex(this);
 		for (SDFEdge outedge : ((SDFGraph) this.getBase())
 				.outgoingEdgesOf(this)) {
 			outgoingEdge = outedge;
 		}
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase())
-				.incomingEdgesOf(this)) {
+		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
 			UserFunctionCall copyCall = new UserFunctionCall("memcpy",
 					parentContainer);
 			try {
@@ -171,32 +175,25 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements ICodeGenSDFVe
 			outgoingEdge = outEdge;
 		}
 		Buffer outBuffer = parentContainer.getBuffer(outgoingEdge);
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase())
-				.incomingEdgesOf(this)) {
-			ConstantExpression index = new ConstantExpression("",
-					new DataType("int"),
-					((CodeGenSDFJoinVertex) this)
-							.getEdgeIndex(inEdge));
-			String buffName = parentContainer.getBuffer(inEdge)
-					.getName();
-			IExpression expr = new BinaryExpression("%",
-					new BinaryExpression("*", index,
-							new ConstantExpression(inEdge.getCons()
-									.intValue())),
-					new ConstantExpression(outBuffer.getSize()));
+		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
+			ConstantExpression index = new ConstantExpression("", new DataType(
+					"int"), ((CodeGenSDFJoinVertex) this).getEdgeIndex(inEdge));
+			String buffName = parentContainer.getBuffer(inEdge).getName();
+			IExpression expr = new BinaryExpression("%", new BinaryExpression(
+					"*", index, new ConstantExpression(inEdge.getCons()
+							.intValue())), new ConstantExpression(
+					outBuffer.getSize()));
 			SubBuffer subElt = new SubBuffer(buffName, inEdge.getCons()
-					.intValue(), expr, outBuffer, inEdge,
-					parentContainer);
+					.intValue(), expr, outBuffer, inEdge, parentContainer);
 			if (parentContainer.getBuffer(inEdge) == null) {
 				parentContainer.removeBufferAllocation(parentContainer
 						.getBuffer(inEdge));
-				parentContainer
-						.addSubBufferAllocation(new SubBufferAllocation(
-								subElt));
+				parentContainer.addSubBufferAllocation(new SubBufferAllocation(
+						subElt));
 			}
 			i++;
 		}
-		return true ;
+		return true;
 	}
 
 }

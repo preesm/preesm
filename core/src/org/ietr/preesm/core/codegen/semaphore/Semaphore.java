@@ -73,7 +73,8 @@ public class Semaphore {
 	private CodeSectionType codeContainerType;
 
 	public Semaphore(SemaphoreContainer container,
-			List<Buffer> protectedBuffers, SemaphoreType semaphoreType, CodeSectionType codeContainerType) {
+			List<Buffer> protectedBuffers, SemaphoreType semaphoreType,
+			CodeSectionType codeContainerType) {
 
 		this.semaphoreType = semaphoreType;
 
@@ -84,20 +85,21 @@ public class Semaphore {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof Semaphore)
-			for(Buffer buff : protectedBuffers){
-				if(!((Semaphore) obj).protectedBuffers.contains(buff)){
-					return false ;
+			for (Buffer buff : protectedBuffers) {
+				if (!((Semaphore) obj).protectedBuffers.contains(buff)) {
+					return false;
 				}
 			}
-				if (((Semaphore) obj).semaphoreType == semaphoreType)
-					return true;
+		if (((Semaphore) obj).semaphoreType == semaphoreType)
+			return true;
 		return false;
 	}
 
@@ -127,8 +129,8 @@ public class Semaphore {
 
 		String code = "";
 
-		code += "sem[" + getSemaphoreNumber() + ","
-				+ semaphoreType.toString() + "]";
+		code += "sem[" + getSemaphoreNumber() + "," + semaphoreType.toString()
+				+ "]";
 
 		return code;
 	}

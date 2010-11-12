@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.ui.launch;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -141,7 +140,11 @@ public class WorkFlowLaunchAlgorithmTab extends AbstractWorkFlowLaunchTab {
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		super.initializeFrom(configuration);
 		try {
-			workflowText.setText(configuration.getAttribute(WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME, ""));
+			workflowText
+					.setText(configuration
+							.getAttribute(
+									WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME,
+									""));
 		} catch (CoreException e) {
 			workflowText.setText("");
 		}
@@ -158,19 +161,19 @@ public class WorkFlowLaunchAlgorithmTab extends AbstractWorkFlowLaunchTab {
 							WorkflowLaunchConfigurationDelegate.ATTR_WORKFLOW_FILE_NAME,
 							workflowPath.toOSString());
 	}
-	
+
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-	
+
 	}
 
 	@Override
 	public Image getImage() {
 		Image image = Activator.getImage("icons/preesm2mini.png");
-		
-		if(image != null)
+
+		if (image != null)
 			return image;
-		
+
 		return super.getImage();
 	}
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.timings;
 
 import java.util.Iterator;
@@ -53,60 +53,63 @@ import org.sdf4j.model.sdf.SDFGraph;
  * 
  * @author mpelcat
  */
-public class SDFListContentProvider implements IStructuredContentProvider{
-	
+public class SDFListContentProvider implements IStructuredContentProvider {
+
 	@Override
 	public Object[] getElements(Object inputElement) {
 
 		Object[] elementTable = null;
 
-		if(inputElement instanceof Scenario){
-			Scenario inputScenario = (Scenario)inputElement;
-			
+		if (inputElement instanceof Scenario) {
+			Scenario inputScenario = (Scenario) inputElement;
+
 			elementTable = getSortedVertices(inputScenario).toArray();
 		}
 		return elementTable;
-	}	
-	
-	static public Set<SDFAbstractVertex> getSortedVertices(Scenario inputScenario) {
-		Set<SDFAbstractVertex> sortedVertices = null;	
+	}
+
+	static public Set<SDFAbstractVertex> getSortedVertices(
+			Scenario inputScenario) {
+		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
-		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario.getAlgorithmURL());
-		
+		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario
+				.getAlgorithmURL());
+
 		// Displays the task names in alphabetical order
-		if(currentGraph != null){
-			
+		if (currentGraph != null) {
+
 			// lists the vertices in hierarchy
-			Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
-			
+			Set<SDFAbstractVertex> vertices = currentGraph
+					.getHierarchicalVertexSet();
+
 			// Filters the results
 			filterVertices(vertices);
 
-			sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(new NameComparator());
+			sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(
+					new NameComparator());
 			sortedVertices.addAll(vertices);
 		}
-		
+
 		return sortedVertices;
 	}
-	
+
 	/**
 	 * Depending on the kind of vertex, timings are edited or not
 	 */
 	static public void filterVertices(Set<SDFAbstractVertex> vertices) {
 
 		Iterator<SDFAbstractVertex> iterator = vertices.iterator();
-		
-		while(iterator.hasNext()){
+
+		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
-			
-			if(vertex.getKind() == "Broadcast"){
+
+			if (vertex.getKind() == "Broadcast") {
 				iterator.remove();
-			}
-			else if(vertex.getKind() == "port"){
+			} else if (vertex.getKind() == "port") {
 				iterator.remove();
-			}
-			else if(vertex.getGraphDescription() != null){
-				// Timings of vertices with graph description are deduced and not entered in scenario
+			} else if (vertex.getGraphDescription() != null) {
+				// Timings of vertices with graph description are deduced and
+				// not entered in scenario
 				iterator.remove();
 			}
 		}
@@ -115,13 +118,13 @@ public class SDFListContentProvider implements IStructuredContentProvider{
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

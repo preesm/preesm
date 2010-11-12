@@ -86,7 +86,6 @@ public class CodeElementFactory {
 		}
 	}
 
-
 	public static void treatSpecialBehaviorVertex(String name,
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		try {

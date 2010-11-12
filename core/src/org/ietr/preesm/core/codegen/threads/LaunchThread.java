@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.threads;
 
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
@@ -51,10 +51,11 @@ public class LaunchThread extends AbstractCodeElement {
 	private String threadName;
 	private int stackSize;
 	private int priority;
-	
-	public LaunchThread(AbstractBufferContainer parentContainer, String threadName, int stackSize, int priority) {
+
+	public LaunchThread(AbstractBufferContainer parentContainer,
+			String threadName, int stackSize, int priority) {
 		super("launchThread", parentContainer, null);
-		
+
 		this.threadName = threadName;
 		this.stackSize = stackSize;
 		this.priority = priority;

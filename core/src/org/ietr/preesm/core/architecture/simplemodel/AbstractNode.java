@@ -17,8 +17,8 @@ public abstract class AbstractNode extends ArchitectureComponent {
 		super(id, definition);
 		// TODO Auto-generated constructor stub
 	}
-	
-	public boolean isNode(){
+
+	public boolean isNode() {
 		return true;
 	}
 

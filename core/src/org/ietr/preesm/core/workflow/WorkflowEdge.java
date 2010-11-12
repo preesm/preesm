@@ -60,8 +60,8 @@ public class WorkflowEdge {
 	}
 
 	public void setCarriedData(TaskResult data) {
-		
-		if(carriedDataType != null){
+
+		if (carriedDataType != null) {
 			switch (carriedDataType) {
 			case SDF:
 				this.data.setSDF(data.getSDF());
@@ -82,13 +82,13 @@ public class WorkflowEdge {
 				this.data.setAbc(data.getAbc());
 				break;
 			default:
-	
+
 			}
 		}
 	}
-	
-	public WorkflowEdgeType getCarriedDataType(){
-		return carriedDataType ;
+
+	public WorkflowEdgeType getCarriedDataType() {
+		return carriedDataType;
 	}
 
 	public void setCarriedDataType(String type) {

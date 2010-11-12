@@ -165,7 +165,7 @@ public class ScenarioParser {
 
 		String excelFileUrl = varsElt.getAttribute("excelUrl");
 		scenario.getVariablesManager().setExcelFileURL(excelFileUrl);
-		
+
 		Node node = varsElt.getFirstChild();
 
 		while (node != null) {
@@ -176,7 +176,7 @@ public class ScenarioParser {
 				if (type.equals("variable")) {
 					String name = elt.getAttribute("name");
 					String value = elt.getAttribute("value");
-					
+
 					scenario.getVariablesManager().setVariable(name, value);
 				}
 			}
@@ -199,12 +199,12 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
 				if (type.equals("mainCore")) {
-					scenario.getSimulationManager()
-							.setMainOperatorId(content);
+					scenario.getSimulationManager().setMainOperatorId(content);
 				} else if (type.equals("mainMedium")) {
 					scenario.getSimulationManager().setMainMediumName(content);
 				} else if (type.equals("averageDataSize")) {
-					scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
+					scenario.getSimulationManager().setAverageDataSize(
+							Long.valueOf(content));
 				} else if (type.equals("dataTypes")) {
 					parseDataTypes(elt);
 				} else if (type.equals("specialVertexOperators")) {
@@ -233,8 +233,8 @@ public class ScenarioParser {
 					String size = elt.getAttribute("size");
 
 					if (!name.isEmpty() && !size.isEmpty()) {
-						DataType dataType = new DataType(name, Integer
-								.parseInt(size));
+						DataType dataType = new DataType(name,
+								Integer.parseInt(size));
 						scenario.getSimulationManager().putDataType(dataType);
 					}
 				}
@@ -261,26 +261,28 @@ public class ScenarioParser {
 
 					ArchitectureComponent cmp = archi
 							.getHierarchicalVertexFromPath(path);
-					
+
 					if (cmp != null) {
-						scenario.getSimulationManager().addSpecialVertexOperator(cmp);
+						scenario.getSimulationManager()
+								.addSpecialVertexOperator(cmp);
 					}
 				}
 			}
 
 			node = node.getNextSibling();
 		}
-		
 
 		/*
 		 * It is not possible to remove all operators from special vertex
 		 * executors: if no operator is selected, all of them are!!
 		 */
-		if(scenario.getSimulationManager().getSpecialVertexOperators().isEmpty()){
-			for(ArchitectureComponent c : archi.getComponents(ArchitectureComponentType.operator)){
+		if (scenario.getSimulationManager().getSpecialVertexOperators()
+				.isEmpty()) {
+			for (ArchitectureComponent c : archi
+					.getComponents(ArchitectureComponentType.operator)) {
 				scenario.getSimulationManager().addSpecialVertexOperator(c);
 			}
-			
+
 		}
 	}
 
@@ -342,7 +344,7 @@ public class ScenarioParser {
 
 		String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
 		scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
-		
+
 		Node node = cstGroupsElt.getFirstChild();
 
 		while (node != null) {
@@ -406,7 +408,7 @@ public class ScenarioParser {
 		scenario.getTimingManager().setExcelFileURL(timingFileUrl);
 
 		Node node = timingsElt.getFirstChild();
-		
+
 		while (node != null) {
 
 			if (node instanceof Element) {
@@ -449,7 +451,7 @@ public class ScenarioParser {
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
 								ArchitectureComponentType.operator, opdefname);
-				
+
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef, vertex, time);
 				}

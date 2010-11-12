@@ -38,13 +38,13 @@ package org.ietr.preesm.core.task;
 
 /**
  * A file transformation does not receive any data from its edges. It is
- * synchronized by the edges and transforms a file which path is specified in task
- * parameters into another file also specified in task parameters
+ * synchronized by the edges and transforms a file which path is specified in
+ * task parameters into another file also specified in task parameters
  * 
  * @author mpelcat
  */
-public interface IFileConversion extends ITransformation{
-	
+public interface IFileConversion extends ITransformation {
+
 	/**
 	 * Transforms a file into another file. No data transmitted
 	 */

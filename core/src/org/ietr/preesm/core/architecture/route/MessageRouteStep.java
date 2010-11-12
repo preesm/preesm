@@ -99,14 +99,14 @@ public class MessageRouteStep extends AbstractRouteStep {
 
 	public List<ContentionNode> getContentionNodes() {
 		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
-		for(AbstractNode node : nodes){
-			if(node instanceof ContentionNode){
-				contentionNodes.add((ContentionNode)node);
+		for (AbstractNode node : nodes) {
+			if (node instanceof ContentionNode) {
+				contentionNodes.add((ContentionNode) node);
 			}
 		}
 		return contentionNodes;
 	}
-	
+
 	public List<AbstractNode> getNodes() {
 		return nodes;
 	}
@@ -117,23 +117,24 @@ public class MessageRouteStep extends AbstractRouteStep {
 	@Override
 	public final long getWorstTransferTime(long transfersSize) {
 		long time = 0;
-		
-		for(AbstractNode node: nodes){
-			if(node instanceof ContentionNode){
-			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
-			time = Math.max(time,def.getTransferTime(transfersSize));
-			}
-			else if (node instanceof ParallelNode){
-				ParallelNodeDefinition def = (ParallelNodeDefinition)node.getDefinition();
-				time = Math.max(time,def.getTransferTime(transfersSize));
+
+		for (AbstractNode node : nodes) {
+			if (node instanceof ContentionNode) {
+				ContentionNodeDefinition def = (ContentionNodeDefinition) node
+						.getDefinition();
+				time = Math.max(time, def.getTransferTime(transfersSize));
+			} else if (node instanceof ParallelNode) {
+				ParallelNodeDefinition def = (ParallelNodeDefinition) node
+						.getDefinition();
+				time = Math.max(time, def.getTransferTime(transfersSize));
 			}
 		}
 		return time;
 	}
 
 	/**
-	 * Evaluates the cost of a data transfer with size transferSize.
-	 * Can include overheads, additional cost...
+	 * Evaluates the cost of a data transfer with size transferSize. Can include
+	 * overheads, additional cost...
 	 */
 	@Override
 	public long getTransferCost(long transfersSize) {
@@ -149,9 +150,11 @@ public class MessageRouteStep extends AbstractRouteStep {
 		trace += "-> " + getReceiver().toString() + "}";
 		return trace;
 	}
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new MessageRouteStep((Operator)getSender().clone(),nodes,(Operator)getReceiver().clone());
+		return new MessageRouteStep((Operator) getSender().clone(), nodes,
+				(Operator) getReceiver().clone());
 	}
 
 }

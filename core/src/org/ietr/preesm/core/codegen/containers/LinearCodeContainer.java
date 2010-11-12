@@ -47,7 +47,8 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  * 
  * @author mpelcat
  */
-public class LinearCodeContainer extends AbstractCodeContainer implements ICodeElement {
+public class LinearCodeContainer extends AbstractCodeContainer implements
+		ICodeElement {
 
 	public LinearCodeContainer(AbstractBufferContainer parentContainer) {
 		super(parentContainer);
@@ -56,7 +57,8 @@ public class LinearCodeContainer extends AbstractCodeContainer implements ICodeE
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 		super.accept(printer, currentLocation); // Accept the code container
 	}
 

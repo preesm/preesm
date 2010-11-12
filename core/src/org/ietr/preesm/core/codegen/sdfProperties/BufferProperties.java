@@ -39,25 +39,25 @@ package org.ietr.preesm.core.codegen.sdfProperties;
 import org.ietr.preesm.core.codegen.types.DataType;
 
 /**
- * Objects used to tag the DAG edges. The buffer couple definition 
- * is transmitted to the code generation. One buffer is created 
- * for the source and one for the destination.
+ * Objects used to tag the DAG edges. The buffer couple definition is
+ * transmitted to the code generation. One buffer is created for the source and
+ * one for the destination.
  * 
  * @author mpelcat
- *
+ * 
  */
 public class BufferProperties {
-	
+
 	private DataType dataType;
-	
+
 	private String destInputPortID;
-	
+
 	private int size;
-	
+
 	private String sourceOutputPortID;
 
-	public BufferProperties(DataType dataType, String sourceOutputPortID, String destInputPortID,
-			int size) {
+	public BufferProperties(DataType dataType, String sourceOutputPortID,
+			String destInputPortID, int size) {
 		super();
 		this.dataType = dataType;
 		this.destInputPortID = destInputPortID;
@@ -67,10 +67,9 @@ public class BufferProperties {
 
 	public String getDataType() {
 		String typeName = "";
-		if(dataType == null){
+		if (dataType == null) {
 			typeName = "typeNotFound";
-		}
-		else{
+		} else {
 			typeName = dataType.getTypeName();
 		}
 		return typeName;
@@ -87,6 +86,5 @@ public class BufferProperties {
 	public String getSourceOutputPortID() {
 		return sourceOutputPortID;
 	}
-	
-	
+
 }

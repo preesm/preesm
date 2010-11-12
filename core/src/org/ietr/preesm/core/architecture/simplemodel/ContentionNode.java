@@ -33,14 +33,14 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
 /**
- * A contention node is a communication node which contention
- * is taken into account during the deployment simulation
+ * A contention node is a communication node which contention is taken into
+ * account during the deployment simulation
  * 
  * @author mpelcat
  */
@@ -49,13 +49,13 @@ public class ContentionNode extends AbstractNode {
 	public ContentionNode(String id, ContentionNodeDefinition type) {
 		super(id, type);
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.contentionNode;
 	}
 
-	/*@Override
-	public ArchitectureComponent clone() {
-		return new ContentionNode(getName(),null);
-	}*/
+	/*
+	 * @Override public ArchitectureComponent clone() { return new
+	 * ContentionNode(getName(),null); }
+	 */
 }

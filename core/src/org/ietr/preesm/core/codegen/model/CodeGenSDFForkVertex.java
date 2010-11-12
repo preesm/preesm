@@ -137,11 +137,10 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 	@Override
 	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
 		SDFEdge incomingEdge = null;
-		CompoundCodeElement container = new CompoundCodeElement(
-				this.getName(), parentContainer);
+		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
+				parentContainer);
 		container.setCorrespondingVertex(this);
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase())
-				.incomingEdgesOf(this)) {
+		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
 			incomingEdge = inEdge;
 		}
 		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
@@ -186,41 +185,34 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 
 	@Override
 	public boolean generateSpecialBehavior(
-			AbstractBufferContainer parentContainer) throws InvalidExpressionException {
+			AbstractBufferContainer parentContainer)
+			throws InvalidExpressionException {
 		SDFEdge incomingEdge = null;
 		int i = 0;
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase())
-				.incomingEdgesOf(this)) {
+		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
 			incomingEdge = inEdge;
 		}
 		Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
 		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
 				.outgoingEdgesOf(this)) {
-			ConstantExpression index = new ConstantExpression("",
-					new DataType("int"),
-					((CodeGenSDFForkVertex) this)
-							.getEdgeIndex(outEdge));
-			String buffName = parentContainer.getBuffer(outEdge)
-					.getName();
-			IExpression expr = new BinaryExpression("%",
-					new BinaryExpression("*", index,
-							new ConstantExpression(outEdge.getProd()
-									.intValue())),
-					new ConstantExpression(inBuffer.getSize()));
-			SubBuffer subElt = new SubBuffer(buffName, outEdge
-					.getProd().intValue(), expr, inBuffer, outEdge,
-					parentContainer);
+			ConstantExpression index = new ConstantExpression("", new DataType(
+					"int"), ((CodeGenSDFForkVertex) this).getEdgeIndex(outEdge));
+			String buffName = parentContainer.getBuffer(outEdge).getName();
+			IExpression expr = new BinaryExpression("%", new BinaryExpression(
+					"*", index, new ConstantExpression(outEdge.getProd()
+							.intValue())), new ConstantExpression(
+					inBuffer.getSize()));
+			SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd()
+					.intValue(), expr, inBuffer, outEdge, parentContainer);
 			if (parentContainer.getBuffer(outEdge) == null) {
 				parentContainer.removeBufferAllocation(parentContainer
 						.getBuffer(outEdge));
-				parentContainer
-						.addSubBufferAllocation(new SubBufferAllocation(
-								subElt));
+				parentContainer.addSubBufferAllocation(new SubBufferAllocation(
+						subElt));
 			}
 			i++;
 		}
-		return true ;
+		return true;
 	}
-
 
 }

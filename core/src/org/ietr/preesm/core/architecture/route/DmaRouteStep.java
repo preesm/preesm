@@ -43,8 +43,8 @@ import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
- * Route step where the sender uses a dma to send data in
- * parallel with its processing
+ * Route step where the sender uses a dma to send data in parallel with its
+ * processing
  * 
  * @author mpelcat
  */
@@ -56,9 +56,10 @@ public class DmaRouteStep extends MessageRouteStep {
 	 * The route step type determines how the communication will be simulated.
 	 */
 	public static final String type = "DmaRouteStep";
-	
-	public DmaRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Dma dma) {
-		super(sender,nodes, receiver);		
+
+	public DmaRouteStep(Operator sender, List<AbstractNode> nodes,
+			Operator receiver, Dma dma) {
+		super(sender, nodes, receiver);
 		this.dma = dma;
 	}
 
@@ -69,7 +70,7 @@ public class DmaRouteStep extends MessageRouteStep {
 	public String getType() {
 		return type;
 	}
-	
+
 	public Dma getDma() {
 		return dma;
 	}
@@ -77,15 +78,16 @@ public class DmaRouteStep extends MessageRouteStep {
 	@Override
 	public String toString() {
 		String trace = super.toString();
-		trace = trace.substring(0,trace.length()-1);
+		trace = trace.substring(0, trace.length() - 1);
 		trace += "[" + dma + "]}";
 		return trace;
 	}
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		Dma newDma = (Dma)dma.clone();
+		Dma newDma = (Dma) dma.clone();
 		newDma.setDefinition(dma.getDefinition());
-		return new DmaRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newDma);
+		return new DmaRouteStep((Operator) getSender().clone(), getNodes(),
+				(Operator) getReceiver().clone(), newDma);
 	}
 }

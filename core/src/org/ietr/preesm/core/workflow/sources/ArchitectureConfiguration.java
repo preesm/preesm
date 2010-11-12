@@ -40,8 +40,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 
 /**
- * Representing the configuration for the architecture retrieved from launch tab.
- * It feeds an {@link ArchitectureRetriever} to create the input architecture.
+ * Representing the configuration for the architecture retrieved from launch
+ * tab. It feeds an {@link ArchitectureRetriever} to create the input
+ * architecture.
  * 
  * @author mpelcat
  */
@@ -54,7 +55,8 @@ public class ArchitectureConfiguration {
 
 	private String architectureFileName = null;
 
-	public ArchitectureConfiguration(ILaunchConfiguration configuration) throws CoreException {
+	public ArchitectureConfiguration(ILaunchConfiguration configuration)
+			throws CoreException {
 		super();
 		this.architectureFileName = configuration.getAttribute(
 				ATTR_ARCHITECTURE_FILE_NAME, "");

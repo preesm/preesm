@@ -58,19 +58,19 @@ public class DataType {
 	public DataType(String typeName) {
 		super();
 		this.typeName = typeName;
-		if(nameToSize.get(typeName) == null){
+		if (nameToSize.get(typeName) == null) {
 			this.size = defaultDataTypeSize;
-		}else{
+		} else {
 			this.size = nameToSize.get(typeName);
 		}
 	}
-	
-	public DataType(DataType type){
+
+	public DataType(DataType type) {
 		super();
 		this.typeName = type.getTypeName();
 		this.size = type.getSize();
 	}
-	
+
 	public DataType(String typeName, Integer size) {
 		super();
 		this.typeName = typeName;
@@ -81,7 +81,7 @@ public class DataType {
 	public String getTypeName() {
 		return typeName;
 	}
-	
+
 	public Integer getSize() {
 		return size;
 	}
@@ -89,8 +89,8 @@ public class DataType {
 	public void setSize(Integer size) {
 		this.size = size;
 	}
-	
-	public String toString(){
-		return typeName ;
+
+	public String toString() {
+		return typeName;
 	}
 }

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.buffer;
 
 import org.ietr.preesm.core.codegen.expression.IExpression;
@@ -43,28 +43,32 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.sdf4j.model.sdf.SDFEdge;
 
-
 public class SubBuffer extends Buffer {
 
 	private IExpression index;
 	private Buffer parentBuffer;
 
-	public SubBuffer(String name, Integer size, IExpression index ,  Buffer parentBuffer, AbstractBufferContainer container) {
-		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(), container);
+	public SubBuffer(String name, Integer size, IExpression index,
+			Buffer parentBuffer, AbstractBufferContainer container) {
+		super(name, size, parentBuffer.getType(), parentBuffer.getEdge(),
+				container);
 		this.parentBuffer = parentBuffer;
-		this.index = index ;
+		this.index = index;
 	}
-	
-	public SubBuffer(String name, Integer size, IExpression index ,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+
+	public SubBuffer(String name, Integer size, IExpression index,
+			Buffer parentBuffer, SDFEdge edge, AbstractBufferContainer container) {
 		super(name, size, parentBuffer.getType(), edge, container);
 		this.parentBuffer = parentBuffer;
-		this.index = index ;
+		this.index = index;
 	}
-	
-	public SubBuffer(String name, Integer size, IExpression index , DataType type,Buffer parentBuffer, SDFEdge edge,  AbstractBufferContainer container) {
+
+	public SubBuffer(String name, Integer size, IExpression index,
+			DataType type, Buffer parentBuffer, SDFEdge edge,
+			AbstractBufferContainer container) {
 		super(name, size, type, edge, container);
 		this.parentBuffer = parentBuffer;
-		this.index = index ;
+		this.index = index;
 	}
 
 	public IExpression getIndex() {
@@ -78,23 +82,24 @@ public class SubBuffer extends Buffer {
 	public void setIndex(VariableExpression index) {
 		this.index = index;
 	}
-	
-	public int getAllocatedSize(){
-		if(getSize() == 0 && parentBuffer != null){
+
+	public int getAllocatedSize() {
+		if (getSize() == 0 && parentBuffer != null) {
 			return parentBuffer.getAllocatedSize();
-		}else{
+		} else {
 			return getSize();
 		}
 	}
-	
-	public void setType(DataType type){
+
+	public void setType(DataType type) {
 		this.getParentBuffer().setType(type);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
-	
+
 	public void setParentBuffer(Buffer parentBuffer) {
 		this.parentBuffer = parentBuffer;
 	}

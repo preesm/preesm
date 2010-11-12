@@ -44,41 +44,36 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
 
-
 /**
  * Factory able to create an architecture component of any type
  * 
  * @author mpelcat
  */
 public class ArchitectureComponentDefinitionFactory {
-	
-	public static ArchitectureComponentDefinition createElement(ArchitectureComponentType type,VLNV vlnv){
+
+	public static ArchitectureComponentDefinition createElement(
+			ArchitectureComponentType type, VLNV vlnv) {
 
 		ArchitectureComponentDefinition result = null;
-		
-		if(type != null){
-			//Simple model
-			if(type == ArchitectureComponentType.medium){
+
+		if (type != null) {
+			// Simple model
+			if (type == ArchitectureComponentType.medium) {
 				result = new MediumDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.operator){
+			} else if (type == ArchitectureComponentType.operator) {
 				result = new OperatorDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.contentionNode){
+			} else if (type == ArchitectureComponentType.contentionNode) {
 				result = new ContentionNodeDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.parallelNode){
+			} else if (type == ArchitectureComponentType.parallelNode) {
 				result = new ParallelNodeDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.dma){
+			} else if (type == ArchitectureComponentType.dma) {
 				result = new DmaDefinition(vlnv);
-			}
-			else if(type == ArchitectureComponentType.ram){
+			} else if (type == ArchitectureComponentType.ram) {
 				result = new RamDefinition(vlnv);
 			}
-			
+
 		}
-		
+
 		return result;
 	}
 }

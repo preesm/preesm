@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen;
 
 import org.ietr.preesm.core.codegen.calls.Variable;
@@ -54,7 +54,7 @@ public class VariableAllocation {
 	public VariableAllocation(VariableExpression var) {
 		this.var = var;
 	}
-	
+
 	/**
 	 * Constructor
 	 */

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.parser;
 
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
@@ -41,17 +41,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * A contention node has specific properties parsed in this class to generate a ContentionNodeDefinition
+ * A contention node has specific properties parsed in this class to generate a
+ * ContentionNodeDefinition
  * 
  * @author mpelcat
  */
 public class ContentionNodeParser {
 
 	/**
-	 * Parsing contention node specific data from DOM document and filling the contention node definition
+	 * Parsing contention node specific data from DOM document and filling the
+	 * contention node definition
 	 */
-	static void parse(ContentionNodeDefinition def, Element callElt){
-		
+	static void parse(ContentionNodeDefinition def, Element callElt) {
+
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -59,11 +61,13 @@ public class ContentionNodeParser {
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
-				String configurableElementName = elt.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("node_dataRate")) {
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("node_dataRate")) {
 					String value = elt.getTextContent();
 					def.setDataRate(Float.parseFloat(value));
-				}  
+				}
 			}
 
 			node = node.getNextSibling();

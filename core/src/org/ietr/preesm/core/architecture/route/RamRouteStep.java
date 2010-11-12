@@ -53,7 +53,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Ram;
 public class RamRouteStep extends MessageRouteStep {
 
 	private Ram ram;
-	
+
 	/**
 	 * Index of the communication node connected to the shared ram
 	 */
@@ -63,9 +63,10 @@ public class RamRouteStep extends MessageRouteStep {
 	 * The route step type determines how the communication will be simulated.
 	 */
 	public static final String type = "RamRouteStep";
-	
-	public RamRouteStep(Operator sender, List<AbstractNode> nodes, Operator receiver, Ram ram, int ramNodeIndex) {
-		super(sender,nodes, receiver);		
+
+	public RamRouteStep(Operator sender, List<AbstractNode> nodes,
+			Operator receiver, Ram ram, int ramNodeIndex) {
+		super(sender, nodes, receiver);
 		this.ram = ram;
 		this.ramNodeIndex = ramNodeIndex;
 	}
@@ -77,7 +78,7 @@ public class RamRouteStep extends MessageRouteStep {
 	public String getType() {
 		return type;
 	}
-	
+
 	public Ram getRam() {
 		return ram;
 	}
@@ -85,50 +86,55 @@ public class RamRouteStep extends MessageRouteStep {
 	@Override
 	public String toString() {
 		String trace = super.toString();
-		trace = trace.substring(0,trace.length()-1);
+		trace = trace.substring(0, trace.length() - 1);
 		trace += "[" + ram + "]}";
 		return trace;
 	}
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		Ram newRam = (Ram)ram.clone();
+		Ram newRam = (Ram) ram.clone();
 		newRam.setDefinition(ram.getDefinition());
-		return new RamRouteStep((Operator)getSender().clone(),getNodes(),(Operator)getReceiver().clone(),newRam, ramNodeIndex);
+		return new RamRouteStep((Operator) getSender().clone(), getNodes(),
+				(Operator) getReceiver().clone(), newRam, ramNodeIndex);
 	}
 
 	/**
-	 * Returns the longest time a contention node needs to transfer the data before the RAM in the route steps
+	 * Returns the longest time a contention node needs to transfer the data
+	 * before the RAM in the route steps
 	 */
 	public long getSenderSideWorstTransferTime(long transfersSize) {
 		long time = 0;
-		
-		for(ContentionNode node: getSenderSideContentionNodes()){
-			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
-			time = Math.max(time,def.getTransferTime(transfersSize));
+
+		for (ContentionNode node : getSenderSideContentionNodes()) {
+			ContentionNodeDefinition def = (ContentionNodeDefinition) node
+					.getDefinition();
+			time = Math.max(time, def.getTransferTime(transfersSize));
 		}
 		return time;
 	}
 
 	/**
-	 * Returns the longest time a contention node needs to transfer the data after the RAM in the route steps
+	 * Returns the longest time a contention node needs to transfer the data
+	 * after the RAM in the route steps
 	 */
 	public long getReceiverSideWorstTransferTime(long transfersSize) {
 		long time = 0;
-		
-		for(ContentionNode node: getReceiverSideContentionNodes()){
-			ContentionNodeDefinition def = (ContentionNodeDefinition)node.getDefinition();
-			time = Math.max(time,def.getTransferTime(transfersSize));
+
+		for (ContentionNode node : getReceiverSideContentionNodes()) {
+			ContentionNodeDefinition def = (ContentionNodeDefinition) node
+					.getDefinition();
+			time = Math.max(time, def.getTransferTime(transfersSize));
 		}
 		return time;
 	}
 
 	public List<ContentionNode> getSenderSideContentionNodes() {
 		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
-		for(int i=0; i<=ramNodeIndex;i++){
+		for (int i = 0; i <= ramNodeIndex; i++) {
 			AbstractNode node = nodes.get(i);
-			if(node instanceof ContentionNode){
-				contentionNodes.add((ContentionNode)node);
+			if (node instanceof ContentionNode) {
+				contentionNodes.add((ContentionNode) node);
 			}
 		}
 		return contentionNodes;
@@ -136,10 +142,10 @@ public class RamRouteStep extends MessageRouteStep {
 
 	public List<ContentionNode> getReceiverSideContentionNodes() {
 		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
-		for(int i=ramNodeIndex; i<nodes.size();i++){
+		for (int i = ramNodeIndex; i < nodes.size(); i++) {
 			AbstractNode node = nodes.get(i);
-			if(node instanceof ContentionNode){
-				contentionNodes.add((ContentionNode)node);
+			if (node instanceof ContentionNode) {
+				contentionNodes.add((ContentionNode) node);
 			}
 		}
 		return contentionNodes;

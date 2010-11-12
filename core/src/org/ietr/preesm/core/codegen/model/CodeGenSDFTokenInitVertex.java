@@ -56,8 +56,7 @@ import org.sdf4j.model.sdf.esdf.SDFInitVertex;
 public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 		ICodeGenSDFVertex {
 
-	
-	private Variable delayVariable ;
+	private Variable delayVariable;
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFTokenInitVertex() {
@@ -92,13 +91,13 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 	public IRefinement getRefinement() {
 		return null;
 	}
-	
-	public void setDelayVariable(Variable var){
-		this.delayVariable = var ;
+
+	public void setDelayVariable(Variable var) {
+		this.delayVariable = var;
 	}
-	
-	public Variable getDelayVariable(){
-		return this.delayVariable ;
+
+	public Variable getDelayVariable() {
+		return this.delayVariable;
 	}
 
 	@Override
@@ -112,22 +111,27 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 			if (outgoingEdge != null) {
 				UserFunctionCall delayCall = new UserFunctionCall("read_delay",
 						parentContainer);
-				delayCall.addArgument("delay", new PointerOn(this.getDelayVariable()));
-				delayCall.addArgument("buffer", parentContainer.getBuffer(outgoingEdge));
+				delayCall.addArgument("delay",
+						new PointerOn(this.getDelayVariable()));
+				delayCall.addArgument("buffer",
+						parentContainer.getBuffer(outgoingEdge));
 				try {
-					delayCall.addArgument("nb_elt", new Constant("nb_elt", outgoingEdge.getProd().intValue()));
-					return delayCall; 
+					delayCall.addArgument("nb_elt", new Constant("nb_elt",
+							outgoingEdge.getProd().intValue()));
+					return delayCall;
 				} catch (InvalidExpressionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-		}else{
-			AbstractBufferContainer newContainer = (AbstractBufferContainer) parentContainer.getParentContainer();
-			while(newContainer instanceof AbstractCodeContainer && !(newContainer instanceof CompoundCodeElement)){
+		} else {
+			AbstractBufferContainer newContainer = (AbstractBufferContainer) parentContainer
+					.getParentContainer();
+			while (newContainer instanceof AbstractCodeContainer
+					&& !(newContainer instanceof CompoundCodeElement)) {
 				newContainer = newContainer.getParentContainer();
 			}
-			
+
 		}
 
 		return null;

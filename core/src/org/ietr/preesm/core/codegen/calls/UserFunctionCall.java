@@ -91,34 +91,43 @@ public class UserFunctionCall extends AbstractCodeElement {
 		callParameters = new Vector<FunctionArgument>();
 		SDFEdge outEdge = (SDFEdge) vertex.getBase().outgoingEdgesOf(vertex)
 				.toArray()[0];
-		if(vertex.getBase().incomingEdgesOf(vertex).size() > 0){
+		if (vertex.getBase().incomingEdgesOf(vertex).size() > 0) {
 			this.setName("memcpy");
-			for(SDFEdge initEdge : ((SDFGraph)vertex.getBase()).incomingEdgesOf(vertex)){
-				if(initEdge.getTargetInterface().getName().equals("init")){
+			for (SDFEdge initEdge : ((SDFGraph) vertex.getBase())
+					.incomingEdgesOf(vertex)) {
+				if (initEdge.getTargetInterface().getName().equals("init")) {
 					Buffer buf = parentContainer.getBuffer(outEdge);
-					this.addArgument(outEdge.getSource().getName()+ "_to_" + outEdge.getTarget().getName(), buf);
+					this.addArgument(outEdge.getSource().getName() + "_to_"
+							+ outEdge.getTarget().getName(), buf);
 
 					buf = parentContainer.getBuffer(initEdge);
-					this.addArgument(initEdge.getSource().getName()+ "_to_" + initEdge.getTarget().getName(), buf);
+					this.addArgument(initEdge.getSource().getName() + "_to_"
+							+ initEdge.getTarget().getName(), buf);
 					try {
-						this.addArgument("size", new Constant("size", outEdge.getCons().intValue()
-								+ "*sizeof(" + outEdge.getDataType().toString() + ")"));
+						this.addArgument("size", new Constant("size", outEdge
+								.getCons().intValue()
+								+ "*sizeof("
+								+ outEdge.getDataType().toString() + ")"));
 					} catch (InvalidExpressionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
-		}else{
-			AbstractBufferContainer globalContainer = parentContainer.getGlobalContainer();
-			
-			Variable delay = new Variable(vertex.getName(), new DataType("Delay")) ;
+		} else {
+			AbstractBufferContainer globalContainer = parentContainer
+					.getGlobalContainer();
+
+			Variable delay = new Variable(vertex.getName(), new DataType(
+					"Delay"));
 			globalContainer.addVariable(delay);
 			vertex.setDelayVariable(delay);
 			this.setName("new_delay");
 			this.addArgument("delay", new PointerOn(delay));
-			this.addArgument("elt_size", new Constant("size","sizeof(" + outEdge.getDataType().toString() + ")"));
-			this.addArgument("nb_delay", new Constant("delay_size",vertex.getInitSize()));
+			this.addArgument("elt_size", new Constant("size", "sizeof("
+					+ outEdge.getDataType().toString() + ")"));
+			this.addArgument("nb_delay",
+					new Constant("delay_size", vertex.getInitSize()));
 		}
 
 	}
@@ -255,15 +264,14 @@ public class UserFunctionCall extends AbstractCodeElement {
 			}
 		}
 	}
-	
+
 	public void addArgument(FunctionArgument param) {
 		callParameters.add(param);
 	}
-	
 
 	/**
-	 * Adds an argument to a call; if the argument is null, 
-	 * displays a message including a display name for debug
+	 * Adds an argument to a call; if the argument is null, displays a message
+	 * including a display name for debug
 	 */
 	public void addArgument(String displayName, FunctionArgument param) {
 
@@ -309,7 +317,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 			SDFEdge edge = eIterator.next();
 
 			Buffer buf = getParentContainer().getBuffer((SDFEdge) edge);
-			addArgument(edge.getSource().getName()+ "_to_" + edge.getTarget().getName(), buf);
+			addArgument(edge.getSource().getName() + "_to_"
+					+ edge.getTarget().getName(), buf);
 		}
 	}
 

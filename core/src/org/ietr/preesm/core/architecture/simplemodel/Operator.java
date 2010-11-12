@@ -42,42 +42,41 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 
-
 /**
- * an operator is a hardware calculation entity able to process data.
- * Operators are connected with media
+ * an operator is a hardware calculation entity able to process data. Operators
+ * are connected with media
  * 
  * @author mpelcat
  */
 public class Operator extends ArchitectureComponent implements IOperator {
-	
+
 	public Operator(String id, OperatorDefinition type) {
 		super(id, type);
 
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.operator;
 	}
-/*
-	@Override
-	public ArchitectureComponent clone() {
-		return new Operator(getName(),(OperatorDefinition)getDefinition());
-	}*/
-	
-	public boolean isNode(){
+
+	/*
+	 * @Override public ArchitectureComponent clone() { return new
+	 * Operator(getName(),(OperatorDefinition)getDefinition()); }
+	 */
+
+	public boolean isNode() {
 		return false;
 	}
-	
+
 	/**
 	 * Checking if a list of operators contains one element equals to operator.
-	 * Necessary because the method contains of the list only checks object equality but
-	 * not object content equality.
+	 * Necessary because the method contains of the list only checks object
+	 * equality but not object content equality.
 	 */
-	public static boolean contains(List<Operator> opList,Operator operator){
+	public static boolean contains(List<Operator> opList, Operator operator) {
 
-		for(Operator o : opList){
-			if(o.equals(operator)){
+		for (Operator o : opList) {
+			if (o.equals(operator)) {
 				return true;
 			}
 		}

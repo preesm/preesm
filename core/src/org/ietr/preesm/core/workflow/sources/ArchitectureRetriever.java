@@ -44,45 +44,50 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
 
 /**
- * Class used while retrieving the architecture at the beginning of the workflow execution
+ * Class used while retrieving the architecture at the beginning of the workflow
+ * execution
  * 
  * @author mpelcat
  */
 public class ArchitectureRetriever {
 
 	MultiCoreArchitecture architecture = null;
-	
+
 	public ArchitectureRetriever(String architecturePath) {
 		super();
-		
+
 		String filename = architecturePath;
 		DesignParser parser = new DesignParser();
-		
+
 		Path relativePath = new Path(filename);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
 		architecture = parser.parseXmlFile(file);
-		
-		addVertexPathProperties(architecture,"");
+
+		addVertexPathProperties(architecture, "");
 	}
 
 	public MultiCoreArchitecture getArchitecture() {
 		return architecture;
 	}
 
-
 	/**
-	 * Adding an information that keeps the path of each vertex relative to the hierarchy
+	 * Adding an information that keeps the path of each vertex relative to the
+	 * hierarchy
 	 */
-	private void addVertexPathProperties(MultiCoreArchitecture architecture, String currentPath){
-		
-		for(ArchitectureComponent vertex : architecture.vertexSet()){
+	private void addVertexPathProperties(MultiCoreArchitecture architecture,
+			String currentPath) {
+
+		for (ArchitectureComponent vertex : architecture.vertexSet()) {
 			String newPath = currentPath + vertex.getName();
 			vertex.setInfo(newPath);
 			newPath += "/";
-			if(vertex.getGraphDescription() != null){
-				addVertexPathProperties((MultiCoreArchitecture)vertex.getGraphDescription(), newPath);
+			if (vertex.getGraphDescription() != null) {
+				addVertexPathProperties(
+						(MultiCoreArchitecture) vertex.getGraphDescription(),
+						newPath);
 			}
 		}
-	}	
+	}
 }

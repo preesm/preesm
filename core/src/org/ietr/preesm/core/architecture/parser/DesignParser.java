@@ -125,7 +125,7 @@ public class DesignParser {
 		} catch (CoreException e) {
 			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
-		
+
 		return parseDocument();
 	}
 
@@ -305,14 +305,17 @@ public class DesignParser {
 					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
 							configElt);
 				} else if (type == ArchitectureComponentType.operator) {
-					OperatorParser.parse((OperatorDefinition) cmp
-							.getDefinition(), configElt);
+					OperatorParser
+							.parse((OperatorDefinition) cmp.getDefinition(),
+									configElt);
 				} else if (type == ArchitectureComponentType.contentionNode) {
-					ContentionNodeParser.parse((ContentionNodeDefinition) cmp
-							.getDefinition(), configElt);
+					ContentionNodeParser.parse(
+							(ContentionNodeDefinition) cmp.getDefinition(),
+							configElt);
 				} else if (type == ArchitectureComponentType.parallelNode) {
-					ParallelNodeParser.parse((ParallelNodeDefinition) cmp
-							.getDefinition(), configElt);
+					ParallelNodeParser.parse(
+							(ParallelNodeDefinition) cmp.getDefinition(),
+							configElt);
 				}
 			}
 
@@ -403,15 +406,13 @@ public class DesignParser {
 			currentPath = currentPath.removeLastSegments(1);
 			currentPath = currentPath.append(path);
 
-			if(path.getFileExtension() != null
-					&& path.getFileExtension().equals(fileExt)){
+			if (path.getFileExtension() != null
+					&& path.getFileExtension().equals(fileExt)) {
 				file = workspace.getRoot().getFile(currentPath);
-			}
-			else {
+			} else {
 				PreesmLogger
 						.getLogger()
-						.log(
-								Level.SEVERE,
+						.log(Level.SEVERE,
 								"The refinement of a component must exist and have the extension ."
 										+ fileExt
 										+ ". The following file is not usable: "

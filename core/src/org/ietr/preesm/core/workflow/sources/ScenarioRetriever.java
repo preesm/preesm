@@ -52,7 +52,8 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Class used while retrieving the scenario at the beginning of the workflow execution
+ * Class used while retrieving the scenario at the beginning of the workflow
+ * execution
  * 
  * @author mpelcat
  */
@@ -87,10 +88,11 @@ public class ScenarioRetriever {
 		super();
 		String filename = scenarioConfiguration.getScenarioFileName();
 		ScenarioParser parser = new ScenarioParser();
-		
+
 		Path relativePath = new Path(filename);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
 		parser.parseXmlFile(file);
 		scenario = parser.parseDocument();
 

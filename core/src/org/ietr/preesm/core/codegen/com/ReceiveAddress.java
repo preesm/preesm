@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.com;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -53,16 +53,17 @@ public class ReceiveAddress extends CommunicationFunctionInit {
 	 * Buffer to store the received addresses
 	 */
 	private Buffer addressBuffer = null;
-	
-	public ReceiveAddress(AbstractBufferContainer parentContainer, String connectedCoreId,
-			AbstractRouteStep rs, int callIndex, Buffer addressBuffer) {
-		super("receiveAddress", parentContainer, connectedCoreId,
-				rs,callIndex);
+
+	public ReceiveAddress(AbstractBufferContainer parentContainer,
+			String connectedCoreId, AbstractRouteStep rs, int callIndex,
+			Buffer addressBuffer) {
+		super("receiveAddress", parentContainer, connectedCoreId, rs, callIndex);
 		this.addressBuffer = addressBuffer;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 
 		addressBuffer.accept(printer, currentLocation); // Accept the code
 														// container

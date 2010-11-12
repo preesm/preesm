@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.timings;
 
 import java.io.InputStream;
@@ -60,7 +60,6 @@ public class SaveAsWizard extends Wizard implements INewWizard {
 
 	private IWorkbench workbench;
 	private ExcelTimingWriter writer;
-
 
 	/**
 	 * Constructor for {@link SaveAsWizard}.
@@ -109,8 +108,8 @@ public class SaveAsWizard extends Wizard implements INewWizard {
 		}
 
 		// Open editor on new file.
-		IWorkbenchWindow dw = Activator.getDefault()
-		.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchWindow dw = Activator.getDefault().getWorkbench()
+				.getActiveWorkbenchWindow();
 		try {
 			if (dw != null) {
 				BasicNewResourceWizard.selectAndReveal(file, dw);
@@ -120,8 +119,8 @@ public class SaveAsWizard extends Wizard implements INewWizard {
 				}
 			}
 		} catch (PartInitException e) {
-			MessageDialog.openError(dw.getShell(), "Problem opening editor", e
-					.getMessage());
+			MessageDialog.openError(dw.getShell(), "Problem opening editor",
+					e.getMessage());
 		}
 
 		return true;

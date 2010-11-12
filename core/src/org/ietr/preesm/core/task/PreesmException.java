@@ -33,14 +33,14 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.task;
 
-public class PreesmException extends Exception{
+public class PreesmException extends Exception {
 
 	private static final long serialVersionUID = 620727777815265095L;
-	
-	public PreesmException(String message){
+
+	public PreesmException(String message) {
 		super(message);
 	}
 

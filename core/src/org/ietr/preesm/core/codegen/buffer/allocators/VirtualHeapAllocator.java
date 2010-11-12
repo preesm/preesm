@@ -101,14 +101,12 @@ public class VirtualHeapAllocator extends BufferAllocation implements
 			if (allocToPos.get(alloc) > oldBase) {
 				if (alloc instanceof HeapSectionAllocator) {
 					((HeapSectionAllocator) alloc).setBasePos(allocToPos
-							.get(alloc)
-							- diffSize);
+							.get(alloc) - diffSize);
 					allocToPos.put(alloc, allocToPos.get(alloc) - diffSize);
 				} else {
 					((SubBuffer) alloc.getBuffer())
 							.setIndex(new ConstantExpression(allocToPos
-									.get(alloc)
-									- diffSize));
+									.get(alloc) - diffSize));
 					allocToPos.put(alloc, allocToPos.get(alloc) - diffSize);
 				}
 			}

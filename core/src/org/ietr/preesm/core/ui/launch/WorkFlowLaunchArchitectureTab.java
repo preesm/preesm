@@ -51,14 +51,14 @@ import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 
 /**
- * Launch Tab for architecture options. From this tab, an {@link ArchitectureConfiguration}
- * is generated that feeds an {@link ArchitectureRetriever} to create the input architecture.
+ * Launch Tab for architecture options. From this tab, an
+ * {@link ArchitectureConfiguration} is generated that feeds an
+ * {@link ArchitectureRetriever} to create the input architecture.
  * 
  * @author mpelcat
  */
-public class WorkFlowLaunchArchitectureTab extends
-AbstractWorkFlowLaunchTab {
-	
+public class WorkFlowLaunchArchitectureTab extends AbstractWorkFlowLaunchTab {
+
 	public static final int ARCH_TYPE_FILE = 2;
 	public static final int ARCH_TYPE_TI_C64x2 = 0;
 	public static final int ARCH_TYPE_TI_C64x3 = 1;
@@ -81,11 +81,11 @@ AbstractWorkFlowLaunchTab {
 
 	@Override
 	public void createControl(Composite parent) {
-		
+
 		super.createControl(parent);
 
 		Composite composite = getCurrentComposite();
-		
+
 		radioButtons[0] = new Button(composite, SWT.RADIO);
 		radioButtons[0].setText("2 C64x+ and EDMA");
 		radioButtons[0].addSelectionListener(new SelectionAdapter() {
@@ -124,8 +124,9 @@ AbstractWorkFlowLaunchTab {
 
 		// dummy label, because we have two columns
 		new Label(composite, SWT.NONE);
-		
-		drawFileChooser("Architecture file:",ArchitectureConfiguration.ATTR_ARCHITECTURE_FILE_NAME);
+
+		drawFileChooser("Architecture file:",
+				ArchitectureConfiguration.ATTR_ARCHITECTURE_FILE_NAME);
 
 	}
 
@@ -138,11 +139,10 @@ AbstractWorkFlowLaunchTab {
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		super.initializeFrom(configuration);
-		
+
 		try {
 			architectureReference = configuration.getAttribute(
-					ATTR_ARCHITECTURE_TYPE,
-					ARCH_TYPE_FILE);
+					ATTR_ARCHITECTURE_TYPE, ARCH_TYPE_FILE);
 			radioButtons[architectureReference].setSelection(true);
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -152,7 +152,7 @@ AbstractWorkFlowLaunchTab {
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		super.performApply(configuration);
-		//configuration.setAttribute(ATTR_ARCHITECTURE_TYPE,architectureReference);
+		// configuration.setAttribute(ATTR_ARCHITECTURE_TYPE,architectureReference);
 	}
 
 	@Override
@@ -164,10 +164,10 @@ AbstractWorkFlowLaunchTab {
 	@Override
 	public Image getImage() {
 		Image image = Activator.getImage("icons/preesm3mini.png");
-		
-		if(image != null)
+
+		if (image != null)
 			return image;
-		
+
 		return super.getImage();
 	}
 }

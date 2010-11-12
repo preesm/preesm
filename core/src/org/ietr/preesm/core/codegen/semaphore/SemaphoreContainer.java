@@ -78,8 +78,8 @@ public class SemaphoreContainer extends ArrayList<Semaphore> {
 		semaphoreBuffer = new Buffer(semaphoreBufferName, this.size(),
 				new DataType("semaphore"), null, parentContainer);
 
-		semaphoreBuffer = parentContainer.allocateBuffer(semaphoreBufferName, this.size(),
-				new DataType("semaphore"));
+		semaphoreBuffer = parentContainer.allocateBuffer(semaphoreBufferName,
+				this.size(), new DataType("semaphore"));
 		return semaphoreBuffer;
 	}
 

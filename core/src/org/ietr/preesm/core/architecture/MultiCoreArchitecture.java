@@ -392,19 +392,19 @@ public class MultiCoreArchitecture extends
 	 */
 	public ArchitectureComponent getComponent(ArchitectureComponentType type,
 			String name) {
-		return(getVertex(name));
+		return (getVertex(name));
 	}
 
 	/**
 	 * Returns the Component with the given name
 	 */
 	public ArchitectureComponent getComponent(String id) {
-		for(ArchitectureComponent component : getComponents()){
-			if(component.getName().equals(id)){
+		for (ArchitectureComponent component : getComponents()) {
+			if (component.getName().equals(id)) {
 				return component;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -510,10 +510,12 @@ public class MultiCoreArchitecture extends
 	}
 
 	public void setMainMedium(String mainMediumName) {
-		if(!(getComponent(ArchitectureComponentType.medium,
-				mainMediumName) instanceof Medium)){
+		if (!(getComponent(ArchitectureComponentType.medium, mainMediumName) instanceof Medium)) {
 			this.mainMedium = null;
-			PreesmLogger.getLogger().log(Level.SEVERE,"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");
+			PreesmLogger
+					.getLogger()
+					.log(Level.SEVERE,
+							"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");
 		}
 		Medium m = (Medium) getComponent(ArchitectureComponentType.medium,
 				mainMediumName);

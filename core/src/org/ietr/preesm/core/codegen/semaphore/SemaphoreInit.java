@@ -44,9 +44,9 @@ import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
 /**
- * Special function call making the initialization of the semaphores. 
- * It receives the number of semaphores to initialize and the buffer
- * containing the semaphores
+ * Special function call making the initialization of the semaphores. It
+ * receives the number of semaphores to initialize and the buffer containing the
+ * semaphores
  * 
  * @author mpelcat
  */
@@ -60,14 +60,18 @@ public class SemaphoreInit extends AbstractCodeElement {
 		super("semaphoreInit", globalContainer, null);
 
 		this.semaphoreBuffer = semaphoreBuffer;
-		this.semaphoreNumber = new Constant("semNumber",semaphoreBuffer.getSize());
+		this.semaphoreNumber = new Constant("semNumber",
+				semaphoreBuffer.getSize());
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
-		semaphoreBuffer.accept(printer, currentLocation); // Accept the semaphore buffer
-		semaphoreNumber.accept(printer, currentLocation); // Accept the semaphore number constant
+		semaphoreBuffer.accept(printer, currentLocation); // Accept the
+															// semaphore buffer
+		semaphoreNumber.accept(printer, currentLocation); // Accept the
+															// semaphore number
+															// constant
 	}
 
 	/**

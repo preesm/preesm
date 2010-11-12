@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture;
 
 /**
@@ -43,7 +43,6 @@ package org.ietr.preesm.core.architecture;
  * @author mpelcat
  */
 public class BusReference {
-
 
 	private String id;
 
@@ -65,12 +64,12 @@ public class BusReference {
 
 	@Override
 	public boolean equals(Object obj) {
-		
-		if(obj instanceof BusReference)
-			if(((BusReference) obj).getId().equals(getId()))
+
+		if (obj instanceof BusReference)
+			if (((BusReference) obj).getId().equals(getId()))
 				return true;
-		
+
 		return false;
 	}
-	
+
 }

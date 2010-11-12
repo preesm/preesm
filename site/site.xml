@@ -3,5 +3,8 @@
    <description url="http://preesm.sourceforge.net/eclipse/">
       PREESM provides a complete framework for fast prototyping. PREESM stands for Parallel &amp; Real-time Embedded Executives Scheduling Method. It generates a simulation and an optimized multiprocessor code from graph descriptions of algorithm and architecture.
    </description>
+   <feature url="features/org.ietr.preesm.feature_0.5.3.jar" id="org.ietr.preesm.feature" version="0.5.3">
+      <category name="PREESM"/>
+   </feature>
    <category-def name="PREESM" label="PREESM"/>
 </site>

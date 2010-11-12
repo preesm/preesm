@@ -33,18 +33,18 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.buffer;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-public class SubBufferAllocation extends BufferAllocation{
+public class SubBufferAllocation extends BufferAllocation {
 
 	public SubBufferAllocation(Buffer buffer) {
 		super(buffer);
 	}
-	
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 	}

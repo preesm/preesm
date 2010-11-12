@@ -43,7 +43,6 @@ import org.ietr.preesm.core.types.IMapperAbc;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-
 /**
  * This class provides a generic result for a transformation.
  * 
@@ -55,7 +54,7 @@ public class TaskResult {
 	 * Returned algorithm
 	 */
 	private SDFGraph sdf;
-	
+
 	/**
 	 * Returned algorithm
 	 */
@@ -70,16 +69,16 @@ public class TaskResult {
 	 * Returned source file list
 	 */
 	private SourceFileList sourcefilelist;
-	
+
 	/**
 	 * Returned scenario
 	 */
-	private IScenario scenario ;
-	
+	private IScenario scenario;
+
 	/**
 	 * Returned custom input
 	 */
-	private IMapperAbc abc ;
+	private IMapperAbc abc;
 
 	/**
 	 * Creates a result with no contents.
@@ -120,19 +119,20 @@ public class TaskResult {
 	public SourceFileList getSourcefilelist() {
 		return sourcefilelist;
 	}
-	
+
 	/**
 	 * Gives the scenario of this result
+	 * 
 	 * @return The scenarion of this result
 	 */
-	public IScenario getScenario(){
-		return scenario ;
+	public IScenario getScenario() {
+		return scenario;
 	}
-	
+
 	public IMapperAbc getAbc() {
 		return abc;
 	}
-	
+
 	/**
 	 * Returns true if the algorithm of this result exists.
 	 */
@@ -168,7 +168,7 @@ public class TaskResult {
 	public void setDAG(DirectedAcyclicGraph dag) {
 		this.dag = dag;
 	}
-	
+
 	public void setArchitecture(MultiCoreArchitecture architecture) {
 		this.architecture = architecture;
 	}
@@ -176,9 +176,9 @@ public class TaskResult {
 	public void setSourcefilelist(SourceFileList sourcefilelist) {
 		this.sourcefilelist = sourcefilelist;
 	}
-	
-	public void setScenario(IScenario scenario){
-		this.scenario = scenario ;
+
+	public void setScenario(IScenario scenario) {
+		this.scenario = scenario;
 	}
 
 	public void setAbc(IMapperAbc abc) {
@@ -186,9 +186,9 @@ public class TaskResult {
 	}
 
 	public String toString() {
-		
+
 		String result = "";
-		
+
 		if (sdf != null) {
 			result += getSDF().toString();
 		}
@@ -196,8 +196,7 @@ public class TaskResult {
 		if (architecture == null) {
 			result += getArchitecture().toString();
 		}
-		
+
 		return result;
 	}
 }
-

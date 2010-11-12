@@ -220,8 +220,9 @@ public abstract class ArchitectureComponent extends
 						"Dangerous unnamed ports in architecture.");
 			}
 
-			ArchitectureInterface newItf = new ArchitectureInterface(newArchi
-					.createBusReference(itf.getBusReference().getId()), this);
+			ArchitectureInterface newItf = new ArchitectureInterface(
+					newArchi.createBusReference(itf.getBusReference().getId()),
+					this);
 			this.getAvailableInterfaces().add(newItf);
 		}
 	}
@@ -262,8 +263,7 @@ public abstract class ArchitectureComponent extends
 		// Definition is cloned
 		ArchitectureComponent newCmp = null;
 
-		if (this.getType().equals(
-				ArchitectureComponentType.contentionNode)) {
+		if (this.getType().equals(ArchitectureComponentType.contentionNode)) {
 			newCmp = new ContentionNode(getName(), null);
 		} else if (this.getType().equals(ArchitectureComponentType.dma)) {
 			newCmp = new Dma(getName(), null);

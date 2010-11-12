@@ -2,40 +2,40 @@ package org.ietr.preesm.core.codegen.buffer.allocators;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 
-public class  AllocationPolicy{
+public class AllocationPolicy {
 
 	public static AllocationPolicy instance = null;
-	public static BufferAllocator allocatorType = BufferAllocator.Global ;
-	
-	public static AllocationPolicy getInstance(){
-		if(instance == null){
+	public static BufferAllocator allocatorType = BufferAllocator.Global;
+
+	public static AllocationPolicy getInstance() {
+		if (instance == null) {
 			instance = new AllocationPolicy();
 		}
-		return instance ;
+		return instance;
 	}
-	
-	public static void setAllocatorType(BufferAllocator alloc){
-		
-		allocatorType = alloc ;
+
+	public static void setAllocatorType(BufferAllocator alloc) {
+
+		allocatorType = alloc;
 
 	}
-	
-	protected AllocationPolicy(){
-		
+
+	protected AllocationPolicy() {
+
 	}
-	
-	public IBufferAllocator getAllocator(AbstractBufferContainer container){
-		switch(allocatorType){
+
+	public IBufferAllocator getAllocator(AbstractBufferContainer container) {
+		switch (allocatorType) {
 		case Global:
 			return new GlobalAllocator(container);
 		case Local:
 			return new LocalAllocator(container);
 		case VirtualHeap:
 			return new VirtualHeapAllocator(container);
-		default :
+		default:
 			return new GlobalAllocator(container);
 		}
-		
+
 	}
 
 }

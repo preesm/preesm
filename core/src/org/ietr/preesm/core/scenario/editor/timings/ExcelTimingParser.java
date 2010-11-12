@@ -82,8 +82,7 @@ public class ExcelTimingParser {
 	public void parse(String url) {
 		PreesmLogger
 				.getLogger()
-				.log(
-						Level.INFO,
+				.log(Level.INFO,
 						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -108,9 +107,8 @@ public class ExcelTimingParser {
 
 			Set<ArchitectureComponentDefinition> opDefs = new HashSet<ArchitectureComponentDefinition>();
 
-			opDefs
-					.addAll(currentArchi
-							.getComponentDefinitions(ArchitectureComponentType.operator));
+			opDefs.addAll(currentArchi
+					.getComponentDefinitions(ArchitectureComponentType.operator));
 
 			// Warnings are displayed once for each missing operator or vertex
 			// in the excel sheet
@@ -181,8 +179,7 @@ public class ExcelTimingParser {
 								} catch (NumberFormatException e) {
 									PreesmLogger
 											.getLogger()
-											.log(
-													Level.SEVERE,
+											.log(Level.SEVERE,
 													"Problem importing timing of "
 															+ vertexName
 															+ " on "

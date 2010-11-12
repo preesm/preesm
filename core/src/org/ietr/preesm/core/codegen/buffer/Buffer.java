@@ -103,11 +103,12 @@ public class Buffer extends FunctionArgument {
 			this.destInputPortID = edge.getTargetInterface().getName();
 		}
 
-		if(size == 0){
-			PreesmLogger.getLogger().log(Level.SEVERE,"Adding a buffer of size 0: " + getName());
+		if (size == 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Adding a buffer of size 0: " + getName());
 		}
-		
-		this.size =  size ;
+
+		this.size = size;
 		this.edge = edge;
 	}
 
@@ -122,14 +123,15 @@ public class Buffer extends FunctionArgument {
 		this.sourceOutputPortID = sourceOutputPortID;
 		this.destInputPortID = destInputPortID;
 
-		if(size == 0){
-			PreesmLogger.getLogger().log(Level.SEVERE,"Adding a buffer of size 0: " + getName());
+		if (size == 0) {
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Adding a buffer of size 0: " + getName());
 		}
-		
-		this.size =  size ;
+
+		this.size = size;
 		this.edge = edge;
 	}
-	
+
 	public Buffer(String name, Integer size, DataType type,
 			AbstractBufferContainer container) {
 
@@ -140,7 +142,7 @@ public class Buffer extends FunctionArgument {
 		this.sourceOutputPortID = null;
 		this.destInputPortID = null;
 
-		this.size =  size ;
+		this.size = size;
 
 		this.edge = null;
 	}
@@ -159,15 +161,14 @@ public class Buffer extends FunctionArgument {
 	public int getSize() {
 		return size;
 	}
-	
+
 	public int getAllocatedSize() {
 		return getSize();
 	}
-	
-	public void setSize(int size){
-		this.size =  size ;
-	}
 
+	public void setSize(int size) {
+		this.size = size;
+	}
 
 	public String getDestInputPortID() {
 		return destInputPortID;
@@ -186,18 +187,18 @@ public class Buffer extends FunctionArgument {
 		if (container != null) {
 			String currentName = getName();
 			if (maxReducedNameSize <= currentName.length()
-					|| container.existBuffer(currentName,true)) {
+					|| container.existBuffer(currentName, true)) {
 				String indexString = "_" + String.valueOf(0);
 
-				for (int index = 0; maxReducedNameSize>=indexString.length(); index++) {
-					
+				for (int index = 0; maxReducedNameSize >= indexString.length(); index++) {
+
 					indexString = "_" + String.valueOf(index);
 					int reducedNameSizeMinIndex = Math.min(maxReducedNameSize
 							- indexString.length(), getName().length());
 					currentName = currentName.substring(0,
 							reducedNameSizeMinIndex);
 					currentName = currentName + indexString;
-					if (!container.existBuffer(currentName,true)){
+					if (!container.existBuffer(currentName, true)) {
 						break;
 					}
 				}

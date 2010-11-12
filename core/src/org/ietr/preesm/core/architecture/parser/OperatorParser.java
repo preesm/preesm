@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.parser;
 
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
@@ -41,17 +41,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * An operator has specific properties parsed in this class to generate an OperatorDefinition
+ * An operator has specific properties parsed in this class to generate an
+ * OperatorDefinition
  * 
  * @author mpelcat
  */
 public class OperatorParser {
 
 	/**
-	 * Parsing operator specific data from DOM document and filling the operator definition
+	 * Parsing operator specific data from DOM document and filling the operator
+	 * definition
 	 */
-	static void parse(OperatorDefinition def, Element callElt){
-		
+	static void parse(OperatorDefinition def, Element callElt) {
+
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -59,11 +61,13 @@ public class OperatorParser {
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
-				String configurableElementName = elt.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("dataCopySpeed")) {
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("dataCopySpeed")) {
 					String value = elt.getTextContent();
 					def.setDataCopySpeed(Float.parseFloat(value));
-				} 
+				}
 			}
 
 			node = node.getNextSibling();

@@ -37,9 +37,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
+import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -124,6 +126,11 @@ public class DynamicQueuingScheduler {
 		// Mapping on operator with minimal final cost
 		if (currentMinOp != null) {
 			abc.map(currentvertex, currentMinOp, true);
+		}
+		else{
+			PreesmLogger.getLogger().log(
+					Level.SEVERE,
+					"No available operator for " + currentvertex);
 		}
 	}
 }

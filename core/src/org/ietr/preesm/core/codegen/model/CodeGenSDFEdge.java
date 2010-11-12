@@ -53,8 +53,8 @@ public class CodeGenSDFEdge extends SDFEdge {
 		try {
 			if (this.getSource() != this.getTarget()) {
 				return Math.max(this.getSource().getNbRepeatAsInteger()
-						* getProd().intValue(), this.getTarget().getNbRepeatAsInteger()
-						* getCons().intValue());
+						* getProd().intValue(), this.getTarget()
+						.getNbRepeatAsInteger() * getCons().intValue());
 			} else {
 				return getProd().intValue();
 			}

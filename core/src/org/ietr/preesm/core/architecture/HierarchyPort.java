@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
-
 /**
  * A hierarchical connection joins one interface of a component to one port of
  * its design component

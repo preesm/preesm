@@ -305,8 +305,8 @@ public class TestTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(ATTR_ARGS, textArguments.getText());
 		configuration.setAttribute(ATTR_REMOTE_DEBUG_ENABLE,
 				buttonRemoteDebugEnable.getSelection());
-		configuration.setAttribute(ATTR_REMOTE_DEBUG_PORT, textRemoteDebugPort
-				.getText());
+		configuration.setAttribute(ATTR_REMOTE_DEBUG_PORT,
+				textRemoteDebugPort.getText());
 		setDirty(false);
 	}
 

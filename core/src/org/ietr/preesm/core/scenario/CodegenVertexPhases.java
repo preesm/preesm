@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario;
 
 import java.util.HashMap;
@@ -49,10 +49,10 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 public class CodegenVertexPhases {
 
 	/**
-	 * list of the phases for a vertex with their names and a boolean precising if code should
-	 * be generated for this phase
+	 * list of the phases for a vertex with their names and a boolean precising
+	 * if code should be generated for this phase
 	 */
-	private Map<String,Boolean> phases;
+	private Map<String, Boolean> phases;
 	public static final String initPhaseId = "init";
 	public static final String loopPhaseId = "loop";
 	public static final String closePhaseId = "close";
@@ -61,6 +61,7 @@ public class CodegenVertexPhases {
 	 * Vertex to which the preceding phases are associated
 	 */
 	private SDFAbstractVertex vertex = null;
+
 	public CodegenVertexPhases(SDFAbstractVertex vertex) {
 		super();
 		this.vertex = vertex;
@@ -74,8 +75,8 @@ public class CodegenVertexPhases {
 		return phases.get(name);
 	}
 
-	public void setPhase(String name,Boolean exist) {
-		phases.put(name,exist);
+	public void setPhase(String name, Boolean exist) {
+		phases.put(name, exist);
 	}
 
 	public SDFAbstractVertex getVertex() {

@@ -59,14 +59,16 @@ public class SendDma extends CommunicationFunctionCall {
 	private Operator target;
 
 	/**
-	 * Buffer containing the distant location where to store the data.
-	 * Ther index to use in the buffer is given by callIndex
+	 * Buffer containing the distant location where to store the data. Ther
+	 * index to use in the buffer is given by callIndex
 	 */
 	private Buffer addressBuffer = null;
 
-	public SendDma(AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
-			List<Buffer> bufferSet, AbstractRouteStep routeStep, Operator target, int callIndex, Buffer addressBuffer) {
-		super("send", parentContainer, bufferSet, routeStep, vertex,callIndex);
+	public SendDma(AbstractBufferContainer parentContainer,
+			SDFAbstractVertex vertex, List<Buffer> bufferSet,
+			AbstractRouteStep routeStep, Operator target, int callIndex,
+			Buffer addressBuffer) {
+		super("send", parentContainer, bufferSet, routeStep, vertex, callIndex);
 
 		this.target = target;
 		this.addressBuffer = addressBuffer;

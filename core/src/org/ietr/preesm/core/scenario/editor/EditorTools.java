@@ -163,12 +163,14 @@ public class EditorTools {
 		ElementTreeSelectionDialog tree = null;
 
 		if (fileExtensions == null) {
-			tree = new ElementTreeSelectionDialog(shell, WorkbenchLabelProvider
-					.getDecoratingWorkbenchLabelProvider(),
+			tree = new ElementTreeSelectionDialog(shell,
+					WorkbenchLabelProvider
+							.getDecoratingWorkbenchLabelProvider(),
 					new DirectoryContentProvider());
 		} else {
-			tree = new ElementTreeSelectionDialog(shell, WorkbenchLabelProvider
-					.getDecoratingWorkbenchLabelProvider(),
+			tree = new ElementTreeSelectionDialog(shell,
+					WorkbenchLabelProvider
+							.getDecoratingWorkbenchLabelProvider(),
 					new FileContentProvider(fileExtensions));
 		}
 		tree.setAllowMultiple(false);

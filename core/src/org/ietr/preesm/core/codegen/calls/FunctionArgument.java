@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.calls;
 
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
@@ -65,7 +65,7 @@ public abstract class FunctionArgument {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -78,9 +78,9 @@ public abstract class FunctionArgument {
 	public DataType getType() {
 		return type;
 	}
-	
-	public void setType(DataType type){
-		this.type = type ; 
+
+	public void setType(DataType type) {
+		this.type = type;
 	}
 
 	public abstract void accept(IAbstractPrinter printer, Object currentLocation);

@@ -69,7 +69,7 @@ public class WorkflowParser extends DefaultHandler2 {
 	private Map<String, IWorkflowNode> nodes;
 
 	private DirectedGraph<IWorkflowNode, WorkflowEdge> workflow;
-	
+
 	/**
 	 * Creates a new workflow parser.
 	 * 
@@ -82,11 +82,11 @@ public class WorkflowParser extends DefaultHandler2 {
 			DirectedGraph<IWorkflowNode, WorkflowEdge> workflow) {
 		this.nodes = new HashMap<String, IWorkflowNode>();
 		this.workflow = workflow;
-		
+
 		Path relativePath = new Path(fileName);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		
-		
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
 		try {
 			XMLReader reader = XMLReaderFactory.createXMLReader();
 			reader.setContentHandler(this);
@@ -106,7 +106,7 @@ public class WorkflowParser extends DefaultHandler2 {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) {
-		
+
 		if (qName.equals("preesm:algorithm")) {
 			IWorkflowNode node = new AlgorithmNode();
 			workflow.addVertex(node);
@@ -133,8 +133,9 @@ public class WorkflowParser extends DefaultHandler2 {
 			WorkflowEdge edge = workflow.addEdge(source, target);
 			edge.setCarriedDataType(dataType);
 		} else if (qName.equals("variable")) {
-			if(lastTransformationNode != null){
-				lastTransformationNode.addVariable(attributes.getValue("name"),attributes.getValue("value"));
+			if (lastTransformationNode != null) {
+				lastTransformationNode.addVariable(attributes.getValue("name"),
+						attributes.getValue("value"));
 			}
 		}
 	}

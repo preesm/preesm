@@ -92,9 +92,11 @@ public abstract class AbstractBufferContainer {
 	 */
 	public AbstractBufferContainer(AbstractBufferContainer parentContainer) {
 		if (parentContainer != null && parentContainer.getHeap() != null) {
-			this.bufferAllocator = parentContainer.getHeap().openNewSection(this);
+			this.bufferAllocator = parentContainer.getHeap().openNewSection(
+					this);
 		} else {
-			this.bufferAllocator = AllocationPolicy.getInstance().getAllocator(this);
+			this.bufferAllocator = AllocationPolicy.getInstance().getAllocator(
+					this);
 		}
 		allocs = new ArrayList<BufferAllocation>();
 		this.variables = new ArrayList<VariableAllocation>();
@@ -135,24 +137,21 @@ public abstract class AbstractBufferContainer {
 	 * @param buffer
 	 *            A {@link BufferAllocation}.
 	 */
-	public Buffer allocateBuffer(SDFEdge edge, String name, 
-			DataType type) {
+	public Buffer allocateBuffer(SDFEdge edge, String name, DataType type) {
 		return bufferAllocator.addBuffer(edge, name, type);
 	}
-	
+
 	/**
 	 * Adds the given buffer to the buffer list.
 	 * 
 	 * @param buffer
 	 *            A {@link BufferAllocation}.
 	 */
-	public Buffer allocateBuffer(String name, int size,
-			DataType type) {
-		Buffer newBuffer = new Buffer(name,
-				size, new DataType(type),
-				null, this);
+	public Buffer allocateBuffer(String name, int size, DataType type) {
+		Buffer newBuffer = new Buffer(name, size, new DataType(type), null,
+				this);
 		addBuffer(new BufferAllocation(newBuffer));
-		return newBuffer ;
+		return newBuffer;
 	}
 
 	public void addBuffer(BufferAllocation alloc) {
@@ -193,9 +192,9 @@ public abstract class AbstractBufferContainer {
 				return var.getVariable();
 			}
 		}
-		if(parentContainer != null){
+		if (parentContainer != null) {
 			return parentContainer.getVariable(name);
-		}else{
+		} else {
 			return null;
 		}
 	}
@@ -208,11 +207,10 @@ public abstract class AbstractBufferContainer {
 		if (bufferAllocator == null) {
 			return false;
 		}
-		
-		if(bufferAllocator.getBuffer(name) != null){
-			return true ;
+
+		if (bufferAllocator.getBuffer(name) != null) {
+			return true;
 		}
-		
 
 		// Looks for the buffer in the current sub-buffers
 		Iterator<BufferAllocation> iterator = allocs.iterator();
@@ -249,12 +247,13 @@ public abstract class AbstractBufferContainer {
 
 	public Buffer getBuffer(SDFEdge edge) {
 		for (BufferAllocation alloc : allocs) {
-			if (alloc.getBuffer().getEdge() != null && alloc.getBuffer().getEdge().equals(edge)) {
+			if (alloc.getBuffer().getEdge() != null
+					&& alloc.getBuffer().getEdge().equals(edge)) {
 				return alloc.getBuffer();
 			}
 		}
-		if(bufferAllocator.getBuffer(edge) != null){
-			return bufferAllocator.getBuffer(edge) ;
+		if (bufferAllocator.getBuffer(edge) != null) {
+			return bufferAllocator.getBuffer(edge);
 		}
 		if (parentContainer != null)
 			return (parentContainer.getBuffer(edge));
@@ -305,14 +304,13 @@ public abstract class AbstractBufferContainer {
 	 * 
 	 * @param alloc
 	 */
-	public Buffer addGlobalBuffer(SDFEdge edge, String name,
-			DataType type) {
+	public Buffer addGlobalBuffer(SDFEdge edge, String name, DataType type) {
 		return getGlobalContainer().allocateBuffer(edge, name, type);
 	}
 
 	public void removeBufferAllocation(Buffer buff) {
-		if(bufferAllocator.removeBufferAllocation(buff)){
-			return ;
+		if (bufferAllocator.removeBufferAllocation(buff)) {
+			return;
 		}
 
 		for (int i = 0; i < allocs.size(); i++) {
@@ -346,7 +344,7 @@ public abstract class AbstractBufferContainer {
 		return bufferAllocator;
 	}
 
-	public void setParentContainer(AbstractBufferContainer parent){
-		parentContainer = parent ;
+	public void setParentContainer(AbstractBufferContainer parent) {
+		parentContainer = parent;
 	}
 }

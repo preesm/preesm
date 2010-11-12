@@ -73,13 +73,15 @@ public class VertexType {
 
 		// If the communication operation is an intermediate step of a route
 		if (vType.isReceive()) {
-			for(SDFEdge outEdge : ((SDFGraph) vertex.getBase()).outgoingEdgesOf(
-					vertex)){
+			for (SDFEdge outEdge : ((SDFGraph) vertex.getBase())
+					.outgoingEdgesOf(vertex)) {
 
-				VertexType nextVType = (VertexType) outEdge.getTarget()
-						.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+				VertexType nextVType = (VertexType) outEdge
+						.getTarget()
+						.getPropertyBean()
+						.getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-				if (nextVType.isSend()){
+				if (nextVType.isSend()) {
 					return true;
 				}
 			}
@@ -101,7 +103,8 @@ public class VertexType {
 			SDFEdge inEdge = (SDFEdge) (((SDFGraph) vertex.getBase())
 					.incomingEdgesOf(vertex).toArray()[0]);
 			VertexType prevVType = (VertexType) inEdge.getSource()
-					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+					.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_vertexType);
 
 			if (prevVType.isReceive())
 				return true;

@@ -40,13 +40,14 @@ public class GlobalAllocator implements IBufferAllocator {
 
 	@Override
 	public Buffer addBuffer(SDFEdge edge, String name, DataType type) {
-		Buffer newBuffer ;
+		Buffer newBuffer;
 		int size = BufferToolBox.getBufferSize(edge);
-		if(size == 0){
-			IExpression ssize = BufferToolBox.getBufferSymbolicSize(edge);;
+		if (size == 0) {
+			IExpression ssize = BufferToolBox.getBufferSymbolicSize(edge);
+			;
 			newBuffer = new Pointer(name, new DataType(type), edge, ssize,
 					container);
-		}else{
+		} else {
 			newBuffer = new Buffer(name, size, new DataType(type), edge,
 					container);
 		}

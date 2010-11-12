@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -45,19 +45,19 @@ import org.ietr.preesm.core.scenario.Scenario;
  * 
  * @author mpelcat
  */
-public class DataTypesContentProvider implements IStructuredContentProvider{
+public class DataTypesContentProvider implements IStructuredContentProvider {
 
 	Object[] elementTable = null;
-	
+
 	@Override
 	public Object[] getElements(Object inputElement) {
 
+		if (inputElement instanceof Scenario) {
+			Scenario inputScenario = (Scenario) inputElement;
 
-		if(inputElement instanceof Scenario){
-			Scenario inputScenario = (Scenario)inputElement;
-			
 			// Retrieving the data types from the scenario
-			elementTable = inputScenario.getSimulationManager().getDataTypes().values().toArray();
+			elementTable = inputScenario.getSimulationManager().getDataTypes()
+					.values().toArray();
 		}
 		return elementTable;
 	}
@@ -65,13 +65,13 @@ public class DataTypesContentProvider implements IStructuredContentProvider{
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

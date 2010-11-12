@@ -167,11 +167,11 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 					if (edge.getDelay().intValue() > 0
 							&& !(edge.getTarget() instanceof CodeGenSDFTokenInitVertex)) {
 						UserFunctionCall initCall = new UserFunctionCall(
-								"memset",
-								this);
-						
+								"memset", this);
+
 						Buffer buf = this.getBuffer(edge);
-						initCall.addArgument(edge.getSource().getName()+ "_to_" + edge.getTarget().getName(), buf);
+						initCall.addArgument(edge.getSource().getName()
+								+ "_to_" + edge.getTarget().getName(), buf);
 						initCall.addArgument("value", new Constant("value", 0));
 						initCall.addArgument("size", new Constant("size", edge
 								.getDelay().intValue()));
@@ -325,13 +325,17 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
 		try {
 			if (vertex instanceof CodeGenSDFForkVertex) {
-				((CodeGenSDFForkVertex) vertex).generateSpecialBehavior(parentContainer);
+				((CodeGenSDFForkVertex) vertex)
+						.generateSpecialBehavior(parentContainer);
 			} else if (vertex instanceof CodeGenSDFJoinVertex) {
-				((CodeGenSDFJoinVertex) vertex).generateSpecialBehavior(parentContainer);
+				((CodeGenSDFJoinVertex) vertex)
+						.generateSpecialBehavior(parentContainer);
 			} else if (vertex instanceof CodeGenSDFBroadcastVertex) {
-				((CodeGenSDFBroadcastVertex) vertex).generateSpecialBehavior(parentContainer);
+				((CodeGenSDFBroadcastVertex) vertex)
+						.generateSpecialBehavior(parentContainer);
 			} else if (vertex instanceof CodeGenSDFRoundBufferVertex) {
-				((CodeGenSDFRoundBufferVertex) vertex).generateSpecialBehavior(parentContainer);
+				((CodeGenSDFRoundBufferVertex) vertex)
+						.generateSpecialBehavior(parentContainer);
 			}
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();

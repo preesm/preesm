@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.tools;
 
 import java.util.Comparator;
@@ -44,27 +44,30 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
  * @author mpelcat
- *
- * Vertex comparator that helps to order vertices in path alphabetical order
+ * 
+ *         Vertex comparator that helps to order vertices in path alphabetical
+ *         order
  */
-public class PathComparator implements Comparator<IHierarchicalVertex>{
+public class PathComparator implements Comparator<IHierarchicalVertex> {
 
 	@Override
 	public int compare(IHierarchicalVertex o1, IHierarchicalVertex o2) {
 
 		int diff = 0;
-		
-		if(o1.getStoredVertex() instanceof Operator){
-			((Operator)o1.getStoredVertex()).getInfo().compareTo(((Operator)o2.getStoredVertex()).getInfo());
+
+		if (o1.getStoredVertex() instanceof Operator) {
+			((Operator) o1.getStoredVertex()).getInfo().compareTo(
+					((Operator) o2.getStoredVertex()).getInfo());
+		} else if (o1.getStoredVertex() instanceof SDFAbstractVertex) {
+			((SDFAbstractVertex) o1.getStoredVertex()).getInfo().compareTo(
+					((SDFAbstractVertex) o2.getStoredVertex()).getInfo());
+
 		}
-		else if(o1.getStoredVertex() instanceof SDFAbstractVertex){
-			((SDFAbstractVertex)o1.getStoredVertex()).getInfo().compareTo(((SDFAbstractVertex)o2.getStoredVertex()).getInfo());
-			
-		}
-		
-		if(diff == 0) diff = 1;
-		
+
+		if (diff == 0)
+			diff = 1;
+
 		return diff;
 	}
-	
+
 }

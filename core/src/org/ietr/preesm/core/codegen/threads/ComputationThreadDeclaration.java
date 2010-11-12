@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.threads;
 
 import java.util.Iterator;
@@ -48,7 +48,6 @@ import org.ietr.preesm.core.codegen.model.VertexType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
-
 /**
  * Declaration of a communication thread for code generation. A computation
  * thread calls the functions corresponding to the dag tasks.
@@ -57,14 +56,14 @@ import org.sdf4j.model.sdf.SDFEdge;
  */
 public class ComputationThreadDeclaration extends ThreadDeclaration {
 
-	VirtualHeapAllocator heap ;
-	
+	VirtualHeapAllocator heap;
+
 	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
 		super("computationThread", parentContainer);
 	}
-	
-	public void setVirtualHeap(VirtualHeapAllocator heap){
-		this.heap = heap ;
+
+	public void setVirtualHeap(VirtualHeapAllocator heap) {
+		this.heap = heap;
 	}
 
 	/**
@@ -73,8 +72,8 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	 * vertex, otherwise, returns the communication vertices following the
 	 * vertex. The communication vertices are returned in scheduling order
 	 */
-	public SortedSet<SDFAbstractVertex> getComVertices(SDFAbstractVertex vertex,
-			boolean preceding) {
+	public SortedSet<SDFAbstractVertex> getComVertices(
+			SDFAbstractVertex vertex, boolean preceding) {
 		SDFAbstractVertex currentVertex = null;
 
 		ConcurrentSkipListSet<SDFAbstractVertex> schedule = new ConcurrentSkipListSet<SDFAbstractVertex>(
@@ -99,11 +98,13 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 
 			// retrieving the type of the vertex
 			VertexType vertexType = (VertexType) currentVertex
-					.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.Vertex_vertexType);
 
 			if (vertexType != null
 					&& (vertexType.equals(VertexType.send) || vertexType
-							.equals(VertexType.receive)) && !schedule.contains(currentVertex)) {
+							.equals(VertexType.receive))
+					&& !schedule.contains(currentVertex)) {
 				schedule.add(currentVertex);
 			}
 		}

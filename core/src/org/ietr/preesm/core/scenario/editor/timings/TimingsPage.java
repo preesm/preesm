@@ -116,11 +116,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		// Timing file chooser section
 		createFileSection(managedForm,
-				Messages.getString("Timings.timingFile"), Messages
-						.getString("Timings.timingFileDescription"), Messages
-						.getString("Timings.timingFileEdit"), scenario
-						.getTimingManager().getExcelFileURL(), Messages
-						.getString("Timings.timingFileBrowseTitle"), "xls");
+				Messages.getString("Timings.timingFile"),
+				Messages.getString("Timings.timingFileDescription"),
+				Messages.getString("Timings.timingFileEdit"), scenario
+						.getTimingManager().getExcelFileURL(),
+				Messages.getString("Timings.timingFileBrowseTitle"), "xls");
 
 		createTimingsSection(managedForm, Messages.getString("Timings.title"),
 				Messages.getString("Timings.description"));
@@ -337,7 +337,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 		text.setData(title);
-		
+
 		// If the text is modified or Enter key pressed, timings are imported
 		text.addModifyListener(new ModifyListener() {
 
@@ -357,13 +357,13 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.CR) {
 					Text text = (Text) e.getSource();
-					scenario.getTimingManager().setExcelFileURL(
-							text.getText());
+					scenario.getTimingManager().setExcelFileURL(text.getText());
 					scenario.getTimingManager().importTimings(scenario);
 					tableViewer.refresh();
 				}
 
 			}
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 
@@ -373,16 +373,16 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button browseButton = toolkit.createButton(client, Messages
-				.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client
-				.getShell(), browseTitle, fileExtension);
+		final Button browseButton = toolkit.createButton(client,
+				Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
+				client.getShell(), browseTitle, fileExtension);
 		browseButton.addSelectionListener(browseAdapter);
 
-		final Button exportButton = toolkit.createButton(client, Messages
-				.getString("Timings.timingExportExcel"), SWT.PUSH);
+		final Button exportButton = toolkit.createButton(client,
+				Messages.getString("Timings.timingExportExcel"), SWT.PUSH);
 		exportButton.addSelectionListener(new ExcelTimingWriter(scenario));
-		
+
 		toolkit.paintBordersFor(client);
 	}
 }

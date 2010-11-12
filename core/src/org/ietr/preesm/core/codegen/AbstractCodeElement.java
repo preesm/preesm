@@ -70,7 +70,8 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
 
 	public SDFAbstractVertex getCorrespondingVertex() {
@@ -80,9 +81,9 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	public String getName() {
 		return name;
 	}
-	
-	public void setName(String name){
-		this.name = name ;
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public AbstractBufferContainer getParentContainer() {

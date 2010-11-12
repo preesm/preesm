@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
@@ -41,8 +41,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
- * A contention node is a communication node which contention
- * is taken into account during the deployment simulation
+ * A contention node is a communication node which contention is taken into
+ * account during the deployment simulation
  * 
  * @author mpelcat
  */
@@ -64,18 +64,19 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 		return ArchitectureComponentType.contentionNode;
 	}
 
-	/*public ContentionNodeDefinition clone() {
+	/*
+	 * public ContentionNodeDefinition clone() {
+	 * 
+	 * // A new OperatorDefinition is created with same id
+	 * ContentionNodeDefinition newdef = new
+	 * ContentionNodeDefinition(this.getVlnv());
+	 * newdef.setDataRate(this.getDataRate()); return newdef; }
+	 */
 
-		// A new OperatorDefinition is created with same id
-		ContentionNodeDefinition newdef = new ContentionNodeDefinition(this.getVlnv());
-		newdef.setDataRate(this.getDataRate());
-		return newdef;
-	}*/
-
-	public void fill(ArchitectureComponentDefinition origin){
-		this.dataRate = ((ContentionNodeDefinition)origin).getDataRate();
+	public void fill(ArchitectureComponentDefinition origin) {
+		this.dataRate = ((ContentionNodeDefinition) origin).getDataRate();
 	}
-	
+
 	public float getDataRate() {
 		return dataRate;
 	}
@@ -83,8 +84,8 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 	public void setDataRate(float dataRate) {
 		this.dataRate = dataRate;
 	}
-	
-	public long getTransferTime(long transferSize){
+
+	public long getTransferTime(long transferSize) {
 		Long datasize = transferSize;
 		Double time = datasize.doubleValue() / getDataRate();
 		time = Math.ceil(time);

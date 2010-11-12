@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import java.util.HashMap;
@@ -51,46 +51,46 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
 public class DmaDefinition extends ArchitectureComponentDefinition {
 
 	/**
-	 * The time needed to set-up a communication depending
-	 * on the operator doing the set-up. Using operator names as keys
+	 * The time needed to set-up a communication depending on the operator doing
+	 * the set-up. Using operator names as keys
 	 */
-	Map<String,Long> setupTimes = null;
+	Map<String, Long> setupTimes = null;
 
 	public DmaDefinition(VLNV vlnv) {
 		super(vlnv, "dma");
-		setupTimes = new HashMap<String,Long>();
+		setupTimes = new HashMap<String, Long>();
 	}
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.dma;
 	}
 
-	/*public DmaDefinition clone() {
-		// A new OperatorDefinition is created with same id
-		DmaDefinition newdef = new DmaDefinition(this.getVlnv());
-		return newdef;
-	}*/
+	/*
+	 * public DmaDefinition clone() { // A new OperatorDefinition is created
+	 * with same id DmaDefinition newdef = new DmaDefinition(this.getVlnv());
+	 * return newdef; }
+	 */
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
-	
-	public void addSetupTime(String opName, long time){
+
+	public void addSetupTime(String opName, long time) {
 		setupTimes.put(opName, time);
 	}
-	
-	public long getSetupTime(String opName){
+
+	public long getSetupTime(String opName) {
 		return setupTimes.get(opName);
 	}
-	
-	public void addSetupTime(Operator o, long time){
+
+	public void addSetupTime(Operator o, long time) {
 		addSetupTime(o.getName(), time);
 	}
-	
-	public void removeSetupTime(Operator o){
+
+	public void removeSetupTime(Operator o) {
 		setupTimes.remove(o);
 	}
-	
-	public long getSetupTime(Operator o){
+
+	public long getSetupTime(Operator o) {
 		return getSetupTime(o.getId());
 	}
 

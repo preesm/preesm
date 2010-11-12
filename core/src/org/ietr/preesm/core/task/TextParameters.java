@@ -50,16 +50,16 @@ import org.ietr.preesm.core.workflow.TaskNode;
 public class TextParameters {
 
 	/**
-	 * Variables retrieved form {@link TaskNode} and 
-	 * used to parameterize the transformation.
+	 * Variables retrieved form {@link TaskNode} and used to parameterize the
+	 * transformation.
 	 */
-	private Map<String,String> variables = null;
-	
+	private Map<String, String> variables = null;
+
 	public TextParameters() {
 		super();
-		this.variables = new HashMap<String,String>();
+		this.variables = new HashMap<String, String>();
 	}
-	
+
 	public TextParameters(Map<String, String> variables) {
 		super();
 		this.variables = variables;
@@ -77,51 +77,51 @@ public class TextParameters {
 	/**
 	 * Creates a new variable.
 	 * 
-	 * @param key 
-	 * 				the name of the variable.
-	 * @param value 
-	 * 				the value of the variable.
+	 * @param key
+	 *            the name of the variable.
+	 * @param value
+	 *            the value of the variable.
 	 */
 	public void addVariable(String key, String value) {
 		variables.put(key, value);
 	}
-	
+
 	/**
 	 * Retrieves the variable as a boolean.
 	 */
 	public boolean getBooleanVariable(String key) {
-		
-		if(variables.containsKey(key)){
+
+		if (variables.containsKey(key)) {
 			return Boolean.valueOf(variables.get(key));
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Retrieves the variable as an integer.
 	 */
 	public int getIntVariable(String key) {
-		
-		if(variables.containsKey(key)){
+
+		if (variables.containsKey(key)) {
 			return Integer.valueOf(variables.get(key));
 		}
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * Retrieves the variable as a string.
 	 */
 	public String getVariable(String key) {
-		
-		if(variables.containsKey(key)){
+
+		if (variables.containsKey(key)) {
 			return variables.get(key);
 		}
-		
+
 		return "";
 	}
-	
+
 	public boolean hasVariable(String key) {
 		return variables.containsKey(key);
 	}
@@ -129,21 +129,22 @@ public class TextParameters {
 	/**
 	 * Replaces the environment variables by their values
 	 */
-	public void resolveEnvironmentVars(Map<String,String> envVars) {
-		
+	public void resolveEnvironmentVars(Map<String, String> envVars) {
+
 		Iterator<String> localVarIterator = variables.keySet().iterator();
-		
-		while(localVarIterator.hasNext()){
+
+		while (localVarIterator.hasNext()) {
 			String localVarKey = localVarIterator.next();
 			String localVarValue = variables.get(localVarKey);
-			
+
 			Iterator<String> envVarIterator = envVars.keySet().iterator();
-			
-			while(envVarIterator.hasNext()){
+
+			while (envVarIterator.hasNext()) {
 				String envVarKey = envVarIterator.next();
 				String envVarValue = envVars.get(envVarKey);
-				
-				localVarValue = localVarValue.replace("${"+envVarKey+"}",envVarValue);
+
+				localVarValue = localVarValue.replace("${" + envVarKey + "}",
+						envVarValue);
 				variables.put(localVarKey, localVarValue);
 			}
 		}

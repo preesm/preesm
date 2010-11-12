@@ -10,10 +10,10 @@ public class BufferAtIndex extends FunctionArgument {
 	private VariableExpression index;
 	private Buffer parentBuffer;
 
-	public BufferAtIndex(VariableExpression index ,Buffer parentBuffer) {
+	public BufferAtIndex(VariableExpression index, Buffer parentBuffer) {
 		super(parentBuffer.getName(), parentBuffer.getType());
 		this.parentBuffer = parentBuffer;
-		this.index = index ;
+		this.index = index;
 	}
 
 	public VariableExpression getIndex() {
@@ -29,9 +29,10 @@ public class BufferAtIndex extends FunctionArgument {
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 	}
-	
+
 	public void setParentBuffer(Buffer parentBuffer) {
 		this.parentBuffer = parentBuffer;
 	}

@@ -33,14 +33,15 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 
 /**
- * The label provider displays the name of the core displayed in an architecture tree
+ * The label provider displays the name of the core displayed in an architecture
+ * tree
  * 
  * @author mpelcat
  */

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.logging.Level;
@@ -58,20 +58,22 @@ import org.ietr.preesm.core.scenario.editor.variables.VariablesPage;
 import org.ietr.preesm.core.tools.PreesmLogger;
 
 /**
- * The scenario editor allows to change all parameters in scenario; i.e. depending
- * on both algorithm and architecture. It can be called by editing a .scenario file
- * or by creating a new file through File/New/Other/Preesm/Preesm Scenario
+ * The scenario editor allows to change all parameters in scenario; i.e.
+ * depending on both algorithm and architecture. It can be called by editing a
+ * .scenario file or by creating a new file through File/New/Other/Preesm/Preesm
+ * Scenario
  * 
  * @author mpelcat
  */
-public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyListener {
+public class ScenarioEditor extends SharedHeaderFormEditor implements
+		IPropertyListener {
 
 	boolean isDirty = false;
-	
+
 	private IFile scenarioFile = null;
-	
+
 	private Scenario scenario;
-	
+
 	public ScenarioEditor() {
 		super();
 	}
@@ -82,26 +84,26 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		
+
 		// Starting the console
 		PreesmLogger.getLogger().createConsole();
 		PreesmLogger.getLogger().setLevel(Level.INFO);
-		
+
 		setSite(site);
 		setInput(input);
 		setPartName(input.getName());
-					
-		if(input instanceof FileEditorInput){
+
+		if (input instanceof FileEditorInput) {
 			FileEditorInput fileInput = (FileEditorInput) input;
 			scenarioFile = fileInput.getFile();
 		}
-		
-		if(scenarioFile != null){
+
+		if (scenarioFile != null) {
 			scenario = new Scenario();
 			ScenarioParser parser = new ScenarioParser();
 			parser.parseXmlFile(scenarioFile);
 			scenario = parser.parseDocument();
-			
+
 		}
 	}
 
@@ -110,20 +112,26 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 	 */
 	@Override
 	protected void addPages() {
-		//this.activateSite();
-		IFormPage overviewPage = new OverviewPage(scenario,this, "Overview","Overview");
+		// this.activateSite();
+		IFormPage overviewPage = new OverviewPage(scenario, this, "Overview",
+				"Overview");
 		overviewPage.addPropertyListener(this);
-		IFormPage constraintsPage = new ConstraintsPage(scenario,this, "Constraints","Constraints");
+		IFormPage constraintsPage = new ConstraintsPage(scenario, this,
+				"Constraints", "Constraints");
 		constraintsPage.addPropertyListener(this);
-		IFormPage timingsPage = new TimingsPage(scenario,this, "Timings","Timings");
+		IFormPage timingsPage = new TimingsPage(scenario, this, "Timings",
+				"Timings");
 		timingsPage.addPropertyListener(this);
-		SimulationPage simulationPage = new SimulationPage(scenario,this, "Simulation","Simulation");
+		SimulationPage simulationPage = new SimulationPage(scenario, this,
+				"Simulation", "Simulation");
 		simulationPage.addPropertyListener(this);
-		CodegenPage codegenPage = new CodegenPage(scenario,this, "Codegen","Codegen");
+		CodegenPage codegenPage = new CodegenPage(scenario, this, "Codegen",
+				"Codegen");
 		codegenPage.addPropertyListener(this);
-		VariablesPage variablesPage = new VariablesPage(scenario,this, "Variables","Variables");
+		VariablesPage variablesPage = new VariablesPage(scenario, this,
+				"Variables", "Variables");
 		variablesPage.addPropertyListener(this);
-		
+
 		try {
 			addPage(overviewPage);
 			addPage(constraintsPage);
@@ -150,7 +158,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 		isDirty = false;
 		this.firePropertyChange(PROP_DIRTY);
 	}
-	
+
 	@Override
 	public boolean isDirty() {
 		return isDirty;
@@ -159,7 +167,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 	@Override
 	public void doSaveAs() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -170,7 +178,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if(propId == PROP_DIRTY){
+		if (propId == PROP_DIRTY) {
 			isDirty = true;
 			this.firePropertyChange(propId);
 		}

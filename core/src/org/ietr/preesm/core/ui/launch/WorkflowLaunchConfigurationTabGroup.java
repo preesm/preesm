@@ -48,7 +48,6 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 public class WorkflowLaunchConfigurationTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 
-	
 	/**
 	 * 
 	 */
@@ -59,10 +58,8 @@ public class WorkflowLaunchConfigurationTabGroup extends
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new WorkFlowLaunchWorkflowTab(),
-				//new WorkFlowLaunchArchitectureTab(),
-				new WorkFlowLaunchScenarioTab(),
-				new EnvironmentTab()
-				};
+				// new WorkFlowLaunchArchitectureTab(),
+				new WorkFlowLaunchScenarioTab(), new EnvironmentTab() };
 		this.setTabs(tabs);
 	}
 

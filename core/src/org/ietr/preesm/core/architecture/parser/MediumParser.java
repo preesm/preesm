@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.parser;
 
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -41,17 +41,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * A medium has specific properties parsed in this class to generate a MediumDefinition
+ * A medium has specific properties parsed in this class to generate a
+ * MediumDefinition
  * 
  * @author mpelcat
  */
 public class MediumParser {
 
 	/**
-	 * Parsing medium specific data from DOM document and filling the medium definition
+	 * Parsing medium specific data from DOM document and filling the medium
+	 * definition
 	 */
-	static void parse(MediumDefinition def, Element callElt){
-		
+	static void parse(MediumDefinition def, Element callElt) {
+
 		Node node = callElt.getFirstChild();
 
 		while (node != null) {
@@ -59,14 +61,17 @@ public class MediumParser {
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String eltType = elt.getTagName();
-				String configurableElementName = elt.getAttribute("spirit:referenceId");
-				if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("medium_dataRate")) {
+				String configurableElementName = elt
+						.getAttribute("spirit:referenceId");
+				if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("medium_dataRate")) {
 					String value = elt.getTextContent();
 					def.setDataRate(Float.parseFloat(value));
-				} else if (eltType.equals("spirit:configurableElementValue") && configurableElementName.equals("medium_overhead")) {
+				} else if (eltType.equals("spirit:configurableElementValue")
+						&& configurableElementName.equals("medium_overhead")) {
 					String value = elt.getTextContent();
 					def.setOverhead(Integer.parseInt(value));
-				} 
+				}
 			}
 
 			node = node.getNextSibling();

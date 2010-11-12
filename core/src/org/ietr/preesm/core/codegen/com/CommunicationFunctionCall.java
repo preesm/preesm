@@ -54,7 +54,6 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  */
 public class CommunicationFunctionCall extends AbstractCodeElement {
 
-
 	/**
 	 * Transmitted buffers
 	 */
@@ -66,13 +65,14 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	private AbstractRouteStep routeStep;
 
 	/**
-	 * index of the function call  within the calls of same type and route step
+	 * index of the function call within the calls of same type and route step
 	 */
 	private int callIndex = -1;
 
 	public CommunicationFunctionCall(String name,
 			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
-			 AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex, int callIndex) {
+			AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex,
+			int callIndex) {
 
 		super(name, parentContainer, correspondingVertex);
 
@@ -84,8 +84,8 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer
-				.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 
 		if (bufferSet != null) {
 			Iterator<Buffer> iterator = bufferSet.iterator();

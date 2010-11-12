@@ -111,10 +111,6 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				scenario);
 		simu2.setTaskScheduler(new SimpleTaskSched());
 		
-		/*for(OrderProperty prop : simu.getTotalOrder().getOrderedList()){
-			PreesmLogger.getLogger().log(Level.INFO,prop.getName() + " ");
-		}*/
-		
 		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(simu
 				.getTotalOrder(), textParameters);
 		dynamicSched.mapVertices(simu2);

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture.simplemodel;
 
 import java.util.HashMap;
@@ -51,43 +51,43 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
 public class RamDefinition extends ArchitectureComponentDefinition {
 
 	/**
-	 * The time needed to set-up a communication depending
-	 * on the operator doing the set-up
+	 * The time needed to set-up a communication depending on the operator doing
+	 * the set-up
 	 */
-	Map<String,Integer> setupTimes = null;
+	Map<String, Integer> setupTimes = null;
 
 	public RamDefinition(VLNV vlnv) {
 		super(vlnv, "ram");
-		setupTimes = new HashMap<String,Integer>();
+		setupTimes = new HashMap<String, Integer>();
 	}
 
 	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.ram;
 	}
 
-	/*public RamDefinition clone() {
-		// A new OperatorDefinition is created with same id
-		RamDefinition newdef = new RamDefinition(this.getVlnv());
-
-		return newdef;
-	}*/
+	/*
+	 * public RamDefinition clone() { // A new OperatorDefinition is created
+	 * with same id RamDefinition newdef = new RamDefinition(this.getVlnv());
+	 * 
+	 * return newdef; }
+	 */
 
 	public void fill(ArchitectureComponentDefinition origin) {
 	}
-	
-	public void addSetupTime(String opName, int time){
+
+	public void addSetupTime(String opName, int time) {
 		setupTimes.put(opName, time);
 	}
-	
-	public long getSetupTime(String opName){
+
+	public long getSetupTime(String opName) {
 		return setupTimes.get(opName);
 	}
-	
-	public void addSetupTime(Operator o, int time){
+
+	public void addSetupTime(Operator o, int time) {
 		addSetupTime(o.getName(), time);
 	}
-	
-	public long getSetupTime(Operator o){
+
+	public long getSetupTime(Operator o) {
 		return getSetupTime(o.getName());
 	}
 

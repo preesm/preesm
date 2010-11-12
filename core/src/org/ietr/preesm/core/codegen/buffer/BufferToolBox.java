@@ -31,25 +31,31 @@ public class BufferToolBox {
 						&& dParam.getDomain() instanceof DynamicParameterRange) {
 					int nbRepeat = 1;
 					try {
-						if(edge.getTarget().getNbRepeat() instanceof Integer){
+						if (edge.getTarget().getNbRepeat() instanceof Integer) {
 							nbRepeat = (Integer) edge.getTarget().getNbRepeat();
-						}else{
-							Expression expr = (Expression) edge.getTarget().getNbRepeat() ;
-							Generic newExpr = expr ;
-							Variable [] vars = expr.variables();
-							for( int i = 0 ; i < vars.length ;  i ++){
-								if(getCorrespondingParameter(edge, vars[i].name()) != null){
-									PSDFDynamicParameter dynParam = getCorrespondingParameter(edge, vars[i].name());
-									if(dynParam.getDomain() instanceof DynamicParameterRange){
-										int max = ((DynamicParameterRange) dynParam.getDomain()).getMaxValue();
-										newExpr =  newExpr.substitute(vars[i], JSCLInteger.valueOf(max));
+						} else {
+							Expression expr = (Expression) edge.getTarget()
+									.getNbRepeat();
+							Generic newExpr = expr;
+							Variable[] vars = expr.variables();
+							for (int i = 0; i < vars.length; i++) {
+								if (getCorrespondingParameter(edge,
+										vars[i].name()) != null) {
+									PSDFDynamicParameter dynParam = getCorrespondingParameter(
+											edge, vars[i].name());
+									if (dynParam.getDomain() instanceof DynamicParameterRange) {
+										int max = ((DynamicParameterRange) dynParam
+												.getDomain()).getMaxValue();
+										newExpr = newExpr.substitute(vars[i],
+												JSCLInteger.valueOf(max));
 									}
 								}
 							}
-							if(newExpr.simplify() instanceof JSCLInteger){
-								nbRepeat = newExpr.simplify().integerValue().intValue();
-							}else{
-								return 0 ;
+							if (newExpr.simplify() instanceof JSCLInteger) {
+								nbRepeat = newExpr.simplify().integerValue()
+										.intValue();
+							} else {
+								return 0;
 							}
 						}
 					} catch (Exception e) {
@@ -70,25 +76,31 @@ public class BufferToolBox {
 						&& dParam.getDomain() instanceof DynamicParameterRange) {
 					int nbRepeat = 1;
 					try {
-						if(edge.getSource().getNbRepeat() instanceof Integer){
+						if (edge.getSource().getNbRepeat() instanceof Integer) {
 							nbRepeat = (Integer) edge.getSource().getNbRepeat();
-						}else{
-							Expression expr = (Expression) edge.getSource().getNbRepeat() ;
-							Generic newExpr = expr ;
-							Variable [] vars = expr.variables();
-							for( int i = 0 ; i < vars.length ;  i ++){
-								if(getCorrespondingParameter(edge, vars[i].name()) != null){
-									PSDFDynamicParameter dynParam = getCorrespondingParameter(edge, vars[i].name());
-									if(dynParam.getDomain() instanceof DynamicParameterRange){
-										int max = ((DynamicParameterRange) dynParam.getDomain()).getMaxValue();
-										newExpr =  newExpr.substitute(vars[i], JSCLInteger.valueOf(max));
+						} else {
+							Expression expr = (Expression) edge.getSource()
+									.getNbRepeat();
+							Generic newExpr = expr;
+							Variable[] vars = expr.variables();
+							for (int i = 0; i < vars.length; i++) {
+								if (getCorrespondingParameter(edge,
+										vars[i].name()) != null) {
+									PSDFDynamicParameter dynParam = getCorrespondingParameter(
+											edge, vars[i].name());
+									if (dynParam.getDomain() instanceof DynamicParameterRange) {
+										int max = ((DynamicParameterRange) dynParam
+												.getDomain()).getMaxValue();
+										newExpr = newExpr.substitute(vars[i],
+												JSCLInteger.valueOf(max));
 									}
 								}
 							}
-							if(newExpr.simplify() instanceof JSCLInteger){
-								nbRepeat = newExpr.simplify().integerValue().intValue();
-							}else{
-								return 0 ;
+							if (newExpr.simplify() instanceof JSCLInteger) {
+								nbRepeat = newExpr.simplify().integerValue()
+										.intValue();
+							} else {
+								return 0;
 							}
 						}
 					} catch (Exception e) {
@@ -178,13 +190,13 @@ public class BufferToolBox {
 			String pName) {
 		if (edge.getBase().getParameter(pName) == null) {
 			if (edge.getSource().getGraphDescription() != null
-					&& edge.getSource().getGraphDescription().getParameter(
-							pName) != null) {
+					&& edge.getSource().getGraphDescription()
+							.getParameter(pName) != null) {
 				return (PSDFDynamicParameter) edge.getSource()
 						.getGraphDescription().getParameter(pName);
 			} else if (edge.getTarget().getGraphDescription() != null
-					&& edge.getTarget().getGraphDescription().getParameter(
-							pName) != null) {
+					&& edge.getTarget().getGraphDescription()
+							.getParameter(pName) != null) {
 				return (PSDFDynamicParameter) edge.getTarget()
 						.getGraphDescription().getParameter(pName);
 			} else {

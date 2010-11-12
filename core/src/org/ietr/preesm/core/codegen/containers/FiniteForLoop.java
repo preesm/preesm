@@ -112,8 +112,8 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		allocatedBuffers = new HashMap<SDFEdge, Buffer>();
 		this.parentContainer = parentContainer;
 		this.correspondingVertex = (SDFAbstractVertex) correspondingVertex;
-		for (SDFEdge edge : ((SDFGraph)this.correspondingVertex.getBase()).outgoingEdgesOf(
-				this.correspondingVertex)) {
+		for (SDFEdge edge : ((SDFGraph) this.correspondingVertex.getBase())
+				.outgoingEdgesOf(this.correspondingVertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -124,8 +124,10 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				if (parentBufferContainer != null
 						&& allocatedBuffers.get(edge) == null) {
 					if (edge.getProd().intValue() != parentBufferContainer
-							.getBuffer(edge).getSize() || edge.getProd().intValue() == 0) {
-						IExpression expr = BufferToolBox.createBufferIndex(index, edge, parentBufferContainer, true);
+							.getBuffer(edge).getSize()
+							|| edge.getProd().intValue() == 0) {
+						IExpression expr = BufferToolBox.createBufferIndex(
+								index, edge, parentBufferContainer, true);
 						SubBuffer newBuffer = new SubBuffer("inSub_"
 								+ index.getName()
 								+ "_"
@@ -136,7 +138,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 						this.addSubBufferAllocation(new SubBufferAllocation(
 								newBuffer));
 						this.addBuffer(newBuffer, edge);
-					}else {
+					} else {
 						this.addBuffer(parentBufferContainer.getBuffer(edge),
 								edge);
 					}
@@ -149,8 +151,8 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				e.printStackTrace();
 			}
 		}
-		for (SDFEdge edge : ((SDFGraph)this.correspondingVertex.getBase()).incomingEdgesOf(
-				this.correspondingVertex)) {
+		for (SDFEdge edge : ((SDFGraph) this.correspondingVertex.getBase())
+				.incomingEdgesOf(this.correspondingVertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -161,8 +163,10 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 				if (parentBufferContainer != null
 						&& allocatedBuffers.get(edge) == null) {
 					if (edge.getCons().intValue() != parentBufferContainer
-							.getBuffer(edge).getSize() || edge.getCons().intValue() == 0) {
-						IExpression expr = BufferToolBox.createBufferIndex(index, edge, parentBufferContainer, false);
+							.getBuffer(edge).getSize()
+							|| edge.getCons().intValue() == 0) {
+						IExpression expr = BufferToolBox.createBufferIndex(
+								index, edge, parentBufferContainer, false);
 						SubBuffer newBuffer = new SubBuffer("outSub_"
 								+ index.getName()
 								+ "_"
@@ -252,7 +256,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	public String toString() {
 		return "";
 	}
-	
+
 	/**
 	 * Adds the given variable to this buffer container variable list.
 	 * 

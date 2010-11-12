@@ -38,26 +38,25 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 
-
 /**
- * defines a communication medium between 2 operators. It represents a
- * bus and its drivers
- *         
+ * defines a communication medium between 2 operators. It represents a bus and
+ * its drivers
+ * 
  * @author mpelcat
  */
 public class Medium extends AbstractNode {
-	
+
 	public Medium(String id, MediumDefinition def) {
 		super(id, def);
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.medium;
 	}
 
-	/*@Override
-	public ArchitectureComponent clone() {
-		return new Medium(getName(),(MediumDefinition)getDefinition());
-	}*/
+	/*
+	 * @Override public ArchitectureComponent clone() { return new
+	 * Medium(getName(),(MediumDefinition)getDefinition()); }
+	 */
 
 }

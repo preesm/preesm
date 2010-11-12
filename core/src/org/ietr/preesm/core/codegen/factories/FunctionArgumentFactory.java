@@ -98,14 +98,21 @@ public class FunctionArgumentFactory {
 				if (vertex.getArgument(param.getName()) instanceof PSDFDynamicArgument) {
 					currentParam = parentContainer.getVariable(vertex
 							.getArgument(param.getName()).getValue());
-				}else if(vertex.getBase().getParameter(vertex.getArgument(param.getName()).getValue()) instanceof PSDFDynamicParameter){
-					currentParam = parentContainer.getVariable(vertex.getArgument(param.getName()).getObjectValue().getValue());
-				}else {
-					if(vertex.getBase().getParameter(vertex
-							.getArgument(param.getName()).getValue()) != null){
-						String valueName = vertex.getArgument(param.getName()).getValue();
-						if(vertex.getBase().getParentVertex().getArgument(valueName) instanceof PSDFDynamicArgument){
-							currentParam = parentContainer.getVariable(vertex.getBase().getParentVertex().getArgument(valueName).getValue());
+				} else if (vertex.getBase().getParameter(
+						vertex.getArgument(param.getName()).getValue()) instanceof PSDFDynamicParameter) {
+					currentParam = parentContainer.getVariable(vertex
+							.getArgument(param.getName()).getObjectValue()
+							.getValue());
+				} else {
+					if (vertex.getBase().getParameter(
+							vertex.getArgument(param.getName()).getValue()) != null) {
+						String valueName = vertex.getArgument(param.getName())
+								.getValue();
+						if (vertex.getBase().getParentVertex()
+								.getArgument(valueName) instanceof PSDFDynamicArgument) {
+							currentParam = parentContainer.getVariable(vertex
+									.getBase().getParentVertex()
+									.getArgument(valueName).getValue());
 						}
 					}
 					try {
@@ -113,10 +120,11 @@ public class FunctionArgumentFactory {
 								.getArgument(param.getName()).intValue());
 					} catch (NoIntegerValueException e) {
 						currentParam = new Constant(param.getName(), vertex
-								.getArgument(param.getName()).getObjectValue().toString());
+								.getArgument(param.getName()).getObjectValue()
+								.toString());
 					}
 				}
-				if(param.isOutput()){
+				if (param.isOutput()) {
 					currentParam = new PointerOn(currentParam);
 				}
 				return currentParam;
@@ -130,7 +138,7 @@ public class FunctionArgumentFactory {
 			CodeGenSDFInitVertex initVertex = (CodeGenSDFInitVertex) vertex;
 			if (initVertex.getAffectedParameter(param.getName()) != null) {
 				currentParam = parentContainer.getVariable(param.getName());
-				if(param.isOutput()){
+				if (param.isOutput()) {
 					currentParam = new PointerOn(currentParam);
 				}
 				return currentParam;
@@ -139,7 +147,7 @@ public class FunctionArgumentFactory {
 			CodeGenSDFSubInitVertex initVertex = (CodeGenSDFSubInitVertex) vertex;
 			if (initVertex.getAffectedParameter(param.getName()) != null) {
 				currentParam = parentContainer.getVariable(param.getName());
-				if(param.isOutput()){
+				if (param.isOutput()) {
 					currentParam = new PointerOn(currentParam);
 				}
 				return currentParam;
@@ -158,7 +166,8 @@ public class FunctionArgumentFactory {
 
 		Map<SDFEdge, Buffer> candidateBuffers = new HashMap<SDFEdge, Buffer>();
 		// Adding output buffers
-		for (SDFEdge edge : ((SDFGraph) vertex.getBase()).outgoingEdgesOf(vertex)) {
+		for (SDFEdge edge : ((SDFGraph) vertex.getBase())
+				.outgoingEdgesOf(vertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -166,13 +175,14 @@ public class FunctionArgumentFactory {
 						.getParentContainer();
 			}
 			if (parentBufferContainer != null) {
-				candidateBuffers.put(edge, parentBufferContainer
-						.getBuffer(edge));
+				candidateBuffers.put(edge,
+						parentBufferContainer.getBuffer(edge));
 			}
 		}
 
 		// Adding input buffers
-		for (SDFEdge edge : ((SDFGraph) vertex.getBase()).incomingEdgesOf(vertex)) {
+		for (SDFEdge edge : ((SDFGraph) vertex.getBase())
+				.incomingEdgesOf(vertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -180,8 +190,8 @@ public class FunctionArgumentFactory {
 						.getParentContainer();
 			}
 			if (parentBufferContainer != null) {
-				candidateBuffers.put(edge, parentBufferContainer
-						.getBuffer(edge));
+				candidateBuffers.put(edge,
+						parentBufferContainer.getBuffer(edge));
 			}
 		}
 

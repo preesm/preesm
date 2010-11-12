@@ -12,16 +12,15 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
 
-public abstract class SpecialBehaviorCall extends AbstractCodeElement{
-	
-	
+public abstract class SpecialBehaviorCall extends AbstractCodeElement {
+
 	protected List<Buffer> inputBuffers;
-	
+
 	/**
 	 * The buffer to explode
 	 */
 	protected List<Buffer> outputBuffers;
-	
+
 	public SpecialBehaviorCall(String name,
 			AbstractBufferContainer parentContainer,
 			SDFAbstractVertex correspondingVertex) {
@@ -29,7 +28,8 @@ public abstract class SpecialBehaviorCall extends AbstractCodeElement{
 		inputBuffers = new ArrayList<Buffer>();
 		outputBuffers = new ArrayList<Buffer>();
 		// Adding output buffers
-		for (SDFEdge edge : ((SDFGraph) correspondingVertex.getBase()).incomingEdgesOf(correspondingVertex)) {
+		for (SDFEdge edge : ((SDFGraph) correspondingVertex.getBase())
+				.incomingEdgesOf(correspondingVertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -42,7 +42,8 @@ public abstract class SpecialBehaviorCall extends AbstractCodeElement{
 		}
 
 		// Adding input buffers
-		for (SDFEdge edge : ((SDFGraph)correspondingVertex.getBase()).outgoingEdgesOf(correspondingVertex)) {
+		for (SDFEdge edge : ((SDFGraph) correspondingVertex.getBase())
+				.outgoingEdgesOf(correspondingVertex)) {
 			AbstractBufferContainer parentBufferContainer = parentContainer;
 			while (parentBufferContainer != null
 					&& parentBufferContainer.getBuffer(edge) == null) {
@@ -56,18 +57,17 @@ public abstract class SpecialBehaviorCall extends AbstractCodeElement{
 	}
 
 	public abstract String getBehaviorId();
-	
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 	}
-	
-	public List<Buffer> getOutputBuffers(){
-		return outputBuffers ;
+
+	public List<Buffer> getOutputBuffers() {
+		return outputBuffers;
 	}
 
-	
-	public List<Buffer> getInputBuffers(){
-		return inputBuffers ;
+	public List<Buffer> getInputBuffers() {
+		return inputBuffers;
 	}
 
 }

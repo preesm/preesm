@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.calls;
 
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -41,8 +41,8 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
 /**
- * A constant is a parameter given to a function call.
- * It is retrieved from the graph parameters
+ * A constant is a parameter given to a function call. It is retrieved from the
+ * graph parameters
  * 
  * @author mpelcat
  */
@@ -50,12 +50,12 @@ public class Constant extends FunctionArgument {
 
 	String stringValue = null;
 	int intValue = 0;
-	
+
 	public Constant(String name, String value) {
 		super(name, new DataType("string"));
 		this.stringValue = value;
 	}
-	
+
 	public Constant(String name, int value) {
 		super(name, new DataType("int"));
 		this.intValue = value;
@@ -67,12 +67,11 @@ public class Constant extends FunctionArgument {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
 	}
-	
-	public String getValue(){
-		if(stringValue == null){
+
+	public String getValue() {
+		if (stringValue == null) {
 			return String.valueOf(intValue);
-		}
-		else{
+		} else {
 			return stringValue;
 		}
 	}

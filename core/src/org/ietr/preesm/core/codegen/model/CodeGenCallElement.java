@@ -10,14 +10,13 @@ package org.ietr.preesm.core.codegen.model;
  */
 public class CodeGenCallElement {
 
-	private String name ;
-	
-	public CodeGenCallElement(String name){
-		this.name = name ;
+	private String name;
+
+	public CodeGenCallElement(String name) {
+		this.name = name;
 	}
-	
-	
-	public String getName(){
-		return name ;
+
+	public String getName() {
+		return name;
 	}
 }

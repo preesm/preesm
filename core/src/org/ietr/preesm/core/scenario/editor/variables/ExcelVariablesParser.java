@@ -128,8 +128,7 @@ public class ExcelVariablesParser {
 				}
 			} else {
 				PreesmLogger.getLogger()
-						.log(
-								Level.WARNING,
+						.log(Level.WARNING,
 								"No cell found in excel sheet for variable: "
 										+ varName);
 			}

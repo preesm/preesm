@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import org.sdf4j.factories.SDFEdgeFactory;
@@ -41,14 +41,13 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
 import org.sdf4j.model.sdf.types.SDFStringEdgePropertyType;
 
-public class CodeGenSDFEdgeFactory extends SDFEdgeFactory{
+public class CodeGenSDFEdgeFactory extends SDFEdgeFactory {
 
 	@Override
 	public CodeGenSDFEdge createEdge(SDFAbstractVertex arg0,
 			SDFAbstractVertex arg1) {
 		return new CodeGenSDFEdge(new SDFIntEdgePropertyType(1),
-				new SDFIntEdgePropertyType(1),
-				new SDFIntEdgePropertyType(0),
+				new SDFIntEdgePropertyType(1), new SDFIntEdgePropertyType(0),
 				new SDFStringEdgePropertyType("char"));
 	}
 

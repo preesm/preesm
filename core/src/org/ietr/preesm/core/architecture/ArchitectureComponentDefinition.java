@@ -113,27 +113,35 @@ public abstract class ArchitectureComponentDefinition {
 
 		if (getType().equals(ArchitectureComponentType.contentionNode)) {
 			newdef = new ContentionNodeDefinition(this.getVlnv());
-			((ContentionNodeDefinition)newdef).setDataRate(((ContentionNodeDefinition)this).getDataRate());
+			((ContentionNodeDefinition) newdef)
+					.setDataRate(((ContentionNodeDefinition) this)
+							.getDataRate());
 		} else if (getType().equals(ArchitectureComponentType.dma)) {
-			DmaDefinition dmaDef = (DmaDefinition)this;
+			DmaDefinition dmaDef = (DmaDefinition) this;
 			newdef = new DmaDefinition(this.getVlnv());
-			for(String opName : dmaDef.getSetupTimes().keySet()){
-				((DmaDefinition)newdef).addSetupTime(opName, (int)dmaDef.getSetupTime(opName));
+			for (String opName : dmaDef.getSetupTimes().keySet()) {
+				((DmaDefinition) newdef).addSetupTime(opName,
+						(int) dmaDef.getSetupTime(opName));
 			}
 		} else if (getType().equals(ArchitectureComponentType.medium)) {
-			MediumDefinition def = (MediumDefinition)this;
-			newdef = new MediumDefinition(this.getVlnv(),def.getDataRate(), def.getOverheadTime());
+			MediumDefinition def = (MediumDefinition) this;
+			newdef = new MediumDefinition(this.getVlnv(), def.getDataRate(),
+					def.getOverheadTime());
 		} else if (getType().equals(ArchitectureComponentType.operator)) {
 			newdef = new OperatorDefinition(this.getVlnv());
-			((OperatorDefinition)newdef).setDataCopySpeed(((OperatorDefinition)this).getDataCopySpeed());
+			((OperatorDefinition) newdef)
+					.setDataCopySpeed(((OperatorDefinition) this)
+							.getDataCopySpeed());
 		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
 			newdef = new ParallelNodeDefinition(this.getVlnv());
-			((ParallelNodeDefinition)newdef).setDataRate(((ParallelNodeDefinition)this).getDataRate());
+			((ParallelNodeDefinition) newdef)
+					.setDataRate(((ParallelNodeDefinition) this).getDataRate());
 		} else if (getType().equals(ArchitectureComponentType.ram)) {
-			RamDefinition ramDef = (RamDefinition)this;
+			RamDefinition ramDef = (RamDefinition) this;
 			newdef = new RamDefinition(this.getVlnv());
-			for(String opName : ramDef.getSetupTimes().keySet()){
-				((RamDefinition)newdef).addSetupTime(opName, (int)ramDef.getSetupTime(opName));
+			for (String opName : ramDef.getSetupTimes().keySet()) {
+				((RamDefinition) newdef).addSetupTime(opName,
+						(int) ramDef.getSetupTime(opName));
 			}
 		} else {
 			PreesmLogger.getLogger().log(Level.SEVERE,

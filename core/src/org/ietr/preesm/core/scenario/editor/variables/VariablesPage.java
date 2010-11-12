@@ -94,7 +94,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 	TableViewer tableViewer = null;
 
 	/**
-	 * Current graph in the scenario initialized when the variables page is displayed.
+	 * Current graph in the scenario initialized when the variables page is
+	 * displayed.
 	 */
 	SDFGraph currentGraph = null;
 
@@ -121,16 +122,16 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		form.getBody().setLayout(layout);
 
 		// Timing file chooser section
-		createFileSection(managedForm, Messages
-				.getString("Variables.excelFile"), Messages
-				.getString("Variables.excelFileDescription"), Messages
-				.getString("Variables.excelFileEdit"), scenario
-				.getVariablesManager().getExcelFileURL(), Messages
-				.getString("Variables.excelFileBrowseTitle"), "xls");
+		createFileSection(managedForm,
+				Messages.getString("Variables.excelFile"),
+				Messages.getString("Variables.excelFileDescription"),
+				Messages.getString("Variables.excelFileEdit"), scenario
+						.getVariablesManager().getExcelFileURL(),
+				Messages.getString("Variables.excelFileBrowseTitle"), "xls");
 
-		createVariablesSection(managedForm, Messages
-				.getString("Variables.title"), Messages
-				.getString("Variables.description"));
+		createVariablesSection(managedForm,
+				Messages.getString("Variables.title"),
+				Messages.getString("Variables.description"));
 
 		managedForm.refresh();
 		managedForm.reflow(true);
@@ -188,10 +189,10 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		Composite buttonscps = toolkit.createComposite(parent);
 		buttonscps.setLayout(new GridLayout(2, true));
 
-		final Button addButton = toolkit.createButton(buttonscps, Messages
-				.getString("Variables.addVar"), SWT.PUSH);
-		final Button removeButton = toolkit.createButton(buttonscps, Messages
-				.getString("Variables.removeVar"), SWT.PUSH);
+		final Button addButton = toolkit.createButton(buttonscps,
+				Messages.getString("Variables.addVar"), SWT.PUSH);
+		final Button removeButton = toolkit.createButton(buttonscps,
+				Messages.getString("Variables.removeVar"), SWT.PUSH);
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
@@ -402,10 +403,10 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button browseButton = toolkit.createButton(client, Messages
-				.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client
-				.getShell(), browseTitle, fileExtension);
+		final Button browseButton = toolkit.createButton(client,
+				Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
+				client.getShell(), browseTitle, fileExtension);
 		browseButton.addSelectionListener(browseAdapter);
 
 		toolkit.paintBordersFor(client);

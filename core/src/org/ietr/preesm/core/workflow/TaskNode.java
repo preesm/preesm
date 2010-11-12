@@ -69,7 +69,7 @@ public class TaskNode implements IWorkflowNode {
 	/**
 	 * Variables used to parameterize the transformation.
 	 */
-	private Map<String,String> variables;
+	private Map<String, String> variables;
 
 	/**
 	 * Creates a new transformation node with the given transformation
@@ -80,27 +80,26 @@ public class TaskNode implements IWorkflowNode {
 	 */
 	public TaskNode(String taskId) {
 		this.taskId = taskId;
-		
+
 		variables = new HashMap<String, String>();
 	}
 
 	/**
-	 * Creates a new variable retrieved from the xml in 
-	 * {@link WorkflowParser}.
+	 * Creates a new variable retrieved from the xml in {@link WorkflowParser}.
 	 * 
-	 * @param key 
-	 * 				the name of the variable.
-	 * @param value 
-	 * 				the value of the variable.
+	 * @param key
+	 *            the name of the variable.
+	 * @param value
+	 *            the value of the variable.
 	 */
 	public void addVariable(String key, String value) {
 		variables.put(key, value);
 	}
 
 	/**
-	 * Returns the transformation associated with this
-	 * {@link TaskNode}. Note that it is only valid if
-	 * {@link #isTransformationPossible()} returns true.
+	 * Returns the transformation associated with this {@link TaskNode}. Note
+	 * that it is only valid if {@link #isTransformationPossible()} returns
+	 * true.
 	 * 
 	 * @return The transformation associated with this transformation node, or
 	 *         <code>null</code> if the transformation is not valid.
@@ -121,8 +120,8 @@ public class TaskNode implements IWorkflowNode {
 	/**
 	 * Returns the value of the variable with name key.
 	 * 
-	 * @param key 
-	 * 				the name of the variable.
+	 * @param key
+	 *            the name of the variable.
 	 * @return the value of the variable.
 	 */
 	public String getVariableValue(String key) {
@@ -177,7 +176,8 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,"Failed to find plugins from workflow");
+			PreesmLogger.getLogger().log(Level.SEVERE,
+					"Failed to find plugins from workflow");
 			return false;
 		}
 	}

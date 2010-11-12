@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.constraints;
 
 import org.eclipse.swt.SWT;
@@ -76,7 +76,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	private Scenario scenario = null;
 	private ConstraintsCheckStateListener checkStateListener = null;
 
-	public ConstraintsPage(Scenario scenario, FormEditor editor, String id, String title) {
+	public ConstraintsPage(Scenario scenario, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
 		this.scenario = scenario;
 	}
@@ -87,7 +88,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		super.createFormContent(managedForm);
-		
+
 		ScrolledForm f = managedForm.getForm();
 		f.setText(Messages.getString("Constraints.title"));
 		f.getBody().setLayout(new GridLayout());
@@ -95,15 +96,14 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		// Constrints file chooser section
 		createFileSection(managedForm, Messages.getString("Constraints.file"),
 				Messages.getString("Constraints.fileDescription"),
-				Messages.getString("Constraints.fileEdit"),
-				scenario.getConstraintGroupManager().getExcelFileURL(),
-				Messages.getString("Constraints.fileBrowseTitle"),
-				"xls");
-		
-		createConstraintsSection(managedForm, Messages.getString("Constraints.title"),
+				Messages.getString("Constraints.fileEdit"), scenario
+						.getConstraintGroupManager().getExcelFileURL(),
+				Messages.getString("Constraints.fileBrowseTitle"), "xls");
+
+		createConstraintsSection(managedForm,
+				Messages.getString("Constraints.title"),
 				Messages.getString("Constraints.description"));
-		
-		
+
 		managedForm.refresh();
 		managedForm.reflow(true);
 
@@ -112,9 +112,9 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Creates a generic section
 	 */
-	public Section createSection(IManagedForm mform, String title,
-			String desc, int numColumns) {
-		
+	public Section createSection(IManagedForm mform, String title, String desc,
+			int numColumns) {
+
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -131,7 +131,6 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	public Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns, GridData gridData) {
 
-		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -157,19 +156,20 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Creates the section editing constraints
 	 */
-	private void createConstraintsSection(IManagedForm managedForm, String title, String desc) {
+	private void createConstraintsSection(IManagedForm managedForm,
+			String title, String desc) {
 
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
 		Section section = createSection(managedForm, title, desc, 2);
 		section.setLayout(new ColumnLayout());
-	
 
-		checkStateListener = new ConstraintsCheckStateListener(
-				section, scenario);
-		
+		checkStateListener = new ConstraintsCheckStateListener(section,
+				scenario);
+
 		// Creates the section part containing the tree with SDF vertices
-		new SDFTreeSection(scenario, section, managedForm.getToolkit(),Section.DESCRIPTION,this,checkStateListener);
+		new SDFTreeSection(scenario, section, managedForm.getToolkit(),
+				Section.DESCRIPTION, this, checkStateListener);
 	}
 
 	/**
@@ -177,27 +177,35 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if(source instanceof ConstraintsCheckStateListener && propId == PROP_DIRTY)
+		if (source instanceof ConstraintsCheckStateListener
+				&& propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
-		
-	}
 
+	}
 
 	/**
 	 * Creates a section to edit a file
 	 * 
-	 * @param mform form containing the section
-	 * @param title section title
-	 * @param desc description of the section
-	 * @param fileEdit text to display in text label
-	 * @param initValue initial value of Text
-	 * @param browseTitle title of file browser
+	 * @param mform
+	 *            form containing the section
+	 * @param title
+	 *            section title
+	 * @param desc
+	 *            description of the section
+	 * @param fileEdit
+	 *            text to display in text label
+	 * @param initValue
+	 *            initial value of Text
+	 * @param browseTitle
+	 *            title of file browser
 	 */
-	private void createFileSection(IManagedForm mform, String title, String desc, String fileEdit, String initValue, String browseTitle,String fileExtension) {
-		
+	private void createFileSection(IManagedForm mform, String title,
+			String desc, String fileEdit, String initValue, String browseTitle,
+			String fileExtension) {
+
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 2,gridData);
+		Composite client = createSection(mform, title, desc, 2, gridData);
 		FormToolkit toolkit = mform.getToolkit();
 
 		GridData gd = new GridData();
@@ -205,52 +213,55 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 
 		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
 		text.setData(title);
-		text.addModifyListener(new ModifyListener(){
+		text.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
-				Text text = (Text)e.getSource();
+				Text text = (Text) e.getSource();
 
 				importData(text);
-				
-			}});
-		
-		text.addKeyListener(new KeyListener(){
+
+			}
+		});
+
+		text.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode == SWT.CR){
-					Text text = (Text)e.getSource();
+				if (e.keyCode == SWT.CR) {
+					Text text = (Text) e.getSource();
 					importData(text);
 				}
-				
+
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+
 			}
-			
+
 		});
-		
-		gd.widthHint =400;
+
+		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
-		final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,client.getShell(),browseTitle,fileExtension);
+		final Button button = toolkit.createButton(client,
+				Messages.getString("Overview.browse"), SWT.PUSH);
+		SelectionAdapter adapter = new FileSelectionAdapter(text,
+				client.getShell(), browseTitle, fileExtension);
 		button.addSelectionListener(adapter);
-		
+
 		toolkit.paintBordersFor(client);
 	}
-	
-	private void importData(Text text){
+
+	private void importData(Text text) {
 
 		scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
 		scenario.getConstraintGroupManager().importConstraints(scenario);
-		
+
 		firePropertyChange(PROP_DIRTY);
-		
-		if(checkStateListener != null){
+
+		if (checkStateListener != null) {
 			checkStateListener.updateCheck();
 		}
 	}

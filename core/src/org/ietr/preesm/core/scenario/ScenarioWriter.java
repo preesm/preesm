@@ -109,7 +109,7 @@ public class ScenarioWriter {
 
 		variables.setAttribute("excelUrl", scenario.getVariablesManager()
 				.getExcelFileURL());
-		
+
 		Collection<Variable> variablesSet = scenario.getVariablesManager()
 				.getVariables().values();
 		for (Variable variable : variablesSet) {
@@ -227,9 +227,9 @@ public class ScenarioWriter {
 
 		Element constraints = dom.createElement("constraints");
 		parent.appendChild(constraints);
-		
-		constraints.setAttribute("excelUrl", scenario.getConstraintGroupManager()
-				.getExcelFileURL());
+
+		constraints.setAttribute("excelUrl", scenario
+				.getConstraintGroupManager().getExcelFileURL());
 
 		for (ConstraintGroup cst : scenario.getConstraintGroupManager()
 				.getConstraintGroups()) {
@@ -246,8 +246,8 @@ public class ScenarioWriter {
 			if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.operator) {
 				Element opdefelt = dom.createElement("operator");
 				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name", ((ArchitectureComponent) opdef)
-						.getName());
+				opdefelt.setAttribute("name",
+						((ArchitectureComponent) opdef).getName());
 			}
 		}
 

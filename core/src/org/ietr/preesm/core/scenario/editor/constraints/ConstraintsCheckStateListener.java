@@ -138,18 +138,20 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				if (element instanceof SDFGraph) {
 					SDFGraph graph = (SDFGraph) element;
 					fireOnCheck(graph, isChecked);
-					//updateConstraints(null, contentProvider.getCurrentGraph());
+					// updateConstraints(null,
+					// contentProvider.getCurrentGraph());
 					updateCheck();
 				} else if (element instanceof HierarchicalSDFVertex) {
 					HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
 					fireOnCheck(vertex, isChecked);
-					//updateConstraints(null, contentProvider.getCurrentGraph());
+					// updateConstraints(null,
+					// contentProvider.getCurrentGraph());
 					updateCheck();
 
 				}
 			}
 		});
-		
+
 		propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
 	}
 
@@ -195,48 +197,40 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	}
 
 	/**
-	 * Adds or remove a constraint depending on the isChecked status. Removed because
-	 * the good handling of hierarchy makes that a task with children should sometimes
-	 * be checked even if some children are not (the whole 
+	 * Adds or remove a constraint depending on the isChecked status. Removed
+	 * because the good handling of hierarchy makes that a task with children
+	 * should sometimes be checked even if some children are not (the whole
 	 */
-/*	public void updateConstraints(SDFAbstractVertex currentVertex,
-			SDFGraph currentGraph) {
-
-		if (currentIOpDef != null) {
-			
-			Set<VertexWithPath> appropriateChildrenSet = contentProvider
-			.keepAndConvertAppropriateChildren(currentGraph.vertexSet());
-
-			boolean allChildrenChecked = !appropriateChildrenSet.isEmpty();
-
-			for (VertexWithPath vertex : appropriateChildrenSet) {
-
-				SDFGraph graph = (SDFGraph) vertex.getStoredVertex().getGraphDescription();
-				if (graph != null) {
-					updateConstraints(vertex.getStoredVertex(), graph);
-				}
-
-				allChildrenChecked &= scenario.getConstraintGroupManager()
-						.isCompatibleToConstraints(vertex.getStoredVertex(), currentIOpDef);
-			}
-
-			if (currentVertex != null) {
-				if (!allChildrenChecked
-						&& scenario.getConstraintGroupManager()
-								.isCompatibleToConstraints(currentVertex,
-										currentIOpDef)) {
-					scenario.getConstraintGroupManager().removeConstraint(
-							currentIOpDef, currentVertex);
-				} else if (allChildrenChecked
-						&& !scenario.getConstraintGroupManager()
-								.isCompatibleToConstraints(currentVertex,
-										currentIOpDef)) {
-					scenario.getConstraintGroupManager().addConstraint(
-							currentIOpDef, currentVertex);
-				}
-			}
-		}
-	}*/
+	/*
+	 * public void updateConstraints(SDFAbstractVertex currentVertex, SDFGraph
+	 * currentGraph) {
+	 * 
+	 * if (currentIOpDef != null) {
+	 * 
+	 * Set<VertexWithPath> appropriateChildrenSet = contentProvider
+	 * .keepAndConvertAppropriateChildren(currentGraph.vertexSet());
+	 * 
+	 * boolean allChildrenChecked = !appropriateChildrenSet.isEmpty();
+	 * 
+	 * for (VertexWithPath vertex : appropriateChildrenSet) {
+	 * 
+	 * SDFGraph graph = (SDFGraph)
+	 * vertex.getStoredVertex().getGraphDescription(); if (graph != null) {
+	 * updateConstraints(vertex.getStoredVertex(), graph); }
+	 * 
+	 * allChildrenChecked &= scenario.getConstraintGroupManager()
+	 * .isCompatibleToConstraints(vertex.getStoredVertex(), currentIOpDef); }
+	 * 
+	 * if (currentVertex != null) { if (!allChildrenChecked &&
+	 * scenario.getConstraintGroupManager()
+	 * .isCompatibleToConstraints(currentVertex, currentIOpDef)) {
+	 * scenario.getConstraintGroupManager().removeConstraint( currentIOpDef,
+	 * currentVertex); } else if (allChildrenChecked &&
+	 * !scenario.getConstraintGroupManager()
+	 * .isCompatibleToConstraints(currentVertex, currentIOpDef)) {
+	 * scenario.getConstraintGroupManager().addConstraint( currentIOpDef,
+	 * currentVertex); } } } }
+	 */
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
@@ -277,14 +271,15 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group
 				for (SDFAbstractVertex vertex : cg.getVertices()) {
-					SDFAbstractVertex v = currentGraph.getHierarchicalVertexFromPath(vertex.getInfo());
-					
-					if(v != null) {
+					SDFAbstractVertex v = currentGraph
+							.getHierarchicalVertexFromPath(vertex.getInfo());
+
+					if (v != null) {
 						cgSet.add(contentProvider.convertChild(v));
 					}
 				}
 			}
-			
+
 			treeViewer.setCheckedElements(cgSet.toArray());
 
 			// If all the children of a graph are checked, it is checked itself

@@ -41,10 +41,10 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
- * The medium definition describes the medium capabilities
- * Its properties are used by the timed architecture simulator to
- * evaluate the performance of an implementation
- *         
+ * The medium definition describes the medium capabilities Its properties are
+ * used by the timed architecture simulator to evaluate the performance of an
+ * implementation
+ * 
  * @author mpelcat
  */
 public class MediumDefinition extends ArchitectureComponentDefinition {
@@ -61,7 +61,6 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	 */
 	private float dataRate = 0f;
 
-
 	/**
 	 * Transmission overhead on sender in TU(Time Unit) The usual utilization is
 	 * with cycles
@@ -70,7 +69,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 
 	public MediumDefinition(MediumDefinition origin) {
 		super(origin.getVlnv(), "medium");
-		
+
 		this.fill(origin);
 	}
 
@@ -78,24 +77,25 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 		super(vlnv, "medium");
 	}
 
-	public MediumDefinition(VLNV vlnv,float invSpeed, int overhead) {
+	public MediumDefinition(VLNV vlnv, float invSpeed, int overhead) {
 		super(vlnv, "medium");
 		setDataRate(invSpeed);
 		setOverhead(overhead);
 	}
-	
-	public ArchitectureComponentType getType(){
+
+	public ArchitectureComponentType getType() {
 		return ArchitectureComponentType.medium;
 	}
 
-	/*@Override
-	public MediumDefinition clone() {
-		return new MediumDefinition(this.getVlnv(),this.getDataRate(), this.getOverheadTime());
-	}*/
+	/*
+	 * @Override public MediumDefinition clone() { return new
+	 * MediumDefinition(this.getVlnv(),this.getDataRate(),
+	 * this.getOverheadTime()); }
+	 */
 
-	public void fill(ArchitectureComponentDefinition origin){
-		this.dataRate = ((MediumDefinition)origin).getDataRate();
-		this.overhead = ((MediumDefinition)origin).getOverheadTime();
+	public void fill(ArchitectureComponentDefinition origin) {
+		this.dataRate = ((MediumDefinition) origin).getDataRate();
+		this.overhead = ((MediumDefinition) origin).getOverheadTime();
 	}
 
 	public int getOverheadTime() {
@@ -105,7 +105,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	public void setOverhead(int overhead) {
 		this.overhead = overhead;
 	}
-	
+
 	public float getDataRate() {
 		return dataRate;
 	}
@@ -113,8 +113,8 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	public void setDataRate(float dataRate) {
 		this.dataRate = dataRate;
 	}
-	
-	public long getTransferTime(long transferSize){
+
+	public long getTransferTime(long transferSize) {
 		Long datasize = transferSize;
 		Double time = datasize.doubleValue() / getDataRate();
 		time = Math.ceil(time);

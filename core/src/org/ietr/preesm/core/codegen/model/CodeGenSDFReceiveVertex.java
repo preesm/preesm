@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.codegen.model;
 
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
@@ -42,20 +42,21 @@ import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 /**
  * @author jpiat
  */
-public class CodeGenSDFReceiveVertex extends CodeGenSDFTaskVertex{
+public class CodeGenSDFReceiveVertex extends CodeGenSDFTaskVertex {
 
-	public static final String INTERFACE ="interface"; 
-	public static final String TYPE =ImplementationPropertyNames.Vertex_vertexType;
-	
+	public static final String INTERFACE = "interface";
+	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
+
 	public CodeGenSDFReceiveVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.receive);
 	}
-	
-	public ArchitectureInterface getInterface(){
-		return (ArchitectureInterface) this.getPropertyBean().getValue(INTERFACE, ArchitectureInterface.class);
+
+	public ArchitectureInterface getInterface() {
+		return (ArchitectureInterface) this.getPropertyBean().getValue(
+				INTERFACE, ArchitectureInterface.class);
 	}
-	
-	public void setOperator(ArchitectureInterface inter){
+
+	public void setOperator(ArchitectureInterface inter) {
 		this.getPropertyBean().setValue(INTERFACE, getInterface(), inter);
 	}
 }

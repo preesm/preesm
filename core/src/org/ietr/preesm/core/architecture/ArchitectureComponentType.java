@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.architecture;
 
 /**
@@ -42,15 +42,21 @@ package org.ietr.preesm.core.architecture;
  * @author mpelcat
  */
 public class ArchitectureComponentType {
-	
+
 	// Simple model
-	public static final ArchitectureComponentType operator = new ArchitectureComponentType("operator");
-	public static final ArchitectureComponentType medium = new ArchitectureComponentType("medium");
-	public static final ArchitectureComponentType dma = new ArchitectureComponentType("dma");
-	public static final ArchitectureComponentType parallelNode = new ArchitectureComponentType("parallelNode");
-	public static final ArchitectureComponentType contentionNode = new ArchitectureComponentType("contentionNode");
-	public static final ArchitectureComponentType ram = new ArchitectureComponentType("ram");
-	
+	public static final ArchitectureComponentType operator = new ArchitectureComponentType(
+			"operator");
+	public static final ArchitectureComponentType medium = new ArchitectureComponentType(
+			"medium");
+	public static final ArchitectureComponentType dma = new ArchitectureComponentType(
+			"dma");
+	public static final ArchitectureComponentType parallelNode = new ArchitectureComponentType(
+			"parallelNode");
+	public static final ArchitectureComponentType contentionNode = new ArchitectureComponentType(
+			"contentionNode");
+	public static final ArchitectureComponentType ram = new ArchitectureComponentType(
+			"ram");
+
 	private String name = null;
 
 	public ArchitectureComponentType(String name) {
@@ -61,14 +67,21 @@ public class ArchitectureComponentType {
 	public static ArchitectureComponentType getType(String name) {
 
 		// Simple model
-		if(name.equalsIgnoreCase("operator")) 				return operator;
-		else if(name.equalsIgnoreCase("medium")) 			return medium;
-		else if(name.equalsIgnoreCase("dma")) 				return dma;
-		else if(name.equalsIgnoreCase("parallelNode")) 		return parallelNode;
-		else if(name.equalsIgnoreCase("contentionNode")) 	return contentionNode;
-		else if(name.equalsIgnoreCase("ram")) 				return ram;
+		if (name.equalsIgnoreCase("operator"))
+			return operator;
+		else if (name.equalsIgnoreCase("medium"))
+			return medium;
+		else if (name.equalsIgnoreCase("dma"))
+			return dma;
+		else if (name.equalsIgnoreCase("parallelNode"))
+			return parallelNode;
+		else if (name.equalsIgnoreCase("contentionNode"))
+			return contentionNode;
+		else if (name.equalsIgnoreCase("ram"))
+			return ram;
 
-		else return null;
+		else
+			return null;
 	}
 
 	public String getName() {

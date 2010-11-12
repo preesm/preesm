@@ -66,14 +66,15 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
-		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit self
+		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
+																					// self
 		Iterator<VariableAllocation> iterator2 = variables.iterator();
 		while (iterator2.hasNext()) {
 			VariableAllocation alloc = iterator2.next();
 			alloc.accept(printer, currentLocation); // Accepts allocations
 		}
-		for(BufferAllocation buff : this.getBufferAllocations()){
-			if(buff != null){
+		for (BufferAllocation buff : this.getBufferAllocations()) {
+			if (buff != null) {
 				buff.accept(printer, currentLocation);
 			}
 		}
@@ -85,7 +86,6 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	/**
 	 * Displays pseudo-code for test

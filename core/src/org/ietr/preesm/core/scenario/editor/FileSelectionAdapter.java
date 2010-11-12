@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor;
 
 import java.util.HashSet;
@@ -44,21 +44,20 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
 /**
- * This class calls the file browser when a "browse" button
- * is pushed
+ * This class calls the file browser when a "browse" button is pushed
  * 
  * @author mpelcat
  */
-public class FileSelectionAdapter extends SelectionAdapter{
-	
+public class FileSelectionAdapter extends SelectionAdapter {
+
 	private Text filePath;
 	private Shell shell;
 	private String title;
 	Set<String> fileExtensions;
-	
-	public FileSelectionAdapter(Text filePath,Shell shell,String title,String fileExtension) {
+
+	public FileSelectionAdapter(Text filePath, Shell shell, String title,
+			String fileExtension) {
 		super();
 		this.filePath = filePath;
 		this.shell = shell;
@@ -66,16 +65,17 @@ public class FileSelectionAdapter extends SelectionAdapter{
 		this.fileExtensions = new HashSet<String>();
 		this.fileExtensions.add(fileExtension);
 	}
-	
-	public FileSelectionAdapter(Text filePath,Shell shell,String title,Set<String> fileExtensions) {
+
+	public FileSelectionAdapter(Text filePath, Shell shell, String title,
+			Set<String> fileExtensions) {
 		super();
 		this.filePath = filePath;
 		this.shell = shell;
 		this.title = title;
 		this.fileExtensions = fileExtensions;
 	}
-	
-	public FileSelectionAdapter(Text filePath,Shell shell,String title) {
+
+	public FileSelectionAdapter(Text filePath, Shell shell, String title) {
 		super();
 		this.filePath = filePath;
 		this.shell = shell;

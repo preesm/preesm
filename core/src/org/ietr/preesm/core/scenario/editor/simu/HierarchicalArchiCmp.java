@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -47,14 +47,13 @@ import org.ietr.preesm.core.scenario.editor.IHierarchicalVertex;
  */
 public class HierarchicalArchiCmp implements IHierarchicalVertex {
 
-
 	private ArchitectureComponent storedOp;
 
 	public HierarchicalArchiCmp(ArchitectureComponent storedOp) {
 		super();
 		this.storedOp = storedOp;
 	}
-	
+
 	@Override
 	public ArchitectureComponent getStoredVertex() {
 		return storedOp;
@@ -81,8 +80,7 @@ public class HierarchicalArchiCmp implements IHierarchicalVertex {
 				if (!(vStored.getInfo() == null || thisStored.getInfo() == null)) {
 					if ((!(vStored.getInfo().isEmpty()) || thisStored.getInfo()
 							.isEmpty())) {
-						equals = vStored.getInfo()
-								.equals(thisStored.getInfo());
+						equals = vStored.getInfo().equals(thisStored.getInfo());
 					}
 				}
 			}
@@ -91,7 +89,7 @@ public class HierarchicalArchiCmp implements IHierarchicalVertex {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return storedOp.getInfo();

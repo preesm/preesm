@@ -6,46 +6,50 @@ import org.ietr.preesm.core.codegen.buffer.SubBuffer;
 import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
+public class HeapSectionAllocator extends VirtualHeapAllocator {
 
-public class HeapSectionAllocator extends VirtualHeapAllocator{
+	protected VirtualHeapAllocator parentHeap;
 
-	protected VirtualHeapAllocator parentHeap ;
-	
-	
-	public HeapSectionAllocator(VirtualHeapAllocator parentHeap, AbstractBufferContainer container, int pos) {
+	public HeapSectionAllocator(VirtualHeapAllocator parentHeap,
+			AbstractBufferContainer container, int pos) {
 		super(container);
-		currentPos = pos ;
+		currentPos = pos;
 		basePos = pos;
-		this.parentHeap = parentHeap ;
+		this.parentHeap = parentHeap;
 	}
-	
-	public void setBasePos(int newBase){
+
+	public void setBasePos(int newBase) {
 		int diffSize = basePos - newBase;
-		for(BufferAllocation alloc : allocToPos.keySet()){
-			if(alloc instanceof HeapSectionAllocator){
-				((HeapSectionAllocator)alloc).setBasePos(allocToPos.get(alloc)-diffSize);
-				allocToPos.put(alloc, allocToPos.get(alloc)-diffSize);
-			}else{
-				((SubBuffer) alloc.getBuffer()).setIndex( new ConstantExpression(allocToPos.get(alloc)-diffSize));
-				allocToPos.put(alloc, allocToPos.get(alloc)-diffSize);
+		for (BufferAllocation alloc : allocToPos.keySet()) {
+			if (alloc instanceof HeapSectionAllocator) {
+				((HeapSectionAllocator) alloc).setBasePos(allocToPos.get(alloc)
+						- diffSize);
+				allocToPos.put(alloc, allocToPos.get(alloc) - diffSize);
+			} else {
+				((SubBuffer) alloc.getBuffer())
+						.setIndex(new ConstantExpression(allocToPos.get(alloc)
+								- diffSize));
+				allocToPos.put(alloc, allocToPos.get(alloc) - diffSize);
 			}
 		}
-		this.basePos = newBase ;
+		this.basePos = newBase;
 	}
-	
-	public void setSize(int size){
-		if(size > this.getSize()){
+
+	public void setSize(int size) {
+		if (size > this.getSize()) {
 			this.getBuffer().setSize(size);
 		}
-		if(parentHeap != null){
-			parentHeap.setSize((parentHeap.getCurrentPos() - parentHeap.getBasePos())+this.getSize());
+		if (parentHeap != null) {
+			parentHeap.setSize((parentHeap.getCurrentPos() - parentHeap
+					.getBasePos()) + this.getSize());
 		}
 	}
-	
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
-		/*for(SubBufferAllocation allocToPrint : alloc.values()){
-			printer.visit(allocToPrint, CodeZoneId.body, currentLocation) ;
-		}*/
+		/*
+		 * for(SubBufferAllocation allocToPrint : alloc.values()){
+		 * printer.visit(allocToPrint, CodeZoneId.body, currentLocation) ; }
+		 */
 	}
 
 }
