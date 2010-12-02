@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Lib_com\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MVS"
+				AdditionalIncludeDirectories="..\..\..\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MVS;WIN_TCP"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ..\..\..\..\Lib_com\lib\Os_Com.lib"
+				AdditionalDependencies="ws2_32.lib setupapi.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBCMTD"
 				GenerateDebugInformation="true"
@@ -209,6 +209,18 @@
 			</File>
 			<File
 				RelativePath="..\..\..\generatedSrc\Core7.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\OS_Com.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\PC_x86_SEM.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\PC_x86_TCP.c"
 				>
 			</File>
 			<File

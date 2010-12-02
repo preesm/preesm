@@ -29,6 +29,11 @@
             <variable name="path" value="/tutorial-image/DAG/flatten.graphml"/>
         </data>
     </preesm:task>
+    <preesm:task pluginId="albert" taskId="AlbertTask">
+        <data key="variables">
+            <variable name="test" value="1"/>
+        </data>
+    </preesm:task>
     <preesm:dataTransfer from="__scenario" sourceport=""
         targetport="scenario" to="DAG Plotter"/>
     <preesm:dataTransfer from="__scenario" sourceport=""
@@ -47,4 +52,6 @@
         targetport="SDF" to="HSDF"/>
     <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
     <preesm:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="LIST scheduler"/>
+    <preesm:dataTransfer from="__scenario" sourceport="test"
+        targetport="test" to="AlbertTask"/>
 </preesm:workflow>

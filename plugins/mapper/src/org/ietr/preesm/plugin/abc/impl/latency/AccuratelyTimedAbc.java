@@ -52,7 +52,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 
 /**
- * The accurately timed ABC schedules edges and set-up times
+ * The accurately timed ABC schedules edges and setup times
  * 
  * @author mpelcat
  */

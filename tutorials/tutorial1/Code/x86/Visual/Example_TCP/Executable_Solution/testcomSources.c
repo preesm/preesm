@@ -13,8 +13,6 @@
 
 #define SIZE_LOCAL 1000
 
-char 	nbrand;
-
 void sensor_init(char* o1, char* o2, char* o3){
 
 }
@@ -49,10 +47,8 @@ void sensor(char* o1, char* o2, char* o3){
 	//printf("sensor");
 	int i = 0;
 
-	nbrand=20;//rand();
-
 	for(i=0;i<TESTVALUE;i++){
-		o3[i] = o2[i] = o1[i] = nbrand;
+		o3[i] = o2[i] = o1[i] = i%128;
 	}
 }
 

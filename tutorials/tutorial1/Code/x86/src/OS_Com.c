@@ -9,7 +9,7 @@
 
 
 
-#ifdef _MVS // Code pour projet Microsoft Visual Studio
+#ifdef _MVS // Code for Microsoft Visual Studio
 /* 
 *	This part of the library contain the differents fonctions used by the generating of code.
 *	cf. the x86.xslt apporiate.
@@ -64,7 +64,7 @@ int sendData(int I_param, short I_senderID, short I_receiverID, void *PV_buffer,
 				case TCP:   {
 					Media_TCP *medium = (Media_TCP *) Media[I_senderID][I_receiverID].medium ;
 					Send_TCP (*medium, (unsigned int*)PV_buffer, I_size_of_data );
-					printf("send fini\n");
+					printf("send OK\n");
 					break;
 							}
 				case PCI:   {break;}
@@ -83,7 +83,7 @@ int receiveData(int I_param, short I_senderID, short I_receiverID, void *PV_buff
 					Media_TCP *medium = (Media_TCP *) Media[I_receiverID][I_senderID].medium ;
 
 					Receive_TCP ( *medium, (unsigned int*)PV_buffer,I_size_of_data );
-					printf("receive fini\n");
+					printf("receive OK\n");
 					break;
 							}
 				case PCI:   {break;}
@@ -96,7 +96,7 @@ int receiveData(int I_param, short I_senderID, short I_receiverID, void *PV_buff
 #endif // end for Code for Microsoft Visual Studio
 
 
-/*#ifdef _CCS // Code pour projet Code Composer Studio
+/*#ifdef _CCS // Code for Code Composer Studio
 #include "C64x+_dmamsg.h"
 #include "C64x+_srio.h"
 #define		ERROR	0
@@ -254,4 +254,4 @@ int Receive(int I_param, void *PV_media, void *PV_buffer, int I_size_of_data, in
 
 }
 
-#endif// Code pour projet Code Composer Studio*/
+#endif// Code for Code Composer Studio*/
