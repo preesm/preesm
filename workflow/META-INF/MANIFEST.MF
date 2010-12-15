@@ -14,17 +14,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions;bundle-version="3.4.200"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: lib/jgraph.jar,
- lib/jgrapht-jdk1.5.jar,
- .
+Bundle-ClassPath: .,
+ lib/jgrapht-jdk1.6.jar
 Export-Package: org.ietr.preesm.workflow,
  org.ietr.preesm.workflow.test,
- org.jgraph,
- org.jgraph.event,
- org.jgraph.graph,
- org.jgraph.plaf,
- org.jgraph.plaf.basic,
- org.jgraph.util,
  org.jgrapht,
  org.jgrapht.alg,
  org.jgrapht.alg.util,
