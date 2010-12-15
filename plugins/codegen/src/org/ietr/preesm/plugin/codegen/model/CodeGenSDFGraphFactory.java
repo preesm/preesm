@@ -93,9 +93,9 @@ import org.sdf4j.model.sdf.visitors.DAGTransformation;
 import org.sdf4j.model.visitors.SDF4JException;
 
 /**
- * Code generation necessitates a specific model preparing the different types of vertices for
- * code generation
- *  
+ * Code generation necessitates a specific model preparing the different types
+ * of vertices for code generation
+ * 
  * @author jpiat
  */
 public class CodeGenSDFGraphFactory {
@@ -267,16 +267,28 @@ public class CodeGenSDFGraphFactory {
 				if (output.getVertex(((CodeGenSDFTokenEndVertex) codeGenVertex)
 						.getEndReference().getName()) != null) {
 					SDFInitVertex initVertex = (SDFInitVertex) output
-					.getVertex(((CodeGenSDFTokenEndVertex) codeGenVertex)
-							.getEndReference().getName());
+							.getVertex(((CodeGenSDFTokenEndVertex) codeGenVertex)
+									.getEndReference().getName());
 					((CodeGenSDFTokenEndVertex) codeGenVertex)
 							.setEndReference((SDFInitVertex) initVertex);
-					
-					SDFEdge outEdge = (SDFEdge) output.outgoingEdgesOf(initVertex).toArray()[0];
-					int order_end = (Integer) codeGenVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
-					int order_consumer = (Integer) outEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
-					if(order_end < order_consumer){
-						codeGenVertex.getPropertyBean().setValue(ImplementationPropertyNames.Vertex_schedulingOrder, order_consumer + 1);
+
+					SDFEdge outEdge = (SDFEdge) output.outgoingEdgesOf(
+							initVertex).toArray()[0];
+					int order_end = (Integer) codeGenVertex
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_schedulingOrder);
+					int order_consumer = (Integer) outEdge
+							.getTarget()
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_schedulingOrder);
+					if (order_end < order_consumer) {
+						codeGenVertex
+								.getPropertyBean()
+								.setValue(
+										ImplementationPropertyNames.Vertex_schedulingOrder,
+										order_consumer + 1);
 					}
 				}
 			}
@@ -494,10 +506,10 @@ public class CodeGenSDFGraphFactory {
 				for (int r = 0; r < block.size(); r++) {
 					if (block.get(r).getName()
 							.equals(vertices.get(i).getName())) {
-						if(vertices.get(i) instanceof SDFInitVertex){
+						if (vertices.get(i) instanceof SDFInitVertex) {
 							isInBlock = false;
 							block.remove(r);
-						}else{
+						} else {
 							isInBlock = true;
 							copies.put(block.get(r), vertices.get(i));
 						}

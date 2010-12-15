@@ -48,7 +48,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.ArchitectureConfiguration;
-import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 
 /**
  * Launch Tab for architecture options. From this tab, an

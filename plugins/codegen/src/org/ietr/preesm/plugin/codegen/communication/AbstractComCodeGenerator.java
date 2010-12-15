@@ -150,8 +150,8 @@ public abstract class AbstractComCodeGenerator implements IComCodeGenerator {
 					return true;
 				}
 			}
-		}else if(vertex.getGraphDescription() != null){
-			return true ;
+		} else if (vertex.getGraphDescription() != null) {
+			return true;
 		}
 
 		return false;

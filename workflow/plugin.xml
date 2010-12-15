@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="tasks" name="%tasksName" schema="schema/tasks.exsd"/>
+   <extension
+         point="org.ietr.preesm.workflow.tasks">
+      <task
+            id="TestNewWorkflow"
+            type="org.ietr.preesm.workflow.test.TestNewWorkflow">
+      </task>
+      <task
+            id="TestNewWorkflow2"
+            type="org.ietr.preesm.workflow.test.TestNewWorkflow2">
+      </task>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.ietr.preesm.workflow.launch.ui.WorkflowLaunchConfigurationDelegate"
+            id="org.ietr.preesm.workflow.launchConfigurationType"
+            modes="run"
+            name="Workflow"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.ietr.preesm.workflow.launchConfigurationType"
+            icon="icons/preesmBnW.png"
+            id="org.ietr.preesm.workflow.workflowLaunchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.ietr.preesm.workflow.launch.ui.WorkflowLaunchShortcut"
+            icon="icons/preesmBnW.png"
+            id="org.ietr.preesm.workflow.workflowLaunchShortcut"
+            label="Workflow"
+            modes="run">
+         <description
+               description="Create a Preesm workflow"
+               mode="run">
+         </description>
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.ietr.preesm.workflow.ui.WorkflowPropertyTester"
+            id="org.ietr.preesm.workflow.workflowTester"
+            namespace="org.ietr.preesm.workflow"
+            properties="isWorkflow"
+            type="org.eclipse.core.resources.IFile">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.ietr.preesm.workflow.launch.ui.WorkflowLaunchConfigurationTabGroup"
+            id="org.ietr.preesm.workflow.workflowLaunchConfigurationTabGroup"
+            type="org.ietr.preesm.workflow.launchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+
+</plugin>

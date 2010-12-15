@@ -8,8 +8,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
 /**
- * @author mpelcat
+ * Filtering the .layout files that do not need to be displayed in the
+ * file explorer
  * 
+ * @author mpelcat
  */
 public class ProjectExplorerFilter extends ViewerFilter {
 

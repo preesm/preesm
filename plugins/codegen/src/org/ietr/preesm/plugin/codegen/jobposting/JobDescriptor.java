@@ -82,11 +82,11 @@ public class JobDescriptor {
 		return prededessors;
 	}
 
-	public void addBuffer(Buffer b){
+	public void addBuffer(Buffer b) {
 		buffers.add(b);
 	}
 
-	public void addConstant(Constant c){
+	public void addConstant(Constant c) {
 		constants.add(c);
 	}
 
@@ -97,6 +97,5 @@ public class JobDescriptor {
 	public List<Constant> getConstants() {
 		return constants;
 	}
-	
-	
+
 }

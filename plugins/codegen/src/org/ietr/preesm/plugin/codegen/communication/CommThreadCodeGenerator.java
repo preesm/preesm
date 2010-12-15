@@ -159,8 +159,8 @@ public class CommThreadCodeGenerator {
 					codeContainer.addCodeElementBefore(coms.get(0), pend);
 
 					if (codeContainerType.equals(CodeSectionType.loop)) {
-						codeContainer.addCodeElementAfter(coms
-								.get(coms.size() - 1), post);
+						codeContainer.addCodeElementAfter(
+								coms.get(coms.size() - 1), post);
 					}
 				} else {
 					PreesmLogger.getLogger().log(Level.SEVERE,

@@ -86,8 +86,8 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
- * Visitor that generates XML code from source files. This code will be transformed
- * by xslt to the target language.
+ * Visitor that generates XML code from source files. This code will be
+ * transformed by xslt to the target language.
  * 
  * @author mpelcat
  */
@@ -97,20 +97,21 @@ public class XMLPrinter implements IAbstractPrinter {
 	 * Current document
 	 */
 	private Document dom;
-	
+
 	public XMLPrinter() {
 		super();
 
-        try {
+		try {
 			DOMImplementation impl;
 			impl = DOMImplementationRegistry.newInstance()
 					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("http://org.ietr.preesm.sourceCode", "sourceCode",null);
+			dom = impl.createDocument("http://org.ietr.preesm.sourceCode",
+					"sourceCode", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
+
 	public void writeDom(IFile file) {
 
 		try {
@@ -125,27 +126,27 @@ public class XMLPrinter implements IAbstractPrinter {
 			LSSerializer serializer = implLS.createLSSerializer();
 			serializer.getDomConfig().setParameter("format-pretty-print", true);
 			serializer.write(dom, output);
-			
+
 			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
 					false, new NullProgressMonitor());
 			out.close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public Element getRoot(){
+
+	public Element getRoot() {
 		return dom.getDocumentElement();
 	}
 
 	/**
 	 * The core type determines which xsl transformation to apply
 	 */
-	public void setCoreType(String coreType){
-		
+	public void setCoreType(String coreType) {
+
 		Element root = dom.getDocumentElement();
-		Element eCoreType= dom.createElement("coreType");
+		Element eCoreType = dom.createElement("coreType");
 		eCoreType.setTextContent(coreType);
 		root.appendChild(eCoreType);
 	}
@@ -153,39 +154,38 @@ public class XMLPrinter implements IAbstractPrinter {
 	/**
 	 * The core name is an additional information for the xsl transformation
 	 */
-	public void setCoreName(String coreName){
-		
+	public void setCoreName(String coreName) {
+
 		Element root = dom.getDocumentElement();
-		Element eCoreName= dom.createElement("coreName");
+		Element eCoreName = dom.createElement("coreName");
 		eCoreName.setTextContent(coreName);
 		root.appendChild(eCoreName);
 	}
-	
+
 	/**
 	 * Compares two buffers by their alphabetical order
 	 */
-	public class AlphaOrderComparator implements
-	Comparator<Buffer>{
+	public class AlphaOrderComparator implements Comparator<Buffer> {
 
 		@Override
 		public int compare(Buffer o1, Buffer o2) {
 			return o1.getName().compareTo(o2.getName());
 		}
-		
+
 	}
 
 	// Buffers
-	
+
 	@Override
 	public Object visit(AbstractBufferContainer domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element bufferContainer= dom.createElement("bufferContainer");
-			((Element)currentLocation).appendChild(bufferContainer);
+			Element bufferContainer = dom.createElement("bufferContainer");
+			((Element) currentLocation).appendChild(bufferContainer);
 			currentLocation = bufferContainer;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -194,28 +194,29 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element buffer = dom.createElement("buffer");
-			((Element)currentLocation).appendChild(buffer);
+			((Element) currentLocation).appendChild(buffer);
 
 			buffer.setAttribute("name", domElt.getName());
 			buffer.setAttribute("size", String.valueOf(domElt.getSize()));
 			buffer.setAttribute("type", domElt.getType().getTypeName());
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(Constant domElt, CodeZoneId index, Object currentLocation) {
+	public Object visit(Constant domElt, CodeZoneId index,
+			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element constant = dom.createElement("constant");
-			((Element)currentLocation).appendChild(constant);
+			((Element) currentLocation).appendChild(constant);
 
 			constant.setAttribute("name", domElt.getName());
 			constant.setAttribute("type", domElt.getType().getTypeName());
 			constant.setAttribute("value", domElt.getValue());
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -224,41 +225,43 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element buffer = dom.createElement("subBuffer");
-			((Element)currentLocation).appendChild(buffer);
+			((Element) currentLocation).appendChild(buffer);
 			buffer.setAttribute("name", domElt.getName());
-			buffer.setAttribute("parentBuffer", domElt.getParentBuffer().getName());
+			buffer.setAttribute("parentBuffer", domElt.getParentBuffer()
+					.getName());
 			buffer.setAttribute("index", domElt.getIndex().toString());
 			buffer.setAttribute("size", String.valueOf(domElt.getSize()));
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
-	
 	public Object visit(BufferAtIndex domElt, CodeZoneId index,
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element buffer = dom.createElement("bufferAtIndex");
-			((Element)currentLocation).appendChild(buffer);
+			((Element) currentLocation).appendChild(buffer);
 			buffer.setAttribute("name", domElt.getParentBuffer().getName());
 			buffer.setAttribute("index", domElt.getIndex().toString());
-		} 
+		}
 		return currentLocation;
 	}
-	
+
 	@Override
 	public Object visit(BufferAllocation domElt, CodeZoneId index,
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element bufferAllocation = dom.createElement("bufferAllocation");
-			((Element)currentLocation).appendChild(bufferAllocation);
-			
+			((Element) currentLocation).appendChild(bufferAllocation);
+
 			bufferAllocation.setAttribute("name", domElt.getBuffer().getName());
-			bufferAllocation.setAttribute("size", String.valueOf(domElt.getBuffer().getSize()));
-			bufferAllocation.setAttribute("type", domElt.getBuffer().getType().getTypeName());
-		} 
-		
+			bufferAllocation.setAttribute("size",
+					String.valueOf(domElt.getBuffer().getSize()));
+			bufferAllocation.setAttribute("type", domElt.getBuffer().getType()
+					.getTypeName());
+		}
+
 		return currentLocation;
 	}
 
@@ -267,18 +270,21 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element variableAllocation = dom.createElement("variableAllocation");
-			((Element)currentLocation).appendChild(variableAllocation);
-			
-			variableAllocation.setAttribute("name", domElt.getVariable().getName());
-			variableAllocation.setAttribute("type", domElt.getVariable().getType().getTypeName());
-		} 
-		
+			Element variableAllocation = dom
+					.createElement("variableAllocation");
+			((Element) currentLocation).appendChild(variableAllocation);
+
+			variableAllocation.setAttribute("name", domElt.getVariable()
+					.getName());
+			variableAllocation.setAttribute("type", domElt.getVariable()
+					.getType().getTypeName());
+		}
+
 		return currentLocation;
 	}
 
 	// Calls
-	
+
 	@Override
 	public Object visit(AbstractCodeElement domElt, CodeZoneId index,
 			Object currentLocation) {
@@ -291,14 +297,15 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element userFunctionCall = dom.createElement("userFunctionCall");
-			((Element)currentLocation).appendChild(userFunctionCall);
+			((Element) currentLocation).appendChild(userFunctionCall);
 
 			userFunctionCall.setAttribute("name", domElt.getName());
-			if(domElt.getReturn() != null)
-				userFunctionCall.setAttribute("sets", domElt.getReturn().getName());
+			if (domElt.getReturn() != null)
+				userFunctionCall.setAttribute("sets", domElt.getReturn()
+						.getName());
 			currentLocation = userFunctionCall;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -309,18 +316,17 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		return currentLocation;
 	}
-	
+
 	@Override
-	public Object visit(ForLoop domElt, CodeZoneId index,
-			Object currentLocation) {
+	public Object visit(ForLoop domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element forLoop = dom.createElement("forLoop");
-			((Element)currentLocation).appendChild(forLoop);
-			
+			((Element) currentLocation).appendChild(forLoop);
+
 			currentLocation = forLoop;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -329,25 +335,27 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
-			Element linearCodeContainer = dom.createElement("linearCodeContainer");
-			((Element)currentLocation).appendChild(linearCodeContainer);
-			
+			Element linearCodeContainer = dom
+					.createElement("linearCodeContainer");
+			((Element) currentLocation).appendChild(linearCodeContainer);
+
 			currentLocation = linearCodeContainer;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
 	@Override
-	public Object visit(FiniteForLoop domElt, CodeZoneId index, Object currentLocation) {
+	public Object visit(FiniteForLoop domElt, CodeZoneId index,
+			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element forLoop = dom.createElement("finiteForLoop");
 			forLoop.setAttribute("index", domElt.getIndex().toString());
 			forLoop.setAttribute("domain", domElt.getNbIteration());
-			((Element)currentLocation).appendChild(forLoop);
+			((Element) currentLocation).appendChild(forLoop);
 			currentLocation = forLoop;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -356,12 +364,14 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(Semaphore domElt, CodeZoneId index,
 			Object currentLocation) {
-		
+
 		if (index == CodeZoneId.body) {
-			((Element)currentLocation).setAttribute("number", Integer.toString(domElt.getSemaphoreNumber()));
-			((Element)currentLocation).setAttribute("type", domElt.getSemaphoreType().toString());
-		} 
-		
+			((Element) currentLocation).setAttribute("number",
+					Integer.toString(domElt.getSemaphoreNumber()));
+			((Element) currentLocation).setAttribute("type", domElt
+					.getSemaphoreType().toString());
+		}
+
 		return currentLocation;
 	}
 
@@ -371,10 +381,10 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element semaphorePend = dom.createElement("semaphorePend");
-			((Element)currentLocation).appendChild(semaphorePend);
+			((Element) currentLocation).appendChild(semaphorePend);
 			currentLocation = semaphorePend;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -384,10 +394,10 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element semaphorePost = dom.createElement("semaphorePost");
-			((Element)currentLocation).appendChild(semaphorePost);
+			((Element) currentLocation).appendChild(semaphorePost);
 			currentLocation = semaphorePost;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -397,39 +407,39 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element semaphoreInit = dom.createElement("semaphoreInit");
-			((Element)currentLocation).appendChild(semaphoreInit);
+			((Element) currentLocation).appendChild(semaphoreInit);
 			currentLocation = semaphoreInit;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
 	// File and threads
-	
+
 	@Override
 	public Object visit(SourceFile domElt, CodeZoneId index,
 			Object currentLocation) {
-		
+
 		if (index == CodeZoneId.body) {
-			Element sourceFileElt= dom.createElement("SourceFile");
-			((Element)currentLocation).appendChild(sourceFileElt);
+			Element sourceFileElt = dom.createElement("SourceFile");
+			((Element) currentLocation).appendChild(sourceFileElt);
 			currentLocation = sourceFileElt;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
 	@Override
 	public Object visit(ThreadDeclaration domElt, CodeZoneId index,
 			Object currentLocation) {
-		
+
 		if (index == CodeZoneId.body) {
 			Element threadElt = dom.createElement("threadDeclaration");
-			((Element)currentLocation).appendChild(threadElt);
+			((Element) currentLocation).appendChild(threadElt);
 			threadElt.setAttribute("name", domElt.getName());
 			currentLocation = threadElt;
 		}
-		
+
 		return currentLocation;
 	}
 
@@ -439,19 +449,21 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element launchThread = dom.createElement("launchThread");
-			((Element)currentLocation).appendChild(launchThread);
+			((Element) currentLocation).appendChild(launchThread);
 
 			launchThread.setAttribute("threadName", domElt.getThreadName());
-			launchThread.setAttribute("stackSize", String.valueOf(domElt.getStackSize()));
-			launchThread.setAttribute("priority", String.valueOf(domElt.getPriority()));
+			launchThread.setAttribute("stackSize",
+					String.valueOf(domElt.getStackSize()));
+			launchThread.setAttribute("priority",
+					String.valueOf(domElt.getPriority()));
 			currentLocation = launchThread;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
-	
+
 	// Communication
-	
+
 	@Override
 	public Object visit(CommunicationFunctionCall domElt, CodeZoneId index,
 			Object currentLocation) {
@@ -464,30 +476,31 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element init = dom.createElement(domElt.getName());
-			((Element)currentLocation).appendChild(init);
-			
+			((Element) currentLocation).appendChild(init);
+
 			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
 			int callIndex = domElt.getCallIndex();
-			if(callIndex!=-1) init.setAttribute("index", String.valueOf(callIndex));
-			domElt.getRouteStep().appendRouteStep(dom,init);
+			if (callIndex != -1)
+				init.setAttribute("index", String.valueOf(callIndex));
+			domElt.getRouteStep().appendRouteStep(dom, init);
 			currentLocation = init;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
-	
+
 	@Override
 	public Object visit(SendMsg domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("sendMsg");
-			((Element)currentLocation).appendChild(send);
-			domElt.getRouteStep().appendRouteStep(dom,send);
-			
+			((Element) currentLocation).appendChild(send);
+			domElt.getRouteStep().appendRouteStep(dom, send);
+
 			send.setAttribute("target", domElt.getTarget().getName());
 			currentLocation = send;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -497,35 +510,36 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receiveMsg");
-			((Element)currentLocation).appendChild(receive);
-			domElt.getRouteStep().appendRouteStep(dom,receive);
-			
+			((Element) currentLocation).appendChild(receive);
+			domElt.getRouteStep().appendRouteStep(dom, receive);
+
 			receive.setAttribute("source", domElt.getSource().getName());
 			currentLocation = receive;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
-	
+
 	@Override
 	public Object visit(SendDma domElt, CodeZoneId index, Object currentLocation) {
 
 		if (index == CodeZoneId.body) {
 			Element send = dom.createElement("sendDma");
-			((Element)currentLocation).appendChild(send);
-			domElt.getRouteStep().appendRouteStep(dom,send);
-			
+			((Element) currentLocation).appendChild(send);
+			domElt.getRouteStep().appendRouteStep(dom, send);
+
 			send.setAttribute("target", domElt.getTarget().getName());
-			
+
 			Element addressBuffer = dom.createElement("addressBuffer");
 			send.appendChild(addressBuffer);
-			this.visit(domElt.getAddressBuffer(), CodeZoneId.body, addressBuffer);
-			
+			this.visit(domElt.getAddressBuffer(), CodeZoneId.body,
+					addressBuffer);
+
 			int callIndex = domElt.getCallIndex();
 			send.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = send;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -535,15 +549,15 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element receive = dom.createElement("receiveDma");
-			((Element)currentLocation).appendChild(receive);
-			domElt.getRouteStep().appendRouteStep(dom,receive);
-			
+			((Element) currentLocation).appendChild(receive);
+			domElt.getRouteStep().appendRouteStep(dom, receive);
+
 			receive.setAttribute("source", domElt.getSource().getName());
 			int callIndex = domElt.getCallIndex();
 			receive.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = receive;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -552,11 +566,11 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element compound = dom.createElement("CompoundCode");
-			((Element)currentLocation).appendChild(compound);
+			((Element) currentLocation).appendChild(compound);
 			compound.setAttribute("name", element.getName());
 			currentLocation = compound;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -565,14 +579,19 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element bufferAllocation = dom.createElement("subBufferAllocation");
-			((Element)currentLocation).appendChild(bufferAllocation);
-			bufferAllocation.setAttribute("name", element.getBuffer().getName());
-			bufferAllocation.setAttribute("size", String.valueOf(element.getBuffer().getSize()));
-			bufferAllocation.setAttribute("type", element.getBuffer().getType().getTypeName());
-			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element.getBuffer()).getParentBuffer().getName());
-			bufferAllocation.setAttribute("index", ((SubBuffer) element.getBuffer()).getIndex().toString());
-		} 
-		
+			((Element) currentLocation).appendChild(bufferAllocation);
+			bufferAllocation
+					.setAttribute("name", element.getBuffer().getName());
+			bufferAllocation.setAttribute("size",
+					String.valueOf(element.getBuffer().getSize()));
+			bufferAllocation.setAttribute("type", element.getBuffer().getType()
+					.getTypeName());
+			bufferAllocation.setAttribute("parentBuffer", ((SubBuffer) element
+					.getBuffer()).getParentBuffer().getName());
+			bufferAllocation.setAttribute("index",
+					((SubBuffer) element.getBuffer()).getIndex().toString());
+		}
+
 		return currentLocation;
 	}
 
@@ -581,25 +600,25 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element specialCall = dom.createElement("specialBehavior");
-			((Element)currentLocation).appendChild(specialCall);
+			((Element) currentLocation).appendChild(specialCall);
 			specialCall.setAttribute("behavior", element.getBehaviorId());
 			specialCall.setAttribute("name", element.getName());
-			//adding input buffer
+			// adding input buffer
 			Element inputBuffers = dom.createElement("inputBuffers");
-			((Element)specialCall).appendChild(inputBuffers);
-			for(Buffer inputBuffer : element.getInputBuffers()){
+			((Element) specialCall).appendChild(inputBuffers);
+			for (Buffer inputBuffer : element.getInputBuffers()) {
 				visit(inputBuffer, index, inputBuffers);
 			}
-			
-			//adding output buffers
+
+			// adding output buffers
 			Element outputBuffers = dom.createElement("outputBuffers");
-			((Element)specialCall).appendChild(outputBuffers);
-			for(Buffer outputBuffer : element.getOutputBuffers()){
+			((Element) specialCall).appendChild(outputBuffers);
+			for (Buffer outputBuffer : element.getOutputBuffers()) {
 				visit(outputBuffer, index, outputBuffers);
 			}
 			currentLocation = specialCall;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -609,12 +628,12 @@ public class XMLPrinter implements IAbstractPrinter {
 
 		if (index == CodeZoneId.body) {
 			Element wait = dom.createElement(domElt.getName());
-			((Element)currentLocation).appendChild(wait);
+			((Element) currentLocation).appendChild(wait);
 
-			domElt.getRouteStep().appendRouteStep(dom,wait);
+			domElt.getRouteStep().appendRouteStep(dom, wait);
 			currentLocation = wait;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -623,12 +642,12 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element assignment = dom.createElement("Assignment");
-			((Element)currentLocation).appendChild(assignment);
+			((Element) currentLocation).appendChild(assignment);
 			assignment.setAttribute("var", element.getVar().getName());
 			assignment.setTextContent(element.getValue());
 			currentLocation = assignment;
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -637,11 +656,11 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element constant = dom.createElement("variable");
-			((Element)currentLocation).appendChild(constant);
+			((Element) currentLocation).appendChild(constant);
 
 			constant.setAttribute("name", element.getName());
-		} 
-		
+		}
+
 		return currentLocation;
 	}
 
@@ -650,12 +669,11 @@ public class XMLPrinter implements IAbstractPrinter {
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
 			Element constant = dom.createElement("variable");
-			((Element)currentLocation).appendChild(constant);
+			((Element) currentLocation).appendChild(constant);
 			constant.setAttribute("name", element.getName());
-		} 
-		
+		}
+
 		return currentLocation;
 	}
-
 
 }

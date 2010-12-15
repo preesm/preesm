@@ -57,7 +57,7 @@ void sensor2(char* o1){
 	int i = 0;
 
 	for(i=0;i<SIZE_LOCAL;i++){
-		o1[i] = nbrand;
+		o1[i] = -i%128;
 	}
 }
 
@@ -121,7 +121,7 @@ void actuator(char* i1, int size,char* i2,char* i3){
 			bSuccess = 0;
 			break;
 		}
-		if(i3[i] != nbrand){
+		if(i3[i] != -i){
 			bSuccess = 0;
 			break;
 		}

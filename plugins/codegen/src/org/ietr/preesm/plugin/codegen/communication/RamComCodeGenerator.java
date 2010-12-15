@@ -14,14 +14,17 @@ import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
- * Generating communication code (initialization and calls) for a shared ram Route Step
+ * Generating communication code (initialization and calls) for a shared ram
+ * Route Step
  * 
  * @author mpelcat
  */
 public class RamComCodeGenerator extends AbstractComCodeGenerator {
-	
-	public RamComCodeGenerator(ComputationThreadDeclaration compThread,CommunicationThreadDeclaration comThread, SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
-		super(compThread,comThread,vertices, step);
+
+	public RamComCodeGenerator(ComputationThreadDeclaration compThread,
+			CommunicationThreadDeclaration comThread,
+			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
+		super(compThread, comThread, vertices, step);
 	}
 
 	/**
@@ -37,9 +40,8 @@ public class RamComCodeGenerator extends AbstractComCodeGenerator {
 	 * creates a send or a receive depending on the vertex type
 	 */
 	protected List<CommunicationFunctionCall> createCalls(
-			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex, CodeSectionType codeContainerType) {
-
-
+			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
+			CodeSectionType codeContainerType) {
 
 		return null;
 	}

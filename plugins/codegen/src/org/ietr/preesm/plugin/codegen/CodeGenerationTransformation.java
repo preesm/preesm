@@ -69,7 +69,6 @@ import org.sdf4j.model.visitors.SDF4JException;
  */
 public class CodeGenerationTransformation implements ICodeGeneration {
 
-
 	/**
 	 * Generates the source files from an implementation and an architecture.
 	 * The implementation is a tagged SDF graph.
@@ -78,21 +77,22 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 * @throws InvalidExpressionException
 	 * @throws PreesmException
 	 */
-	private CodeGenSDFGraph generateCodegenGraph(DirectedAcyclicGraph algorithm, IScenario scenario) throws InvalidExpressionException,
-			SDF4JException, PreesmException {
-		
+	private CodeGenSDFGraph generateCodegenGraph(
+			DirectedAcyclicGraph algorithm, IScenario scenario)
+			throws InvalidExpressionException, SDF4JException, PreesmException {
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(
 				new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
-		
+
 		// Displays the DAG
-		if(false) {
+		if (false) {
 			SDFAdapterDemo applet2 = new SDFAdapterDemo();
 			applet2.init(sdfGraph);
 		}
-		
+
 		return sdfGraph;
 	}
 
@@ -106,7 +106,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 
 		// Resets the parsed IDL prototypes
 		IDLFunctionFactory.getInstance().resetPrototypes();
-		
+
 		// Default source path is given in the workflow
 		String sourcePath = parameters.getVariable("sourcePath");
 
@@ -118,10 +118,12 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 
 		String xslPath = parameters.getVariable("xslLibraryPath");
 		TaskResult result = new TaskResult();
-		
+
 		String allocPolicy = parameters.getVariable("allocationPolicy");
-		if(allocPolicy != null && BufferAllocator.fromString(allocPolicy) != null){
-			AllocationPolicy.setAllocatorType(BufferAllocator.fromString(allocPolicy));
+		if (allocPolicy != null
+				&& BufferAllocator.fromString(allocPolicy) != null) {
+			AllocationPolicy.setAllocatorType(BufferAllocator
+					.fromString(allocPolicy));
 		}
 		// Generating the code generation specific graph
 		CodeGenSDFGraph codeGenSDFGraph = null;
@@ -139,21 +141,25 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 			CodeGenerator codegen = new CodeGenerator(list);
 			// Generate source files
 			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
-			
-			// Generates the code in xml and translates it to c using XSLT sheets
+
+			// Generates the code in xml and translates it to c using XSLT
+			// sheets
 			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
 					xslPath);
 			printerChooser.printList(list);
 
 			result.setSourcefilelist(list);
-		} else{
+		} else {
 			// Job posting code generation
-			boolean timedSimulation = parameters.getBooleanVariable("timedSimulation");
-			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(codeGenSDFGraph, scenario, timedSimulation);
+			boolean timedSimulation = parameters
+					.getBooleanVariable("timedSimulation");
+			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(
+					codeGenSDFGraph, scenario, timedSimulation);
 			JobPostingSource source = jobGen.generate();
 			JobPostingPrinter printer = new JobPostingPrinter();
 			printer.addData(source);
-			printer.writeDom(GenericPrinter.createFile("jobList.xml", sourcePath));
+			printer.writeDom(GenericPrinter.createFile("jobList.xml",
+					sourcePath));
 		}
 
 		return result;

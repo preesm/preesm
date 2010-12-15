@@ -118,7 +118,8 @@ public class JobPostingCodeGenerator {
 
 				// Adding function parameters
 				UserFunctionCall userCall = new UserFunctionCall(vertex,
-						sourceFile.getGlobalContainer(), CodeSectionType.loop, true);
+						sourceFile.getGlobalContainer(), CodeSectionType.loop,
+						true);
 				List<FunctionArgument> params = userCall.getCallParameters();
 
 				for (FunctionArgument param : params) {
@@ -131,10 +132,9 @@ public class JobPostingCodeGenerator {
 				}
 
 				// Setting job names
-				if(timedSimulation){
+				if (timedSimulation) {
 					desc.setFunctionName("simulation");
-				}
-				else{
+				} else {
 					desc.setFunctionName(call.getFunctionName());
 				}
 				desc.setVertexName(vertex.getName());

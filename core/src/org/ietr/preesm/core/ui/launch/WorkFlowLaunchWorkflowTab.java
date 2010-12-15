@@ -41,9 +41,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.ui.Activator;
-import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
-import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
-
 /**
  * Launch Tab for algorithm options. From this tab, an
  * {@link AlgorithmConfiguration} is generated that feeds an

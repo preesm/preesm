@@ -215,9 +215,9 @@ public class SourceFileCodeGenerator {
 			file.addThread(communicationThread);
 
 			// Launching the communication thread in the computation thread
-			LaunchThread launchThread = new LaunchThread(file
-					.getGlobalContainer(), communicationThread.getName(), 8000,
-					1);
+			LaunchThread launchThread = new LaunchThread(
+					file.getGlobalContainer(), communicationThread.getName(),
+					8000, 1);
 			computationThread.getBeginningCode().addCodeElementFirst(
 					launchThread);
 
@@ -227,8 +227,8 @@ public class SourceFileCodeGenerator {
 			// Inserts the communication function calls, the communication
 			// thread semaphore post and pends and the communication
 			// initializations
-			commCodeGen.addSendsAndReceives(ownCommunicationVertices, file
-					.getGlobalContainer());
+			commCodeGen.addSendsAndReceives(ownCommunicationVertices,
+					file.getGlobalContainer());
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
 					CodeSectionType.beginning);
 			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
@@ -286,10 +286,15 @@ public class SourceFileCodeGenerator {
 
 		while (eIterator.hasNext()) {
 			SDFEdge edge = eIterator.next();
-			if (!edge.getSource().getPropertyBean().getValue(
-					ImplementationPropertyNames.Vertex_Operator).equals(
-					edge.getTarget().getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_Operator))) {
+			if (!edge
+					.getSource()
+					.getPropertyBean()
+					.getValue(ImplementationPropertyNames.Vertex_Operator)
+					.equals(edge
+							.getTarget()
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_Operator))) {
 				eIterator.remove();
 			}
 		}

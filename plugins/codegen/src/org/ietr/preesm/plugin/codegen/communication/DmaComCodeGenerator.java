@@ -59,8 +59,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super(compThread, comThread, vertices, step);
 
-		dmaInitCodeContainer = new LinearCodeContainer(this.comThread
-				.getBeginningCode());
+		dmaInitCodeContainer = new LinearCodeContainer(
+				this.comThread.getBeginningCode());
 		this.comThread.getBeginningCode().addCodeElement(dmaInitCodeContainer);
 
 		// Testing the number of send functions with the given route step
@@ -89,8 +89,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		// functions are stored in the order of send functions
 		if (addressBufferSize != 0) {
 			addressBuffer = new Buffer("addressBuffer", addressBufferSize,
-					new DataType("void *", 4), null, comThread
-							.getGlobalContainer());
+					new DataType("void *", 4), null,
+					comThread.getGlobalContainer());
 			BufferAllocation alloc = new BufferAllocation(addressBuffer);
 			comThread.getGlobalContainer().addBuffer(alloc);
 		}
@@ -117,8 +117,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 
 			initAddress = new ReceiveAddress(bufferContainer, send
-					.getRouteStep().getReceiver().getName(), send
-					.getRouteStep(), send.getCallIndex(), addressBuffer);
+					.getRouteStep().getReceiver().getName(),
+					send.getRouteStep(), send.getCallIndex(), addressBuffer);
 
 		} else if (call instanceof ReceiveDma) {
 			ReceiveDma receive = (ReceiveDma) call;
@@ -128,9 +128,9 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 
 			initAddress = new SendAddress(bufferContainer, receive
-					.getRouteStep().getSender().getName(), receive
-					.getRouteStep(), receive.getCallIndex(), receive
-					.getBufferSet().get(0));
+					.getRouteStep().getSender().getName(),
+					receive.getRouteStep(), receive.getCallIndex(), receive
+							.getBufferSet().get(0));
 		}
 
 		// Checking that the initialization has not already been done
@@ -203,7 +203,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			if (type.isSend()) {
 				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (predList
 						.get(0));
-				if (hasCallForCodeContainerType(senderVertex, codeContainerType) || VertexType.isIntermediateReceive(senderVertex)) {
+				if (hasCallForCodeContainerType(senderVertex, codeContainerType)
+						|| VertexType.isIntermediateReceive(senderVertex)) {
 					List<Buffer> bufferSet = parentContainer
 							.getBuffers(inEdges);
 
@@ -227,21 +228,23 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					for (Buffer buf : bufferSet) {
 						if (SourceFileCodeGenerator
 								.usesBufferInCodeContainerType(senderVertex,
-										codeContainerType, buf, "output") || VertexType.isIntermediateSend(vertex)) {
+										codeContainerType, buf, "output")
+								|| VertexType.isIntermediateSend(vertex)) {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new SendDma(parentContainer, vertex,
 									singleBufferSet, rs, target,
 									sendNextCallIndex, addressBuffer));
 							sendNextCallIndex++;
-							}
+						}
 					}
 				}
 			} else if (type.isReceive()) {
 				SDFAbstractVertex send = (SDFAbstractVertex) (predList.get(0));
 				SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
 						.predecessorListOf(send).get(0));
-				if (hasCallForCodeContainerType(senderVertex, codeContainerType) || VertexType.isIntermediateReceive(senderVertex)) {
+				if (hasCallForCodeContainerType(senderVertex, codeContainerType)
+						|| VertexType.isIntermediateReceive(senderVertex)) {
 					List<Buffer> bufferSet = parentContainer
 							.getBuffers(outEdges);
 
@@ -262,14 +265,16 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					for (Buffer buf : bufferSet) {
 						if (SourceFileCodeGenerator
 								.usesBufferInCodeContainerType(senderVertex,
-										codeContainerType, buf, "output") || VertexType.isIntermediateReceive(senderVertex)) {
+										codeContainerType, buf, "output")
+								|| VertexType
+										.isIntermediateReceive(senderVertex)) {
 							List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 							singleBufferSet.add(buf);
 							calls.add(new ReceiveDma(parentContainer, vertex,
 									singleBufferSet, rs, source,
 									receiveNextCallIndex));
 							receiveNextCallIndex++;
-							}
+						}
 					}
 				}
 			}

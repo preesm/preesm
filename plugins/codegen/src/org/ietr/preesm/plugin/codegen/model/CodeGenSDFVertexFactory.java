@@ -106,16 +106,21 @@ public class CodeGenSDFVertexFactory {
 				newVertex = new CodeGenSDFJoinVertex();
 			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
 				newVertex = new CodeGenSDFRoundBufferVertex();
-			}else if (sdfVertex instanceof SDFEndVertex) {
+			} else if (sdfVertex instanceof SDFEndVertex) {
 				newVertex = new CodeGenSDFTokenEndVertex();
-				((CodeGenSDFTokenEndVertex) newVertex).setEndReference(((SDFInitVertex) sdfVertex).getEndReference());
-			}else if (sdfVertex instanceof SDFInitVertex) {
+				((CodeGenSDFTokenEndVertex) newVertex)
+						.setEndReference(((SDFInitVertex) sdfVertex)
+								.getEndReference());
+			} else if (sdfVertex instanceof SDFInitVertex) {
 				newVertex = new CodeGenSDFTokenInitVertex();
-				((CodeGenSDFTokenInitVertex) newVertex).setEndReference(((SDFInitVertex) sdfVertex).getEndReference());
-				((CodeGenSDFTokenInitVertex) newVertex).setInitSize(((SDFInitVertex) sdfVertex).getInitSize());
+				((CodeGenSDFTokenInitVertex) newVertex)
+						.setEndReference(((SDFInitVertex) sdfVertex)
+								.getEndReference());
+				((CodeGenSDFTokenInitVertex) newVertex)
+						.setInitSize(((SDFInitVertex) sdfVertex).getInitSize());
 			} else if (sdfVertex instanceof PSDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
-			}  else {
+			} else {
 				newVertex = new CodeGenSDFTaskVertex();
 			}
 		} else if (vertexType != null && vertexType.equals(VertexType.send)) {
@@ -168,8 +173,10 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 		((SDFAbstractVertex) newVertex).copyProperties(dagVertex);
-		if(dagVertex.getCorrespondingSDFVertex() != null && newVertex instanceof CodeGenSDFTaskVertex){
-			((SDFAbstractVertex) newVertex).setNbRepeat(dagVertex.getCorrespondingSDFVertex().getNbRepeat());
+		if (dagVertex.getCorrespondingSDFVertex() != null
+				&& newVertex instanceof CodeGenSDFTaskVertex) {
+			((SDFAbstractVertex) newVertex).setNbRepeat(dagVertex
+					.getCorrespondingSDFVertex().getNbRepeat());
 		}
 		if (dagVertex.getCorrespondingSDFVertex() != null
 				&& dagVertex.getCorrespondingSDFVertex().getArguments() != null) {
@@ -215,8 +222,7 @@ public class CodeGenSDFVertexFactory {
 				newVertex = new CodeGenSDFInitVertex();
 			} else if (sdfVertex instanceof PSDFSubInitVertex) {
 				newVertex = new CodeGenSDFSubInitVertex();
-			}  
-			else {
+			} else {
 				newVertex = new CodeGenSDFTaskVertex();
 			}
 		}
@@ -224,8 +230,8 @@ public class CodeGenSDFVertexFactory {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
 		if (sdfVertex.getGraphDescription() != null) {
-			newVertex.setGraphDescription(graphFactory
-					.create(sdfVertex.getGraphDescription()));
+			newVertex.setGraphDescription(graphFactory.create(sdfVertex
+					.getGraphDescription()));
 			for (SDFAbstractVertex child : ((CodeGenSDFGraph) newVertex
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {

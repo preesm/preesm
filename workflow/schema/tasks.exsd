@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.ietr.preesm.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.ietr.preesm.workflow" id="org.ietr.preesm.workflow.plugins" name="Preesm task plug-in"/>
+      </appinfo>
+      <documentation>
+         The plugins extension point allows plug-ins to declare themselves as Workflow task plug-ins.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="task"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="task">
+      <complexType>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The fully qualified name of a Java class that implements ITask.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.ietr.preesm.core.task.ITask"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The identifier of this task. It must unique amongst the registered tasks identifiers. Example: org.ietr.preesm.plugin.mapping
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The task name, for example the algorithm implemented.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         Following is an example of an adapter declaration.  This example declares that this plug-in will provide an adapter factory that will adapt objects of type IFile to objects of type MyFile.
+&lt;p&gt;
+   &lt;pre&gt;
+      &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot;&gt;
+         &lt;factory 
+            class=&quot;com.xyz.MyFileAdapterFactory&quot; 
+            adaptableType=&quot;org.eclipse.core.resources.IFile&quot;&gt;
+            &lt;adapter type=&quot;com.xyz.MyFile&quot;/&gt;
+         &lt;/factory&gt;
+      &lt;/extension&gt;
+   &lt;/pre&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2008 IETR
+      </documentation>
+   </annotation>
+
+</schema>

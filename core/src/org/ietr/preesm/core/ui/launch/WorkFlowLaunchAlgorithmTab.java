@@ -60,7 +60,6 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
-import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 
 /**
  * Launch Tab for algorithm options. From this tab, an

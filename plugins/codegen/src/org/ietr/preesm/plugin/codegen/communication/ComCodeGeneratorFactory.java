@@ -61,8 +61,7 @@ public class ComCodeGeneratorFactory {
 					vertices, step);
 			PreesmLogger
 					.getLogger()
-					.log(
-							Level.FINE,
+					.log(Level.FINE,
 							"A route step with type medium correspond to a message passing code generation: "
 									+ step);
 		} else if (step.getType() == DmaRouteStep.type) {

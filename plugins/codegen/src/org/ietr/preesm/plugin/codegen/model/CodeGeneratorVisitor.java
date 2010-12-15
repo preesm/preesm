@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen.model;
 
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
@@ -48,27 +48,28 @@ import org.sdf4j.model.visitors.SDF4JException;
  * 
  * @author jpiat
  */
-public class CodeGeneratorVisitor implements GraphVisitor<SDFGraph, SDFAbstractVertex, CodeGenSDFEdge>{
-	
-	public void visit(CodeGenSDFEdge edge){
-		
+public class CodeGeneratorVisitor implements
+		GraphVisitor<SDFGraph, SDFAbstractVertex, CodeGenSDFEdge> {
+
+	public void visit(CodeGenSDFEdge edge) {
+
 	}
-	
+
 	/**
 	 * visiting a vertex implies accepting its children
 	 */
-	public void visit(SDFAbstractVertex vertex) throws SDF4JException{
-		if(vertex.getGraphDescription() != null){
+	public void visit(SDFAbstractVertex vertex) throws SDF4JException {
+		if (vertex.getGraphDescription() != null) {
 			vertex.getGraphDescription().accept(this);
 		}
-		
+
 	}
-	
-	public void visit(SDFGraph graph)throws SDF4JException{
-		for(SDFEdge edge : graph.edgeSet()){
+
+	public void visit(SDFGraph graph) throws SDF4JException {
+		for (SDFEdge edge : graph.edgeSet()) {
 			edge.accept(this);
 		}
-		for(SDFAbstractVertex vertex : graph.vertexSet()){
+		for (SDFAbstractVertex vertex : graph.vertexSet()) {
 			vertex.accept(this);
 		}
 	}

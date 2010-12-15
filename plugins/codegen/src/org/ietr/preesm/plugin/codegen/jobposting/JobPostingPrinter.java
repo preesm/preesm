@@ -93,12 +93,13 @@ public class JobPostingPrinter {
 	}
 
 	public void addBufferAllocation(Element elt, BufferAllocation alloc) {
-		
+
 		Element allocElt = dom.createElement("BufferAllocation");
 		elt.appendChild(allocElt);
-		
+
 		allocElt.setAttribute("name", alloc.getBuffer().getName());
-		allocElt.setAttribute("size", String.valueOf(alloc.getBuffer().getSize()));
+		allocElt.setAttribute("size",
+				String.valueOf(alloc.getBuffer().getSize()));
 		allocElt.setAttribute("type", alloc.getBuffer().getType().getTypeName());
 	}
 
@@ -116,7 +117,7 @@ public class JobPostingPrinter {
 	}
 
 	public void addDescriptor(Element elt, JobDescriptor desc) {
-		
+
 		Element job = dom.createElement("job");
 		elt.appendChild(job);
 		job.setAttribute("id", String.valueOf(desc.getId()));
@@ -168,7 +169,8 @@ public class JobPostingPrinter {
 		Element predElt = dom.createElement("buffer");
 		elt.appendChild(predElt);
 		predElt.setAttribute("name", String.valueOf(buf.getName()));
-		predElt.setAttribute("type", String.valueOf(buf.getType().getTypeName()));
+		predElt.setAttribute("type",
+				String.valueOf(buf.getType().getTypeName()));
 		predElt.setAttribute("size", String.valueOf(buf.getSize()));
 	}
 

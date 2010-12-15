@@ -69,8 +69,8 @@ public class GenericPrinter {
 	private String outputPath = null;
 
 	/**
-	 * Directory in which we should put the xsl files to transform
-	 * XML into formatted files
+	 * Directory in which we should put the xsl files to transform XML into
+	 * formatted files
 	 */
 	private String xslPath = null;
 
@@ -95,7 +95,7 @@ public class GenericPrinter {
 
 	}
 
-	public static IFile createFile(String fileName, String pathName){
+	public static IFile createFile(String fileName, String pathName) {
 		// Creating a file if necessary
 		IPath path = new Path(pathName);
 		path = path.append(fileName);
@@ -109,40 +109,43 @@ public class GenericPrinter {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		return iFile;
 	}
-	
+
 	/**
-	 * Generates an XML source file and converts it into a target source file with
-	 * an xslt sheet
+	 * Generates an XML source file and converts it into a target source file
+	 * with an xslt sheet
 	 */
 	public void print(SourceFile srcFile) {
 
 		IOperator operator = srcFile.getOperator();
 
 		// Generating an xml file corresponding to the code of one file
-		String fileName = ((ArchitectureComponent)operator).getName();
+		String fileName = ((ArchitectureComponent) operator).getName();
 		IPath xmlPath = new Path(outputPath);
 		xmlPath = xmlPath.append(fileName + ".xml");
-		
+
 		IFile iFile = createFile(fileName + ".xml", outputPath);
-		
+
 		XMLPrinter printer = createOperatorPrinter(operator);
 		srcFile.accept(printer, printer.getRoot());
 		printer.writeDom(iFile);
 
-		if(!xslPath.isEmpty()){
+		if (!xslPath.isEmpty()) {
 			IPath specificPath = new Path(outputPath);
 			specificPath = specificPath.append(fileName + ".c");
-	
+
 			IPath xslFilePath = new Path(xslPath);
-			xslFilePath = xslFilePath.append(((ArchitectureComponent)operator).getDefinition().getVlnv().getName() + ".xslt");
-	
+			xslFilePath = xslFilePath.append(((ArchitectureComponent) operator)
+					.getDefinition().getVlnv().getName()
+					+ ".xslt");
+
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
-				if(xsltTransfo.setXSLFile(xslFilePath.toOSString())){
-				xsltTransfo.transformFileToFile(xmlPath.toOSString(), specificPath.toOSString());
+				if (xsltTransfo.setXSLFile(xslFilePath.toOSString())) {
+					xsltTransfo.transformFileToFile(xmlPath.toOSString(),
+							specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
 				PreesmLogger.getLogger().log(Level.INFO, e.getMessage());
@@ -155,8 +158,9 @@ public class GenericPrinter {
 	 */
 	public XMLPrinter createOperatorPrinter(IOperator opRef) {
 		XMLPrinter printer = null;
-		String opRefId = ((ArchitectureComponent)opRef).getDefinition().getVlnv().getName();
-		String opId = ((ArchitectureComponent)opRef).getName();
+		String opRefId = ((ArchitectureComponent) opRef).getDefinition()
+				.getVlnv().getName();
+		String opId = ((ArchitectureComponent) opRef).getName();
 
 		printer = new XMLPrinter();
 		printer.setCoreType(opRefId);

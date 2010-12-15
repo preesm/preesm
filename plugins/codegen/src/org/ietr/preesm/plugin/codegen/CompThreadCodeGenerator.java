@@ -237,8 +237,10 @@ public class CompThreadCodeGenerator {
 		if (params != null) {
 			for (Parameter param : params.values()) {
 				if (param instanceof PSDFDynamicParameter) {
-					thread.getLoopCode().addVariable(new Variable(param.getName(),
-							new DataType("long")));
+					thread.getLoopCode()
+							.addVariable(
+									new Variable(param.getName(), new DataType(
+											"long")));
 				}
 			}
 		}
@@ -248,7 +250,7 @@ public class CompThreadCodeGenerator {
 	 * Adds one function call for each vertex in the ordered set
 	 */
 	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices) {
-		
+
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
@@ -259,7 +261,7 @@ public class CompThreadCodeGenerator {
 		// possible at this time to ensure buffers reliability
 
 		// Filtering special vertices (Fork , Broadcast...) from regular tasks
-		// 
+		//
 		// List<SDFAbstractVertex> specialVertices = new
 		// ArrayList<SDFAbstractVertex>(vertices);
 		// List<SDFAbstractVertex> treatedVertices = new
@@ -307,7 +309,7 @@ public class CompThreadCodeGenerator {
 		// specialVertices.remove(origin);
 		// }
 		// }
-		//		
+		//
 		// for (SDFAbstractVertex vertex : vertices) {
 		// if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof
 		// CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex
@@ -322,13 +324,14 @@ public class CompThreadCodeGenerator {
 			if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
 				FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
-				if(vertex instanceof CodeGenSDFTokenInitVertex){
-					ICodeElement beginningCall = new UserFunctionCall((CodeGenSDFTokenInitVertex) vertex,
-							thread, CodeSectionType.beginning, false);
+				if (vertex instanceof CodeGenSDFTokenInitVertex) {
+					ICodeElement beginningCall = new UserFunctionCall(
+							(CodeGenSDFTokenInitVertex) vertex, thread,
+							CodeSectionType.beginning, false);
 					// Adding init call if any
 					beginningCode.addCodeElement(beginningCall);
-					//PreesmLogger.getLogger().log(Level.INFO, "");
-				}else if ((vertexCall != null && vertexCall.getInitCall() != null) ) {
+					// PreesmLogger.getLogger().log(Level.INFO, "");
+				} else if ((vertexCall != null && vertexCall.getInitCall() != null)) {
 					ICodeElement beginningCall = new UserFunctionCall(vertex,
 							thread, CodeSectionType.beginning, false);
 					// Adding init call if any
@@ -344,8 +347,8 @@ public class CompThreadCodeGenerator {
 			}
 
 			if (vertex instanceof ICodeGenSDFVertex) {
-				ICodeElement loopCall = CodeElementFactory.createElement(vertex
-						.getName(), loopCode, vertex);
+				ICodeElement loopCall = CodeElementFactory.createElement(
+						vertex.getName(), loopCode, vertex);
 				if (loopCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
 						loopCode.addInitCodeElement(loopCall);
@@ -353,7 +356,13 @@ public class CompThreadCodeGenerator {
 						loopCode.addCodeElementFirst(loopCall);
 					} else {
 						// Adding loop call if any
-						PreesmLogger.getLogger().log(Level.FINE,"Adding code elt " + loopCall.toString() + " on operator " + thread.getParentContainer().getName());
+						PreesmLogger.getLogger()
+								.log(Level.FINE,
+										"Adding code elt "
+												+ loopCall.toString()
+												+ " on operator "
+												+ thread.getParentContainer()
+														.getName());
 						loopCode.addCodeElement(loopCall);
 					}
 				}

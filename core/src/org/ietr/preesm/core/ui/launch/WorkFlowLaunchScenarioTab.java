@@ -41,7 +41,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
-import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 
 /**
  * Launch Tab for scenario options. From this tab, an

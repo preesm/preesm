@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.codegen.model.idl;
 
 import java.util.logging.Level;
@@ -64,7 +64,8 @@ public class IDLParser extends parser {
 
 			new parser().parse();
 		} catch (Exception e) {
-			PreesmLogger.getLogger().log(Level.INFO,"IDL Parser: " + e.getMessage());
+			PreesmLogger.getLogger().log(Level.INFO,
+					"IDL Parser: " + e.getMessage());
 		}
 	}
 
