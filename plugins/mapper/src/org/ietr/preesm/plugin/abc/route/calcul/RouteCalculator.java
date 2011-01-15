@@ -53,7 +53,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -74,27 +74,27 @@ public class RouteCalculator {
 
 	private RouteStepFactory stepFactory = null;
 	
-	private IScenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public static RouteCalculator getInstance(MultiCoreArchitecture archi, IScenario scenario){
+	public static RouteCalculator getInstance(MultiCoreArchitecture archi, PreesmScenario scenario){
 		if(instances.get(archi) == null){
 			instances.put(archi, new  RouteCalculator(archi, scenario));
 		}
 		return instances.get(archi);
 	}
 	
-	public static void recalculate(MultiCoreArchitecture archi, IScenario scenario){
+	public static void recalculate(MultiCoreArchitecture archi, PreesmScenario scenario){
 		instances.put(archi, new  RouteCalculator(archi, scenario));
 	}
 	
-	public static void deleteRoutes(MultiCoreArchitecture archi, IScenario scenario){
+	public static void deleteRoutes(MultiCoreArchitecture archi, PreesmScenario scenario){
 		instances.remove(archi);
 	}
 	
 	/**
 	 * Constructor from a given architecture
 	 */
-	private RouteCalculator(MultiCoreArchitecture archi, IScenario scenario) {
+	private RouteCalculator(MultiCoreArchitecture archi, PreesmScenario scenario) {
 
 		this.archi = archi;
 		this.table = new RoutingTable(scenario);

@@ -57,7 +57,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -72,9 +72,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelConstraintsParser {
 
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public ExcelConstraintsParser(Scenario scenario) {
+	public ExcelConstraintsParser(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}

@@ -38,7 +38,7 @@ package org.ietr.preesm.core.scenario.editor.variables;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Provides the elements contained in the variables editor
@@ -52,8 +52,8 @@ public class VariablesContentProvider implements IStructuredContentProvider {
 	@Override
 	public Object[] getElements(Object inputElement) {
 
-		if (inputElement instanceof Scenario) {
-			Scenario inputScenario = (Scenario) inputElement;
+		if (inputElement instanceof PreesmScenario) {
+			PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
 			// Retrieving the data types from the scenario
 			elementTable = inputScenario.getVariablesManager().getVariables()

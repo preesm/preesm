@@ -57,7 +57,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * This page contains general informations of the scenario including current
@@ -70,9 +70,9 @@ public class OverviewPage extends FormPage {
 	/**
 	 * The current scenario being edited
 	 */
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
-	public OverviewPage(Scenario scenario, FormEditor editor, String id,
+	public OverviewPage(PreesmScenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 

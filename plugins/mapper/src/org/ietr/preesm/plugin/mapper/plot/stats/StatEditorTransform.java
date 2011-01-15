@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IPlotter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.types.IMapperAbc;
@@ -53,7 +53,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 public class StatEditorTransform implements IPlotter {
 
 	@Override
-	public void transform(IMapperAbc simulator, IScenario scenario, TextParameters params) {
+	public void transform(IMapperAbc simulator, PreesmScenario scenario, TextParameters params) {
 
 		if(simulator instanceof IAbc){
 			IAbc abc = (IAbc) simulator;

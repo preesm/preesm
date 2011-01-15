@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IMapping;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
@@ -64,14 +64,14 @@ public abstract class AbstractMapping implements IMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor)  throws PreesmException{
+			PreesmScenario scenario, IProgressMonitor monitor)  throws PreesmException{
 		
 		// Asking to recalculate routes
 		RouteCalculator.recalculate(architecture,scenario);
 		return null;
 	}
 	
-	protected void clean(MultiCoreArchitecture architecture,IScenario scenario) throws PreesmException{
+	protected void clean(MultiCoreArchitecture architecture,PreesmScenario scenario) throws PreesmException{
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture,scenario);
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractMapping implements IMapping {
 	 * without transfer time to other operator)
 	 */
 	protected void calculateSpan(MapperDAG dag,
-			MultiCoreArchitecture archi, IScenario scenario, AbcParameters parameters){
+			MultiCoreArchitecture archi, PreesmScenario scenario, AbcParameters parameters){
 		
 		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,
 				dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);

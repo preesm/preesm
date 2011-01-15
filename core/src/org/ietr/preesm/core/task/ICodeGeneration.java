@@ -38,7 +38,7 @@ package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -62,7 +62,7 @@ public interface ICodeGeneration extends ITransformation {
 	 *            A {@link SourceFileList}.
 	 */
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario,
+			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			TextParameters parameters) throws PreesmException;
 
 }

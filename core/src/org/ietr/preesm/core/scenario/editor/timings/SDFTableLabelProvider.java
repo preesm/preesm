@@ -54,7 +54,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFVertex;
@@ -67,7 +67,7 @@ import org.sdf4j.model.sdf.SDFVertex;
 public class SDFTableLabelProvider implements ITableLabelProvider,
 		SelectionListener {
 
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	private IOperatorDefinition currentOpDef = null;
 
@@ -78,7 +78,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(Scenario scenario, TableViewer tableViewer,
+	public SDFTableLabelProvider(PreesmScenario scenario, TableViewer tableViewer,
 			IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;

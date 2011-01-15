@@ -52,7 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
@@ -130,7 +130,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, IScenario scenario, AbcParameters abcParams,
+			MultiCoreArchitecture archi, PreesmScenario scenario, AbcParameters abcParams,
 			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables

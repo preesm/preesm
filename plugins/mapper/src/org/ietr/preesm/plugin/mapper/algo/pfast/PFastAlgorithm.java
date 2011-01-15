@@ -53,7 +53,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -120,7 +120,7 @@ public class PFastAlgorithm extends Observable {
 		 * 
 		 */
 		public FinalTimeComparator(AbcParameters abcParams, MapperDAG dag,
-				MultiCoreArchitecture archi, IScenario scenario) {
+				MultiCoreArchitecture archi, PreesmScenario scenario) {
 			super();
 			this.simulator = AbstractAbc.getInstance(abcParams, dag, archi,
 					scenario);
@@ -289,7 +289,7 @@ public class PFastAlgorithm extends Observable {
 	 * @return MapperDAG
 	 */
 	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi,
-			IScenario scenario, InitialLists initialLists,
+			PreesmScenario scenario, InitialLists initialLists,
 			AbcParameters abcParams, PFastAlgoParameters pFastParams,
 			boolean population, int populationsize, boolean isDisplaySolutions,
 			List<MapperDAG> populationList, AbstractTaskSched taskSched) {

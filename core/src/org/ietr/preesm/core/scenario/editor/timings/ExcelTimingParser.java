@@ -57,7 +57,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -72,9 +72,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelTimingParser {
 
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public ExcelTimingParser(Scenario scenario) {
+	public ExcelTimingParser(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}

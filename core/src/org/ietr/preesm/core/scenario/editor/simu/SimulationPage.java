@@ -80,7 +80,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
@@ -138,9 +138,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	/**
 	 * The current scenario being edited
 	 */
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
-	public SimulationPage(Scenario scenario, FormEditor editor, String id,
+	public SimulationPage(PreesmScenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 

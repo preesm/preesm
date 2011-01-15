@@ -12,7 +12,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IScenarioTransformation;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
@@ -54,7 +54,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 			ScenarioRetriever retriever = new ScenarioRetriever(
 					scenarioConfiguration);
 
-			IScenario scenario = retriever.getScenario();
+			PreesmScenario scenario = retriever.getScenario();
 			result.setScenario(scenario);
 
 			AlgorithmRetriever algoR = new AlgorithmRetriever(scenario

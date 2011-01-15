@@ -47,7 +47,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.ScenarioWriter;
 import org.ietr.preesm.core.scenario.editor.codegen.CodegenPage;
@@ -72,7 +72,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 
 	private IFile scenarioFile = null;
 
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
 	public ScenarioEditor() {
 		super();
@@ -99,7 +99,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		}
 
 		if (scenarioFile != null) {
-			scenario = new Scenario();
+			scenario = new PreesmScenario();
 			ScenarioParser parser = new ScenarioParser();
 			parser.parseXmlFile(scenarioFile);
 			scenario = parser.parseDocument();

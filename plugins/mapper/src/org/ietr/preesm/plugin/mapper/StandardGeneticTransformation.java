@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
@@ -84,7 +84,7 @@ public class StandardGeneticTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
 			TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor) throws PreesmException{
+			PreesmScenario scenario, IProgressMonitor monitor) throws PreesmException{
 
 		super.transform(algorithm,architecture,textParameters,scenario,monitor);
 		TaskResult transfoResult = new TaskResult();

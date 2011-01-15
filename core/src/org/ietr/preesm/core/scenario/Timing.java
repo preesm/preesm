@@ -53,12 +53,6 @@ public class Timing {
 	public static final int DEFAULT_JOIN_TIME = 10;
 	public static final int DEFAULT_INIT_TIME = 10;
 
-	public static void main(String[] args) {
-		Variable test = new Parameter("test");
-		test.setValue(6546);
-		System.out.println(test);
-	}
-
 	/**
 	 * related operator
 	 */

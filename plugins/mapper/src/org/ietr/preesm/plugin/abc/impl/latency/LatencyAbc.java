@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -105,7 +105,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public LatencyAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
 		this.params = params;

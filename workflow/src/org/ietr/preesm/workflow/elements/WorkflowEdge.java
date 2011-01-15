@@ -49,6 +49,19 @@ public class WorkflowEdge {
 	 * Type of the data carried by the edge
 	 */
 	private String dataType = null;
+	
+	/**
+	 * Object carrying the data
+	 */
+	private Object data = null;
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
 
 	public String getDataType() {
 		return dataType;

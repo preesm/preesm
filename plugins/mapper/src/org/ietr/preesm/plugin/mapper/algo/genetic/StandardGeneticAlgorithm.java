@@ -45,7 +45,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
@@ -119,7 +119,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> convertListDAGtoListChromo(List<MapperDAG> list,
-			MultiCoreArchitecture archi, IScenario scenario) {
+			MultiCoreArchitecture archi, PreesmScenario scenario) {
 
 		// create the list of chromosome
 		List<Chromosome> population3 = new ArrayList<Chromosome>();
@@ -152,7 +152,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
 			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
-			IScenario scenario, AbcParameters abcParams, int populationSize,
+			PreesmScenario scenario, AbcParameters abcParams, int populationSize,
 			int generationNumber, boolean pgeneticalgo) {
 
 		final BestCostPlotter costPlotter = new BestCostPlotter(

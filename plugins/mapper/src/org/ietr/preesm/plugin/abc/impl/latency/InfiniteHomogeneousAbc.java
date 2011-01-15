@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -64,7 +64,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * Constructor
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, IScenario scenario) {
+			MultiCoreArchitecture archi, PreesmScenario scenario) {
 		this(params, dag, archi, TaskSchedType.Simple, scenario);
 	}
 
@@ -74,7 +74,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
-			IScenario scenario) {
+			PreesmScenario scenario) {
 		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 

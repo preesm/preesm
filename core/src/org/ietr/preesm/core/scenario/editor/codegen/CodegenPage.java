@@ -57,7 +57,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
@@ -71,9 +71,9 @@ public class CodegenPage extends FormPage {
 	/**
 	 * Currently edited scenario
 	 */
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
-	public CodegenPage(Scenario scenario, FormEditor editor, String id,
+	public CodegenPage(PreesmScenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 		this.scenario = scenario;

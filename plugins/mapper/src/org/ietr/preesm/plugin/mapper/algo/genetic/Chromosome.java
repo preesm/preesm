@@ -42,7 +42,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -72,7 +72,7 @@ public class Chromosome {
 	// and scheduling)
 	private MultiCoreArchitecture archi;
 
-	private IScenario scenario;
+	private PreesmScenario scenario;
 
 	/**
 	 * Constructor
@@ -91,7 +91,7 @@ public class Chromosome {
 	 * @param dag
 	 * @param architecture
 	 */
-	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture, IScenario scenario) {
+	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture, PreesmScenario scenario) {
 		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList().listIterator();
 		MapperDAGVertex currentVertex = null;
 		this.dag = dag;
@@ -197,7 +197,7 @@ public class Chromosome {
 		this.dag = dag;
 	}
 
-	public void setScenario(IScenario scenario) {
+	public void setScenario(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 

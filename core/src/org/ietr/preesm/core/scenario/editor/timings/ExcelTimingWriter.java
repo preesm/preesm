@@ -61,7 +61,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -72,9 +72,9 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  */
 public class ExcelTimingWriter implements SelectionListener {
 
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
-	public ExcelTimingWriter(Scenario scenario) {
+	public ExcelTimingWriter(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}

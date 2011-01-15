@@ -46,7 +46,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.SectionPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Tree representing a SDF graph in the constraint page and the code generation
@@ -69,7 +69,7 @@ public class SDFTreeSection extends SectionPart {
 	/**
 	 * Creates the tree view
 	 */
-	public SDFTreeSection(Scenario scenario, Section inputSection,
+	public SDFTreeSection(PreesmScenario scenario, Section inputSection,
 			FormToolkit toolkit, int style, IPropertyListener listener,
 			ISDFCheckStateListener checkStateListener) {
 		super(inputSection);

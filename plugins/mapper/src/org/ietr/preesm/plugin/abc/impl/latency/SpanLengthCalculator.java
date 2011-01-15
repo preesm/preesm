@@ -4,7 +4,7 @@
 package org.ietr.preesm.plugin.abc.impl.latency;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -21,7 +21,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
 	public SpanLengthCalculator(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
-			IScenario scenario) {
+			PreesmScenario scenario) {
 		super(params, dag, archi, taskSchedType, scenario);
 
 		this.updateTimings();

@@ -38,7 +38,7 @@ package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -73,7 +73,7 @@ public class TaskResult {
 	/**
 	 * Returned scenario
 	 */
-	private IScenario scenario;
+	private PreesmScenario scenario;
 
 	/**
 	 * Returned custom input
@@ -125,7 +125,7 @@ public class TaskResult {
 	 * 
 	 * @return The scenarion of this result
 	 */
-	public IScenario getScenario() {
+	public PreesmScenario getScenario() {
 		return scenario;
 	}
 
@@ -177,7 +177,7 @@ public class TaskResult {
 		this.sourcefilelist = sourcefilelist;
 	}
 
-	public void setScenario(IScenario scenario) {
+	public void setScenario(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 

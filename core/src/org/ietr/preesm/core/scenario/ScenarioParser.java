@@ -75,7 +75,7 @@ public class ScenarioParser {
 	/**
 	 * scenario being retrieved
 	 */
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	/**
 	 * current algorithm
@@ -89,7 +89,7 @@ public class ScenarioParser {
 
 	public ScenarioParser() {
 
-		scenario = new Scenario();
+		scenario = new PreesmScenario();
 	}
 
 	public Document getDom() {
@@ -126,7 +126,7 @@ public class ScenarioParser {
 	/**
 	 * Parses the first level of hierarchy
 	 */
-	public Scenario parseDocument() {
+	public PreesmScenario parseDocument() {
 		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();

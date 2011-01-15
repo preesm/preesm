@@ -82,10 +82,9 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 
 		ILaunchConfigurationWorkingCopy workingCopy;
 		try {
-			workingCopy = type.newInstance(
-					null,
-					manager.generateLaunchConfigurationName(
-									file.getFullPath().toString()));
+			String fullPath = file.getFullPath().toString();
+			String launchConfigurationName = manager.generateLaunchConfigurationName(fullPath);
+			workingCopy = type.newInstance(null,launchConfigurationName); 
 		} catch (CoreException e) {
 			return null;
 		}

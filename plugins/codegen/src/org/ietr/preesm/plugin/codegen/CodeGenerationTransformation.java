@@ -45,7 +45,7 @@ import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
@@ -78,7 +78,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 * @throws PreesmException
 	 */
 	private CodeGenSDFGraph generateCodegenGraph(
-			DirectedAcyclicGraph algorithm, IScenario scenario)
+			DirectedAcyclicGraph algorithm, PreesmScenario scenario)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -101,7 +101,7 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 	 */
 	@Override
 	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, IScenario scenario,
+			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			TextParameters parameters) throws PreesmException {
 
 		// Resets the parsed IDL prototypes

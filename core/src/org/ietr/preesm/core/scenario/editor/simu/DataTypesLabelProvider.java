@@ -48,7 +48,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 
 /**
@@ -58,7 +58,7 @@ import org.ietr.preesm.core.scenario.editor.Messages;
  */
 public class DataTypesLabelProvider implements ITableLabelProvider {
 
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	private TableViewer tableViewer = null;
 
@@ -67,7 +67,7 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public DataTypesLabelProvider(Scenario scenario, TableViewer tableViewer,
+	public DataTypesLabelProvider(PreesmScenario scenario, TableViewer tableViewer,
 			IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;

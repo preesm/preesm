@@ -46,7 +46,7 @@ import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -96,7 +96,7 @@ public class TagDAG {
 	 * @throws InvalidExpressionException 
 	 */
 	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
-			IScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) throws InvalidExpressionException{
+			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) throws InvalidExpressionException{
 
 		PropertyBean bean = dag.getPropertyBean();
 		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu
@@ -115,7 +115,7 @@ public class TagDAG {
 	 * Adds send and receive without scheduling them
 	 */
 	public void addSendReceive(MapperDAG dag,
-			MultiCoreArchitecture architecture, IAbc simu, IScenario scenario) {
+			MultiCoreArchitecture architecture, IAbc simu, PreesmScenario scenario) {
 
 		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
@@ -251,7 +251,7 @@ public class TagDAG {
 	 * @throws InvalidExpressionException 
 	 * @throws InvalidExpressionException 
 	 */
-	public void addAllAggregates(MapperDAG dag, IScenario scenario) throws InvalidExpressionException{
+	public void addAllAggregates(MapperDAG dag, PreesmScenario scenario) throws InvalidExpressionException{
 
 		MapperDAGEdge edge;
 
@@ -275,7 +275,7 @@ public class TagDAG {
 	 * sdf edges that were merged into one DAG edge.
 	 * @throws InvalidExpressionException 
 	 */
-	public void addAggregateFromSDF(MapperDAGEdge edge, IScenario scenario) throws InvalidExpressionException {
+	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario) throws InvalidExpressionException {
 
 		BufferAggregate agg = new BufferAggregate();
 

@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -54,17 +54,17 @@ import org.ietr.preesm.plugin.mapper.activator.Activator;
 public class StatEditorInput implements IEditorInput {
 
 	private IAbc abc = null;
-	private IScenario scenario = null;
+	private PreesmScenario scenario = null;
 	private TextParameters params = null;
 
-	public StatEditorInput(IAbc abc, IScenario scenario, TextParameters params) {
+	public StatEditorInput(IAbc abc, PreesmScenario scenario, TextParameters params) {
 		super();
 		this.abc = abc;
 		this.params = params;
 		this.scenario = scenario;
 	}
 
-	public IScenario getScenario() {
+	public PreesmScenario getScenario() {
 		return scenario;
 	}
 

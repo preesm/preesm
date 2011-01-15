@@ -43,7 +43,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
@@ -69,11 +69,11 @@ public class StatGenerator {
 
 	private IAbc abc = null;
 
-	private IScenario scenario = null;
+	private PreesmScenario scenario = null;
 	private TextParameters params = null;
 	private long finalTime = 0;
 
-	public StatGenerator(IAbc abc, IScenario scenario, TextParameters params) {
+	public StatGenerator(IAbc abc, PreesmScenario scenario, TextParameters params) {
 		super();
 		this.params = params;
 		this.scenario = scenario;
@@ -233,7 +233,7 @@ public class StatGenerator {
 
 	}
 
-	public IScenario getScenario() {
+	public PreesmScenario getScenario() {
 		return scenario;
 	}
 

@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.writer.DesignWriter;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.tools.PreesmLogger;
@@ -93,7 +93,7 @@ public class ArchitectureExporter implements IExporter {
 
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario,
+			MultiCoreArchitecture archi, PreesmScenario scenario,
 			TextParameters params) {
 		
 	}

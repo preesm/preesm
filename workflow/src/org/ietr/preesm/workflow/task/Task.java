@@ -39,6 +39,8 @@ package org.ietr.preesm.workflow.task;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.preesm.workflow.WorkflowException;
+
 /**
  * This interface must be implemented by any workflow task element.
  * 
@@ -60,7 +62,7 @@ public abstract class Task {
 	/**
 	 * The workflow task element must have a execute method that is called by the workflow
 	 */
-	public abstract boolean execute(Map<String,Object> inputs, Map<String,Object> outputs);
+	public abstract Map<String,Object> execute(Map<String,Object> inputs) throws WorkflowException;
 	
 	/**
 	 * Returns the task parameters and their default values

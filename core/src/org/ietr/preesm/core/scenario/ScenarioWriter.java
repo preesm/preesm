@@ -71,9 +71,9 @@ public class ScenarioWriter {
 	/**
 	 * Current scenario
 	 */
-	private Scenario scenario;
+	private PreesmScenario scenario;
 
-	public ScenarioWriter(Scenario scenario) {
+	public ScenarioWriter(PreesmScenario scenario) {
 		super();
 
 		this.scenario = scenario;

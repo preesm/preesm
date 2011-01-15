@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.task;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -74,7 +74,7 @@ public interface IExporter extends ITask {
 	 *            The parameters rulling the exportation
 	 */
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, IScenario scenario,
+			MultiCoreArchitecture archi, PreesmScenario scenario,
 			TextParameters params);
 
 	public boolean isSDFExporter();

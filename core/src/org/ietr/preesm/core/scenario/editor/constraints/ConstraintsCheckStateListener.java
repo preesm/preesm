@@ -59,7 +59,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
@@ -81,7 +81,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Currently edited scenario
 	 */
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	/**
 	 * Current operator
@@ -108,7 +108,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public ConstraintsCheckStateListener(Section section, Scenario scenario) {
+	public ConstraintsCheckStateListener(Section section, PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 		this.section = section;

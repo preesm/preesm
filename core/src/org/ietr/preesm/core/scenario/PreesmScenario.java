@@ -34,34 +34,86 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.workflow.elements;
+package org.ietr.preesm.core.scenario;
 
-/**
- * This class provides an algorithm workflow node.
- * 
- * @author Matthieu Wipliez
- * 
- */
-public class AlgorithmNode implements IWorkflowNode {
+public class PreesmScenario {
 
-	@Override
-	public boolean isAlgorithmNode() {
-		return true;
+	/**
+	 * Manager of constraint groups
+	 */
+	private ConstraintGroupManager constraintgroupmanager = null;
+
+	/**
+	 * Manager of timings
+	 */
+	private TimingManager timingmanager = null;
+
+	/**
+	 * Manager of simulation parameters
+	 */
+	private SimulationManager simulationManager = null;
+
+	/**
+	 * Manager of graph variables
+	 */
+	private VariablesManager variablesManager = null;
+
+	/**
+	 * Manager of code generation parameters
+	 */
+	private CodegenManager codegenManager = null;
+
+	/**
+	 * Path to the algorithm file
+	 */
+	private String algorithmURL = "";
+
+	/**
+	 * Path to the architecture file
+	 */
+	private String architectureURL = "";
+
+	public PreesmScenario() {
+		constraintgroupmanager = new ConstraintGroupManager();
+		timingmanager = new TimingManager();
+		simulationManager = new SimulationManager();
+		codegenManager = new CodegenManager();
+		variablesManager = new VariablesManager();
 	}
 
-	@Override
-	public boolean isArchitectureNode() {
-		return false;
+	public VariablesManager getVariablesManager() {
+		return variablesManager;
 	}
 
-	@Override
-	public boolean isScenarioNode() {
-		return false;
+	public ConstraintGroupManager getConstraintGroupManager() {
+		return constraintgroupmanager;
 	}
 
-	@Override
-	public boolean isTaskNode() {
-		return false;
+	public TimingManager getTimingManager() {
+		return timingmanager;
 	}
 
+	public String getAlgorithmURL() {
+		return algorithmURL;
+	}
+
+	public void setAlgorithmURL(String algorithmURL) {
+		this.algorithmURL = algorithmURL;
+	}
+
+	public String getArchitectureURL() {
+		return architectureURL;
+	}
+
+	public void setArchitectureURL(String architectureURL) {
+		this.architectureURL = architectureURL;
+	}
+
+	public SimulationManager getSimulationManager() {
+		return simulationManager;
+	}
+
+	public CodegenManager getCodegenManager() {
+		return codegenManager;
+	}
 }

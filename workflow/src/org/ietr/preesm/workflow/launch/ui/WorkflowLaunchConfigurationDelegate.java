@@ -62,7 +62,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 
 	public static final String ATTR_WORKFLOW_FILE_NAME = "org.ietr.preesm.workflow.fileName";
 
-	public static String WORKFLOW_LAUNCH_CONFIGURATION_TYPE_ID = "org.ietr.preesm.workflow.configurationType";
+	public static String WORKFLOW_LAUNCH_CONFIGURATION_TYPE_ID = "org.ietr.preesm.workflow.launchConfigurationType";
 
 	/**
 	 * Launches a workflow

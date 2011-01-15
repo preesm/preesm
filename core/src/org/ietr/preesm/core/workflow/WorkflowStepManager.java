@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
@@ -73,7 +73,7 @@ public class WorkflowStepManager {
 		monitor.worked(numberOfTasksDone);
 	}
 
-	public void retrieveAlgorithm(String message, IScenario scenario,
+	public void retrieveAlgorithm(String message, PreesmScenario scenario,
 			TaskResult nodeResult) {
 
 		updateMonitor(message);
@@ -85,7 +85,7 @@ public class WorkflowStepManager {
 		}
 	}
 
-	public void retrieveArchitecture(String message, IScenario scenario,
+	public void retrieveArchitecture(String message, PreesmScenario scenario,
 			TaskResult nodeResult) {
 
 		updateMonitor(message);
@@ -112,7 +112,7 @@ public class WorkflowStepManager {
 
 		ScenarioRetriever retriever = new ScenarioRetriever(
 				scenarioConfiguration);
-		IScenario theScenario = retriever.getScenario();
+		PreesmScenario theScenario = retriever.getScenario();
 
 		nodeResult.setScenario(theScenario);
 	}

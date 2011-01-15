@@ -51,7 +51,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.scenario.Scenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -63,9 +63,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelVariablesParser {
 
-	private Scenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public ExcelVariablesParser(Scenario scenario) {
+	public ExcelVariablesParser(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}

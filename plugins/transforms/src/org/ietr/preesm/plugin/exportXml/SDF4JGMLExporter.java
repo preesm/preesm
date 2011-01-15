@@ -44,6 +44,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.exporter.GMLSDFExporter;
@@ -96,7 +97,7 @@ public class SDF4JGMLExporter implements IExporter {
 	@Override
 	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
 			MultiCoreArchitecture archi,
-			org.ietr.preesm.core.scenario.IScenario scenario,
+			PreesmScenario scenario,
 			TextParameters params) {
 		// TODO Auto-generated method stub
 

@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.task;
 
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 
 /**
@@ -54,7 +54,7 @@ public interface IPlotter extends ITask {
 	 * @param params
 	 *            The parameters rulling the exportation
 	 */
-	public void transform(IMapperAbc simulator, IScenario scenario,
+	public void transform(IMapperAbc simulator, PreesmScenario scenario,
 			TextParameters params);
 
 }

@@ -38,7 +38,7 @@ package org.ietr.preesm.core.task;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -66,7 +66,7 @@ public interface IMapping extends ITransformation {
 	 */
 	public TaskResult transform(SDFGraph algorithm,
 			MultiCoreArchitecture architecture,
-			TextParameters algorithmParameters, IScenario scenario,
+			TextParameters algorithmParameters, PreesmScenario scenario,
 			IProgressMonitor monitor) throws PreesmException;
 
 	/**

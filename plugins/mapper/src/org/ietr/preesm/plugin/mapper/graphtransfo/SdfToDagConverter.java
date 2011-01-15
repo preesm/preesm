@@ -49,7 +49,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.tools.PreesmLogger;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
@@ -87,7 +87,7 @@ public class SdfToDagConverter {
 	 * @author mpelcat
 	 */
 	public static MapperDAG convert(SDFGraph sdfIn,
-			MultiCoreArchitecture architecture, IScenario scenario,
+			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			boolean display) {
 
 		PreesmLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
@@ -150,7 +150,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static MapperDAG addInitialProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, IScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
@@ -165,7 +165,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialVertexProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, IScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing default timings
@@ -215,7 +215,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialEdgeProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, IScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing data edge weights and multiplying by type size when
@@ -263,7 +263,7 @@ public class SdfToDagConverter {
 	 * Retrieves the constraints and adds them to the DAG initial properties
 	 */
 	public static void addInitialConstraintsProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, IScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 		/**
 		 * Importing scenario: Only the timings corresponding to allowed
 		 * mappings are set.

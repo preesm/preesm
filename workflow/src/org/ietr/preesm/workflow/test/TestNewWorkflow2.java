@@ -23,10 +23,9 @@ public class TestNewWorkflow2 extends Task {
 	}
 
 	@Override
-	public boolean execute(Map<String, Object> inputs,
-			Map<String, Object> outputs) {
+	public Map<String, Object> execute(Map<String, Object> inputs) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override

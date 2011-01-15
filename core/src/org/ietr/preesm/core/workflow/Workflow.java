@@ -53,7 +53,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.ICodeTranslation;
 import org.ietr.preesm.core.task.IExporter;
@@ -151,7 +151,7 @@ public class Workflow {
 		SDFGraph sdf = null;
 		DirectedAcyclicGraph dag = null;
 		MultiCoreArchitecture architecture = null;
-		IScenario scenario = null;
+		PreesmScenario scenario = null;
 		SourceFileList sourceFiles = null;
 		IMapperAbc abc = null; // This input type is known from the sender and
 								// the receiver

@@ -47,7 +47,7 @@ public class VariablesManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importVariables(Scenario currentScenario) {
+	public void importVariables(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelVariablesParser parser = new ExcelVariablesParser(
 					currentScenario);

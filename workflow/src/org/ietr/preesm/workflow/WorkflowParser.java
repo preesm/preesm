@@ -45,8 +45,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.workflow.elements.AlgorithmNode;
-import org.ietr.preesm.workflow.elements.ArchitectureNode;
 import org.ietr.preesm.workflow.elements.IWorkflowNode;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
 import org.ietr.preesm.workflow.elements.TaskNode;
@@ -117,15 +115,7 @@ public class WorkflowParser extends DefaultHandler2 {
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) {
 
-		if (qName.equals("preesm:algorithm")) {
-			IWorkflowNode node = new AlgorithmNode();
-			workflow.addNode(node);
-			nodes.put("__algorithm", node);
-		} else if (qName.equals("preesm:architecture")) {
-			IWorkflowNode node = new ArchitectureNode();
-			workflow.addNode(node);
-			nodes.put("__architecture", node);
-		} else if (qName.equals("preesm:scenario")) {
+		if (qName.equals("preesm:scenario")) {
 			IWorkflowNode node = new ScenarioNode();
 			workflow.addNode(node);
 			nodes.put("__scenario", node);

@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
@@ -64,7 +64,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public AccuratelyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, IScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 		
 		types = new ArrayList<Integer>();

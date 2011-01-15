@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.IScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
@@ -76,7 +76,7 @@ public class PFASTTransformation extends AbstractMapping {
 	@Override
 	public TaskResult transform(SDFGraph algorithm,
 			MultiCoreArchitecture architecture, TextParameters textParameters,
-			IScenario scenario, IProgressMonitor monitor)
+			PreesmScenario scenario, IProgressMonitor monitor)
 			throws PreesmException {
 
 		super.transform(algorithm, architecture, textParameters, scenario,

@@ -234,7 +234,7 @@ public class TimingManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importTimings(Scenario currentScenario) {
+	public void importTimings(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
 			parser.parse(excelFileURL);
