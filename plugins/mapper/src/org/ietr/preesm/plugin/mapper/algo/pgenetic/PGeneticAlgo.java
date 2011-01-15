@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -147,7 +147,7 @@ public class PGeneticAlgo extends Observable {
 		// best Population
 		ConcurrentSkipListSet<Chromosome> result = new ConcurrentSkipListSet<Chromosome>(
 				new FinalTimeComparator(abcParams, population.get(0)));
-		Logger logger = PreesmLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 
 		// if only one processor is used we must do the Standard Genetic
 		// Algorithm

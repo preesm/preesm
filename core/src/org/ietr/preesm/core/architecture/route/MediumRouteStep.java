@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Represents a single step in a route between two operators separated by a
@@ -107,7 +107,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 			return def.getTransferTime(transfersSize);
 		} else {
 
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Data could not be correctly transfered from "
 							+ getSender().getName() + " to "

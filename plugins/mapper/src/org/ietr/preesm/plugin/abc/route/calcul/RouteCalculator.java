@@ -54,7 +54,7 @@ import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
@@ -112,7 +112,7 @@ public class RouteCalculator {
 	 * Creating recursively the route steps from the architecture.
 	 */
 	private void createRouteSteps() {
-		PreesmLogger.getLogger().log(Level.INFO, "creating route steps.");
+		WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
 
 		for (ArchitectureComponent c : archi
 				.getComponents(ArchitectureComponentType.operator)) {
@@ -179,7 +179,7 @@ public class RouteCalculator {
 	 * Building recursively the routes between the cores.
 	 */
 	private void createRoutes() {
-		PreesmLogger.getLogger().log(Level.INFO, "Initializing routing table.");
+		WorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
 		floydWarshall(table, archi
 				.getComponents(ArchitectureComponentType.operator));
@@ -242,7 +242,7 @@ public class RouteCalculator {
 		Route r = table.getBestRoute(op1, op2);
 
 		if (r == null) {
-			PreesmLogger.getLogger()
+			WorkflowLogger.getLogger()
 					.log(
 							Level.SEVERE,
 							"Did not find a route between " + op1 + " and "

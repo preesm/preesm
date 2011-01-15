@@ -15,7 +15,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -59,7 +59,7 @@ public class ArchiHierarchyFlattening extends
 		// parent graph
 		for (ArchitectureInterface intf : subDesignCmp.getInterfaces()) {
 			if (subDesignCmp.getBusType(intf.getBusReference().getId()) == null) {
-				PreesmLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"The component " + subDesignCmp.getName()
 								+ " should contain the port with id: "
@@ -70,7 +70,7 @@ public class ArchiHierarchyFlattening extends
 			HierarchyPort port = subDesign.getHierarchyPort(intf
 					.getBusReference().getId());
 			if (port == null) {
-				PreesmLogger
+				WorkflowLogger
 						.getLogger()
 						.log(
 								Level.SEVERE,

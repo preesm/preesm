@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
 import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
@@ -68,7 +68,7 @@ public class WorkflowStepManager {
 	void updateMonitor(String message) {
 
 		monitor.subTask(message);
-		PreesmLogger.getLogger().log(Level.INFO, message);
+		WorkflowLogger.getLogger().log(Level.INFO, message);
 		numberOfTasksDone++;
 		monitor.worked(numberOfTasksDone);
 	}

@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -185,7 +185,7 @@ public class AddTransferVertexTransaction extends Transaction {
 				+ currentTarget.getName() + ")";
 
 		if (edge instanceof PrecedenceEdge) {
-			PreesmLogger.getLogger().log(Level.INFO,
+			WorkflowLogger.getLogger().log(Level.INFO,
 					"no transfer vertex corresponding to a schedule edge");
 			return;
 		}

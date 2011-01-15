@@ -45,7 +45,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.preesm.core.task.ITask;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides a transformation workflow node.
@@ -176,7 +176,7 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Failed to find plugins from workflow");
 			return false;
 		}

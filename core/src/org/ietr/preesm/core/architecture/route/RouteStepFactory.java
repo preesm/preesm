@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Depending on the architecture nodes separating two operators, generates a
@@ -77,7 +77,7 @@ public class RouteStepFactory {
 				return new MediumRouteStep(source, (Medium) nodes.get(0),
 						target);
 			} else {
-				PreesmLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"A medium must be connected only to operators.");
 			}
 		} else {

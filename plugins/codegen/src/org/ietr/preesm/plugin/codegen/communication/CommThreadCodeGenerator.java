@@ -54,7 +54,7 @@ import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 
@@ -163,7 +163,7 @@ public class CommThreadCodeGenerator {
 								coms.get(coms.size() - 1), post);
 					}
 				} else {
-					PreesmLogger.getLogger().log(Level.SEVERE,
+					WorkflowLogger.getLogger().log(Level.SEVERE,
 							"semaphore creation failed");
 				}
 			}

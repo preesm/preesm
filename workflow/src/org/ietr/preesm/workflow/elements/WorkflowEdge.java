@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.workflow.elements;
 
-
 /**
  * An edge between two workflow tasks
  * 
@@ -44,12 +43,12 @@ package org.ietr.preesm.workflow.elements;
  */
 
 public class WorkflowEdge {
-	
+
 	/**
 	 * Type of the data carried by the edge
 	 */
 	private String dataType = null;
-	
+
 	/**
 	 * Object carrying the data
 	 */

@@ -58,11 +58,11 @@ import org.ietr.preesm.workflow.Activator;
  * @author mwipliez
  * @author mpelcat
  */
-public class PreesmLogger extends Logger {
+public class WorkflowLogger extends Logger {
 
-	private static final PreesmLogger logger = new PreesmLogger();
+	private static final WorkflowLogger logger = new WorkflowLogger();
 
-	private static final String LOGGER_NAME = "org.ietr.preesm.log.PreesmLogger";
+	private static final String LOGGER_NAME = "org.ietr.preesm.log.WorkflowLogger";
 
 	MessageConsole console = null;
 
@@ -71,7 +71,7 @@ public class PreesmLogger extends Logger {
 	 * 
 	 * @return a Logger
 	 */
-	public static PreesmLogger getLogger() {
+	public static WorkflowLogger getLogger() {
 		return logger;
 	}
 
@@ -84,7 +84,7 @@ public class PreesmLogger extends Logger {
 	/**
 	 * 
 	 */
-	private PreesmLogger() {
+	private WorkflowLogger() {
 		super(LOGGER_NAME, null);
 		LogManager.getLogManager().addLogger(this);
 	}

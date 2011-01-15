@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.plot.gantt;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
 
@@ -77,7 +77,7 @@ public class GanttEditorInput implements IEditorInput {
 	}
 	@Override
 	public String getName() {
-		return name + " " + PreesmLogger.getFormattedTime();
+		return name + " " + WorkflowLogger.getFormattedTime();
 	}
 	@Override
 	public IPersistableElement getPersistable() {

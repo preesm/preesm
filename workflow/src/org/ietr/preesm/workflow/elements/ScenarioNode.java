@@ -36,6 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.workflow.elements;
 
+import java.util.logging.Level;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
+
 /**
  * This class provides a scenario workflow node.
  * 
@@ -43,14 +51,29 @@ package org.ietr.preesm.workflow.elements;
  */
 public class ScenarioNode implements IWorkflowNode {
 
-	@Override
-	public boolean isAlgorithmNode() {
-		return false;
+	/**
+	 * The identifier of this scenario node. It is needed to retrieve the
+	 * implementation of this node
+	 */
+	private String scenarioId = null;
+
+	/**
+	 * The identifier of this scenario node. It is needed to retrieve the
+	 * implementation of this node
+	 */
+	private Scenario scenario = null;
+
+	public ScenarioNode(String scenarioId) {
+		super();
+		this.scenarioId = scenarioId;
 	}
 
-	@Override
-	public boolean isArchitectureNode() {
-		return false;
+	public String getScenarioId() {
+		return scenarioId;
+	}
+	
+	public Scenario getScenario() {
+		return scenario;
 	}
 
 	@Override
@@ -61,5 +84,38 @@ public class ScenarioNode implements IWorkflowNode {
 	@Override
 	public boolean isTaskNode() {
 		return false;
+	}
+
+	/**
+	 * Checks if this scenario exists based on its ID.
+	 * 
+	 * @return True if this scenario exists, false otherwise.
+	 */
+	public boolean isScenarioImplemented() {
+		try {
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+			IConfigurationElement[] elements = registry
+					.getConfigurationElementsFor("org.ietr.preesm.workflow.scenarios");
+			for (int i = 0; i < elements.length; i++) {
+				IConfigurationElement element = elements[i];
+				if (element.getAttribute("id").equals(scenarioId)) {
+					// Tries to create the transformation
+					Object obj = element.createExecutableExtension("type");
+
+					// and checks it actually is an ITransformation.
+					if (obj instanceof Scenario) {
+						scenario = (Scenario) obj;
+						return true;
+					}
+				}
+			}
+
+			return false;
+		} catch (CoreException e) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"Failed to find the scenario from workflow");
+			return false;
+		}
 	}
 }

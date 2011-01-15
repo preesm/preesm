@@ -44,7 +44,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -105,7 +105,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				architecture, abcParameters.getSimulatorType()
 						.getTaskSchedType(), scenario);
 
-		PreesmLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
+		WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
@@ -132,7 +132,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		super.clean(architecture, scenario);
 
-		PreesmLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
+		WorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
 
 		return result;
 	}

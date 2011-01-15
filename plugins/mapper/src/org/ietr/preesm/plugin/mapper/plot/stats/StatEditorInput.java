@@ -41,7 +41,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
@@ -99,9 +99,9 @@ public class StatEditorInput implements IEditorInput {
 			abc.updateFinalCosts();
 			return "Latency:" + ((LatencyAbc) abc).getFinalLatency() + " Cost:"
 					+ abc.getFinalCost() + " "
-					+ PreesmLogger.getFormattedTime();
+					+ WorkflowLogger.getFormattedTime();
 		} else {
-			return "Stats " + PreesmLogger.getFormattedTime();
+			return "Stats " + WorkflowLogger.getFormattedTime();
 		}
 	}
 

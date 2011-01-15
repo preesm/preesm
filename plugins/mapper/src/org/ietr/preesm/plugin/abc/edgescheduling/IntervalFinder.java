@@ -42,7 +42,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -227,7 +227,7 @@ public class IntervalFinder {
 			}
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO, trace);
+		WorkflowLogger.getLogger().log(Level.INFO, trace);
 	}
 
 	public SchedOrderManager getOrderManager() {

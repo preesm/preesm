@@ -40,7 +40,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
@@ -79,10 +79,10 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		this.getType().setTaskSchedType(taskSchedType);
 
 		if (archi.getMainMedium() != null) {
-			PreesmLogger.getLogger().info("Infinite homogeneous simulation");
+			WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
 		} else {
 
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.info(
 							"Current architecture has no main medium. infinite homogeneous simulator will use default speed");
@@ -119,7 +119,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 * is done through the unique type of medium
 		 */
 		if (effectiveOp == Operator.NO_COMPONENT) {
-			PreesmLogger.getLogger().severe(
+			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 
 			vertex.getTimingVertexProperty().setCost(0);

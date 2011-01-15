@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -303,7 +303,7 @@ public abstract class AbstractAbc implements IAbc {
 			boolean updateRank) {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-		PreesmLogger.getLogger().log(
+		WorkflowLogger.getLogger().log(
 				Level.FINE,
 				"mapping " + dagvertex.toString() + " on "
 						+ operator.toString());
@@ -330,13 +330,13 @@ public abstract class AbstractAbc implements IAbc {
 				fireNewMappedVertex(impvertex, updateRank);
 
 			} else {
-				PreesmLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						impvertex.toString() + " can not be mapped on "
 								+ operator.toString());
 			}
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Operator asked may not exist");
 		}
 	}
@@ -375,10 +375,10 @@ public abstract class AbstractAbc implements IAbc {
 			if (adequateOp != null) {
 				map(currentvertex, adequateOp, true);
 			} else {
-				PreesmLogger
+				WorkflowLogger
 						.getLogger()
 						.severe("The current mapping algorithm necessitates that all vertices can be mapped on an operator");
-				PreesmLogger.getLogger().severe(
+				WorkflowLogger.getLogger().severe(
 						"Problem with: " + currentvertex.getName()
 								+ ". Consider changing the scenario.");
 
@@ -412,7 +412,7 @@ public abstract class AbstractAbc implements IAbc {
 		}
 
 		if (initOperators.isEmpty()) {
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Empty operator set for a vertex: "
 							+ vertex.getName()
@@ -497,7 +497,7 @@ public abstract class AbstractAbc implements IAbc {
 				.getMapperDAGVertex(vertex.getName());
 
 		if (internalVertex == null) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"No simulator internal vertex with id " + vertex.getName());
 		}
 		return internalVertex;
@@ -514,7 +514,7 @@ public abstract class AbstractAbc implements IAbc {
 				.getTarget());
 
 		if (destVertex == null || sourceVertex == null) {
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Implementation vertex with id " + edge.getSource()
 							+ " or " + edge.getTarget() + " not found");

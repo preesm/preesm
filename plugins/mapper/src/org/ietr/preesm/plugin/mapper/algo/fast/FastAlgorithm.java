@@ -50,7 +50,7 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
@@ -167,7 +167,7 @@ public class FastAlgorithm extends Observable {
 		Operator operatortest;
 		Operator operatorfcp;
 		Operator operatorprec;
-		Logger logger = PreesmLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 
 		// these steps are linked to the description of the FAST algorithm to
 		// understand the steps, please refer to the Kwok thesis
@@ -195,7 +195,7 @@ public class FastAlgorithm extends Observable {
 					+ initial + " List");
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Found List solution; Cost:" + initial);
 
 		logger.log(Level.FINE, "InitialSP " + initial);
@@ -325,7 +325,7 @@ public class FastAlgorithm extends Observable {
 							"Cost:" + bestSL + " Fast");
 				}
 
-				PreesmLogger.getLogger().log(Level.INFO,
+				WorkflowLogger.getLogger().log(Level.INFO,
 						"Found Fast solution; Cost:" + bestSL);
 
 				dagfinal.setScheduleCost(bestSL);

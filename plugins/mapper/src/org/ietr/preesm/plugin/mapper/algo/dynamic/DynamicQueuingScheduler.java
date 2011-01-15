@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -128,7 +128,7 @@ public class DynamicQueuingScheduler {
 			abc.map(currentvertex, currentMinOp, true);
 		}
 		else{
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"No available operator for " + currentvertex);
 		}

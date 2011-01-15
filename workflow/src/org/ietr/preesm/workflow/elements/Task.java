@@ -34,34 +34,40 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.workflow.task;
+package org.ietr.preesm.workflow.elements;
+
+import java.util.Map;
+import java.util.Set;
+
+import org.ietr.preesm.workflow.WorkflowException;
 
 /**
- * This class provides a generic type for data exchanged between workflow tasks.
+ * This interface must be implemented by any workflow task element.
  * 
  * @author mpelcat
  */
-public class TaskData<Type> {
+public abstract class Task {
 
 	/**
-	 * Returned object
+	 * The workflow task element must accept the names of the input/output ports
+	 * in the graph. Otherwise, the graph is considered not valid.
 	 */
-	private Type content;
+	public abstract boolean accept(Set<String> inputs, Set<String> outputs);
 
-	private String sType;
+	/**
+	 * Displays the preferred prototype
+	 */
+	public abstract String displayPrototype();
 
-	
-	public TaskData(Type content, String sType) {
-		super();
-		this.content = content;
-		this.sType = sType;
-	}
+	/**
+	 * The workflow task element must have a execute method that is called by
+	 * the workflow
+	 */
+	public abstract Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters) throws WorkflowException;
 
-	public Type getContent() {
-		return content;
-	}
-
-	public String toString() {
-		return sType;
-	}
+	/**
+	 * Returns the task parameters and their default values
+	 */
+	public abstract Map<String, String> getDefaultParameters();
 }

@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread
@@ -104,7 +104,7 @@ public class PFastAlgoParameters extends SchedulingParameters {
 			this.fastNumber = textParameters.getIntVariable("fastNumber");
 		}
 		
-		PreesmLogger
+		WorkflowLogger
 		.getLogger()
 		.log(
 				Level.INFO,

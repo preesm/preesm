@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
@@ -110,7 +110,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 							incomingEdge, getImplementation(), routeStep,
 							transferTime, getOrderManager()));
 				} else {
-					PreesmLogger
+					WorkflowLogger
 							.getLogger()
 							.log(
 									Level.FINE,

@@ -51,7 +51,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractVertex;
 
@@ -216,7 +216,7 @@ public abstract class ArchitectureComponent extends
 		for (ArchitectureInterface itf : cmp.availableInterfaces) {
 
 			if (itf.getBusReference().getId().isEmpty()) {
-				PreesmLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"Dangerous unnamed ports in architecture.");
 			}
 
@@ -278,7 +278,7 @@ public abstract class ArchitectureComponent extends
 		} else if (this.getType().equals(ArchitectureComponentType.ram)) {
 			newCmp = new Ram(getName(), null);
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component.");
 		}
 

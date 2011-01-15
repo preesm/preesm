@@ -10,7 +10,7 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouterImplementer;
@@ -63,7 +63,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 					transactions.add(transaction);
 					return transaction;
 				} else {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.INFO,
 							"A transfer vertex must have a strictly positive size: "
 									+ edge);
@@ -90,7 +90,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 							incomingEdge, getImplementation(), routeStep,
 							overheadTime, getOrderManager()));
 				} else {
-					PreesmLogger
+					WorkflowLogger
 							.getLogger()
 							.log(
 									Level.FINE,

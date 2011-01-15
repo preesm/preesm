@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
@@ -83,7 +83,7 @@ public class ImplExportTransform implements IExporter{
 		exporter.export(clone, iGraphMLFile.getLocation().toOSString());
 		}
 		else{
-			PreesmLogger.getLogger().log(Level.SEVERE,"The output file " + path + " can not be written.");
+			WorkflowLogger.getLogger().log(Level.SEVERE,"The output file " + path + " can not be written.");
 		}
 	}
 

@@ -49,7 +49,7 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.WorkbenchException;
 import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;
 import org.ietr.preesm.core.workflow.Workflow;
@@ -118,7 +118,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 						configEnv);
 			} catch (PreesmException e) {
 				e.printStackTrace();
-				PreesmLogger.getLogger().log(Level.WARNING,
+				WorkflowLogger.getLogger().log(Level.WARNING,
 						"workflow aborted :" + e.getMessage());
 				monitor.setCanceled(true);
 			}
@@ -128,8 +128,8 @@ public class WorkflowLaunchConfigurationDelegate implements
 	}
 
 	private void activatePerspective() {
-		PreesmLogger.getLogger().createConsole();
-		PreesmLogger.getLogger().setLevel(Level.INFO);
+		WorkflowLogger.getLogger().createConsole();
+		WorkflowLogger.getLogger().setLevel(Level.INFO);
 
 		Activator.getDefault().getWorkbench().getDisplay()
 				.syncExec(new Runnable() {

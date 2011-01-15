@@ -40,7 +40,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * @author mpelcat
@@ -56,7 +56,7 @@ public class CoreConsoleFactory implements IConsoleFactory {
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null) {
 				// Creates a console for the logger
-				PreesmLogger.getLogger().createConsole();
+				WorkflowLogger.getLogger().createConsole();
 			}
 		}
 	}

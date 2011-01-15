@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
@@ -145,7 +145,7 @@ public class PrecedenceEdgeAdder {
 
 		if (edges != null) {
 			if (edges.size() >= 2)
-				PreesmLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"too many edges between " + v1.toString() + " and "
 								+ v2.toString());

@@ -18,6 +18,7 @@ Bundle-ClassPath: .,
  lib/jgrapht-jdk1.6.jar
 Export-Package: org.ietr.preesm.workflow,
  org.ietr.preesm.workflow.test,
+ org.ietr.preesm.workflow.tools,
  org.jgrapht,
  org.jgrapht.alg,
  org.jgrapht.alg.util,

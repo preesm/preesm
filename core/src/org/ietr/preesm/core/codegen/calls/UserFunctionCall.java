@@ -55,7 +55,7 @@ import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
@@ -167,7 +167,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 											parentContainer), call
 									.getArguments().get(arg));
 						} else {
-							PreesmLogger
+							WorkflowLogger
 									.getLogger()
 									.log(Level.SEVERE,
 											"Vertex: "
@@ -186,7 +186,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 							this.addArgument(funcArg,
 									call.getParameters().get(param));
 						} else {
-							PreesmLogger
+							WorkflowLogger
 									.getLogger()
 									.log(Level.SEVERE,
 											"Vertex: "
@@ -216,7 +216,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 				break;
 			case loop:
 				if (call.getFunctionName().isEmpty()) {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.INFO,
 							"Name not found in the IDL for function: "
 									+ vertex.getName());
@@ -252,7 +252,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void addArgument(FunctionArgument param, int pos) {
 
 		if (param == null)
-			PreesmLogger.getLogger().log(Level.SEVERE, "null buffer");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "null buffer");
 		else {
 			if (pos == callParameters.size()) {
 				callParameters.add(param);
@@ -276,7 +276,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void addArgument(String displayName, FunctionArgument param) {
 
 		if (param == null)
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"buffer or parameter was not found: " + displayName);
 		else
 			callParameters.add(param);

@@ -49,7 +49,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
@@ -179,7 +179,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp == Operator.NO_COMPONENT) {
-			PreesmLogger.getLogger().severe(
+			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
 
@@ -259,7 +259,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
 		}
 
@@ -302,7 +302,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final latency");
 		}
 
@@ -512,7 +512,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void reschedule2() {
 
 		if (implementation != null && dag != null) {
-			PreesmLogger.getLogger().log(Level.INFO, "Reordering");
+			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
 					implementation);
 			adder.removePrecedenceEdges();
@@ -587,7 +587,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			updateTimings();
 			// this.plotImplementation(null);
 
-			PreesmLogger.getLogger().log(Level.INFO, "Reordering");
+			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
 					orderManager.getTotalOrder().getList());
 

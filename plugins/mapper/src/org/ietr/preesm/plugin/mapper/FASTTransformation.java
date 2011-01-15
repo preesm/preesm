@@ -44,7 +44,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -114,12 +114,12 @@ public class FASTTransformation extends AbstractMapping {
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
-		PreesmLogger.getLogger().log(Level.INFO,"Mapping");
+		WorkflowLogger.getLogger().log(Level.INFO,"Mapping");
 		
 		dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false
 				, fastParams.isDisplaySolutions(), monitor, taskSched);
 
-		PreesmLogger.getLogger().log(Level.INFO,"Mapping finished");
+		WorkflowLogger.getLogger().log(Level.INFO,"Mapping finished");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
 		// Transfer vertices are automatically regenerated

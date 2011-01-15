@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm
@@ -79,7 +79,7 @@ public class FastAlgoParameters extends SchedulingParameters {
 					.getIntVariable("fastLocalSearchTime");
 		}
 
-		PreesmLogger
+		WorkflowLogger
 				.getLogger()
 				.log(
 						Level.INFO,

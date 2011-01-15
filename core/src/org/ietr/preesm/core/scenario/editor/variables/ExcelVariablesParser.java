@@ -53,7 +53,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
@@ -71,7 +71,7 @@ public class ExcelVariablesParser {
 	}
 
 	public void parse(String url) {
-		PreesmLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Importing variables from an excel sheet.");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -123,11 +123,11 @@ public class ExcelVariablesParser {
 
 					scenario.getVariablesManager().setVariable(varName, value);
 
-					PreesmLogger.getLogger().log(Level.INFO,
+					WorkflowLogger.getLogger().log(Level.INFO,
 							"Importing variable: " + varName);
 				}
 			} else {
-				PreesmLogger.getLogger()
+				WorkflowLogger.getLogger()
 						.log(Level.WARNING,
 								"No cell found in excel sheet for variable: "
 										+ varName);

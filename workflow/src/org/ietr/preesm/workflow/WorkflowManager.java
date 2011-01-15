@@ -44,12 +44,13 @@ import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.workflow.elements.IWorkflowNode;
+import org.ietr.preesm.workflow.elements.Scenario;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
+import org.ietr.preesm.workflow.elements.Task;
 import org.ietr.preesm.workflow.elements.TaskNode;
 import org.ietr.preesm.workflow.elements.Workflow;
 import org.ietr.preesm.workflow.elements.WorkflowEdge;
-import org.ietr.preesm.workflow.task.Task;
-import org.ietr.preesm.workflow.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides methods to check and execute a workflow. A workflow
@@ -64,7 +65,8 @@ public class WorkflowManager {
 	}
 
 	/**
-	 * Checks the existence of all task classes
+	 * Checks the existence of all task and scenario classes and sets the
+	 * classes in the workflow nodess
 	 */
 	public boolean check(String workflowPath, IProgressMonitor monitor) {
 
@@ -73,19 +75,21 @@ public class WorkflowManager {
 
 		boolean workflowOk = true;
 		for (IWorkflowNode node : workflow.vertexSet()) {
-			if (node.isTaskNode()) {
+			if (node.isScenarioNode()) {
+				workflowOk = ((ScenarioNode) node).isScenarioImplemented();
+			} else if (node.isTaskNode()) {
 				// Testing only connected nodes
 				if (!workflow.edgesOf(node).isEmpty()) {
-					workflowOk = ((TaskNode) node).isTaskPossible();
+					workflowOk = ((TaskNode) node).isTaskImplemented();
 				}
+			}
 
-				if (!workflowOk) {
-					PreesmLogger.getLogger().log(
-							Level.SEVERE,
-							"Failed to find plugin "
-									+ ((TaskNode) node).getTaskId()
-									+ " from workflow.");
-				}
+			if (!workflowOk) {
+				WorkflowLogger.getLogger().log(
+						Level.SEVERE,
+						"Failed to find plugin "
+								+ ((TaskNode) node).getTaskId()
+								+ " from workflow.");
 			}
 		}
 
@@ -96,9 +100,33 @@ public class WorkflowManager {
 	}
 
 	/**
+	 * Checks that the workflow scenario node edges fit the task prototype
+	 */
+	public boolean checkScenarioPrototype(ScenarioNode scenarioNode, Workflow workflow) {
+		Scenario scenario = scenarioNode.getScenario();
+		Set<String> outputs = new HashSet<String>();
+
+		for (WorkflowEdge edge : workflow.outgoingEdgesOf(scenarioNode)) {
+			outputs.add(edge.getDataType());
+		}
+
+		if (!scenario.accept(outputs)) {
+			WorkflowLogger.getLogger().log(
+					Level.SEVERE,
+					"The edges of scenario " + scenarioNode.getScenarioId()
+							+ " are not correct. Needed outputs: "
+							+ outputs.toString() + ".");
+			
+			return false;
+		}
+		
+		return true;
+	}
+
+	/**
 	 * Checks that the workflow task node edges fit the task prototype
 	 */
-	public void checkPrototype(TaskNode taskNode, Workflow workflow) {
+	public boolean checkTaskPrototype(TaskNode taskNode, Workflow workflow) {
 		Task task = taskNode.getTask();
 		Set<String> inputs = new HashSet<String>();
 		Set<String> outputs = new HashSet<String>();
@@ -106,19 +134,23 @@ public class WorkflowManager {
 		for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
 			inputs.add(edge.getDataType());
 		}
-		
+
 		for (WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
 			outputs.add(edge.getDataType());
 		}
-		
+
 		if (!task.accept(inputs, outputs)) {
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"The edges of task " + taskNode.getTaskId()
 							+ " are not correct. Needed inputs: "
 							+ inputs.toString() + ". Needed outputs: "
 							+ outputs.toString() + ".");
+			
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
@@ -128,54 +160,99 @@ public class WorkflowManager {
 
 		Workflow workflow = new WorkflowParser().parse(workflowPath);
 
+		WorkflowLogger.getLogger().log(Level.INFO,
+				"Starting workflow execution.");
+
+		if (!workflow.hasScenario()) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"The workflow necessitates one and only one scenario.");
+
+			return false;
+		}
+
 		for (IWorkflowNode node : workflow.vertexTopologicalList()) {
-			if (node.isScenarioNode()) {
+			if (workflow.edgesOf(node).isEmpty()) {
+				WorkflowLogger.getLogger().log(Level.WARNING,
+						"Ignoring non-connected workflow task");
+			} else {
+				if (node.isScenarioNode()) {
 
-				// The scenario node is special because it gets a path from the
-				// outside
-				// IScenario scenario =
+					// The scenario node is special because it gets a reference
+					// path and generates the inputs of the rapid prototyping 
+					// process
+					ScenarioNode scenarioNode = (ScenarioNode) node;
+					Scenario scenario = scenarioNode.getScenario();
+					
+					// Checks that the scenario node output edges fit the task
+					// prototype
+					if(!checkScenarioPrototype(scenarioNode, workflow)){
+						return false;
+					}
+					
+					try {
+						scenario.extractData(scenarioPath);
+					} catch (WorkflowException e) {
+						WorkflowLogger.getLogger().log(Level.SEVERE,
+								e.getMessage());
 
-			} else if (node.isTaskNode()) {
-				TaskNode taskNode = (TaskNode) node;
-				Task task = taskNode.getTask();
+						return false;
+					}
 
-				// Checks that the workflow task node edges fit the task prototype
-				checkPrototype(taskNode, workflow);
-				// Preparing the input and output maps of the execute method
-				Map<String, Object> inputs = new HashMap<String, Object>();
-				Map<String, Object> outputs = null;
+				} else if (node.isTaskNode()) {
+					TaskNode taskNode = (TaskNode) node;
+					Task task = taskNode.getTask();
 
-				// Retrieving the data from input edges
-				for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-					inputs.put(edge.getDataType(), edge.getData());
-				}
+					// Checks that the workflow task node edges fit the task
+					// prototype
+					if(!checkTaskPrototype(taskNode, workflow)){
+						return false;
+					}
+					
+					// Preparing the input and output maps of the execute method
+					Map<String, Object> inputs = new HashMap<String, Object>();
+					Map<String, Object> outputs = null;
 
-				// Executing the workflow task
-				try {
-					outputs = task.execute(inputs);
-				} catch (WorkflowException e) {
-					PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
-				}
+					// Retrieving the data from input edges
+					for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
+						inputs.put(edge.getDataType(), edge.getData());
+					}
 
-				// Putting the data in output edges
-				for (WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
-					String type = edge.getDataType();
-					if (outputs.containsKey(type)) {
-						edge.setData(outputs.get(type));
-					} else {
-						edge.setData(null);
-						PreesmLogger
-								.getLogger()
-								.log(Level.SEVERE,
-										"The workflow task "
-												+ taskNode.getTaskId()
-												+ " has not produced the necessary data "
-												+ type
-												+ ". Consider revising the workflow.");
+					// Executing the workflow task
+					try {
+						outputs = task
+								.execute(inputs, taskNode.getParameters());
+					} catch (WorkflowException e) {
+						WorkflowLogger.getLogger().log(Level.SEVERE,
+								e.getMessage());
+
+						return false;
+					}
+
+					// Putting the data in output edges
+					for (WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
+						String type = edge.getDataType();
+						if (outputs.containsKey(type)) {
+							edge.setData(outputs.get(type));
+						} else {
+							edge.setData(null);
+							WorkflowLogger
+									.getLogger()
+									.log(Level.SEVERE,
+											"The workflow task "
+													+ taskNode.getTaskId()
+													+ " has not produced the necessary data "
+													+ type
+													+ ". Consider revising the workflow.");
+
+							return false;
+						}
 					}
 				}
 			}
 		}
+
+		WorkflowLogger.getLogger().log(Level.INFO,
+				"Workflow execution finished.");
 
 		return true;
 	}

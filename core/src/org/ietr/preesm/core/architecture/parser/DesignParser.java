@@ -66,7 +66,7 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -117,13 +117,13 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			PreesmLogger.getLogger().log(Level.SEVERE, pce.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, pce.getMessage());
 		} catch (SAXException se) {
-			PreesmLogger.getLogger().log(Level.SEVERE, se.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, se.getMessage());
 		} catch (IOException ioe) {
-			PreesmLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		return parseDocument();
@@ -149,7 +149,7 @@ public class DesignParser {
 						archi.setName(elt.getTextContent());
 					} else {
 						if (archi == null) {
-							PreesmLogger.getLogger().log(Level.SEVERE,
+							WorkflowLogger.getLogger().log(Level.SEVERE,
 									"enter a name in the architecture");
 						}
 
@@ -410,7 +410,7 @@ public class DesignParser {
 					&& path.getFileExtension().equals(fileExt)) {
 				file = workspace.getRoot().getFile(currentPath);
 			} else {
-				PreesmLogger
+				WorkflowLogger
 						.getLogger()
 						.log(Level.SEVERE,
 								"The refinement of a component must exist and have the extension ."
@@ -505,7 +505,7 @@ public class DesignParser {
 					try {
 						setupTime = Integer.valueOf(description);
 					} catch (NumberFormatException e) {
-						PreesmLogger.getLogger().log(
+						WorkflowLogger.getLogger().log(
 								Level.INFO,
 								"No setup type entered for the setup link of "
 										+ cmp1 + " . 0 used.");
@@ -519,7 +519,7 @@ public class DesignParser {
 								.addSetupTime((Operator) cmp1, setupTime);
 					}
 				} else {
-					PreesmLogger
+					WorkflowLogger
 							.getLogger()
 							.log(Level.SEVERE,
 									"a setup link must join an operator to a dma or a ram.");

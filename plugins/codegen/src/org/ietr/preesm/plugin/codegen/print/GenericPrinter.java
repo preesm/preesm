@@ -52,7 +52,7 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
@@ -148,7 +148,7 @@ public class GenericPrinter {
 							specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
-				PreesmLogger.getLogger().log(Level.INFO, e.getMessage());
+				WorkflowLogger.getLogger().log(Level.INFO, e.getMessage());
 			}
 		}
 	}

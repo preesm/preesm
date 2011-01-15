@@ -42,7 +42,7 @@ import org.ietr.preesm.core.codegen.calls.FunctionArgument;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFEdge;
 
 /**
@@ -104,7 +104,7 @@ public class Buffer extends FunctionArgument {
 		}
 
 		if (size == 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Adding a buffer of size 0: " + getName());
 		}
 
@@ -124,7 +124,7 @@ public class Buffer extends FunctionArgument {
 		this.destInputPortID = destInputPortID;
 
 		if (size == 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Adding a buffer of size 0: " + getName());
 		}
 

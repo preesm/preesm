@@ -48,7 +48,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -130,7 +130,7 @@ public class SchedOrderManager extends Observable {
 				if (elt instanceof SynchronizedVertices) {
 					((SynchronizedVertices) elt).add(vertex);
 				} else {
-					PreesmLogger.getLogger().log(Level.SEVERE,
+					WorkflowLogger.getLogger().log(Level.SEVERE,
 							"Error in sched order!!");
 				}
 			}

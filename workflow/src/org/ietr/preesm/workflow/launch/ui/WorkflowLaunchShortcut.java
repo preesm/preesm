@@ -70,12 +70,12 @@ import org.ietr.preesm.workflow.ui.WorkflowMessages;
  * @author mpelcat
  */
 public class WorkflowLaunchShortcut implements ILaunchShortcut {
-	
+
 	/**
 	 * Creates configuration that references a given scenario
 	 */
 	public static ILaunchConfiguration createLaunchConfiguration(IFile file) {
-		
+
 		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType type = manager
 				.getLaunchConfigurationType(WorkflowLaunchConfigurationDelegate.WORKFLOW_LAUNCH_CONFIGURATION_TYPE_ID);
@@ -83,8 +83,9 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		ILaunchConfigurationWorkingCopy workingCopy;
 		try {
 			String fullPath = file.getFullPath().toString();
-			String launchConfigurationName = manager.generateLaunchConfigurationName(fullPath);
-			workingCopy = type.newInstance(null,launchConfigurationName); 
+			String launchConfigurationName = manager
+					.generateLaunchConfigurationName(fullPath);
+			workingCopy = type.newInstance(null, launchConfigurationName);
 		} catch (CoreException e) {
 			return null;
 		}
@@ -96,7 +97,8 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 		// We ask for the scenario to use with the selected workflow
 		String scenarioPath = EditorTools.browseFiles(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(),
-				WorkflowMessages.getString("Workflow.browseScenarioTitle"), "scenario");
+				WorkflowMessages.getString("Workflow.browseScenarioTitle"),
+				"scenario");
 
 		workingCopy.setAttribute(ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME,
 				scenarioPath);

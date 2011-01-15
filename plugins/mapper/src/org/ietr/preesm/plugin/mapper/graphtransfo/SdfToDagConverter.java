@@ -51,7 +51,7 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
@@ -90,15 +90,15 @@ public class SdfToDagConverter {
 			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			boolean display) {
 
-		PreesmLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
+		WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
 		try {
 
-			if (!sdfIn.validateModel(PreesmLogger.getLogger())) {
+			if (!sdfIn.validateModel(WorkflowLogger.getLogger())) {
 				return null;
 			}
 		} catch (SDF4JException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 		SDFGraph sdf = sdfIn.clone();
@@ -115,7 +115,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
@@ -130,11 +130,11 @@ public class SdfToDagConverter {
 		}
 
 		if (dag.vertexSet().size() == 0) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Can not map a DAG with no vertex.");
 		} else {
-			PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
+			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"mapping a DAG with " + dag.vertexSet().size()
 							+ " vertices and " + dag.edgeSet().size()

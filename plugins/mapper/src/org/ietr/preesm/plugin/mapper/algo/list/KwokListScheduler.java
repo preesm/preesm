@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -108,7 +108,7 @@ public class KwokListScheduler {
 
 		// Variables
 		Operator chosenoperator = null;
-		Logger logger = PreesmLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 
 		// Maps the fastest one to be ready among the operators in the vertex
 		// check the vertex by priority in the CPN-Dominant list

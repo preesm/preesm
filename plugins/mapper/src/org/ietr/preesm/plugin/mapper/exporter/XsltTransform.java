@@ -44,7 +44,7 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
@@ -68,7 +68,7 @@ public class XsltTransform implements IFileConversion {
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
 				if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
-					PreesmLogger.getLogger().log(Level.INFO,
+					WorkflowLogger.getLogger().log(Level.INFO,
 							"Generating file: " + outputPath.toOSString());
 					xsltTransfo.transformFileToFile(inputPath.toOSString(),
 							outputPath.toOSString());

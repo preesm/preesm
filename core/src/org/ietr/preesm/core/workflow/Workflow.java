@@ -65,7 +65,7 @@ import org.ietr.preesm.core.task.ITask;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.core.workflow.runnables.OpenWorkflowOutput;
 import org.ietr.preesm.core.workflow.sources.AlgorithmConfiguration;
@@ -119,7 +119,7 @@ public class Workflow {
 				}
 
 				if (!workflowOk) {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"Failed to find plugin "
 									+ ((TaskNode) node).getTaskId()
@@ -156,7 +156,7 @@ public class Workflow {
 		IMapperAbc abc = null; // This input type is known from the sender and
 								// the receiver
 
-		PreesmLogger.getLogger().log(Level.INFO, "Starting workflow execution");
+		WorkflowLogger.getLogger().log(Level.INFO, "Starting workflow execution");
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -218,7 +218,7 @@ public class Workflow {
 
 					if (transformation instanceof IMapping) {
 						monitor.subTask("scheduling");
-						PreesmLogger.getLogger().log(Level.INFO, "scheduling");
+						WorkflowLogger.getLogger().log(Level.INFO, "scheduling");
 
 						// mapping
 						IMapping mapping = (IMapping) transformation;
@@ -228,7 +228,7 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
-						PreesmLogger.getLogger()
+						WorkflowLogger.getLogger()
 								.log(Level.INFO, "transforming");
 
 						// mapping
@@ -237,7 +237,7 @@ public class Workflow {
 						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
-						PreesmLogger.getLogger().log(Level.INFO,
+						WorkflowLogger.getLogger().log(Level.INFO,
 								"converting file");
 
 						// mapping
@@ -246,7 +246,7 @@ public class Workflow {
 						nodeResult = tranform.transform(parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
-						PreesmLogger.getLogger().log(Level.INFO,
+						WorkflowLogger.getLogger().log(Level.INFO,
 								"code generation");
 
 						// generic code generation
@@ -263,7 +263,7 @@ public class Workflow {
 
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
-						PreesmLogger.getLogger().log(Level.INFO,
+						WorkflowLogger.getLogger().log(Level.INFO,
 								"code translation");
 
 						// code translation
@@ -271,7 +271,7 @@ public class Workflow {
 						codeTrans.transform(sourceFiles);
 					} else if (transformation instanceof IExporter) {
 						monitor.subTask("content exporter");
-						PreesmLogger.getLogger().log(Level.INFO,
+						WorkflowLogger.getLogger().log(Level.INFO,
 								"content exporter");
 						// code translation
 						IExporter exporter = (IExporter) transformation;
@@ -294,7 +294,7 @@ public class Workflow {
 						}
 					} else if (transformation instanceof IPlotter) {
 						monitor.subTask("plot");
-						PreesmLogger.getLogger().log(Level.INFO, "plot");
+						WorkflowLogger.getLogger().log(Level.INFO, "plot");
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
@@ -311,7 +311,7 @@ public class Workflow {
 			}
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO, "End of workflow execution");
+		WorkflowLogger.getLogger().log(Level.INFO, "End of workflow execution");
 		// Workflow completed
 		monitor.done();
 	}

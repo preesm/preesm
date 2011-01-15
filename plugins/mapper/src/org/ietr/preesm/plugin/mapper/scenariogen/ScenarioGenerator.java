@@ -16,7 +16,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IScenarioTransformation;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
@@ -38,13 +38,13 @@ public class ScenarioGenerator implements IScenarioTransformation {
 
 		TaskResult result = new TaskResult();
 
-		PreesmLogger.getLogger().log(Level.INFO, "Generating scenario");
+		WorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
 
 		String scenarioFileName = parameters.getVariable("scenarioFile");
 
 		// Retrieving the scenario
 		if (scenarioFileName.isEmpty()) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"lack of a scenarioFile parameter");
 			return null;
 		} else {
@@ -60,7 +60,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 			AlgorithmRetriever algoR = new AlgorithmRetriever(scenario
 					.getAlgorithmURL());
 			if (algoR.getAlgorithm() == null) {
-				PreesmLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
 			} else {
@@ -70,7 +70,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 			ArchitectureRetriever archiR = new ArchitectureRetriever(scenario
 					.getArchitectureURL());
 			if (archiR.getArchitecture() == null) {
-				PreesmLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
@@ -86,7 +86,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 		String dagFileName = parameters.getVariable("dagFile");
 		// Parsing the output DAG if present and updating the constraints
 		if (dagFileName.isEmpty()) {
-			PreesmLogger.getLogger().log(Level.WARNING,
+			WorkflowLogger.getLogger().log(Level.WARNING,
 					"No dagFile -> retrieving the scenario as is");
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
@@ -125,7 +125,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 				}
 
 			} catch (Exception e) {
-				PreesmLogger.getLogger().log(Level.SEVERE, e.getMessage());
+				WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			}
 
 		}

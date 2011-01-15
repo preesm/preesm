@@ -45,7 +45,7 @@ import org.ietr.preesm.core.codegen.calls.Constant;
 import org.ietr.preesm.core.codegen.calls.PointerOn;
 import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -98,7 +98,7 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 						"write_delay", parentContainer);
 				if (((CodeGenSDFTokenInitVertex) this.getEndReference())
 						.getDelayVariable() == null) {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"Delay variable nor found for vertex "
 									+ this.getName() + " with end reference "

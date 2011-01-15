@@ -4,26 +4,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.workflow.task.Task;
+import org.ietr.preesm.workflow.elements.Task;
 
-public class TestNewWorkflow extends Task {
+public class TestWorkflowTask2 extends Task {
 
 	@Override
 	public String displayPrototype() {
-		return "outputs: toto";
+		return "inputs: titi";
 	}
 
 	@Override
 	public boolean accept(Set<String> inputs, Set<String> outputs) {
-		if(inputs.size()==0 && outputs.size()==1 && outputs.contains("toto")){
+		if (inputs.size() == 1 && outputs.size() == 0
+				&& inputs.contains("titi")) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs) {
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -31,11 +33,10 @@ public class TestNewWorkflow extends Task {
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
-		
-		parameters.put("size", "25");
-		parameters.put("duration", "short");
+
+		parameters.put("size", "10");
+		parameters.put("duration", "long");
 		return parameters;
 	}
-
 
 }

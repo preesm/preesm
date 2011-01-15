@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * 
@@ -47,7 +47,7 @@ public class RelativeConstraint {
 		List<Operator> operators = new ArrayList<Operator>();
 		
 		if(vertices.isEmpty()){
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Relative constraint with no vertex.");
 			

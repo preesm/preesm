@@ -54,7 +54,7 @@ import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
@@ -243,7 +243,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			cost = route.evaluateTransferCost(edge.getInitialEdgeProperty()
 					.getDataSize());
 		} else {
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"trying to evaluate a transfer between non mapped operators.");

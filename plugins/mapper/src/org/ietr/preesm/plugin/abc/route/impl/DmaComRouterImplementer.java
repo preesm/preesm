@@ -9,7 +9,7 @@ import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
@@ -112,7 +112,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 							incomingEdge, getImplementation(), routeStep,
 							overheadTime, getOrderManager()));
 				} else {
-					PreesmLogger
+					WorkflowLogger
 							.getLogger()
 							.log(
 									Level.FINE,

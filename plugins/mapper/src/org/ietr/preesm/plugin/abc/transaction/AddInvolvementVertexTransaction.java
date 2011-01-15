@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -120,7 +120,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
 		if (edge instanceof PrecedenceEdge) {
-			PreesmLogger.getLogger().log(Level.INFO,
+			WorkflowLogger.getLogger().log(Level.INFO,
 					"no involvement vertex corresponding to a schedule edge");
 			return;
 		}

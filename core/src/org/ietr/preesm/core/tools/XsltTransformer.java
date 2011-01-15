@@ -51,6 +51,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides methods to transform an XML file via XSLT
@@ -99,7 +100,7 @@ public class XsltTransformer {
 		}
 
 		if (transformer == null) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"XSL sheet not found or not valid: " + fileName);
 		}
 
@@ -124,7 +125,7 @@ public class XsltTransformer {
 				transformer.transform(new StreamSource(sourceFileLoc),
 						new StreamResult(new FileOutputStream(destFileLoc)));
 			} catch (FileNotFoundException e1) {
-				PreesmLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"Problem finding files for XSL transfo ("
 								+ osSourceFilePath, "," + osDestFilePath + ")");

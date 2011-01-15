@@ -55,7 +55,7 @@ import org.ietr.preesm.core.scenario.editor.constraints.ConstraintsPage;
 import org.ietr.preesm.core.scenario.editor.simu.SimulationPage;
 import org.ietr.preesm.core.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.core.scenario.editor.variables.VariablesPage;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * The scenario editor allows to change all parameters in scenario; i.e.
@@ -86,8 +86,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			throws PartInitException {
 
 		// Starting the console
-		PreesmLogger.getLogger().createConsole();
-		PreesmLogger.getLogger().setLevel(Level.INFO);
+		WorkflowLogger.getLogger().createConsole();
+		WorkflowLogger.getLogger().setLevel(Level.INFO);
 
 		setSite(site);
 		setInput(input);

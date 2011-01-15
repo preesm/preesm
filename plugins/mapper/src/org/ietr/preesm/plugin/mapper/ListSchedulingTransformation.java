@@ -44,7 +44,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -116,11 +116,11 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		InitialLists initial = new InitialLists();
 
 		if (!initial.constructInitialLists(dag, simu)) {
-			PreesmLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
 			return null;
 		}
 
-		PreesmLogger.getLogger().log(Level.INFO, "Mapping");
+		WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
 		// Using topological task scheduling in list scheduling: the t-level
 		// order of the infinite homogeneous simulation
@@ -137,7 +137,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		KwokListScheduler scheduler = new KwokListScheduler();
 		scheduler.schedule(dag, initial.getCpnDominant(), simu2, null, null);
 
-		PreesmLogger.getLogger().log(Level.INFO, "Mapping finished");
+		WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
 		TagDAG tagSDF = new TagDAG();
 

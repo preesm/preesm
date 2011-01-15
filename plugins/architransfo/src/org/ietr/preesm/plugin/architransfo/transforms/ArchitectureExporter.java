@@ -43,7 +43,7 @@ import org.ietr.preesm.core.architecture.writer.DesignWriter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.IExporter;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -81,7 +81,7 @@ public class ArchitectureExporter implements IExporter {
 		writer.writeDom(params.getVariable(pathKey));
 		}
 		else{
-			PreesmLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
+			WorkflowLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
 		}
 	}
 

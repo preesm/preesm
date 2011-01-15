@@ -48,11 +48,11 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.ietr.preesm.workflow.WorkflowManager;
 import org.ietr.preesm.workflow.sources.ScenarioConfiguration;
-import org.ietr.preesm.workflow.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
- * Launch a workflow in run mode, using the previously created
- * launch configuration.
+ * Launch a workflow in run mode, using the previously created launch
+ * configuration.
  * 
  * @author mwipliez
  * @author mpelcat
@@ -89,15 +89,15 @@ public class WorkflowLaunchConfigurationDelegate implements
 			configEnv = new HashMap<String, String>();
 		}
 
-		PreesmLogger.getLogger().log(
-				Level.INFO,"Launching " + workflowPath + "...");
+		WorkflowLogger.getLogger().log(Level.INFO,
+				"Launching " + workflowPath + "...");
 
 		WorkflowManager workflowManager = new WorkflowManager();
-		if(workflowManager.check(workflowPath,monitor)){
-			
+		if (workflowManager.check(workflowPath, monitor)) {
+
 			String scenarioPath = configuration.getAttribute(
 					ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "");
-			
+
 			workflowManager.execute(workflowPath, scenarioPath);
 		} else {
 			monitor.setCanceled(true);

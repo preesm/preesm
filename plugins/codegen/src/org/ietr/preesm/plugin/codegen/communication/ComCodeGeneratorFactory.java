@@ -15,7 +15,7 @@ import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -59,7 +59,7 @@ public class ComCodeGeneratorFactory {
 		if (step.getType() == MediumRouteStep.type) {
 			generator = new MessageComCodeGenerator(compThread, comThread,
 					vertices, step);
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.FINE,
 							"A route step with type medium correspond to a message passing code generation: "
@@ -74,7 +74,7 @@ public class ComCodeGeneratorFactory {
 			generator = new RamComCodeGenerator(compThread, comThread,
 					vertices, step);
 		} else {
-			PreesmLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"A route step with unknown type was found during code generation: "
 							+ step);

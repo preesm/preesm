@@ -2,15 +2,16 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="tasks" name="%tasksName" schema="schema/tasks.exsd"/>
+   <extension-point id="scenarios" name="%scenariosName" schema="schema/scenarios.exsd"/>
    <extension
          point="org.ietr.preesm.workflow.tasks">
       <task
-            id="TestNewWorkflow"
-            type="org.ietr.preesm.workflow.test.TestNewWorkflow">
+            id="Test1"
+            type="org.ietr.preesm.workflow.test.TestWorkflowTask1">
       </task>
       <task
-            id="TestNewWorkflow2"
-            type="org.ietr.preesm.workflow.test.TestNewWorkflow2">
+            id="Test2"
+            type="org.ietr.preesm.workflow.test.TestWorkflowTask2">
       </task>
    </extension>
    <extension
@@ -72,6 +73,13 @@
             id="org.ietr.preesm.workflow.workflowLaunchConfigurationTabGroup"
             type="org.ietr.preesm.workflow.launchConfigurationType">
       </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.ietr.preesm.workflow.scenarios">
+      <scenario
+            id="TestScenario"
+            type="org.ietr.preesm.workflow.test.TestWorkflowScenario">
+      </scenario>
    </extension>
 
 </plugin>

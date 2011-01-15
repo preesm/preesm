@@ -64,7 +64,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * 
  */
 public class WorkflowParser extends DefaultHandler2 {
-/*
+	/*
 	*//**
 	 * The last parsed transformation node is saved to receive its variables.
 	 */
@@ -107,7 +107,7 @@ public class WorkflowParser extends DefaultHandler2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return workflow;
 	}
 
@@ -116,7 +116,8 @@ public class WorkflowParser extends DefaultHandler2 {
 			Attributes attributes) {
 
 		if (qName.equals("preesm:scenario")) {
-			IWorkflowNode node = new ScenarioNode();
+			String pluginId = attributes.getValue("pluginId");
+			IWorkflowNode node = new ScenarioNode(pluginId);
 			workflow.addNode(node);
 			nodes.put("__scenario", node);
 		} else if (qName.equals("preesm:task")) {
@@ -134,12 +135,13 @@ public class WorkflowParser extends DefaultHandler2 {
 			edge.setDataType(dataType);
 		} else if (qName.equals("variable")) {
 			if (lastTransformationNode != null) {
-				lastTransformationNode.addVariable(attributes.getValue("name"),
+				lastTransformationNode.addParameter(
+						attributes.getValue("name"),
 						attributes.getValue("value"));
 			}
 		}
 	}
-	
+
 	public Workflow getWorkflow() {
 		return workflow;
 	}

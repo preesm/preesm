@@ -61,7 +61,7 @@ import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -156,7 +156,7 @@ public class DesignWriter {
 				e.printStackTrace();
 			}
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Architecture exporter has an invalid file path.");
 		}
 	}

@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.AbstractVertex;
 import org.sdf4j.model.visitors.SDF4JException;
@@ -142,7 +142,7 @@ public class MultiCoreArchitecture extends
 			ArchitectureComponentType type, VLNV vlnv) {
 
 		if (vlnv.getName().isEmpty()) {
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.WARNING,
 							"careful: at least one component has no definition in the architecture");
@@ -512,7 +512,7 @@ public class MultiCoreArchitecture extends
 	public void setMainMedium(String mainMediumName) {
 		if (!(getComponent(ArchitectureComponentType.medium, mainMediumName) instanceof Medium)) {
 			this.mainMedium = null;
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");

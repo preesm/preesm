@@ -59,7 +59,7 @@ import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.parameters.Parameter;
 import org.sdf4j.model.parameters.ParameterSet;
@@ -110,7 +110,7 @@ public class CompThreadCodeGenerator {
 				List<ICodeElement> taskElements = codeContainer
 						.getCodeElements(task);
 				if (taskElements.size() != 1) {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
@@ -167,7 +167,7 @@ public class CompThreadCodeGenerator {
 				List<ICodeElement> loopElements = codeContainer
 						.getCodeElements(task);
 				if (loopElements.size() != 1) {
-					PreesmLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
@@ -356,7 +356,7 @@ public class CompThreadCodeGenerator {
 						loopCode.addCodeElementFirst(loopCall);
 					} else {
 						// Adding loop call if any
-						PreesmLogger.getLogger()
+						WorkflowLogger.getLogger()
 								.log(Level.FINE,
 										"Adding code elt "
 												+ loopCall.toString()

@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
@@ -93,7 +93,7 @@ public class AbcParameters {
 				.getVariable("edgeSchedType"));
 		this.balanceLoads = textParameters.getBooleanVariable("balanceLoads");
 
-		PreesmLogger
+		WorkflowLogger
 				.getLogger()
 				.log(
 						Level.INFO,

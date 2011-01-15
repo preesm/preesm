@@ -45,8 +45,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.preesm.workflow.WorkflowParser;
-import org.ietr.preesm.workflow.task.Task;
-import org.ietr.preesm.workflow.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides a task workflow node.
@@ -68,9 +67,9 @@ public class TaskNode implements IWorkflowNode {
 	private String taskId;
 
 	/**
-	 * Variables used to parameterize the transformation.
+	 * Parameters used to parameterize the transformation.
 	 */
-	private Map<String, String> variables;
+	private Map<String, String> parameters;
 
 	/**
 	 * Creates a new transformation node with the given transformation
@@ -82,19 +81,19 @@ public class TaskNode implements IWorkflowNode {
 	public TaskNode(String taskId) {
 		this.taskId = taskId;
 
-		variables = new HashMap<String, String>();
+		parameters = new HashMap<String, String>();
 	}
 
 	/**
-	 * Creates a new variable retrieved from the xml in {@link WorkflowParser}.
+	 * Creates a new parameter retrieved from the xml in {@link WorkflowParser}.
 	 * 
 	 * @param key
 	 *            the name of the variable.
 	 * @param value
 	 *            the value of the variable.
 	 */
-	public void addVariable(String key, String value) {
-		variables.put(key, value);
+	public void addParameter(String key, String value) {
+		parameters.put(key, value);
 	}
 
 	/**
@@ -114,29 +113,19 @@ public class TaskNode implements IWorkflowNode {
 	 * 
 	 * @return the variables map.
 	 */
-	public Map<String, String> getVariables() {
-		return variables;
+	public Map<String, String> getParameters() {
+		return parameters;
 	}
 
 	/**
-	 * Returns the value of the variable with name key.
+	 * Returns the value of the parameter with name key.
 	 * 
 	 * @param key
 	 *            the name of the variable.
 	 * @return the value of the variable.
 	 */
-	public String getVariableValue(String key) {
-		return variables.get(key);
-	}
-
-	@Override
-	public boolean isAlgorithmNode() {
-		return false;
-	}
-
-	@Override
-	public boolean isArchitectureNode() {
-		return false;
+	public String getParameter(String key) {
+		return parameters.get(key);
 	}
 
 	@Override
@@ -150,11 +139,11 @@ public class TaskNode implements IWorkflowNode {
 	}
 
 	/**
-	 * Checks if this task exists.
+	 * Checks if this task exists based on its ID.
 	 * 
 	 * @return True if this task exists, false otherwise.
 	 */
-	public boolean isTaskPossible() {
+	public boolean isTaskImplemented() {
 		try {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -177,7 +166,7 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Failed to find plugins from workflow");
 			return false;
 		}

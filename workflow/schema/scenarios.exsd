@@ -3,10 +3,10 @@
 <schema targetNamespace="org.ietr.preesm.workflow" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.ietr.preesm.workflow" id="org.ietr.preesm.workflow.tasks" name="Workflow task"/>
+         <meta.schema plugin="org.ietr.preesm.workflow" id="org.ietr.preesm.workflow.scenarios" name="Workflow scenario"/>
       </appinfo>
       <documentation>
-         The tasks extension point allows plug-ins to declare classes as Workflow task plug-ins.
+         The scenario configures the workflow execution.
       </documentation>
    </annotation>
 
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="task"/>
+            <element ref="scenario"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,29 +47,22 @@
       </complexType>
    </element>
 
-   <element name="task">
+   <element name="scenario">
       <complexType>
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
-                  The fully qualified name of a Java class that extends Task.
+                  The fully qualified name of a Java class that extends Scenario.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.ietr.preesm.workflow.elements.Task:"/>
+                  <meta.attribute kind="java" basedOn="org.ietr.preesm.workflow.elements.Scenario:"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The identifier of this task. It must unique amongst the registered tasks identifiers. Example: org.ietr.preesm.plugin.mapping
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string">
-            <annotation>
-               <documentation>
-                  The task name, for example the algorithm implemented.
+                  The identifier of this scenario. It must unique amongst the registered tasks identifiers.
                </documentation>
             </annotation>
          </attribute>
@@ -81,7 +74,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         1.0
+         [Enter the first release in which this extension point appears.]
       </documentation>
    </annotation>
 
@@ -90,22 +83,27 @@
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         Following is an example of an adapter declaration.  This example declares that this plug-in will provide an adapter factory that will adapt objects of type IFile to objects of type MyFile.
-&lt;p&gt;
-   &lt;pre&gt;
-      &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot;&gt;
-         &lt;factory 
-            class=&quot;com.xyz.MyFileAdapterFactory&quot; 
-            adaptableType=&quot;org.eclipse.core.resources.IFile&quot;&gt;
-            &lt;adapter type=&quot;com.xyz.MyFile&quot;/&gt;
-         &lt;/factory&gt;
-      &lt;/extension&gt;
-   &lt;/pre&gt;
-&lt;/p&gt;
+         [Enter extension point usage example here.]
       </documentation>
    </annotation>
 
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
 
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
 
    <annotation>
       <appinfo>

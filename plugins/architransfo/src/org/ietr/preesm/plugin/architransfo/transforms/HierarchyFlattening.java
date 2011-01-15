@@ -44,7 +44,7 @@ import org.ietr.preesm.core.task.IArchiTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.visitors.SDF4JException;
 import org.sdf4j.model.visitors.VisitorOutput;
 
@@ -68,7 +68,7 @@ public class HierarchyFlattening implements IArchiTransformation {
 			depth = 1;
 		}
 
-		Logger logger = PreesmLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 

@@ -60,7 +60,7 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -80,7 +80,7 @@ public class ExcelTimingParser {
 	}
 
 	public void parse(String url) {
-		PreesmLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
@@ -172,12 +172,12 @@ public class ExcelTimingParser {
 									scenario.getTimingManager().addTiming(
 											timing);
 
-									PreesmLogger.getLogger().log(
+									WorkflowLogger.getLogger().log(
 											Level.INFO,
 											"Importing timing: "
 													+ timing.toString());
 								} catch (NumberFormatException e) {
-									PreesmLogger
+									WorkflowLogger
 											.getLogger()
 											.log(Level.SEVERE,
 													"Problem importing timing of "
@@ -190,7 +190,7 @@ public class ExcelTimingParser {
 						} else {
 							if (vertexCell == null
 									&& !missingVertices.contains(vertexName)) {
-								PreesmLogger.getLogger().log(
+								WorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No line found in excel sheet for vertex: "
 												+ vertexName);
@@ -198,7 +198,7 @@ public class ExcelTimingParser {
 							} else if (operatorCell == null
 									&& !missingOperatorTypes
 											.contains(operatorId)) {
-								PreesmLogger.getLogger().log(
+								WorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No column found in excel sheet for operator type: "
 												+ operatorId);

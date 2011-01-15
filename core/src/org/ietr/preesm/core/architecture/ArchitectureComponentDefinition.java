@@ -45,7 +45,7 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * The architecture component definition gives component specifications
@@ -144,7 +144,7 @@ public abstract class ArchitectureComponentDefinition {
 						(int) ramDef.getSetupTime(opName));
 			}
 		} else {
-			PreesmLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component definition.");
 		}
 

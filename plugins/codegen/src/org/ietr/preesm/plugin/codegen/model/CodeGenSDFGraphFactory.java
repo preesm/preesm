@@ -58,7 +58,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.demo.SDFtoDAGDemo;
@@ -481,7 +481,7 @@ public class CodeGenSDFGraphFactory {
 			List<SDFAbstractVertex> block, String name)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		try {
-			graph.validateModel(PreesmLogger.getLogger());
+			graph.validateModel(WorkflowLogger.getLogger());
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -627,7 +627,7 @@ public class CodeGenSDFGraphFactory {
 			for (int r = 0; r < block.size(); r++) {
 				graph.removeVertex(block.get(r));
 			}
-			clusterGraph.validateModel(PreesmLogger.getLogger());
+			clusterGraph.validateModel(WorkflowLogger.getLogger());
 			cluster.setNbRepeat(pgcd);
 			for (SDFAbstractVertex vertex : clusterGraph.vertexSet()) {
 				if (!(vertex instanceof SDFInterfaceVertex)) {

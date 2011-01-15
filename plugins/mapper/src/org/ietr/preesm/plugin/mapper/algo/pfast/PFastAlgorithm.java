@@ -54,7 +54,7 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PreesmLogger;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
@@ -167,7 +167,7 @@ public class PFastAlgorithm extends Observable {
 		nbsubsets = setThreadNumber(BNlist, nboperator, nodesmin);
 
 		if (nbsubsets == 0) {
-			PreesmLogger
+			WorkflowLogger
 					.getLogger()
 					.log(
 							Level.SEVERE,
