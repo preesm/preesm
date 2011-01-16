@@ -5,12 +5,8 @@ package org.ietr.preesm.workflow.elements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /**
@@ -20,39 +16,16 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
  */
 public class Workflow extends DirectedMultigraph<IWorkflowNode, WorkflowEdge> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -908014142930559238L;
+
 	public Workflow() {
 		super(
 				WorkflowEdge.class);
 	}
-/*
-	public void addNode(IWorkflowNode node) {
-		graph.addVertex(node);
-	}
 
-	public WorkflowEdge addEdge(IWorkflowNode source, IWorkflowNode target) {
-		return graph.addEdge(source, target);
-	}
-
-	public WorkflowEdge getEdge(IWorkflowNode source, IWorkflowNode target) {
-		return graph.getEdge(source, target);
-	}
-
-	public Set<WorkflowEdge> edgesOf(IWorkflowNode node) {
-		return graph.edgesOf(node);
-	}
-
-	public Set<WorkflowEdge> incomingEdgesOf(IWorkflowNode node) {
-		return graph.incomingEdgesOf(node);
-	}
-
-	public Set<WorkflowEdge> outgoingEdgesOf(IWorkflowNode node) {
-		return graph.outgoingEdgesOf(node);
-	}
-
-	public Set<IWorkflowNode> vertexSet() {
-		return graph.vertexSet();
-	}
-*/
 	public List<IWorkflowNode> vertexTopologicalList() {
 		List<IWorkflowNode> nodeList = new ArrayList<IWorkflowNode>();
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(

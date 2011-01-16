@@ -38,7 +38,6 @@ package org.ietr.preesm.workflow.launch.ui;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,7 +47,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.ietr.preesm.workflow.WorkflowManager;
 import org.ietr.preesm.workflow.sources.ScenarioConfiguration;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Launch a workflow in run mode, using the previously created launch
