@@ -59,10 +59,15 @@ public class TaskNode implements IWorkflowNode {
 	/**
 	 * The ITransformation created using transformationId.
 	 */
-	private Task task;
+	private AbstractTask task;
 
 	/**
-	 * The transformation identifier of this transformation node.
+	 * Transformation Id.
+	 */
+	private String pluginId;
+
+	/**
+	 * Instance Id.
 	 */
 	private String taskId;
 
@@ -73,12 +78,13 @@ public class TaskNode implements IWorkflowNode {
 
 	/**
 	 * Creates a new transformation node with the given transformation
-	 * identifier.
+	 * identifier and the given name.
 	 * 
 	 * @param taskId
 	 *            The transformation identifier.
 	 */
-	public TaskNode(String taskId) {
+	public TaskNode(String pluginId, String taskId) {
+		this.pluginId = pluginId;
 		this.taskId = taskId;
 
 		parameters = new HashMap<String, String>();
@@ -104,7 +110,7 @@ public class TaskNode implements IWorkflowNode {
 	 * @return The transformation associated with this transformation node, or
 	 *         <code>null</code> if the transformation is not valid.
 	 */
-	public Task getTask() {
+	public AbstractTask getTask() {
 		return task;
 	}
 
@@ -152,13 +158,13 @@ public class TaskNode implements IWorkflowNode {
 					.getConfigurationElementsFor("org.ietr.preesm.workflow.tasks");
 			for (int i = 0; i < elements.length && !found; i++) {
 				IConfigurationElement element = elements[i];
-				if (element.getAttribute("id").equals(taskId)) {
+				if (element.getAttribute("id").equals(pluginId)) {
 					// Tries to create the transformation
 					Object obj = element.createExecutableExtension("type");
 
 					// and checks it actually is an ITransformation.
-					if (obj instanceof Task) {
-						task = (Task) obj;
+					if (obj instanceof AbstractTask) {
+						task = (AbstractTask) obj;
 						found = true;
 					}
 				}
@@ -172,6 +178,16 @@ public class TaskNode implements IWorkflowNode {
 		}
 	}
 
+	/**
+	 * Get task transformation Id.
+	 */
+	public String getPluginId() {
+		return pluginId;
+	}
+
+	/**
+	 * Get task instance Id.
+	 */
 	public String getTaskId() {
 		return taskId;
 	}

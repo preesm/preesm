@@ -51,6 +51,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.ietr.preesm.workflow.Activator;
+import org.ietr.preesm.workflow.ui.WorkflowMessages;
 
 /**
  * Displaying information or error messages through the console
@@ -67,7 +68,7 @@ public class WorkflowLogger extends Logger {
 	MessageConsole console = null;
 
 	/**
-	 * GIves this Logger
+	 * Gives this Logger singleton
 	 * 
 	 * @return a Logger
 	 */
@@ -87,6 +88,14 @@ public class WorkflowLogger extends Logger {
 	private WorkflowLogger() {
 		super(LOGGER_NAME, null);
 		LogManager.getLogManager().addLogger(this);
+	}
+	
+	/**
+	 * adds a log retrieved from a property file and parameterized with variables
+	 * Each string "%VAR%" is replaced by a given variable
+	 */
+	public void logFromProperty(Level level, String msgKey, String... variables) {
+		log(level, WorkflowMessages.getString(msgKey, variables));
 	}
 
 	@Override
@@ -153,8 +162,9 @@ public class WorkflowLogger extends Logger {
 		return time;
 	}
 
-	public void createConsole() {
+	public void initConsole() {
 
+		setLevel(Level.INFO);
 		IConsoleManager mgr = ConsolePlugin.getDefault().getConsoleManager();
 
 		if (console == null) {
@@ -163,7 +173,7 @@ public class WorkflowLogger extends Logger {
 		}
 
 		console.activate();
-		console.setBackground(new Color(null, 0, 0, 0));
+		console.setBackground(new Color(null, 230, 228, 252));
 		// console.newMessageStream().println("test");
 
 		mgr.refresh(console);

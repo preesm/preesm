@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
@@ -16,21 +18,23 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
  * 
  * @author mpelcat
  */
-public class Workflow {
-
-	DirectedGraph<IWorkflowNode, WorkflowEdge> graph = null;
+public class Workflow extends DirectedMultigraph<IWorkflowNode, WorkflowEdge> {
 
 	public Workflow() {
-		this.graph = new SimpleDirectedGraph<IWorkflowNode, WorkflowEdge>(
+		super(
 				WorkflowEdge.class);
 	}
-
+/*
 	public void addNode(IWorkflowNode node) {
 		graph.addVertex(node);
 	}
 
 	public WorkflowEdge addEdge(IWorkflowNode source, IWorkflowNode target) {
 		return graph.addEdge(source, target);
+	}
+
+	public WorkflowEdge getEdge(IWorkflowNode source, IWorkflowNode target) {
+		return graph.getEdge(source, target);
 	}
 
 	public Set<WorkflowEdge> edgesOf(IWorkflowNode node) {
@@ -48,11 +52,11 @@ public class Workflow {
 	public Set<IWorkflowNode> vertexSet() {
 		return graph.vertexSet();
 	}
-
+*/
 	public List<IWorkflowNode> vertexTopologicalList() {
 		List<IWorkflowNode> nodeList = new ArrayList<IWorkflowNode>();
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
-				graph);
+				this);
 
 		while (it.hasNext()) {
 			IWorkflowNode node = it.next();
@@ -64,7 +68,7 @@ public class Workflow {
 
 	public boolean hasScenario() {
 		int nbScenarios = 0;
-		for (IWorkflowNode node : graph.vertexSet()) {
+		for (IWorkflowNode node : this.vertexSet()) {
 			if (node.isScenarioNode()) {
 				nbScenarios++;
 			}

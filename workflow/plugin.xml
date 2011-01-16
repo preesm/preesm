@@ -6,11 +6,11 @@
    <extension
          point="org.ietr.preesm.workflow.tasks">
       <task
-            id="Test1"
+            id="TestNewWorkflow1"
             type="org.ietr.preesm.workflow.test.TestWorkflowTask1">
       </task>
       <task
-            id="Test2"
+            id="TestNewWorkflow2"
             type="org.ietr.preesm.workflow.test.TestWorkflowTask2">
       </task>
    </extension>

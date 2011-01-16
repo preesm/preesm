@@ -3,20 +3,23 @@ package org.ietr.preesm.workflow.test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
-import org.ietr.preesm.workflow.elements.Task;
+import org.ietr.preesm.workflow.elements.AbstractTask;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
-public class TestWorkflowTask1 extends Task {
+public class TestWorkflowTask1 extends AbstractTask {
 
 	@Override
 	public String displayPrototype() {
-		return "outputs: toto";
+		return "in: algo, archi; out: superData";
 	}
 
 	@Override
 	public boolean accept(Set<String> inputs, Set<String> outputs) {
-		if (inputs.size() == 0 && outputs.size() == 1
-				&& outputs.contains("toto")) {
+		if (inputs.size() == 2 && inputs.contains("algo")
+				&& inputs.contains("archi") && outputs.size() == 1
+				&& outputs.contains("superData")) {
 			return true;
 		}
 
@@ -26,8 +29,10 @@ public class TestWorkflowTask1 extends Task {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		WorkflowLogger.getLogger().log(Level.INFO,"Executing TestWorkflowTask1");
+		outputs.put("superData", "superData1");
+		return outputs;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import org.ietr.preesm.workflow.WorkflowException;
  * 
  * @author mpelcat
  */
-public abstract class Scenario {
+public abstract class AbstractScenario {
 
 	/**
 	 * The workflow scenario element must accept the names of the output ports

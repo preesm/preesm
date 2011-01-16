@@ -118,15 +118,15 @@ public class WorkflowParser extends DefaultHandler2 {
 		if (qName.equals("preesm:scenario")) {
 			String pluginId = attributes.getValue("pluginId");
 			IWorkflowNode node = new ScenarioNode(pluginId);
-			workflow.addNode(node);
+			workflow.addVertex(node);
 			nodes.put("__scenario", node);
 		} else if (qName.equals("preesm:task")) {
-			String id = attributes.getValue("taskId");
+			String taskId = attributes.getValue("taskId");
 			String pluginId = attributes.getValue("pluginId");
-			lastTransformationNode = new TaskNode(pluginId);
+			lastTransformationNode = new TaskNode(pluginId, taskId);
 			IWorkflowNode node = lastTransformationNode;
-			workflow.addNode(node);
-			nodes.put(id, node);
+			workflow.addVertex(node);
+			nodes.put(taskId, node);
 		} else if (qName.equals("preesm:dataTransfer")) {
 			IWorkflowNode source = nodes.get(attributes.getValue("from"));
 			IWorkflowNode target = nodes.get(attributes.getValue("to"));

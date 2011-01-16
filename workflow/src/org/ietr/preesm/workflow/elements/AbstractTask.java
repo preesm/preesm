@@ -46,28 +46,33 @@ import org.ietr.preesm.workflow.WorkflowException;
  * 
  * @author mpelcat
  */
-public abstract class Task {
+public abstract class AbstractTask {
 
 	/**
-	 * The workflow task element must accept the names of the input/output ports
-	 * in the graph. Otherwise, the graph is considered not valid.
+	 * The workflow task implementation must accept the names of the input/output ports
+	 * set in the graph. Otherwise, the graph is considered to be wrongly defined.
 	 */
 	public abstract boolean accept(Set<String> inputs, Set<String> outputs);
 
 	/**
-	 * Displays the preferred prototype
+	 * Displays the preferred prototype that fits the accept method.
 	 */
 	public abstract String displayPrototype();
 
 	/**
 	 * The workflow task element must have a execute method that is called by
-	 * the workflow
+	 * the workflow manager
+	 * 
+	 * @param inputs a map associating input objects to their data type in the graph
+	 * @param parameters a map containing the vertex parameters
+	 * @return a map associating output objects to their data type in the graph
 	 */
 	public abstract Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters) throws WorkflowException;
 
 	/**
-	 * Returns the task parameters and their default values
+	 * Returns the task parameters and their default values. These parameters
+	 * are automatically added in the graph if not present.
 	 */
 	public abstract Map<String, String> getDefaultParameters();
 }

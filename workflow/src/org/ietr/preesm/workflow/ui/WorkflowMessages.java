@@ -55,9 +55,19 @@ public class WorkflowMessages {
 	private WorkflowMessages() {
 	}
 
-	public static String getString(String key) {
+	/**
+	 * Gets the string defined in the key. Replace the nth chain "%VAR%"
+	 * by the nth string variable
+	 */
+	public static String getString(String key, String... variables) {
 		try {
-			return RESOURCE_BUNDLE.getString(key);
+			String message = RESOURCE_BUNDLE.getString(key);
+			for(String var: variables){
+				if(var != null){
+					message = message.replaceFirst("%VAR%", var);
+				}
+			}
+			return message;
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}

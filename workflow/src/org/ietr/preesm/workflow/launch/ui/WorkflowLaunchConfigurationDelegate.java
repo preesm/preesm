@@ -79,6 +79,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		
 		String workflowPath = configuration.getAttribute(
 				ATTR_WORKFLOW_FILE_NAME, "");
 
@@ -89,18 +90,12 @@ public class WorkflowLaunchConfigurationDelegate implements
 			configEnv = new HashMap<String, String>();
 		}
 
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Launching " + workflowPath + "...");
-
 		WorkflowManager workflowManager = new WorkflowManager();
-		if (workflowManager.check(workflowPath, monitor)) {
 
-			String scenarioPath = configuration.getAttribute(
-					ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "");
+		String scenarioPath = configuration.getAttribute(
+				ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "");
+		
+		workflowManager.execute(workflowPath, scenarioPath, monitor);
 
-			workflowManager.execute(workflowPath, scenarioPath);
-		} else {
-			monitor.setCanceled(true);
-		}
 	}
 }

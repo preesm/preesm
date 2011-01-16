@@ -86,8 +86,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			throws PartInitException {
 
 		// Starting the console
-		WorkflowLogger.getLogger().createConsole();
-		WorkflowLogger.getLogger().setLevel(Level.INFO);
+		WorkflowLogger.getLogger().initConsole();
 
 		setSite(site);
 		setInput(input);

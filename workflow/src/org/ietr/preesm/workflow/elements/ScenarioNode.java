@@ -61,7 +61,7 @@ public class ScenarioNode implements IWorkflowNode {
 	 * The identifier of this scenario node. It is needed to retrieve the
 	 * implementation of this node
 	 */
-	private Scenario scenario = null;
+	private AbstractScenario scenario = null;
 
 	public ScenarioNode(String scenarioId) {
 		super();
@@ -72,7 +72,7 @@ public class ScenarioNode implements IWorkflowNode {
 		return scenarioId;
 	}
 	
-	public Scenario getScenario() {
+	public AbstractScenario getScenario() {
 		return scenario;
 	}
 
@@ -104,8 +104,8 @@ public class ScenarioNode implements IWorkflowNode {
 					Object obj = element.createExecutableExtension("type");
 
 					// and checks it actually is an ITransformation.
-					if (obj instanceof Scenario) {
-						scenario = (Scenario) obj;
+					if (obj instanceof AbstractScenario) {
+						scenario = (AbstractScenario) obj;
 						return true;
 					}
 				}

@@ -56,7 +56,7 @@ public class CoreConsoleFactory implements IConsoleFactory {
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null) {
 				// Creates a console for the logger
-				WorkflowLogger.getLogger().createConsole();
+				WorkflowLogger.getLogger().initConsole();
 			}
 		}
 	}

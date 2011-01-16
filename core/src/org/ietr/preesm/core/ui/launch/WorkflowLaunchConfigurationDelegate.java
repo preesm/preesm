@@ -128,8 +128,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 	}
 
 	private void activatePerspective() {
-		WorkflowLogger.getLogger().createConsole();
-		WorkflowLogger.getLogger().setLevel(Level.INFO);
+		WorkflowLogger.getLogger().initConsole();
 
 		Activator.getDefault().getWorkbench().getDisplay()
 				.syncExec(new Runnable() {
