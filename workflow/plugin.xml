@@ -59,7 +59,7 @@
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
-            class="org.ietr.preesm.workflow.ui.WorkflowPropertyTester"
+            class="org.ietr.preesm.workflow.launch.WorkflowPropertyTester"
             id="org.ietr.preesm.workflow.workflowTester"
             namespace="org.ietr.preesm.workflow"
             properties="isWorkflow"

@@ -34,55 +34,20 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.workflow.elements;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
+package org.ietr.preesm.workflow.ui;
 
 /**
- * Workflow graph
+ * Representing the configuration for the scenario retrieved from launch tab. It
+ * feeds a {@link ScenarioRetriever} to create the input scenario.
  * 
  * @author mpelcat
+ * 
  */
-public class Workflow extends DirectedMultigraph<IWorkflowNode, WorkflowEdge> {
+public class ScenarioConfiguration {
 
 	/**
-	 * 
+	 * ID used to save scenario file name in tab attributes
 	 */
-	private static final long serialVersionUID = -908014142930559238L;
+	public static final String ATTR_SCENARIO_FILE_NAME = "org.ietr.preesm.workflow.scenarioFileName";
 
-	public Workflow() {
-		super(WorkflowEdge.class);
-	}
-
-	public List<IWorkflowNode> vertexTopologicalList() {
-		List<IWorkflowNode> nodeList = new ArrayList<IWorkflowNode>();
-		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
-				this);
-
-		while (it.hasNext()) {
-			IWorkflowNode node = it.next();
-			nodeList.add(node);
-		}
-
-		return nodeList;
-	}
-
-	public boolean hasScenario() {
-		int nbScenarios = 0;
-		for (IWorkflowNode node : this.vertexSet()) {
-			if (node.isScenarioNode()) {
-				nbScenarios++;
-			}
-		}
-
-		if (nbScenarios == 1) {
-			return true;
-		}
-
-		return false;
-	}
 }

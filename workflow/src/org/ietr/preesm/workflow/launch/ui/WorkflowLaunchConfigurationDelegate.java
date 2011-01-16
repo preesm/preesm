@@ -46,7 +46,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.ietr.preesm.workflow.WorkflowManager;
-import org.ietr.preesm.workflow.sources.ScenarioConfiguration;
+import org.ietr.preesm.workflow.ui.ScenarioConfiguration;
 
 /**
  * Launch a workflow in run mode, using the previously created launch
@@ -77,7 +77,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		
+
 		String workflowPath = configuration.getAttribute(
 				ATTR_WORKFLOW_FILE_NAME, "");
 
@@ -92,7 +92,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 
 		String scenarioPath = configuration.getAttribute(
 				ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME, "");
-		
+
 		workflowManager.execute(workflowPath, scenarioPath, monitor);
 
 	}

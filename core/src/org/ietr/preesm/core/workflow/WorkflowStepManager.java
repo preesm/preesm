@@ -62,7 +62,6 @@ public class WorkflowStepManager {
 		super();
 		this.monitor = monitor;
 
-		monitor.beginTask("Executing workflow", workFlowSize);
 	}
 
 	void updateMonitor(String message) {

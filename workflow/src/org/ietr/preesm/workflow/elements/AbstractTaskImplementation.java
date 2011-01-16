@@ -36,53 +36,50 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.workflow.elements;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.workflow.WorkflowException;
 
 /**
- * Workflow graph
+ * This interface must be implemented by any workflow task element.
  * 
  * @author mpelcat
  */
-public class Workflow extends DirectedMultigraph<IWorkflowNode, WorkflowEdge> {
+public abstract class AbstractTaskImplementation implements
+		IWorkflowNodeImplementation {
 
 	/**
-	 * 
+	 * The workflow task implementation must accept the names of the
+	 * input/output ports set in the graph. Otherwise, the graph is considered
+	 * to be wrongly defined.
 	 */
-	private static final long serialVersionUID = -908014142930559238L;
+	public abstract boolean accept(Set<String> inputs, Set<String> outputs);
 
-	public Workflow() {
-		super(WorkflowEdge.class);
-	}
+	/**
+	 * The workflow task element implementation must have a execute method that
+	 * is called by the workflow manager
+	 * 
+	 * @param inputs
+	 *            a map associating input objects to their data type in the
+	 *            graph
+	 * @param parameters
+	 *            a map containing the vertex parameters
+	 * @param monitor
+	 *            the progress monitor that can be checked to cancel a task if
+	 *            requested
+	 * @param nodeName
+	 *            name of the graph node that triggered this execution
+	 * @return a map associating output objects to their data type in the graph
+	 */
+	public abstract Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException;
 
-	public List<IWorkflowNode> vertexTopologicalList() {
-		List<IWorkflowNode> nodeList = new ArrayList<IWorkflowNode>();
-		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
-				this);
-
-		while (it.hasNext()) {
-			IWorkflowNode node = it.next();
-			nodeList.add(node);
-		}
-
-		return nodeList;
-	}
-
-	public boolean hasScenario() {
-		int nbScenarios = 0;
-		for (IWorkflowNode node : this.vertexSet()) {
-			if (node.isScenarioNode()) {
-				nbScenarios++;
-			}
-		}
-
-		if (nbScenarios == 1) {
-			return true;
-		}
-
-		return false;
-	}
+	/**
+	 * Returns the task parameters and their default values. These parameters
+	 * are automatically added in the graph if not present.
+	 */
+	public abstract Map<String, String> getDefaultParameters();
 }

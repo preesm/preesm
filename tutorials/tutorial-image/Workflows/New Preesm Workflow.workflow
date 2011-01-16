@@ -12,8 +12,17 @@
          <variable name="size" value="10"/>
       </data>
    </preesm:task>
+   <preesm:task pluginId="TestNewWorkflow1" taskId="a2">
+      <data key="variables">
+         <variable name="duration" value="short"/>
+         <variable name="size" value="25"/>
+      </data>
+   </preesm:task>
    <preesm:dataTransfer from="a" sourceport="superData" targetport="superData" to="b"/>
    <preesm:dataTransfer from="__scenario" sourceport="algo" targetport="algo" to="a"/>
-   <preesm:dataTransfer from="__scenario" sourceport="archi" targetport="archi" to="a"/>
+   <preesm:dataTransfer from="__scenario" sourceport="archi" targetport="archture" to="a"/>
    <preesm:dataTransfer from="__scenario" sourceport="algo" targetport="algo" to="b"/>
+   <preesm:dataTransfer from="__scenario" sourceport="algo" targetport="algo" to="a2"/>
+   <preesm:dataTransfer from="__scenario" sourceport="archi" targetport="archture" to="a2"/>
+   <preesm:dataTransfer from="a2" sourceport="superData" targetport="superData" to="b"/>
 </preesm:workflow>

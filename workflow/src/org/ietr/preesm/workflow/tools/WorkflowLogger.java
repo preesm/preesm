@@ -54,7 +54,8 @@ import org.ietr.preesm.workflow.Activator;
 import org.ietr.preesm.workflow.ui.WorkflowMessages;
 
 /**
- * Displaying information or error messages through the console
+ * Displaying information or error messages through a console initialized by the
+ * initConsole method.
  * 
  * @author mwipliez
  * @author mpelcat
@@ -89,10 +90,11 @@ public class WorkflowLogger extends Logger {
 		super(LOGGER_NAME, null);
 		LogManager.getLogManager().addLogger(this);
 	}
-	
+
 	/**
-	 * adds a log retrieved from a property file and parameterized with variables
-	 * Each string "%VAR%" is replaced by a given variable
+	 * adds a log retrieved from a property file {@link WorkflowMessages} and
+	 * parameterized with variables Each string "%VAR%" is replaced by a given
+	 * variable
 	 */
 	public void logFromProperty(Level level, String msgKey, String... variables) {
 		log(level, WorkflowMessages.getString(msgKey, variables));

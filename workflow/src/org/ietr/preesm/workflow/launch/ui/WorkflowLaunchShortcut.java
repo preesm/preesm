@@ -59,7 +59,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.workflow.Activator;
-import org.ietr.preesm.workflow.sources.ScenarioConfiguration;
+import org.ietr.preesm.workflow.ui.ScenarioConfiguration;
 import org.ietr.preesm.workflow.ui.WorkflowMessages;
 
 /**

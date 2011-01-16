@@ -59,7 +59,7 @@ public class TaskNode implements IWorkflowNode {
 	/**
 	 * The ITransformation created using transformationId.
 	 */
-	private AbstractTask task;
+	private AbstractTaskImplementation task;
 
 	/**
 	 * Transformation Id.
@@ -110,7 +110,7 @@ public class TaskNode implements IWorkflowNode {
 	 * @return The transformation associated with this transformation node, or
 	 *         <code>null</code> if the transformation is not valid.
 	 */
-	public AbstractTask getTask() {
+	public AbstractTaskImplementation getTask() {
 		return task;
 	}
 
@@ -163,8 +163,8 @@ public class TaskNode implements IWorkflowNode {
 					Object obj = element.createExecutableExtension("type");
 
 					// and checks it actually is an ITransformation.
-					if (obj instanceof AbstractTask) {
-						task = (AbstractTask) obj;
+					if (obj instanceof AbstractTaskImplementation) {
+						task = (AbstractTaskImplementation) obj;
 						found = true;
 					}
 				}

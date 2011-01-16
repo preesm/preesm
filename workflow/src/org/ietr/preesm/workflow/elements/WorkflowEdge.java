@@ -45,9 +45,16 @@ package org.ietr.preesm.workflow.elements;
 public class WorkflowEdge {
 
 	/**
-	 * Type of the data carried by the edge
+	 * Name of the output port of the source that must correspond to the name in
+	 * the corresponding task prototype
 	 */
-	private String dataType = null;
+	private String sourcePort = null;
+
+	/**
+	 * Name of the input port of the target that must correspond to the name in
+	 * the corresponding task prototype
+	 */
+	private String targetPort = null;
 
 	/**
 	 * Object carrying the data
@@ -62,11 +69,20 @@ public class WorkflowEdge {
 		this.data = data;
 	}
 
-	public String getDataType() {
-		return dataType;
+	public String getSourcePort() {
+		return sourcePort;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setSourcePort(String sourcePort) {
+		this.sourcePort = sourcePort;
 	}
+
+	public String getTargetPort() {
+		return targetPort;
+	}
+
+	public void setTargetPort(String targetPort) {
+		this.targetPort = targetPort;
+	}
+
 }

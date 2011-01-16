@@ -5,20 +5,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.workflow.elements.AbstractTask;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.workflow.elements.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
-public class TestWorkflowTask1 extends AbstractTask {
+public class TestWorkflowTask1 extends AbstractTaskImplementation {
 
 	@Override
 	public String displayPrototype() {
-		return "in: algo, archi; out: superData";
+		return "in: algo, archture; out: superData";
 	}
 
 	@Override
 	public boolean accept(Set<String> inputs, Set<String> outputs) {
 		if (inputs.size() == 2 && inputs.contains("algo")
-				&& inputs.contains("archi") && outputs.size() == 1
+				&& inputs.contains("archture") && outputs.size() == 1
 				&& outputs.contains("superData")) {
 			return true;
 		}
@@ -28,9 +29,11 @@ public class TestWorkflowTask1 extends AbstractTask {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters) {
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) {
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		WorkflowLogger.getLogger().log(Level.INFO,"Executing TestWorkflowTask1");
+		WorkflowLogger.getLogger().log(Level.INFO,
+				"Executing TestWorkflowTask1; node: " + nodeName);
 		outputs.put("superData", "superData1");
 		return outputs;
 	}
@@ -42,6 +45,11 @@ public class TestWorkflowTask1 extends AbstractTask {
 		parameters.put("size", "25");
 		parameters.put("duration", "short");
 		return parameters;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Executing TestWorkflowTask1";
 	}
 
 }

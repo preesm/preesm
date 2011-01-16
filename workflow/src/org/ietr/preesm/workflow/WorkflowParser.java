@@ -130,9 +130,11 @@ public class WorkflowParser extends DefaultHandler2 {
 		} else if (qName.equals("preesm:dataTransfer")) {
 			IWorkflowNode source = nodes.get(attributes.getValue("from"));
 			IWorkflowNode target = nodes.get(attributes.getValue("to"));
-			String dataType = attributes.getValue("targetport");
+			String sourcePort = attributes.getValue("sourceport");
+			String targetPort = attributes.getValue("targetport");
 			WorkflowEdge edge = workflow.addEdge(source, target);
-			edge.setDataType(dataType);
+			edge.setSourcePort(sourcePort);
+			edge.setTargetPort(targetPort);
 		} else if (qName.equals("variable")) {
 			if (lastTransformationNode != null) {
 				lastTransformationNode.addParameter(

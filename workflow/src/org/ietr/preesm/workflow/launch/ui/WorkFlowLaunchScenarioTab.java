@@ -40,7 +40,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.workflow.Activator;
-import org.ietr.preesm.workflow.sources.ScenarioConfiguration;
+import org.ietr.preesm.workflow.ui.ScenarioConfiguration;
 
 /**
  * Launch Tab for scenario options. From this tab, an

@@ -34,15 +34,16 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.workflow.ui;
+package org.ietr.preesm.workflow.launch;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
 
 /**
- * This class tests the hasNature and isWorkflow property.
+ * This class tests the isWorkflow property to enable workflow execution.
  * 
  * @author Matthieu Wipliez
+ * @author mpelcat
  */
 public class WorkflowPropertyTester extends PropertyTester {
 

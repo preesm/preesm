@@ -42,37 +42,25 @@ import java.util.Set;
 import org.ietr.preesm.workflow.WorkflowException;
 
 /**
- * This interface must be implemented by any workflow task element.
+ * Abstract scenario that can be implemented by a plugin wanting workflow
+ * execution capabilities.
  * 
  * @author mpelcat
  */
-public abstract class AbstractTask {
+public abstract class AbstractScenarioImplementation implements
+		IWorkflowNodeImplementation {
 
 	/**
-	 * The workflow task implementation must accept the names of the input/output ports
-	 * set in the graph. Otherwise, the graph is considered to be wrongly defined.
+	 * The workflow scenario element must accept the names of the output ports
+	 * in the graph. Otherwise, the graph is considered not valid.
 	 */
-	public abstract boolean accept(Set<String> inputs, Set<String> outputs);
+	public abstract boolean accept(Set<String> outputs);
 
 	/**
-	 * Displays the preferred prototype that fits the accept method.
+	 * The workflow scenario element must have an initialize method that is
+	 * called by the workflow to generate the scenario outputs (for example, an
+	 * algorithm and an architecture).
 	 */
-	public abstract String displayPrototype();
-
-	/**
-	 * The workflow task element must have a execute method that is called by
-	 * the workflow manager
-	 * 
-	 * @param inputs a map associating input objects to their data type in the graph
-	 * @param parameters a map containing the vertex parameters
-	 * @return a map associating output objects to their data type in the graph
-	 */
-	public abstract Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters) throws WorkflowException;
-
-	/**
-	 * Returns the task parameters and their default values. These parameters
-	 * are automatically added in the graph if not present.
-	 */
-	public abstract Map<String, String> getDefaultParameters();
+	public abstract Map<String, Object> extractData(String path)
+			throws WorkflowException;
 }

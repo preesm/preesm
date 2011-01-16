@@ -43,8 +43,8 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.workflow.elements.AbstractScenario;
-import org.ietr.preesm.workflow.elements.AbstractTask;
+import org.ietr.preesm.workflow.elements.AbstractScenarioImplementation;
+import org.ietr.preesm.workflow.elements.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.elements.IWorkflowNode;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
 import org.ietr.preesm.workflow.elements.TaskNode;
@@ -111,18 +111,18 @@ public class WorkflowManager {
 	 */
 	public boolean checkScenarioPrototype(ScenarioNode scenarioNode,
 			Workflow workflow) {
-		AbstractScenario scenario = scenarioNode.getScenario();
-		Set<String> outputs = new HashSet<String>();
+		AbstractScenarioImplementation scenario = scenarioNode.getScenario();
+		Set<String> outputPorts = new HashSet<String>();
 
 		// There may be several output edges with same data type (sharing same
 		// port)
 		for (WorkflowEdge edge : workflow.outgoingEdgesOf(scenarioNode)) {
-			if (!outputs.contains(edge.getDataType())) {
-				outputs.add(edge.getDataType());
+			if (!outputPorts.contains(edge.getSourcePort())) {
+				outputPorts.add(edge.getSourcePort());
 			}
 		}
 
-		if (!scenario.accept(outputs)) {
+		if (!scenario.accept(outputPorts)) {
 			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
 					"Workflow.WrongScenarioPrototype",
 					scenarioNode.getScenarioId(), scenario.displayPrototype());
@@ -137,19 +137,19 @@ public class WorkflowManager {
 	 * Checks that the workflow task node edges fit the task prototype
 	 */
 	public boolean checkTaskPrototype(TaskNode taskNode, Workflow workflow) {
-		AbstractTask task = taskNode.getTask();
+		AbstractTaskImplementation task = taskNode.getTask();
 		Set<String> inputs = new HashSet<String>();
 		Set<String> outputs = new HashSet<String>();
 
 		for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-			inputs.add(edge.getDataType());
+			inputs.add(edge.getTargetPort());
 		}
 
 		// There may be several output edges with same data type (sharing same
 		// port)
 		for (WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
-			if (!outputs.contains(edge.getDataType())) {
-				outputs.add(edge.getDataType());
+			if (!outputs.contains(edge.getSourcePort())) {
+				outputs.add(edge.getSourcePort());
 			}
 		}
 
@@ -170,10 +170,11 @@ public class WorkflowManager {
 	public boolean execute(String workflowPath, String scenarioPath,
 			IProgressMonitor monitor) {
 
+		Workflow workflow = new WorkflowParser().parse(workflowPath);
+
 		// Initializing the workflow console
 		WorkflowLogger.getLogger().initConsole();
-
-		Workflow workflow = new WorkflowParser().parse(workflowPath);
+		monitor.beginTask("Executing workflow", workflow.vertexSet().size());
 
 		WorkflowLogger.getLogger().logFromProperty(Level.INFO,
 				"Workflow.StartInfo", workflowPath);
@@ -181,6 +182,13 @@ public class WorkflowManager {
 		// Checking the existence of plugins
 		if (!check(workflow, monitor)) {
 			monitor.setCanceled(true);
+			return false;
+		}
+
+		if (workflow.vertexSet().size() == 0) {
+			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
+					"Workflow.EmptyVertexSet");
+
 			return false;
 		}
 
@@ -206,7 +214,8 @@ public class WorkflowManager {
 					// process
 					ScenarioNode scenarioNode = (ScenarioNode) node;
 					nodeId = scenarioNode.getScenarioId();
-					AbstractScenario scenario = scenarioNode.getScenario();
+					AbstractScenarioImplementation scenario = scenarioNode
+							.getScenario();
 
 					// Checks that the scenario node output edges fit the task
 					// prototype
@@ -215,7 +224,11 @@ public class WorkflowManager {
 					}
 
 					try {
+						// updating monitor
+						monitor.subTask(scenario.monitorMessage());
 						outputs = scenario.extractData(scenarioPath);
+						// Each node execution is equivalent for the monitor
+						monitor.worked(1);
 					} catch (WorkflowException e) {
 						WorkflowLogger.getLogger().logFromProperty(
 								Level.SEVERE,
@@ -227,7 +240,7 @@ public class WorkflowManager {
 
 				} else if (node.isTaskNode()) {
 					TaskNode taskNode = (TaskNode) node;
-					AbstractTask task = taskNode.getTask();
+					AbstractTaskImplementation task = taskNode.getTask();
 					nodeId = taskNode.getTaskId();
 
 					// Checks that the workflow task node edges fit the task
@@ -241,13 +254,29 @@ public class WorkflowManager {
 
 					// Retrieving the data from input edges
 					for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-						inputs.put(edge.getDataType(), edge.getData());
+						inputs.put(edge.getTargetPort(), edge.getData());
 					}
 
 					// Executing the workflow task
 					try {
-						outputs = task
-								.execute(inputs, taskNode.getParameters());
+						// updating monitor
+						monitor.subTask(task.monitorMessage());
+
+						// Workflow cancellation was requested
+						if (monitor.isCanceled()) {
+
+							WorkflowLogger.getLogger().logFromProperty(
+									Level.SEVERE,
+									"Workflow.CancellationRequested");
+							return false;
+						}
+
+						// execution
+						outputs = task.execute(inputs,
+								taskNode.getParameters(), monitor, nodeId);
+
+						// Each node execution is equivalent for the monitor
+						monitor.worked(1);
 					} catch (WorkflowException e) {
 						WorkflowLogger.getLogger().logFromProperty(
 								Level.SEVERE, "Workflow.ExecutionException",
@@ -266,7 +295,7 @@ public class WorkflowManager {
 					// Retrieving output of the current node
 					// Putting the data in output edges
 					for (WorkflowEdge edge : workflow.outgoingEdgesOf(node)) {
-						String type = edge.getDataType();
+						String type = edge.getSourcePort();
 						// The same data may be transferred to several
 						// successors
 						if (outputs.containsKey(type)) {
@@ -283,8 +312,8 @@ public class WorkflowManager {
 			}
 		}
 
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Workflow execution finished.");
+		WorkflowLogger.getLogger().logFromProperty(Level.INFO,
+				"Workflow.EndInfo", workflowPath);
 
 		return true;
 	}

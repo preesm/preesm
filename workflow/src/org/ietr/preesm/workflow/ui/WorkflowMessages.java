@@ -41,8 +41,8 @@ import java.util.ResourceBundle;
 
 /**
  * This class is used to gather all texts displayed while managing the workflow.
- * The strings are stored in message.properties and retrieved through
- * {@link WorkflowMessages}
+ * The strings are stored in message.properties and retrieved through a text
+ * file.
  * 
  * @author mpelcat
  */
@@ -56,14 +56,14 @@ public class WorkflowMessages {
 	}
 
 	/**
-	 * Gets the string defined in the key. Replace the nth chain "%VAR%"
-	 * by the nth string variable
+	 * Gets the string defined in the key. Replace the nth chain "%VAR%" by the
+	 * nth string variable
 	 */
 	public static String getString(String key, String... variables) {
 		try {
 			String message = RESOURCE_BUNDLE.getString(key);
-			for(String var: variables){
-				if(var != null){
+			for (String var : variables) {
+				if (var != null) {
 					message = message.replaceFirst("%VAR%", var);
 				}
 			}
