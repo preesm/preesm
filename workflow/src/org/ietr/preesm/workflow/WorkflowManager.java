@@ -43,13 +43,13 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.workflow.elements.AbstractScenarioImplementation;
-import org.ietr.preesm.workflow.elements.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.elements.AbstractWorkflowNode;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
 import org.ietr.preesm.workflow.elements.TaskNode;
 import org.ietr.preesm.workflow.elements.Workflow;
 import org.ietr.preesm.workflow.elements.WorkflowEdge;
+import org.ietr.preesm.workflow.implement.AbstractScenarioImplementation;
+import org.ietr.preesm.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**

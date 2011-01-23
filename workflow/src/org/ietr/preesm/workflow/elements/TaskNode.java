@@ -45,6 +45,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.ietr.preesm.workflow.WorkflowParser;
+import org.ietr.preesm.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**

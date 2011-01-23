@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.ietr.preesm.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**

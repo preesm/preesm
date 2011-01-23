@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.workflow.elements;
 
+import org.ietr.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
+
 /**
  * This class provides methods to manipulate workflow nodes.
  * 

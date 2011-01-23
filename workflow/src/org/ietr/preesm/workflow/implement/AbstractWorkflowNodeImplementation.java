@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.workflow.elements;
+package org.ietr.preesm.workflow.implement;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.workflow.elements.AbstractTaskImplementation;
+import org.ietr.preesm.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 public class TestWorkflowTask2 extends AbstractTaskImplementation {

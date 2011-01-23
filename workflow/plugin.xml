@@ -11,7 +11,7 @@
          <inputs>
             <input
                   id="algo"
-                  object="java.lang.String">
+                  object="java.lang.Integer">
             </input>
             <input
                   id="archture"
@@ -30,7 +30,7 @@
          <inputs>
             <input
                   id="algo"
-                  object="java.lang.String">
+                  object="java.lang.Integer">
             </input>
             <input
                   id="superData"
@@ -107,7 +107,7 @@
          <outputs>
             <output
                   id="algo"
-                  object="java.lang.String">
+                  object="java.lang.Integer">
             </output>
             <output
                   id="archi"

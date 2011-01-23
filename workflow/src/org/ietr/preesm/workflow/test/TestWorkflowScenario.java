@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.ietr.preesm.workflow.WorkflowException;
-import org.ietr.preesm.workflow.elements.AbstractScenarioImplementation;
+import org.ietr.preesm.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 public class TestWorkflowScenario extends AbstractScenarioImplementation {
