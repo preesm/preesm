@@ -37,24 +37,26 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.workflow.elements;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.ietr.preesm.workflow.WorkflowException;
 
 /**
  * Abstract scenario that can be implemented by a plugin wanting workflow
- * execution capabilities.
+ * execution capabilities. The prototype of the scenario element is set in the
+ * plugin extension.
  * 
  * @author mpelcat
  */
-public abstract class AbstractScenarioImplementation implements
-		IWorkflowNodeImplementation {
+public abstract class AbstractScenarioImplementation extends
+		AbstractWorkflowNodeImplementation {
 
 	/**
-	 * The workflow scenario element must accept the names of the output ports
-	 * in the graph. Otherwise, the graph is considered not valid.
+	 * Returns the preferred prototype for the node in a workflow. Useful to
+	 * give user information in the workflow
 	 */
-	public abstract boolean accept(Set<String> outputs);
+	public final String displayPrototype() {
+		return super.displayPrototype();
+	}
 
 	/**
 	 * The workflow scenario element must have an initialize method that is

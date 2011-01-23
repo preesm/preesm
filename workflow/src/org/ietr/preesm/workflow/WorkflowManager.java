@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.workflow.elements.AbstractScenarioImplementation;
 import org.ietr.preesm.workflow.elements.AbstractTaskImplementation;
-import org.ietr.preesm.workflow.elements.IWorkflowNode;
+import org.ietr.preesm.workflow.elements.AbstractWorkflowNode;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
 import org.ietr.preesm.workflow.elements.TaskNode;
 import org.ietr.preesm.workflow.elements.Workflow;
@@ -73,9 +73,9 @@ public class WorkflowManager {
 		monitor.subTask("Checking workflow...");
 
 		boolean workflowOk = true;
-		for (IWorkflowNode node : workflow.vertexSet()) {
+		for (AbstractWorkflowNode node : workflow.vertexSet()) {
 			if (node.isScenarioNode()) {
-				workflowOk = ((ScenarioNode) node).isScenarioImplemented();
+				workflowOk = ((ScenarioNode) node).getExtensionInformation();
 
 				// The plugin declaring the scenario class was not found
 				if (!workflowOk) {
@@ -87,7 +87,7 @@ public class WorkflowManager {
 			} else if (node.isTaskNode()) {
 				// Testing only connected nodes
 				if (!workflow.edgesOf(node).isEmpty()) {
-					workflowOk = ((TaskNode) node).isTaskImplemented();
+					workflowOk = ((TaskNode) node).getExtensionInformation();
 
 					// The plugin declaring the task class was not found
 					if (!workflowOk) {
@@ -115,14 +115,15 @@ public class WorkflowManager {
 		Set<String> outputPorts = new HashSet<String>();
 
 		// There may be several output edges with same data type (sharing same
-		// port)
+		// port). All output names are retrieved here.
 		for (WorkflowEdge edge : workflow.outgoingEdgesOf(scenarioNode)) {
 			if (!outputPorts.contains(edge.getSourcePort())) {
 				outputPorts.add(edge.getSourcePort());
 			}
 		}
 
-		if (!scenario.accept(outputPorts)) {
+		// The scenario node prototype is compared to the output port names
+		if (!scenario.acceptOutputs(outputPorts)) {
 			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
 					"Workflow.WrongScenarioPrototype",
 					scenarioNode.getScenarioId(), scenario.displayPrototype());
@@ -138,11 +139,16 @@ public class WorkflowManager {
 	 */
 	public boolean checkTaskPrototype(TaskNode taskNode, Workflow workflow) {
 		AbstractTaskImplementation task = taskNode.getTask();
-		Set<String> inputs = new HashSet<String>();
+		Map<String, String> inputs = new HashMap<String, String>();
 		Set<String> outputs = new HashSet<String>();
 
+		// input ports are retrieved as well as the data type
+		// of the corresponding output port in the connected node
 		for (WorkflowEdge edge : workflow.incomingEdgesOf(taskNode)) {
-			inputs.add(edge.getTargetPort());
+			AbstractWorkflowNode predecessor = workflow.getEdgeSource(edge);
+			String type = predecessor.getImplementation().getOutputType(
+					edge.getSourcePort());
+			inputs.put(edge.getTargetPort(), type);
 		}
 
 		// There may be several output edges with same data type (sharing same
@@ -153,7 +159,16 @@ public class WorkflowManager {
 			}
 		}
 
-		if (!task.accept(inputs, outputs)) {
+		if (!task.acceptInputs(inputs)) {
+			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
+					"Workflow.WrongTaskPrototype", taskNode.getTaskId(),
+					task.displayPrototype());
+
+			return false;
+		}
+
+		// The task prototype is compared to the output port names
+		if (!task.acceptOutputs(outputs)) {
 			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
 					"Workflow.WrongTaskPrototype", taskNode.getTaskId(),
 					task.displayPrototype());
@@ -179,7 +194,7 @@ public class WorkflowManager {
 		WorkflowLogger.getLogger().logFromProperty(Level.INFO,
 				"Workflow.StartInfo", workflowPath);
 
-		// Checking the existence of plugins
+		// Checking the existence of plugins and retrieving prototypess
 		if (!check(workflow, monitor)) {
 			monitor.setCanceled(true);
 			return false;
@@ -199,7 +214,7 @@ public class WorkflowManager {
 			return false;
 		}
 
-		for (IWorkflowNode node : workflow.vertexTopologicalList()) {
+		for (AbstractWorkflowNode node : workflow.vertexTopologicalList()) {
 			if (workflow.edgesOf(node).isEmpty()) {
 				WorkflowLogger.getLogger().logFromProperty(Level.WARNING,
 						"Workflow.IgnoredNonConnectedTask");

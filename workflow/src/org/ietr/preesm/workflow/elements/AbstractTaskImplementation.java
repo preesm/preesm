@@ -36,26 +36,82 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.workflow.elements;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.workflow.WorkflowException;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
- * This interface must be implemented by any workflow task element.
+ * This interface must be implemented by any workflow task element. The
+ * prototype of the workflow task is specified in the plugin extension.
  * 
  * @author mpelcat
  */
-public abstract class AbstractTaskImplementation implements
-		IWorkflowNodeImplementation {
+public abstract class AbstractTaskImplementation extends
+		AbstractWorkflowNodeImplementation {
 
 	/**
-	 * The workflow task implementation must accept the names of the
-	 * input/output ports set in the graph. Otherwise, the graph is considered
-	 * to be wrongly defined.
+	 * Id and fully qualified names of task input and output retrieved from the
+	 * extension.
 	 */
-	public abstract boolean accept(Set<String> inputs, Set<String> outputs);
+	private Map<String, String> inputPrototype;
+
+	public AbstractTaskImplementation() {
+		inputPrototype = new HashMap<String, String>();
+	}
+
+	/**
+	 * Adds an input to the task prototype.
+	 */
+	final public void addInput(String id, String type) {
+		inputPrototype.put(id, type);
+	}
+
+	/**
+	 * Compares the prototype with the input edges id AND type. All inputs need
+	 * to be initialized
+	 */
+	final public boolean acceptInputs(Map<String, String> graphInputPorts) {
+
+		for (String protoInputPortName : inputPrototype.keySet()) {
+			if (!graphInputPorts.keySet().contains(protoInputPortName)) {
+				WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
+						"Workflow.FalseInputEdge", protoInputPortName);
+				return false;
+			} else {
+				String protoType = inputPrototype.get(protoInputPortName);
+				String graphType = graphInputPorts.get(protoInputPortName);
+				if (!protoType.equals(graphType)) {
+					WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
+							"Workflow.FalseInputType", protoInputPortName,
+							graphType, protoType);
+					return false;
+				}
+			}
+		}
+
+		if (graphInputPorts.keySet().size() > inputPrototype.keySet().size()) {
+			WorkflowLogger.getLogger().logFromProperty(Level.SEVERE,
+					"Workflow.TooManyInputEdges",
+					String.valueOf(graphInputPorts.keySet().size()),
+					String.valueOf(inputPrototype.keySet().size()));
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns the preferred prototype for the node in a workflow. Useful to
+	 * give user information in the workflow
+	 */
+	public final String displayPrototype() {
+		return " inputs=" + inputPrototype.toString()
+				+ super.displayPrototype();
+	}
 
 	/**
 	 * The workflow task element implementation must have a execute method that

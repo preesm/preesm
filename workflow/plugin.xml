@@ -8,10 +8,35 @@
       <task
             id="TestNewWorkflow1"
             type="org.ietr.preesm.workflow.test.TestWorkflowTask1">
+         <inputs>
+            <input
+                  id="algo"
+                  object="java.lang.String">
+            </input>
+            <input
+                  id="archture"
+                  object="java.lang.String">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="superData"
+                  object="java.lang.String"></output>
+         </outputs>
       </task>
       <task
             id="TestNewWorkflow2"
             type="org.ietr.preesm.workflow.test.TestWorkflowTask2">
+         <inputs>
+            <input
+                  id="algo"
+                  object="java.lang.String">
+            </input>
+            <input
+                  id="superData"
+                  object="java.lang.String">
+            </input>
+         </inputs>
       </task>
    </extension>
    <extension
@@ -79,6 +104,16 @@
       <scenario
             id="TestScenario"
             type="org.ietr.preesm.workflow.test.TestWorkflowScenario">
+         <outputs>
+            <output
+                  id="algo"
+                  object="java.lang.String">
+            </output>
+            <output
+                  id="archi"
+                  object="java.lang.String">
+            </output>
+         </outputs>
       </scenario>
    </extension>
 

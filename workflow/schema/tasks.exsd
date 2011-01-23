@@ -15,6 +15,9 @@
          <appinfo>
             <meta.element />
          </appinfo>
+         <documentation>
+            Implement here tasks that can be added to a workflow
+         </documentation>
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
@@ -48,7 +51,16 @@
    </element>
 
    <element name="task">
+      <annotation>
+         <documentation>
+            A task specifies a class that implements the behavior of a workflow graph node type. A prototype is needed to specify which inputs and outputs are exposed by this task.
+         </documentation>
+      </annotation>
       <complexType>
+         <sequence minOccurs="0" maxOccurs="1">
+            <element ref="inputs"/>
+            <element ref="outputs"/>
+         </sequence>
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
@@ -73,6 +85,76 @@
                </documentation>
             </annotation>
          </attribute>
+      </complexType>
+   </element>
+
+   <element name="input">
+      <annotation>
+         <documentation>
+            An input data is specified by an id that correspond to the port name in the graph and an object type that corresponds to the type of the data object.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  id that correspond to the port name in the graph
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="object" type="string">
+            <annotation>
+               <documentation>
+                  object type that corresponds to the type of the data object
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="output">
+      <annotation>
+         <documentation>
+            An output data is specified by an id that correspond to the port name in the graph and an object type that corresponds to the type of the data object.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  id that correspond to the port name in the graph
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="object" type="string">
+            <annotation>
+               <documentation>
+                  object type that corresponds to the type of the data object
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="java.lang.Object:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="inputs">
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="input"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="outputs">
+      <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="output"/>
+         </sequence>
       </complexType>
    </element>
 

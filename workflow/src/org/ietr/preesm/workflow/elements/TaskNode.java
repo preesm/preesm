@@ -54,12 +54,7 @@ import org.ietr.preesm.workflow.tools.WorkflowLogger;
  * @author mpelcat
  * 
  */
-public class TaskNode implements IWorkflowNode {
-
-	/**
-	 * The ITransformation created using transformationId.
-	 */
-	private AbstractTaskImplementation task;
+public class TaskNode extends AbstractWorkflowNode {
 
 	/**
 	 * Transformation Id.
@@ -111,7 +106,7 @@ public class TaskNode implements IWorkflowNode {
 	 *         <code>null</code> if the transformation is not valid.
 	 */
 	public AbstractTaskImplementation getTask() {
-		return task;
+		return (AbstractTaskImplementation) implementation;
 	}
 
 	/**
@@ -145,11 +140,36 @@ public class TaskNode implements IWorkflowNode {
 	}
 
 	/**
+	 * Specifies the inputs and outputs types of the workflow task using
+	 * information from the plugin extension.
+	 * 
+	 * @return True if the prototype was correctly set.
+	 */
+	private boolean initPrototype(AbstractTaskImplementation task,
+			IConfigurationElement element) {
+
+		for (IConfigurationElement child : element.getChildren()) {
+			if (child.getName().equals("inputs")) {
+				for (IConfigurationElement input : child.getChildren()) {
+					task.addInput(input.getAttribute("id"),
+							input.getAttribute("object"));
+				}
+			} else if (child.getName().equals("outputs")) {
+				for (IConfigurationElement output : child.getChildren()) {
+					task.addOutput(output.getAttribute("id"),
+							output.getAttribute("object"));
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Checks if this task exists based on its ID.
 	 * 
 	 * @return True if this task exists, false otherwise.
 	 */
-	public boolean isTaskImplemented() {
+	public boolean getExtensionInformation() {
 		try {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -162,10 +182,15 @@ public class TaskNode implements IWorkflowNode {
 					// Tries to create the transformation
 					Object obj = element.createExecutableExtension("type");
 
-					// and checks it actually is an ITransformation.
+					// and checks it actually is a TaskImplementation.
 					if (obj instanceof AbstractTaskImplementation) {
-						task = (AbstractTaskImplementation) obj;
+						implementation = (AbstractTaskImplementation) obj;
 						found = true;
+
+						// Initializes the prototype of the workflow task
+						initPrototype(
+								(AbstractTaskImplementation) implementation,
+								element);
 					}
 				}
 			}

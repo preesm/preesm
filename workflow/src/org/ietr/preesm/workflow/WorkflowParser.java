@@ -45,7 +45,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.workflow.elements.IWorkflowNode;
+import org.ietr.preesm.workflow.elements.AbstractWorkflowNode;
 import org.ietr.preesm.workflow.elements.ScenarioNode;
 import org.ietr.preesm.workflow.elements.TaskNode;
 import org.ietr.preesm.workflow.elements.Workflow;
@@ -70,12 +70,12 @@ public class WorkflowParser extends DefaultHandler2 {
 	 */
 	TaskNode lastTransformationNode = null;
 
-	private Map<String, IWorkflowNode> nodes;
+	private Map<String, AbstractWorkflowNode> nodes;
 
 	private Workflow workflow = null;
 
 	public WorkflowParser() {
-		this.nodes = new HashMap<String, IWorkflowNode>();
+		this.nodes = new HashMap<String, AbstractWorkflowNode>();
 		this.workflow = new Workflow();
 	}
 
@@ -117,19 +117,20 @@ public class WorkflowParser extends DefaultHandler2 {
 
 		if (qName.equals("preesm:scenario")) {
 			String pluginId = attributes.getValue("pluginId");
-			IWorkflowNode node = new ScenarioNode(pluginId);
+			AbstractWorkflowNode node = new ScenarioNode(pluginId);
 			workflow.addVertex(node);
 			nodes.put("__scenario", node);
 		} else if (qName.equals("preesm:task")) {
 			String taskId = attributes.getValue("taskId");
 			String pluginId = attributes.getValue("pluginId");
 			lastTransformationNode = new TaskNode(pluginId, taskId);
-			IWorkflowNode node = lastTransformationNode;
+			AbstractWorkflowNode node = lastTransformationNode;
 			workflow.addVertex(node);
 			nodes.put(taskId, node);
 		} else if (qName.equals("preesm:dataTransfer")) {
-			IWorkflowNode source = nodes.get(attributes.getValue("from"));
-			IWorkflowNode target = nodes.get(attributes.getValue("to"));
+			AbstractWorkflowNode source = nodes
+					.get(attributes.getValue("from"));
+			AbstractWorkflowNode target = nodes.get(attributes.getValue("to"));
 			String sourcePort = attributes.getValue("sourceport");
 			String targetPort = attributes.getValue("targetport");
 			WorkflowEdge edge = workflow.addEdge(source, target);

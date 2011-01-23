@@ -49,19 +49,13 @@ import org.ietr.preesm.workflow.tools.WorkflowLogger;
  * 
  * @author mpelcat
  */
-public class ScenarioNode implements IWorkflowNode {
+public class ScenarioNode extends AbstractWorkflowNode {
 
 	/**
 	 * The identifier of this scenario node. It is needed to retrieve the
 	 * implementation of this node
 	 */
 	private String scenarioId = null;
-
-	/**
-	 * The identifier of this scenario node. It is needed to retrieve the
-	 * implementation of this node
-	 */
-	private AbstractScenarioImplementation scenario = null;
 
 	public ScenarioNode(String scenarioId) {
 		super();
@@ -73,7 +67,7 @@ public class ScenarioNode implements IWorkflowNode {
 	}
 
 	public AbstractScenarioImplementation getScenario() {
-		return scenario;
+		return (AbstractScenarioImplementation) implementation;
 	}
 
 	@Override
@@ -87,11 +81,31 @@ public class ScenarioNode implements IWorkflowNode {
 	}
 
 	/**
+	 * Initializes the outputs types of the scenario using information from the
+	 * plugin extension.
+	 * 
+	 * @return True if the prototype was correctly set.
+	 */
+	private boolean initPrototype(AbstractScenarioImplementation scenario,
+			IConfigurationElement element) {
+
+		for (IConfigurationElement child : element.getChildren()) {
+			if (child.getName().equals("outputs")) {
+				for (IConfigurationElement output : child.getChildren()) {
+					scenario.addOutput(output.getAttribute("id"),
+							output.getAttribute("object"));
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Checks if this scenario exists based on its ID.
 	 * 
 	 * @return True if this scenario exists, false otherwise.
 	 */
-	public boolean isScenarioImplemented() {
+	public boolean getExtensionInformation() {
 		try {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 
@@ -105,7 +119,12 @@ public class ScenarioNode implements IWorkflowNode {
 
 					// and checks it actually is an ITransformation.
 					if (obj instanceof AbstractScenarioImplementation) {
-						scenario = (AbstractScenarioImplementation) obj;
+						implementation = (AbstractScenarioImplementation) obj;
+
+						// Initializes the prototype of the scenario
+						initPrototype(
+								(AbstractScenarioImplementation) implementation,
+								element);
 						return true;
 					}
 				}

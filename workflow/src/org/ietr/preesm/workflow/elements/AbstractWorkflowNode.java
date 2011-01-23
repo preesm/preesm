@@ -37,22 +37,30 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.workflow.elements;
 
 /**
- * This interface provides methods to manipulate workflow nodes.
+ * This class provides methods to manipulate workflow nodes.
  * 
- * @author Matthieu Wipliez
  * @author mpelcat
  * 
  */
-public interface IWorkflowNode {
+public abstract class AbstractWorkflowNode {
+
+	/**
+	 * Implementation of this node
+	 */
+	protected AbstractWorkflowNodeImplementation implementation = null;
+
+	final public AbstractWorkflowNodeImplementation getImplementation() {
+		return implementation;
+	}
 
 	/**
 	 * @return True if this node is a scenario node, false otherwise.
 	 */
-	public boolean isScenarioNode();
+	public abstract boolean isScenarioNode();
 
 	/**
 	 * @return True if this node is a transformation node, false otherwise.
 	 */
-	public boolean isTaskNode();
+	public abstract boolean isTaskNode();
 
 }
