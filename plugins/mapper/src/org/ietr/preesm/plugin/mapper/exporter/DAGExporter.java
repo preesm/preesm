@@ -36,26 +36,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.exporter;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.jgrapht.Graph;
 import org.sdf4j.exporter.GMLExporter;
-import org.sdf4j.exporter.GMLSDFExporter;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
 import org.sdf4j.model.sdf.SDFVertex;
 import org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory;
 import org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory;

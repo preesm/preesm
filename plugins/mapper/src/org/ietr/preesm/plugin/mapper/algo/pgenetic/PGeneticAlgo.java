@@ -53,13 +53,13 @@ import java.util.logging.Logger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Task scheduling genetic algorithm

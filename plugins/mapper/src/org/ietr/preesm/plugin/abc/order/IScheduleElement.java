@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.abc.order;
 import java.util.Set;
 
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
+import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.sdf4j.model.dag.DAGEdge;
 
@@ -54,6 +55,8 @@ public interface IScheduleElement {
 	public TimingVertexProperty getTimingVertexProperty();
 	
 	public ImplementationVertexProperty getImplementationVertexProperty();
+	
+	public InitialVertexProperty getInitialVertexProperty();
 	
 	public Set<DAGEdge> incomingEdges();
 }

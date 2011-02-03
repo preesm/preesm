@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
+import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.sdf4j.model.dag.DAGEdge;
@@ -84,6 +85,14 @@ public class SynchronizedVertices implements IScheduleElement {
 	public ImplementationVertexProperty getImplementationVertexProperty() {
 		if (!vertices.isEmpty()) {
 			return vertices.get(0).getImplementationVertexProperty();
+		}
+		return null;
+	}
+
+	@Override
+	public InitialVertexProperty getInitialVertexProperty() {
+		if (!vertices.isEmpty()) {
+			return vertices.get(0).getInitialVertexProperty();
 		}
 		return null;
 	}

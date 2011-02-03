@@ -64,7 +64,7 @@ public class InitialVertexProperty {
 	 * Timings on available operators
 	 */
 	private List<Timing> timings;
-
+	
 	/**
 	 * Available operators
 	 */

@@ -54,7 +54,6 @@ import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
@@ -69,6 +68,7 @@ import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Task scheduling FAST algorithm multithread

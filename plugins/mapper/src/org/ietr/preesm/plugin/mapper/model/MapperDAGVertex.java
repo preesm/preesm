@@ -118,7 +118,6 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 
 		ImplementationVertexProperty impProp = this
 				.getImplementationVertexProperty().clone();
-		impProp.setParentVertex(result);
 		result.setImplementationVertexProperty(impProp);
 
 		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(

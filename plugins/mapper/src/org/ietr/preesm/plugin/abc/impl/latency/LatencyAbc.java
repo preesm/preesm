@@ -49,7 +49,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
@@ -72,6 +71,7 @@ import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.dag.DAGVertex;
 
 /**
@@ -547,7 +547,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		}
 	}
 
-	private class IshedTLevelComp implements Comparator<IScheduleElement> {
+	private class ISchedTLevelComp implements Comparator<IScheduleElement> {
 
 		@Override
 		public int compare(IScheduleElement arg0, IScheduleElement arg1) {
@@ -591,7 +591,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
 					orderManager.getTotalOrder().getList());
 
-			Collections.sort(vList, new IshedTLevelComp());
+			Collections.sort(vList, new ISchedTLevelComp());
 
 			Map<IScheduleElement, IScheduleElement> refMap = new HashMap<IScheduleElement, IScheduleElement>();
 			List<IScheduleElement> eltList = new ArrayList<IScheduleElement>();

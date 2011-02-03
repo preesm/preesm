@@ -63,6 +63,11 @@ public class TimingVertexProperty {
 	 * T Level is the time between the start of execution and the vertex start
 	 */
 	private long newtLevel;
+	
+	/**
+	 * Time under which a valid tLevel for the vertex can not be
+	 */
+	private long minimalTLevel = 0;
 
 	public TimingVertexProperty() {
 		super();
@@ -75,6 +80,7 @@ public class TimingVertexProperty {
 		property.setNewbLevel(this.getNewbLevel());
 		property.setNewtLevel(this.getNewtLevel());
 		property.setCost(this.getCost());
+		property.setMinimalTLevel(minimalTLevel);
 		return property;
 	}
 
@@ -128,5 +134,11 @@ public class TimingVertexProperty {
 		return (newtLevel != UNAVAILABLE);
 	}
 
-	
+	public long getMinimalTLevel() {
+		return minimalTLevel;
+	}
+
+	public void setMinimalTLevel(long minimalTLevel) {
+		this.minimalTLevel = minimalTLevel;
+	}
 }

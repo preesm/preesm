@@ -5,10 +5,8 @@ package org.ietr.preesm.plugin.mapper.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 

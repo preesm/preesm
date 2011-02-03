@@ -44,7 +44,6 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -54,6 +53,9 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -94,6 +96,31 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
 
+		// The graph may be repeated a predefined number of times
+		// with a predefined period
+		int iterationNr = textParameters.getIntVariable("iterationNr");
+		int iterationPeriod = textParameters.getIntVariable("iterationPeriod");
+		
+		// Repeating the graph to simulate several calls.
+		if(iterationNr != 0){
+			WorkflowLogger.getLogger().log(Level.INFO, "Repetition of the graph " + iterationNr + " time(s) with period " + iterationPeriod + " required in dynamic scheduling");
+			
+			for(int i=0; i<iterationNr; i++){
+				MapperDAG clone = dag.clone();
+				
+				for(DAGVertex v : clone.vertexSet()){
+					v.setName(v.getName() + "_it" + i+2);
+					v.setId(v.getId() + "_it" + i+2);
+					//((MapperDAGVertex) v).getTimingVertexProperty().setMinimalTLevel(iterationPeriod * (i+1));
+					dag.addVertex(v);
+				}
+				
+				for(DAGEdge e : clone.edgeSet()){
+					dag.addEdge(e.getSource(), e.getTarget(), e);
+				}
+			}
+		}
+
 		// calculates the DAG span length on the architecture main operator (the
 		// tasks that can
 		// not be executed by the main operator are deported without transfer
@@ -106,7 +133,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 						.getTaskSchedType(), scenario);
 
 		WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
-
+		
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
 		simu2.setTaskScheduler(new SimpleTaskSched());
@@ -116,7 +143,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		dynamicSched.mapVertices(simu2);
 
 		simu2.retrieveTotalOrder();
-
+		
 		TagDAG tagSDF = new TagDAG();
 
 		try {

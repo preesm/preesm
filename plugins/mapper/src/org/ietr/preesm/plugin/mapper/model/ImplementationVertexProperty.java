@@ -56,12 +56,6 @@ public class ImplementationVertexProperty {
 	 */
 	private RelativeConstraint relativeConstraint = null;
 
-
-	/**
-	 * Corresponding vertex
-	 */
-	private MapperDAGVertex parentVertex;
-
 	/**
 	 * The order in the schedule of a processor is determined by the order of
 	 * the calls to map() method.
@@ -71,7 +65,6 @@ public class ImplementationVertexProperty {
 	public ImplementationVertexProperty(MapperDAGVertex parentVertex) {
 		super();
 		effectiveComponent = Operator.NO_COMPONENT;
-		this.parentVertex = parentVertex;
 		schedulingTotalOrder = -1;
 	}
 
@@ -91,10 +84,6 @@ public class ImplementationVertexProperty {
 		property.setEffectiveComponent(this.getEffectiveComponent());
 		property.setSchedTotalOrder(this.schedulingTotalOrder);
 		return property;
-	}
-
-	public void setParentVertex(MapperDAGVertex parentVertex) {
-		this.parentVertex = parentVertex;
 	}
 
 	/**

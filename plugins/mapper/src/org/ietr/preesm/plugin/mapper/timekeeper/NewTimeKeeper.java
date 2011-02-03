@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
@@ -21,6 +20,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -209,15 +209,18 @@ public class NewTimeKeeper implements Observer {
 
 			predset.addAll(inducedPredset);
 
+			long time;
+			
 			// If the vertex has no predecessor, ALAP=ASAP=0;
 			// t-level = ASAP
 			if (predset.isEmpty()) {
-				currenttimingproperty.setNewtLevel(0);
+				time = 0;
 			} else {
 				// The T level is the time of the longest preceding path
-				long l = getLongestPrecedingPath(predset, modifiedElt);
-				currenttimingproperty.setNewtLevel(l);
+				time = getLongestPrecedingPath(predset, modifiedElt);
 			}
+			
+			currenttimingproperty.setNewtLevel(time);
 
 		} else {
 			// If the current vertex has no effective component

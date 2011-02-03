@@ -54,9 +54,9 @@ import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * This class can evaluate a given transfer and choose the best route between
