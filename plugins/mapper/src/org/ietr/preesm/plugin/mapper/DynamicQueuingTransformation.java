@@ -39,8 +39,17 @@ package org.ietr.preesm.plugin.mapper;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.parser.VLNV;
+import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.editor.simu.OperatorCheckStateListener;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
@@ -51,13 +60,21 @@ import org.ietr.preesm.plugin.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.plugin.mapper.algo.dynamic.DynamicQueuingScheduler;
 import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
+import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.plugin.mapper.model.RelativeConstraint;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
+import org.sdf4j.model.AbstractVertexPropertyType;
 import org.sdf4j.model.dag.DAGEdge;
 import org.sdf4j.model.dag.DAGVertex;
+import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
 import org.sdf4j.model.parameters.InvalidExpressionException;
+import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
+import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Plug-in class for dynamic queuing scheduling
@@ -87,6 +104,44 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			PreesmScenario scenario, IProgressMonitor monitor)
 			throws PreesmException {
 
+		// The graph may be repeated a predefined number of times
+		// with a predefined period
+		int iterationNr = textParameters.getIntVariable("iterationNr");
+		int iterationPeriod = textParameters.getIntVariable("iterationPeriod");
+
+		// Repeating the graph to simulate several calls. Repetitions are
+		// delayed through
+		// Special dependencies to virtual operator tasks
+		Operator virtualDelayManager = null;
+		if (iterationNr != 0) {
+			// Creating a virtual component
+			VLNV v = new VLNV("nobody", "none", "DelayManager", "1.0");
+			OperatorDefinition opdef = new OperatorDefinition(v);
+			virtualDelayManager = new Operator("VirtualDelayManager", opdef);
+			architecture.addComponent(virtualDelayManager);
+
+			// Connecting the virtual component to all cores
+			for (ArchitectureComponent cmp : architecture.getComponents()) {
+				if (cmp instanceof Operator
+						&& !cmp.getId().equals("VirtualDelayManager")) {
+					Operator op = (Operator) cmp;
+					VLNV v2 = new VLNV("nobody", "none", "DelayManagerNodeTo"
+							+ op.getId(), "1.0");
+					ParallelNodeDefinition nodeDef = new ParallelNodeDefinition(
+							v2);
+					nodeDef.setDataRate(1000000);
+					ParallelNode virtualNode = new ParallelNode("virtualNodeTo"
+							+ op.getId(), nodeDef);
+					architecture.addComponent(virtualNode);
+					Interconnection c1 = architecture.addEdge(virtualNode, op);
+					c1.setDirected(false);
+					Interconnection c2 = architecture.addEdge(virtualNode,
+							virtualDelayManager);
+					c2.setDirected(false);
+				}
+			}
+		}
+
 		super.transform(algorithm, architecture, textParameters, scenario,
 				monitor);
 
@@ -96,26 +151,69 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
 
-		// The graph may be repeated a predefined number of times
-		// with a predefined period
-		int iterationNr = textParameters.getIntVariable("iterationNr");
-		int iterationPeriod = textParameters.getIntVariable("iterationPeriod");
-		
 		// Repeating the graph to simulate several calls.
-		if(iterationNr != 0){
-			WorkflowLogger.getLogger().log(Level.INFO, "Repetition of the graph " + iterationNr + " time(s) with period " + iterationPeriod + " required in dynamic scheduling");
-			
-			for(int i=0; i<iterationNr; i++){
-				MapperDAG clone = dag.clone();
-				
-				for(DAGVertex v : clone.vertexSet()){
-					v.setName(v.getName() + "_it" + i+2);
-					v.setId(v.getId() + "_it" + i+2);
-					//((MapperDAGVertex) v).getTimingVertexProperty().setMinimalTLevel(iterationPeriod * (i+1));
-					dag.addVertex(v);
+		if (iterationNr != 0) {
+			WorkflowLogger.getLogger().log(
+					Level.INFO,
+					"Repetition of the graph " + iterationNr
+							+ " time(s) with period " + iterationPeriod
+							+ " required in dynamic scheduling");
+
+			// Creating virtual actors to delay iterations
+			MapperDAGVertex lastCreatedVertex = null;
+			for (int i = 0; i < iterationNr; i++) {
+				// A virtual actor with SDF corresponding vertex to associate a
+				// timing
+				MapperDAGVertex v = new MapperDAGVertex();
+				SDFAbstractVertex sdfV = new SDFVertex();
+				sdfV.setName("VirtualDelay");
+				sdfV.setId("VirtualDelay");
+				v.setCorrespondingSDFVertex(sdfV);
+				v.setName("VirtualDelay" + "_it" + (i + 2));
+				v.setId("VirtualDelay" + "_it" + (i + 2));
+				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
+				v.getInitialVertexProperty().addOperator(virtualDelayManager);
+				Timing timing = new Timing(
+						(OperatorDefinition) virtualDelayManager
+								.getDefinition(),
+						sdfV, iterationPeriod);
+				v.getInitialVertexProperty().addTiming(timing);
+				dag.addVertex(v);
+
+				// Edges between actors ensure the order of appearance
+				if (lastCreatedVertex != null) {
+					MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
+							lastCreatedVertex, v);
+					InitialEdgeProperty p = new InitialEdgeProperty(1);
+					e.setInitialEdgeProperty(p);
 				}
+				lastCreatedVertex = v;
+			}
+
+			for (int i = 0; i < iterationNr; i++) {
+				MapperDAG clone = dag.clone();
+
+				MapperDAGVertex correspondingVirtualVertex = (MapperDAGVertex) dag
+				.getVertex("VirtualDelay" + "_it" + (i + 2));
 				
-				for(DAGEdge e : clone.edgeSet()){
+				for (DAGVertex v : clone.vertexSet()) {
+					// Cloning the vertices to duplicate the graph
+					v.setName(v.getName() + "_it" + i + 2);
+					v.setId(v.getId() + "_it" + i + 2);
+					dag.addVertex(v);
+
+					// Adding edges to delay correctly the execution of
+					// iterations. Only vertices without predecessor are concerned
+					if(v.incomingEdges().isEmpty()){
+						MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
+								correspondingVirtualVertex, v);
+						InitialEdgeProperty p = new InitialEdgeProperty(1);
+						e.setInitialEdgeProperty(p);
+					}
+				}
+
+				// Cloning edges
+				for (DAGEdge e : clone.edgeSet()) {
 					dag.addEdge(e.getSource(), e.getTarget(), e);
 				}
 			}
@@ -133,22 +231,22 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 						.getTaskSchedType(), scenario);
 
 		WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
-		
+
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
 		simu2.setTaskScheduler(new SimpleTaskSched());
-		
-		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(simu
-				.getTotalOrder(), textParameters);
+
+		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(
+				simu.getTotalOrder(), textParameters);
 		dynamicSched.mapVertices(simu2);
 
 		simu2.retrieveTotalOrder();
-		
+
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag, architecture, scenario, simu2, abcParameters
-					.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2,
+					abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 			throw (new PreesmException(e.getMessage()));

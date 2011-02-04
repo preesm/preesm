@@ -211,9 +211,9 @@ public class NewTimeKeeper implements Observer {
 
 			long time;
 			
-			// If the vertex has no predecessor, ALAP=ASAP=0;
-			// t-level = ASAP
 			if (predset.isEmpty()) {
+				// If the vertex has no predecessor, ALAP=ASAP=0;
+				// t-level = ASAP
 				time = 0;
 			} else {
 				// The T level is the time of the longest preceding path
