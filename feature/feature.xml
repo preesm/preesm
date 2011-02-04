@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.5.4"
+      version="0.5.5"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">
@@ -82,6 +82,13 @@ terms.
 
    <plugin
          id="org.ietr.preesm.plugin.architransform"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.workflow"
          download-size="0"
          install-size="0"
          version="0.0.0"

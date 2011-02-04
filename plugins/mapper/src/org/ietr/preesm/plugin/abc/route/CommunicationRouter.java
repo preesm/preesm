@@ -116,7 +116,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		while (iterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
 
-			if (!(currentEdge instanceof PrecedenceEdge)) {
+			if (!(currentEdge instanceof PrecedenceEdge) &&
+					currentEdge.getInitialEdgeProperty().getDataSize() != 0) {
 				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
 						.getSource()).getImplementationVertexProperty();
 				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge

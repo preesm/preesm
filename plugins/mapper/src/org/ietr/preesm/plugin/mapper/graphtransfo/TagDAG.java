@@ -106,7 +106,7 @@ public class TagDAG {
 		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag
 				.getReferenceSdfGraph());
 
-		addSendReceive(dag, architecture, simu, scenario);
+		addSendReceive(dag, architecture, scenario);
 		addProperties(dag);
 		addAllAggregates(dag, scenario);
 	}
@@ -115,7 +115,7 @@ public class TagDAG {
 	 * Adds send and receive without scheduling them
 	 */
 	public void addSendReceive(MapperDAG dag,
-			MultiCoreArchitecture architecture, IAbc simu, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);

@@ -247,6 +247,12 @@ public class MyGanttRenderer extends GanttRenderer {
 				c = getRandomColor(210.0, 150.0, 50.0, 20);
 			} else if (name.indexOf("__send") == 0 || name.indexOf("__receive") == 0) {
 				c = getRandomColor(160.0, 130.0, 100.0, 20);
+			} else if (name.indexOf("__@") != -1) {
+				int atNumber = name.indexOf("__@");
+				
+				int index = Integer.valueOf(name.substring(atNumber + 3, atNumber + 4)) - 1;
+				// iteration task color
+				c = getRandomColor(27.0 + ((50*index)%200), 182.0 - ((50*index)%160), 233.0, 20);
 			} else {
 				c = getRandomColor(130.0, 100.0, 160.0, 20);
 			}

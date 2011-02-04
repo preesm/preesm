@@ -169,8 +169,8 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				sdfV.setName("VirtualDelay");
 				sdfV.setId("VirtualDelay");
 				v.setCorrespondingSDFVertex(sdfV);
-				v.setName("VirtualDelay" + "_it" + (i + 2));
-				v.setId("VirtualDelay" + "_it" + (i + 2));
+				v.setName("VirtualDelay" + "__@" + (i + 2));
+				v.setId("VirtualDelay" + "__@" + (i + 2));
 				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 				v.getInitialVertexProperty().addOperator(virtualDelayManager);
 				Timing timing = new Timing(
@@ -184,7 +184,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				if (lastCreatedVertex != null) {
 					MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
 							lastCreatedVertex, v);
-					InitialEdgeProperty p = new InitialEdgeProperty(1);
+					InitialEdgeProperty p = new InitialEdgeProperty(0);
 					e.setInitialEdgeProperty(p);
 				}
 				lastCreatedVertex = v;
@@ -194,27 +194,33 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				MapperDAG clone = dag.clone();
 
 				MapperDAGVertex correspondingVirtualVertex = (MapperDAGVertex) dag
-				.getVertex("VirtualDelay" + "_it" + (i + 2));
+				.getVertex("VirtualDelay" + "__@" + (i + 2));
 				
 				for (DAGVertex v : clone.vertexSet()) {
-					// Cloning the vertices to duplicate the graph
-					v.setName(v.getName() + "_it" + i + 2);
-					v.setId(v.getId() + "_it" + i + 2);
-					dag.addVertex(v);
-
-					// Adding edges to delay correctly the execution of
-					// iterations. Only vertices without predecessor are concerned
-					if(v.incomingEdges().isEmpty()){
-						MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
-								correspondingVirtualVertex, v);
-						InitialEdgeProperty p = new InitialEdgeProperty(1);
-						e.setInitialEdgeProperty(p);
+					if(!v.getName().contains("__@")){
+						// Cloning the vertices to duplicate the graph
+						v.setName(v.getName() + "__@" + (i + 2));
+						v.setId(v.getId() + "__@" + (i + 2));
+						dag.addVertex(v);
+	
+						// Adding edges to delay correctly the execution of
+						// iterations. Only vertices without predecessor are concerned
+						if(v.incomingEdges().isEmpty()){
+							MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
+									correspondingVirtualVertex, v);
+							
+							// 0 data edges will be ignored while routing
+							InitialEdgeProperty p = new InitialEdgeProperty(0);
+							e.setInitialEdgeProperty(p);
+						}
 					}
 				}
 
 				// Cloning edges
 				for (DAGEdge e : clone.edgeSet()) {
-					dag.addEdge(e.getSource(), e.getTarget(), e);
+					if(!e.getSource().getName().contains("__@")){
+						dag.addEdge(e.getSource(), e.getTarget(), e);
+					}
 				}
 			}
 		}
