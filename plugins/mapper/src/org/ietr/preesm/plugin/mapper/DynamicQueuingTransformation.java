@@ -194,21 +194,23 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				MapperDAG clone = dag.clone();
 
 				MapperDAGVertex correspondingVirtualVertex = (MapperDAGVertex) dag
-				.getVertex("VirtualDelay" + "__@" + (i + 2));
-				
+						.getVertex("VirtualDelay" + "__@" + (i + 2));
+
+				// Copy cloned vertices into dag
 				for (DAGVertex v : clone.vertexSet()) {
-					if(!v.getName().contains("__@")){
+					if (!v.getName().contains("__@")) {
 						// Cloning the vertices to duplicate the graph
 						v.setName(v.getName() + "__@" + (i + 2));
 						v.setId(v.getId() + "__@" + (i + 2));
 						dag.addVertex(v);
-	
+
 						// Adding edges to delay correctly the execution of
-						// iterations. Only vertices without predecessor are concerned
-						if(v.incomingEdges().isEmpty()){
+						// iterations. Only vertices without predecessor are
+						// concerned
+						if (v.incomingEdges().isEmpty()) {
 							MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
 									correspondingVirtualVertex, v);
-							
+
 							// 0 data edges will be ignored while routing
 							InitialEdgeProperty p = new InitialEdgeProperty(0);
 							e.setInitialEdgeProperty(p);
@@ -216,9 +218,11 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 					}
 				}
 
-				// Cloning edges
+				// Copy cloned edges into dag
+				String currentPostFix = "__@" + (i + 2);
 				for (DAGEdge e : clone.edgeSet()) {
-					if(!e.getSource().getName().contains("__@")){
+					if (e.getSource().getName().contains(currentPostFix)
+							&& e.getTarget().getName().contains(currentPostFix)) {
 						dag.addEdge(e.getSource(), e.getTarget(), e);
 					}
 				}
