@@ -179,7 +179,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * and end vertices
 	 */
 	private void populateRelativeConstraint(MapperDAGVertex vertex) {
-
+		
 		Set<MapperDAGVertex> verticesToAssociate = new HashSet<MapperDAGVertex>();
 		verticesToAssociate.add(vertex);
 

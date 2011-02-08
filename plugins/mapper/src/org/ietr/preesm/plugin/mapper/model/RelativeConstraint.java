@@ -11,6 +11,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
+ * Centralizing constraints of related vertices
  * 
  * @author mpelcat
  */
@@ -54,7 +55,8 @@ public class RelativeConstraint {
 		else{
 			MapperDAGVertex firstVertex = vertices.get(0);
 			Operator op = firstVertex.getImplementationVertexProperty().getEffectiveOperator();
-			if(op != null){
+			if(op != null && vertices.size() > 1){
+				// Forcing the mapper to put together related vertices
 				operators.add(op);
 			}
 			else{

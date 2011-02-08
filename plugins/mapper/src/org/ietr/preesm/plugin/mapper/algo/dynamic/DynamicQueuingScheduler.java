@@ -110,6 +110,7 @@ public class DynamicQueuingScheduler {
 	}
 
 	public void mapOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
+		
 		List<Operator> adequateOps = abc.getCandidateOperators(currentvertex);
 		long currentMinCost = Long.MAX_VALUE;
 		Operator currentMinOp = null;
