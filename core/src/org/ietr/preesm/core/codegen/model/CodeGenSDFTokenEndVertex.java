@@ -38,6 +38,7 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -45,7 +46,6 @@ import org.ietr.preesm.core.codegen.calls.Constant;
 import org.ietr.preesm.core.codegen.calls.PointerOn;
 import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFEdge;
 import org.sdf4j.model.sdf.SDFGraph;

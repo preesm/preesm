@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -66,7 +67,6 @@ import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorInput;
 import org.ietr.preesm.plugin.mapper.plot.gantt.GanttEditorRunnable;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Fast Algorithm

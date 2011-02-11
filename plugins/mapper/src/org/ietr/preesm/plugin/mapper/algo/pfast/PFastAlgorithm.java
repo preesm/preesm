@@ -52,6 +52,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -68,7 +69,6 @@ import org.ietr.preesm.plugin.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.params.PFastAlgoParameters;
 import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 import org.ietr.preesm.plugin.mapper.plot.bestcost.BestCostEditor;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Task scheduling FAST algorithm multithread
@@ -88,8 +88,6 @@ public class PFastAlgorithm extends Observable {
 	 * based on
 	 */
 	private class FinalTimeComparator implements Comparator<MapperDAG> {
-
-		IAbc simulator = null;
 
 		/**
 		 * @Override compare
@@ -122,8 +120,6 @@ public class PFastAlgorithm extends Observable {
 		public FinalTimeComparator(AbcParameters abcParams, MapperDAG dag,
 				MultiCoreArchitecture archi, PreesmScenario scenario) {
 			super();
-			this.simulator = AbstractAbc.getInstance(abcParams, dag, archi,
-					scenario);
 		}
 
 	}

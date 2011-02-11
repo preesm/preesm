@@ -39,6 +39,7 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -47,7 +48,6 @@ import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.Ram;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Depending on the architecture nodes separating two operators, generates a

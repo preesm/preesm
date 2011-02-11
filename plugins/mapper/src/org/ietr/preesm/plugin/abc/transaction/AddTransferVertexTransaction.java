@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
@@ -49,7 +50,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * A transaction that adds one transfer vertex in an implementation and
@@ -173,7 +173,7 @@ public class AddTransferVertexTransaction extends Transaction {
 			if (precedingTransaction instanceof AddTransferVertexTransaction) {
 				currentSource = ((AddTransferVertexTransaction) precedingTransaction)
 						.getTransfer();
-				currentSource.getBase().removeAllEdges(currentSource,
+				((MapperDAG)currentSource.getBase()).removeAllEdges(currentSource,
 						currentTarget);
 			}
 		} else {

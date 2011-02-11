@@ -39,11 +39,11 @@ package org.ietr.preesm.plugin.transforms;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor;
 import org.sdf4j.model.visitors.SDF4JException;

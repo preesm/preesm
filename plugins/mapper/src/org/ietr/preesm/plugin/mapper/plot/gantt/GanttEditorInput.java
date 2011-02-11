@@ -39,9 +39,9 @@ package org.ietr.preesm.plugin.mapper.plot.gantt;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Input of the simple editor of implementation gantt chart

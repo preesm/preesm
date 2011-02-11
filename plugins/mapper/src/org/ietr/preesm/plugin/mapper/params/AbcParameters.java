@@ -38,10 +38,10 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Parameters applied to the current Abc

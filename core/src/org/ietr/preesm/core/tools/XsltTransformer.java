@@ -51,7 +51,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides methods to transform an XML file via XSLT

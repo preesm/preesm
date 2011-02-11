@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -46,11 +47,9 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
@@ -145,7 +144,7 @@ public class AddSendReceiveTransaction extends Transaction {
 				&& precedingTransaction instanceof AddSendReceiveTransaction) {
 			currentSource = ((AddSendReceiveTransaction) precedingTransaction).receiveVertex;
 			
-			currentSource.getBase().removeAllEdges(currentSource, currentTarget);
+			((MapperDAG)currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
 		} else {
 			currentSource = (MapperDAGVertex) edge.getSource();
 		}
@@ -206,7 +205,8 @@ public class AddSendReceiveTransaction extends Transaction {
 		newEdge2.setAggregate(edge.getAggregate());
 		newEdge3.setAggregate(edge.getAggregate());
 		
-		if (false) {
+		// TODO: Consider the need for transfer vertex rescheduling
+		/*if (false) {
 			// Remove original edges
 			implementation.removeAllEdges(currentSource, currentTarget);
 		}
@@ -216,7 +216,7 @@ public class AddSendReceiveTransaction extends Transaction {
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation);
 			adder.scheduleVertex(sendVertex);
 			adder.scheduleVertex(receiveVertex);
-		}
+		}*/
 		
 		if(resultList != null){
 			resultList.add(sendVertex);

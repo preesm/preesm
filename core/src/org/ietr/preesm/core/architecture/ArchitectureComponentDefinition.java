@@ -38,6 +38,7 @@ package org.ietr.preesm.core.architecture;
 
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
@@ -45,7 +46,6 @@ import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * The architecture component definition gives component specifications

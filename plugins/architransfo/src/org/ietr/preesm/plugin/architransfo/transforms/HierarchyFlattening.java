@@ -39,12 +39,12 @@ package org.ietr.preesm.plugin.architransfo.transforms;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.task.IArchiTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.visitors.SDF4JException;
 import org.sdf4j.model.visitors.VisitorOutput;
 

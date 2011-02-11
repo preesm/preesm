@@ -11,6 +11,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -20,7 +21,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.model.dag.DAGEdge;
@@ -104,6 +104,7 @@ public class NewTimeKeeper implements Observer {
 	 * timings need recalculation
 	 */
 	@Override
+	@SuppressWarnings(value = "unchecked")
 	public void update(Observable arg0, Object arg1) {
 		if (arg1 != null) {
 			if (arg1 instanceof Set) {

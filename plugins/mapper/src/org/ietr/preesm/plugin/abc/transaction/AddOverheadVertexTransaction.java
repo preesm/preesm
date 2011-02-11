@@ -39,9 +39,9 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
-import org.ietr.preesm.plugin.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -49,7 +49,6 @@ import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
@@ -152,13 +151,14 @@ public class AddOverheadVertexTransaction extends Transaction {
 			newInEdge.getTimingEdgeProperty().setCost(0);
 			newOutEdge.getTimingEdgeProperty().setCost(0);
 
-			if (true) {
+			// TODO: Look at switching possibilities
+			/*if (true) {
 				TaskSwitcher taskSwitcher = new TaskSwitcher();
 				taskSwitcher.setOrderManager(orderManager);
 				taskSwitcher.insertVertexBefore(currentTarget, oVertex);
-			} else {
+			} else */
 				orderManager.insertBefore(currentTarget, oVertex);
-			}
+			
 
 			// Scheduling overhead vertex
 			new PrecedenceEdgeAdder(orderManager, implementation)

@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
@@ -58,7 +59,6 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.demo.SDFtoDAGDemo;

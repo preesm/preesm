@@ -39,13 +39,13 @@ package org.ietr.preesm.plugin.mapper.algo.dynamic;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Scheduler that simulates a dynamic queuing system

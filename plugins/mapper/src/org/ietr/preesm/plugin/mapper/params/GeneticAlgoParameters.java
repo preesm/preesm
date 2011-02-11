@@ -38,8 +38,8 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import java.util.logging.Level;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 
 /**
  * Specific parameters of genetic algorithm

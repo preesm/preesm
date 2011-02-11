@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.mapper;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.PreesmException;
@@ -55,8 +56,6 @@ import org.ietr.preesm.plugin.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.plugin.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.ietr.preesm.plugin.mapper.params.ListSchedulingParameters;
-import org.ietr.preesm.workflow.tools.WorkflowLogger;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -93,7 +92,6 @@ public class ListSchedulingTransformation extends AbstractMapping {
 				monitor);
 		TaskResult result = new TaskResult();
 
-		ListSchedulingParameters listParams = new ListSchedulingParameters(textParameters);
 		AbcParameters abcParameters = new AbcParameters(textParameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
