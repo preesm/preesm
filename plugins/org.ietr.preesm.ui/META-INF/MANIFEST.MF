@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.ietr.preesm.ui
+Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: org.ietr.preesm.ui.Activator
+Bundle-Vendor: IETR/INSA
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sf.graphiti.ui,
+ net.sf.graphiti.model,
+ org.eclipse.core.resources,
+ org.eclipse.ui.views.properties.tabbed,
+ org.ietr.libs;bundle-version="1.2.8"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
