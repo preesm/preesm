@@ -48,7 +48,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.WorkbenchException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;

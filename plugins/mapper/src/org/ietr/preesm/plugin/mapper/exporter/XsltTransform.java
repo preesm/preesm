@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
 import org.ietr.preesm.core.task.TextParameters;

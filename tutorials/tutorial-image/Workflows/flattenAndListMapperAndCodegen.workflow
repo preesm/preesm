@@ -22,7 +22,7 @@
          <variable name="balanceLoads" value="true"/>
          <variable name="displaySolutions" value="true"/>
          <variable name="edgeSchedType" value="Simple"/>
-         <variable name="simulatorType" value="LooselyTimed"/>
+         <variable name="simulatorType" value="AccuratelyTimed"/>
       </data>
    </preesm:task>
    <preesm:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">

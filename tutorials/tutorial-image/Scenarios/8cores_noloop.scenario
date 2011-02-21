@@ -6,84 +6,86 @@
         <codegenDirectory url="/tutorial-image/Code/generated"/>
     </files>
     <constraints excelUrl="">
-        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core3"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
+            <operator name="Core2"/>
             <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
             <task name="display_pic2"/>
+            <task name="display_pic"/>
             <task name="Read_YUV"/>
         </constraintGroup>
+        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core5"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
+            <operator name="Core6"/>
             <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
             <task name="display_pic2"/>
+            <task name="display_pic"/>
             <task name="Read_YUV"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
             <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
             <task name="display_pic2"/>
+            <task name="display_pic"/>
             <task name="Read_YUV"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core6"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
+            <operator name="Core4"/>
             <task name="substract_pic_slices/substract_pic"/>
-            <task name="display_pic2"/>
-            <task name="Read_YUV"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
-            <task name="display_pic"/>
             <task name="substract_pic_slices"/>
-            <task name="substract_pic_slices/substract_pic"/>
             <task name="display_pic2"/>
-            <task name="Read_YUV"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
             <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
-            <task name="substract_pic_slices/substract_pic"/>
-            <task name="display_pic2"/>
             <task name="Read_YUV"/>
         </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
-            <operator name="Core4"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
+            <operator name="Core3"/>
             <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
             <task name="display_pic2"/>
+            <task name="display_pic"/>
             <task name="Read_YUV"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="display_pic2"/>
             <task name="substract_pic_slices/substract_pic"/>
             <task name="substract_pic_slices"/>
+            <task name="display_pic2"/>
+            <task name="display_pic"/>
+            <task name="Read_YUV"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
+            <task name="display_pic2"/>
+            <task name="display_pic"/>
+            <task name="Read_YUV"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="substract_pic_slices/substract_pic"/>
+            <task name="substract_pic_slices"/>
+            <task name="display_pic2"/>
+            <task name="display_pic"/>
+            <task name="Read_YUV"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
         <timing opname="x86" time="100000" vertexname="Read_YUV"/>
         <timing opname="x86" time="100000" vertexname="display_pic"/>
         <timing opname="x86" time="100000" vertexname="display_pic2"/>
-        <timing opname="x86" time="100000" vertexname="substract_pic"/>
+        <timing opname="x86" time="50000" vertexname="substract_pic"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
         <mainMedium>tcp</mainMedium>
         <averageDataSize>1000</averageDataSize>
-        <dataTypes/>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>
         </specialVertexOperators>

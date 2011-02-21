@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.architransfo.transforms;
 
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.writer.DesignWriter;
 import org.ietr.preesm.core.scenario.PreesmScenario;

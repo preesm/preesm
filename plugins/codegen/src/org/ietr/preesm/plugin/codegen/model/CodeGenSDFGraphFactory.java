@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;

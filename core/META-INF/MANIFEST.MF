@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.ui.views,
  org.junit,
  org.eclipse.ui.navigator,
- org.ietr.dftools.workflow;bundle-version="0.0.1"
+ net.sf.dftools.workflow,
+ org.ietr.libs
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jmatharray.jar,
