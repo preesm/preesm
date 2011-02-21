@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
@@ -48,7 +50,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.WorkbenchException;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory;

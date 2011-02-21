@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;

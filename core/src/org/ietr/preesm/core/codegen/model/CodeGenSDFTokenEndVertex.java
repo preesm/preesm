@@ -39,6 +39,7 @@ package org.ietr.preesm.core.codegen.model;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;

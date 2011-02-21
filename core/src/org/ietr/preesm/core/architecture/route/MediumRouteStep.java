@@ -39,6 +39,7 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;

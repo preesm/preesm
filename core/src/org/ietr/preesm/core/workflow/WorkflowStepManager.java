@@ -38,8 +38,9 @@ package org.ietr.preesm.core.workflow;
 
 import java.util.logging.Level;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.task.TaskResult;

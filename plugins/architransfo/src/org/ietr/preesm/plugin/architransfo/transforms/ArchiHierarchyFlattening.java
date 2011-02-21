@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;

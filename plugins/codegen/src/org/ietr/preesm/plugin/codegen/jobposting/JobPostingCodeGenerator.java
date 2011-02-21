@@ -36,7 +36,6 @@ import org.sdf4j.model.sdf.SDFEdge;
 public class JobPostingCodeGenerator {
 
 	private CodeGenSDFGraph codeGenSDFGraph;
-	private PreesmScenario scenario;
 
 	/**
 	 * If true, the functions that are called are just simulation functions and
@@ -49,7 +48,6 @@ public class JobPostingCodeGenerator {
 			PreesmScenario scenario, boolean timedSimulation) {
 		super();
 		this.codeGenSDFGraph = codeGenSDFGraph;
-		this.scenario = scenario;
 		this.timedSimulation = timedSimulation;
 
 		// Displays the DAG

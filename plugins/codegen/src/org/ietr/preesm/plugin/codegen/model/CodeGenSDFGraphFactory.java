@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +43,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.eclipse.core.resources.IFile;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.eclipse.core.resources.IFile;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
@@ -61,10 +60,6 @@ import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.task.PreesmException;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
-import org.sdf4j.demo.SDFtoDAGDemo;
-import org.sdf4j.factories.DAGVertexFactory;
-import org.sdf4j.importer.GMLSDFImporter;
-import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.iterators.SDFIterator;
 import org.sdf4j.model.AbstractEdge;
 import org.sdf4j.model.AbstractGraph;
@@ -89,7 +84,6 @@ import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
 import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
-import org.sdf4j.model.sdf.visitors.DAGTransformation;
 import org.sdf4j.model.visitors.SDF4JException;
 
 /**

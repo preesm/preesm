@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;

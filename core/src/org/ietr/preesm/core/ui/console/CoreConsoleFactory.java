@@ -36,11 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.ui.console;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * @author mpelcat

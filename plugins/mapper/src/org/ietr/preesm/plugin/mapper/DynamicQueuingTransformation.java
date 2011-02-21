@@ -38,8 +38,9 @@ package org.ietr.preesm.plugin.mapper;
 
 import java.util.logging.Level;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;

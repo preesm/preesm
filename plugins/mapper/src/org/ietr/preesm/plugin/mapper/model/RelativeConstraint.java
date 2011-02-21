@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**

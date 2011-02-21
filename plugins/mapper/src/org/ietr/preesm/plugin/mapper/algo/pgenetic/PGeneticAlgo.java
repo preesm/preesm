@@ -52,6 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;

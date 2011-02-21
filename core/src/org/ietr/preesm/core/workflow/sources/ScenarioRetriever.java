@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;

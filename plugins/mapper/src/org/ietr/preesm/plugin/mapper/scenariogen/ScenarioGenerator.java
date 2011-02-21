@@ -5,10 +5,11 @@ package org.ietr.preesm.plugin.mapper.scenariogen;
 
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;

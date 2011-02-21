@@ -88,7 +88,7 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.dftools.workflow"
+         id="net.sf.dftools.workflow"
          download-size="0"
          install-size="0"
          version="0.0.0"
