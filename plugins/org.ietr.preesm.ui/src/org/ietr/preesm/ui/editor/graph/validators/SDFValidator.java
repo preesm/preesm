@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, IETR/INSA of Rennes
+ * Copyright (c) 2008, IETR/INSA of Rennes
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,25 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package org.ietr.preesm.ui.properties;
+package org.ietr.preesm.ui.editor.graph.validators;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
+import net.sf.graphiti.model.Graph;
+import net.sf.graphiti.validators.DataflowValidator;
 
-import net.sf.graphiti.ui.properties.ListSection;
+import org.eclipse.core.resources.IFile;
 
 /**
- * This class defines a list section for graph parameters.
+ * This class implements a model validator.
  * 
  * @author Matthieu Wipliez
  * 
  */
-public class GraphParametersListSection extends ListSection {
+public class SDFValidator extends DataflowValidator {
 
 	@Override
-	public void createControls(Composite parent,
-			TabbedPropertySheetPage aTabbedPropertySheetPage) {
-		super.createControls(parent, aTabbedPropertySheetPage);
-		getForm().setText("Graph parameters");
-		setParameterName("network parameter");
+	public boolean validate(Graph graph, IFile file) {
+		// first checks dataflow rules.
+		return super.validate(graph, file);
 	}
 
 }

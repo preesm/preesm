@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.ui,
  net.sf.graphiti.model,
  org.eclipse.core.resources,
  org.eclipse.ui.views.properties.tabbed,
- org.ietr.libs;bundle-version="1.2.8"
+ org.ietr.libs,
+ org.eclipse.gef
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

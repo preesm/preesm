@@ -28,25 +28,25 @@
  */
 package org.ietr.preesm.ui.properties;
 
+import net.sf.graphiti.ui.properties.ListSection;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
-import net.sf.graphiti.ui.properties.MapSection;
-
 /**
- * This class defines a map section for vertex parameters.
+ * This class defines a list section for graph parameters.
  * 
  * @author Matthieu Wipliez
  * 
  */
-public class VertexParametersMapSection extends MapSection {
+public class SDFGraphParametersListSection extends ListSection {
 
 	@Override
 	public void createControls(Composite parent,
 			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		super.createControls(parent, aTabbedPropertySheetPage);
-		getForm().setText("Instance parameters");
-		setParameterName("instance parameter");
+		getForm().setText("Graph Parameters");
+		setParameterName("graph parameter");
 	}
 
 }

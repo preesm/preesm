@@ -86,7 +86,7 @@
                 </xsl:element>
 
                 <xsl:element name="parameter">
-                    <xsl:attribute name="name">actual parameter</xsl:attribute>
+                    <xsl:attribute name="name">instance argument</xsl:attribute>
                     <xsl:apply-templates select="graphml:data[@key = 'arguments']"/>
                 </xsl:element>
             </xsl:element>
@@ -94,12 +94,12 @@
     </xsl:template>
  
 
-	<!-- node actual parameter -->
+	<!-- node instance arguments -->
 	<xsl:template match="graphml:data[@key = 'arguments']">
     		<xsl:apply-templates select="graphml:argument"/>
 	</xsl:template>
 
-    <!-- actual parameter entry -->
+    <!-- instance arguments entry -->
     <xsl:template match="graphml:argument">
 		<xsl:element name="entry">
 			<xsl:attribute name="key" select="@name"/>

@@ -34,19 +34,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
- * This class defines a map section for graph variables.
+ * This class defines a map section for SDF vertex instance arguments.
  * 
- * @author Matthieu Wipliez
+ * @author mpelcat
  * 
  */
-public class GraphVariablesMapSection extends MapSection {
+public class SDFVertexInstanceArgumentsMapSection extends MapSection {
 
 	@Override
 	public void createControls(Composite parent,
 			TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		super.createControls(parent, aTabbedPropertySheetPage);
-		getForm().setText("Graph variables");
-		setParameterName("network variable declaration");
+		getForm().setText("Instance Arguments");
+		setParameterName("instance argument");
 	}
 
 }

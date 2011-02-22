@@ -7,7 +7,7 @@
             extension="graphml"
             name="GraphML"
             type="text/xml"
-            validator="org.ietr.preesm.ui.editor.graph.validators.StaticDataflowValidator">
+            validator="org.ietr.preesm.ui.editor.graph.validators.SDFValidator">
          <graphType
                name="SDF Graph">
             <parameter
@@ -68,7 +68,7 @@
                   type="java.lang.String">
             </parameter>
             <parameter
-                  name="actual parameter"
+                  name="instance argument"
                   type="java.util.Map">
             </parameter>
             <parameter
@@ -867,19 +867,24 @@
       <propertyTabs
             contributorId="net.sf.graphiti.ui.properties.contributor">
          <propertyTab
+               category="net.sf.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
+               label="Graph Parameters">
+         </propertyTab>
+         <propertyTab
+               category="net.sf.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
+               label="Graph Variable Declarations">
+         </propertyTab>
+         <propertyTab
                category="net.sf.graphiti.ui.properties.category.vertex"
-               id="org.ietr.preesm.ui.properties.tab.vertex.parameters"
-               label="Instance parameters">
+               id="org.ietr.preesm.ui.properties.tab.wokflow.task.variables"
+               label="Task Variables">
          </propertyTab>
          <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.graph.parameters"
-               label="Network parameters">
-         </propertyTab>
-         <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.graph.variables"
-               label="Network variable declarations">
+               category="net.sf.graphiti.ui.properties.category.vertex"
+               id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
+               label="Instance Arguments">
          </propertyTab>
       </propertyTabs>
    </extension>
@@ -888,28 +893,28 @@
       <propertySections
             contributorId="net.sf.graphiti.ui.properties.contributor">
          <propertySection
-               class="org.ietr.preesm.ui.properties.VertexParametersMapSection"
-               id="org.ietr.preesm.ui.properties.section.vertex.parameters"
-               tab="org.ietr.preesm.ui.properties.tab.vertex.parameters">
-            <input
-                  type="net.sf.graphiti.model.Vertex">
-            </input>
+               class="org.ietr.preesm.ui.properties.SDFGraphParametersListSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.parameters"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters">
          </propertySection>
          <propertySection
-               class="org.ietr.preesm.ui.properties.GraphParametersListSection"
-               id="org.ietr.preesm.ui.properties.section.graph.parameters"
-               tab="org.ietr.preesm.ui.properties.tab.graph.parameters">
-            <input
-                  type="net.sf.graphiti.model.Graph">
-            </input>
+               class="org.ietr.preesm.ui.properties.SDFGraphVariablesMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.variables"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
          </propertySection>
          <propertySection
-               class="org.ietr.preesm.ui.properties.GraphVariablesMapSection"
-               id="org.ietr.preesm.ui.properties.section.graph.variables"
-               tab="org.ietr.preesm.ui.properties.tab.graph.variables">
-            <input
-                  type="net.sf.graphiti.model.Graph">
-            </input>
+               class="org.ietr.preesm.ui.properties.WorkflowTaskVariablesMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.WorkflowTaskFilter"
+               id="org.ietr.preesm.ui.properties.section.workflow.task.variables"
+               tab="org.ietr.preesm.ui.properties.tab.workflow.task.variables">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFVertexInstanceArgumentsMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFVertexFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
          </propertySection>
       </propertySections>
    </extension>

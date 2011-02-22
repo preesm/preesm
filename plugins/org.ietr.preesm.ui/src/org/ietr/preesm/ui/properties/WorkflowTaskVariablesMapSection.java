@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, IETR/INSA of Rennes
+ * Copyright (c) 2011, IETR/INSA of Rennes
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,28 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package org.ietr.preesm.ui.editor.graph.validators;
+package org.ietr.preesm.ui.properties;
 
-import net.sf.graphiti.model.Graph;
-import net.sf.graphiti.model.IValidator;
+import net.sf.graphiti.ui.properties.MapSection;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
-public class IDLValidator implements IValidator{
+/**
+ * This class defines a map section for vertex variables.
+ * 
+ * @author Matthieu Wipliez
+ * @author mpelcat
+ * 
+ */
+public class WorkflowTaskVariablesMapSection extends MapSection {
 
 	@Override
-	public boolean validate(Graph graph, IFile file) {
-		return true;
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
+		super.createControls(parent, aTabbedPropertySheetPage);
+		getForm().setText("Vertex variables");
+		setParameterName("variable declaration");
 	}
 
 }

@@ -80,13 +80,13 @@
                 <xsl:value-of select="parameters/parameter[@name = 'id']/@value"/>
             </data>
 
-            <xsl:apply-templates select="parameters/parameter[@name = 'actual parameter']"/>
+            <xsl:apply-templates select="parameters/parameter[@name = 'instance argument']"/>
 
         </node>
     </xsl:template>
     
     <!-- node parameter -->
-    <xsl:template match="parameter[@name = 'actual parameter']">
+    <xsl:template match="parameter[@name = 'instance argument']">
         <data key="arguments">
             <xsl:apply-templates select="entry" mode="argument"/>
         </data>

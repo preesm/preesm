@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, IETR/INSA of Rennes
+ * Copyright (c) 2011, IETR/INSA of Rennes
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -26,25 +26,27 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package org.ietr.preesm.ui.editor.graph.validators;
+package org.ietr.preesm.ui.properties;
 
-import net.sf.graphiti.model.Graph;
-import net.sf.graphiti.validators.DataflowValidator;
+import net.sf.graphiti.ui.properties.MapSection;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
- * This class implements a model validator.
+ * This class defines a map section for graph variables.
  * 
  * @author Matthieu Wipliez
  * 
  */
-public class StaticDataflowValidator extends DataflowValidator {
+public class SDFGraphVariablesMapSection extends MapSection {
 
 	@Override
-	public boolean validate(Graph graph, IFile file) {
-		// first checks dataflow rules.
-		return super.validate(graph, file);
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage aTabbedPropertySheetPage) {
+		super.createControls(parent, aTabbedPropertySheetPage);
+		getForm().setText("Graph Variables");
+		setParameterName("graph variable");
 	}
 
 }
