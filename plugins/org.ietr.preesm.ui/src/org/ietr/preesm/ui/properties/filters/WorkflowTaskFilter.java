@@ -21,7 +21,7 @@ public class WorkflowTaskFilter implements IFilter {
 			if (model instanceof Vertex) {
 				Vertex vertex = (Vertex) model;
 				Graph graph = vertex.getParent();
-				return graph.getType().getName().equals("Preesm Workflow");
+				return graph.getType().getName().equals("DFTools Workflow");
 			}
 		}
 		return false;

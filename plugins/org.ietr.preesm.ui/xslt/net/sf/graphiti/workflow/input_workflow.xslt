@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:preesm="http://ietr-image.insa-rennes.fr/projects/Preesm"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:dftools="http://net.sf.dftools"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
 
     <xsl:output indent="yes" method="xml"/>
 
@@ -25,72 +25,38 @@
         </xsl:if>
     </xsl:template>
 
-    <!-- Top-level: preesm:workflow -> graph -->
-    <xsl:template match="preesm:workflow">
+    <!-- Top-level: dftools:workflow -> graph -->
+    <xsl:template match="dftools:workflow">
 
         <xsl:element name="graph">
-            <xsl:attribute name="type">Preesm Workflow</xsl:attribute>
+            <xsl:attribute name="type">DFTools Workflow</xsl:attribute>
 
             <xsl:element name="parameters"/>
 
             <xsl:element name="vertices">
-                <xsl:if test="not(empty(preesm:algorithm))">
-                    <xsl:element name="vertex">
-                        <xsl:attribute name="type" select="'Algorithm source'"/>
-                      
-                        <xsl:call-template name="getVertexLayoutAttributes">
-                            <xsl:with-param name="vertexId" select="'__algorithm'"/>
-                        </xsl:call-template>
-                        
-                        <xsl:element name="parameters">
-                            <xsl:element name="parameter">
-                                <xsl:attribute name="name" select="'id'"/>
-                                <xsl:attribute name="value" select="'__algorithm'"/>
-                            </xsl:element>
-                        </xsl:element>
-                    </xsl:element>
-                </xsl:if>
-
-                <xsl:if test="not(empty(preesm:architecture))">
-                    <xsl:element name="vertex">
-                        <xsl:attribute name="type" select="'Architecture source'"/>
-                        
-                        <xsl:call-template name="getVertexLayoutAttributes">
-                            <xsl:with-param name="vertexId" select="'__architecture'"/>
-                        </xsl:call-template>
-                        
-                        <xsl:element name="parameters">
-                            <xsl:element name="parameter">
-                                <xsl:attribute name="name" select="'id'"/>
-                                <xsl:attribute name="value" select="'__architecture'"/>
-                            </xsl:element>
-                        </xsl:element>
-                    </xsl:element>
-                </xsl:if>
-                
-                <xsl:apply-templates select="preesm:scenario"/>
-                <xsl:apply-templates select="preesm:task"/>
+                <xsl:apply-templates select="dftools:scenario"/>
+                <xsl:apply-templates select="dftools:task"/>
             </xsl:element>
 
             <xsl:element name="edges">
-                <xsl:apply-templates select="preesm:dataTransfer"/>
+                <xsl:apply-templates select="dftools:dataTransfer"/>
             </xsl:element>
         </xsl:element>
     </xsl:template>
     
     <!-- scenario -->
-    <xsl:template match="preesm:scenario">
+    <xsl:template match="dftools:scenario">
         <xsl:element name="vertex">
             <xsl:attribute name="type" select="'Scenario source'"/>
             
             <xsl:call-template name="getVertexLayoutAttributes">
-                <xsl:with-param name="vertexId" select="'__scenario'"/>
+                <xsl:with-param name="vertexId" select="'scenario'"/>
             </xsl:call-template>
             
             <xsl:element name="parameters">
                 <xsl:element name="parameter">
                     <xsl:attribute name="name" select="'id'"/>
-                    <xsl:attribute name="value" select="'__scenario'"/>
+                    <xsl:attribute name="value" select="'scenario'"/>
                 </xsl:element>
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">plugin identifier</xsl:attribute>
@@ -101,7 +67,7 @@
     </xsl:template>
     
     <!-- tasks -->
-    <xsl:template match="preesm:task">
+    <xsl:template match="dftools:task">
         <xsl:element name="vertex">
             <xsl:attribute name="type">Task</xsl:attribute>
 
@@ -120,22 +86,22 @@
                 </xsl:element>
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">variable declaration</xsl:attribute>
-                    <xsl:apply-templates select="data[@key = 'variables']"/>
+                    <xsl:apply-templates select="dftools:data[@key = 'variables']"/>
                 </xsl:element>
             </xsl:element>
         </xsl:element>
     </xsl:template>
 
     <!-- Parameter instantiations -->
-    <xsl:template match="variable">
+    <xsl:template match="dftools:variable">
         <xsl:element name="entry">
             <xsl:attribute name="key" select="@name"/>
             <xsl:attribute name="value" select="@value"/>
         </xsl:element>
     </xsl:template>
 
-    <!-- preesm:dataTransfer -->
-    <xsl:template match="preesm:dataTransfer">
+    <!-- dftools:dataTransfer -->
+    <xsl:template match="dftools:dataTransfer">
         <xsl:element name="edge">
             <xsl:attribute name="type">Data transfer</xsl:attribute>
             <xsl:attribute name="source" select="@from"/>

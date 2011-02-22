@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:preesm="http://ietr-image.insa-rennes.fr/projects/Preesm"
+<xsl:stylesheet xmlns:dftools="http://net.sf.dftools"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
     
     <xsl:import href="output_layout.xslt"/>
@@ -21,45 +21,45 @@
             <xsl:call-template name="setLayout"/>
         </xsl:result-document>
 
-        <preesm:workflow>
+        <dftools:workflow>
             <xsl:if test="not(empty(vertices/vertex[@type = 'Algorithm source']))">
-                <preesm:algorithm/>
+                <dftools:algorithm/>
             </xsl:if>
 
             <xsl:if test="not(empty(vertices/vertex[@type = 'Architecture source']))">
-                <preesm:architecture/>
+                <dftools:architecture/>
             </xsl:if>
             
             <xsl:apply-templates select="vertices/vertex[@type = 'Scenario source']"/>
             <xsl:apply-templates select="vertices/vertex[@type = 'Task']"/>
             <xsl:apply-templates select="edges/edge"/>
-        </preesm:workflow>
+        </dftools:workflow>
     </xsl:template>
 
     <!-- scenario -->
     <xsl:template match="vertex[@type = 'Scenario source']">
-        <preesm:scenario>
+        <dftools:scenario>
             <xsl:attribute name="pluginId"
                 select="parameters/parameter[@name = 'plugin identifier']/@value"/>
-        </preesm:scenario>
+        </dftools:scenario>
     </xsl:template>
     
     <!-- tasks -->
     <xsl:template match="vertex[@type = 'Task']">
-        <preesm:task>
+        <dftools:task>
             <xsl:attribute name="pluginId"
                 select="parameters/parameter[@name = 'plugin identifier']/@value"/>
             <xsl:attribute name="taskId" select="parameters/parameter[@name = 'id']/@value"/>
-            <data key="variables">
+            <dftools:data key="variables">
                 <xsl:apply-templates
                     select="parameters/parameter[@name = 'variable declaration']/entry"/>
-            </data>
-        </preesm:task>
+            </dftools:data>
+        </dftools:task>
     </xsl:template>
     
     <!-- variable -->
     <xsl:template match="entry">
-        <xsl:element name="variable">
+        <xsl:element name="dftools:variable">
             <xsl:attribute name="name" select="@key"/>
             <xsl:attribute name="value" select="@value"/>
         </xsl:element>
@@ -67,14 +67,14 @@
 
     <!-- data transfers -->
     <xsl:template match="edge">
-        <preesm:dataTransfer>
+        <dftools:dataTransfer>
             <xsl:attribute name="from" select="@source"/>
             <xsl:attribute name="to" select="@target"/>
             <xsl:attribute name="sourceport"
                 select="parameters/parameter[@name = 'source port']/@value"/>
             <xsl:attribute name="targetport"
                 select="parameters/parameter[@name = 'target port']/@value"/>
-        </preesm:dataTransfer>
+        </dftools:dataTransfer>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -118,7 +118,7 @@ public class WorkflowParser extends DefaultHandler2 {
 		} else if (qName.equals("preesm:scenario")) {
 			IWorkflowNode node = new ScenarioNode();
 			workflow.addVertex(node);
-			nodes.put("__scenario", node);
+			nodes.put("scenario", node);
 		} else if (qName.equals("preesm:task")) {
 			String id = attributes.getValue("taskId");
 			String pluginId = attributes.getValue("pluginId");
