@@ -37,6 +37,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
  * This class defines a map section for graph variables.
  * 
  * @author Matthieu Wipliez
+ * @author mpelcat
  * 
  */
 public class SDFGraphVariablesMapSection extends MapSection {

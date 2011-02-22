@@ -384,9 +384,9 @@
          <vertexType
                name="contentionNode">
             <color
-                  blue="255"
-                  green="140"
-                  red="110">
+                  blue="25"
+                  green="14"
+                  red="11">
             </color>
             <shape
                   type="triangle">
@@ -778,77 +778,6 @@
             </parameter>
          </edgeType>
       </configuration>
-      <configuration
-            extension="idl"
-            name="IDL"
-            type="text"
-            validator="org.ietr.preesm.ui.editor.graph.validators.IDLValidator">
-         <graphType
-               name="IDL Module">
-            <parameter
-                  name="id"
-                  type="java.lang.String">
-            </parameter>
-            <parameter
-                  name="module parameter"
-                  type="java.util.List">
-            </parameter>
-         </graphType>
-         <import>
-            <grammar
-                  definition="net.sf.graphiti.grammar.idl"
-                  startRule="module">
-            </grammar>
-            <xslt
-                  name="xslt/net/sf/graphiti/idl/input_IDL.xslt">
-            </xslt>
-         </import>
-         <vertexType
-               name="Input port">
-            <parameter
-                  name="id"
-                  type="java.lang.String">
-            </parameter>
-            <color
-                  blue="60"
-                  green="100"
-                  red="0">
-            </color>
-            <size
-                  height="30"
-                  width="30">
-            </size>
-            <shape
-                  type="triangle">
-            </shape>
-         </vertexType>
-         <vertexType
-               name="Output port">
-            <parameter
-                  name="id"
-                  type="java.lang.String">
-            </parameter>
-            <color
-                  blue="100"
-                  green="60"
-                  red="0">
-            </color>
-            <size
-                  height="30"
-                  width="30">
-            </size>
-            <shape
-                  type="triangle">
-            </shape>
-         </vertexType>
-      </configuration>
-   </extension>
-   <extension
-         point="net.sf.graphiti.model.grammar">
-      <definition
-            class="net.sf.graphiti.grammar.idl.IDLAntlrProxy"
-            id="net.sf.graphiti.grammar.idl">
-      </definition>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -878,7 +807,7 @@
          </propertyTab>
          <propertyTab
                category="net.sf.graphiti.ui.properties.category.vertex"
-               id="org.ietr.preesm.ui.properties.tab.wokflow.task.variables"
+               id="org.ietr.preesm.ui.properties.tab.workflow.task.variables"
                label="Task Variables">
          </propertyTab>
          <propertyTab

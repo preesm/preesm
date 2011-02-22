@@ -34,9 +34,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
- * This class defines a map section for vertex variables.
+ * This class defines a map section for workflow task variables.
  * 
- * @author Matthieu Wipliez
  * @author mpelcat
  * 
  */

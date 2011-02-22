@@ -6,6 +6,12 @@ import net.sf.graphiti.model.Vertex;
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
 
+/**
+ * This class filters SDF vertices to enable the correct property tabs
+ * 
+ * @author mpelcat
+ * 
+ */
 public class SDFVertexFilter implements IFilter {
 
 	@Override

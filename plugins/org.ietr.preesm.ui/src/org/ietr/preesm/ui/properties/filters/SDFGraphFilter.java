@@ -2,9 +2,16 @@ package org.ietr.preesm.ui.properties.filters;
 
 import net.sf.graphiti.model.Graph;
 
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
 
+/**
+ * This class filters SDF graphs to enable the correct property tabs
+ * 
+ * @author mpelcat
+ * 
+ */
 public class SDFGraphFilter implements IFilter {
 
 	@Override

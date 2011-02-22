@@ -37,6 +37,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
  * This class defines a list section for graph parameters.
  * 
  * @author Matthieu Wipliez
+ * @author mpelcat
  * 
  */
 public class SDFGraphParametersListSection extends ListSection {
