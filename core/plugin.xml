@@ -209,6 +209,27 @@
          </includes>
       </viewerContentBinding>
    </extension>
+   <extension
+         point="net.sf.dftools.workflow.scenarios">
+      <scenario
+            id="org.ietr.preesm.scenario"
+            type="org.ietr.preesm.core.workflow.PreesmScenarioNodeImplementation">
+         <outputs>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </output>
+            <output
+                  id="SDF"
+                  object="org.sdf4j.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="architecture"
+                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+            </output>
+         </outputs>
+      </scenario>
+   </extension>
 
 
 </plugin>

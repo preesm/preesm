@@ -36,12 +36,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.exporter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.task.IFileConversion;
 import org.ietr.preesm.core.task.TaskResult;
@@ -56,14 +61,16 @@ import org.ietr.preesm.core.tools.XsltTransformer;
  * @author mpelcat
  * 
  */
-public class XsltTransform implements IFileConversion {
+public class XsltTransform extends AbstractTaskImplementation {
 
 	@Override
-	public TaskResult transform(TextParameters params) {
-
-		Path inputPath = new Path(params.getVariable("inputFile"));
-		Path outputPath = new Path(params.getVariable("outputFile"));
-		Path xslPath = new Path(params.getVariable("xslFile"));
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+		Path inputPath = new Path(parameters.get("inputFile"));
+		Path outputPath = new Path(parameters.get("outputFile"));
+		Path xslPath = new Path(parameters.get("xslFile"));
+		
 
 		if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
 			try {
@@ -81,8 +88,22 @@ public class XsltTransform implements IFileConversion {
 				e.printStackTrace();
 			}
 		}
-
-		return new TaskResult();
+		
+		return null;
 	}
 
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("inputFile", "");
+		parameters.put("outputFile", "");
+		parameters.put("xslFile", "");
+		return parameters;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "XSL Transformation.";
+	}
 }

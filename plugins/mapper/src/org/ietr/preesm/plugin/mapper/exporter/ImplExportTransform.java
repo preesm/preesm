@@ -36,13 +36,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.exporter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -58,20 +63,39 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  * 
  */
-public class ImplExportTransform implements IExporter{
+public class ImplExportTransform extends AbstractTaskImplementation {
 
 	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf, MultiCoreArchitecture archi, PreesmScenario scenario, TextParameters params) {
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
 
-		Path graphmlPath = new Path(params.getVariable("path"));
+		DirectedAcyclicGraph dag = (DirectedAcyclicGraph)inputs.get("DAG");
+
+		Path graphmlPath = new Path(parameters.get("path"));
 		
 		// Exporting the DAG in a GraphML
 		if(!graphmlPath.isEmpty()){
 			exportGraphML(dag, graphmlPath);
 		}
+		
+		return null;
+	}
+
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("path", "");
+		return parameters;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Exporting implementation.";
 	}
 	
-	public void exportGraphML(DirectedAcyclicGraph dag, Path path){
+	private void exportGraphML(DirectedAcyclicGraph dag, Path path){
 
 		MapperDAG mapperDag = (MapperDAG)dag;
 		
@@ -87,37 +111,5 @@ public class ImplExportTransform implements IExporter{
 			WorkflowLogger.getLogger().log(Level.SEVERE,"The output file " + path + " can not be written.");
 		}
 	}
-
-	@Override
-	public boolean isDAGExporter() {
-		return true;
-	}
-
-	@Override
-	public boolean isSDFExporter() {
-		return false;
-	}
-
-
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void transform(AbstractGraph algorithm, TextParameters params) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void transform(MultiCoreArchitecture archi, TextParameters params) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isArchiExporter() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 
 }
