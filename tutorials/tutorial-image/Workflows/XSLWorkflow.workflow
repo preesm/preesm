@@ -16,9 +16,17 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
         <dftools:data key="variables"/>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
+        <dftools:data key="variables">
+            <dftools:variable name="depth" value="2"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="void"
         targetport="void" to="XSL"/>
     <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="SDF Exporter"/>
     <dftools:dataTransfer from="scenario" sourceport="SDF"
+        targetport="SDF" to="HierarchyFlattening"/>
+    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
         targetport="SDF" to="HSDF"/>
 </dftools:workflow>

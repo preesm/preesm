@@ -36,11 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.transforms;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
@@ -55,20 +60,26 @@ import org.sdf4j.model.visitors.VisitorOutput;
  * Class used to flatten the hierarchy of a given graph
  * 
  * @author jpiat
- * 
+ * @author mpelcat
  */
-public class HierarchyFlattening implements IGraphTransformation {
+public class HierarchyFlattening extends AbstractTaskImplementation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params)
-			throws PreesmException {
-		String depthS = params.getVariable("depth");
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		String depthS = parameters.get("depth");
+		
 		int depth;
 		if (depthS != null) {
 			depth = Integer.decode(depthS);
 		} else {
 			depth = 1;
 		}
+		
 		Logger logger = WorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
@@ -83,30 +94,39 @@ public class HierarchyFlattening implements IGraphTransformation {
 					try {
 						flatHier.flattenGraph(algorithm, depth);
 					} catch (SDF4JException e) {
-						throw (new PreesmException(e.getMessage()));
+						throw (new WorkflowException(e.getMessage()));
 					}
 					logger.log(Level.FINER, "flattening complete");
-					TaskResult result = new TaskResult();
 					SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
-					result.setSDF(resultGraph);
-					return result;
+					outputs.put("SDF", resultGraph);
 				} else {
-					throw (new PreesmException("Graph not valid, not schedulable"));
+					throw (new WorkflowException("Graph not valid, not schedulable"));
 				}
 			} catch (SDF4JException e) {
-				throw(new PreesmException(e.getMessage() ));
+				throw(new WorkflowException(e.getMessage() ));
 			}
 		} else {
 			logger.log(Level.SEVERE,
 					"Inconsistent Hierarchy, graph can't be flattened");
 			TaskResult result = new TaskResult();
 			result.setSDF((SDFGraph) algorithm.clone());
-			throw (new PreesmException(
+			throw (new WorkflowException(
 					"Inconsistent Hierarchy, graph can't be flattened"));
 		}
-
+		
+		return outputs;
 	}
-	
 
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
 
+		parameters.put("depth", "1");
+		return parameters;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Flattening algorithm hierarchy.";
+	}
 }
