@@ -79,7 +79,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 			exportGraphML(dag, graphmlPath);
 		}
 		
-		return null;
+		return new HashMap<String, Object>();
 	}
 
 	@Override

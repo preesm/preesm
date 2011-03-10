@@ -67,11 +67,11 @@ public class XsltTransform extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
+		
 		Path inputPath = new Path(parameters.get("inputFile"));
 		Path outputPath = new Path(parameters.get("outputFile"));
 		Path xslPath = new Path(parameters.get("xslFile"));
 		
-
 		if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
@@ -89,7 +89,7 @@ public class XsltTransform extends AbstractTaskImplementation {
 			}
 		}
 		
-		return null;
+		return new HashMap<String, Object>();
 	}
 
 	@Override

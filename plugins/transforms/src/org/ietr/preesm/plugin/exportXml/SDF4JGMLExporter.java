@@ -33,14 +33,23 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.exportXml;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -52,30 +61,23 @@ import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
-
-public class SDF4JGMLExporter implements IExporter {
-
-	@Override
-	public boolean isDAGExporter() {
-		return false;
-	}
+public class SDF4JGMLExporter extends AbstractTaskImplementation {
 
 	@Override
-	public boolean isSDFExporter() {
-		return true;
-	}
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
 
-	@SuppressWarnings("rawtypes")
-	public void transform(AbstractGraph algorithm, TextParameters params) {
+		IPath xmlPath = new Path(parameters.get("path"));
+
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		GMLSDFExporter exporter = new GMLSDFExporter();
 		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		IPath xmlPath = new Path(params.getVariable("path"));
-		if(!xmlPath.getFileExtension().equals(".graphml")){
-			xmlPath.addFileExtension(".graphml");
+		if (xmlPath.getFileExtension() == null || !xmlPath.getFileExtension().equals("graphml")) {
+			xmlPath = xmlPath.addFileExtension("graphml");
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
 
 		IFile iFile = workspace.getRoot().getFile(xmlPath);
 		try {
@@ -86,33 +88,21 @@ public class SDF4JGMLExporter implements IExporter {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-	}
-	
-	public static void main(String [] args){
-		SDFGraph algorithm = GMLSDFExporter.createTestComGraph();
-		GMLSDFExporter exporter = new GMLSDFExporter();
-		exporter.export(algorithm, "D:\\test.graphml");
+
+		return new HashMap<String, Object>();
 	}
 
 	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi,
-			PreesmScenario scenario,
-			TextParameters params) {
-		// TODO Auto-generated method stub
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
 
+		parameters.put("path", "");
+		return parameters;
 	}
 
 	@Override
-	public void transform(MultiCoreArchitecture archi, TextParameters params) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isArchiExporter() {
-		// TODO Auto-generated method stub
-		return false;
+	public String monitorMessage() {
+		return "Exporting algorithm graph";
 	}
 
 }

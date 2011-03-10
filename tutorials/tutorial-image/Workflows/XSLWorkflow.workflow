@@ -8,6 +8,17 @@
             <dftools:variable name="xslFile" value="/tutorial-image/Workflows/newWorkflow.xslt"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="SDF Exporter">
+        <dftools:data key="variables">
+            <dftools:variable name="path" value="/tutorial-image/DAG/test"/>
+        </dftools:data>
+    </dftools:task>
+    <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="void"
         targetport="void" to="XSL"/>
+    <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="SDF Exporter"/>
+    <dftools:dataTransfer from="scenario" sourceport="SDF"
+        targetport="SDF" to="HSDF"/>
 </dftools:workflow>

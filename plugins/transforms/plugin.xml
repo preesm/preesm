@@ -4,11 +4,6 @@
    <extension
          point="org.ietr.preesm.core.tasks">
       <task
-            id="org.ietr.preesm.plugin.transforms.sdf2hsdf"
-            name="SDF2HSDF"
-            type="org.ietr.preesm.plugin.transforms.HSDFTransformation">
-      </task>
-      <task
             id="org.ietr.preesm.plugin.transforms.flathierarchy"
             name="Hierarchy flattening"
             type="org.ietr.preesm.plugin.transforms.HierarchyFlattening">
@@ -18,10 +13,36 @@
             name="Detecting loops in graph"
             type="org.ietr.preesm.plugin.transforms.GraphLooping">
       </task>
+   </extension>
+   <extension
+         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.plugin.exportXml.sdf4jgml"
             name="SDF4J GML Exporter "
             type="org.ietr.preesm.plugin.exportXml.SDF4JGMLExporter">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.sdf4j.model.sdf.SDFGraph">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.plugin.transforms.sdf2hsdf"
+            name="SDF2HSDF"
+            type="org.ietr.preesm.plugin.transforms.HSDFTransformation">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="org.sdf4j.model.sdf.SDFGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.sdf4j.model.sdf.SDFGraph">
+            </output>
+         </outputs>
       </task>
    </extension>
 

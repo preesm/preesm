@@ -33,14 +33,19 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.transforms;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.task.IGraphTransformation;
 import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
@@ -49,39 +54,89 @@ import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor;
 import org.sdf4j.model.visitors.SDF4JException;
 import org.sdf4j.model.visitors.VisitorOutput;
+
 /**
  * Class used to transform a SDF graph into a HSDF graph
  * 
  * @author jpiat
+ * @author mpelcat
  * 
  */
-public class HSDFTransformation implements IGraphTransformation {
+public class HSDFTransformation extends AbstractTaskImplementation {
 
 	@Override
-	public TaskResult transform(SDFGraph algorithm, TextParameters params) throws PreesmException {
-		try{
-		Logger logger = WorkflowLogger.getLogger();
-		logger.setLevel(Level.FINEST);
-		logger.log(Level.FINER, "Transforming application "+algorithm.getName()+" ato HSDF");
-		VisitorOutput.setLogger(logger);
-		if(algorithm.validateModel(WorkflowLogger.getLogger())){
-			org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
-			try {
-				algorithm.accept(toHsdf);
-			} catch (SDF4JException e) {
-				e.printStackTrace();
-				throw(new PreesmException(e.getMessage()));
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+		
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		
+		try {
+			Logger logger = WorkflowLogger.getLogger();
+			logger.setLevel(Level.FINEST);
+			logger.log(Level.FINER,
+					"Transforming application " + algorithm.getName()
+							+ " to HSDF");
+			VisitorOutput.setLogger(logger);
+			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+				try {
+					algorithm.accept(toHsdf);
+				} catch (SDF4JException e) {
+					e.printStackTrace();
+					throw (new WorkflowException(e.getMessage()));
+				}
+				logger.log(Level.FINER, "HSDF transformation complete");
+				outputs.put("SDF", (SDFGraph) toHsdf.getOutput());
+			} else {
+				throw (new WorkflowException("Graph not valid, not schedulable"));
 			}
-			logger.log(Level.FINER,"HSDF transformation complete");
-			TaskResult result = new TaskResult();
-			result.setSDF((SDFGraph) toHsdf.getOutput());
-			return result;
-		}else{
-			throw(new PreesmException("Graph not valid, not schedulable"));
+		} catch (SDF4JException e) {
+			throw (new WorkflowException(e.getMessage()));
 		}
-		}catch(SDF4JException e){
-			throw(new PreesmException(e.getMessage()));
-		}
+		
+		return outputs;
 	}
+
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		return null;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "HSDF Transformation.";
+	}
+
+	/*@Override
+	public TaskResult transform(SDFGraph algorithm, TextParameters params)
+			throws PreesmException {
+		try {
+			Logger logger = WorkflowLogger.getLogger();
+			logger.setLevel(Level.FINEST);
+			logger.log(Level.FINER,
+					"Transforming application " + algorithm.getName()
+							+ " to HSDF");
+			VisitorOutput.setLogger(logger);
+			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+				try {
+					algorithm.accept(toHsdf);
+				} catch (SDF4JException e) {
+					e.printStackTrace();
+					throw (new PreesmException(e.getMessage()));
+				}
+				logger.log(Level.FINER, "HSDF transformation complete");
+				TaskResult result = new TaskResult();
+				result.setSDF((SDFGraph) toHsdf.getOutput());
+				return result;
+			} else {
+				throw (new PreesmException("Graph not valid, not schedulable"));
+			}
+		} catch (SDF4JException e) {
+			throw (new PreesmException(e.getMessage()));
+		}
+	}*/
 
 }
