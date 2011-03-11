@@ -46,7 +46,7 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -131,7 +131,7 @@ public class SchedOrderManager extends Observable {
 				if (elt instanceof SynchronizedVertices) {
 					((SynchronizedVertices) elt).add(vertex);
 				} else {
-					WorkflowLogger.getLogger().log(Level.SEVERE,
+					AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 							"Error in sched order!!");
 				}
 			}

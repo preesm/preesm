@@ -42,7 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -148,7 +148,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 			topolist.add((MapperDAGVertex) v);
 			
 			if (!initList.contains(v.getName())) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,"problem with topological ordering.");
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,"problem with topological ordering.");
 			}
 		}
 

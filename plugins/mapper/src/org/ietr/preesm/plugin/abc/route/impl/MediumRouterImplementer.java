@@ -6,7 +6,7 @@ package org.ietr.preesm.plugin.abc.route.impl;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MediumRouteStep;
@@ -64,7 +64,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 					transactions.add(transaction);
 					return transaction;
 				} else {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.INFO,
 							"A transfer vertex must have a strictly positive size: "
 									+ edge);
@@ -91,7 +91,7 @@ public class MediumRouterImplementer extends CommunicationRouterImplementer {
 							incomingEdge, getImplementation(), routeStep,
 							overheadTime, getOrderManager()));
 				} else {
-					WorkflowLogger
+					AbstractWorkflowLogger
 							.getLogger()
 							.log(
 									Level.FINE,

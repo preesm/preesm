@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -245,7 +245,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			cost = route.evaluateTransferCost(edge.getInitialEdgeProperty()
 					.getDataSize());
 		} else {
-			WorkflowLogger
+			AbstractWorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"trying to evaluate a transfer between non mapped operators.");

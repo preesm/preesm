@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
@@ -113,7 +113,7 @@ public class RouteCalculator {
 	 * Creating recursively the route steps from the architecture.
 	 */
 	private void createRouteSteps() {
-		WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
 
 		for (ArchitectureComponent c : archi
 				.getComponents(ArchitectureComponentType.operator)) {
@@ -180,7 +180,7 @@ public class RouteCalculator {
 	 * Building recursively the routes between the cores.
 	 */
 	private void createRoutes() {
-		WorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
 
 		floydWarshall(table, archi
 				.getComponents(ArchitectureComponentType.operator));
@@ -243,7 +243,7 @@ public class RouteCalculator {
 		Route r = table.getBestRoute(op1, op2);
 
 		if (r == null) {
-			WorkflowLogger.getLogger()
+			AbstractWorkflowLogger.getLogger()
 					.log(
 							Level.SEVERE,
 							"Did not find a route between " + op1 + " and "

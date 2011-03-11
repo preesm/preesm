@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -115,12 +115,12 @@ public class FASTTransformation extends AbstractMapping {
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
-		WorkflowLogger.getLogger().log(Level.INFO,"Mapping");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,"Mapping");
 		
 		dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false
 				, fastParams.isDisplaySolutions(), monitor, taskSched);
 
-		WorkflowLogger.getLogger().log(Level.INFO,"Mapping finished");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,"Mapping finished");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
 		// Transfer vertices are automatically regenerated

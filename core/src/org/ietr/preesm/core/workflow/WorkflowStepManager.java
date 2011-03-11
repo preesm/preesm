@@ -38,7 +38,7 @@ package org.ietr.preesm.core.workflow;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -68,7 +68,7 @@ public class WorkflowStepManager {
 	void updateMonitor(String message) {
 
 		monitor.subTask(message);
-		WorkflowLogger.getLogger().log(Level.INFO, message);
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, message);
 		numberOfTasksDone++;
 		monitor.worked(numberOfTasksDone);
 	}

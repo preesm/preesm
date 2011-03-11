@@ -42,7 +42,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;

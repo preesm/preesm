@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.architransfo.transforms;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.writer.DesignWriter;
@@ -82,7 +82,7 @@ public class ArchitectureExporter implements IExporter {
 		writer.writeDom(params.getVariable(pathKey));
 		}
 		else{
-			WorkflowLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
 		}
 	}
 

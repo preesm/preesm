@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
@@ -143,7 +143,7 @@ public class MultiCoreArchitecture extends
 			ArchitectureComponentType type, VLNV vlnv) {
 
 		if (vlnv.getName().isEmpty()) {
-			WorkflowLogger
+			AbstractWorkflowLogger
 					.getLogger()
 					.log(Level.WARNING,
 							"careful: at least one component has no definition in the architecture");
@@ -513,7 +513,7 @@ public class MultiCoreArchitecture extends
 	public void setMainMedium(String mainMediumName) {
 		if (!(getComponent(ArchitectureComponentType.medium, mainMediumName) instanceof Medium)) {
 			this.mainMedium = null;
-			WorkflowLogger
+			AbstractWorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");

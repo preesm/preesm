@@ -40,7 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -157,7 +157,7 @@ public class DesignWriter {
 				e.printStackTrace();
 			}
 		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Architecture exporter has an invalid file path.");
 		}
 	}

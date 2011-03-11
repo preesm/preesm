@@ -43,7 +43,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -71,7 +71,7 @@ public class ExcelVariablesParser {
 	}
 
 	public void parse(String url) {
-		WorkflowLogger.getLogger().log(Level.INFO,
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
 				"Importing variables from an excel sheet.");
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -123,11 +123,11 @@ public class ExcelVariablesParser {
 
 					scenario.getVariablesManager().setVariable(varName, value);
 
-					WorkflowLogger.getLogger().log(Level.INFO,
+					AbstractWorkflowLogger.getLogger().log(Level.INFO,
 							"Importing variable: " + varName);
 				}
 			} else {
-				WorkflowLogger.getLogger()
+				AbstractWorkflowLogger.getLogger()
 						.log(Level.WARNING,
 								"No cell found in excel sheet for variable: "
 										+ varName);

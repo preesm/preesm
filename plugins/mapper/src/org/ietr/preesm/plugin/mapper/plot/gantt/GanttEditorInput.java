@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
  
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -78,7 +78,7 @@ public class GanttEditorInput implements IEditorInput {
 	}
 	@Override
 	public String getName() {
-		return name + " " + WorkflowLogger.getFormattedTime();
+		return name + " " + AbstractWorkflowLogger.getFormattedTime();
 	}
 	@Override
 	public IPersistableElement getPersistable() {

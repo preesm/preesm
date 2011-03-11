@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -228,7 +228,7 @@ public class IntervalFinder {
 			}
 		}
 
-		WorkflowLogger.getLogger().log(Level.INFO, trace);
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, trace);
 	}
 
 	public SchedOrderManager getOrderManager() {

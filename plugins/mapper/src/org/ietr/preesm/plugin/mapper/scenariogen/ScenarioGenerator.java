@@ -5,7 +5,7 @@ package org.ietr.preesm.plugin.mapper.scenariogen;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,13 +39,13 @@ public class ScenarioGenerator implements IScenarioTransformation {
 
 		TaskResult result = new TaskResult();
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
 
 		String scenarioFileName = parameters.getVariable("scenarioFile");
 
 		// Retrieving the scenario
 		if (scenarioFileName.isEmpty()) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"lack of a scenarioFile parameter");
 			return null;
 		} else {
@@ -61,7 +61,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 			AlgorithmRetriever algoR = new AlgorithmRetriever(scenario
 					.getAlgorithmURL());
 			if (algoR.getAlgorithm() == null) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
 			} else {
@@ -71,7 +71,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 			ArchitectureRetriever archiR = new ArchitectureRetriever(scenario
 					.getArchitectureURL());
 			if (archiR.getArchitecture() == null) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
@@ -87,7 +87,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 		String dagFileName = parameters.getVariable("dagFile");
 		// Parsing the output DAG if present and updating the constraints
 		if (dagFileName.isEmpty()) {
-			WorkflowLogger.getLogger().log(Level.WARNING,
+			AbstractWorkflowLogger.getLogger().log(Level.WARNING,
 					"No dagFile -> retrieving the scenario as is");
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
@@ -126,7 +126,7 @@ public class ScenarioGenerator implements IScenarioTransformation {
 				}
 
 			} catch (Exception e) {
-				WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			}
 
 		}

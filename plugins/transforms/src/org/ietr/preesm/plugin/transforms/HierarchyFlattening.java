@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.task.IGraphTransformation;
@@ -80,7 +80,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 			depth = 1;
 		}
 		
-		Logger logger = WorkflowLogger.getLogger();
+		Logger logger = AbstractWorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 		ConsistencyChecker checkConsistent = new ConsistencyChecker();
@@ -90,7 +90,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
 			VisitorOutput.setLogger(logger);
 			try {
-				if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+				if (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
 					try {
 						flatHier.flattenGraph(algorithm, depth);
 					} catch (SDF4JException e) {

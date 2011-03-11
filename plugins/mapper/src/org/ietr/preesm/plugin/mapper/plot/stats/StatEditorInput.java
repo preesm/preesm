@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -100,9 +100,9 @@ public class StatEditorInput implements IEditorInput {
 			abc.updateFinalCosts();
 			return "Latency:" + ((LatencyAbc) abc).getFinalLatency() + " Cost:"
 					+ abc.getFinalCost() + " "
-					+ WorkflowLogger.getFormattedTime();
+					+ AbstractWorkflowLogger.getFormattedTime();
 		} else {
-			return "Stats " + WorkflowLogger.getFormattedTime();
+			return "Stats " + AbstractWorkflowLogger.getFormattedTime();
 		}
 	}
 

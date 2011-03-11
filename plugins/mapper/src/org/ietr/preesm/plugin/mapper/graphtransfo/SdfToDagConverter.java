@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
@@ -91,15 +91,15 @@ public class SdfToDagConverter {
 			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			boolean display) {
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
 
 		try {
 
-			if (!sdfIn.validateModel(WorkflowLogger.getLogger())) {
+			if (!sdfIn.validateModel(AbstractWorkflowLogger.getLogger())) {
 				return null;
 			}
 		} catch (SDF4JException e) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 		SDFGraph sdf = sdfIn.clone();
@@ -116,7 +116,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
@@ -131,11 +131,11 @@ public class SdfToDagConverter {
 		}
 
 		if (dag.vertexSet().size() == 0) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Can not map a DAG with no vertex.");
 		} else {
-			WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
-			WorkflowLogger.getLogger().log(
+			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
+			AbstractWorkflowLogger.getLogger().log(
 					Level.INFO,
 					"mapping a DAG with " + dag.vertexSet().size()
 							+ " vertices and " + dag.edgeSet().size()

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
@@ -113,7 +113,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 							incomingEdge, getImplementation(), routeStep,
 							overheadTime, getOrderManager()));
 				} else {
-					WorkflowLogger
+					AbstractWorkflowLogger
 							.getLogger()
 							.log(
 									Level.FINE,

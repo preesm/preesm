@@ -801,5 +801,37 @@
          </propertySection>
       </propertySections>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="net.sf.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
+            icon="icons/workflow.png"
+            id="net.sf.dftools.ui.workflow.workflowLaunchShortcut"
+            label="Preesm Workflow"
+            modes="run,debug">
+         <description
+               description="Launch a Preesm workflow"
+               mode="run">
+         </description>
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <and>
+                        <test
+                              forcePluginActivation="true"
+                              property="net.sf.dftools.isWorkflow">
+                        </test>
+                     </and>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
 
 </plugin>

@@ -36,7 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.editor;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -85,7 +87,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			throws PartInitException {
 
 		// Starting the console
-		WorkflowLogger.getLogger().initConsole();
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
 
 		setSite(site);
 		setInput(input);

@@ -38,7 +38,7 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.ICodeElement;
@@ -99,7 +99,7 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 						"write_delay", parentContainer);
 				if (((CodeGenSDFTokenInitVertex) this.getEndReference())
 						.getDelayVariable() == null) {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"Delay variable nor found for vertex "
 									+ this.getName() + " with end reference "

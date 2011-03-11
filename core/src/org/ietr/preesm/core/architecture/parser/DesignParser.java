@@ -45,7 +45,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -118,13 +118,13 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, pce.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, pce.getMessage());
 		} catch (SAXException se) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, se.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, se.getMessage());
 		} catch (IOException ioe) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
 		} catch (CoreException e) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		return parseDocument();
@@ -150,7 +150,7 @@ public class DesignParser {
 						archi.setName(elt.getTextContent());
 					} else {
 						if (archi == null) {
-							WorkflowLogger.getLogger().log(Level.SEVERE,
+							AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 									"enter a name in the architecture");
 						}
 
@@ -411,7 +411,7 @@ public class DesignParser {
 					&& path.getFileExtension().equals(fileExt)) {
 				file = workspace.getRoot().getFile(currentPath);
 			} else {
-				WorkflowLogger
+				AbstractWorkflowLogger
 						.getLogger()
 						.log(Level.SEVERE,
 								"The refinement of a component must exist and have the extension ."
@@ -506,7 +506,7 @@ public class DesignParser {
 					try {
 						setupTime = Integer.valueOf(description);
 					} catch (NumberFormatException e) {
-						WorkflowLogger.getLogger().log(
+						AbstractWorkflowLogger.getLogger().log(
 								Level.INFO,
 								"No setup type entered for the setup link of "
 										+ cmp1 + " . 0 used.");
@@ -520,7 +520,7 @@ public class DesignParser {
 								.addSetupTime((Operator) cmp1, setupTime);
 					}
 				} else {
-					WorkflowLogger
+					AbstractWorkflowLogger
 							.getLogger()
 							.log(Level.SEVERE,
 									"a setup link must join an operator to a dma or a ram.");

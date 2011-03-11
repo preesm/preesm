@@ -39,7 +39,7 @@ package org.ietr.preesm.core.workflow;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -120,7 +120,7 @@ public class Workflow {
 				}
 
 				if (!workflowOk) {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"Failed to find plugin "
 									+ ((TaskNode) node).getTaskId()
@@ -157,7 +157,7 @@ public class Workflow {
 		IMapperAbc abc = null; // This input type is known from the sender and
 								// the receiver
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Starting workflow execution");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Starting workflow execution");
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -219,7 +219,7 @@ public class Workflow {
 
 					if (transformation instanceof IMapping) {
 						monitor.subTask("scheduling");
-						WorkflowLogger.getLogger().log(Level.INFO, "scheduling");
+						AbstractWorkflowLogger.getLogger().log(Level.INFO, "scheduling");
 
 						// mapping
 						IMapping mapping = (IMapping) transformation;
@@ -229,7 +229,7 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
-						WorkflowLogger.getLogger()
+						AbstractWorkflowLogger.getLogger()
 								.log(Level.INFO, "transforming");
 
 						// mapping
@@ -238,7 +238,7 @@ public class Workflow {
 						nodeResult = tranform.transform(sdf, parameters);
 					} else if (transformation instanceof IFileConversion) {
 						monitor.subTask("converting file");
-						WorkflowLogger.getLogger().log(Level.INFO,
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
 								"converting file");
 
 						// mapping
@@ -247,7 +247,7 @@ public class Workflow {
 						nodeResult = tranform.transform(parameters);
 					} else if (transformation instanceof ICodeGeneration) {
 						monitor.subTask("code generation");
-						WorkflowLogger.getLogger().log(Level.INFO,
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
 								"code generation");
 
 						// generic code generation
@@ -264,7 +264,7 @@ public class Workflow {
 
 					} else if (transformation instanceof ICodeTranslation) {
 						monitor.subTask("code translation");
-						WorkflowLogger.getLogger().log(Level.INFO,
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
 								"code translation");
 
 						// code translation
@@ -272,7 +272,7 @@ public class Workflow {
 						codeTrans.transform(sourceFiles);
 					} else if (transformation instanceof IExporter) {
 						monitor.subTask("content exporter");
-						WorkflowLogger.getLogger().log(Level.INFO,
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
 								"content exporter");
 						// code translation
 						IExporter exporter = (IExporter) transformation;
@@ -295,7 +295,7 @@ public class Workflow {
 						}
 					} else if (transformation instanceof IPlotter) {
 						monitor.subTask("plot");
-						WorkflowLogger.getLogger().log(Level.INFO, "plot");
+						AbstractWorkflowLogger.getLogger().log(Level.INFO, "plot");
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
@@ -312,7 +312,7 @@ public class Workflow {
 			}
 		}
 
-		WorkflowLogger.getLogger().log(Level.INFO, "End of workflow execution");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "End of workflow execution");
 		// Workflow completed
 		monitor.done();
 	}

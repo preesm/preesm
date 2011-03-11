@@ -51,7 +51,7 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -148,7 +148,7 @@ public class PGeneticAlgo extends Observable {
 		// best Population
 		ConcurrentSkipListSet<Chromosome> result = new ConcurrentSkipListSet<Chromosome>(
 				new FinalTimeComparator(abcParams, population.get(0)));
-		Logger logger = WorkflowLogger.getLogger();
+		Logger logger = AbstractWorkflowLogger.getLogger();
 
 		// if only one processor is used we must do the Standard Genetic
 		// Algorithm

@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -186,7 +186,7 @@ public class AddTransferVertexTransaction extends Transaction {
 				+ currentTarget.getName() + ")";
 
 		if (edge instanceof PrecedenceEdge) {
-			WorkflowLogger.getLogger().log(Level.INFO,
+			AbstractWorkflowLogger.getLogger().log(Level.INFO,
 					"no transfer vertex corresponding to a schedule edge");
 			return;
 		}

@@ -36,7 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.ui.console;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -56,8 +58,8 @@ public class CoreConsoleFactory implements IConsoleFactory {
 		if (window != null) {
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null) {
-				// Creates a console for the logger
-				WorkflowLogger.getLogger().initConsole();
+				// Creates a console for the logger.ui
+				AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
 			}
 		}
 	}

@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -151,7 +151,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		// Repeating the graph to simulate several calls.
 		if (iterationNr != 0) {
-			WorkflowLogger.getLogger().log(
+			AbstractWorkflowLogger.getLogger().log(
 					Level.INFO,
 					"Repetition of the graph " + iterationNr
 							+ " time(s) with period " + iterationPeriod
@@ -238,7 +238,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				architecture, abcParameters.getSimulatorType()
 						.getTaskSchedType(), scenario);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
@@ -265,7 +265,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		super.clean(architecture, scenario);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
 
 		return result;
 	}

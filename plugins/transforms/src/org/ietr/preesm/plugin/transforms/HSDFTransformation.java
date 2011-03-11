@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.task.IGraphTransformation;
@@ -73,13 +73,13 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		
 		try {
-			Logger logger = WorkflowLogger.getLogger();
+			Logger logger = AbstractWorkflowLogger.getLogger();
 			logger.setLevel(Level.FINEST);
 			logger.log(Level.FINER,
 					"Transforming application " + algorithm.getName()
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
-			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+			if (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
 				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 				try {
 					algorithm.accept(toHsdf);
@@ -113,13 +113,13 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 	public TaskResult transform(SDFGraph algorithm, TextParameters params)
 			throws PreesmException {
 		try {
-			Logger logger = WorkflowLogger.getLogger();
+			Logger logger = AbstractWorkflowLogger.getLogger();
 			logger.setLevel(Level.FINEST);
 			logger.log(Level.FINER,
 					"Transforming application " + algorithm.getName()
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
-			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+			if (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
 				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 				try {
 					algorithm.accept(toHsdf);

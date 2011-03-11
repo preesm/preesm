@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.ICodeElement;
@@ -164,7 +164,7 @@ public class CommThreadCodeGenerator {
 								coms.get(coms.size() - 1), post);
 					}
 				} else {
-					WorkflowLogger.getLogger().log(Level.SEVERE,
+					AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 							"semaphore creation failed");
 				}
 			}

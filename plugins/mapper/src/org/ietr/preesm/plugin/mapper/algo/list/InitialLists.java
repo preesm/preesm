@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
@@ -168,7 +168,7 @@ public class InitialLists {
 				predset.addAll(neighborindex
 						.predecessorListOf((MapperDAGVertex) cpnvertex));
 			} else {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"Predecessor not found");
 				return false;
 			}
@@ -215,7 +215,7 @@ public class InitialLists {
 				blevelmax = bLevel;
 				tlevelmax = tLevel;
 			} else if (bLevel == -1) {
-				WorkflowLogger.getLogger().log(
+				AbstractWorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"CPN list construction: b-level can not be computed for vertex "
 								+ currentvertex);
@@ -236,7 +236,7 @@ public class InitialLists {
 			List<MapperDAGVertex> cpnDominant,
 			List<MapperDAGVertex> criticalPath, LatencyAbc abc) {
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
 
 		// variables
 		MapperDAGVertex currentvertex;
@@ -273,7 +273,7 @@ public class InitialLists {
 		succset.addAll(neighborindex
 				.successorListOf((MapperDAGVertex) cpnvertex));
 
-		WorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
 
 		/* Do the process while the vertex is not a leaf */
 		while (!(succset.isEmpty())) {
@@ -312,7 +312,7 @@ public class InitialLists {
 			while (!(cpnDominant.contains(currentvertex))) {
 				// If no predecessor was found
 				if (!choosePredecessor(dag, currentvertex, cpnDominant, abc)) {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"No predecessor was found for vertex: "
 									+ currentvertex.getName());
@@ -373,17 +373,17 @@ public class InitialLists {
 			// construction of critical path and CPN dominant list with CPN and
 			// IBN actors
 			if (!constructCPN(dag, cpnDominant, criticalPath, (LatencyAbc) simu)) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"Problem with initial list construction");
 				return false;
 			}
 		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"To construct initial lists, a latency ABC is needed.");
 			return false;
 		}
 
-		WorkflowLogger.getLogger().log(Level.INFO,
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
 				"Adding OBN actors to CPN and IBN actors in CPN dominant list");
 		addCPNobn(dag, cpnDominant, simu);
 
@@ -411,7 +411,7 @@ public class InitialLists {
 		// Variables
 		Iterator<MapperDAGVertex> iter = tempset.iterator();
 		MapperDAGVertex currentvertex;
-		Logger logger = WorkflowLogger.getLogger();
+		Logger logger = AbstractWorkflowLogger.getLogger();
 		// check all the list
 		while (iter.hasNext()) {
 			currentvertex = iter.next();

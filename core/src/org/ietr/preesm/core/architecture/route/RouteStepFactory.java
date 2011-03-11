@@ -39,7 +39,7 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.Interconnection;
@@ -78,7 +78,7 @@ public class RouteStepFactory {
 				return new MediumRouteStep(source, (Medium) nodes.get(0),
 						target);
 			} else {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"A medium must be connected only to operators.");
 			}
 		} else {

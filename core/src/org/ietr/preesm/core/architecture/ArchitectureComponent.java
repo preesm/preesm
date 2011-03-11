@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
@@ -217,7 +217,7 @@ public abstract class ArchitectureComponent extends
 		for (ArchitectureInterface itf : cmp.availableInterfaces) {
 
 			if (itf.getBusReference().getId().isEmpty()) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"Dangerous unnamed ports in architecture.");
 			}
 
@@ -279,7 +279,7 @@ public abstract class ArchitectureComponent extends
 		} else if (this.getType().equals(ArchitectureComponentType.ram)) {
 			newCmp = new Ram(getName(), null);
 		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component.");
 		}
 

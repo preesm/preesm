@@ -47,7 +47,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -101,7 +101,7 @@ public class XsltTransformer {
 		}
 
 		if (transformer == null) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"XSL sheet not found or not valid: " + fileName);
 		}
 
@@ -126,7 +126,7 @@ public class XsltTransformer {
 				transformer.transform(new StreamSource(sourceFileLoc),
 						new StreamResult(new FileOutputStream(destFileLoc)));
 			} catch (FileNotFoundException e1) {
-				WorkflowLogger.getLogger().log(
+				AbstractWorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"Problem finding files for XSL transfo ("
 								+ osSourceFilePath, "," + osDestFilePath + ")");

@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -180,7 +180,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp == Operator.NO_COMPONENT) {
-			WorkflowLogger.getLogger().severe(
+			AbstractWorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
 
@@ -260,7 +260,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
 		}
 
@@ -303,7 +303,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final latency");
 		}
 
@@ -513,7 +513,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void reschedule2() {
 
 		if (implementation != null && dag != null) {
-			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
+			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
 					implementation);
 			adder.removePrecedenceEdges();
@@ -588,7 +588,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			updateTimings();
 			// this.plotImplementation(null);
 
-			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
+			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
 					orderManager.getTotalOrder().getList());
 

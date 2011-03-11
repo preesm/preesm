@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -177,7 +177,7 @@ public class TaskNode implements IWorkflowNode {
 
 			return found;
 		} catch (CoreException e) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Failed to find plugins from workflow");
 			return false;
 		}

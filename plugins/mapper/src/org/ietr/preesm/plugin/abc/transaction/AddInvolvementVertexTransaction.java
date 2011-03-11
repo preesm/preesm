@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -120,7 +120,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
 		if (edge instanceof PrecedenceEdge) {
-			WorkflowLogger.getLogger().log(Level.INFO,
+			AbstractWorkflowLogger.getLogger().log(Level.INFO,
 					"no involvement vertex corresponding to a schedule edge");
 			return;
 		}

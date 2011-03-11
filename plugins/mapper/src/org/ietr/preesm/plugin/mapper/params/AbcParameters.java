@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
@@ -94,7 +94,7 @@ public class AbcParameters {
 				.getVariable("edgeSchedType"));
 		this.balanceLoads = textParameters.getBooleanVariable("balanceLoads");
 
-		WorkflowLogger
+		AbstractWorkflowLogger
 				.getLogger()
 				.log(
 						Level.INFO,

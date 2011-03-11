@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -149,7 +149,7 @@ public class GenericPrinter {
 							specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
-				WorkflowLogger.getLogger().log(Level.INFO, e.getMessage());
+				AbstractWorkflowLogger.getLogger().log(Level.INFO, e.getMessage());
 			}
 		}
 	}

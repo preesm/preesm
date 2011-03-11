@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.params;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.task.TextParameters;
 
@@ -105,7 +105,7 @@ public class PFastAlgoParameters extends SchedulingParameters {
 			this.fastNumber = textParameters.getIntVariable("fastNumber");
 		}
 		
-		WorkflowLogger
+		AbstractWorkflowLogger
 		.getLogger()
 		.log(
 				Level.INFO,

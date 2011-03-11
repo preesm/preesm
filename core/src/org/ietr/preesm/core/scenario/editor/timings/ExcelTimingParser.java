@@ -45,7 +45,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -80,7 +80,7 @@ public class ExcelTimingParser {
 	}
 
 	public void parse(String url) {
-		WorkflowLogger
+		AbstractWorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
@@ -172,12 +172,12 @@ public class ExcelTimingParser {
 									scenario.getTimingManager().addTiming(
 											timing);
 
-									WorkflowLogger.getLogger().log(
+									AbstractWorkflowLogger.getLogger().log(
 											Level.INFO,
 											"Importing timing: "
 													+ timing.toString());
 								} catch (NumberFormatException e) {
-									WorkflowLogger
+									AbstractWorkflowLogger
 											.getLogger()
 											.log(Level.SEVERE,
 													"Problem importing timing of "
@@ -190,7 +190,7 @@ public class ExcelTimingParser {
 						} else {
 							if (vertexCell == null
 									&& !missingVertices.contains(vertexName)) {
-								WorkflowLogger.getLogger().log(
+								AbstractWorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No line found in excel sheet for vertex: "
 												+ vertexName);
@@ -198,7 +198,7 @@ public class ExcelTimingParser {
 							} else if (operatorCell == null
 									&& !missingOperatorTypes
 											.contains(operatorId)) {
-								WorkflowLogger.getLogger().log(
+								AbstractWorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No column found in excel sheet for operator type: "
 												+ operatorId);

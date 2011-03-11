@@ -44,7 +44,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -76,7 +76,7 @@ public class XsltTransform extends AbstractTaskImplementation {
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
 				if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
-					WorkflowLogger.getLogger().log(Level.INFO,
+					AbstractWorkflowLogger.getLogger().log(Level.INFO,
 							"Generating file: " + outputPath.toOSString());
 					xsltTransfo.transformFileToFile(inputPath.toOSString(),
 							outputPath.toOSString());

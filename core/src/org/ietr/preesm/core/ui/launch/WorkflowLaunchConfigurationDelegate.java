@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -119,7 +119,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 						configEnv);
 			} catch (PreesmException e) {
 				e.printStackTrace();
-				WorkflowLogger.getLogger().log(Level.WARNING,
+				AbstractWorkflowLogger.getLogger().log(Level.WARNING,
 						"workflow aborted :" + e.getMessage());
 				monitor.setCanceled(true);
 			}
@@ -129,7 +129,7 @@ public class WorkflowLaunchConfigurationDelegate implements
 	}
 
 	private void activatePerspective() {
-		WorkflowLogger.getLogger().initConsole();
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
 
 		Activator.getDefault().getWorkbench().getDisplay()
 				.syncExec(new Runnable() {

@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.algo.dynamic;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.task.TextParameters;
@@ -130,7 +130,7 @@ public class DynamicQueuingScheduler {
 			abc.map(currentvertex, currentMinOp, true);
 		}
 		else{
-			WorkflowLogger.getLogger().log(
+			AbstractWorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"No available operator for " + currentvertex);
 		}

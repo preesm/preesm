@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.architransfo.transforms;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.task.IArchiTransformation;
@@ -69,7 +69,7 @@ public class HierarchyFlattening implements IArchiTransformation {
 			depth = 1;
 		}
 
-		Logger logger = WorkflowLogger.getLogger();
+		Logger logger = AbstractWorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 

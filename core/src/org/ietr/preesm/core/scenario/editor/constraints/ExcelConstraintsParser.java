@@ -45,7 +45,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -100,7 +100,7 @@ public class ExcelConstraintsParser {
 		IFile file = workspace.getRoot().getFile(path);
 
 		scenario.getConstraintGroupManager().removeAll();
-		WorkflowLogger
+		AbstractWorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
@@ -160,13 +160,13 @@ public class ExcelConstraintsParser {
 					scenario.getConstraintGroupManager().addConstraint(
 							(Operator) operator, vertex);
 
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Importing constraint: {" + operator.getName()
 									+ "," + vertex + ",yes}");
 
 				} else {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Importing constraint: {" + operator.getName()
 									+ "," + vertex + ",no}");
@@ -174,12 +174,12 @@ public class ExcelConstraintsParser {
 			} else {
 				if (vertexCell == null && !missingVertices.contains(vertexName)) {
 					if (vertex.getGraphDescription() != null) {
-						WorkflowLogger.getLogger().log(
+						AbstractWorkflowLogger.getLogger().log(
 								Level.WARNING,
 								"No line found in excel sheet for hierarchical vertex: "
 										+ vertexName);
 					} else {
-						WorkflowLogger.getLogger().log(
+						AbstractWorkflowLogger.getLogger().log(
 								Level.SEVERE,
 								"No line found in excel sheet for atomic vertex: "
 										+ vertexName);
@@ -187,7 +187,7 @@ public class ExcelConstraintsParser {
 					missingVertices.add(vertexName);
 				} else if (operatorCell == null
 						&& !missingOperators.contains(operatorName)) {
-					WorkflowLogger.getLogger().log(
+					AbstractWorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"No column found in excel sheet for operator: "
 									+ operatorName);
