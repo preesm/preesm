@@ -73,8 +73,7 @@ public class ArchiHierarchyFlattening extends
 			if (port == null) {
 				AbstractWorkflowLogger
 						.getLogger()
-						.log(
-								Level.SEVERE,
+						.log(Level.SEVERE,
 								"The subdesign "
 										+ subDesign.getId()
 										+ " should contain a hierarchical port with id: "
@@ -149,11 +148,15 @@ public class ArchiHierarchyFlattening extends
 		}
 
 		// Connecting hierarchical ports to subdesign
-		for (HierarchyPort port : new HashSet<HierarchyPort>(parentGraph.getHierarchyPorts())) {
+		for (HierarchyPort port : new HashSet<HierarchyPort>(
+				parentGraph.getHierarchyPorts())) {
 			if (port.getConnectedCmpId().equals(subDesignCmp.getName())) {
 				parentGraph.addHierarchyPort(new HierarchyPort(port.getName(),
-						prefix + subDesign.getHierarchyPort(port.getBusRefName())
-								.getConnectedCmpId(), port.getBusRefName()));
+						prefix
+								+ subDesign.getHierarchyPort(
+										port.getBusRefName())
+										.getConnectedCmpId(), port
+								.getBusRefName()));
 			}
 		}
 
@@ -187,7 +190,7 @@ public class ArchiHierarchyFlattening extends
 							.getRefinement();
 
 					flattenGraph(subDesign, newDepth);
-					
+
 					try {
 						treatSubDesign(cmp, archi);
 					} catch (InvalidExpressionException e) {
@@ -199,8 +202,8 @@ public class ArchiHierarchyFlattening extends
 			}
 		}
 
-		for (HierarchyPort port : new HashSet<HierarchyPort>(archi
-				.getHierarchyPorts())) {
+		for (HierarchyPort port : new HashSet<HierarchyPort>(
+				archi.getHierarchyPorts())) {
 			for (ArchitectureComponent cmp : subDesignCmps) {
 				if (cmp.getName().equals(port.getConnectedCmpId())) {
 					archi.removeHierarchyPort(port);
@@ -210,8 +213,8 @@ public class ArchiHierarchyFlattening extends
 
 		// Removing original vertices with subgraph and corresponding edges
 		for (ArchitectureComponent cmp : subDesignCmps) {
-			for (Interconnection i : new HashSet<Interconnection>(archi
-					.edgesOf(cmp))) {
+			for (Interconnection i : new HashSet<Interconnection>(
+					archi.edgesOf(cmp))) {
 				archi.removeEdge(i);
 			}
 			archi.removeVertex(cmp);

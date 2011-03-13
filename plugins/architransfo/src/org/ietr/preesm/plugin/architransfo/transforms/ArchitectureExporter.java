@@ -36,18 +36,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.architransfo.transforms;
 
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.writer.DesignWriter;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IExporter;
-import org.ietr.preesm.core.task.TextParameters;
-import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Exporter for IP-XACT multicore architectures
@@ -55,49 +52,33 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  * 
  */
-public class ArchitectureExporter implements IExporter {
+public class ArchitectureExporter extends AbstractTaskImplementation {
 
 	@Override
-	public boolean isDAGExporter() {
-		return false;
-	}
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
 
-	@Override
-	public boolean isSDFExporter() {
-		return false;
-	}
-
-	@Override
-	public boolean isArchiExporter() {
-		return true;
-	}
-
-	@Override
-	public void transform(MultiCoreArchitecture archi, TextParameters params) {
-		
-		String pathKey = "path";
-		if(params.hasVariable(pathKey)){
+		String path = parameters.get("path");
+		MultiCoreArchitecture archi = (MultiCoreArchitecture) inputs
+				.get("architecture");
 		DesignWriter writer = new DesignWriter(archi);
 		writer.generateArchitectureDOM();
-		writer.writeDom(params.getVariable(pathKey));
-		}
-		else{
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,"Architecture exporter has no file path.");
-		}
+		writer.writeDom(path);
+
+		return new HashMap<String, Object>();
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public void transform(AbstractGraph algorithm, TextParameters params) {
-		
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("path", "");
+		return parameters;
 	}
 
 	@Override
-	public void transform(DirectedAcyclicGraph dag, SDFGraph sdf,
-			MultiCoreArchitecture archi, PreesmScenario scenario,
-			TextParameters params) {
-		
+	public String monitorMessage() {
+		return "Exporting architecture.";
 	}
-
-
 }

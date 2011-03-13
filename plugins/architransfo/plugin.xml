@@ -2,16 +2,33 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.ietr.preesm.core.tasks">
+         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.plugin.architransfo.transforms.HierarchyFlattening"
             name="Architecture Hierarchy Flattening"
             type="org.ietr.preesm.plugin.architransfo.transforms.HierarchyFlattening">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="architecture"
+                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture"></output>
+         </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter"
             name="Architecture exporter"
             type="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+            </input>
+         </inputs>
       </task>
    </extension>
 
