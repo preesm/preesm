@@ -52,6 +52,10 @@ terms.
       <update label="PREESM" url="http://preesm.sourceforge.net/eclipse/"/>
    </url>
 
+   <requires>
+      <import feature="net.sf.dftools.feature" version="0.0.1"/>
+   </requires>
+
    <plugin
          id="org.ietr.preesm.core"
          download-size="0"
@@ -88,7 +92,7 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="net.sf.dftools.workflow"
+         id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

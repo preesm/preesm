@@ -52,6 +52,7 @@ import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 /**
@@ -90,19 +91,23 @@ public class XsltTransformer {
 		Path xslFilePath = new Path(fileName);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile xslFile = root.getFile(xslFilePath);
-		String xslFileLoc = xslFile.getLocation().toOSString();
-		StreamSource source = new StreamSource(xslFileLoc);
-
-		try {
-			transformer = factory.newTransformer(source);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		IPath path = xslFile.getLocation();
+		if(path != null){
+			String xslFileLoc = xslFile.getLocation().toOSString();
+			StreamSource source = new StreamSource(xslFileLoc);
+	
+			try {
+				transformer = factory.newTransformer(source);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		if (transformer == null) {
 			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"XSL sheet not found or not valid: " + fileName);
+			return false;
 		}
 
 		return true;
