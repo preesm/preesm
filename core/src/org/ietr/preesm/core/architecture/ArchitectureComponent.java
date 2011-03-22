@@ -217,7 +217,7 @@ public abstract class ArchitectureComponent extends
 		for (ArchitectureInterface itf : cmp.availableInterfaces) {
 
 			if (itf.getBusReference().getId().isEmpty()) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+				AbstractWorkflowLogger.getLogger().log(Level.WARNING,
 						"Dangerous unnamed ports in architecture.");
 			}
 

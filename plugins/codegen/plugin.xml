@@ -8,7 +8,9 @@
             name="Default code generation"
             type="org.ietr.preesm.plugin.codegen.CodeGenerationTransformation">
          <outputs>
-            <output></output>
+            <output
+                  id="SourceFileList"
+                  object="org.ietr.preesm.core.codegen.SourceFileList"></output>
          </outputs>
          <inputs>
             <input
