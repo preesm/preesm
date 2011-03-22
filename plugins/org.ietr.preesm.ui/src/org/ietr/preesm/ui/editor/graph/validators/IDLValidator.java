@@ -33,7 +33,7 @@ import net.sf.graphiti.model.IValidator;
 
 import org.eclipse.core.resources.IFile;
 
-public class IDLValidator implements IValidator{
+public class IDLValidator implements IValidator {
 
 	@Override
 	public boolean validate(Graph graph, IFile file) {

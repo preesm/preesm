@@ -48,16 +48,17 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 public interface IEdgeSched {
 
 	/**
-	 * Schedules a transfer which source is given.
-	 * Scheduling consists in giving a total order.
+	 * Schedules a transfer which source is given. Scheduling consists in giving
+	 * a total order.
 	 */
-	void schedule(TransferVertex tVertex, MapperDAGVertex source, MapperDAGVertex target);
+	void schedule(TransferVertex tVertex, MapperDAGVertex source,
+			MapperDAGVertex target);
 
 	/**
 	 * Gets the internal order manager
 	 */
 	public SchedOrderManager getOrderManager();
-	
+
 	/**
 	 * Gets the current edge scheduling type
 	 */

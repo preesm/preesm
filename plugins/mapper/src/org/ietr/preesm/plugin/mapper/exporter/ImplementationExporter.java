@@ -52,8 +52,8 @@ import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
 import org.w3c.dom.Element;
 
 /**
- * Exporter for the mapper DAG graph that represents the implementation.
- * The attributes contain every information on the deployment.
+ * Exporter for the mapper DAG graph that represents the implementation. The
+ * attributes contain every information on the deployment.
  * 
  * @author mpelcat
  * 
@@ -92,8 +92,8 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 				ImplementationPropertyNames.SendReceive_Operator_address,
 				"vertex", "string", DAGDefaultEdgePropertyType.class);
 		addKey(ImplementationPropertyNames.Vertex_originalVertexId,
-				ImplementationPropertyNames.Vertex_originalVertexId,
-				"vertex", "string", DAGDefaultEdgePropertyType.class);
+				ImplementationPropertyNames.Vertex_originalVertexId, "vertex",
+				"string", DAGDefaultEdgePropertyType.class);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		Element edgeElt = createEdge(parentELement, edge.getSource().getId(),
 				edge.getTarget().getId());
 		exportKeys("edge", edgeElt, edge.getPropertyBean());
-		return edgeElt ;
+		return edgeElt;
 	}
 
 	@Override
@@ -119,12 +119,12 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			for (DAGEdge edge : myGraph.edgeSet()) {
 				exportEdge(edge, graphElt);
 			}
-			return graphElt ;
+			return graphElt;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null ;
+		return null;
 	}
 
 	@Override
@@ -136,43 +136,42 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			// Adding operator definition type to the newly created element
 			Element opDefElt = domDocument.createElement("data");
 			vertexElt.appendChild(opDefElt);
-			opDefElt.setAttribute("key",ImplementationPropertyNames.SendReceive_OperatorDef);
-			opDefElt.setTextContent(
-					((MapperDAGVertex) vertex)
-							.getImplementationVertexProperty()
-							.getEffectiveOperator().getDefinition()
-							.getVlnv().getName());
+			opDefElt.setAttribute("key",
+					ImplementationPropertyNames.SendReceive_OperatorDef);
+			opDefElt.setTextContent(((MapperDAGVertex) vertex)
+					.getImplementationVertexProperty().getEffectiveOperator()
+					.getDefinition().getVlnv().getName());
 
 			// Adding route step to the node
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
 							ImplementationPropertyNames.SendReceive_routeStep);
-			
+
 			if (routeStep != null) {
 				exportRouteStep(routeStep, vertexElt);
 			}
-			
+
 		} else {
 			// Adding operator definition type to the newly created element
 			Element opDefElt = domDocument.createElement("data");
 			vertexElt.appendChild(opDefElt);
-			opDefElt.setAttribute("key",ImplementationPropertyNames.Vertex_OperatorDef);
-			opDefElt.setTextContent(
-					((MapperDAGVertex) vertex)
-							.getImplementationVertexProperty()
-							.getEffectiveOperator().getDefinition()
-							.getVlnv().getName());
+			opDefElt.setAttribute("key",
+					ImplementationPropertyNames.Vertex_OperatorDef);
+			opDefElt.setTextContent(((MapperDAGVertex) vertex)
+					.getImplementationVertexProperty().getEffectiveOperator()
+					.getDefinition().getVlnv().getName());
 
 			// Adding available operators to the newly created element
 			Element opsElt = domDocument.createElement("data");
 			vertexElt.appendChild(opsElt);
-			opsElt.setAttribute("key",ImplementationPropertyNames.Vertex_Available_Operators);
-			opsElt.setTextContent(
-					((MapperDAGVertex) vertex)
-							.getInitialVertexProperty().getInitialOperatorList().toString());
-			
+			opsElt.setAttribute("key",
+					ImplementationPropertyNames.Vertex_Available_Operators);
+			opsElt.setTextContent(((MapperDAGVertex) vertex)
+					.getInitialVertexProperty().getInitialOperatorList()
+					.toString());
+
 		}
-		return vertexElt ;
+		return vertexElt;
 	}
 
 	private void exportRouteStep(AbstractRouteStep step, Element vertexElt) {
@@ -180,8 +179,9 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	}
 
 	@Override
-	protected Element exportPort(DAGVertex interfaceVertex, Element parentELement) {
-		return null ;
+	protected Element exportPort(DAGVertex interfaceVertex,
+			Element parentELement) {
+		return null;
 	}
 
 	@Override
@@ -189,7 +189,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		this.path = path;
 		try {
 			exportGraph(graph);
-			transform( new FileOutputStream(path));
+			transform(new FileOutputStream(path));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

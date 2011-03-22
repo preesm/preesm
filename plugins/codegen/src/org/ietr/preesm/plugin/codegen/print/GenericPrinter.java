@@ -149,7 +149,8 @@ public class GenericPrinter {
 							specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
-				AbstractWorkflowLogger.getLogger().log(Level.INFO, e.getMessage());
+				AbstractWorkflowLogger.getLogger().log(Level.INFO,
+						e.getMessage());
 			}
 		}
 	}

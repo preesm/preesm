@@ -41,7 +41,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 
 /**
- * An edge scheduler that simply adds the transfer as soon as possible after the sender
+ * An edge scheduler that simply adds the transfer as soon as possible after the
+ * sender
  * 
  * @author mpelcat
  */
@@ -56,12 +57,13 @@ public class SimpleEdgeSched extends AbstractEdgeSched {
 	}
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
+	public void schedule(TransferVertex vertex, MapperDAGVertex source,
+			MapperDAGVertex target) {
 		orderManager.insertAfter(source, vertex);
 
 	}
 
-	public EdgeSchedType getEdgeSchedType(){
+	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Simple;
 	}
 }

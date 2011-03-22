@@ -41,40 +41,40 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This is a transaction container that enables the consecutive
- * execution of several listed transactions.
+ * This is a transaction container that enables the consecutive execution of
+ * several listed transactions.
  * 
  * @author mpelcat
  */
 public class TransactionManager {
-	
+
 	LinkedList<Transaction> transactionList = null;
 	List<Object> resultList = null;
 
 	public TransactionManager() {
 		this(null);
 	}
-	
+
 	public TransactionManager(List<Object> resultList) {
 		super();
 		this.transactionList = new LinkedList<Transaction>();
 		this.resultList = resultList;
 	}
 
-	public void execute(){
+	public void execute() {
 		Iterator<Transaction> it = transactionList.iterator();
-		
-		while(it.hasNext()){
+
+		while (it.hasNext()) {
 			Transaction currentT = it.next();
 			currentT.execute(resultList);
 		}
 	}
-	
-	public void add(Transaction transaction){
+
+	public void add(Transaction transaction) {
 		transactionList.add(transaction);
 	}
-	
-	public void clear(){
+
+	public void clear() {
 		transactionList.clear();
 	}
 
@@ -82,15 +82,14 @@ public class TransactionManager {
 	public String toString() {
 		String s = "{";
 
-		for(Transaction t : transactionList){
+		for (Transaction t : transactionList) {
 			s += t.toString() + ",";
 		}
-		
-		s = s.substring(0, s.length()-1);
+
+		s = s.substring(0, s.length() - 1);
 		s += "}";
-		
+
 		return s;
 	}
-	
-	
+
 }

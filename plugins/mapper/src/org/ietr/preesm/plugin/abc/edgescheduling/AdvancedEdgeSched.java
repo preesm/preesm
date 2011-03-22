@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.edgescheduling;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -49,10 +49,10 @@ import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 public class AdvancedEdgeSched extends AbstractEdgeSched {
 
 	private IntervalFinder intervalFinder = null;
-	
+
 	public AdvancedEdgeSched(SchedOrderManager orderManager) {
 		super(orderManager);
-		
+
 		intervalFinder = new IntervalFinder(orderManager);
 	}
 
@@ -64,23 +64,25 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 	}
 
 	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source, MapperDAGVertex target) {
+	public void schedule(TransferVertex vertex, MapperDAGVertex source,
+			MapperDAGVertex target) {
 
-		ArchitectureComponent component = vertex.getImplementationVertexProperty().getEffectiveComponent();
-		//intervalFinder.displayCurrentSchedule(vertex, source);
-		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(component, source, target);
-		
-		if(earliestInterval.getDuration() >= 0){
-			orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(), vertex);
-		}
-		else{
+		ArchitectureComponent component = vertex
+				.getImplementationVertexProperty().getEffectiveComponent();
+		// intervalFinder.displayCurrentSchedule(vertex, source);
+		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(
+				component, source, target);
+
+		if (earliestInterval.getDuration() >= 0) {
+			orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(),
+					vertex);
+		} else {
 			orderManager.insertAfter(source, vertex);
 		}
 
-
 	}
 
-	public EdgeSchedType getEdgeSchedType(){
+	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Advanced;
 	}
 

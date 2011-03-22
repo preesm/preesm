@@ -34,7 +34,6 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-
 package org.ietr.preesm.plugin.mapper.activator;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -90,7 +89,7 @@ public class Activator extends AbstractUIPlugin {
 		plugin = null;
 		super.stop(context);
 	}
-	
+
 	/**
 	 * Returns an image for the image file at the given plug-in relative path.
 	 * 
@@ -109,7 +108,7 @@ public class Activator extends AbstractUIPlugin {
 
 		return image;
 	}
-	
+
 	/**
 	 * Returns an image for the image file at the given plug-in relative path.
 	 * 

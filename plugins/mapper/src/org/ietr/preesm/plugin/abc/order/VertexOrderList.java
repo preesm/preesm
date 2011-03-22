@@ -77,40 +77,41 @@ public class VertexOrderList {
 			return name;
 		}
 	}
-	
-	// Maintaining a list of the properties for iterating purpose in the given order
+
+	// Maintaining a list of the properties for iterating purpose in the given
+	// order
 	private List<OrderProperty> orderedList;
 	// Maintaining a map of the properties for research purpose of a given name
-	private Map<String,OrderProperty> nameMap;
+	private Map<String, OrderProperty> nameMap;
 
 	public VertexOrderList() {
 		super();
 		orderedList = new ArrayList<OrderProperty>();
 		nameMap = new HashMap<String, OrderProperty>();
 	}
-	
-	public int indexOf(OrderProperty p){
+
+	public int indexOf(OrderProperty p) {
 		return orderedList.indexOf(p);
 	}
 
-	public List<OrderProperty> elements(){
+	public List<OrderProperty> elements() {
 		return Collections.unmodifiableList(orderedList);
 	}
-	
-	public int orderOf(String name){
+
+	public int orderOf(String name) {
 		return nameMap.get(name).getOrder();
 	}
-	
-	public boolean contains(String name){
+
+	public boolean contains(String name) {
 		return nameMap.containsKey(name);
 	}
-	
-	public void addLast(OrderProperty p){
+
+	public void addLast(OrderProperty p) {
 		orderedList.add(p);
 		nameMap.put(p.getName(), p);
 	}
-	
-	public List<OrderProperty> getOrderedList(){
+
+	public List<OrderProperty> getOrderedList() {
 		return Collections.unmodifiableList(orderedList);
 	}
 }

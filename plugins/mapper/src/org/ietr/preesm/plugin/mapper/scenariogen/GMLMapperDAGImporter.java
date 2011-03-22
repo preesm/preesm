@@ -83,20 +83,21 @@ public class GMLMapperDAGImporter extends
 			attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
 					vertexElt.getAttributes().item(i).getNodeValue());
 		}
-		
-		attributes.put("kind",SDFVertex.VERTEX);
+
+		attributes.put("kind", SDFVertex.VERTEX);
 		vertex = SDFVertexFactory.createVertex(attributes);
-		
+
 		vertex.setId(vertexElt.getAttribute("id"));
 
 		for (int i = 0; i < vertexElt.getChildNodes().getLength(); i++) {
 			Node n = vertexElt.getChildNodes().item(i);
-			if(n.getNodeName().equals("data")){
-			vertex.getPropertyBean().setValue(n.getAttributes().getNamedItem("key").getTextContent(),
-					n.getTextContent());
+			if (n.getNodeName().equals("data")) {
+				vertex.getPropertyBean().setValue(
+						n.getAttributes().getNamedItem("key").getTextContent(),
+						n.getTextContent());
 			}
 		}
-		
+
 		parseKeys(vertexElt, vertex.getPropertyBean(), "node");
 		vertexFromId.put(vertex.getId(), vertex);
 		parseArguments(vertex, vertexElt);

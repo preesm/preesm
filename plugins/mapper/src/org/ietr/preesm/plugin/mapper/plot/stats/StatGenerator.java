@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
@@ -44,7 +45,6 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
@@ -70,18 +70,19 @@ public class StatGenerator {
 	private IAbc abc = null;
 
 	private PreesmScenario scenario = null;
-	private TextParameters params = null;
+	private Map<String, String> params = null;
 	private long finalTime = 0;
 
-	public StatGenerator(IAbc abc, PreesmScenario scenario, TextParameters params) {
+	public StatGenerator(IAbc abc, PreesmScenario scenario,
+			Map<String, String> params) {
 		super();
 		this.params = params;
 		this.scenario = scenario;
 		if (abc instanceof LatencyAbc) {
 			this.abc = abc;
-			
+
 			this.abc.updateFinalCosts();
-			this.finalTime = ((LatencyAbc)this.abc).getFinalLatency();
+			this.finalTime = ((LatencyAbc) this.abc).getFinalLatency();
 		} else {
 			this.abc = abc;
 			this.abc.updateFinalCosts();
@@ -100,8 +101,8 @@ public class StatGenerator {
 	 * available.
 	 */
 	public long getDAGSpanLength() {
-		Object span = abc.getDAG().getPropertyBean().getValue(
-				SpanLengthCalculator.DAG_SPAN);
+		Object span = abc.getDAG().getPropertyBean()
+				.getValue(SpanLengthCalculator.DAG_SPAN);
 		if (span != null && span instanceof Long) {
 			return (Long) span;
 		}
@@ -109,34 +110,34 @@ public class StatGenerator {
 	}
 
 	/**
-	 * The work is the sum of all task lengths excluding vertices added by the mapping.
+	 * The work is the sum of all task lengths excluding vertices added by the
+	 * mapping.
 	 */
 	public long getDAGWorkLength() {
 
 		long work = 0;
 		MapperDAG dag = abc.getDAG();
 		Operator mainOp = abc.getArchitecture().getMainOperator();
-		
+
 		for (DAGVertex vertex : dag.vertexSet()) {
 			if (!(vertex instanceof TransferVertex)
 					&& !(vertex instanceof OverheadVertex)
 					&& !(vertex instanceof InvolvementVertex)) {
 
-				// Looks for an operator able to execute currentvertex (preferably
+				// Looks for an operator able to execute currentvertex
+				// (preferably
 				// the given operator)
-				Operator adequateOp = abc.findOperator((MapperDAGVertex)vertex, mainOp);
-				
+				Operator adequateOp = abc.findOperator(
+						(MapperDAGVertex) vertex, mainOp);
+
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
 						.getTime(adequateOp);
 
-				/*PreesmLogger.getLogger().log(
-						Level.INFO,
-						"task "
-								+ vertex.getName()
-								+ " duration "
-								+ ((MapperDAGVertex) vertex)
-										.getInitialVertexProperty().getTime(
-												adequateOp));*/
+				/*
+				 * PreesmLogger.getLogger().log( Level.INFO, "task " +
+				 * vertex.getName() + " duration " + ((MapperDAGVertex) vertex)
+				 * .getInitialVertexProperty().getTime( adequateOp));
+				 */
 			}
 		}
 
@@ -148,9 +149,8 @@ public class StatGenerator {
 	 */
 	public long getResultTime() {
 		if (abc instanceof LatencyAbc) {
-			return ((LatencyAbc)abc).getFinalLatency();
-		}
-		else{
+			return ((LatencyAbc) abc).getFinalLatency();
+		} else {
 			return 0l;
 		}
 	}
@@ -193,9 +193,8 @@ public class StatGenerator {
 	public long getLoad(Operator operator) {
 
 		if (abc instanceof LatencyAbc) {
-			return ((LatencyAbc)abc).getLoad(operator);
-		}
-		else{
+			return ((LatencyAbc) abc).getLoad(operator);
+		} else {
 			return 0l;
 		}
 	}
@@ -237,7 +236,7 @@ public class StatGenerator {
 		return scenario;
 	}
 
-	public TextParameters getParams() {
+	public Map<String, String> getParams() {
 		return params;
 	}
 

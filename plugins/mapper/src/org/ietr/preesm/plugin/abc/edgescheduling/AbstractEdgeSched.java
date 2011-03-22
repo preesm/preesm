@@ -44,7 +44,7 @@ import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
  * @author mpelcat
  */
 public abstract class AbstractEdgeSched implements IEdgeSched {
-	
+
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
@@ -62,22 +62,21 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 			SchedOrderManager orderManager) {
 
 		AbstractEdgeSched edgeSched = null;
-		
+
 		if (edgeSchedType == EdgeSchedType.Simple) {
 			edgeSched = new SimpleEdgeSched(orderManager);
 		} else if (edgeSchedType == EdgeSchedType.Switcher) {
 			edgeSched = new SwitcherEdgeSched(orderManager);
 		} else if (edgeSchedType == EdgeSchedType.Advanced) {
 			edgeSched = new AdvancedEdgeSched(orderManager);
-		}
-		else{
+		} else {
 			// Default scheduler
 			edgeSched = new SimpleEdgeSched(orderManager);
 		}
 
 		return edgeSched;
 	}
-	
+
 	public SchedOrderManager getOrderManager() {
 		return orderManager;
 	}

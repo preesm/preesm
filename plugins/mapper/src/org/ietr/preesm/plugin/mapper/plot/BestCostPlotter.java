@@ -190,7 +190,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 			rangeAxis.setAutoRangeIncludesZero(false);
 			final XYPlot subplot = new XYPlot(this.datasets[i], null,
 					rangeAxis, new XYLineAndShapeRenderer());
-			
+
 			subplot.setBackgroundPaint(Color.white);
 			subplot.setDomainGridlinePaint(Color.lightGray);
 			subplot.setRangeGridlinePaint(Color.lightGray);
@@ -200,8 +200,8 @@ public class BestCostPlotter extends ApplicationFrame implements
 		final JFreeChart chart = new JFreeChart(title, plot);
 
 		chart.removeLegend();
-		//chart.getLegend().setPosition(RectangleEdge.BOTTOM);
-		
+		// chart.getLegend().setPosition(RectangleEdge.BOTTOM);
+
 		chart.setBorderPaint(Color.lightGray);
 		chart.setBorderVisible(true);
 

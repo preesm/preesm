@@ -57,13 +57,14 @@ import org.ietr.preesm.plugin.mapper.params.AbcParameters;
  * @author mpelcat
  */
 public class LooselyTimedAbc extends LatencyAbc {
-	
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been mapped yet.
 	 */
 	public LooselyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType,
+			PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 	}
 
@@ -71,15 +72,16 @@ public class LooselyTimedAbc extends LatencyAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		super.fireNewMappedVertex(vertex,updateRank);
+		super.fireNewMappedVertex(vertex, updateRank);
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
-			// Adding precedence edges for an automatic graph timings calculation
+			// Adding precedence edges for an automatic graph timings
+			// calculation
 			new PrecedenceEdgeAdder(orderManager, implementation)
-			.scheduleVertex(vertex);
+					.scheduleVertex(vertex);
 		}
 
 	}
@@ -110,14 +112,13 @@ public class LooselyTimedAbc extends LatencyAbc {
 			}
 		}
 
-		//Setting edge costs for special types
-		//super.setEdgeCost(edge);
+		// Setting edge costs for special types
+		// super.setEdgeCost(edge);
 	}
 
 	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return null;
 	}
-	
-	
+
 }

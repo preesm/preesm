@@ -36,11 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 
@@ -51,7 +52,7 @@ import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
  */
 public class AbcParameters {
 
-	protected TextParameters textParameters = null;
+	protected Map<String, String> textParameters = null;
 
 	/**
 	 * Simulator type
@@ -73,39 +74,31 @@ public class AbcParameters {
 	 */
 	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType,
 			boolean balanceLoads) {
-		textParameters = new TextParameters();
+		textParameters = new HashMap<String, String>();
 		this.simulatorType = simulatorType;
 		this.edgeSchedType = edgeSchedType;
 		this.balanceLoads = balanceLoads;
 
-		textParameters.addVariable("simulatorType", simulatorType.toString());
-		textParameters.addVariable("edgeSchedType", edgeSchedType.toString());
-		textParameters.addVariable("balanceLoads", balanceLoads);
+		textParameters.put("simulatorType", simulatorType.toString());
+		textParameters.put("edgeSchedType", edgeSchedType.toString());
+		textParameters.put("balanceLoads", Boolean.toString(balanceLoads));
 	}
 
 	/**
 	 * Constructor from textual parameters
 	 */
-	public AbcParameters(TextParameters textParameters) {
+	public AbcParameters(Map<String, String> textParameters) {
 		this.textParameters = textParameters;
 		this.simulatorType = AbcType.fromString(textParameters
-				.getVariable("simulatorType"));
+				.get("simulatorType"));
 		this.edgeSchedType = EdgeSchedType.fromString(textParameters
-				.getVariable("edgeSchedType"));
-		this.balanceLoads = textParameters.getBooleanVariable("balanceLoads");
+				.get("edgeSchedType"));
+		this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
 
 		AbstractWorkflowLogger
 				.getLogger()
-				.log(
-						Level.INFO,
+				.log(Level.INFO,
 						"The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
-	}
-
-	/**
-	 * Generates textual parameters from its internal parameters
-	 */
-	public TextParameters textParameters() {
-		return textParameters;
 	}
 
 	public AbcType getSimulatorType() {

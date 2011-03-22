@@ -52,10 +52,9 @@ import org.sdf4j.model.sdf.SDFGraph;
 /**
  * @author mpelcat
  * 
- * This class represents a Directed Acyclic Graph in the mapper
+ *         This class represents a Directed Acyclic Graph in the mapper
  */
 public class MapperDAG extends DirectedAcyclicGraph {
-
 
 	/**
 	 * 
@@ -71,11 +70,11 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	 * The cost of the implementation
 	 */
 	private long ScheduleCost;
-	
+
 	/**
 	 * Creactor of a DAG from a edge factory and a converted graph
 	 */
-	public MapperDAG(MapperEdgeFactory factory,SDFGraph graph) {
+	public MapperDAG(MapperEdgeFactory factory, SDFGraph graph) {
 		super(factory);
 		this.sdfGraph = graph;
 		this.ScheduleCost = 0;
@@ -122,30 +121,30 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public MapperDAG clone() {
 
 		// create clone
-		MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(), this
-				.getReferenceSdfGraph());
+		MapperDAG newDAG = new MapperDAG(new MapperEdgeFactory(),
+				this.getReferenceSdfGraph());
 		newDAG.setScheduleCost(this.getScheduleCost());
-		
+
 		// add vertex
 		Iterator<DAGVertex> iterV = this.vertexSet().iterator();
 		while (iterV.hasNext()) {
-			MapperDAGVertex currentVertex = (MapperDAGVertex)iterV.next();
-			currentVertex = ((MapperDAGVertex)currentVertex).clone();
+			MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
+			currentVertex = ((MapperDAGVertex) currentVertex).clone();
 			newDAG.addVertex(currentVertex);
 		}
 
 		// add edge
 		Iterator<DAGEdge> iterE = this.edgeSet().iterator();
 		while (iterE.hasNext()) {
-			MapperDAGEdge origEdge = (MapperDAGEdge)iterE.next();
-			
+			MapperDAGEdge origEdge = (MapperDAGEdge) iterE.next();
+
 			DAGVertex source = origEdge.getSource();
 			DAGVertex target = origEdge.getTarget();
-			
+
 			String sourceName = source.getName();
 			String targetName = target.getName();
-			MapperDAGEdge newEdge = (MapperDAGEdge)newDAG.addEdge(newDAG
-					.getVertex(sourceName), newDAG.getVertex(targetName));
+			MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(
+					newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
 			newEdge.setInitialEdgeProperty(origEdge.getInitialEdgeProperty()
 					.clone());
 			newEdge.setTimingEdgeProperty(origEdge.getTimingEdgeProperty()
@@ -164,7 +163,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		Iterator<DAGVertex> iter = vertexSet().iterator();
 		MapperDAGVertex currentvertex = null;
 		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex)iter.next();
+			currentvertex = (MapperDAGVertex) iter.next();
 			if (currentvertex.getName().equals(sdfvertex.getName())) {
 				return currentvertex;
 			}
@@ -180,10 +179,12 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		Set<MapperDAGVertex> currentset = new HashSet<MapperDAGVertex>();
 		MapperDAGVertex currentvertex = null;
 		for (DAGVertex currentv : vertexSet()) {
-			currentvertex = (MapperDAGVertex)currentv;
-			
+			currentvertex = (MapperDAGVertex) currentv;
+
 			// Special vertices have null info
-			if (currentvertex.getCorrespondingSDFVertex().getInfo() != null && currentvertex.getCorrespondingSDFVertex().getInfo().equals(sdfvertex.getInfo())) {
+			if (currentvertex.getCorrespondingSDFVertex().getInfo() != null
+					&& currentvertex.getCorrespondingSDFVertex().getInfo()
+							.equals(sdfvertex.getInfo())) {
 				currentset.add(currentvertex);
 			}
 		}
@@ -199,13 +200,13 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		List<MapperDAGVertex> list = new ArrayList<MapperDAGVertex>();
 		MapperDAGVertex currentvertex = null;
 		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex)iter.next();
+			currentvertex = (MapperDAGVertex) iter.next();
 			if (!list.contains(currentvertex))
 				list.add(currentvertex);
 		}
 		return list;
 	}
-	
+
 	public Set<MapperDAGVertex> getVertexSet(Set<String> nameSet) {
 		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
 
@@ -213,17 +214,16 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
 		while (iterator.hasNext()) {
 			String name = iterator.next();
-			MapperDAGVertex v = (MapperDAGVertex)this.getVertex(name);
+			MapperDAGVertex v = (MapperDAGVertex) this.getVertex(name);
 			vSet.add(v);
 
 		}
 
 		return vSet;
 	}
-	
 
 	public MapperDAGVertex getMapperDAGVertex(String name) {
-		
-		return (MapperDAGVertex)super.getVertex(name);
+
+		return (MapperDAGVertex) super.getVertex(name);
 	}
 }

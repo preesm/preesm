@@ -33,37 +33,58 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IPlotter;
-import org.ietr.preesm.core.task.TextParameters;
-import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 
 /**
- * Transform class that can be called in workflow. The transform method displays the gantt
- * chart of the given mapped dag
+ * Transform class that can be called in workflow. The transform method displays
+ * the gantt chart of the given mapped dag
  * 
  * @author mpelcat
  */
-public class StatEditorTransform implements IPlotter {
+public class StatEditorTransform extends AbstractTaskImplementation {
 
 	@Override
-	public void transform(IMapperAbc simulator, PreesmScenario scenario, TextParameters params) {
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
 
-		if(simulator instanceof IAbc){
+		IAbc simulator = (IAbc) inputs.get("ABC");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
+		if (simulator instanceof IAbc) {
 			IAbc abc = (IAbc) simulator;
-			
-			IEditorInput input = new StatEditorInput(abc, scenario, params);
-	
+
+			IEditorInput input = new StatEditorInput(abc, scenario, parameters);
+
 			// Run statistic editor
-			PlatformUI.getWorkbench().getDisplay().asyncExec(
-					new EditorRunnable(input));
+			PlatformUI.getWorkbench().getDisplay()
+					.asyncExec(new EditorRunnable(input));
 		}
+
+		return new HashMap<String, Object>();
+	}
+
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		return null;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Plots the Gantt chart";
 	}
 
 }

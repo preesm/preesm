@@ -118,13 +118,17 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, pce.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					pce.getMessage());
 		} catch (SAXException se) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, se.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					se.getMessage());
 		} catch (IOException ioe) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					ioe.getMessage());
 		} catch (CoreException e) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger()
+					.log(Level.SEVERE, e.getMessage());
 		}
 
 		return parseDocument();
@@ -150,7 +154,8 @@ public class DesignParser {
 						archi.setName(elt.getTextContent());
 					} else {
 						if (archi == null) {
-							AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+							AbstractWorkflowLogger.getLogger().log(
+									Level.SEVERE,
 									"enter a name in the architecture");
 						}
 

@@ -85,8 +85,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 		memoryNeeds = new HashMap<Operator, Integer>();
 
 		repetitionPeriod = statGen.getFinalTime();
-		columnOrder = Messages
-		.getString("Overview.properties.opColumn");
+		columnOrder = Messages.getString("Overview.properties.opColumn");
 
 		initData();
 	}
@@ -122,7 +121,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			comparator = new Comparator<Operator>() {
 				@Override
 				public int compare(Operator o1, Operator o2) {
-					return (int)(loads.get(o1)-loads.get(o2));
+					return (int) (loads.get(o1) - loads.get(o2));
 				}
 			};
 		} else if (columnOrder.equals(Messages
@@ -130,7 +129,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			comparator = new Comparator<Operator>() {
 				@Override
 				public int compare(Operator o1, Operator o2) {
-					return (int)(memoryNeeds.get(o1)-memoryNeeds.get(o2));
+					return (int) (memoryNeeds.get(o1) - memoryNeeds.get(o2));
 				}
 			};
 		}

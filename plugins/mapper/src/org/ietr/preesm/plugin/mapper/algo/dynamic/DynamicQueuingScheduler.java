@@ -37,12 +37,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.algo.dynamic;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -63,12 +63,13 @@ public class DynamicQueuingScheduler {
 	/**
 	 * Parameters of the workflow
 	 */
-	private TextParameters textParameters;
+	private Map<String, String> textParameters;
 
 	/**
 	 * constructor
 	 */
-	public DynamicQueuingScheduler(VertexOrderList orderList, TextParameters textParameters) {
+	public DynamicQueuingScheduler(VertexOrderList orderList,
+			Map<String, String> textParameters) {
 		super();
 		this.orderList = orderList;
 		this.textParameters = textParameters;
@@ -81,12 +82,12 @@ public class DynamicQueuingScheduler {
 	public void mapVertices(IAbc abc) {
 
 		// Type of order to use while mapping/scheduling
-		String listType = textParameters.getVariable("listType");
-		
-		if(listType.isEmpty()){
+		String listType = textParameters.get("listType");
+
+		if (listType.isEmpty()) {
 			listType = "optimised";
 		}
-		
+
 		if (listType.equalsIgnoreCase("optimised")) {
 
 			for (VertexOrderList.OrderProperty vP : orderList.elements()) {
@@ -111,7 +112,7 @@ public class DynamicQueuingScheduler {
 	}
 
 	public void mapOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
-		
+
 		List<Operator> adequateOps = abc.getCandidateOperators(currentvertex);
 		long currentMinCost = Long.MAX_VALUE;
 		Operator currentMinOp = null;
@@ -128,10 +129,8 @@ public class DynamicQueuingScheduler {
 		// Mapping on operator with minimal final cost
 		if (currentMinOp != null) {
 			abc.map(currentvertex, currentMinOp, true);
-		}
-		else{
-			AbstractWorkflowLogger.getLogger().log(
-					Level.SEVERE,
+		} else {
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"No available operator for " + currentvertex);
 		}
 	}

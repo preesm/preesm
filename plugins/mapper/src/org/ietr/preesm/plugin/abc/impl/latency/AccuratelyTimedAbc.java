@@ -57,23 +57,25 @@ import org.ietr.preesm.plugin.mapper.params.AbcParameters;
  * @author mpelcat
  */
 public class AccuratelyTimedAbc extends LatencyAbc {
-	
+
 	List<Integer> types = null;
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been mapped yet.
 	 */
 	public AccuratelyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType,
+			PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
-		
+
 		types = new ArrayList<Integer>();
 		types.add(CommunicationRouter.transferType);
 		types.add(CommunicationRouter.overheadType);
 		types.add(CommunicationRouter.involvementType);
 		types.add(CommunicationRouter.synchroType);
 	}
-	
+
 	/**
 	 * Called when a new vertex operator is set
 	 */
@@ -81,14 +83,14 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		super.fireNewMappedVertex(vertex,updateRank);
+		super.fireNewMappedVertex(vertex, updateRank);
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
 		if (effectiveOp != Operator.NO_COMPONENT) {
 			new PrecedenceEdgeAdder(orderManager, implementation)
-			.scheduleVertex(vertex);
+					.scheduleVertex(vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}
@@ -101,8 +103,8 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
 		edge.getTimingEdgeProperty().setCost(0);
 
-		//Setting edge costs for special types
-		//super.setEdgeCost(edge);
+		// Setting edge costs for special types
+		// super.setEdgeCost(edge);
 	}
 
 	@Override

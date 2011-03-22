@@ -96,7 +96,8 @@ public class TransferVertex extends MapperDAGVertex {
 	 * predecessor if it is an overhead vertex
 	 */
 	public OverheadVertex getPrecedingOverhead() {
-		for (DAGEdge incomingEdge : ((DirectedAcyclicGraph) getBase()).incomingEdgesOf(this)) {
+		for (DAGEdge incomingEdge : ((DirectedAcyclicGraph) getBase())
+				.incomingEdgesOf(this)) {
 			if (!(incomingEdge instanceof PrecedenceEdge)) {
 				MapperDAGVertex precV = (MapperDAGVertex) incomingEdge
 						.getSource();
@@ -131,6 +132,5 @@ public class TransferVertex extends MapperDAGVertex {
 	public void setInvolvementVertex(InvolvementVertex involvementVertex) {
 		this.involvementVertex = involvementVertex;
 	}
-	
-	
+
 }

@@ -91,8 +91,10 @@ public class Chromosome {
 	 * @param dag
 	 * @param architecture
 	 */
-	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture, PreesmScenario scenario) {
-		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList().listIterator();
+	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture,
+			PreesmScenario scenario) {
+		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList()
+				.listIterator();
 		MapperDAGVertex currentVertex = null;
 		this.dag = dag;
 		this.ChromoList = new ArrayList<Gene>();
@@ -125,11 +127,13 @@ public class Chromosome {
 		Iterator<Gene> iterator = this.ChromoList.listIterator();
 		while (iterator.hasNext()) {
 			currentGene = iterator.next();
-			currentVertex = this.dag.getMapperDAGVertex(currentGene.getVertexName());
-			currentVertex
-					.getImplementationVertexProperty()
+			currentVertex = this.dag.getMapperDAGVertex(currentGene
+					.getVertexName());
+			currentVertex.getImplementationVertexProperty()
 					.setEffectiveComponent(
-							this.archi.getComponent(ArchitectureComponentType.operator,currentGene.getOperatorId()));
+							this.archi.getComponent(
+									ArchitectureComponentType.operator,
+									currentGene.getOperatorId()));
 
 		}
 		this.setDirty(true);
@@ -145,8 +149,8 @@ public class Chromosome {
 	 */
 	public void evaluate(AbcParameters abcParams) {
 		this.updateDAG();
-		IAbc simulator = AbstractAbc
-				.getInstance(abcParams, this.dag, this.archi, scenario);
+		IAbc simulator = AbstractAbc.getInstance(abcParams, this.dag,
+				this.archi, scenario);
 		simulator.setDAG(this.getDag());
 		simulator.updateFinalCosts();
 		this.setEvaluateCost(simulator.getFinalCost());

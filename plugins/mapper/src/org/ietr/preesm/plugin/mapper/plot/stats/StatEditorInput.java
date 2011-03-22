@@ -36,13 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
+import java.util.Map;
+
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
@@ -56,9 +57,10 @@ public class StatEditorInput implements IEditorInput {
 
 	private IAbc abc = null;
 	private PreesmScenario scenario = null;
-	private TextParameters params = null;
+	private Map<String, String> params = null;
 
-	public StatEditorInput(IAbc abc, PreesmScenario scenario, TextParameters params) {
+	public StatEditorInput(IAbc abc, PreesmScenario scenario,
+			Map<String, String> params) {
 		super();
 		this.abc = abc;
 		this.params = params;
@@ -69,7 +71,7 @@ public class StatEditorInput implements IEditorInput {
 		return scenario;
 	}
 
-	public TextParameters getParams() {
+	public Map<String, String> getParams() {
 		return params;
 	}
 

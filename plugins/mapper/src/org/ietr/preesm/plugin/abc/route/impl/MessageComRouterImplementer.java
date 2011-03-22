@@ -113,8 +113,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 				} else {
 					AbstractWorkflowLogger
 							.getLogger()
-							.log(
-									Level.FINE,
+							.log(Level.FINE,
 									"The transfer following vertex"
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");
@@ -140,7 +139,8 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 					}
 				}
 
-				// Synchronizing the vertices in order manager (they will all have the same total order).
+				// Synchronizing the vertices in order manager (they will all
+				// have the same total order).
 				if (toSynchronize.size() > 1) {
 					ImplementationCleaner cleaner = new ImplementationCleaner(
 							getOrderManager(), getImplementation());
@@ -148,13 +148,13 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 							getOrderManager(), getImplementation());
 					IScheduleElement last = null;
 					last = null;
-					
+
 					for (MapperDAGVertex v : toSynchronize) {
 						cleaner.unscheduleVertex(v);
 						last = getOrderManager().synchronize(last, v);
 						adder.scheduleVertex(v);
 					}
-					
+
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 

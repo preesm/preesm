@@ -88,9 +88,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	private RouteCalculator calculator = null;
 
-	public CommunicationRouter(MultiCoreArchitecture archi, PreesmScenario scenario,
-			MapperDAG implementation, IEdgeSched edgeScheduler,
-			SchedOrderManager orderManager) {
+	public CommunicationRouter(MultiCoreArchitecture archi,
+			PreesmScenario scenario, MapperDAG implementation,
+			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
 		this.calculator = RouteCalculator.getInstance(archi, scenario);
 
@@ -101,8 +101,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 				this));
 		this.addImplementer(MessageRouteStep.type,
 				new MessageComRouterImplementer(this));
-		this.addImplementer(RamRouteStep.type,
-				new SharedRamRouterImplementer(this));
+		this.addImplementer(RamRouteStep.type, new SharedRamRouterImplementer(
+				this));
 	}
 
 	/**
@@ -117,8 +117,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		while (iterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
 
-			if (!(currentEdge instanceof PrecedenceEdge) &&
-					currentEdge.getInitialEdgeProperty().getDataSize() != 0) {
+			if (!(currentEdge instanceof PrecedenceEdge)
+					&& currentEdge.getInitialEdgeProperty().getDataSize() != 0) {
 				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
 						.getSource()).getImplementationVertexProperty();
 				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
@@ -168,7 +168,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	}
 
 	/**
-	 * Creates a map associating to each edge to be routed the corresponding route
+	 * Creates a map associating to each edge to be routed the corresponding
+	 * route
 	 */
 	public Map<MapperDAGEdge, Route> getRouteMap(MapperDAGVertex newVertex) {
 		Map<MapperDAGEdge, Route> transferEdges = new HashMap<MapperDAGEdge, Route>();
@@ -192,8 +193,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 					if (!currentSourceProp.getEffectiveOperator().equals(
 							currentDestProp.getEffectiveOperator())) {
 						MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
-						transferEdges.put(mapperEdge, calculator
-								.getRoute(mapperEdge));
+						transferEdges.put(mapperEdge,
+								calculator.getRoute(mapperEdge));
 					}
 				}
 			}
@@ -204,8 +205,10 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	/**
 	 * Adds the dynamic vertices to simulate the transfers of the given edges
 	 */
-	public void addVertices(Map<MapperDAGEdge, Route> transferEdges, int type, List<Object> createdVertices) {
-		TransactionManager localTransactionManager = new TransactionManager(createdVertices);
+	public void addVertices(Map<MapperDAGEdge, Route> transferEdges, int type,
+			List<Object> createdVertices) {
+		TransactionManager localTransactionManager = new TransactionManager(
+				createdVertices);
 
 		for (MapperDAGEdge edge : transferEdges.keySet()) {
 			int routeStepIndex = 0;

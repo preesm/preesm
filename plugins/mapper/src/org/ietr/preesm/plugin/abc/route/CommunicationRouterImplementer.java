@@ -52,26 +52,31 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
  * @author mpelcat
  */
 public abstract class CommunicationRouterImplementer {
-	
+
 	private AbstractCommunicationRouter user = null;
-	
+
 	public CommunicationRouterImplementer(AbstractCommunicationRouter user) {
 		super();
 		this.user = user;
 	}
-	
+
 	public MapperDAG getImplementation() {
 		return user.getImplementation();
 	}
-	
+
 	public IEdgeSched getEdgeScheduler() {
 		return user.getEdgeScheduler();
 	}
-	
+
 	public SchedOrderManager getOrderManager() {
 		return user.getOrderManager();
 	}
 
-	public abstract Transaction addVertices(AbstractRouteStep routeStep, MapperDAGEdge edge, TransactionManager transactions, int type, int routeStepIndex, Transaction lastTransaction, List<Object> alreadyCreatedVertices);
-	public abstract void removeVertices(MapperDAGEdge edge, TransactionManager transactions);
+	public abstract Transaction addVertices(AbstractRouteStep routeStep,
+			MapperDAGEdge edge, TransactionManager transactions, int type,
+			int routeStepIndex, Transaction lastTransaction,
+			List<Object> alreadyCreatedVertices);
+
+	public abstract void removeVertices(MapperDAGEdge edge,
+			TransactionManager transactions);
 }

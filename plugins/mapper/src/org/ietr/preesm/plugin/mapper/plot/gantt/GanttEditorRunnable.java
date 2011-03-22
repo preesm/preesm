@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
 import org.eclipse.ui.IEditorInput;
@@ -43,15 +43,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Class used by the editor displaying the gantt chart.
- * Useful to run editor in display thread.
+ * Class used by the editor displaying the gantt chart. Useful to run editor in
+ * display thread.
  * 
  * @author mpelcat
  */
 public class GanttEditorRunnable implements Runnable {
 
 	private IEditorInput input;
-	
+
 	public GanttEditorRunnable(IEditorInput input) {
 		super();
 		this.input = input;
@@ -65,17 +65,17 @@ public class GanttEditorRunnable implements Runnable {
 
 		if (dwindow != null && input instanceof GanttEditorInput) {
 			IWorkbenchPage page = dwindow.getActivePage();
-			
+
 			try {
 				page.openEditor(input,
-								"org.ietr.preesm.plugin.mapper.plot.GanttEditor");
+						"org.ietr.preesm.plugin.mapper.plot.GanttEditor");
 
 			} catch (PartInitException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 }

@@ -135,21 +135,22 @@ public class ImplementationCleaner {
 
 		MapperDAGVertex prev = orderManager.getPrevious(vertex);
 		MapperDAGVertex next = orderManager.getNext(vertex);
-		PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation);
+		PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
+				implementation);
 
 		if (prev != null) {
-			adder.removePrecedenceEdge( prev, vertex);
+			adder.removePrecedenceEdge(prev, vertex);
 		}
 
 		if (next != null) {
-			adder.removePrecedenceEdge( vertex, next);
+			adder.removePrecedenceEdge(vertex, next);
 		}
 
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
 		if ((prev != null && next != null)
 				&& (edges == null || edges.isEmpty())) {
-			adder.addPrecedenceEdge( prev, next);
+			adder.addPrecedenceEdge(prev, next);
 		}
 
 	}
@@ -176,10 +177,10 @@ public class ImplementationCleaner {
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
 		for (MapperDAGVertex v : vertex.getPredecessorSet(true)) {
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getPrecedingTransfers(v));
-				}
+			if (v instanceof TransferVertex) {
+				transfers.add(v);
+				transfers.addAll(getPrecedingTransfers(v));
+			}
 		}
 
 		return transfers;
@@ -193,10 +194,10 @@ public class ImplementationCleaner {
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
 		for (MapperDAGVertex v : vertex.getSuccessorSet(true)) {
-				if (v instanceof TransferVertex) {
-					transfers.add(v);
-					transfers.addAll(getFollowingTransfers(v));
-				}
+			if (v instanceof TransferVertex) {
+				transfers.add(v);
+				transfers.addAll(getFollowingTransfers(v));
+			}
 		}
 
 		return transfers;

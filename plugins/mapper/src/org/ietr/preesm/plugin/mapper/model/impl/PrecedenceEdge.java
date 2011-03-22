@@ -43,7 +43,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  * A precedence edge is automatically generated and expresses the sequential
  * execution of successive vertices in a single component
  * 
- * @author mpelcat   
+ * @author mpelcat
  */
 public class PrecedenceEdge extends MapperDAGEdge {
 

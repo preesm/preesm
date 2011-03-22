@@ -76,8 +76,8 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	private PreesmScenario scenario = null;
 	private ConstraintsCheckStateListener checkStateListener = null;
 
-	public ConstraintsPage(PreesmScenario scenario, FormEditor editor, String id,
-			String title) {
+	public ConstraintsPage(PreesmScenario scenario, FormEditor editor,
+			String id, String title) {
 		super(editor, id, title);
 		this.scenario = scenario;
 	}

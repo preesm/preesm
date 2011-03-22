@@ -148,7 +148,8 @@ public class FastPopulation {
 	 * @param MAXSTEP
 	 * @param MARGIN
 	 */
-	public void constructPopulation(MapperDAG dag, PreesmScenario scenario, FastAlgoParameters fastParams) {
+	public void constructPopulation(MapperDAG dag, PreesmScenario scenario,
+			FastAlgoParameters fastParams) {
 
 		// create the population
 		List<MapperDAG> temp = new ArrayList<MapperDAG>();
@@ -166,14 +167,15 @@ public class FastPopulation {
 			InitialLists initialLists = new InitialLists();
 			initialLists.constructInitialLists(tempdag, simu);
 
-			TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+			TopologicalTaskSched taskSched = new TopologicalTaskSched(
+					simu.getTotalOrder());
 			simu.resetDAG();
 
 			// perform the fast algo
 			FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
-			tempdag = algorithm.map("population", abcParams, fastParams, tempdag,
-					this.archi, false, true, false,
-					null, taskSched).clone();
+			tempdag = algorithm.map("population", abcParams, fastParams,
+					tempdag, this.archi, false, true, false, null, taskSched)
+					.clone();
 			temp.add(tempdag.clone());
 
 		}

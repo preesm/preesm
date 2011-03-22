@@ -64,7 +64,7 @@ public class InitialVertexProperty {
 	 * Timings on available operators
 	 */
 	private List<Timing> timings;
-	
+
 	/**
 	 * Available operators
 	 */
@@ -144,11 +144,11 @@ public class InitialVertexProperty {
 	public List<Operator> getInitialOperatorList() {
 		return operators;
 	}
-	
+
 	/**
-	 * Checks in the vertex initial properties if it can be mapped on the
-	 * given operator. For special vertices, the predecessors and successor
-	 * mapping possibilities are studied
+	 * Checks in the vertex initial properties if it can be mapped on the given
+	 * operator. For special vertices, the predecessors and successor mapping
+	 * possibilities are studied
 	 */
 	public boolean isMapable(Operator operator) {
 
@@ -293,8 +293,8 @@ public class InitialVertexProperty {
 	}
 
 	/**
-	 * Checks if the vertex first non special predecessors can be mapped on
-	 * the given operator.
+	 * Checks if the vertex first non special predecessors can be mapped on the
+	 * given operator.
 	 */
 	public boolean isPredMapable(Operator operator) {
 
@@ -304,11 +304,11 @@ public class InitialVertexProperty {
 			if (pred == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(pred)) {
-				predMapable |= pred.getInitialVertexProperty()
-						.isPredMapable(operator);
+				predMapable |= pred.getInitialVertexProperty().isPredMapable(
+						operator);
 			} else {
-				predMapable |= pred.getInitialVertexProperty()
-						.isMapable(operator);
+				predMapable |= pred.getInitialVertexProperty().isMapable(
+						operator);
 			}
 		}
 
@@ -327,11 +327,11 @@ public class InitialVertexProperty {
 			if (succ == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(succ)) {
-				succMapable |= succ.getInitialVertexProperty()
-						.isSuccMapable(operator);
+				succMapable |= succ.getInitialVertexProperty().isSuccMapable(
+						operator);
 			} else {
-				succMapable |= succ.getInitialVertexProperty()
-						.isMapable(operator);
+				succMapable |= succ.getInitialVertexProperty().isMapable(
+						operator);
 			}
 		}
 

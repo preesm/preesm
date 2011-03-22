@@ -53,7 +53,7 @@ public class MapperDAGEdge extends DAGEdge {
 	protected InitialEdgeProperty initialEdgeProperty;
 
 	protected TimingEdgeProperty timingEdgeProperty;
-	
+
 	/**
 	 */
 	public MapperDAGEdge(MapperDAGVertex source, MapperDAGVertex destination) {

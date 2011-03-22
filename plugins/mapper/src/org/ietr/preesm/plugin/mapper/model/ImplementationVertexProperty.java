@@ -52,7 +52,8 @@ public class ImplementationVertexProperty {
 	private ArchitectureComponent effectiveComponent;
 
 	/**
-	 * This object is shared between all vertices that share relative constraints.
+	 * This object is shared between all vertices that share relative
+	 * constraints.
 	 */
 	private RelativeConstraint relativeConstraint = null;
 
@@ -75,7 +76,7 @@ public class ImplementationVertexProperty {
 	public void setRelativeConstraint(RelativeConstraint relativeConstraints) {
 		this.relativeConstraint = relativeConstraints;
 	}
-	
+
 	@Override
 	public ImplementationVertexProperty clone() {
 

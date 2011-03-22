@@ -53,8 +53,8 @@ import org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory;
 import org.w3c.dom.Element;
 
 /**
- * Exporter for the DAG graph that enters the mapping process.
- * This DAG can be opened in Graphiti.
+ * Exporter for the DAG graph that enters the mapping process. This DAG can be
+ * opened in Graphiti.
  * 
  * @author mpelcat
  * 
@@ -76,10 +76,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 				null);
 		addKey(SDFAbstractVertex.ARGUMENTS, SDFAbstractVertex.ARGUMENTS,
 				"node", null, null);
-		addKey(SDFGraph.PARAMETERS, SDFGraph.PARAMETERS,
-				"graph", null, null);
-		addKey(SDFGraph.VARIABLES, SDFGraph.VARIABLES, "graph",
-				null, null);
+		addKey(SDFGraph.PARAMETERS, SDFGraph.PARAMETERS, "graph", null, null);
+		addKey(SDFGraph.VARIABLES, SDFGraph.VARIABLES, "graph", null, null);
 		addKey(SDFEdge.DATA_TYPE, SDFEdge.DATA_TYPE, "edge", "string",
 				SDFTextualEdgePropertyTypeFactory.class);
 	}
@@ -104,7 +102,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "data_type");
 		data.setTextContent("0");
-		return edgeElt ;
+		return edgeElt;
 	}
 
 	@Override
@@ -122,12 +120,12 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			exportVariables(myGraph.getVariables(), graphElt);
 		}
 		for (DAGVertex child : myGraph.vertexSet()) {
-				exportNode(child, graphElt);
+			exportNode(child, graphElt);
 		}
 		for (DAGEdge edge : myGraph.edgeSet()) {
 			exportEdge(edge, graphElt);
 		}
-		return null ;
+		return null;
 	}
 
 	@Override
@@ -137,13 +135,12 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		vertexElt.setAttribute(SDFAbstractVertex.KIND, "vertex");
 
 		exportKeys("node", vertexElt, vertex.getPropertyBean());
-		
-		
+
 		Element data = appendChild(vertexElt, "data");
 		data.setAttribute("key", "graph_desc");
 		data = appendChild(vertexElt, "data");
 		data.setAttribute("key", "arguments");
-		return vertexElt ;
+		return vertexElt;
 	}
 
 	@Override
@@ -151,7 +148,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		this.path = path;
 		try {
 			exportGraph(graph);
-			transform( new FileOutputStream(path));
+			transform(new FileOutputStream(path));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,7 +157,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 	protected Element exportPort(DAGVertex interfaceVertex,
 			Element parentELement) {
-		return null ;
+		return null;
 	}
 
 }

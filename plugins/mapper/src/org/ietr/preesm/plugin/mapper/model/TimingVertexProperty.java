@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-
 /**
  * Property added to a DAG vertex to give its timing properties Only used within
  * ABCs.

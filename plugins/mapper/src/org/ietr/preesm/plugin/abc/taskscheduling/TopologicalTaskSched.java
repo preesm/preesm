@@ -146,9 +146,10 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
 		for (DAGVertex v : dag.vertexSet()) {
 			topolist.add((MapperDAGVertex) v);
-			
+
 			if (!initList.contains(v.getName())) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,"problem with topological ordering.");
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+						"problem with topological ordering.");
 			}
 		}
 
@@ -169,15 +170,14 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				MapperDAGVertex previousCandidate = topolist.get(topoOrder);
 				int totalOrder = orderManager.totalIndexOf(previousCandidate);
 				if (totalOrder >= 0) {
-					orderManager.insertAtIndex(totalOrder+1, vertex);
+					orderManager.insertAtIndex(totalOrder + 1, vertex);
 					inserted = true;
 					break;
 				}
 				topoOrder--;
 			}
 
-			if (!inserted
-					&& vertex.getPredecessorSet(false).isEmpty()) {
+			if (!inserted && vertex.getPredecessorSet(false).isEmpty()) {
 				orderManager.addFirst(vertex);
 			}
 		} else {

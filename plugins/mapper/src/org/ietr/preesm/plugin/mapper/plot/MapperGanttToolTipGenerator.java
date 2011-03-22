@@ -64,15 +64,14 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 
 		if ((collection.getSeries(0).getItemCount() > column)
 				&& (collection.getSeries(0).get(column).getSubtaskCount() > row)) {
-			Task currentTask = collection.getSeries(0).get(column).getSubtask(
-					row);
+			Task currentTask = collection.getSeries(0).get(column)
+					.getSubtask(row);
 			long startTime = currentTask.getDuration().getStart().getTime();
 			long endTime = currentTask.getDuration().getEnd().getTime();
 
 			tooltip = "\"" + currentTask.getDescription() + "\"" + "("
-					+ startTime + "-"
-					+ endTime + "-"
-					+ (endTime - startTime) + ")";
+					+ startTime + "-" + endTime + "-" + (endTime - startTime)
+					+ ")";
 		}
 
 		return tooltip;

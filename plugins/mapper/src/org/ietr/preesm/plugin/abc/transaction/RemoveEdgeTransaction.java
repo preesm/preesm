@@ -52,15 +52,13 @@ public class RemoveEdgeTransaction extends Transaction {
 	 * Implementation DAG from which the edge is removed
 	 */
 	private MapperDAG implementation = null;
-	
+
 	/**
 	 * edge removed
 	 */
 	private MapperDAGEdge edge = null;
-	
-	
-	public RemoveEdgeTransaction(MapperDAGEdge edge,
-			MapperDAG implementation) {
+
+	public RemoveEdgeTransaction(MapperDAGEdge edge, MapperDAG implementation) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;
@@ -75,7 +73,7 @@ public class RemoveEdgeTransaction extends Transaction {
 
 	@Override
 	public String toString() {
-		return("RemoveEdge(" + edge.toString() +")");
+		return ("RemoveEdge(" + edge.toString() + ")");
 	}
 
 }

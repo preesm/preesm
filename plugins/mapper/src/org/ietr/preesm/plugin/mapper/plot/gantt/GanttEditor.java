@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,7 +52,7 @@ import org.ietr.preesm.plugin.abc.IAbc;
 public class GanttEditor extends EditorPart {
 
 	private IAbc abc = null;
-	
+
 	public GanttEditor() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -61,34 +61,34 @@ public class GanttEditor extends EditorPart {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void doSaveAs() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		
+
 		try {
 			setSite(site);
 			setInput(input);
 			setPartName(input.getName());
-			
-			if(input instanceof GanttEditorInput){
-				GanttEditorInput implinput = (GanttEditorInput)input;
+
+			if (input instanceof GanttEditorInput) {
+				GanttEditorInput implinput = (GanttEditorInput) input;
 				this.abc = implinput.getAbc();
 			}
-			
+
 		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases.  So
+			// Editor might not exist anymore if switching databases. So
 			// just close it.
 			this.getEditorSite().getPage().closeEditor(this, false);
-		} 
+		}
 
 	}
 
@@ -106,16 +106,16 @@ public class GanttEditor extends EditorPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		
-		if(abc != null){
+
+		if (abc != null) {
 			abc.plotImplementation(parent);
 		}
-		
+
 	}
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -95,9 +95,9 @@ public class PerformancePage extends FormPage {
 		 * Messages.getString("Performance.Explanation.title"),
 		 * Messages.getString("Performance.Explanation.description"));
 		 */
-		createChartSection(managedForm, Messages
-				.getString("Performance.Chart.title"), Messages
-				.getString("Performance.Chart.description"));
+		createChartSection(managedForm,
+				Messages.getString("Performance.Chart.title"),
+				Messages.getString("Performance.Chart.description"));
 
 		managedForm.refresh();
 	}
@@ -140,18 +140,18 @@ public class PerformancePage extends FormPage {
 	 * @param desc
 	 *            description of the section
 	 */
-	/*private void createExplanationSection(IManagedForm mform, String title,
-			String desc) {
-
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
-				| GridData.VERTICAL_ALIGN_BEGINNING);
-		gridData.heightHint = 500;
-
-		Composite client = createSection(mform, title, desc, 1, gridData);
-
-		FormToolkit toolkit = mform.getToolkit();
-		toolkit.paintBordersFor(client);
-	}*/
+	/*
+	 * private void createExplanationSection(IManagedForm mform, String title,
+	 * String desc) {
+	 * 
+	 * GridData gridData = new GridData(GridData.FILL_HORIZONTAL |
+	 * GridData.VERTICAL_ALIGN_BEGINNING); gridData.heightHint = 500;
+	 * 
+	 * Composite client = createSection(mform, title, desc, 1, gridData);
+	 * 
+	 * FormToolkit toolkit = mform.getToolkit();
+	 * toolkit.paintBordersFor(client); }
+	 */
 
 	/**
 	 * Creates a section for the chart
@@ -173,21 +173,22 @@ public class PerformancePage extends FormPage {
 		int resultNbMainCores = statGen.getNbMainTypeOperators();
 
 		String currentValuesDisplay = String
-				.format(
-						"work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.",
-						workLength,spanLength, resultTime, resultNbMainCores);
+				.format("work length: %d, span length: %d, implementation length: %d, implementation number of main type operators: %d.",
+						workLength, spanLength, resultTime, resultNbMainCores);
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL);
 
 		mform.getForm().setLayout(new FillLayout());
-		Composite client = createSection(mform, title, desc + currentValuesDisplay, 1, gridData);
+		Composite client = createSection(mform, title, desc
+				+ currentValuesDisplay, 1, gridData);
 
 		FormToolkit toolkit = mform.getToolkit();
 
 		if (workLength > 0 && spanLength > 0 && resultTime > 0
 				&& resultNbCores > 0) {
-			plotter.setData(workLength, spanLength, resultTime, resultNbCores, resultNbMainCores);
+			plotter.setData(workLength, spanLength, resultTime, resultNbCores,
+					resultNbMainCores);
 			plotter.display(client);
 		}
 

@@ -72,7 +72,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 
 	// number of tries to do locally probabilistic jump maximum authorized
 	private int populationSize;
-	
+
 	private PreesmScenario scenario;
 
 	/**
@@ -85,10 +85,10 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param simulatorType
 	 * @param threadName
 	 */
-	public PGeneticAlgoCallable(MultiCoreArchitecture architecture, PreesmScenario scenario,
-			int generationNumber, List<Chromosome> population,
-			int populationSize, AbcParameters abcParams,
-			String threadName) {
+	public PGeneticAlgoCallable(MultiCoreArchitecture architecture,
+			PreesmScenario scenario, int generationNumber,
+			List<Chromosome> population, int populationSize,
+			AbcParameters abcParams, String threadName) {
 		super();
 		this.architecture = architecture;
 		this.scenario = scenario;
@@ -129,7 +129,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 		// perform the standard genetic algorithm
 		StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 		outputChromosomeList.addAll(geneticAlgorithm.runGeneticAlgo(threadName,
-				callableMapperDAGList, architecture,scenario, abcParams,
+				callableMapperDAGList, architecture, scenario, abcParams,
 				populationSize, generationNumber, true));
 
 		return outputChromosomeList;

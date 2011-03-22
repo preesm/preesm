@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc;
 
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
@@ -48,9 +48,11 @@ public class AbcType {
 	/**
 	 * Available Abc types
 	 */
-	public static final AbcType InfiniteHomogeneous = new AbcType("InfiniteHomogeneous");
+	public static final AbcType InfiniteHomogeneous = new AbcType(
+			"InfiniteHomogeneous");
 	public static final AbcType LooselyTimed = new AbcType("LooselyTimed");
-	public static final AbcType ApproximatelyTimed = new AbcType("ApproximatelyTimed");
+	public static final AbcType ApproximatelyTimed = new AbcType(
+			"ApproximatelyTimed");
 	public static final AbcType AccuratelyTimed = new AbcType("AccuratelyTimed");
 	public static final AbcType CommConten = new AbcType("CommConten");
 	public static final AbcType DynamicQueuing = new AbcType("DynamicQueuing");
@@ -61,11 +63,10 @@ public class AbcType {
 	private String name = null;
 
 	/**
-	 * True if the tasks are switched while mapping using algorithms that do further tests
-	 * than the mapping/scheduling chosen algorithm
+	 * True if the tasks are switched while mapping using algorithms that do
+	 * further tests than the mapping/scheduling chosen algorithm
 	 */
 	private TaskSchedType taskSchedType = null;
-	
 
 	public AbcType(String name) {
 		super();
@@ -97,20 +98,18 @@ public class AbcType {
 
 		return null;
 	}
-	
+
 	public TaskSchedType getTaskSchedType() {
 		return taskSchedType;
 	}
 
-	
 	public AbcType setTaskSchedType(TaskSchedType taskSchedType) {
-		if(taskSchedType != null){
+		if (taskSchedType != null) {
 			this.taskSchedType = taskSchedType;
-		}
-		else{
+		} else {
 			this.taskSchedType = TaskSchedType.Simple;
 		}
-		
+
 		return this;
 	}
 }

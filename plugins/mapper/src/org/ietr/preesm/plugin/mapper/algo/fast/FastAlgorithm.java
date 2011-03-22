@@ -178,7 +178,7 @@ public class FastAlgorithm extends Observable {
 		int searchcount = 0;
 
 		KwokListScheduler listscheduler = new KwokListScheduler();
-		
+
 		// step 1
 		if (!alreadyMapped) {
 			listscheduler.schedule(dag, cpnDominantList, simulator, null, null);
@@ -269,7 +269,8 @@ public class FastAlgorithm extends Observable {
 				do {
 					nonBlockingIndex++;
 					currentvertex = (MapperDAGVertex) vertexiter.next();
-					operatorList = simulator.getCandidateOperators(currentvertex);
+					operatorList = simulator
+							.getCandidateOperators(currentvertex);
 				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 				SL = simulator.getFinalCost();
@@ -285,17 +286,17 @@ public class FastAlgorithm extends Observable {
 						.getEffectiveComponent(currentvertex);
 
 				// step 9 TODO: check if ok to use mapWithGroup
-				//simulator.map(currentvertex, operatortest, false);
-				simulator.map(currentvertex, operatortest,false);
+				// simulator.map(currentvertex, operatortest, false);
+				simulator.map(currentvertex, operatortest, false);
 
 				// step 10
 				simulator.updateFinalCosts();
 				long newSL = simulator.getFinalCost();
 
 				if (newSL >= SL) {
-					//TODO: check if ok to use mapWithGroup
-					//simulator.map(currentvertex, operatorprec, false);
-					simulator.map(currentvertex, operatorprec,false);
+					// TODO: check if ok to use mapWithGroup
+					// simulator.map(currentvertex, operatorprec, false);
+					simulator.map(currentvertex, operatorprec, false);
 					simulator.updateFinalCosts();
 					localCounter++;
 				} else {
@@ -345,9 +346,9 @@ public class FastAlgorithm extends Observable {
 			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 			// Choosing an operator different from the current vertex operator
-			Operator currentOp = dagfinal.getMapperDAGVertex(
-					fcpvertex.getName()).getImplementationVertexProperty()
-					.getEffectiveOperator();
+			Operator currentOp = dagfinal
+					.getMapperDAGVertex(fcpvertex.getName())
+					.getImplementationVertexProperty().getEffectiveOperator();
 
 			do {
 				int randomIndex = randomGenerator.nextInt(operatorList.size());
@@ -378,16 +379,16 @@ public class FastAlgorithm extends Observable {
 			VertexOrderList bestTotalOrder, String name) {
 
 		MapperDAG dag = abc.getDAG().clone();
-		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag, abc
-				.getArchitecture(), abc.getScenario());
+		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag,
+				abc.getArchitecture(), abc.getScenario());
 		newAbc.setDAG(dag);
 		newAbc.reschedule(bestTotalOrder);
 		newAbc.updateFinalCosts();
 
 		IEditorInput input = new GanttEditorInput(newAbc, name);
 
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new GanttEditorRunnable(input));
+		PlatformUI.getWorkbench().getDisplay()
+				.asyncExec(new GanttEditorRunnable(input));
 
 	}
 

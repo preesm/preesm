@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.gantt;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
@@ -53,7 +53,7 @@ public class GanttEditorInput implements IEditorInput {
 
 	private IAbc abc = null;
 	private String name = null;
-	
+
 	public GanttEditorInput(IAbc abc, String name) {
 		super();
 		this.abc = abc;
@@ -67,27 +67,34 @@ public class GanttEditorInput implements IEditorInput {
 	public void setAbc(IAbc abc) {
 		this.abc = abc;
 	}
+
 	@Override
 	public boolean exists() {
 		return false;
 	}
+
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm3mini.PNG");
+		ImageDescriptor img = Activator
+				.getImageDescriptor("icons/preesm3mini.PNG");
 		return img;
 	}
+
 	@Override
 	public String getName() {
 		return name + " " + AbstractWorkflowLogger.getFormattedTime();
 	}
+
 	@Override
 	public IPersistableElement getPersistable() {
 		return null;
 	}
+
 	@Override
 	public String getToolTipText() {
 		return name;
 	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {

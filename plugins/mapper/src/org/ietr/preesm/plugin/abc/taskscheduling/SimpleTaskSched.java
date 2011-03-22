@@ -33,13 +33,14 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.taskscheduling;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * Simple task scheduler that schedules the tasks in the order given by the mapping algorithm
+ * Simple task scheduler that schedules the tasks in the order given by the
+ * mapping algorithm
  * 
  * @author mpelcat
  */

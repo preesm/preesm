@@ -36,16 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -75,31 +75,32 @@ public class ListSchedulingTransformation extends AbstractMapping {
 	}
 
 	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm)
-			throws PreesmException {
-
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = super.getDefaultParameters();
+		return parameters;
 	}
 
-	/**
-	 * Function called while running the plugin
-	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm,
-			MultiCoreArchitecture architecture, TextParameters textParameters,
-			PreesmScenario scenario, IProgressMonitor monitor)
-			throws PreesmException {
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
 
-		super.transform(algorithm, architecture, textParameters, scenario,
-				monitor);
-		TaskResult result = new TaskResult();
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+				.get("architecture");
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		AbcParameters abcParameters = new AbcParameters(textParameters);
+		super.execute(inputs, parameters, monitor, nodeName);
+
+		AbcParameters abcParameters = new AbcParameters(parameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
-		
-		//DAGExporter exporter = new DAGExporter();
-		//exporter.export(dag, "D:\\Projets\\LTE\\PreesmProjects\\MPEG4P2_Encoder_Preesm\\DAG\\test.graphml");
+
+		// DAGExporter exporter = new DAGExporter();
+		// exporter.export(dag,
+		// "D:\\Projets\\LTE\\PreesmProjects\\MPEG4P2_Encoder_Preesm\\DAG\\test.graphml");
 
 		// calculates the DAG span length on the architecture main operator (the
 		// tasks that can
@@ -114,7 +115,8 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		InitialLists initial = new InitialLists();
 
 		if (!initial.constructInitialLists(dag, simu)) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					"Error in scheduling");
 			return null;
 		}
 
@@ -122,11 +124,11 @@ public class ListSchedulingTransformation extends AbstractMapping {
 
 		// Using topological task scheduling in list scheduling: the t-level
 		// order of the infinite homogeneous simulation
-		AbstractTaskSched taskSched = new TopologicalTaskSched(simu
-				.getTotalOrder());
-		
-		//AbstractTaskSched taskSched = new TaskSwitcher();
-		
+		AbstractTaskSched taskSched = new TopologicalTaskSched(
+				simu.getTotalOrder());
+
+		// AbstractTaskSched taskSched = new TaskSwitcher();
+
 		simu.resetDAG();
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
@@ -140,18 +142,18 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		TagDAG tagSDF = new TagDAG();
 
 		try {
-			tagSDF.tag(dag, architecture, scenario, simu2, abcParameters
-					.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2,
+					abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
-			throw (new PreesmException(e.getMessage()));
-		} 
-		
-		result.setDAG(dag);
-		result.setAbc(simu2);
+			throw (new WorkflowException(e.getMessage()));
+		}
+
+		outputs.put("DAG", dag);
+		outputs.put("ABC", simu2);
 
 		super.clean(architecture, scenario);
-		return result;
+		return outputs;
 	}
 
 }

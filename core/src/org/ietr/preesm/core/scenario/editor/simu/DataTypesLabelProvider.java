@@ -67,8 +67,8 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public DataTypesLabelProvider(PreesmScenario scenario, TableViewer tableViewer,
-			IPropertyListener propertyListener) {
+	public DataTypesLabelProvider(PreesmScenario scenario,
+			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;

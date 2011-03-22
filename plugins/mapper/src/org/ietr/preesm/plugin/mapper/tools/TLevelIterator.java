@@ -59,10 +59,10 @@ public class TLevelIterator extends ImplementationIterator {
 		if (!directOrder)
 			TLevelDifference = -TLevelDifference;
 
-		if (TLevelDifference == 0){
+		if (TLevelDifference == 0) {
 			TLevelDifference = arg0.getName().compareTo(arg1.getName());
-			
-			if (TLevelDifference == 0){
+
+			if (TLevelDifference == 0) {
 				TLevelDifference++;
 			}
 		}

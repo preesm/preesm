@@ -93,18 +93,20 @@ public class TagDAG {
 	/**
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
 	 */
 	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
-			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType) throws InvalidExpressionException{
+			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType)
+			throws InvalidExpressionException {
 
 		PropertyBean bean = dag.getPropertyBean();
-		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu
-				.getType());
+		bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType,
+				simu.getType());
 		bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType,
 				edgeSchedType);
-		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph, dag
-				.getReferenceSdfGraph());
+		bean.setValue(ImplementationPropertyNames.Graph_SdfReferenceGraph,
+				dag.getReferenceSdfGraph());
 
 		addSendReceive(dag, architecture, scenario);
 		addProperties(dag);
@@ -148,10 +150,8 @@ public class TagDAG {
 						VertexType.send);
 
 				// Setting the operator on which vertex is executed
-				bean
-						.setValue(ImplementationPropertyNames.Vertex_Operator,
-								((SendVertex) currentVertex).getRouteStep()
-										.getSender());
+				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
+						((SendVertex) currentVertex).getRouteStep().getSender());
 
 				// Setting the medium transmitting the current data
 				AbstractRouteStep sendRs = ((SendVertex) currentVertex)
@@ -170,11 +170,10 @@ public class TagDAG {
 
 				// Setting the address of the operator on which vertex is
 				// executed
-				bean
-						.setValue(
-								ImplementationPropertyNames.SendReceive_Operator_address,
-								((SendVertex) currentVertex).getRouteStep()
-										.getSender().getBaseAddress());
+				bean.setValue(
+						ImplementationPropertyNames.SendReceive_Operator_address,
+						((SendVertex) currentVertex).getRouteStep().getSender()
+								.getBaseAddress());
 			} else if (currentVertex instanceof ReceiveVertex) {
 
 				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
@@ -207,11 +206,10 @@ public class TagDAG {
 
 				// Setting the address of the operator on which vertex is
 				// executed
-				bean
-						.setValue(
-								ImplementationPropertyNames.SendReceive_Operator_address,
-								((ReceiveVertex) currentVertex).getRouteStep()
-										.getReceiver().getBaseAddress());
+				bean.setValue(
+						ImplementationPropertyNames.SendReceive_Operator_address,
+						((ReceiveVertex) currentVertex).getRouteStep()
+								.getReceiver().getBaseAddress());
 			} else {
 
 				// Setting the operator on which vertex is executed
@@ -222,8 +220,9 @@ public class TagDAG {
 				// Setting the vertex type
 				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
 						VertexType.task);
-				
-				bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId,
+
+				bean.setValue(
+						ImplementationPropertyNames.Vertex_originalVertexId,
 						currentVertex.getCorrespondingSDFVertex().getId());
 
 				// Setting the task duration
@@ -248,10 +247,12 @@ public class TagDAG {
 
 	/**
 	 * Loop on the edges to add aggregates.
-	 * @throws InvalidExpressionException 
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
+	 * @throws InvalidExpressionException
 	 */
-	public void addAllAggregates(MapperDAG dag, PreesmScenario scenario) throws InvalidExpressionException{
+	public void addAllAggregates(MapperDAG dag, PreesmScenario scenario)
+			throws InvalidExpressionException {
 
 		MapperDAGEdge edge;
 
@@ -273,9 +274,11 @@ public class TagDAG {
 	/**
 	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
 	 * sdf edges that were merged into one DAG edge.
-	 * @throws InvalidExpressionException 
+	 * 
+	 * @throws InvalidExpressionException
 	 */
-	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario) throws InvalidExpressionException {
+	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario)
+			throws InvalidExpressionException {
 
 		BufferAggregate agg = new BufferAggregate();
 

@@ -36,16 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -75,54 +75,70 @@ public class FASTTransformation extends AbstractMapping {
 	public FASTTransformation() {
 	}
 
-	/**
-	 * Function called while running the plugin
-	 * @throws PreesmException 
-	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm,
-			MultiCoreArchitecture architecture, TextParameters textParameters,
-			PreesmScenario scenario, IProgressMonitor monitor) throws PreesmException {
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = super.getDefaultParameters();
 
-		super.transform(algorithm,architecture,textParameters,scenario,monitor);
-		TaskResult result = new TaskResult();
+		parameters.put("displaySolutions", "false");
+		parameters.put("fastTime", "100");
+		parameters.put("fastLocalSearchTime", "10");
+		return parameters;
+	}
 
-		FastAlgoParameters fastParams = new FastAlgoParameters(textParameters);
-		AbcParameters abcParams = new AbcParameters(textParameters);
+	@Override
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+				.get("architecture");
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
+		super.execute(inputs, parameters, monitor, nodeName);
+
+		FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
+		AbcParameters abcParams = new AbcParameters(parameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
-		
-		if(dag == null){
-			throw(new PreesmException(" graph can't be scheduled, check console messages"));
-		}
-		
-		// calculates the DAG span length on the architecture main operator (the tasks that can
-		// not be executed by the main operator are deported without transfer time to other operator
-		calculateSpan(dag,architecture,scenario,abcParams);
 
-		IAbc simu = new InfiniteHomogeneousAbc(abcParams,
-				dag, architecture, abcParams.getSimulatorType().getTaskSchedType(), scenario);
-		
+		if (dag == null) {
+			throw (new WorkflowException(
+					" graph can't be scheduled, check console messages"));
+		}
+
+		// calculates the DAG span length on the architecture main operator (the
+		// tasks that can
+		// not be executed by the main operator are deported without transfer
+		// time to other operator
+		calculateSpan(dag, architecture, scenario, abcParams);
+
+		IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
+				abcParams.getSimulatorType().getTaskSchedType(), scenario);
+
 		InitialLists initialLists = new InitialLists();
-		if (!initialLists.constructInitialLists(dag, simu)){
-			return result;
+		if (!initialLists.constructInitialLists(dag, simu)) {
+			return outputs;
 		}
 
-		TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+		TopologicalTaskSched taskSched = new TopologicalTaskSched(
+				simu.getTotalOrder());
 		simu.resetDAG();
-		
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,"Mapping");
-		
-		dag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false
-				, fastParams.isDisplaySolutions(), monitor, taskSched);
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,"Mapping finished");
+		dag = fastAlgorithm.map("test", abcParams, fastParams, dag,
+				architecture, false, false, fastParams.isDisplaySolutions(),
+				monitor, taskSched);
 
-		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture, scenario);
+		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+
+		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture,
+				scenario);
 		// Transfer vertices are automatically regenerated
 		simu2.setDAG(dag);
 
@@ -131,27 +147,23 @@ public class FASTTransformation extends AbstractMapping {
 		simu2.reschedule(fastAlgorithm.getBestTotalOrder());
 		TagDAG tagSDF = new TagDAG();
 
-		// The mapper dag properties are put in the property bean to be transfered to code generation
+		// The mapper dag properties are put in the property bean to be
+		// transfered to code generation
 		try {
-			tagSDF.tag(dag, architecture, scenario, simu2, abcParams
-					.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2,
+					abcParams.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
-			throw(new PreesmException(e.getMessage()));
+			throw (new WorkflowException(e.getMessage()));
 		}
-		
-		result.setDAG(dag); 
-		// A simple task scheduler avoids new task swaps and ensures reuse of previous order.
+
+		outputs.put("DAG", dag);
+		// A simple task scheduler avoids new task swaps and ensures reuse of
+		// previous order.
 		simu2.setTaskScheduler(new SimpleTaskSched());
-		result.setAbc(simu2);
+		outputs.put("ABC", simu2);
 
-		super.clean(architecture,scenario);
-		return result;
-	}
-
-	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) {
-		// TODO Auto-generated method stub
-
+		super.clean(architecture, scenario);
+		return outputs;
 	}
 
 }

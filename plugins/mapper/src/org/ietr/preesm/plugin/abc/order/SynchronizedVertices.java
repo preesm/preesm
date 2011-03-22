@@ -165,23 +165,23 @@ public class SynchronizedVertices implements IScheduleElement {
 	@Override
 	public boolean equals(Object obj) {
 
-		if(obj instanceof SynchronizedVertices){
-			SynchronizedVertices newS = (SynchronizedVertices)obj;
-			if(this==obj){
+		if (obj instanceof SynchronizedVertices) {
+			SynchronizedVertices newS = (SynchronizedVertices) obj;
+			if (this == obj) {
 				return true;
 			}
-			if(newS.vertices().size() != vertices().size()){
+			if (newS.vertices().size() != vertices().size()) {
 				return false;
 			}
-			
-			for(MapperDAGVertex v : newS.vertices()){
-				if(!contains(v)){
+
+			for (MapperDAGVertex v : newS.vertices()) {
+				if (!contains(v)) {
 					return false;
 				}
 			}
-			
+
 			return true;
 		}
-		 return false;
+		return false;
 	}
 }

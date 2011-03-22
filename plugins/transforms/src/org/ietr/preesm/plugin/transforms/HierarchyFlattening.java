@@ -46,10 +46,7 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.task.IGraphTransformation;
-import org.ietr.preesm.core.task.PreesmException;
 import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
 import org.sdf4j.model.sdf.visitors.SDFHierarchyFlattening;
@@ -72,21 +69,22 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		String depthS = parameters.get("depth");
-		
+
 		int depth;
 		if (depthS != null) {
 			depth = Integer.decode(depthS);
 		} else {
 			depth = 1;
 		}
-		
+
 		Logger logger = AbstractWorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 		ConsistencyChecker checkConsistent = new ConsistencyChecker();
 		if (checkConsistent.verifyGraph(algorithm)) {
-			logger.log(Level.FINER, "flattening application "
-					+ algorithm.getName() + " at level " + depth);
+			logger.log(Level.FINER,
+					"flattening application " + algorithm.getName()
+							+ " at level " + depth);
 			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
 			VisitorOutput.setLogger(logger);
 			try {
@@ -100,10 +98,11 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 					SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
 					outputs.put("SDF", resultGraph);
 				} else {
-					throw (new WorkflowException("Graph not valid, not schedulable"));
+					throw (new WorkflowException(
+							"Graph not valid, not schedulable"));
 				}
 			} catch (SDF4JException e) {
-				throw(new WorkflowException(e.getMessage() ));
+				throw (new WorkflowException(e.getMessage()));
 			}
 		} else {
 			logger.log(Level.SEVERE,
@@ -113,7 +112,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 			throw (new WorkflowException(
 					"Inconsistent Hierarchy, graph can't be flattened"));
 		}
-		
+
 		return outputs;
 	}
 

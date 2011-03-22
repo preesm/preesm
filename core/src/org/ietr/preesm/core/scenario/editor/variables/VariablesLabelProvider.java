@@ -67,8 +67,8 @@ public class VariablesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public VariablesLabelProvider(PreesmScenario scenario, TableViewer tableViewer,
-			IPropertyListener propertyListener) {
+	public VariablesLabelProvider(PreesmScenario scenario,
+			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;

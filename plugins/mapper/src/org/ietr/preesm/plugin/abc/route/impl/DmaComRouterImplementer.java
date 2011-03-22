@@ -96,10 +96,11 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 						TransferVertex v = (TransferVertex) o;
 						if (v.getSource().equals(edge.getSource())
 								&& v.getTarget().equals(edge.getTarget())
-								&& v.getRouteStep() == routeStep && v.getNodeIndex() == 0) {
-								// Finding the edge where to add an overhead
-								incomingEdge = (MapperDAGEdge) v
-										.incomingEdges().toArray()[0];
+								&& v.getRouteStep() == routeStep
+								&& v.getNodeIndex() == 0) {
+							// Finding the edge where to add an overhead
+							incomingEdge = (MapperDAGEdge) v.incomingEdges()
+									.toArray()[0];
 						}
 
 					}
@@ -115,8 +116,7 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 				} else {
 					AbstractWorkflowLogger
 							.getLogger()
-							.log(
-									Level.FINE,
+							.log(Level.FINE,
 									"The transfer following vertex"
 											+ edge.getSource()
 											+ "was not found. We could not add overhead.");
@@ -139,7 +139,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
-				// Synchronizing the vertices in order manager (they will all have the same total order).
+				// Synchronizing the vertices in order manager (they will all
+				// have the same total order).
 				if (toSynchronize.size() > 1) {
 					ImplementationCleaner cleaner = new ImplementationCleaner(
 							getOrderManager(), getImplementation());
@@ -147,13 +148,13 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 							getOrderManager(), getImplementation());
 					IScheduleElement last = null;
 					last = null;
-					
+
 					for (MapperDAGVertex v : toSynchronize) {
 						cleaner.unscheduleVertex(v);
 						last = getOrderManager().synchronize(last, v);
 						adder.scheduleVertex(v);
 					}
-					
+
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 

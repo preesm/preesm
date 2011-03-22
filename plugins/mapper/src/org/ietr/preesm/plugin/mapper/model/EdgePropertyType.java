@@ -67,7 +67,7 @@ public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
 
 	@Override
 	public String toString() {
-		return String.format("%d",time) ;
+		return String.format("%d", time);
 	}
 
 }

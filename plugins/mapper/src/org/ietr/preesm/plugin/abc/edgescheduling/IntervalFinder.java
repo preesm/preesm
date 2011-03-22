@@ -67,10 +67,13 @@ public class IntervalFinder {
 	private static class FindType {
 		public static final FindType largestFreeInterval = new FindType();
 		public static final FindType earliestBigEnoughInterval = new FindType();
+
 		@Override
 		public String toString() {
-			if(this == largestFreeInterval) return "largestFreeInterval";
-			if(this == earliestBigEnoughInterval) return "largestFreeInterval";
+			if (this == largestFreeInterval)
+				return "largestFreeInterval";
+			if (this == earliestBigEnoughInterval)
+				return "largestFreeInterval";
 			return "";
 		}
 	}
@@ -111,10 +114,12 @@ public class IntervalFinder {
 	}
 
 	/**
-	 * Finds the largest free interval in a schedule between a minVertex and a maxVertex
+	 * Finds the largest free interval in a schedule between a minVertex and a
+	 * maxVertex
 	 */
 	public Interval findInterval(ArchitectureComponent component,
-			IScheduleElement minVertex, IScheduleElement maxVertex, FindType type, long data) {
+			IScheduleElement minVertex, IScheduleElement maxVertex,
+			FindType type, long data) {
 
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
@@ -144,39 +149,35 @@ public class IntervalFinder {
 		if (schedule != null) {
 			for (MapperDAGVertex v : schedule) {
 				TimingVertexProperty props = v.getTimingVertexProperty();
-				
+
 				// If we have the current vertex tLevel
 				if (props.getNewtLevel() >= 0) {
-					
+
 					// newInt is the interval corresponding to the execution of
 					// the vertex v: a non free interval
 					newInt = new Interval(props.getCost(),
 							props.getNewtLevel(), orderManager.totalIndexOf(v));
 
 					// end of the preceding non free interval
-					long oldEnd = oldInt.getStartTime()
-							+ oldInt.getDuration();
-					// latest date between the end of minVertex and the end of oldInt
-					long available = Math.max(minIndexVertexEndTime,
-							oldEnd);
+					long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+					// latest date between the end of minVertex and the end of
+					// oldInt
+					long available = Math.max(minIndexVertexEndTime, oldEnd);
 					// Computing the size of the free interval
-					long freeIntervalSize = newInt.getStartTime()
-							- available;
-					
+					long freeIntervalSize = newInt.getStartTime() - available;
+
 					if (type == FindType.largestFreeInterval) {
 						// Verifying that newInt is in the interval of search
 						if (newInt.getTotalOrderIndex() > minIndex
 								&& newInt.getTotalOrderIndex() <= maxIndex) {
-							
-							if (freeIntervalSize > freeInterval
-									.getDuration()) {
+
+							if (freeIntervalSize > freeInterval.getDuration()) {
 								// The free interval takes the index of its
 								// following task v.
 								// Inserting a vertex in this interval means
 								// inserting it before v.
-								freeInterval = new Interval(
-										freeIntervalSize, available, newInt
-												.getTotalOrderIndex());
+								freeInterval = new Interval(freeIntervalSize,
+										available, newInt.getTotalOrderIndex());
 							}
 						}
 					} else if (type == FindType.earliestBigEnoughInterval) {
@@ -188,9 +189,8 @@ public class IntervalFinder {
 								// following task v.
 								// Inserting a vertex in this interval means
 								// inserting it before v.
-								freeInterval = new Interval(
-										freeIntervalSize, available, newInt
-												.getTotalOrderIndex());
+								freeInterval = new Interval(freeIntervalSize,
+										available, newInt.getTotalOrderIndex());
 								break;
 							}
 						}
@@ -252,8 +252,8 @@ public class IntervalFinder {
 
 		// Finds the largest free hole after the latest predecessor
 		if (op != null) {
-			Interval largestInterval = findLargestFreeInterval(
-					op, source, target);
+			Interval largestInterval = findLargestFreeInterval(op, source,
+					target);
 
 			// If it is big enough, use it
 			if (largestInterval.getDuration() > minimalHoleSize) {
@@ -294,14 +294,13 @@ public class IntervalFinder {
 
 		// Finds the largest free hole after the latest predecessor
 		if (op != null) {
-			Interval largestInterval = findEarliestBigEnoughInterval(
-					op, source, target, size);
+			Interval largestInterval = findEarliestBigEnoughInterval(op,
+					source, target, size);
 
 			// If it is big enough, use it
 			if (largestInterval.getDuration() >= 0) {
 				index = largestInterval.getTotalOrderIndex();
-			}
-			else{
+			} else {
 				index = -1;
 			}
 
@@ -315,8 +314,8 @@ public class IntervalFinder {
 	 */
 	public int getEarliestIndex(MapperDAGVertex vertex) {
 		int latePred = getLatestPredecessorIndex(vertex);
-		
-		if(latePred != -1){
+
+		if (latePred != -1) {
 			latePred++;
 		}
 		return latePred;
@@ -342,8 +341,7 @@ public class IntervalFinder {
 		int index = Integer.MAX_VALUE;
 
 		for (MapperDAGVertex v : testVertex.getSuccessorSet(true)) {
-				index = Math.min(index, orderManager
-						.totalIndexOf(v));
+			index = Math.min(index, orderManager.totalIndexOf(v));
 		}
 
 		if (index == Integer.MAX_VALUE)

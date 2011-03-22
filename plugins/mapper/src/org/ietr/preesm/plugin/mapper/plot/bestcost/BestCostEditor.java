@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.bestcost;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -53,7 +53,7 @@ import org.ietr.preesm.plugin.mapper.plot.BestCostPlotter;
 public class BestCostEditor extends EditorPart {
 
 	private BestCostPlotter plotter = null;
-	
+
 	public BestCostEditor() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -62,36 +62,36 @@ public class BestCostEditor extends EditorPart {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void doSaveAs() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		
+
 		try {
 			setSite(site);
 			setInput(input);
 			setPartName(input.getName());
-			
-			if(input instanceof BestCostEditorInput){
-				BestCostEditorInput implinput = (BestCostEditorInput)input;
+
+			if (input instanceof BestCostEditorInput) {
+				BestCostEditorInput implinput = (BestCostEditorInput) input;
 				this.plotter = implinput.getPlotter();
 			}
-			
+
 		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases.  So
+			// Editor might not exist anymore if switching databases. So
 			// just close it.
 			this.getEditorSite().getPage().closeEditor(this, false);
 			throw new PartInitException("File " + input.getName()
 					+ " does not exist.");
-		} 
+		}
 
 	}
 
@@ -109,25 +109,25 @@ public class BestCostEditor extends EditorPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		
-		if(plotter != null){
+
+		if (plotter != null) {
 
 			plotter.display(parent);
 		}
-		
+
 	}
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void createEditor(BestCostPlotter plotter) {
 		IEditorInput input = new BestCostEditorInput(plotter);
 
-		PlatformUI.getWorkbench().getDisplay().asyncExec(
-				new BestCostEditorRunnable(input));
-		
+		PlatformUI.getWorkbench().getDisplay()
+				.asyncExec(new BestCostEditorRunnable(input));
+
 	}
 }

@@ -78,8 +78,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(PreesmScenario scenario, TableViewer tableViewer,
-			IPropertyListener propertyListener) {
+	public SDFTableLabelProvider(PreesmScenario scenario,
+			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;

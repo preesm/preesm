@@ -58,8 +58,8 @@ import org.sdf4j.model.dag.DAGVertex;
 /**
  * The scheduling order manager keeps a total order of the vertices and a
  * partial order in each schedule. It is used by the schedule edge adder to
- * insert schedule edges. The scheduling order manager is observed by the
- * time keeper and reports the vertices which timings need to be updated.
+ * insert schedule edges. The scheduling order manager is observed by the time
+ * keeper and reports the vertices which timings need to be updated.
  * 
  * @author mpelcat
  */
@@ -121,8 +121,9 @@ public class SchedOrderManager extends Observable {
 
 			ArchitectureComponent cmp = currImpProp.getEffectiveComponent();
 			int newSchedulingTotalOrder = totalIndexOf(vertex);
-			int maxPrec = findLastestPredIndexForOp(currImpProp
-					.getEffectiveComponent(), newSchedulingTotalOrder);
+			int maxPrec = findLastestPredIndexForOp(
+					currImpProp.getEffectiveComponent(),
+					newSchedulingTotalOrder);
 			// Testing a possible synchronized vertex
 			IScheduleElement elt = get(newSchedulingTotalOrder);
 			if (elt == null || elt.equals(vertex)) {
@@ -186,11 +187,10 @@ public class SchedOrderManager extends Observable {
 			// Notifies the time keeper that it should update the vertex
 			setChanged();
 			notifyObservers(vertex);
-		}
-		else if(elt instanceof SynchronizedVertices){
-			SynchronizedVertices synchros = (SynchronizedVertices)elt;
-			
-			for(MapperDAGVertex vertex : synchros.vertices()){
+		} else if (elt instanceof SynchronizedVertices) {
+			SynchronizedVertices synchros = (SynchronizedVertices) elt;
+
+			for (MapperDAGVertex vertex : synchros.vertices()) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
 					ArchitectureComponent effectiveCmp = vertex
@@ -206,7 +206,7 @@ public class SchedOrderManager extends Observable {
 			}
 
 			totalOrder.addLast(synchros);
-			
+
 			// Notifies the time keeper that it should update the vertex
 			setChanged();
 			notifyObservers(synchros);
@@ -463,8 +463,8 @@ public class SchedOrderManager extends Observable {
 
 		resetTotalOrder();
 
-		List<DAGVertex> newTotalOrder = new ArrayList<DAGVertex>(dag
-				.vertexSet());
+		List<DAGVertex> newTotalOrder = new ArrayList<DAGVertex>(
+				dag.vertexSet());
 
 		Collections.sort(newTotalOrder, new SchedulingOrderComparator());
 
@@ -620,8 +620,10 @@ public class SchedOrderManager extends Observable {
 				if (elt instanceof MapperDAGVertex) {
 					vList.add((MapperDAGVertex) elt);
 				} else if (elt instanceof SynchronizedVertices) {
-					for(MapperDAGVertex sVertex : ((SynchronizedVertices) elt).vertices()){
-						if(sVertex.getImplementationVertexProperty().getEffectiveComponent().equals(cmp)){
+					for (MapperDAGVertex sVertex : ((SynchronizedVertices) elt)
+							.vertices()) {
+						if (sVertex.getImplementationVertexProperty()
+								.getEffectiveComponent().equals(cmp)) {
 							vList.add(sVertex);
 						}
 					}

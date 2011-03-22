@@ -62,7 +62,7 @@ import org.jfree.ui.RectangleEdge;
 public class MyGanttRenderer extends GanttRenderer {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Map of the task colors
 	 */
@@ -111,16 +111,16 @@ public class MyGanttRenderer extends GanttRenderer {
 			if (value0 == null) {
 				return;
 			}
-			double translatedValue0 = rangeAxis.valueToJava2D(value0
-					.doubleValue(), dataArea, rangeAxisLocation);
+			double translatedValue0 = rangeAxis.valueToJava2D(
+					value0.doubleValue(), dataArea, rangeAxisLocation);
 
 			// value 1
 			Number value1 = dataset.getEndValue(row, column, subinterval);
 			if (value1 == null) {
 				return;
 			}
-			double translatedValue1 = rangeAxis.valueToJava2D(value1
-					.doubleValue(), dataArea, rangeAxisLocation);
+			double translatedValue1 = rangeAxis.valueToJava2D(
+					value1.doubleValue(), dataArea, rangeAxisLocation);
 
 			if (translatedValue1 < translatedValue0) {
 				double temp = translatedValue1;
@@ -179,12 +179,11 @@ public class MyGanttRenderer extends GanttRenderer {
 			if (((TaskSeriesCollection) dataset).getSeriesCount() > 0)
 				if (((TaskSeriesCollection) dataset).getSeries(0)
 						.getItemCount() > column)
-					if (((TaskSeriesCollection) dataset).getSeries(0).get(
-							column).getSubtaskCount() > subinterval)
-						g2
-								.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset)
-										.getSeries(0).get(column).getSubtask(
-												subinterval).getDescription()));
+					if (((TaskSeriesCollection) dataset).getSeries(0)
+							.get(column).getSubtaskCount() > subinterval)
+						g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset)
+								.getSeries(0).get(column)
+								.getSubtask(subinterval).getDescription()));
 			g2.fill(bar);
 			if (completeBar != null) {
 				g2.setPaint(getCompletePaint());
@@ -216,15 +215,15 @@ public class MyGanttRenderer extends GanttRenderer {
 								dataset, row, column);
 					}
 					CategoryItemEntity entity = new CategoryItemEntity(bar,
-							tip, url, dataset, dataset.getRowKey(row), dataset
-									.getColumnKey(column));
+							tip, url, dataset, dataset.getRowKey(row),
+							dataset.getColumnKey(column));
 					entities.add(entity);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Chooses colors for the vertices depending on their names
 	 */
@@ -245,37 +244,40 @@ public class MyGanttRenderer extends GanttRenderer {
 				c = getRandomColor(130.0, 160.0, 100.0, 20);
 			} else if (name.indexOf("__involvement") == 0) {
 				c = getRandomColor(210.0, 150.0, 50.0, 20);
-			} else if (name.indexOf("__send") == 0 || name.indexOf("__receive") == 0) {
+			} else if (name.indexOf("__send") == 0
+					|| name.indexOf("__receive") == 0) {
 				c = getRandomColor(160.0, 130.0, 100.0, 20);
 			} else if (name.indexOf("__@") != -1) {
 				int atNumber = name.indexOf("__@");
-				
-				int index = Integer.valueOf(name.substring(atNumber + 3, atNumber + 4)) - 1;
+
+				int index = Integer.valueOf(name.substring(atNumber + 3,
+						atNumber + 4)) - 1;
 				// iteration task color
-				c = getRandomColor(27.0 + ((50*index)%200), 182.0 - ((50*index)%160), 233.0, 20);
+				c = getRandomColor(27.0 + ((50 * index) % 200),
+						182.0 - ((50 * index) % 160), 233.0, 20);
 			} else {
 				c = getRandomColor(130.0, 100.0, 160.0, 20);
 			}
-			
+
 			colorMap.put(name, c);
 		}
 
 		return c;
 	}
-	
+
 	/**
 	 * Given a color c, returns a random color close to c
 	 */
 	private Color getRandomColor(Double r, Double g, Double b, int liberty) {
-		
+
 		r = Math.random() * liberty + r;
 		g = Math.random() * liberty + g;
 		b = Math.random() * liberty + b;
-		
-		r = Math.max(0,Math.min(r,255));
-		g = Math.max(0,Math.min(g,255));
-		b = Math.max(0,Math.min(b,255));
-		
+
+		r = Math.max(0, Math.min(r, 255));
+		g = Math.max(0, Math.min(g, 255));
+		b = Math.max(0, Math.min(b, 255));
+
 		Color c = new Color(r.intValue(), g.intValue(), b.intValue());
 
 		return c;

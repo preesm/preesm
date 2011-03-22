@@ -49,7 +49,7 @@ import org.sdf4j.model.sdf.SDFGraph;
 /**
  * The DAGCreator converts a DAG described with SDF objects in mapper DAG model
  * 
- * @author pmenuet     
+ * @author pmenuet
  */
 public class DAGCreator {
 
@@ -118,8 +118,7 @@ public class DAGCreator {
 		dag.addVertex(num9);
 
 		try {
-			MapperDAGEdge edge = (MapperDAGEdge) dag.addEdge(num1,
-					num2);
+			MapperDAGEdge edge = (MapperDAGEdge) dag.addEdge(num1, num2);
 			edge.setInitialEdgeProperty(new InitialEdgeProperty(4));
 
 			edge = (MapperDAGEdge) dag.addEdge(num1, num3);
@@ -216,8 +215,7 @@ public class DAGCreator {
 		dag.addVertex(num9);
 
 		try {
-			MapperDAGEdge edge = (MapperDAGEdge) dag.addEdge(num1,
-					num2);
+			MapperDAGEdge edge = (MapperDAGEdge) dag.addEdge(num1, num2);
 			edge.setInitialEdgeProperty(new InitialEdgeProperty(4));
 
 			edge = (MapperDAGEdge) dag.addEdge(num1, num3);

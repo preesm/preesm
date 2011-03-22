@@ -236,7 +236,8 @@ public class InitialLists {
 			List<MapperDAGVertex> cpnDominant,
 			List<MapperDAGVertex> criticalPath, LatencyAbc abc) {
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Starting to build CPN list");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"Starting to build CPN list");
 
 		// variables
 		MapperDAGVertex currentvertex;
@@ -273,7 +274,8 @@ public class InitialLists {
 		succset.addAll(neighborindex
 				.successorListOf((MapperDAGVertex) cpnvertex));
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
+		AbstractWorkflowLogger.getLogger()
+				.log(Level.INFO, "Building CPN list.");
 
 		/* Do the process while the vertex is not a leaf */
 		while (!(succset.isEmpty())) {
@@ -416,8 +418,8 @@ public class InitialLists {
 		while (iter.hasNext()) {
 			currentvertex = iter.next();
 
-			logger.log(Level.FINEST, threadName + "Vertex "
-					+ currentvertex.getName());
+			logger.log(Level.FINEST,
+					threadName + "Vertex " + currentvertex.getName());
 
 		}
 	}

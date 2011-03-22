@@ -18,14 +18,13 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
  */
 public class RelativeConstraint {
 
-
 	private List<MapperDAGVertex> vertices;
 
 	public RelativeConstraint() {
 		super();
 		this.vertices = new ArrayList<MapperDAGVertex>();
 	}
-	
+
 	public List<MapperDAGVertex> getVertices() {
 		return vertices;
 	}
@@ -35,8 +34,8 @@ public class RelativeConstraint {
 	}
 
 	public void merge(RelativeConstraint constraints) {
-		for(MapperDAGVertex v : constraints.getVertices()){
-			if(!vertices.contains(v)){
+		for (MapperDAGVertex v : constraints.getVertices()) {
+			if (!vertices.contains(v)) {
 				this.addVertex(v);
 			}
 		}
@@ -45,43 +44,42 @@ public class RelativeConstraint {
 	public List<Operator> getOperatorsIntersection() {
 
 		List<Operator> operators = new ArrayList<Operator>();
-		
-		if(vertices.isEmpty()){
-			AbstractWorkflowLogger.getLogger().log(
-					Level.SEVERE,
+
+		if (vertices.isEmpty()) {
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Relative constraint with no vertex.");
-			
+
 			return operators;
-		}
-		else{
+		} else {
 			MapperDAGVertex firstVertex = vertices.get(0);
-			Operator op = firstVertex.getImplementationVertexProperty().getEffectiveOperator();
-			if(op != null && vertices.size() > 1){
+			Operator op = firstVertex.getImplementationVertexProperty()
+					.getEffectiveOperator();
+			if (op != null && vertices.size() > 1) {
 				// Forcing the mapper to put together related vertices
 				operators.add(op);
-			}
-			else{
-				operators.addAll(firstVertex.getInitialVertexProperty().getInitialOperatorList());
+			} else {
+				operators.addAll(firstVertex.getInitialVertexProperty()
+						.getInitialOperatorList());
 			}
 		}
-		
-		for (int i=1; i<vertices.size();i++) {
+
+		for (int i = 1; i < vertices.size(); i++) {
 			MapperDAGVertex vertex = vertices.get(i);
-			Operator op = vertex.getImplementationVertexProperty().getEffectiveOperator();
-			if(op != null){
-				if(operators.contains(op)){
+			Operator op = vertex.getImplementationVertexProperty()
+					.getEffectiveOperator();
+			if (op != null) {
+				if (operators.contains(op)) {
 					operators.clear();
 					operators.add(op);
-				}
-				else{
+				} else {
 					operators.clear();
 				}
-			}
-			else{
-				operators.retainAll(vertex.getInitialVertexProperty().getInitialOperatorList());
+			} else {
+				operators.retainAll(vertex.getInitialVertexProperty()
+						.getInitialOperatorList());
 			}
 		}
-		
+
 		return operators;
 	}
 }

@@ -36,11 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
-
-import org.ietr.preesm.core.task.TextParameters;
 
 /**
  * Specific parameters of genetic algorithm
@@ -49,7 +48,7 @@ import org.ietr.preesm.core.task.TextParameters;
  * @author mpelcat
  */
 
-public class GeneticAlgoParameters extends SchedulingParameters {
+public class GeneticAlgoParameters {
 
 	// Number of individuals in the population
 	private int populationSize;
@@ -80,30 +79,28 @@ public class GeneticAlgoParameters extends SchedulingParameters {
 	 * 
 	 */
 
-	public GeneticAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
+	public GeneticAlgoParameters(Map<String, String> textParameters) {
 
-		this.generationNumber = textParameters
-				.getIntVariable("generationNumber");
-		this.populationSize = textParameters.getIntVariable("populationSize");
-		this.pfastused2makepopulation = textParameters
-				.getBooleanVariable("pfastused2makepopulation");
-		if (textParameters.getIntVariable("fastTime") != 0) {
-			this.fastTime = textParameters
-					.getIntVariable("fastTime");
+		this.generationNumber = Integer.valueOf(textParameters
+				.get("generationNumber"));
+		this.populationSize = Integer.valueOf(textParameters
+				.get("populationSize"));
+		this.pfastused2makepopulation = Boolean.valueOf(textParameters
+				.get("pfastused2makepopulation"));
+		if (Integer.valueOf(textParameters.get("fastTime")) != 0) {
+			this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
 		}
-		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
-			this.fastLocalSearchTime = textParameters
-					.getIntVariable("fastLocalSearchTime");
+		if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
+			this.fastLocalSearchTime = Integer.valueOf(textParameters
+					.get("fastLocalSearchTime"));
 		}
-		if (textParameters.getIntVariable("fastNumber") != 0) {
-			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		if (Integer.valueOf(textParameters.get("fastNumber")) != 0) {
+			this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
 		}
 
 		AbstractWorkflowLogger
 				.getLogger()
-				.log(
-						Level.INFO,
+				.log(Level.INFO,
 						"The Genetic algo parameters are: generationNumber; populationSize; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 	}
 

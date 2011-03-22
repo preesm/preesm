@@ -123,8 +123,8 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(Transaction precedingTransaction,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, AbstractRouteStep step,
-			long transferCost) {
+			SchedOrderManager orderManager, int routeIndex,
+			AbstractRouteStep step, long transferCost) {
 		super();
 		this.precedingTransaction = precedingTransaction;
 		this.edge = edge;
@@ -144,8 +144,9 @@ public class AddSendReceiveTransaction extends Transaction {
 		if (precedingTransaction != null
 				&& precedingTransaction instanceof AddSendReceiveTransaction) {
 			currentSource = ((AddSendReceiveTransaction) precedingTransaction).receiveVertex;
-			
-			((MapperDAG)currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
+
+			((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource,
+					currentTarget);
 		} else {
 			currentSource = (MapperDAGVertex) edge.getSource();
 		}
@@ -170,33 +171,29 @@ public class AddSendReceiveTransaction extends Transaction {
 		sendVertex = new SendVertex(sendVertexID, implementation);
 		sendVertex.setRouteStep(step);
 		sendVertex.getTimingVertexProperty().setCost(transferCost);
-		sendVertex.getImplementationVertexProperty()
-				.setEffectiveOperator(senderOperator);
+		sendVertex.getImplementationVertexProperty().setEffectiveOperator(
+				senderOperator);
 		orderManager.insertAfter(currentSource, sendVertex);
 		implementation.addVertex(sendVertex);
 
-		receiveVertex = new ReceiveVertex(receiveVertexID,
-				implementation);
+		receiveVertex = new ReceiveVertex(receiveVertexID, implementation);
 		receiveVertex.setRouteStep(step);
 		receiveVertex.getTimingVertexProperty().setCost(transferCost);
-		receiveVertex.getImplementationVertexProperty()
-				.setEffectiveOperator(receiverOperator);
+		receiveVertex.getImplementationVertexProperty().setEffectiveOperator(
+				receiverOperator);
 		orderManager.insertAfter(sendVertex, receiveVertex);
 		implementation.addVertex(receiveVertex);
 
-		newEdge1 = (MapperDAGEdge) implementation.addEdge(
-				currentSource, sendVertex);
+		newEdge1 = (MapperDAGEdge) implementation.addEdge(currentSource,
+				sendVertex);
 		newEdge2 = (MapperDAGEdge) implementation.addEdge(sendVertex,
 				receiveVertex);
-		newEdge3 = (MapperDAGEdge) implementation.addEdge(
-				receiveVertex, currentTarget);
+		newEdge3 = (MapperDAGEdge) implementation.addEdge(receiveVertex,
+				currentTarget);
 
-		newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-				.clone());
-		newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-				.clone());
-		newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty()
-				.clone());
+		newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
+		newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
+		newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
 
 		newEdge1.getTimingEdgeProperty().setCost(0);
 		newEdge2.getTimingEdgeProperty().setCost(0);
@@ -205,21 +202,19 @@ public class AddSendReceiveTransaction extends Transaction {
 		newEdge1.setAggregate(edge.getAggregate());
 		newEdge2.setAggregate(edge.getAggregate());
 		newEdge3.setAggregate(edge.getAggregate());
-		
+
 		// TODO: Consider the need for transfer vertex rescheduling
-		/*if (false) {
-			// Remove original edges
-			implementation.removeAllEdges(currentSource, currentTarget);
-		}
-		
-		if (false) {
-			// Scheduling transfer vertex
-			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager, implementation);
-			adder.scheduleVertex(sendVertex);
-			adder.scheduleVertex(receiveVertex);
-		}*/
-		
-		if(resultList != null){
+		/*
+		 * if (false) { // Remove original edges
+		 * implementation.removeAllEdges(currentSource, currentTarget); }
+		 * 
+		 * if (false) { // Scheduling transfer vertex PrecedenceEdgeAdder adder
+		 * = new PrecedenceEdgeAdder(orderManager, implementation);
+		 * adder.scheduleVertex(sendVertex);
+		 * adder.scheduleVertex(receiveVertex); }
+		 */
+
+		if (resultList != null) {
 			resultList.add(sendVertex);
 			resultList.add(receiveVertex);
 		}

@@ -140,8 +140,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	 */
 	private PreesmScenario scenario;
 
-	public SimulationPage(PreesmScenario scenario, FormEditor editor, String id,
-			String title) {
+	public SimulationPage(PreesmScenario scenario, FormEditor editor,
+			String id, String title) {
 		super(editor, id, title);
 
 		this.scenario = scenario;

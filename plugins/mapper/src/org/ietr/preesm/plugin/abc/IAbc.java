@@ -63,6 +63,7 @@ public interface IAbc extends IMapperAbc {
 	 * Gets the architecture and scenario
 	 */
 	public MultiCoreArchitecture getArchitecture();
+
 	public PreesmScenario getScenario();
 
 	public MapperDAG getDAG();
@@ -76,25 +77,24 @@ public interface IAbc extends IMapperAbc {
 	 * Updates the internal state so as to allow final cost processing
 	 */
 	public void updateFinalCosts();
-	
+
 	/**
-	 * Gives the implementation time of the implementation if possible. If current
-	 * implementation information is not enough to calculate this timing, returns
-	 * TIME_UNKNOWN
+	 * Gives the implementation time of the implementation if possible. If
+	 * current implementation information is not enough to calculate this
+	 * timing, returns TIME_UNKNOWN
 	 */
 	public long getFinalCost();
 
 	/**
-	 * Gives the final time of the given vertex in the current implementation. If
-	 * current implementation information is not enough to calculate this timing,
-	 * returns TIME_UNKNOWN
+	 * Gives the final time of the given vertex in the current implementation.
+	 * If current implementation information is not enough to calculate this
+	 * timing, returns TIME_UNKNOWN
 	 */
 	public long getFinalCost(MapperDAGVertex vertex);
 
 	/**
 	 * Gives the implementation time on the given operator if possible. It
-	 * considers a partially mapped graph and ignores the non mapped
-	 * vertices
+	 * considers a partially mapped graph and ignores the non mapped vertices
 	 */
 	public long getFinalCost(ArchitectureComponent component);
 
@@ -108,16 +108,18 @@ public interface IAbc extends IMapperAbc {
 	 * Gets the total rank of the given vertex. -1 if the vertex has no rank
 	 */
 	public int getSchedTotalOrder(MapperDAGVertex vertex);
-	
+
 	/**
 	 * Gets the current total order of the ABC
 	 */
 	public VertexOrderList getTotalOrder();
 
 	/**
-	 * Reorders the implementation using the given total order or trying to find the best schedule
+	 * Reorders the implementation using the given total order or trying to find
+	 * the best schedule
 	 */
 	public void reschedule(VertexOrderList totalOrder);
+
 	public void reschedule(List<IScheduleElement> alreadyRescheduled);
 
 	/**
@@ -133,10 +135,12 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * maps the vertex on the operator the rank is the scheduling order. The
 	 * current rank is maintained in simulator. User can choose to update the
-	 * rank to the current one or to keep the sank set during last implementation
+	 * rank to the current one or to keep the sank set during last
+	 * implementation
 	 */
 	public void map(MapperDAGVertex vertex, Operator operator,
 			boolean updateRank);
+
 	public void unmap(MapperDAGVertex dagvertex);
 
 	/**
@@ -145,8 +149,8 @@ public interface IAbc extends IMapperAbc {
 	public boolean mapAllVerticesOnOperator(Operator operator);
 
 	/**
-	 * Checks in the vertex implementation properties if it can be mapped on
-	 * the given operator
+	 * Checks in the vertex implementation properties if it can be mapped on the
+	 * given operator
 	 */
 	public boolean isMapable(MapperDAGVertex vertex, Operator operator);
 
@@ -180,6 +184,7 @@ public interface IAbc extends IMapperAbc {
 	 * Gets the type of the current ABC
 	 */
 	public AbcType getType();
+
 	public EdgeSchedType getEdgeSchedType();
 
 	/**
@@ -190,15 +195,15 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Reschedule all the transfers generated during mapping
 	 */
-	//public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
-	
+	// public void rescheduleTransfers(List<MapperDAGVertex> orderlist);
+
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
 	 * operator)
 	 */
 	public Operator findOperator(MapperDAGVertex currentvertex,
 			Operator preferedOperator);
-	
+
 	/**
 	 * Looks for operators able to execute currentvertex
 	 */

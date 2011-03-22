@@ -44,19 +44,20 @@ import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.sdf4j.model.dag.DAGEdge;
 
 /**
- * Element containing either a simple vertex or a group of synchronized elements that have the same total order.
+ * Element containing either a simple vertex or a group of synchronized elements
+ * that have the same total order.
  * 
  * @author mpelcat
  */
 public interface IScheduleElement {
 
 	public String getName();
-	
+
 	public TimingVertexProperty getTimingVertexProperty();
-	
+
 	public ImplementationVertexProperty getImplementationVertexProperty();
-	
+
 	public InitialVertexProperty getInitialVertexProperty();
-	
+
 	public Set<DAGEdge> incomingEdges();
 }

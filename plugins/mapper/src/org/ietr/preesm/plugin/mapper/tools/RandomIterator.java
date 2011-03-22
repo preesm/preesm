@@ -83,7 +83,7 @@ public class RandomIterator<E> implements Iterator<E> {
 		rand.setSeed(seed);
 		this.rand = rand;
 	}
-	
+
 	/**
 	 * RandomIterator constructor
 	 * 

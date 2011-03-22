@@ -160,7 +160,8 @@ public class NewTimeKeeper implements Observer {
 
 		for (IScheduleElement v : allDirtyTLevelVertices) {
 			if (dirtyTLevelElts.contains(v)) {
-				//PreesmLogger.getLogger().log(Level.SEVERE,"t-level of " + v.getName());
+				// PreesmLogger.getLogger().log(Level.SEVERE,"t-level of " +
+				// v.getName());
 				calculateTLevel(v);
 			}
 		}
@@ -212,7 +213,7 @@ public class NewTimeKeeper implements Observer {
 			predset.addAll(inducedPredset);
 
 			long time;
-			
+
 			if (predset.isEmpty()) {
 				// If the vertex has no predecessor, ALAP=ASAP=0;
 				// t-level = ASAP
@@ -221,7 +222,7 @@ public class NewTimeKeeper implements Observer {
 				// The T level is the time of the longest preceding path
 				time = getLongestPrecedingPath(predset, modifiedElt);
 			}
-			
+
 			currenttimingproperty.setNewtLevel(time);
 
 		} else {
@@ -331,8 +332,11 @@ public class NewTimeKeeper implements Observer {
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
 
-			if(currentvertex.getName().equals("explode_RACHDecoding_3_broadcastRepIdxcircor_repetitionIndex_repetitionIndex")){
-				int i =0; i++;
+			if (currentvertex
+					.getName()
+					.equals("explode_RACHDecoding_3_broadcastRepIdxcircor_repetitionIndex_repetitionIndex")) {
+				int i = 0;
+				i++;
 			}
 			// Starting from end vertices, sets the b-levels of the preceding
 			// tasks
@@ -360,8 +364,7 @@ public class NewTimeKeeper implements Observer {
 		// If the current vertex has an effective component and is an ending
 		// vertex
 		if (modifiedvertex.getImplementationVertexProperty()
-				.hasEffectiveComponent()
-				&& succset.isEmpty()) {
+				.hasEffectiveComponent() && succset.isEmpty()) {
 
 			if (currenttimingproperty.hasNewtLevel()
 					&& currenttimingproperty.hasCost()) {
@@ -381,8 +384,7 @@ public class NewTimeKeeper implements Observer {
 
 			AbstractWorkflowLogger
 					.getLogger()
-					.log(
-							Level.SEVERE,
+					.log(Level.SEVERE,
 							"Trying to start b_level calculation from a vertex with successors or without mapping.");
 			currenttimingproperty
 					.setNewbLevel(TimingVertexProperty.UNAVAILABLE);
@@ -484,8 +486,7 @@ public class NewTimeKeeper implements Observer {
 
 	/**
 	 * Gives the implementation time on the given operator if possible. It
-	 * considers a partially mapped graph and ignores the non mapped
-	 * vertices
+	 * considers a partially mapped graph and ignores the non mapped vertices
 	 */
 	public long getFinalTime(ArchitectureComponent component) {
 
@@ -515,10 +516,11 @@ public class NewTimeKeeper implements Observer {
 	public void updateTLevels() {
 
 		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		/*dirtyTLevelElts.clear();
-		for(DAGVertex v : implementation.vertexSet())
-			dirtyTLevelElts.add((MapperDAGVertex) v);*/
-		
+		/*
+		 * dirtyTLevelElts.clear(); for(DAGVertex v :
+		 * implementation.vertexSet()) dirtyTLevelElts.add((MapperDAGVertex) v);
+		 */
+
 		calculateTLevel();
 		dirtyTLevelElts.clear();
 
@@ -528,10 +530,11 @@ public class NewTimeKeeper implements Observer {
 	public void updateTandBLevels() {
 
 		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		/*dirtyTLevelElts.clear();
-		for(DAGVertex v : implementation.vertexSet())
-			dirtyTLevelElts.add((MapperDAGVertex) v);*/
-		
+		/*
+		 * dirtyTLevelElts.clear(); for(DAGVertex v :
+		 * implementation.vertexSet()) dirtyTLevelElts.add((MapperDAGVertex) v);
+		 */
+
 		calculateTLevel();
 		dirtyTLevelElts.clear();
 		calculateBLevel();

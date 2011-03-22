@@ -46,8 +46,7 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class BLevelIterator extends ImplementationIterator {
 
-	public BLevelIterator(MapperDAG implementation,
-			boolean directOrder) {
+	public BLevelIterator(MapperDAG implementation, boolean directOrder) {
 		super(implementation, directOrder);
 	}
 

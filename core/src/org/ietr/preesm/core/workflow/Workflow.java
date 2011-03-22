@@ -157,7 +157,8 @@ public class Workflow {
 		IMapperAbc abc = null; // This input type is known from the sender and
 								// the receiver
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Starting workflow execution");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"Starting workflow execution");
 
 		TopologicalOrderIterator<IWorkflowNode, WorkflowEdge> it = new TopologicalOrderIterator<IWorkflowNode, WorkflowEdge>(
 				workflow);
@@ -219,7 +220,8 @@ public class Workflow {
 
 					if (transformation instanceof IMapping) {
 						monitor.subTask("scheduling");
-						AbstractWorkflowLogger.getLogger().log(Level.INFO, "scheduling");
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
+								"scheduling");
 
 						// mapping
 						IMapping mapping = (IMapping) transformation;
@@ -229,8 +231,8 @@ public class Workflow {
 
 					} else if (transformation instanceof IGraphTransformation) {
 						monitor.subTask("transforming");
-						AbstractWorkflowLogger.getLogger()
-								.log(Level.INFO, "transforming");
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
+								"transforming");
 
 						// mapping
 						IGraphTransformation tranform = (IGraphTransformation) transformation;
@@ -295,7 +297,8 @@ public class Workflow {
 						}
 					} else if (transformation instanceof IPlotter) {
 						monitor.subTask("plot");
-						AbstractWorkflowLogger.getLogger().log(Level.INFO, "plot");
+						AbstractWorkflowLogger.getLogger().log(Level.INFO,
+								"plot");
 
 						// code translation
 						IPlotter plotter = (IPlotter) transformation;
@@ -312,7 +315,8 @@ public class Workflow {
 			}
 		}
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "End of workflow execution");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"End of workflow execution");
 		// Workflow completed
 		monitor.done();
 	}

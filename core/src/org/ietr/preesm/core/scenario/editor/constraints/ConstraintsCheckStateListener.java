@@ -108,7 +108,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public ConstraintsCheckStateListener(Section section, PreesmScenario scenario) {
+	public ConstraintsCheckStateListener(Section section,
+			PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 		this.section = section;

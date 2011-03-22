@@ -56,20 +56,19 @@ public class RemoveVertexTransaction extends Transaction {
 	 * Implementation DAG from which the vertex is removed
 	 */
 	private MapperDAG implementation = null;
-	
+
 	/**
 	 * vertex removed
 	 */
 	private MapperDAGVertex vertex = null;
-	
+
 	/**
 	 * Order manager
 	 */
 	private SchedOrderManager orderManager = null;
-	
-	
+
 	public RemoveVertexTransaction(MapperDAGVertex vertex,
-			MapperDAG implementation,SchedOrderManager orderManager) {
+			MapperDAG implementation, SchedOrderManager orderManager) {
 		super();
 		this.vertex = vertex;
 		this.implementation = implementation;
@@ -80,25 +79,28 @@ public class RemoveVertexTransaction extends Transaction {
 	public void execute(List<Object> resultList) {
 		super.execute(resultList);
 
-		//Unscheduling first
+		// Unscheduling first
 		MapperDAGVertex prev = orderManager.getPrevious(vertex);
 		MapperDAGVertex next = orderManager.getNext(vertex);
-		PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,implementation);
+		PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
+				implementation);
 
-		if(prev != null){
+		if (prev != null) {
 			adder.removePrecedenceEdge(prev, vertex);
 		}
-		
-		if(next != null){
+
+		if (next != null) {
 			adder.removePrecedenceEdge(vertex, next);
 		}
 
-		// Adding precedence between predecessor and sucessor if they don't share data
+		// Adding precedence between predecessor and sucessor if they don't
+		// share data
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
-		if ((prev != null && next != null) && (edges == null || edges.isEmpty())){
+		if ((prev != null && next != null)
+				&& (edges == null || edges.isEmpty())) {
 			adder.addPrecedenceEdge(prev, next);
 		}
-		
+
 		// Removing vertex
 		implementation.removeVertex(vertex);
 		orderManager.remove(vertex, true);
@@ -106,7 +108,7 @@ public class RemoveVertexTransaction extends Transaction {
 
 	@Override
 	public String toString() {
-		return("RemoveVertex(" + vertex.toString() +")");
+		return ("RemoveVertex(" + vertex.toString() + ")");
 	}
 
 }

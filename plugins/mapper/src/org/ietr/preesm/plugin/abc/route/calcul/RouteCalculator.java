@@ -67,31 +67,34 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class RouteCalculator {
 
-	private static Map<MultiCoreArchitecture,RouteCalculator> instances = new HashMap<MultiCoreArchitecture, RouteCalculator>();
-	
+	private static Map<MultiCoreArchitecture, RouteCalculator> instances = new HashMap<MultiCoreArchitecture, RouteCalculator>();
+
 	private MultiCoreArchitecture archi;
 
 	private RoutingTable table = null;
 
 	private RouteStepFactory stepFactory = null;
-	
+
 	private PreesmScenario scenario = null;
 
-	public static RouteCalculator getInstance(MultiCoreArchitecture archi, PreesmScenario scenario){
-		if(instances.get(archi) == null){
-			instances.put(archi, new  RouteCalculator(archi, scenario));
+	public static RouteCalculator getInstance(MultiCoreArchitecture archi,
+			PreesmScenario scenario) {
+		if (instances.get(archi) == null) {
+			instances.put(archi, new RouteCalculator(archi, scenario));
 		}
 		return instances.get(archi);
 	}
-	
-	public static void recalculate(MultiCoreArchitecture archi, PreesmScenario scenario){
-		instances.put(archi, new  RouteCalculator(archi, scenario));
+
+	public static void recalculate(MultiCoreArchitecture archi,
+			PreesmScenario scenario) {
+		instances.put(archi, new RouteCalculator(archi, scenario));
 	}
-	
-	public static void deleteRoutes(MultiCoreArchitecture archi, PreesmScenario scenario){
+
+	public static void deleteRoutes(MultiCoreArchitecture archi,
+			PreesmScenario scenario) {
 		instances.remove(archi);
 	}
-	
+
 	/**
 	 * Constructor from a given architecture
 	 */
@@ -113,7 +116,8 @@ public class RouteCalculator {
 	 * Creating recursively the route steps from the architecture.
 	 */
 	private void createRouteSteps() {
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"creating route steps.");
 
 		for (ArchitectureComponent c : archi
 				.getComponents(ArchitectureComponentType.operator)) {
@@ -180,10 +184,11 @@ public class RouteCalculator {
 	 * Building recursively the routes between the cores.
 	 */
 	private void createRoutes() {
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Initializing routing table.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"Initializing routing table.");
 
-		floydWarshall(table, archi
-				.getComponents(ArchitectureComponentType.operator));
+		floydWarshall(table,
+				archi.getComponents(ArchitectureComponentType.operator));
 	}
 
 	/**
@@ -210,13 +215,16 @@ public class RouteCalculator {
 							Route compoundRoute = new Route(routeSrcK,
 									routeKTgt);
 							if (compoundRoute.isSingleAppearance()) {
-								long averageDataSize = scenario.getSimulationManager().getAverageDataSize();
+								long averageDataSize = scenario
+										.getSimulationManager()
+										.getAverageDataSize();
 								// If this if statement is removed, several
 								// routes become available
-								if (table.getBestRoute(src, tgt) == null){
+								if (table.getBestRoute(src, tgt) == null) {
 									table.addRoute(src, tgt, compoundRoute);
-								}
-								else if(table.getBestRoute(src, tgt).evaluateTransferCost(averageDataSize) > compoundRoute.evaluateTransferCost(averageDataSize)){
+								} else if (table.getBestRoute(src, tgt)
+										.evaluateTransferCost(averageDataSize) > compoundRoute
+										.evaluateTransferCost(averageDataSize)) {
 									table.removeRoutes(src, tgt);
 									table.addRoute(src, tgt, compoundRoute);
 								}
@@ -244,8 +252,7 @@ public class RouteCalculator {
 
 		if (r == null) {
 			AbstractWorkflowLogger.getLogger()
-					.log(
-							Level.SEVERE,
+					.log(Level.SEVERE,
 							"Did not find a route between " + op1 + " and "
 									+ op2 + ".");
 		}

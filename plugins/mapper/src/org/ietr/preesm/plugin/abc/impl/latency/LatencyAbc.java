@@ -106,7 +106,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public LatencyAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType,
+			PreesmScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
 		this.params = params;
@@ -152,13 +153,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 			mdv.getImplementationVertexProperty().setEffectiveComponent(
 					Operator.NO_COMPONENT);
 			implementation.getMapperDAGVertex(mdv.getName())
-					.getImplementationVertexProperty().setEffectiveComponent(
-							Operator.NO_COMPONENT);
+					.getImplementationVertexProperty()
+					.setEffectiveComponent(Operator.NO_COMPONENT);
 			;
 		}
 
-		edgeScheduler = AbstractEdgeSched.getInstance(edgeScheduler
-				.getEdgeSchedType(), orderManager);
+		edgeScheduler = AbstractEdgeSched.getInstance(
+				edgeScheduler.getEdgeSchedType(), orderManager);
 		comRouter.setManagers(implementation, edgeScheduler, orderManager);
 
 		SchedulingOrderIterator iterator = new SchedulingOrderIterator(

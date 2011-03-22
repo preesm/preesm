@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.abc.edgescheduling;
 
 /**
@@ -42,7 +42,7 @@ package org.ietr.preesm.plugin.abc.edgescheduling;
  * @author mpelcat
  */
 public class Interval {
-	
+
 	private long startTime;
 	private long duration;
 	private int totalOrderIndex;
@@ -53,7 +53,7 @@ public class Interval {
 		this.startTime = startTime;
 		this.totalOrderIndex = totalOrderIndex;
 	}
-	
+
 	public long getStartTime() {
 		return startTime;
 	}
@@ -70,6 +70,5 @@ public class Interval {
 	public String toString() {
 		return "<" + startTime + "," + duration + "," + totalOrderIndex + ">";
 	}
-	
-	
+
 }

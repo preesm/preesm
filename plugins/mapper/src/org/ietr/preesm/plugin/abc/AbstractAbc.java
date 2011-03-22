@@ -148,7 +148,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager(archi);
-		
+
 		this.dag = dag;
 
 		// implementation is a duplicate from dag
@@ -180,7 +180,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * and end vertices
 	 */
 	private void populateRelativeConstraint(MapperDAGVertex vertex) {
-		
+
 		Set<MapperDAGVertex> verticesToAssociate = new HashSet<MapperDAGVertex>();
 		verticesToAssociate.add(vertex);
 
@@ -202,8 +202,8 @@ public abstract class AbstractAbc implements IAbc {
 			} else {
 				currentConstraint.merge(newC);
 			}
-			v.getImplementationVertexProperty()
-			.setRelativeConstraint(currentConstraint);
+			v.getImplementationVertexProperty().setRelativeConstraint(
+					currentConstraint);
 		}
 	}
 
@@ -395,16 +395,17 @@ public abstract class AbstractAbc implements IAbc {
 	public List<Operator> getCandidateOperators(MapperDAGVertex vertex) {
 
 		vertex = translateInImplementationVertex(vertex);
-		
+
 		List<Operator> initOperators = null;
 		RelativeConstraint rc = vertex.getImplementationVertexProperty()
 				.getRelativeConstraint();
 
 		if (rc != null) {
 			initOperators = rc.getOperatorsIntersection();
-			
-			if(rc.getVertices().size()>1){
-				int i=0;i++;
+
+			if (rc.getVertices().size() > 1) {
+				int i = 0;
+				i++;
 			}
 		} else {
 			initOperators = vertex.getInitialVertexProperty()
@@ -414,8 +415,7 @@ public abstract class AbstractAbc implements IAbc {
 		if (initOperators.isEmpty()) {
 			AbstractWorkflowLogger.getLogger().log(
 					Level.SEVERE,
-					"Empty operator set for a vertex: "
-							+ vertex.getName()
+					"Empty operator set for a vertex: " + vertex.getName()
 							+ ". Consider relaxing constraints in scenario.");
 		}
 

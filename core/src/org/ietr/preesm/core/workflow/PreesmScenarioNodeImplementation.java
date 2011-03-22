@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -21,26 +24,24 @@ import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
-
 /**
  * @author mpelcat
  * 
- * Implementing the DFTools scenario node behavior for Preesm
+ *         Implementing the DFTools scenario node behavior for Preesm
  */
 public class PreesmScenarioNodeImplementation extends
 		AbstractScenarioImplementation {
-	
+
 	/**
-	 * The scenario node in Preesm outputs three elements: SDF, architecture and scenario
+	 * The scenario node in Preesm outputs three elements: SDF, architecture and
+	 * scenario
 	 */
 	@Override
 	public Map<String, Object> extractData(String path)
 			throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		
+
 		// Retrieving the scenario from the given path
 		PreesmScenario scenario = retrieveScenario(path);
 

@@ -54,8 +54,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 public abstract class AbstractCommunicationRouter {
 
 	/**
-	 * Several ways to simulate a communication depending on which Route
-	 * is taken into account.
+	 * Several ways to simulate a communication depending on which Route is
+	 * taken into account.
 	 */
 	private Map<String, CommunicationRouterImplementer> implementers;
 
@@ -63,12 +63,12 @@ public abstract class AbstractCommunicationRouter {
 	 * DAG with communication vertices
 	 */
 	protected MapperDAG implementation = null;
-	
+
 	/**
 	 * manager of the generated transfers scheduling
 	 */
 	protected IEdgeSched edgeScheduler = null;
-	
+
 	/**
 	 * manager of the vertices order in general
 	 */

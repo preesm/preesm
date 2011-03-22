@@ -36,11 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
-
-import org.ietr.preesm.core.task.TextParameters;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread
@@ -48,8 +47,8 @@ import org.ietr.preesm.core.task.TextParameters;
  * @author pmenuet
  * @author mpelcat
  */
-public class PFastAlgoParameters extends SchedulingParameters {
-	
+public class PFastAlgoParameters {
+
 	/**
 	 * This variable is the one which fix the number of Nodes necessary for each
 	 * processor to execute probabilistic jump locally(local refinement). The
@@ -87,37 +86,34 @@ public class PFastAlgoParameters extends SchedulingParameters {
 	 * Constructors
 	 */
 
-	public PFastAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
-		
-		this.nodesMin = textParameters.getIntVariable("nodesMin");
-		this.procNumber = textParameters.getIntVariable("procNumber");
-		this.displaySolutions = textParameters.getBooleanVariable("displaySolutions");
-		if (textParameters.getIntVariable("fastTime") > 0) {
-			this.fastTime = textParameters
-					.getIntVariable("fastTime");
+	public PFastAlgoParameters(Map<String, String> textParameters) {
+
+		this.nodesMin = Integer.valueOf(textParameters.get("nodesMin"));
+		this.procNumber = Integer.valueOf(textParameters.get("procNumber"));
+		this.displaySolutions = Boolean.valueOf(textParameters
+				.get("displaySolutions"));
+		if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
+			this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
 		}
-		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
-			this.fastLocalSearchTime = textParameters
-					.getIntVariable("fastLocalSearchTime");
+		if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
+			this.fastLocalSearchTime = Integer.valueOf(textParameters
+					.get("fastLocalSearchTime"));
 		}
-		if (textParameters.getIntVariable("fastNumber") != 0) {
-			this.fastNumber = textParameters.getIntVariable("fastNumber");
+		if (Integer.valueOf(textParameters.get("fastNumber")) != 0) {
+			this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
 		}
-		
+
 		AbstractWorkflowLogger
-		.getLogger()
-		.log(
-				Level.INFO,
-				"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+				.getLogger()
+				.log(Level.INFO,
+						"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 
 	}
 
-	public PFastAlgoParameters(int fastNumber, int fastTime,int fastLocalSearchTime, boolean displaySolutions,
-			int nodesmin, int procNumber) {
-		// DAG is not exported now so DAGExportPath = null
-		super((String)null);
-		
+	public PFastAlgoParameters(int fastNumber, int fastTime,
+			int fastLocalSearchTime, boolean displaySolutions, int nodesmin,
+			int procNumber) {
+
 		this.nodesMin = nodesmin;
 		this.procNumber = procNumber;
 		this.displaySolutions = displaySolutions;

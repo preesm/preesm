@@ -40,19 +40,18 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
 
 /**
- * Vertex corresponding to sending a data.
- * This vertex is mapped on the sender of 
- * the corresponding route step.
+ * Vertex corresponding to sending a data. This vertex is mapped on the sender
+ * of the corresponding route step.
  * 
  * @author mpelcat
  */
 public class SendVertex extends TransferVertex {
 
 	public SendVertex(String id, MapperDAG base) {
-		super(id, base,null,null,0,0);
+		super(id, base, null, null, 0, 0);
 	}
-	
-	public DAGDefaultVertexPropertyType getNbRepeat(){
+
+	public DAGDefaultVertexPropertyType getNbRepeat() {
 		return new DAGDefaultVertexPropertyType(1);
 	}
 

@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -56,9 +56,9 @@ import org.w3c.dom.NodeList;
  */
 public class GMLMapperDAGImporter extends
 		GMLImporter<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
-	
+
 	MapperEdgeFactory localFactory = null;
-	
+
 	/**
 	 * Constructs a new DAG importer with the specified factories
 	 */
@@ -76,14 +76,15 @@ public class GMLMapperDAGImporter extends
 
 		DAGEdge edge = parentGraph.addEdge(vertexSource, vertexTarget);
 
-		parseKeys(edgeElt, edge.getPropertyBean(), "edge") ;
+		parseKeys(edgeElt, edge.getPropertyBean(), "edge");
 	}
 
 	@Override
 	public MapperDAG parseGraph(Element graphElt) {
-		MapperDAG graph = new MapperDAG(localFactory,null);
+		MapperDAG graph = new MapperDAG(localFactory, null);
 		parseKeys(graphElt, graph.getPropertyBean(), "graph");
-		graph.setReferenceSdfGraph((SDFGraph)graph.getPropertyBean().getValue(ImplementationPropertyNames.Graph_SdfReferenceGraph));
+		graph.setReferenceSdfGraph((SDFGraph) graph.getPropertyBean().getValue(
+				ImplementationPropertyNames.Graph_SdfReferenceGraph));
 		NodeList childList = graphElt.getChildNodes();
 		for (int i = 0; i < childList.getLength(); i++) {
 			if (childList.item(i).getNodeName().equals("node")) {
@@ -114,6 +115,5 @@ public class GMLMapperDAGImporter extends
 		parseKeys(vertexElt, vertex.getPropertyBean(), "vertex");
 		return vertex;
 	}
-	
 
 }

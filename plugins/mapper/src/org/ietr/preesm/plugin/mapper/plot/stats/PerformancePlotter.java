@@ -147,16 +147,15 @@ public class PerformancePlotter extends ApplicationFrame {
 		final NumberAxis xAxis = new NumberAxis("speedups");
 
 		xAxis.setAutoRangeIncludesZero(false);
-		
+
 		XYSplineRenderer renderer = new XYSplineRenderer();
-		final XYPlot subplot = new XYPlot(this.speedups, null, xAxis,
-				renderer);
-		
+		final XYPlot subplot = new XYPlot(this.speedups, null, xAxis, renderer);
+
 		subplot.setBackgroundPaint(Color.white);
 		subplot.setDomainGridlinePaint(Color.lightGray);
 		subplot.setRangeGridlinePaint(Color.lightGray);
 		plot.add(subplot);
-		
+
 		plot.setForegroundAlpha(0.5f);
 
 		final JFreeChart chart = new JFreeChart(title, plot);
@@ -194,7 +193,6 @@ public class PerformancePlotter extends ApplicationFrame {
 	public void setData(long workLength, long spanLength, long resultTime,
 			int resultNbCores, int resultNbMainCores) {
 
-		
 		double absoluteBestSpeedup = ((double) workLength)
 				/ ((double) spanLength);
 		int maxCoreNumber = (int) Math.ceil(absoluteBestSpeedup) + 10;
@@ -220,7 +218,7 @@ public class PerformancePlotter extends ApplicationFrame {
 		}
 
 		this.speedups.addSeries("Maximum achievable speedups", bestSpeedups);
-		
+
 		// Creating curve for best speedups
 		// The speedup is limited y the span length
 		double[][] reachableSpeedups = new double[2][maxCoreNumber];

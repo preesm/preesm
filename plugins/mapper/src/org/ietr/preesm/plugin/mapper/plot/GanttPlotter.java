@@ -81,12 +81,11 @@ import org.jfree.ui.RefineryUtilities;
 public class GanttPlotter extends ApplicationFrame implements
 		IImplementationPlotter {
 
-
 	private static final long serialVersionUID = 1L;
-	
+
 	JFreeChart chart = null;
 	ChartPanel chartPanel = null;
-	
+
 	/**
 	 * Creates a chart.
 	 * 
@@ -125,7 +124,7 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		plot.setDrawingSupplier(d);
 		MyGanttRenderer ren = new MyGanttRenderer();
-		//ren.setRepaintedListener(new RefreshRepaintedListener(this));
+		// ren.setRepaintedListener(new RefreshRepaintedListener(this));
 
 		ren.setSeriesItemLabelsVisible(0, false);
 		ren.setSeriesVisibleInLegend(0, false);
@@ -156,8 +155,7 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		// Creating the Operator lines
 		List<ArchitectureComponent> cmps = archi.getComponents();
-		Collections.sort(cmps,
-				new ArchitectureComponent.CmpComparator());
+		Collections.sort(cmps, new ArchitectureComponent.CmpComparator());
 
 		for (ArchitectureComponent cmp : cmps) {
 			currenttask = new Task(cmp.getName(), new SimpleTimePeriod(0, 1));
@@ -247,7 +245,7 @@ public class GanttPlotter extends ApplicationFrame implements
 		parent.setLayout(new FillLayout());
 		Frame frame = SWT_AWT.new_Frame(composite);
 		frame.add(getContentPane());
-		
+
 		MouseClickedListener listener = new MouseClickedListener(frame);
 		chartPanel.addChartMouseListener(listener);
 		chartPanel.addMouseMotionListener(listener);
@@ -265,7 +263,6 @@ public class GanttPlotter extends ApplicationFrame implements
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		chartPanel.setMouseZoomable(true, true);
 		setContentPane(chartPanel);
-		
 
 	}
 

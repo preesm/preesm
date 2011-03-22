@@ -88,9 +88,9 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 
 		// Displays the DAG
 		/*
-			SDFAdapterDemo applet2 = new SDFAdapterDemo();
-			applet2.init(sdfGraph);
-		*/
+		 * SDFAdapterDemo applet2 = new SDFAdapterDemo();
+		 * applet2.init(sdfGraph);
+		 */
 
 		return sdfGraph;
 	}

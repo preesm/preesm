@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.bestcost;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -56,12 +56,13 @@ public class BestCostEditorInput implements IEditorInput {
 		this.plotter = plotter;
 	}
 
-	
 	public BestCostPlotter getPlotter() {
 		return plotter;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IEditorInput#exists()
 	 */
 	@Override
@@ -70,16 +71,21 @@ public class BestCostEditorInput implements IEditorInput {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
 	 */
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
+		ImageDescriptor img = Activator
+				.getImageDescriptor("icons/preesm2mini.PNG");
 		return img;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IEditorInput#getName()
 	 */
 	@Override
@@ -87,7 +93,9 @@ public class BestCostEditorInput implements IEditorInput {
 		return "Best found cost";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IEditorInput#getPersistable()
 	 */
 	@Override
@@ -96,7 +104,9 @@ public class BestCostEditorInput implements IEditorInput {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
 	 */
 	@Override
@@ -104,10 +114,12 @@ public class BestCostEditorInput implements IEditorInput {
 		return "Best Latency";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	@SuppressWarnings("rawtypes") 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		// TODO Auto-generated method stub

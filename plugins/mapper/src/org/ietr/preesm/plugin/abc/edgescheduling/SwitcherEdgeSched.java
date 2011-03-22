@@ -71,31 +71,30 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 			MapperDAGVertex target) {
 
 		ArchitectureComponent component = vertex
-					.getImplementationVertexProperty().getEffectiveComponent();
-			// intervalFinder.displayCurrentSchedule(vertex, source);
-			Interval largestInterval = intervalFinder.findLargestFreeInterval(
-					component, source, target);
+				.getImplementationVertexProperty().getEffectiveComponent();
+		// intervalFinder.displayCurrentSchedule(vertex, source);
+		Interval largestInterval = intervalFinder.findLargestFreeInterval(
+				component, source, target);
 
-			if (largestInterval.getDuration() > 0) {
-				orderManager.insertAtIndex(largestInterval
-						.getTotalOrderIndex(), vertex);
+		if (largestInterval.getDuration() > 0) {
+			orderManager.insertAtIndex(largestInterval.getTotalOrderIndex(),
+					vertex);
+		} else {
+			int sourceIndex = intervalFinder.getOrderManager().totalIndexOf(
+					source) + 1;
+			int targetIndex = intervalFinder.getOrderManager().totalIndexOf(
+					target);
+
+			if (targetIndex - sourceIndex > 0) {
+				Random r = new Random();
+				int randomVal = Math.abs(r.nextInt());
+				randomVal = randomVal % (targetIndex - sourceIndex);
+				orderManager.insertAtIndex(sourceIndex + randomVal, vertex);
 			} else {
-				int sourceIndex = intervalFinder.getOrderManager()
-						.totalIndexOf(source) + 1;
-				int targetIndex = intervalFinder.getOrderManager()
-						.totalIndexOf(target);
-
-				if (targetIndex - sourceIndex > 0) {
-					Random r = new Random();
-					int randomVal = Math.abs(r.nextInt());
-					randomVal = randomVal % (targetIndex - sourceIndex);
-					orderManager.insertAtIndex(sourceIndex + randomVal,
-							vertex);
-				} else {
-					orderManager.insertAfter(source, vertex);
-				}
+				orderManager.insertAfter(source, vertex);
 			}
 		}
+	}
 
 	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Switcher;

@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -51,9 +54,6 @@ import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -88,24 +88,31 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 	}
 
 	@Override
-	public void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm)
-			throws PreesmException {
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = super.getDefaultParameters();
 
+		parameters.put("iterationNr", "0");
+		parameters.put("iterationPeriod", "0");
+		parameters.put("listType", "optimised");
+		return parameters;
 	}
 
-	/**
-	 * Function called while running the plugin
-	 */
 	@Override
-	public TaskResult transform(SDFGraph algorithm,
-			MultiCoreArchitecture architecture, TextParameters textParameters,
-			PreesmScenario scenario, IProgressMonitor monitor)
-			throws PreesmException {
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+				.get("architecture");
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// The graph may be repeated a predefined number of times
 		// with a predefined period
-		int iterationNr = textParameters.getIntVariable("iterationNr");
-		int iterationPeriod = textParameters.getIntVariable("iterationPeriod");
+		int iterationNr = Integer.valueOf(parameters.get("iterationNr"));
+		int iterationPeriod = Integer
+				.valueOf(parameters.get("iterationPeriod"));
 
 		// Repeating the graph to simulate several calls. Repetitions are
 		// delayed through
@@ -140,11 +147,9 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			}
 		}
 
-		super.transform(algorithm, architecture, textParameters, scenario,
-				monitor);
+		super.execute(inputs, parameters, monitor, nodeName);
 
-		TaskResult result = new TaskResult();
-		AbcParameters abcParameters = new AbcParameters(textParameters);
+		AbcParameters abcParameters = new AbcParameters(parameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
@@ -238,14 +243,15 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				architecture, abcParameters.getSimulatorType()
 						.getTaskSchedType(), scenario);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
+		AbstractWorkflowLogger.getLogger()
+				.log(Level.INFO, "Dynamic Scheduling");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
 		simu2.setTaskScheduler(new SimpleTaskSched());
 
 		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(
-				simu.getTotalOrder(), textParameters);
+				simu.getTotalOrder(), parameters);
 		dynamicSched.mapVertices(simu2);
 
 		simu2.retrieveTotalOrder();
@@ -257,17 +263,18 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 					abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
-			throw (new PreesmException(e.getMessage()));
+			throw (new WorkflowException(e.getMessage()));
 		}
 
-		result.setDAG(dag);
-		result.setAbc(simu2);
+		outputs.put("DAG", dag);
+		outputs.put("ABC", simu2);
 
 		super.clean(architecture, scenario);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"End of Dynamic Scheduling");
 
-		return result;
+		return outputs;
 	}
 
 }

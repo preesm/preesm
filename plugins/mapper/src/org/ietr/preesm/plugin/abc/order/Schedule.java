@@ -233,14 +233,12 @@ public class Schedule {
 		int index = elementList.indexOf(v);
 
 		// Searching in synchronized vertices
-		if(index != -1){
+		if (index != -1) {
 			return v;
-		}
-		else if (v instanceof MapperDAGVertex) {
+		} else if (v instanceof MapperDAGVertex) {
 			for (IScheduleElement sElt : elementList) {
 				if (sElt instanceof SynchronizedVertices
-						&& ((SynchronizedVertices) sElt).vertices()
-								.contains(v)) {
+						&& ((SynchronizedVertices) sElt).vertices().contains(v)) {
 					return sElt;
 				}
 			}
@@ -279,8 +277,8 @@ public class Schedule {
 		for (IScheduleElement elt : elementList) {
 			if (elt instanceof MapperDAGVertex) {
 				MapperDAGVertex v = (MapperDAGVertex) elt;
-				VertexOrderList.OrderProperty op = order.new OrderProperty(v
-						.getName(), indexOf(v));
+				VertexOrderList.OrderProperty op = order.new OrderProperty(
+						v.getName(), indexOf(v));
 				order.addLast(op);
 			} else if (elt instanceof SynchronizedVertices) {
 				for (MapperDAGVertex v : ((SynchronizedVertices) elt)

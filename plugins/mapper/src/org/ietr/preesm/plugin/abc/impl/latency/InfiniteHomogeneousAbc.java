@@ -80,13 +80,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		this.getType().setTaskSchedType(taskSchedType);
 
 		if (archi.getMainMedium() != null) {
-			AbstractWorkflowLogger.getLogger().info("Infinite homogeneous simulation");
+			AbstractWorkflowLogger.getLogger().info(
+					"Infinite homogeneous simulation");
 		} else {
 
 			AbstractWorkflowLogger
 					.getLogger()
-					.info(
-							"Current architecture has no main medium. infinite homogeneous simulator will use default speed");
+					.info("Current architecture has no main medium. infinite homogeneous simulator will use default speed");
 		}
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
@@ -98,11 +98,11 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		orderManager.resetTotalOrder();
 		TLevelIterator iterator = new TLevelIterator(implementation, true);
 
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			MapperDAGVertex v = iterator.next();
 			orderManager.addLast(v);
 		}
-		
+
 		retrieveTotalOrder();
 	}
 
@@ -136,7 +136,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
-			
+
 			if (updateRank) {
 				nTimeKeeper.updateTLevels();
 				taskScheduler.insertVertex(vertex);
@@ -152,7 +152,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 		// unmapping a vertex resets the cost of the current vertex
 		// and its edges
-		
+
 		// Keeps the total order
 		orderManager.remove(vertex, false);
 
@@ -168,7 +168,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 */
 	@Override
 	public final void updateTimings() {
-		//timeKeeper.updateTandBLevels();
+		// timeKeeper.updateTandBLevels();
 		nTimeKeeper.updateTandBLevels();
 	}
 

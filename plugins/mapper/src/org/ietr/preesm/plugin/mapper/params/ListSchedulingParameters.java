@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
-import org.ietr.preesm.core.task.TextParameters;
+import java.util.Map;
 
 /**
  * Parameters for list scheduling
@@ -44,10 +44,9 @@ import org.ietr.preesm.core.task.TextParameters;
  * @author pmenuet
  * @author mpelcat
  */
-public class ListSchedulingParameters extends SchedulingParameters {
+public class ListSchedulingParameters {
 
-	public ListSchedulingParameters(TextParameters textParameters) {
-		super(textParameters);
+	public ListSchedulingParameters(Map<String, String> textParameters) {
 
 	}
 

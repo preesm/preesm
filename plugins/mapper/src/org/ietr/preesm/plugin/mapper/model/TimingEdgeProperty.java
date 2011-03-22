@@ -37,8 +37,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model;
 
 /**
- * Property added to a DAG edge to give its timing properties.
- * Only used within ABCs.
+ * Property added to a DAG edge to give its timing properties. Only used within
+ * ABCs.
  * 
  * @author mpelcat
  */

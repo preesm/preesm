@@ -38,11 +38,10 @@ package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.List;
 
-
 /**
- * Transactions are used because these actions can be created and stored
- * while going through a graph and then executed altogether afterwards in the
- * right order.
+ * Transactions are used because these actions can be created and stored while
+ * going through a graph and then executed altogether afterwards in the right
+ * order.
  * 
  * @author mpelcat
  */
@@ -51,12 +50,11 @@ public abstract class Transaction {
 	public Transaction() {
 		super();
 	}
-	
-	public void execute(List<Object> resultList){
+
+	public void execute(List<Object> resultList) {
 	}
 
 	@Override
 	public abstract String toString();
-	
-	
+
 }

@@ -36,11 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.params;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
-
-import org.ietr.preesm.core.task.TextParameters;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm
@@ -49,7 +48,7 @@ import org.ietr.preesm.core.task.TextParameters;
  * @author mpelcat
  */
 
-public class FastAlgoParameters extends SchedulingParameters {
+public class FastAlgoParameters {
 
 	/**
 	 * true if we need to display the intermediate solutions
@@ -66,24 +65,21 @@ public class FastAlgoParameters extends SchedulingParameters {
 	 */
 	private int fastLocalSearchTime = 10;
 
-	public FastAlgoParameters(TextParameters textParameters) {
-		super(textParameters);
+	public FastAlgoParameters(Map<String, String> textParameters) {
 
-		this.displaySolutions = textParameters
-				.getBooleanVariable("displaySolutions");
-		if (textParameters.getIntVariable("fastTime") > 0) {
-			this.fastTime = textParameters
-					.getIntVariable("fastTime");
+		this.displaySolutions = Boolean.valueOf(textParameters
+				.get("displaySolutions"));
+		if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
+			this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
 		}
-		if (textParameters.getIntVariable("fastLocalSearchTime") > 0) {
-			this.fastLocalSearchTime = textParameters
-					.getIntVariable("fastLocalSearchTime");
+		if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
+			this.fastLocalSearchTime = Integer.valueOf(textParameters
+					.get("fastLocalSearchTime"));
 		}
 
 		AbstractWorkflowLogger
 				.getLogger()
-				.log(
-						Level.INFO,
+				.log(Level.INFO,
 						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");
 	}
 
@@ -93,11 +89,9 @@ public class FastAlgoParameters extends SchedulingParameters {
 	 * 
 	 */
 
-	public FastAlgoParameters(int fastTime,int fastLocalSearchTime,
+	public FastAlgoParameters(int fastTime, int fastLocalSearchTime,
 			boolean displaySolutions) {
-		// DAG is not exported now so DAGExportPath = null
-		super((String)null);
-		
+
 		this.displaySolutions = displaySolutions;
 		this.fastTime = fastTime;
 		this.fastLocalSearchTime = fastLocalSearchTime;

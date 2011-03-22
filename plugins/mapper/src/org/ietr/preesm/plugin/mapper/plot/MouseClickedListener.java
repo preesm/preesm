@@ -12,16 +12,17 @@ import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 
 /**
- * Listening for mouse events to refresh correctly the awt display
- * when Gantt chart is changed.
+ * Listening for mouse events to refresh correctly the awt display when Gantt
+ * chart is changed.
  * 
  * @author mpelcat
  */
-public class MouseClickedListener implements MouseMotionListener,ChartMouseListener, MouseListener {
+public class MouseClickedListener implements MouseMotionListener,
+		ChartMouseListener, MouseListener {
 
 	private Frame frame;
 	boolean dragged = false;
-	
+
 	public MouseClickedListener(Frame frame) {
 		this.frame = frame;
 	}
@@ -61,11 +62,11 @@ public class MouseClickedListener implements MouseMotionListener,ChartMouseListe
 
 	@Override
 	public void mouseReleased(java.awt.event.MouseEvent e) {
-		if(dragged){
+		if (dragged) {
 			Dimension d = frame.getSize();
-			frame.setSize(new Dimension(1,1));
+			frame.setSize(new Dimension(1, 1));
 			frame.setSize(d);
-			
+
 			dragged = false;
 		}
 	}

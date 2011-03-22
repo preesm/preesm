@@ -38,11 +38,9 @@ package org.ietr.preesm.plugin.exportXml;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -52,13 +50,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IExporter;
-import org.ietr.preesm.core.task.TextParameters;
 import org.sdf4j.exporter.GMLSDFExporter;
-import org.sdf4j.model.AbstractGraph;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
 import org.sdf4j.model.sdf.SDFGraph;
 
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
@@ -73,7 +65,8 @@ public class SDF4JGMLExporter extends AbstractTaskImplementation {
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		GMLSDFExporter exporter = new GMLSDFExporter();
 		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		if (xmlPath.getFileExtension() == null || !xmlPath.getFileExtension().equals("graphml")) {
+		if (xmlPath.getFileExtension() == null
+				|| !xmlPath.getFileExtension().equals("graphml")) {
 			xmlPath = xmlPath.addFileExtension("graphml");
 		}
 

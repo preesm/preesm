@@ -166,8 +166,7 @@ public class PFastAlgorithm extends Observable {
 		if (nbsubsets == 0) {
 			AbstractWorkflowLogger
 					.getLogger()
-					.log(
-							Level.SEVERE,
+					.log(Level.SEVERE,
 							"Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
 		}
 
@@ -309,8 +308,9 @@ public class PFastAlgorithm extends Observable {
 				scenario);
 		Set<Set<String>> subSet = new HashSet<Set<String>>();
 
-		FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams
-				.getFastTime(), pFastParams.getFastLocalSearchTime(),
+		FastAlgoParameters fastParams = new FastAlgoParameters(
+				pFastParams.getFastTime(),
+				pFastParams.getFastLocalSearchTime(),
 				pFastParams.isDisplaySolutions());
 
 		// if only one operator the fast must be used

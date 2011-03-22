@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,10 +50,11 @@ import org.ietr.preesm.plugin.mapper.plot.stats.overview.OverviewPage;
  * 
  * @author mpelcat
  */
-public class StatEditor extends SharedHeaderFormEditor implements IPropertyListener {
+public class StatEditor extends SharedHeaderFormEditor implements
+		IPropertyListener {
 
 	private StatGenerator statGen = null;
-	
+
 	public StatEditor() {
 		super();
 	}
@@ -65,22 +66,21 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 
-			setSite(site);
-			setInput(input);
-			setPartName(input.getName());
-			
-			if(input instanceof StatEditorInput){
-				StatEditorInput statinput = (StatEditorInput)input;
-				this.statGen = new StatGenerator(statinput.getAbc(), statinput.getScenario(),
-						statinput.getParams());
-			}
-			/*
-		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases.  So
-			// just close it.
-			PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
-			this.getEditorSite().getPage().closeEditor(this, false);
-		} */
+		setSite(site);
+		setInput(input);
+		setPartName(input.getName());
+
+		if (input instanceof StatEditorInput) {
+			StatEditorInput statinput = (StatEditorInput) input;
+			this.statGen = new StatGenerator(statinput.getAbc(),
+					statinput.getScenario(), statinput.getParams());
+		}
+		/*
+		 * } catch (Exception e) { // Editor might not exist anymore if
+		 * switching databases. So // just close it.
+		 * PreesmLogger.getLogger().log(Level.SEVERE,e.getMessage());
+		 * this.getEditorSite().getPage().closeEditor(this, false); }
+		 */
 	}
 
 	/**
@@ -88,13 +88,15 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	 */
 	@Override
 	protected void addPages() {
-		//this.activateSite();
-		IFormPage ganttPage = new GanttPage(statGen,this, "Gantt","Gantt");
-		IFormPage overviewPage = new OverviewPage(statGen,this, "Loads","Loads");
+		// this.activateSite();
+		IFormPage ganttPage = new GanttPage(statGen, this, "Gantt", "Gantt");
+		IFormPage overviewPage = new OverviewPage(statGen, this, "Loads",
+				"Loads");
 		overviewPage.addPropertyListener(this);
-		PerformancePage performancePage = new PerformancePage(statGen,this, "Performance","Work, Span and Achieved Speedup");
+		PerformancePage performancePage = new PerformancePage(statGen, this,
+				"Performance", "Work, Span and Achieved Speedup");
 		performancePage.addPropertyListener(this);
-		
+
 		try {
 			addPage(ganttPage);
 			addPage(overviewPage);
@@ -104,7 +106,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public boolean isDirty() {
 		return false;
@@ -113,7 +115,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	@Override
 	public void doSaveAs() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -125,12 +127,12 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void propertyChanged(Object source, int propId) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

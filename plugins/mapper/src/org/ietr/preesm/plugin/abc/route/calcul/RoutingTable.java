@@ -96,9 +96,9 @@ public class RoutingTable {
 	/**
 	 * A route transfer comparator that never returns 0.
 	 */
-	private class RouteComparator implements Comparator<Route>{
+	private class RouteComparator implements Comparator<Route> {
 		private long transferSize = 0;
-		
+
 		public RouteComparator(long transferSize) {
 			super();
 			this.transferSize = transferSize;
@@ -106,15 +106,16 @@ public class RoutingTable {
 
 		@Override
 		public int compare(Route o1, Route o2) {
-			int difference = (int)(o1.evaluateTransferCost(transferSize) - o2.evaluateTransferCost(transferSize));
-			if(difference == 0){
+			int difference = (int) (o1.evaluateTransferCost(transferSize) - o2
+					.evaluateTransferCost(transferSize));
+			if (difference == 0) {
 				difference = 1;
 			}
 			return difference;
 		}
-		
+
 	}
-	
+
 	/**
 	 * A list of routes ordered in inverse order of transfer cosr
 	 */
@@ -174,7 +175,7 @@ public class RoutingTable {
 			}
 		}
 
-		if (key != null){
+		if (key != null) {
 			table.get(key).clear();
 		}
 	}
@@ -193,7 +194,8 @@ public class RoutingTable {
 		if (key != null) {
 			list = table.get(key);
 		} else {
-			list = new RouteList(scenario.getSimulationManager().getAverageDataSize());
+			list = new RouteList(scenario.getSimulationManager()
+					.getAverageDataSize());
 			table.put(new OperatorCouple(op1, op2), list);
 		}
 		list.add(route);

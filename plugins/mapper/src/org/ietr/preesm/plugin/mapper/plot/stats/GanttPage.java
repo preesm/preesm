@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import org.eclipse.ui.forms.IManagedForm;
@@ -51,11 +51,11 @@ import org.ietr.preesm.plugin.abc.IAbc;
 public class GanttPage extends FormPage {
 
 	private StatGenerator statGen = null;
-	
 
-	public GanttPage(StatGenerator statGen, FormEditor editor, String id, String title) {
+	public GanttPage(StatGenerator statGen, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
-		
+
 		this.statGen = statGen;
 	}
 
@@ -64,7 +64,7 @@ public class GanttPage extends FormPage {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		
+
 		ScrolledForm form = managedForm.getForm();
 		ColumnLayout layout = new ColumnLayout();
 		layout.topMargin = 0;
@@ -76,13 +76,12 @@ public class GanttPage extends FormPage {
 		layout.maxNumColumns = 4;
 		layout.minNumColumns = 1;
 		form.getBody().setLayout(layout);
-		
+
 		IAbc abc = statGen.getAbc();
 
 		abc.plotImplementation(form.getBody());
-		
-	}
 
+	}
 
 	public StatGenerator getStatGen() {
 		return statGen;

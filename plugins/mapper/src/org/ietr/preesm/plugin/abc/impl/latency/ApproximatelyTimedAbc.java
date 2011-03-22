@@ -63,13 +63,14 @@ import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 public class ApproximatelyTimedAbc extends LatencyAbc {
 
 	List<Integer> types = null;
-	
+
 	/**
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been mapped yet.
 	 */
 	public ApproximatelyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, AbcType abcType,
+			PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 
 		types = new ArrayList<Integer>();
@@ -84,7 +85,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		super.fireNewMappedVertex(vertex,updateRank);
+		super.fireNewMappedVertex(vertex, updateRank);
 
 		Operator effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
@@ -92,7 +93,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		if (effectiveOp != Operator.NO_COMPONENT) {
 
 			new PrecedenceEdgeAdder(orderManager, implementation)
-			.scheduleVertex(vertex);
+					.scheduleVertex(vertex);
 			comRouter.routeNewVertex(vertex, types);
 		}
 	}
@@ -105,8 +106,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 		edge.getTimingEdgeProperty().setCost(0);
 
-		//Setting edge costs for special types
-		//super.setEdgeCost(edge);
+		// Setting edge costs for special types
+		// super.setEdgeCost(edge);
 
 	}
 

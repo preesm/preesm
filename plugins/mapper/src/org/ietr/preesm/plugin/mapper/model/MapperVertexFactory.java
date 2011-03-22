@@ -53,6 +53,4 @@ public class MapperVertexFactory extends DAGVertexFactory {
 		return result;
 	}
 
-
-
 }

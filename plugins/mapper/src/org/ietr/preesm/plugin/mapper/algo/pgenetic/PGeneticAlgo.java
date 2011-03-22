@@ -94,7 +94,7 @@ public class PGeneticAlgo extends Observable {
 				difference = 1;
 			}
 
-			return (int)difference;
+			return (int) difference;
 		}
 
 		/**
@@ -131,8 +131,9 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, PreesmScenario scenario, AbcParameters abcParams,
-			int populationSize, int generationNumber, int processorNumber) {
+			MultiCoreArchitecture archi, PreesmScenario scenario,
+			AbcParameters abcParams, int populationSize, int generationNumber,
+			int processorNumber) {
 
 		// variables
 		processorNumber = processorNumber - 1;
@@ -140,7 +141,7 @@ public class PGeneticAlgo extends Observable {
 		// Convert list of MapperDAG into a List of Chromosomes
 		StandardGeneticAlgorithm algorithm = new StandardGeneticAlgorithm();
 		List<Chromosome> population = algorithm.convertListDAGtoListChromo(
-				populationDAG, archi,scenario);
+				populationDAG, archi, scenario);
 
 		// List which allow to save all the population (of all Thread)
 		List<List<Chromosome>> listMap = new ArrayList<List<Chromosome>>();
@@ -155,7 +156,7 @@ public class PGeneticAlgo extends Observable {
 		if (processorNumber == 0) {
 			StandardGeneticAlgorithm geneticAlgorithm = new StandardGeneticAlgorithm();
 			result = geneticAlgorithm.runGeneticAlgo("genetic algorithm",
-					populationDAG, archi,scenario, abcParams, populationSize,
+					populationDAG, archi, scenario, abcParams, populationSize,
 					generationNumber, false);
 			List<Chromosome> result2 = new ArrayList<Chromosome>();
 			result2.addAll(result);
@@ -166,7 +167,7 @@ public class PGeneticAlgo extends Observable {
 		final BestCostPlotter costPlotter = new BestCostPlotter(
 				"Parallel genetic Algorithm", null);
 		costPlotter.setSUBPLOT_COUNT(1);
-		//demo.display();
+		// demo.display();
 		BestCostEditor.createEditor(costPlotter);
 		this.addObserver(costPlotter);
 
@@ -214,8 +215,10 @@ public class PGeneticAlgo extends Observable {
 
 			// determine the number of generation we need for the threads this
 			// time
-			int generationNumberTemp = Math.max(((Double) Math
-					.ceil(((double) generationNumber)// / ((double) j)
+			int generationNumberTemp = Math.max(
+					((Double) Math.ceil(((double) generationNumber)// /
+																	// ((double)
+																	// j)
 							/ ((double) processorNumber))).intValue(), 1);
 
 			// create ExecutorService to manage threads
@@ -228,9 +231,9 @@ public class PGeneticAlgo extends Observable {
 				String name = String.format("thread%d", i);
 
 				// step 9/11
-				PGeneticAlgoCallable thread = new PGeneticAlgoCallable(archi,scenario,
-						generationNumberTemp, iter.next(), populationSize,
-						abcParams, name);
+				PGeneticAlgoCallable thread = new PGeneticAlgoCallable(archi,
+						scenario, generationNumberTemp, iter.next(),
+						populationSize, abcParams, name);
 				// Add the thread in the pool for the executor
 				FutureTask<List<Chromosome>> task = new FutureTask<List<Chromosome>>(
 						thread);

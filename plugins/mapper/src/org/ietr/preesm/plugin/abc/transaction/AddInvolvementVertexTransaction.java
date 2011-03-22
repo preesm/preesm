@@ -152,31 +152,31 @@ public class AddInvolvementVertexTransaction extends Transaction {
 						.clone());
 				newInEdge.getTimingEdgeProperty().setCost(0);
 
-				MapperDAGVertex receiverVertex = currentTarget; 
-				do{
-					for(MapperDAGVertex next : receiverVertex.getSuccessorSet(false)){
-						if(next != null){
+				MapperDAGVertex receiverVertex = currentTarget;
+				do {
+					for (MapperDAGVertex next : receiverVertex
+							.getSuccessorSet(false)) {
+						if (next != null) {
 							receiverVertex = next;
 						}
 					}
-				}
-				while(receiverVertex instanceof TransferVertex);
+				} while (receiverVertex instanceof TransferVertex);
 
 				MapperDAGEdge newoutEdge = (MapperDAGEdge) implementation
 						.addEdge(iVertex, receiverVertex);
 				newoutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
 						.clone());
 				newoutEdge.getTimingEdgeProperty().setCost(0);
-				
+
 				// TODO: Look at switching possibilities
-				/*if (false) {
-					TaskSwitcher taskSwitcher = new TaskSwitcher();
-					taskSwitcher.setOrderManager(orderManager);
-					taskSwitcher.insertVertexBefore(currentTarget, iVertex);
-				} else*/
-					orderManager.insertBefore(currentTarget, iVertex);
-				
-				
+				/*
+				 * if (false) { TaskSwitcher taskSwitcher = new TaskSwitcher();
+				 * taskSwitcher.setOrderManager(orderManager);
+				 * taskSwitcher.insertVertexBefore(currentTarget, iVertex); }
+				 * else
+				 */
+				orderManager.insertBefore(currentTarget, iVertex);
+
 			} else {
 				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation
 						.addEdge(iVertex, currentTarget);

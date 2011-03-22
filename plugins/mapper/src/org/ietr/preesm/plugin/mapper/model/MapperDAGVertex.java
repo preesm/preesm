@@ -100,17 +100,17 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		MapperDAGVertex result = null;
 
 		if (this instanceof OverheadVertex) {
-			result = new OverheadVertex(this.getId(), (MapperDAG) this
-					.getBase());
+			result = new OverheadVertex(this.getId(),
+					(MapperDAG) this.getBase());
 		} else if (this instanceof SendVertex) {
 			result = new SendVertex(this.getId(), (MapperDAG) this.getBase());
 		} else if (this instanceof ReceiveVertex) {
 			result = new ReceiveVertex(this.getId(), (MapperDAG) this.getBase());
 		} else if (this instanceof TransferVertex) {
 			TransferVertex t = (TransferVertex) this;
-			result = new TransferVertex(this.getId(), (MapperDAG) this
-					.getBase(), t.getSource(), t.getTarget(), t
-					.getRouteStepIndex(), t.getNodeIndex());
+			result = new TransferVertex(this.getId(),
+					(MapperDAG) this.getBase(), t.getSource(), t.getTarget(),
+					t.getRouteStepIndex(), t.getNodeIndex());
 		} else {
 			result = new MapperDAGVertex(this.getId(), this.getName(),
 					(MapperDAG) this.getBase());
@@ -247,6 +247,5 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		// TODO Auto-generated method stub
 		return super.outgoingEdges();
 	}
-	
-	
+
 }

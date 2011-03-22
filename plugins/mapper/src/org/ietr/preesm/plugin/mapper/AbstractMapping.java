@@ -36,18 +36,19 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IMapping;
-import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
-import org.sdf4j.model.sdf.SDFGraph;
 
 /**
  * Generic class representing the scheduling algorithm behaviour
@@ -55,37 +56,61 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author pmenuet
  * @author mpelcat
  */
-public abstract class AbstractMapping implements IMapping {
-	
-	@Override
-	public abstract void transform(SDFGraph algorithm, SDFGraph transformedAlgorithm) throws PreesmException;
+public abstract class AbstractMapping extends AbstractTaskImplementation {
 
-	
 	@Override
-	public TaskResult transform(SDFGraph algorithm, MultiCoreArchitecture architecture,
-			TextParameters textParameters,
-			PreesmScenario scenario, IProgressMonitor monitor)  throws PreesmException{
-		
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+				.get("architecture");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
 		// Asking to recalculate routes
-		RouteCalculator.recalculate(architecture,scenario);
+		RouteCalculator.recalculate(architecture, scenario);
 		return null;
 	}
-	
-	protected void clean(MultiCoreArchitecture architecture,PreesmScenario scenario) throws PreesmException{
-		// Asking to delete route
-		RouteCalculator.deleteRoutes(architecture,scenario);
-	}
-	
+
 	/**
-	 * Calculates the DAG span length on the architecture main operator 
-	 * (the tasks that cannot be executed by the main operator are deported 
-	 * without transfer time to other operator)
+	 * Generic mapping message
 	 */
-	protected void calculateSpan(MapperDAG dag,
-			MultiCoreArchitecture archi, PreesmScenario scenario, AbcParameters parameters){
-		
+	@Override
+	public String monitorMessage() {
+		return "Mapping/Scheduling";
+	}
+
+	/**
+	 * Returns parameters common to all mappers
+	 */
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("simulatorType", "LooselyTimed");
+		parameters.put("edgeSchedType", "Simple");
+		parameters.put("balanceLoads", "false");
+		parameters.put("dagExportPath", "");
+		return parameters;
+	}
+
+	protected void clean(MultiCoreArchitecture architecture,
+			PreesmScenario scenario) {
+		// Asking to delete route
+		RouteCalculator.deleteRoutes(architecture, scenario);
+	}
+
+	/**
+	 * Calculates the DAG span length on the architecture main operator (the
+	 * tasks that cannot be executed by the main operator are deported without
+	 * transfer time to other operator)
+	 */
+	protected void calculateSpan(MapperDAG dag, MultiCoreArchitecture archi,
+			PreesmScenario scenario, AbcParameters parameters) {
+
 		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,
-				dag, archi, parameters.getSimulatorType().getTaskSchedType(), scenario);
+				dag, archi, parameters.getSimulatorType().getTaskSchedType(),
+				scenario);
 		spanCalc.resetDAG();
 
 	}

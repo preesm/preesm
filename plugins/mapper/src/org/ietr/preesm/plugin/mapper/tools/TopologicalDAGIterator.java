@@ -50,7 +50,7 @@ public class TopologicalDAGIterator extends
 		TopologicalOrderIterator<DAGVertex, DAGEdge> {
 
 	public TopologicalDAGIterator(DirectedGraph<DAGVertex, DAGEdge> dag) {
-		
+
 		super(dag);
 	}
 }

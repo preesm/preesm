@@ -50,7 +50,7 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 public class AddPrecedenceEdgeTransaction extends Transaction {
 
 	// Inputs
-	
+
 	/**
 	 * Implementation DAG to which the edge is added
 	 */
@@ -101,7 +101,7 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 
 	@Override
 	public String toString() {
-		return("AddPrecedence(" + precedenceEdge.toString() +")");
+		return ("AddPrecedence(" + precedenceEdge.toString() + ")");
 	}
 
 }

@@ -116,11 +116,10 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 							// Finding the edge where to add an involvement
 							incomingEdge = (MapperDAGEdge) v.incomingEdges()
 									.toArray()[0];
-						}
-						else if(v.getTarget().equals(edge.getTarget())
+						} else if (v.getTarget().equals(edge.getTarget())
 								&& v.getSource().equals(edge.getSource())
 								&& v.getRouteStep() == routeStep
-								&& v.getNodeIndex() > currentNodeIndex){
+								&& v.getNodeIndex() > currentNodeIndex) {
 							// Finding the edge where to add an involvement
 							outgoingEdge = (MapperDAGEdge) v.outgoingEdges()
 									.toArray()[0];
@@ -162,7 +161,8 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
-				// Synchronizing the vertices in order manager (they will all have the same total order).
+				// Synchronizing the vertices in order manager (they will all
+				// have the same total order).
 				if (toSynchronize.size() > 1) {
 					ImplementationCleaner cleaner = new ImplementationCleaner(
 							getOrderManager(), getImplementation());
@@ -170,13 +170,13 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 							getOrderManager(), getImplementation());
 					IScheduleElement last = null;
 					last = null;
-					
+
 					for (MapperDAGVertex v : toSynchronize) {
 						cleaner.unscheduleVertex(v);
 						last = getOrderManager().synchronize(last, v);
 						adder.scheduleVertex(v);
 					}
-					
+
 				}
 			} else if (type == CommunicationRouter.sendReceiveType) {
 

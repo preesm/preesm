@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.plot.stats.overview;
 
 import org.eclipse.jface.viewers.TableViewer;
@@ -66,19 +66,19 @@ import org.ietr.preesm.plugin.mapper.plot.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 
 /**
- * This page contains general informations of the scenario including
- * current algorithm and current architecture
+ * This page contains general informations of the scenario including current
+ * algorithm and current architecture
  * 
  * @author mpelcat
  */
 public class OverviewPage extends FormPage {
 
 	private StatGenerator statGen = null;
-	
 
-	public OverviewPage(StatGenerator statGen, FormEditor editor, String id, String title) {
+	public OverviewPage(StatGenerator statGen, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
-		
+
 		this.statGen = statGen;
 	}
 
@@ -87,15 +87,16 @@ public class OverviewPage extends FormPage {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		
+
 		ScrolledForm form = managedForm.getForm();
-		//FormToolkit toolkit = managedForm.getToolkit();
+		// FormToolkit toolkit = managedForm.getToolkit();
 		form.setText(Messages.getString("Overview.title"));
 
 		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
-		
-		CreatePropSection(managedForm, Messages.getString("Overview.properties.title"),
+
+		CreatePropSection(managedForm,
+				Messages.getString("Overview.properties.title"),
 				Messages.getString("Overview.properties.description"));
 	}
 
@@ -105,7 +106,6 @@ public class OverviewPage extends FormPage {
 	public Composite createSection(IManagedForm mform, String title,
 			String desc, int numColumns, GridData gridData) {
 
-		
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
 		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
@@ -133,30 +133,32 @@ public class OverviewPage extends FormPage {
 	 */
 	private void CreatePropSection(IManagedForm managedForm, String title,
 			String desc) {
-		
+
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		Composite container = createSection(managedForm, title, desc, 1,
+				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 		FormToolkit toolkit = managedForm.getToolkit();
 
 		final DeploymentProperties props = new DeploymentProperties(statGen);
 		Text text = addPaceEditor(container, toolkit, props);
 		addTable(container, toolkit, text, props);
-		
+
 	}
-	
-	private Text addPaceEditor(Composite parent, FormToolkit toolkit, DeploymentProperties props) {
 
-		toolkit.createLabel(parent, Messages.getString("Overview.properties.paceEditor.label"));
+	private Text addPaceEditor(Composite parent, FormToolkit toolkit,
+			DeploymentProperties props) {
 
-		Text text = toolkit.createText(parent, String.valueOf(props.getRepetitionPeriod()), SWT.SINGLE);
-		
-		
+		toolkit.createLabel(parent,
+				Messages.getString("Overview.properties.paceEditor.label"));
+
+		Text text = toolkit.createText(parent,
+				String.valueOf(props.getRepetitionPeriod()), SWT.SINGLE);
+
 		GridData gd = new GridData();
-		gd.widthHint =400;
+		gd.widthHint = 400;
 		text.setLayoutData(gd);
-		
+
 		return text;
 	}
 
@@ -164,11 +166,11 @@ public class OverviewPage extends FormPage {
 		return statGen;
 	}
 
-
 	/**
 	 * Adds a table to edit timings
 	 */
-	protected void addTable(Composite parent, FormToolkit toolkit,Text text,final DeploymentProperties props) {
+	protected void addTable(Composite parent, FormToolkit toolkit, Text text,
+			final DeploymentProperties props) {
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
@@ -183,29 +185,29 @@ public class OverviewPage extends FormPage {
 
 		tableViewer.setContentProvider(props);
 		tableViewer.setLabelProvider(props);
-		
+
 		// Create columns
 		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
 		column1.setText(Messages.getString("Overview.properties.opColumn"));
-		
+
 		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
 		column2.setText(Messages.getString("Overview.properties.loadColumn"));
-		
+
 		final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
 		column3.setText(Messages.getString("Overview.properties.memColumn"));
-		
-	    Listener charSortListener = new Listener() {
-	      public void handleEvent(Event e) {
-	        TableColumn column = (TableColumn) e.widget;
-	        props.setColumnOrder(column.getText());
-	        tableViewer.refresh();
-	      }
-	    };
-	    
-	    column1.addListener(SWT.Selection, charSortListener);
-	    column2.addListener(SWT.Selection, charSortListener);
-	    column3.addListener(SWT.Selection, charSortListener);
-		
+
+		Listener charSortListener = new Listener() {
+			public void handleEvent(Event e) {
+				TableColumn column = (TableColumn) e.widget;
+				props.setColumnOrder(column.getText());
+				tableViewer.refresh();
+			}
+		};
+
+		column1.addListener(SWT.Selection, charSortListener);
+		column2.addListener(SWT.Selection, charSortListener);
+		column3.addListener(SWT.Selection, charSortListener);
+
 		final Table tref = table;
 		final Composite comp = tablecps;
 
@@ -238,13 +240,14 @@ public class OverviewPage extends FormPage {
 		tableViewer.setInput(props);
 		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL));
-		
-		text.addModifyListener(new ModifyListener(){
+
+		text.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				Text text = (Text)e.getSource();				
+				Text text = (Text) e.getSource();
 				props.setRepetitionPeriod(Integer.valueOf(text.getText()));
 				tableViewer.refresh();
-			}});
+			}
+		});
 	}
 }

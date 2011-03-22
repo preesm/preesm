@@ -69,28 +69,28 @@ public class MutationOperator {
 	 * 
 	 * @return Chromosome
 	 */
-	public Chromosome transform(Chromosome chromosome1,
-			AbcParameters abcParams) {
+	public Chromosome transform(Chromosome chromosome1, AbcParameters abcParams) {
 
 		// Construct the son
 		Chromosome chromosome = chromosome1.clone();
 		chromosome.setDirty(true);
 
 		// chose the gene randomly
-		Iterator<Gene> iter = new RandomIterator<Gene>(chromosome
-				.getChromoList(), new Random());
+		Iterator<Gene> iter = new RandomIterator<Gene>(
+				chromosome.getChromoList(), new Random());
 		Gene currentGene = iter.next();
 
 		// retrieve the operators which can execute the vertex
 		List<ArchitectureComponent> list = new ArrayList<ArchitectureComponent>();
-		list.addAll(chromosome.getArchi().getComponents(ArchitectureComponentType.operator));
+		list.addAll(chromosome.getArchi().getComponents(
+				ArchitectureComponentType.operator));
 
 		// chose one operator randomly
-		Iterator<ArchitectureComponent> iterator = new RandomIterator<ArchitectureComponent>(list,
-				new Random());
-		Operator operator = (Operator)iterator.next();
+		Iterator<ArchitectureComponent> iterator = new RandomIterator<ArchitectureComponent>(
+				list, new Random());
+		Operator operator = (Operator) iterator.next();
 		while (operator.getName().equals(currentGene.getOperatorId())) {
-			operator = (Operator)iterator.next();
+			operator = (Operator) iterator.next();
 		}
 
 		// set the change in the gene

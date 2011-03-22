@@ -3,21 +3,24 @@
  */
 package org.ietr.preesm.plugin.mapper.scenariogen;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IScenarioTransformation;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.core.ui.Activator;
 import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
 import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
@@ -32,16 +35,34 @@ import org.sdf4j.model.sdf.SDFGraph;
  * 
  * @author mpelcat
  */
-public class ScenarioGenerator implements IScenarioTransformation {
+public class ScenarioGenerator extends AbstractTaskImplementation {
 
 	@Override
-	public TaskResult transform(TextParameters parameters) {
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
 
-		TaskResult result = new TaskResult();
+		parameters.put("scenarioFile", "");
+		parameters.put("dagFile", "");
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
+		return parameters;
+	}
 
-		String scenarioFileName = parameters.getVariable("scenarioFile");
+	@Override
+	public String monitorMessage() {
+		return "generating a scenario";
+	}
+
+	@Override
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		Map<String, Object> outputs = new HashMap<String, Object>();
+
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"Generating scenario");
+
+		String scenarioFileName = parameters.get("scenarioFile");
 
 		// Retrieving the scenario
 		if (scenarioFileName.isEmpty()) {
@@ -56,35 +77,35 @@ public class ScenarioGenerator implements IScenarioTransformation {
 					scenarioConfiguration);
 
 			PreesmScenario scenario = retriever.getScenario();
-			result.setScenario(scenario);
+			outputs.put("scenario", scenario);
 
-			AlgorithmRetriever algoR = new AlgorithmRetriever(scenario
-					.getAlgorithmURL());
+			AlgorithmRetriever algoR = new AlgorithmRetriever(
+					scenario.getAlgorithmURL());
 			if (algoR.getAlgorithm() == null) {
 				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
 			} else {
-				result.setSDF(algoR.getAlgorithm());
+				outputs.put("SDF", algoR.getAlgorithm());
 			}
 
-			ArchitectureRetriever archiR = new ArchitectureRetriever(scenario
-					.getArchitectureURL());
+			ArchitectureRetriever archiR = new ArchitectureRetriever(
+					scenario.getArchitectureURL());
 			if (archiR.getArchitecture() == null) {
 				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
 				// Setting main core and medium
-				archiR.getArchitecture().setMainOperator(scenario.getSimulationManager()
-						.getMainOperatorName());
-				archiR.getArchitecture().setMainMedium(scenario.getSimulationManager()
-						.getMainMediumName());
-				result.setArchitecture(archiR.getArchitecture());
+				archiR.getArchitecture().setMainOperator(
+						scenario.getSimulationManager().getMainOperatorName());
+				archiR.getArchitecture().setMainMedium(
+						scenario.getSimulationManager().getMainMediumName());
+				outputs.put("architecture", archiR.getArchitecture());
 			}
 		}
 
-		String dagFileName = parameters.getVariable("dagFile");
+		String dagFileName = parameters.get("dagFile");
 		// Parsing the output DAG if present and updating the constraints
 		if (dagFileName.isEmpty()) {
 			AbstractWorkflowLogger.getLogger().log(Level.WARNING,
@@ -92,13 +113,15 @@ public class ScenarioGenerator implements IScenarioTransformation {
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
 
-			result.getScenario().getConstraintGroupManager().removeAll();
-			result.getScenario().getTimingManager().removeAll();
+			((PreesmScenario) outputs.get("scenario"))
+					.getConstraintGroupManager().removeAll();
+			((PreesmScenario) outputs.get("scenario")).getTimingManager()
+					.removeAll();
 
 			try {
 				Path relativePath = new Path(dagFileName);
-				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
-						relativePath);
+				IFile file = ResourcesPlugin.getWorkspace().getRoot()
+						.getFile(relativePath);
 
 				Activator.updateWorkspace();
 				SDFGraph graph = importer
@@ -112,26 +135,32 @@ public class ScenarioGenerator implements IScenarioTransformation {
 							ImplementationPropertyNames.Vertex_Operator);
 					String timeStr = (String) dagV.getPropertyBean().getValue(
 							ImplementationPropertyNames.Task_duration);
-					SDFAbstractVertex sdfV = result.getSDF().getVertex(vName);
-					ArchitectureComponent op = result.getArchitecture()
-							.getComponent(opName);
+					SDFAbstractVertex sdfV = ((SDFGraph) outputs.get("SDF"))
+							.getVertex(vName);
+					ArchitectureComponent op = ((MultiCoreArchitecture) outputs
+							.get("architecture")).getComponent(opName);
 
 					if (sdfV != null && op != null && op instanceof Operator) {
-						result.getScenario().getConstraintGroupManager()
-								.addConstraint((Operator) op, sdfV);
-						result.getScenario().getTimingManager().setTiming(sdfV,
-								(OperatorDefinition) (op.getDefinition()),
-								Integer.parseInt(timeStr));
+						((PreesmScenario) outputs.get("scenario"))
+								.getConstraintGroupManager().addConstraint(
+										(Operator) op, sdfV);
+						((PreesmScenario) outputs.get("scenario"))
+								.getTimingManager().setTiming(
+										sdfV,
+										(OperatorDefinition) (op
+												.getDefinition()),
+										Integer.parseInt(timeStr));
 					}
 				}
 
 			} catch (Exception e) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+						e.getMessage());
 			}
 
 		}
 
-		return result;
+		return outputs;
 	}
 
 }

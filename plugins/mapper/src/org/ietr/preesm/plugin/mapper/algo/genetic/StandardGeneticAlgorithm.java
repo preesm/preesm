@@ -152,8 +152,8 @@ public class StandardGeneticAlgorithm extends Observable {
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
 			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
-			PreesmScenario scenario, AbcParameters abcParams, int populationSize,
-			int generationNumber, boolean pgeneticalgo) {
+			PreesmScenario scenario, AbcParameters abcParams,
+			int populationSize, int generationNumber, boolean pgeneticalgo) {
 
 		final BestCostPlotter costPlotter = new BestCostPlotter(
 				"Genetic Algorithm", null);

@@ -92,8 +92,8 @@ public class KwokListScheduler {
 	/**
 	 * schedule: Do a mapping with the help of the lists (CPN-Dominant list,
 	 * Blocking node list and the FCP list) and the architecture. It can take
-	 * one vertex already mapped with a particular operator chosen by the
-	 * user and only one.
+	 * one vertex already mapped with a particular operator chosen by the user
+	 * and only one.
 	 * 
 	 * @param : MapperDAG, List<MapperDAGVertex>, List<MapperDAGVertex>,
 	 *        List<MapperDAGVertex>,IArchitectureSimulator,
@@ -124,7 +124,8 @@ public class KwokListScheduler {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				List<Operator> opList = archisimu.getCandidateOperators(currentvertex);
+				List<Operator> opList = archisimu
+						.getCandidateOperators(currentvertex);
 				if (opList.size() == 1) {
 					chosenoperator = (Operator) opList.toArray()[0];
 				} else {
@@ -157,10 +158,11 @@ public class KwokListScheduler {
 			}
 		}
 
-		/*List<IScheduleElement> alreadyRescheduled = new ArrayList<IScheduleElement>();
-		for (int i = 0; i < 20; i++) {
-			archisimu.reschedule(alreadyRescheduled);
-		}*/
+		/*
+		 * List<IScheduleElement> alreadyRescheduled = new
+		 * ArrayList<IScheduleElement>(); for (int i = 0; i < 20; i++) {
+		 * archisimu.reschedule(alreadyRescheduled); }
+		 */
 		// archisimu.rescheduleTransfers(orderlist);
 		// archisimu.retrieveTotalOrder();
 

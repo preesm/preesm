@@ -91,7 +91,8 @@ public class SdfToDagConverter {
 			MultiCoreArchitecture architecture, PreesmScenario scenario,
 			boolean display) {
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
+		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				"Converting from SDF to DAG.");
 
 		try {
 
@@ -99,7 +100,8 @@ public class SdfToDagConverter {
 				return null;
 			}
 		} catch (SDF4JException e) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger()
+					.log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 		SDFGraph sdf = sdfIn.clone();
@@ -116,7 +118,8 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
+			AbstractWorkflowLogger.getLogger()
+					.log(Level.SEVERE, e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
@@ -134,7 +137,8 @@ public class SdfToDagConverter {
 			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 					"Can not map a DAG with no vertex.");
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
+			AbstractWorkflowLogger.getLogger().log(Level.INFO,
+					"Conversion finished.");
 			AbstractWorkflowLogger.getLogger().log(
 					Level.INFO,
 					"mapping a DAG with " + dag.vertexSet().size()
@@ -199,9 +203,9 @@ public class SdfToDagConverter {
 			} else {
 				for (ArchitectureComponent op : architecture
 						.getComponents(ArchitectureComponentType.operator)) {
-					Timing time = new Timing((OperatorDefinition) op
-							.getDefinition(), currentVertex
-							.getCorrespondingSDFVertex(), 1);
+					Timing time = new Timing(
+							(OperatorDefinition) op.getDefinition(),
+							currentVertex.getCorrespondingSDFVertex(), 1);
 					time.setTime(Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
@@ -332,9 +336,9 @@ public class SdfToDagConverter {
 		 */
 		TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
 		List<DAGVertex> vList = new ArrayList<DAGVertex>();
-		Set<ArchitectureComponent> specialCmps = scenario.getSimulationManager()
-		.getSpecialVertexOperators();
-		
+		Set<ArchitectureComponent> specialCmps = scenario
+				.getSimulationManager().getSpecialVertexOperators();
+
 		while (it.hasNext()) {
 			MapperDAGVertex v = (MapperDAGVertex) it.next();
 			if (SpecialVertexManager.isSpecial(v)) {

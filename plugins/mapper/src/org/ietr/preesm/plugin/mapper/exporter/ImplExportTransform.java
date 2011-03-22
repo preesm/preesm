@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
- 
+
 package org.ietr.preesm.plugin.mapper.exporter;
 
 import java.util.HashMap;
@@ -49,16 +49,12 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.IExporter;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.AbstractGraph;
 import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.sdf.SDFGraph;
+
 /**
- * Block in workflow exporting a DAG that contains all information of an implementation
+ * Block in workflow exporting a DAG that contains all information of an
+ * implementation
  * 
  * @author mpelcat
  * 
@@ -70,15 +66,15 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
 
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph)inputs.get("DAG");
+		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
 		Path graphmlPath = new Path(parameters.get("path"));
-		
+
 		// Exporting the DAG in a GraphML
-		if(!graphmlPath.isEmpty()){
+		if (!graphmlPath.isEmpty()) {
 			exportGraphML(dag, graphmlPath);
 		}
-		
+
 		return new HashMap<String, Object>();
 	}
 
@@ -94,21 +90,21 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 	public String monitorMessage() {
 		return "Exporting implementation.";
 	}
-	
-	private void exportGraphML(DirectedAcyclicGraph dag, Path path){
 
-		MapperDAG mapperDag = (MapperDAG)dag;
-		
-		ImplementationExporter exporter = new ImplementationExporter() ;
-		MapperDAG clone = mapperDag.clone() ;
+	private void exportGraphML(DirectedAcyclicGraph dag, Path path) {
+
+		MapperDAG mapperDag = (MapperDAG) dag;
+
+		ImplementationExporter exporter = new ImplementationExporter();
+		MapperDAG clone = mapperDag.clone();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iGraphMLFile = workspace.getRoot().getFile(path);
-		
-		if(iGraphMLFile.getLocation() != null){
-		exporter.export(clone, iGraphMLFile.getLocation().toOSString());
-		}
-		else{
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,"The output file " + path + " can not be written.");
+
+		if (iGraphMLFile.getLocation() != null) {
+			exporter.export(clone, iGraphMLFile.getLocation().toOSString());
+		} else {
+			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					"The output file " + path + " can not be written.");
 		}
 	}
 

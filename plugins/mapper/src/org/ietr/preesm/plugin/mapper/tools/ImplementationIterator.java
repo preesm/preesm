@@ -73,14 +73,12 @@ public abstract class ImplementationIterator extends
 		super();
 	}
 
-	public ImplementationIterator(MapperDAG dag,
-			boolean directOrder) {
+	public ImplementationIterator(MapperDAG dag, boolean directOrder) {
 		super();
-		initParams(dag,directOrder);
+		initParams(dag, directOrder);
 	}
-	
-	public void initParams(MapperDAG dag,
-			boolean directOrder) {
+
+	public void initParams(MapperDAG dag, boolean directOrder) {
 		this.directOrder = directOrder;
 		createOrderedList(dag);
 		currentIndex = 0;
