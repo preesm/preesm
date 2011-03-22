@@ -3,6 +3,7 @@
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="org.ietr.preesm.plugin.codegen" taskId="codegen">
         <dftools:data key="variables">
+            <dftools:variable name="allocationPolicy" value="Global"/>
             <dftools:variable name="sourcePath" value="/tutorial-image/Code"/>
             <dftools:variable name="xslLibraryPath" value="/tutorial-image/Code/XSL"/>
         </dftools:data>
@@ -21,6 +22,7 @@
         pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
+            <dftools:variable name="dagExportPath" value="/tutorial_image/DAG"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="simulatorType" value="AccuratelyTimed"/>
@@ -43,8 +45,8 @@
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="DAG Plotter"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture"
-        targetport="architecture" to="codegen"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="codegen"/>
     <dftools:dataTransfer from="scenario" sourceport="SDF"
         targetport="SDF" to="ImplementationExporter"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
@@ -67,4 +69,6 @@
         targetport="SDF" to="HSDF"/>
     <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
     <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="LIST scheduler"/>
+    <dftools:dataTransfer from="scenario" sourceport="architecture"
+        targetport="architecture" to="codegen"/>
 </dftools:workflow>

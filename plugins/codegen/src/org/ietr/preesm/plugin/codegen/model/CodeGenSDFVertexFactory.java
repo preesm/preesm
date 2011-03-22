@@ -57,7 +57,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.workflow.PreesmException;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.sdf4j.model.CodeRefinement;
 import org.sdf4j.model.CodeRefinement.Language;

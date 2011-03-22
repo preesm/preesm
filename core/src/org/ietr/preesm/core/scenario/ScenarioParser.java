@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,16 +44,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
-import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
+import org.sdf4j.importer.GMLGenericImporter;
+import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.w3c.dom.Document;
@@ -316,25 +320,79 @@ public class ScenarioParser {
 		}
 	}
 
-	/**
-	 * Gets the Algorithm from its url by parsing the algorithm file
-	 */
-	static public SDFGraph getAlgorithm(String url) {
+	public static SDFGraph getAlgorithm(String path) {
+		SDFGraph algorithm = null;
+		GMLGenericImporter importer = new GMLGenericImporter();
 
-		AlgorithmRetriever retriever = new AlgorithmRetriever(url);
+		Path relativePath = new Path(path);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
 
-		return retriever.getAlgorithm();
+		try {
+			algorithm = (SDFGraph) importer.parse(file.getContents(), file
+					.getLocation().toOSString());
 
+			addVertexPathProperties(algorithm, "");
+		} catch (InvalidFileException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return algorithm;
+	}
+
+	public static MultiCoreArchitecture getArchitecture(String path) {
+		DesignParser parser = new DesignParser();
+
+		Path relativePath = new Path(path);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
+		MultiCoreArchitecture architecture = parser.parseXmlFile(file);
+
+		addVertexPathProperties(architecture, "");
+
+		return architecture;
 	}
 
 	/**
-	 * Gets the Architecture from its url by parsing the architecture file
+	 * Adding an information that keeps the path of each vertex relative to the
+	 * hierarchy
 	 */
-	static public MultiCoreArchitecture getArchitecture(String url) {
+	private static void addVertexPathProperties(
+			MultiCoreArchitecture architecture, String currentPath) {
 
-		ArchitectureRetriever retriever = new ArchitectureRetriever(url);
+		for (ArchitectureComponent vertex : architecture.vertexSet()) {
+			String newPath = currentPath + vertex.getName();
+			vertex.setInfo(newPath);
+			newPath += "/";
+			if (vertex.getGraphDescription() != null) {
+				addVertexPathProperties(
+						(MultiCoreArchitecture) vertex.getGraphDescription(),
+						newPath);
+			}
+		}
+	}
 
-		return retriever.getArchitecture();
+	/**
+	 * Adding an information that keeps the path of each vertex relative to the
+	 * hierarchy
+	 */
+	private static void addVertexPathProperties(SDFGraph algorithm,
+			String currentPath) {
+
+		for (SDFAbstractVertex vertex : algorithm.vertexSet()) {
+			String newPath = currentPath + vertex.getName();
+			vertex.setInfo(newPath);
+			newPath += "/";
+			if (vertex.getGraphDescription() != null) {
+				addVertexPathProperties(
+						(SDFGraph) vertex.getGraphDescription(), newPath);
+			}
+		}
 	}
 
 	/**

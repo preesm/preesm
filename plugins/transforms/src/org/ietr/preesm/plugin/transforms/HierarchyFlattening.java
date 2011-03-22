@@ -46,7 +46,6 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.task.TaskResult;
 import org.sdf4j.model.sdf.SDFGraph;
 import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
 import org.sdf4j.model.sdf.visitors.SDFHierarchyFlattening;
@@ -107,8 +106,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		} else {
 			logger.log(Level.SEVERE,
 					"Inconsistent Hierarchy, graph can't be flattened");
-			TaskResult result = new TaskResult();
-			result.setSDF((SDFGraph) algorithm.clone());
+			outputs.put("SDF", (SDFGraph) algorithm.clone());
 			throw (new WorkflowException(
 					"Inconsistent Hierarchy, graph can't be flattened"));
 		}

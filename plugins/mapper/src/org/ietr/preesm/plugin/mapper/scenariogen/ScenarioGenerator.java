@@ -22,10 +22,6 @@ import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.ui.Activator;
-import org.ietr.preesm.core.workflow.sources.AlgorithmRetriever;
-import org.ietr.preesm.core.workflow.sources.ArchitectureRetriever;
-import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
-import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 

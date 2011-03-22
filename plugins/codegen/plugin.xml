@@ -7,6 +7,23 @@
             id="org.ietr.preesm.plugin.codegen"
             name="Default code generation"
             type="org.ietr.preesm.plugin.codegen.CodeGenerationTransformation">
+         <outputs>
+            <output></output>
+         </outputs>
+         <inputs>
+            <input
+                  id="architecture"
+                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
       </task>
    </extension>
 

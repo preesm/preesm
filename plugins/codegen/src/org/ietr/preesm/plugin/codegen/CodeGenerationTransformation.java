@@ -53,7 +53,7 @@ import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.workflow.PreesmException;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
@@ -151,8 +151,6 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		parameters.put("sourcePath", "");
 		parameters.put("xslLibraryPath", "");
 		parameters.put("allocationPolicy", "Global");
-		parameters.put("jobPosting", "false");
-		parameters.put("timedSimulation", "false");
 		return parameters;
 	}
 

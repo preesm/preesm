@@ -57,7 +57,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.task.PreesmException;
+import org.ietr.preesm.core.workflow.PreesmException;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.sdf4j.SDFMath;
 import org.sdf4j.iterators.SDFIterator;

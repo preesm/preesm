@@ -19,6 +19,6 @@ void noCall(){
 
 
 void Read_YUV_init_preesm(int xsize, int ysize){
-	Read_YUV_init("..\\..\\Sequences\\tempete_cif.yuv",xsize, ysize,25);
+	Read_YUV_init("..\\..\\Sequences\\akiyo_cif.y4m",xsize, ysize,25);
 }
 

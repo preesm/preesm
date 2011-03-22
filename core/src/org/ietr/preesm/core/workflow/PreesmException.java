@@ -34,52 +34,14 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.launch;
+package org.ietr.preesm.core.workflow;
 
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.ui.Activator;
-import org.ietr.preesm.core.workflow.sources.ScenarioConfiguration;
-import org.ietr.preesm.core.workflow.sources.ScenarioRetriever;
+public class PreesmException extends Exception {
 
-/**
- * Launch Tab for scenario options. From this tab, an
- * {@link ScenarioConfiguration} is generated that feeds an
- * {@link ScenarioRetriever} to create the input scenario.
- * 
- * @author mpelcat
- */
-public class WorkFlowLaunchScenarioTab extends AbstractWorkFlowLaunchTab {
+	private static final long serialVersionUID = 620727777815265095L;
 
-	@Override
-	public void createControl(Composite parent) {
-
-		super.createControl(parent);
-
-		drawFileChooser("Scenario file:",
-				ScenarioConfiguration.ATTR_SCENARIO_FILE_NAME);
-
+	public PreesmException(String message) {
+		super(message);
 	}
 
-	@Override
-	public String getName() {
-		return "Scenario";
-	}
-
-	@Override
-	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Image getImage() {
-		Image image = Activator.getImage("icons/preesm4mini.png");
-
-		if (image != null)
-			return image;
-
-		return super.getImage();
-	}
 }
