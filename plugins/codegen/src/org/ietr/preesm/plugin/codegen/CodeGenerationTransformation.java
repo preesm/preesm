@@ -36,9 +36,16 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
@@ -46,10 +53,7 @@ import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.task.ICodeGeneration;
 import org.ietr.preesm.core.task.PreesmException;
-import org.ietr.preesm.core.task.TaskResult;
-import org.ietr.preesm.core.task.TextParameters;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
@@ -66,7 +70,96 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author Matthieu Wipliez
  * @author mpelcat
  */
-public class CodeGenerationTransformation implements ICodeGeneration {
+public class CodeGenerationTransformation extends AbstractTaskImplementation {
+
+	@Override
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+				.get("architecture");
+		DirectedAcyclicGraph algorithm = (DirectedAcyclicGraph) inputs
+				.get("DAG");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
+		// Resets the parsed IDL prototypes
+		IDLFunctionFactory.getInstance().resetPrototypes();
+
+		// Default source path is given in the workflow
+		String sourcePath = parameters.get("sourcePath");
+
+		// If a source path is defined in the scenario, it overrides the one
+		// from the workflow
+		if (!scenario.getCodegenManager().getCodegenDirectory().isEmpty()) {
+			sourcePath = scenario.getCodegenManager().getCodegenDirectory();
+		}
+
+		String xslPath = parameters.get("xslLibraryPath");
+
+		String allocPolicy = parameters.get("allocationPolicy");
+		if (allocPolicy != null
+				&& BufferAllocator.fromString(allocPolicy) != null) {
+			AllocationPolicy.setAllocatorType(BufferAllocator
+					.fromString(allocPolicy));
+		}
+		// Generating the code generation specific graph
+		CodeGenSDFGraph codeGenSDFGraph = null;
+		try {
+			codeGenSDFGraph = generateCodegenGraph(algorithm, scenario);
+		} catch (PreesmException e) {
+			throw (new WorkflowException(e.getMessage()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (!Boolean.valueOf(parameters.get("jobPosting"))) {
+			// Typical static code generation
+			SourceFileList list = new SourceFileList();
+			CodeGenerator codegen = new CodeGenerator(list);
+			// Generate source files
+			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
+
+			// Generates the code in xml and translates it to c using XSLT
+			// sheets
+			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
+					xslPath);
+			printerChooser.printList(list);
+
+			outputs.put("SourceFileList", list);
+		} else {
+			// Job posting code generation
+			boolean timedSimulation = Boolean.valueOf(parameters
+					.get("timedSimulation"));
+			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(
+					codeGenSDFGraph, scenario, timedSimulation);
+			JobPostingSource source = jobGen.generate();
+			JobPostingPrinter printer = new JobPostingPrinter();
+			printer.addData(source);
+			printer.writeDom(GenericPrinter.createFile("jobList.xml",
+					sourcePath));
+		}
+
+		return outputs;
+	}
+
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("sourcePath", "");
+		parameters.put("xslLibraryPath", "");
+		parameters.put("allocationPolicy", "Global");
+		parameters.put("jobPosting", "false");
+		parameters.put("timedSimulation", "false");
+		return parameters;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Generating Code.";
+	}
 
 	/**
 	 * Generates the source files from an implementation and an architecture.
@@ -93,75 +186,6 @@ public class CodeGenerationTransformation implements ICodeGeneration {
 		 */
 
 		return sdfGraph;
-	}
-
-	/**
-	 * Transformation method called by the workflow
-	 */
-	@Override
-	public TaskResult transform(DirectedAcyclicGraph algorithm,
-			MultiCoreArchitecture architecture, PreesmScenario scenario,
-			TextParameters parameters) throws PreesmException {
-
-		// Resets the parsed IDL prototypes
-		IDLFunctionFactory.getInstance().resetPrototypes();
-
-		// Default source path is given in the workflow
-		String sourcePath = parameters.getVariable("sourcePath");
-
-		// If a source path is defined in the scenario, it overrides the one
-		// from the workflow
-		if (!scenario.getCodegenManager().getCodegenDirectory().isEmpty()) {
-			sourcePath = scenario.getCodegenManager().getCodegenDirectory();
-		}
-
-		String xslPath = parameters.getVariable("xslLibraryPath");
-		TaskResult result = new TaskResult();
-
-		String allocPolicy = parameters.getVariable("allocationPolicy");
-		if (allocPolicy != null
-				&& BufferAllocator.fromString(allocPolicy) != null) {
-			AllocationPolicy.setAllocatorType(BufferAllocator
-					.fromString(allocPolicy));
-		}
-		// Generating the code generation specific graph
-		CodeGenSDFGraph codeGenSDFGraph = null;
-		try {
-			codeGenSDFGraph = generateCodegenGraph(algorithm, scenario);
-		} catch (PreesmException e) {
-			throw (e);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		if (!parameters.getBooleanVariable("jobPosting")) {
-			// Typical static code generation
-			SourceFileList list = new SourceFileList();
-			CodeGenerator codegen = new CodeGenerator(list);
-			// Generate source files
-			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
-
-			// Generates the code in xml and translates it to c using XSLT
-			// sheets
-			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
-					xslPath);
-			printerChooser.printList(list);
-
-			result.setSourcefilelist(list);
-		} else {
-			// Job posting code generation
-			boolean timedSimulation = parameters
-					.getBooleanVariable("timedSimulation");
-			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(
-					codeGenSDFGraph, scenario, timedSimulation);
-			JobPostingSource source = jobGen.generate();
-			JobPostingPrinter printer = new JobPostingPrinter();
-			printer.addData(source);
-			printer.writeDom(GenericPrinter.createFile("jobList.xml",
-					sourcePath));
-		}
-
-		return result;
 	}
 
 }
