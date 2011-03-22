@@ -40,11 +40,11 @@ public class PreesmScenarioNodeImplementation extends
 		PreesmScenario scenario = scenarioParser.parseDocument();
 
 		// Retrieving the algorithm
-		SDFGraph algorithm = scenarioParser.getAlgorithm(scenario
+		SDFGraph algorithm = ScenarioParser.getAlgorithm(scenario
 				.getAlgorithmURL());
 
 		// Retrieving the architecture
-		MultiCoreArchitecture architecture = scenarioParser
+		MultiCoreArchitecture architecture = ScenarioParser
 				.getArchitecture(scenario.getArchitectureURL());
 
 		outputs.put("scenario", scenario);

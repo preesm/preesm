@@ -21,6 +21,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.ietr.preesm.core.ui.Activator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -66,39 +67,44 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 					"lack of a scenarioFile parameter");
 			return null;
 		} else {
-			ScenarioConfiguration scenarioConfiguration = new ScenarioConfiguration();
-			scenarioConfiguration.setScenarioFileName(scenarioFileName);
 
-			ScenarioRetriever retriever = new ScenarioRetriever(
-					scenarioConfiguration);
+			// Retrieving the scenario from the given path
+			ScenarioParser parser = new ScenarioParser();
 
-			PreesmScenario scenario = retriever.getScenario();
-			outputs.put("scenario", scenario);
+			Path relativePath = new Path(scenarioFileName);
+			IFile file = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(relativePath);
 
-			AlgorithmRetriever algoR = new AlgorithmRetriever(
-					scenario.getAlgorithmURL());
-			if (algoR.getAlgorithm() == null) {
+			parser.parseXmlFile(file);
+			PreesmScenario scenario = parser.parseDocument();
+
+			// Retrieving the algorithm
+			SDFGraph algo = ScenarioParser.getAlgorithm(scenario
+					.getAlgorithmURL());
+			if (algo == null) {
 				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
 			} else {
-				outputs.put("SDF", algoR.getAlgorithm());
+				outputs.put("SDF", algo);
 			}
 
-			ArchitectureRetriever archiR = new ArchitectureRetriever(
-					scenario.getArchitectureURL());
-			if (archiR.getArchitecture() == null) {
+			// Retrieving the architecture
+			MultiCoreArchitecture archi = ScenarioParser
+					.getArchitecture(scenario.getArchitectureURL());
+			if (archi == null) {
 				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
 				// Setting main core and medium
-				archiR.getArchitecture().setMainOperator(
-						scenario.getSimulationManager().getMainOperatorName());
-				archiR.getArchitecture().setMainMedium(
-						scenario.getSimulationManager().getMainMediumName());
-				outputs.put("architecture", archiR.getArchitecture());
+				archi.setMainOperator(scenario.getSimulationManager()
+						.getMainOperatorName());
+				archi.setMainMedium(scenario.getSimulationManager()
+						.getMainMediumName());
+				outputs.put("architecture", archi);
 			}
+
 		}
 
 		String dagFileName = parameters.get("dagFile");
