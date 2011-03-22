@@ -16,7 +16,7 @@
     
     <xsl:template match="preesm:scenario">
         <dftools:scenario>
-            <xsl:attribute name="pluginId" select="'org.ietr.preesm.scenario'"/>
+            <xsl:attribute name="pluginId" select="'org.ietr.preesm.scenario.task'"/>
         </dftools:scenario>
     </xsl:template>
     

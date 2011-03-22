@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.ui,
  net.sf.dftools.ui;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Eclipse-BuddyPolicy: global
