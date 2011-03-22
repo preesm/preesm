@@ -122,12 +122,12 @@
          </edgeType>
          <import>
             <xslt
-                  name="xslt/net/sf/graphiti/sdf4j/input_sdf4j.xslt">
+                  name="org/ietr/sf/graphiti/sdf4j/input_sdf4j.xslt">
             </xslt>
          </import>
          <export>
             <xslt
-                  name="xslt/net/sf/graphiti/sdf4j/output_sdf4j.xslt">
+                  name="org/ietr/sf/graphiti/sdf4j/output_sdf4j.xslt">
             </xslt>
          </export>
          <vertexType
@@ -218,7 +218,7 @@
          </graphType>
          <import>
             <xslt
-                  name="xslt/net/sf/graphiti/ip-xact/input_IP-XACT-Design-Simple.xslt">
+                  name="org/ietr/sf/graphiti/ip-xact/input_IP-XACT-Design-Simple.xslt">
             </xslt>
          </import>
          <vertexType
@@ -527,7 +527,7 @@
          </edgeType>
          <export>
             <xslt
-                  name="xslt/net/sf/graphiti/ip-xact/output_IP-XACT-Design-Simple.xslt">
+                  name="org/ietr/sf/graphiti/ip-xact/output_IP-XACT-Design-Simple.xslt">
             </xslt>
          </export>
       </configuration>
@@ -572,7 +572,7 @@
          </graphType>
          <import>
             <xslt
-                  name="xslt/net/sf/graphiti/ip-xact/input_IP-XACT-Component-Simple.xslt">
+                  name="org/ietr/sf/graphiti/ip-xact/input_IP-XACT-Component-Simple.xslt">
             </xslt>
          </import>
          <vertexType
@@ -612,7 +612,7 @@
          </vertexType>
          <export>
             <xslt
-                  name="xslt/net/sf/graphiti/ip-xact/output_IP-XACT-Component-Simple.xslt">
+                  name="org/ietr/sf/graphiti/ip-xact/output_IP-XACT-Component-Simple.xslt">
             </xslt>
          </export>
          <vertexType
@@ -661,12 +661,12 @@
          </graphType>
          <import>
             <xslt
-                  name="xslt/net/sf/graphiti/workflow/input_workflow.xslt">
+                  name="org/ietr/sf/graphiti/workflow/input_workflow.xslt">
             </xslt>
          </import>
          <export>
             <xslt
-                  name="xslt/net/sf/graphiti/workflow/output_workflow.xslt">
+                  name="org/ietr/sf/graphiti/workflow/output_workflow.xslt">
             </xslt>
          </export>
          <vertexType
