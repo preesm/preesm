@@ -70,6 +70,15 @@ public class WorkflowValidator implements IValidator {
 			if ("Task".equals(vertex.getType().getName())) {
 				// Getting the plugin ID and the associated class name.
 				String pluginId = (String) vertex.getValue("plugin identifier");
+				
+				if(pluginId == null){
+					createMarker(
+							file,
+							"Enter a plugin identifier for each plugin.",
+							"Any plugin", IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
+					return false;
+				}
+				
 				IExtensionRegistry registry = Platform.getExtensionRegistry();
 				IConfigurationElement[] elements = registry
 						.getConfigurationElementsFor("net.sf.dftools.workflow.tasks");
