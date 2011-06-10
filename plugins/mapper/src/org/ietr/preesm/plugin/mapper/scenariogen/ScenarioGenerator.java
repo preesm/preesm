@@ -75,8 +75,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(relativePath);
 
-			parser.parseXmlFile(file);
-			PreesmScenario scenario = parser.parseDocument();
+			PreesmScenario scenario = parser.parseXmlFile(file);
 
 			// Retrieving the algorithm
 			SDFGraph algo = ScenarioParser.getAlgorithm(scenario

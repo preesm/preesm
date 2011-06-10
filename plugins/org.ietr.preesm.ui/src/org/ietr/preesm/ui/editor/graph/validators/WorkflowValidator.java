@@ -99,6 +99,7 @@ public class WorkflowValidator implements IValidator {
 							 * the Graphiti configuration class loader has a
 							 * global knowledge of classes
 							 */
+		
 							Class<?> vertexTaskClass = Class.forName(taskType);
 
 							Object vertexTaskObj = vertexTaskClass

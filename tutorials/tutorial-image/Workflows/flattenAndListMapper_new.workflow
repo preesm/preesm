@@ -8,6 +8,7 @@
         pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
+            <dftools:variable name="dagExportPath" value=""/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="simulatorType" value="AccuratelyTimed"/>

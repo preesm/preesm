@@ -103,7 +103,7 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public void parseXmlFile(IFile file) {
+	public PreesmScenario parseXmlFile(IFile file) {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -125,12 +125,7 @@ public class ScenarioParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Parses the first level of hierarchy
-	 */
-	public PreesmScenario parseDocument() {
+		
 		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
@@ -159,6 +154,7 @@ public class ScenarioParser {
 			}
 		}
 
+		scenario.setScenarioURL(file.getFullPath().toString());
 		return scenario;
 	}
 

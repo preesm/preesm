@@ -73,6 +73,11 @@ public class PreesmScenario {
 	 */
 	private String architectureURL = "";
 
+	/**
+	 * Path to the scenario file
+	 */
+	private String scenarioURL = "";
+
 	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
@@ -116,4 +121,14 @@ public class PreesmScenario {
 	public CodegenManager getCodegenManager() {
 		return codegenManager;
 	}
+
+	public String getScenarioURL() {
+		return scenarioURL;
+	}
+
+	public void setScenarioURL(String scenarioURL) {
+		this.scenarioURL = scenarioURL;
+	}
+	
+	
 }

@@ -36,8 +36,13 @@ public class PreesmScenarioNodeImplementation extends
 		Map<String, Object> outputs = new HashMap<String, Object>();
 
 		// Retrieving the scenario from the given path
-		ScenarioParser scenarioParser = parseScenario(path);
-		PreesmScenario scenario = scenarioParser.parseDocument();
+		ScenarioParser scenarioParser = new ScenarioParser();
+
+		Path relativePath = new Path(path);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
+		PreesmScenario scenario = scenarioParser.parseXmlFile(file);
 
 		// Retrieving the algorithm
 		SDFGraph algorithm = ScenarioParser.getAlgorithm(scenario
@@ -51,18 +56,6 @@ public class PreesmScenarioNodeImplementation extends
 		outputs.put("SDF", algorithm);
 		outputs.put("architecture", architecture);
 		return outputs;
-	}
-
-	private ScenarioParser parseScenario(String path) {
-		ScenarioParser parser = new ScenarioParser();
-
-		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
-
-		parser.parseXmlFile(file);
-
-		return parser;
 	}
 
 	@Override
