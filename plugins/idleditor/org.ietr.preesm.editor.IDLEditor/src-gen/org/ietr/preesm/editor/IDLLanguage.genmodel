@@ -8,50 +8,50 @@
     complianceLevel="5.0" copyrightFields="false" editPluginID="org.ietr.preesm.editor.IDLEditor.edit"
     editorPluginID="org.ietr.preesm.editor.IDLEditor.editor">
   <genPackages prefix="IDLLanguage" basePackage="org.ietr.preesm.editor" disposableProviderFactory="true"
-      ecorePackage="IDLLanguage.ecore#/">
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IDLLanguage.ecore#//BaseType">
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//BaseType/int"/>
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//BaseType/long"/>
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//BaseType/char"/>
+      ecorePackage="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType">
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType/int"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType/long"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType/char"/>
     </genEnums>
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IDLLanguage.ecore#//InterfaceName">
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//InterfaceName/init"/>
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//InterfaceName/loop"/>
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//InterfaceName/end"/>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//InterfaceName">
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//InterfaceName/init"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//InterfaceName/loop"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//InterfaceName/end"/>
     </genEnums>
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IDLLanguage.ecore#//Direction">
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//Direction/in"/>
-      <genEnumLiterals ecoreEnumLiteral="IDLLanguage.ecore#//Direction/out"/>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Direction">
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Direction/in"/>
+      <genEnumLiterals ecoreEnumLiteral="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Direction/out"/>
     </genEnums>
-    <genClasses ecoreClass="IDLLanguage.ecore#//IDL">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//IDL/elements"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//IDL">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//IDL/elements"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//Module">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//Module/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//Module/types"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//Module/interfaces"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Module">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Module/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Module/types"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Module/interfaces"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//DataType">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//DataType/btype"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//DataType/ctype"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//DataType/name"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType/btype"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType/ctype"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType/name"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//Interface">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//Interface/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//Interface/function"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Interface">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Interface/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Interface/function"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//Function">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//Function/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//Function/parameters"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Function">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Function/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Function/parameters"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//Parameter">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//Parameter/direction"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//Parameter/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//Parameter/name"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Parameter">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Parameter/direction"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Parameter/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Parameter/name"/>
     </genClasses>
-    <genClasses ecoreClass="IDLLanguage.ecore#//TypeStar">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IDLLanguage.ecore#//TypeStar/btype"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IDLLanguage.ecore#//TypeStar/ctype"/>
+    <genClasses ecoreClass="platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//TypeStar">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//TypeStar/btype"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//TypeStar/ctype"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

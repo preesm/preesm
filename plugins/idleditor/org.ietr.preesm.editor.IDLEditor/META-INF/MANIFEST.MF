@@ -12,11 +12,11 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.emf.mwe.utils,
  org.eclipse.emf.mwe2.launch,
  com.ibm.icu,
- org.eclipse.xtext.xtend,
  org.eclipse.xtext.util,
  org.eclipse.emf.ecore,
  org.eclipse.emf.common,
- org.antlr.runtime
+ org.antlr.runtime,
+ org.ietr.libs
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.ietr.preesm.editor,

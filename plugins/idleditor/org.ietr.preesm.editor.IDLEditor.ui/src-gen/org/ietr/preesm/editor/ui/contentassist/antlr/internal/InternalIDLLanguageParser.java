@@ -26,20 +26,46 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'int'", "'long'", "'char'", "'init'", "'loop'", "'end'", "'in'", "'out'", "'module'", "'{'", "'}'", "';'", "'typedef'", "'interface'", "'void'", "'('", "')'", "','"
     };
     public static final int RULE_ID=4;
-    public static final int RULE_STRING=6;
+    public static final int T__28=28;
+    public static final int T__27=27;
+    public static final int T__26=26;
+    public static final int T__25=25;
+    public static final int T__24=24;
+    public static final int T__23=23;
+    public static final int T__22=22;
     public static final int RULE_ANY_OTHER=10;
-    public static final int RULE_INT=5;
-    public static final int RULE_WS=9;
+    public static final int T__21=21;
+    public static final int T__20=20;
     public static final int RULE_SL_COMMENT=8;
     public static final int EOF=-1;
     public static final int RULE_ML_COMMENT=7;
+    public static final int T__19=19;
+    public static final int RULE_STRING=6;
+    public static final int T__16=16;
+    public static final int T__15=15;
+    public static final int T__18=18;
+    public static final int T__17=17;
+    public static final int T__12=12;
+    public static final int T__11=11;
+    public static final int T__14=14;
+    public static final int T__13=13;
+    public static final int RULE_INT=5;
+    public static final int RULE_WS=9;
+
+    // delegates
+    // delegators
+
 
         public InternalIDLLanguageParser(TokenStream input) {
-            super(input);
+            this(input, new RecognizerSharedState());
+        }
+        public InternalIDLLanguageParser(TokenStream input, RecognizerSharedState state) {
+            super(input, state);
+             
         }
         
 
-    public String[] getTokenNames() { return tokenNames; }
+    public String[] getTokenNames() { return InternalIDLLanguageParser.tokenNames; }
     public String getGrammarFileName() { return "../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g"; }
 
 
@@ -63,7 +89,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
 
 
 
-    // $ANTLR start entryRuleIDL
+    // $ANTLR start "entryRuleIDL"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:61:1: entryRuleIDL : ruleIDL EOF ;
     public final void entryRuleIDL() throws RecognitionException {
         try {
@@ -73,7 +99,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getIDLRule()); 
             pushFollow(FOLLOW_ruleIDL_in_entryRuleIDL61);
             ruleIDL();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getIDLRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleIDL68); 
@@ -89,10 +116,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleIDL
+    // $ANTLR end "entryRuleIDL"
 
 
-    // $ANTLR start ruleIDL
+    // $ANTLR start "ruleIDL"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:70:1: ruleIDL : ( ( rule__IDL__ElementsAssignment ) ) ;
     public final void ruleIDL() throws RecognitionException {
 
@@ -111,7 +138,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__IDL__ElementsAssignment_in_ruleIDL94);
             rule__IDL__ElementsAssignment();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -135,10 +163,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleIDL
+    // $ANTLR end "ruleIDL"
 
 
-    // $ANTLR start entryRuleModule
+    // $ANTLR start "entryRuleModule"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:89:1: entryRuleModule : ruleModule EOF ;
     public final void entryRuleModule() throws RecognitionException {
         try {
@@ -148,7 +176,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getModuleRule()); 
             pushFollow(FOLLOW_ruleModule_in_entryRuleModule121);
             ruleModule();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getModuleRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleModule128); 
@@ -164,10 +193,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleModule
+    // $ANTLR end "entryRuleModule"
 
 
-    // $ANTLR start ruleModule
+    // $ANTLR start "ruleModule"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:98:1: ruleModule : ( ( rule__Module__Group__0 ) ) ;
     public final void ruleModule() throws RecognitionException {
 
@@ -186,7 +215,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__0_in_ruleModule154);
             rule__Module__Group__0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -210,10 +240,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleModule
+    // $ANTLR end "ruleModule"
 
 
-    // $ANTLR start entryRuleDataType
+    // $ANTLR start "entryRuleDataType"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:117:1: entryRuleDataType : ruleDataType EOF ;
     public final void entryRuleDataType() throws RecognitionException {
         try {
@@ -223,7 +253,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getDataTypeRule()); 
             pushFollow(FOLLOW_ruleDataType_in_entryRuleDataType181);
             ruleDataType();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getDataTypeRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleDataType188); 
@@ -239,10 +270,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleDataType
+    // $ANTLR end "entryRuleDataType"
 
 
-    // $ANTLR start ruleDataType
+    // $ANTLR start "ruleDataType"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:126:1: ruleDataType : ( ( rule__DataType__Group__0 ) ) ;
     public final void ruleDataType() throws RecognitionException {
 
@@ -261,7 +292,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Group__0_in_ruleDataType214);
             rule__DataType__Group__0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -285,10 +317,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleDataType
+    // $ANTLR end "ruleDataType"
 
 
-    // $ANTLR start entryRuleInterface
+    // $ANTLR start "entryRuleInterface"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:145:1: entryRuleInterface : ruleInterface EOF ;
     public final void entryRuleInterface() throws RecognitionException {
         try {
@@ -298,7 +330,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getInterfaceRule()); 
             pushFollow(FOLLOW_ruleInterface_in_entryRuleInterface241);
             ruleInterface();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getInterfaceRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleInterface248); 
@@ -314,10 +347,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleInterface
+    // $ANTLR end "entryRuleInterface"
 
 
-    // $ANTLR start ruleInterface
+    // $ANTLR start "ruleInterface"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:154:1: ruleInterface : ( ( rule__Interface__Group__0 ) ) ;
     public final void ruleInterface() throws RecognitionException {
 
@@ -336,7 +369,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__0_in_ruleInterface274);
             rule__Interface__Group__0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -360,10 +394,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleInterface
+    // $ANTLR end "ruleInterface"
 
 
-    // $ANTLR start entryRuleFunction
+    // $ANTLR start "entryRuleFunction"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:173:1: entryRuleFunction : ruleFunction EOF ;
     public final void entryRuleFunction() throws RecognitionException {
         try {
@@ -373,7 +407,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getFunctionRule()); 
             pushFollow(FOLLOW_ruleFunction_in_entryRuleFunction301);
             ruleFunction();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getFunctionRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleFunction308); 
@@ -389,10 +424,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleFunction
+    // $ANTLR end "entryRuleFunction"
 
 
-    // $ANTLR start ruleFunction
+    // $ANTLR start "ruleFunction"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:182:1: ruleFunction : ( ( rule__Function__Group__0 ) ) ;
     public final void ruleFunction() throws RecognitionException {
 
@@ -411,7 +446,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__0_in_ruleFunction334);
             rule__Function__Group__0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -435,10 +471,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleFunction
+    // $ANTLR end "ruleFunction"
 
 
-    // $ANTLR start entryRuleParameter
+    // $ANTLR start "entryRuleParameter"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:201:1: entryRuleParameter : ruleParameter EOF ;
     public final void entryRuleParameter() throws RecognitionException {
         try {
@@ -448,7 +484,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getParameterRule()); 
             pushFollow(FOLLOW_ruleParameter_in_entryRuleParameter361);
             ruleParameter();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getParameterRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleParameter368); 
@@ -464,10 +501,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleParameter
+    // $ANTLR end "entryRuleParameter"
 
 
-    // $ANTLR start ruleParameter
+    // $ANTLR start "ruleParameter"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:210:1: ruleParameter : ( ( rule__Parameter__Group__0 ) ) ;
     public final void ruleParameter() throws RecognitionException {
 
@@ -486,7 +523,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__Group__0_in_ruleParameter394);
             rule__Parameter__Group__0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -510,10 +548,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleParameter
+    // $ANTLR end "ruleParameter"
 
 
-    // $ANTLR start entryRuleTypeStar
+    // $ANTLR start "entryRuleTypeStar"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:229:1: entryRuleTypeStar : ruleTypeStar EOF ;
     public final void entryRuleTypeStar() throws RecognitionException {
         try {
@@ -523,7 +561,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getTypeStarRule()); 
             pushFollow(FOLLOW_ruleTypeStar_in_entryRuleTypeStar421);
             ruleTypeStar();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getTypeStarRule()); 
             match(input,EOF,FOLLOW_EOF_in_entryRuleTypeStar428); 
@@ -539,10 +578,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end entryRuleTypeStar
+    // $ANTLR end "entryRuleTypeStar"
 
 
-    // $ANTLR start ruleTypeStar
+    // $ANTLR start "ruleTypeStar"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:238:1: ruleTypeStar : ( ( rule__TypeStar__Alternatives ) ) ;
     public final void ruleTypeStar() throws RecognitionException {
 
@@ -561,7 +600,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__TypeStar__Alternatives_in_ruleTypeStar454);
             rule__TypeStar__Alternatives();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -585,10 +625,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleTypeStar
+    // $ANTLR end "ruleTypeStar"
 
 
-    // $ANTLR start ruleBaseType
+    // $ANTLR start "ruleBaseType"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:258:1: ruleBaseType : ( ( rule__BaseType__Alternatives ) ) ;
     public final void ruleBaseType() throws RecognitionException {
 
@@ -607,7 +647,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__BaseType__Alternatives_in_ruleBaseType491);
             rule__BaseType__Alternatives();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -631,10 +672,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleBaseType
+    // $ANTLR end "ruleBaseType"
 
 
-    // $ANTLR start ruleInterfaceName
+    // $ANTLR start "ruleInterfaceName"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:277:1: ruleInterfaceName : ( ( rule__InterfaceName__Alternatives ) ) ;
     public final void ruleInterfaceName() throws RecognitionException {
 
@@ -653,7 +694,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__InterfaceName__Alternatives_in_ruleInterfaceName527);
             rule__InterfaceName__Alternatives();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -677,10 +719,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleInterfaceName
+    // $ANTLR end "ruleInterfaceName"
 
 
-    // $ANTLR start ruleDirection
+    // $ANTLR start "ruleDirection"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:296:1: ruleDirection : ( ( rule__Direction__Alternatives ) ) ;
     public final void ruleDirection() throws RecognitionException {
 
@@ -699,7 +741,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Direction__Alternatives_in_ruleDirection563);
             rule__Direction__Alternatives();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -723,10 +766,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end ruleDirection
+    // $ANTLR end "ruleDirection"
 
 
-    // $ANTLR start rule__DataType__Alternatives_1
+    // $ANTLR start "rule__DataType__Alternatives_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:314:1: rule__DataType__Alternatives_1 : ( ( ( rule__DataType__BtypeAssignment_1_0 ) ) | ( ( rule__DataType__CtypeAssignment_1_1 ) ) );
     public final void rule__DataType__Alternatives_1() throws RecognitionException {
 
@@ -745,7 +788,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("314:1: rule__DataType__Alternatives_1 : ( ( ( rule__DataType__BtypeAssignment_1_0 ) ) | ( ( rule__DataType__CtypeAssignment_1_1 ) ) );", 1, 0, input);
+                    new NoViableAltException("", 1, 0, input);
 
                 throw nvae;
             }
@@ -762,7 +805,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     {
                     pushFollow(FOLLOW_rule__DataType__BtypeAssignment_1_0_in_rule__DataType__Alternatives_1598);
                     rule__DataType__BtypeAssignment_1_0();
-                    _fsp--;
+
+                    state._fsp--;
 
 
                     }
@@ -786,7 +830,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     {
                     pushFollow(FOLLOW_rule__DataType__CtypeAssignment_1_1_in_rule__DataType__Alternatives_1616);
                     rule__DataType__CtypeAssignment_1_1();
-                    _fsp--;
+
+                    state._fsp--;
 
 
                     }
@@ -812,10 +857,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Alternatives_1
+    // $ANTLR end "rule__DataType__Alternatives_1"
 
 
-    // $ANTLR start rule__TypeStar__Alternatives
+    // $ANTLR start "rule__TypeStar__Alternatives"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:336:1: rule__TypeStar__Alternatives : ( ( ( rule__TypeStar__BtypeAssignment_0 ) ) | ( ( rule__TypeStar__CtypeAssignment_1 ) ) );
     public final void rule__TypeStar__Alternatives() throws RecognitionException {
 
@@ -834,7 +879,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("336:1: rule__TypeStar__Alternatives : ( ( ( rule__TypeStar__BtypeAssignment_0 ) ) | ( ( rule__TypeStar__CtypeAssignment_1 ) ) );", 2, 0, input);
+                    new NoViableAltException("", 2, 0, input);
 
                 throw nvae;
             }
@@ -851,7 +896,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     {
                     pushFollow(FOLLOW_rule__TypeStar__BtypeAssignment_0_in_rule__TypeStar__Alternatives649);
                     rule__TypeStar__BtypeAssignment_0();
-                    _fsp--;
+
+                    state._fsp--;
 
 
                     }
@@ -875,7 +921,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     {
                     pushFollow(FOLLOW_rule__TypeStar__CtypeAssignment_1_in_rule__TypeStar__Alternatives667);
                     rule__TypeStar__CtypeAssignment_1();
-                    _fsp--;
+
+                    state._fsp--;
 
 
                     }
@@ -901,10 +948,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeStar__Alternatives
+    // $ANTLR end "rule__TypeStar__Alternatives"
 
 
-    // $ANTLR start rule__BaseType__Alternatives
+    // $ANTLR start "rule__BaseType__Alternatives"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:358:1: rule__BaseType__Alternatives : ( ( ( 'int' ) ) | ( ( 'long' ) ) | ( ( 'char' ) ) );
     public final void rule__BaseType__Alternatives() throws RecognitionException {
 
@@ -931,7 +978,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("358:1: rule__BaseType__Alternatives : ( ( ( 'int' ) ) | ( ( 'long' ) ) | ( ( 'char' ) ) );", 3, 0, input);
+                    new NoViableAltException("", 3, 0, input);
 
                 throw nvae;
             }
@@ -1014,10 +1061,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__BaseType__Alternatives
+    // $ANTLR end "rule__BaseType__Alternatives"
 
 
-    // $ANTLR start rule__InterfaceName__Alternatives
+    // $ANTLR start "rule__InterfaceName__Alternatives"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:389:1: rule__InterfaceName__Alternatives : ( ( ( 'init' ) ) | ( ( 'loop' ) ) | ( ( 'end' ) ) );
     public final void rule__InterfaceName__Alternatives() throws RecognitionException {
 
@@ -1044,7 +1091,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("389:1: rule__InterfaceName__Alternatives : ( ( ( 'init' ) ) | ( ( 'loop' ) ) | ( ( 'end' ) ) );", 4, 0, input);
+                    new NoViableAltException("", 4, 0, input);
 
                 throw nvae;
             }
@@ -1127,10 +1174,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__InterfaceName__Alternatives
+    // $ANTLR end "rule__InterfaceName__Alternatives"
 
 
-    // $ANTLR start rule__Direction__Alternatives
+    // $ANTLR start "rule__Direction__Alternatives"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:420:1: rule__Direction__Alternatives : ( ( ( 'in' ) ) | ( ( 'out' ) ) );
     public final void rule__Direction__Alternatives() throws RecognitionException {
 
@@ -1149,7 +1196,7 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("420:1: rule__Direction__Alternatives : ( ( ( 'in' ) ) | ( ( 'out' ) ) );", 5, 0, input);
+                    new NoViableAltException("", 5, 0, input);
 
                 throw nvae;
             }
@@ -1210,10 +1257,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Direction__Alternatives
+    // $ANTLR end "rule__Direction__Alternatives"
 
 
-    // $ANTLR start rule__Module__Group__0
+    // $ANTLR start "rule__Module__Group__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:446:1: rule__Module__Group__0 : rule__Module__Group__0__Impl rule__Module__Group__1 ;
     public final void rule__Module__Group__0() throws RecognitionException {
 
@@ -1225,11 +1272,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__0__Impl_in_rule__Module__Group__0911);
             rule__Module__Group__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__1_in_rule__Module__Group__0914);
             rule__Module__Group__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1246,10 +1295,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__0
+    // $ANTLR end "rule__Module__Group__0"
 
 
-    // $ANTLR start rule__Module__Group__0__Impl
+    // $ANTLR start "rule__Module__Group__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:458:1: rule__Module__Group__0__Impl : ( 'module' ) ;
     public final void rule__Module__Group__0__Impl() throws RecognitionException {
 
@@ -1283,10 +1332,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__0__Impl
+    // $ANTLR end "rule__Module__Group__0__Impl"
 
 
-    // $ANTLR start rule__Module__Group__1
+    // $ANTLR start "rule__Module__Group__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:477:1: rule__Module__Group__1 : rule__Module__Group__1__Impl rule__Module__Group__2 ;
     public final void rule__Module__Group__1() throws RecognitionException {
 
@@ -1298,11 +1347,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__1__Impl_in_rule__Module__Group__1973);
             rule__Module__Group__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__2_in_rule__Module__Group__1976);
             rule__Module__Group__2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1319,10 +1370,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__1
+    // $ANTLR end "rule__Module__Group__1"
 
 
-    // $ANTLR start rule__Module__Group__1__Impl
+    // $ANTLR start "rule__Module__Group__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:489:1: rule__Module__Group__1__Impl : ( ( rule__Module__NameAssignment_1 ) ) ;
     public final void rule__Module__Group__1__Impl() throws RecognitionException {
 
@@ -1341,7 +1392,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__NameAssignment_1_in_rule__Module__Group__1__Impl1003);
             rule__Module__NameAssignment_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1365,10 +1417,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__1__Impl
+    // $ANTLR end "rule__Module__Group__1__Impl"
 
 
-    // $ANTLR start rule__Module__Group__2
+    // $ANTLR start "rule__Module__Group__2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:506:1: rule__Module__Group__2 : rule__Module__Group__2__Impl rule__Module__Group__3 ;
     public final void rule__Module__Group__2() throws RecognitionException {
 
@@ -1380,11 +1432,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__2__Impl_in_rule__Module__Group__21033);
             rule__Module__Group__2__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__3_in_rule__Module__Group__21036);
             rule__Module__Group__3();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1401,10 +1455,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__2
+    // $ANTLR end "rule__Module__Group__2"
 
 
-    // $ANTLR start rule__Module__Group__2__Impl
+    // $ANTLR start "rule__Module__Group__2__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:518:1: rule__Module__Group__2__Impl : ( '{' ) ;
     public final void rule__Module__Group__2__Impl() throws RecognitionException {
 
@@ -1438,10 +1492,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__2__Impl
+    // $ANTLR end "rule__Module__Group__2__Impl"
 
 
-    // $ANTLR start rule__Module__Group__3
+    // $ANTLR start "rule__Module__Group__3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:537:1: rule__Module__Group__3 : rule__Module__Group__3__Impl rule__Module__Group__4 ;
     public final void rule__Module__Group__3() throws RecognitionException {
 
@@ -1453,11 +1507,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__3__Impl_in_rule__Module__Group__31095);
             rule__Module__Group__3__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__4_in_rule__Module__Group__31098);
             rule__Module__Group__4();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1474,10 +1530,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__3
+    // $ANTLR end "rule__Module__Group__3"
 
 
-    // $ANTLR start rule__Module__Group__3__Impl
+    // $ANTLR start "rule__Module__Group__3__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:549:1: rule__Module__Group__3__Impl : ( ( rule__Module__TypesAssignment_3 )* ) ;
     public final void rule__Module__Group__3__Impl() throws RecognitionException {
 
@@ -1508,7 +1564,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             	    {
             	    pushFollow(FOLLOW_rule__Module__TypesAssignment_3_in_rule__Module__Group__3__Impl1125);
             	    rule__Module__TypesAssignment_3();
-            	    _fsp--;
+
+            	    state._fsp--;
 
 
             	    }
@@ -1538,10 +1595,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__3__Impl
+    // $ANTLR end "rule__Module__Group__3__Impl"
 
 
-    // $ANTLR start rule__Module__Group__4
+    // $ANTLR start "rule__Module__Group__4"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:566:1: rule__Module__Group__4 : rule__Module__Group__4__Impl rule__Module__Group__5 ;
     public final void rule__Module__Group__4() throws RecognitionException {
 
@@ -1553,11 +1610,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__4__Impl_in_rule__Module__Group__41156);
             rule__Module__Group__4__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__5_in_rule__Module__Group__41159);
             rule__Module__Group__5();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1574,10 +1633,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__4
+    // $ANTLR end "rule__Module__Group__4"
 
 
-    // $ANTLR start rule__Module__Group__4__Impl
+    // $ANTLR start "rule__Module__Group__4__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:578:1: rule__Module__Group__4__Impl : ( ( rule__Module__InterfacesAssignment_4 )* ) ;
     public final void rule__Module__Group__4__Impl() throws RecognitionException {
 
@@ -1608,7 +1667,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             	    {
             	    pushFollow(FOLLOW_rule__Module__InterfacesAssignment_4_in_rule__Module__Group__4__Impl1186);
             	    rule__Module__InterfacesAssignment_4();
-            	    _fsp--;
+
+            	    state._fsp--;
 
 
             	    }
@@ -1638,10 +1698,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__4__Impl
+    // $ANTLR end "rule__Module__Group__4__Impl"
 
 
-    // $ANTLR start rule__Module__Group__5
+    // $ANTLR start "rule__Module__Group__5"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:595:1: rule__Module__Group__5 : rule__Module__Group__5__Impl rule__Module__Group__6 ;
     public final void rule__Module__Group__5() throws RecognitionException {
 
@@ -1653,11 +1713,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__5__Impl_in_rule__Module__Group__51217);
             rule__Module__Group__5__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Module__Group__6_in_rule__Module__Group__51220);
             rule__Module__Group__6();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1674,10 +1736,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__5
+    // $ANTLR end "rule__Module__Group__5"
 
 
-    // $ANTLR start rule__Module__Group__5__Impl
+    // $ANTLR start "rule__Module__Group__5__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:607:1: rule__Module__Group__5__Impl : ( '}' ) ;
     public final void rule__Module__Group__5__Impl() throws RecognitionException {
 
@@ -1711,10 +1773,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__5__Impl
+    // $ANTLR end "rule__Module__Group__5__Impl"
 
 
-    // $ANTLR start rule__Module__Group__6
+    // $ANTLR start "rule__Module__Group__6"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:626:1: rule__Module__Group__6 : rule__Module__Group__6__Impl ;
     public final void rule__Module__Group__6() throws RecognitionException {
 
@@ -1726,7 +1788,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Module__Group__6__Impl_in_rule__Module__Group__61279);
             rule__Module__Group__6__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1743,10 +1806,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__6
+    // $ANTLR end "rule__Module__Group__6"
 
 
-    // $ANTLR start rule__Module__Group__6__Impl
+    // $ANTLR start "rule__Module__Group__6__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:637:1: rule__Module__Group__6__Impl : ( ';' ) ;
     public final void rule__Module__Group__6__Impl() throws RecognitionException {
 
@@ -1780,10 +1843,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__Group__6__Impl
+    // $ANTLR end "rule__Module__Group__6__Impl"
 
 
-    // $ANTLR start rule__DataType__Group__0
+    // $ANTLR start "rule__DataType__Group__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:670:1: rule__DataType__Group__0 : rule__DataType__Group__0__Impl rule__DataType__Group__1 ;
     public final void rule__DataType__Group__0() throws RecognitionException {
 
@@ -1795,11 +1858,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Group__0__Impl_in_rule__DataType__Group__01352);
             rule__DataType__Group__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__DataType__Group__1_in_rule__DataType__Group__01355);
             rule__DataType__Group__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1816,10 +1881,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__0
+    // $ANTLR end "rule__DataType__Group__0"
 
 
-    // $ANTLR start rule__DataType__Group__0__Impl
+    // $ANTLR start "rule__DataType__Group__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:682:1: rule__DataType__Group__0__Impl : ( 'typedef' ) ;
     public final void rule__DataType__Group__0__Impl() throws RecognitionException {
 
@@ -1853,10 +1918,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__0__Impl
+    // $ANTLR end "rule__DataType__Group__0__Impl"
 
 
-    // $ANTLR start rule__DataType__Group__1
+    // $ANTLR start "rule__DataType__Group__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:701:1: rule__DataType__Group__1 : rule__DataType__Group__1__Impl rule__DataType__Group__2 ;
     public final void rule__DataType__Group__1() throws RecognitionException {
 
@@ -1868,11 +1933,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Group__1__Impl_in_rule__DataType__Group__11414);
             rule__DataType__Group__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__DataType__Group__2_in_rule__DataType__Group__11417);
             rule__DataType__Group__2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1889,10 +1956,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__1
+    // $ANTLR end "rule__DataType__Group__1"
 
 
-    // $ANTLR start rule__DataType__Group__1__Impl
+    // $ANTLR start "rule__DataType__Group__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:713:1: rule__DataType__Group__1__Impl : ( ( rule__DataType__Alternatives_1 ) ) ;
     public final void rule__DataType__Group__1__Impl() throws RecognitionException {
 
@@ -1911,7 +1978,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Alternatives_1_in_rule__DataType__Group__1__Impl1444);
             rule__DataType__Alternatives_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1935,10 +2003,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__1__Impl
+    // $ANTLR end "rule__DataType__Group__1__Impl"
 
 
-    // $ANTLR start rule__DataType__Group__2
+    // $ANTLR start "rule__DataType__Group__2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:730:1: rule__DataType__Group__2 : rule__DataType__Group__2__Impl rule__DataType__Group__3 ;
     public final void rule__DataType__Group__2() throws RecognitionException {
 
@@ -1950,11 +2018,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Group__2__Impl_in_rule__DataType__Group__21474);
             rule__DataType__Group__2__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__DataType__Group__3_in_rule__DataType__Group__21477);
             rule__DataType__Group__3();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -1971,10 +2041,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__2
+    // $ANTLR end "rule__DataType__Group__2"
 
 
-    // $ANTLR start rule__DataType__Group__2__Impl
+    // $ANTLR start "rule__DataType__Group__2__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:742:1: rule__DataType__Group__2__Impl : ( ( rule__DataType__NameAssignment_2 ) ) ;
     public final void rule__DataType__Group__2__Impl() throws RecognitionException {
 
@@ -1993,7 +2063,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__NameAssignment_2_in_rule__DataType__Group__2__Impl1504);
             rule__DataType__NameAssignment_2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2017,10 +2088,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__2__Impl
+    // $ANTLR end "rule__DataType__Group__2__Impl"
 
 
-    // $ANTLR start rule__DataType__Group__3
+    // $ANTLR start "rule__DataType__Group__3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:759:1: rule__DataType__Group__3 : rule__DataType__Group__3__Impl ;
     public final void rule__DataType__Group__3() throws RecognitionException {
 
@@ -2032,7 +2103,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__DataType__Group__3__Impl_in_rule__DataType__Group__31534);
             rule__DataType__Group__3__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2049,10 +2121,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__3
+    // $ANTLR end "rule__DataType__Group__3"
 
 
-    // $ANTLR start rule__DataType__Group__3__Impl
+    // $ANTLR start "rule__DataType__Group__3__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:770:1: rule__DataType__Group__3__Impl : ( ';' ) ;
     public final void rule__DataType__Group__3__Impl() throws RecognitionException {
 
@@ -2086,10 +2158,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__Group__3__Impl
+    // $ANTLR end "rule__DataType__Group__3__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__0
+    // $ANTLR start "rule__Interface__Group__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:797:1: rule__Interface__Group__0 : rule__Interface__Group__0__Impl rule__Interface__Group__1 ;
     public final void rule__Interface__Group__0() throws RecognitionException {
 
@@ -2101,11 +2173,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__0__Impl_in_rule__Interface__Group__01601);
             rule__Interface__Group__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Interface__Group__1_in_rule__Interface__Group__01604);
             rule__Interface__Group__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2122,10 +2196,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__0
+    // $ANTLR end "rule__Interface__Group__0"
 
 
-    // $ANTLR start rule__Interface__Group__0__Impl
+    // $ANTLR start "rule__Interface__Group__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:809:1: rule__Interface__Group__0__Impl : ( 'interface' ) ;
     public final void rule__Interface__Group__0__Impl() throws RecognitionException {
 
@@ -2159,10 +2233,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__0__Impl
+    // $ANTLR end "rule__Interface__Group__0__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__1
+    // $ANTLR start "rule__Interface__Group__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:828:1: rule__Interface__Group__1 : rule__Interface__Group__1__Impl rule__Interface__Group__2 ;
     public final void rule__Interface__Group__1() throws RecognitionException {
 
@@ -2174,11 +2248,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__1__Impl_in_rule__Interface__Group__11663);
             rule__Interface__Group__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Interface__Group__2_in_rule__Interface__Group__11666);
             rule__Interface__Group__2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2195,10 +2271,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__1
+    // $ANTLR end "rule__Interface__Group__1"
 
 
-    // $ANTLR start rule__Interface__Group__1__Impl
+    // $ANTLR start "rule__Interface__Group__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:840:1: rule__Interface__Group__1__Impl : ( ( rule__Interface__NameAssignment_1 ) ) ;
     public final void rule__Interface__Group__1__Impl() throws RecognitionException {
 
@@ -2217,7 +2293,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__NameAssignment_1_in_rule__Interface__Group__1__Impl1693);
             rule__Interface__NameAssignment_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2241,10 +2318,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__1__Impl
+    // $ANTLR end "rule__Interface__Group__1__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__2
+    // $ANTLR start "rule__Interface__Group__2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:857:1: rule__Interface__Group__2 : rule__Interface__Group__2__Impl rule__Interface__Group__3 ;
     public final void rule__Interface__Group__2() throws RecognitionException {
 
@@ -2256,11 +2333,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__2__Impl_in_rule__Interface__Group__21723);
             rule__Interface__Group__2__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Interface__Group__3_in_rule__Interface__Group__21726);
             rule__Interface__Group__3();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2277,10 +2356,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__2
+    // $ANTLR end "rule__Interface__Group__2"
 
 
-    // $ANTLR start rule__Interface__Group__2__Impl
+    // $ANTLR start "rule__Interface__Group__2__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:869:1: rule__Interface__Group__2__Impl : ( '{' ) ;
     public final void rule__Interface__Group__2__Impl() throws RecognitionException {
 
@@ -2314,10 +2393,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__2__Impl
+    // $ANTLR end "rule__Interface__Group__2__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__3
+    // $ANTLR start "rule__Interface__Group__3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:888:1: rule__Interface__Group__3 : rule__Interface__Group__3__Impl rule__Interface__Group__4 ;
     public final void rule__Interface__Group__3() throws RecognitionException {
 
@@ -2329,11 +2408,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__3__Impl_in_rule__Interface__Group__31785);
             rule__Interface__Group__3__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Interface__Group__4_in_rule__Interface__Group__31788);
             rule__Interface__Group__4();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2350,10 +2431,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__3
+    // $ANTLR end "rule__Interface__Group__3"
 
 
-    // $ANTLR start rule__Interface__Group__3__Impl
+    // $ANTLR start "rule__Interface__Group__3__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:900:1: rule__Interface__Group__3__Impl : ( ( rule__Interface__FunctionAssignment_3 ) ) ;
     public final void rule__Interface__Group__3__Impl() throws RecognitionException {
 
@@ -2372,7 +2453,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__FunctionAssignment_3_in_rule__Interface__Group__3__Impl1815);
             rule__Interface__FunctionAssignment_3();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2396,10 +2478,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__3__Impl
+    // $ANTLR end "rule__Interface__Group__3__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__4
+    // $ANTLR start "rule__Interface__Group__4"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:917:1: rule__Interface__Group__4 : rule__Interface__Group__4__Impl rule__Interface__Group__5 ;
     public final void rule__Interface__Group__4() throws RecognitionException {
 
@@ -2411,11 +2493,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__4__Impl_in_rule__Interface__Group__41845);
             rule__Interface__Group__4__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Interface__Group__5_in_rule__Interface__Group__41848);
             rule__Interface__Group__5();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2432,10 +2516,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__4
+    // $ANTLR end "rule__Interface__Group__4"
 
 
-    // $ANTLR start rule__Interface__Group__4__Impl
+    // $ANTLR start "rule__Interface__Group__4__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:929:1: rule__Interface__Group__4__Impl : ( '}' ) ;
     public final void rule__Interface__Group__4__Impl() throws RecognitionException {
 
@@ -2469,10 +2553,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__4__Impl
+    // $ANTLR end "rule__Interface__Group__4__Impl"
 
 
-    // $ANTLR start rule__Interface__Group__5
+    // $ANTLR start "rule__Interface__Group__5"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:948:1: rule__Interface__Group__5 : rule__Interface__Group__5__Impl ;
     public final void rule__Interface__Group__5() throws RecognitionException {
 
@@ -2484,7 +2568,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Interface__Group__5__Impl_in_rule__Interface__Group__51907);
             rule__Interface__Group__5__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2501,10 +2586,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__5
+    // $ANTLR end "rule__Interface__Group__5"
 
 
-    // $ANTLR start rule__Interface__Group__5__Impl
+    // $ANTLR start "rule__Interface__Group__5__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:959:1: rule__Interface__Group__5__Impl : ( ';' ) ;
     public final void rule__Interface__Group__5__Impl() throws RecognitionException {
 
@@ -2538,10 +2623,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__Group__5__Impl
+    // $ANTLR end "rule__Interface__Group__5__Impl"
 
 
-    // $ANTLR start rule__Function__Group__0
+    // $ANTLR start "rule__Function__Group__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:990:1: rule__Function__Group__0 : rule__Function__Group__0__Impl rule__Function__Group__1 ;
     public final void rule__Function__Group__0() throws RecognitionException {
 
@@ -2553,11 +2638,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__0__Impl_in_rule__Function__Group__01978);
             rule__Function__Group__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__1_in_rule__Function__Group__01981);
             rule__Function__Group__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2574,10 +2661,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__0
+    // $ANTLR end "rule__Function__Group__0"
 
 
-    // $ANTLR start rule__Function__Group__0__Impl
+    // $ANTLR start "rule__Function__Group__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1002:1: rule__Function__Group__0__Impl : ( 'void' ) ;
     public final void rule__Function__Group__0__Impl() throws RecognitionException {
 
@@ -2611,10 +2698,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__0__Impl
+    // $ANTLR end "rule__Function__Group__0__Impl"
 
 
-    // $ANTLR start rule__Function__Group__1
+    // $ANTLR start "rule__Function__Group__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1021:1: rule__Function__Group__1 : rule__Function__Group__1__Impl rule__Function__Group__2 ;
     public final void rule__Function__Group__1() throws RecognitionException {
 
@@ -2626,11 +2713,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__1__Impl_in_rule__Function__Group__12040);
             rule__Function__Group__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__2_in_rule__Function__Group__12043);
             rule__Function__Group__2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2647,10 +2736,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__1
+    // $ANTLR end "rule__Function__Group__1"
 
 
-    // $ANTLR start rule__Function__Group__1__Impl
+    // $ANTLR start "rule__Function__Group__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1033:1: rule__Function__Group__1__Impl : ( ( rule__Function__NameAssignment_1 ) ) ;
     public final void rule__Function__Group__1__Impl() throws RecognitionException {
 
@@ -2669,7 +2758,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__NameAssignment_1_in_rule__Function__Group__1__Impl2070);
             rule__Function__NameAssignment_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2693,10 +2783,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__1__Impl
+    // $ANTLR end "rule__Function__Group__1__Impl"
 
 
-    // $ANTLR start rule__Function__Group__2
+    // $ANTLR start "rule__Function__Group__2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1050:1: rule__Function__Group__2 : rule__Function__Group__2__Impl rule__Function__Group__3 ;
     public final void rule__Function__Group__2() throws RecognitionException {
 
@@ -2708,11 +2798,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100);
             rule__Function__Group__2__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__3_in_rule__Function__Group__22103);
             rule__Function__Group__3();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2729,10 +2821,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__2
+    // $ANTLR end "rule__Function__Group__2"
 
 
-    // $ANTLR start rule__Function__Group__2__Impl
+    // $ANTLR start "rule__Function__Group__2__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1062:1: rule__Function__Group__2__Impl : ( '(' ) ;
     public final void rule__Function__Group__2__Impl() throws RecognitionException {
 
@@ -2766,10 +2858,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__2__Impl
+    // $ANTLR end "rule__Function__Group__2__Impl"
 
 
-    // $ANTLR start rule__Function__Group__3
+    // $ANTLR start "rule__Function__Group__3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1081:1: rule__Function__Group__3 : rule__Function__Group__3__Impl rule__Function__Group__4 ;
     public final void rule__Function__Group__3() throws RecognitionException {
 
@@ -2781,11 +2873,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162);
             rule__Function__Group__3__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__4_in_rule__Function__Group__32165);
             rule__Function__Group__4();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2802,10 +2896,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__3
+    // $ANTLR end "rule__Function__Group__3"
 
 
-    // $ANTLR start rule__Function__Group__3__Impl
+    // $ANTLR start "rule__Function__Group__3__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1093:1: rule__Function__Group__3__Impl : ( ( rule__Function__ParametersAssignment_3 )? ) ;
     public final void rule__Function__Group__3__Impl() throws RecognitionException {
 
@@ -2832,7 +2926,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
                     {
                     pushFollow(FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192);
                     rule__Function__ParametersAssignment_3();
-                    _fsp--;
+
+                    state._fsp--;
 
 
                     }
@@ -2859,10 +2954,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__3__Impl
+    // $ANTLR end "rule__Function__Group__3__Impl"
 
 
-    // $ANTLR start rule__Function__Group__4
+    // $ANTLR start "rule__Function__Group__4"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1110:1: rule__Function__Group__4 : rule__Function__Group__4__Impl rule__Function__Group__5 ;
     public final void rule__Function__Group__4() throws RecognitionException {
 
@@ -2874,11 +2969,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42223);
             rule__Function__Group__4__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42226);
             rule__Function__Group__5();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2895,10 +2992,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__4
+    // $ANTLR end "rule__Function__Group__4"
 
 
-    // $ANTLR start rule__Function__Group__4__Impl
+    // $ANTLR start "rule__Function__Group__4__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1122:1: rule__Function__Group__4__Impl : ( ( rule__Function__Group_4__0 )* ) ;
     public final void rule__Function__Group__4__Impl() throws RecognitionException {
 
@@ -2929,7 +3026,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             	    {
             	    pushFollow(FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2253);
             	    rule__Function__Group_4__0();
-            	    _fsp--;
+
+            	    state._fsp--;
 
 
             	    }
@@ -2959,10 +3057,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__4__Impl
+    // $ANTLR end "rule__Function__Group__4__Impl"
 
 
-    // $ANTLR start rule__Function__Group__5
+    // $ANTLR start "rule__Function__Group__5"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1139:1: rule__Function__Group__5 : rule__Function__Group__5__Impl rule__Function__Group__6 ;
     public final void rule__Function__Group__5() throws RecognitionException {
 
@@ -2974,11 +3072,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52284);
             rule__Function__Group__5__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group__6_in_rule__Function__Group__52287);
             rule__Function__Group__6();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -2995,10 +3095,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__5
+    // $ANTLR end "rule__Function__Group__5"
 
 
-    // $ANTLR start rule__Function__Group__5__Impl
+    // $ANTLR start "rule__Function__Group__5__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1151:1: rule__Function__Group__5__Impl : ( ')' ) ;
     public final void rule__Function__Group__5__Impl() throws RecognitionException {
 
@@ -3032,10 +3132,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__5__Impl
+    // $ANTLR end "rule__Function__Group__5__Impl"
 
 
-    // $ANTLR start rule__Function__Group__6
+    // $ANTLR start "rule__Function__Group__6"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1170:1: rule__Function__Group__6 : rule__Function__Group__6__Impl ;
     public final void rule__Function__Group__6() throws RecognitionException {
 
@@ -3047,7 +3147,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group__6__Impl_in_rule__Function__Group__62346);
             rule__Function__Group__6__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3064,10 +3165,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__6
+    // $ANTLR end "rule__Function__Group__6"
 
 
-    // $ANTLR start rule__Function__Group__6__Impl
+    // $ANTLR start "rule__Function__Group__6__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1181:1: rule__Function__Group__6__Impl : ( ';' ) ;
     public final void rule__Function__Group__6__Impl() throws RecognitionException {
 
@@ -3101,10 +3202,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group__6__Impl
+    // $ANTLR end "rule__Function__Group__6__Impl"
 
 
-    // $ANTLR start rule__Function__Group_4__0
+    // $ANTLR start "rule__Function__Group_4__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1214:1: rule__Function__Group_4__0 : rule__Function__Group_4__0__Impl rule__Function__Group_4__1 ;
     public final void rule__Function__Group_4__0() throws RecognitionException {
 
@@ -3116,11 +3217,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group_4__0__Impl_in_rule__Function__Group_4__02419);
             rule__Function__Group_4__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Function__Group_4__1_in_rule__Function__Group_4__02422);
             rule__Function__Group_4__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3137,10 +3240,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group_4__0
+    // $ANTLR end "rule__Function__Group_4__0"
 
 
-    // $ANTLR start rule__Function__Group_4__0__Impl
+    // $ANTLR start "rule__Function__Group_4__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1226:1: rule__Function__Group_4__0__Impl : ( ',' ) ;
     public final void rule__Function__Group_4__0__Impl() throws RecognitionException {
 
@@ -3174,10 +3277,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group_4__0__Impl
+    // $ANTLR end "rule__Function__Group_4__0__Impl"
 
 
-    // $ANTLR start rule__Function__Group_4__1
+    // $ANTLR start "rule__Function__Group_4__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1245:1: rule__Function__Group_4__1 : rule__Function__Group_4__1__Impl ;
     public final void rule__Function__Group_4__1() throws RecognitionException {
 
@@ -3189,7 +3292,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__Group_4__1__Impl_in_rule__Function__Group_4__12481);
             rule__Function__Group_4__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3206,10 +3310,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group_4__1
+    // $ANTLR end "rule__Function__Group_4__1"
 
 
-    // $ANTLR start rule__Function__Group_4__1__Impl
+    // $ANTLR start "rule__Function__Group_4__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1256:1: rule__Function__Group_4__1__Impl : ( ( rule__Function__ParametersAssignment_4_1 ) ) ;
     public final void rule__Function__Group_4__1__Impl() throws RecognitionException {
 
@@ -3228,7 +3332,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Function__ParametersAssignment_4_1_in_rule__Function__Group_4__1__Impl2508);
             rule__Function__ParametersAssignment_4_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3252,10 +3357,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__Group_4__1__Impl
+    // $ANTLR end "rule__Function__Group_4__1__Impl"
 
 
-    // $ANTLR start rule__Parameter__Group__0
+    // $ANTLR start "rule__Parameter__Group__0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1277:1: rule__Parameter__Group__0 : rule__Parameter__Group__0__Impl rule__Parameter__Group__1 ;
     public final void rule__Parameter__Group__0() throws RecognitionException {
 
@@ -3267,11 +3372,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__Group__0__Impl_in_rule__Parameter__Group__02542);
             rule__Parameter__Group__0__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Parameter__Group__1_in_rule__Parameter__Group__02545);
             rule__Parameter__Group__1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3288,10 +3395,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__0
+    // $ANTLR end "rule__Parameter__Group__0"
 
 
-    // $ANTLR start rule__Parameter__Group__0__Impl
+    // $ANTLR start "rule__Parameter__Group__0__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1289:1: rule__Parameter__Group__0__Impl : ( ( rule__Parameter__DirectionAssignment_0 ) ) ;
     public final void rule__Parameter__Group__0__Impl() throws RecognitionException {
 
@@ -3310,7 +3417,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__DirectionAssignment_0_in_rule__Parameter__Group__0__Impl2572);
             rule__Parameter__DirectionAssignment_0();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3334,10 +3442,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__0__Impl
+    // $ANTLR end "rule__Parameter__Group__0__Impl"
 
 
-    // $ANTLR start rule__Parameter__Group__1
+    // $ANTLR start "rule__Parameter__Group__1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1306:1: rule__Parameter__Group__1 : rule__Parameter__Group__1__Impl rule__Parameter__Group__2 ;
     public final void rule__Parameter__Group__1() throws RecognitionException {
 
@@ -3349,11 +3457,13 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__Group__1__Impl_in_rule__Parameter__Group__12602);
             rule__Parameter__Group__1__Impl();
-            _fsp--;
+
+            state._fsp--;
 
             pushFollow(FOLLOW_rule__Parameter__Group__2_in_rule__Parameter__Group__12605);
             rule__Parameter__Group__2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3370,10 +3480,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__1
+    // $ANTLR end "rule__Parameter__Group__1"
 
 
-    // $ANTLR start rule__Parameter__Group__1__Impl
+    // $ANTLR start "rule__Parameter__Group__1__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1318:1: rule__Parameter__Group__1__Impl : ( ( rule__Parameter__TypeAssignment_1 ) ) ;
     public final void rule__Parameter__Group__1__Impl() throws RecognitionException {
 
@@ -3392,7 +3502,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__TypeAssignment_1_in_rule__Parameter__Group__1__Impl2632);
             rule__Parameter__TypeAssignment_1();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3416,10 +3527,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__1__Impl
+    // $ANTLR end "rule__Parameter__Group__1__Impl"
 
 
-    // $ANTLR start rule__Parameter__Group__2
+    // $ANTLR start "rule__Parameter__Group__2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1335:1: rule__Parameter__Group__2 : rule__Parameter__Group__2__Impl ;
     public final void rule__Parameter__Group__2() throws RecognitionException {
 
@@ -3431,7 +3542,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__Group__2__Impl_in_rule__Parameter__Group__22662);
             rule__Parameter__Group__2__Impl();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3448,10 +3560,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__2
+    // $ANTLR end "rule__Parameter__Group__2"
 
 
-    // $ANTLR start rule__Parameter__Group__2__Impl
+    // $ANTLR start "rule__Parameter__Group__2__Impl"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1346:1: rule__Parameter__Group__2__Impl : ( ( rule__Parameter__NameAssignment_2 ) ) ;
     public final void rule__Parameter__Group__2__Impl() throws RecognitionException {
 
@@ -3470,7 +3582,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
             {
             pushFollow(FOLLOW_rule__Parameter__NameAssignment_2_in_rule__Parameter__Group__2__Impl2689);
             rule__Parameter__NameAssignment_2();
-            _fsp--;
+
+            state._fsp--;
 
 
             }
@@ -3494,10 +3607,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__Group__2__Impl
+    // $ANTLR end "rule__Parameter__Group__2__Impl"
 
 
-    // $ANTLR start rule__IDL__ElementsAssignment
+    // $ANTLR start "rule__IDL__ElementsAssignment"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1370:1: rule__IDL__ElementsAssignment : ( ruleModule ) ;
     public final void rule__IDL__ElementsAssignment() throws RecognitionException {
 
@@ -3513,7 +3626,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getIDLAccess().getElementsModuleParserRuleCall_0()); 
             pushFollow(FOLLOW_ruleModule_in_rule__IDL__ElementsAssignment2730);
             ruleModule();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getIDLAccess().getElementsModuleParserRuleCall_0()); 
 
@@ -3534,10 +3648,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__IDL__ElementsAssignment
+    // $ANTLR end "rule__IDL__ElementsAssignment"
 
 
-    // $ANTLR start rule__Module__NameAssignment_1
+    // $ANTLR start "rule__Module__NameAssignment_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1385:1: rule__Module__NameAssignment_1 : ( RULE_ID ) ;
     public final void rule__Module__NameAssignment_1() throws RecognitionException {
 
@@ -3571,10 +3685,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__NameAssignment_1
+    // $ANTLR end "rule__Module__NameAssignment_1"
 
 
-    // $ANTLR start rule__Module__TypesAssignment_3
+    // $ANTLR start "rule__Module__TypesAssignment_3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1400:1: rule__Module__TypesAssignment_3 : ( ruleDataType ) ;
     public final void rule__Module__TypesAssignment_3() throws RecognitionException {
 
@@ -3590,7 +3704,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getModuleAccess().getTypesDataTypeParserRuleCall_3_0()); 
             pushFollow(FOLLOW_ruleDataType_in_rule__Module__TypesAssignment_32792);
             ruleDataType();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getModuleAccess().getTypesDataTypeParserRuleCall_3_0()); 
 
@@ -3611,10 +3726,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__TypesAssignment_3
+    // $ANTLR end "rule__Module__TypesAssignment_3"
 
 
-    // $ANTLR start rule__Module__InterfacesAssignment_4
+    // $ANTLR start "rule__Module__InterfacesAssignment_4"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1415:1: rule__Module__InterfacesAssignment_4 : ( ruleInterface ) ;
     public final void rule__Module__InterfacesAssignment_4() throws RecognitionException {
 
@@ -3630,7 +3745,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getModuleAccess().getInterfacesInterfaceParserRuleCall_4_0()); 
             pushFollow(FOLLOW_ruleInterface_in_rule__Module__InterfacesAssignment_42823);
             ruleInterface();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getModuleAccess().getInterfacesInterfaceParserRuleCall_4_0()); 
 
@@ -3651,10 +3767,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Module__InterfacesAssignment_4
+    // $ANTLR end "rule__Module__InterfacesAssignment_4"
 
 
-    // $ANTLR start rule__DataType__BtypeAssignment_1_0
+    // $ANTLR start "rule__DataType__BtypeAssignment_1_0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1430:1: rule__DataType__BtypeAssignment_1_0 : ( ruleBaseType ) ;
     public final void rule__DataType__BtypeAssignment_1_0() throws RecognitionException {
 
@@ -3670,7 +3786,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getDataTypeAccess().getBtypeBaseTypeEnumRuleCall_1_0_0()); 
             pushFollow(FOLLOW_ruleBaseType_in_rule__DataType__BtypeAssignment_1_02854);
             ruleBaseType();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getDataTypeAccess().getBtypeBaseTypeEnumRuleCall_1_0_0()); 
 
@@ -3691,10 +3808,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__BtypeAssignment_1_0
+    // $ANTLR end "rule__DataType__BtypeAssignment_1_0"
 
 
-    // $ANTLR start rule__DataType__CtypeAssignment_1_1
+    // $ANTLR start "rule__DataType__CtypeAssignment_1_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1445:1: rule__DataType__CtypeAssignment_1_1 : ( ( RULE_ID ) ) ;
     public final void rule__DataType__CtypeAssignment_1_1() throws RecognitionException {
 
@@ -3736,10 +3853,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__CtypeAssignment_1_1
+    // $ANTLR end "rule__DataType__CtypeAssignment_1_1"
 
 
-    // $ANTLR start rule__DataType__NameAssignment_2
+    // $ANTLR start "rule__DataType__NameAssignment_2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1464:1: rule__DataType__NameAssignment_2 : ( RULE_ID ) ;
     public final void rule__DataType__NameAssignment_2() throws RecognitionException {
 
@@ -3773,10 +3890,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__DataType__NameAssignment_2
+    // $ANTLR end "rule__DataType__NameAssignment_2"
 
 
-    // $ANTLR start rule__Interface__NameAssignment_1
+    // $ANTLR start "rule__Interface__NameAssignment_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1479:1: rule__Interface__NameAssignment_1 : ( ruleInterfaceName ) ;
     public final void rule__Interface__NameAssignment_1() throws RecognitionException {
 
@@ -3792,7 +3909,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getInterfaceAccess().getNameInterfaceNameEnumRuleCall_1_0()); 
             pushFollow(FOLLOW_ruleInterfaceName_in_rule__Interface__NameAssignment_12955);
             ruleInterfaceName();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getInterfaceAccess().getNameInterfaceNameEnumRuleCall_1_0()); 
 
@@ -3813,10 +3931,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__NameAssignment_1
+    // $ANTLR end "rule__Interface__NameAssignment_1"
 
 
-    // $ANTLR start rule__Interface__FunctionAssignment_3
+    // $ANTLR start "rule__Interface__FunctionAssignment_3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1494:1: rule__Interface__FunctionAssignment_3 : ( ruleFunction ) ;
     public final void rule__Interface__FunctionAssignment_3() throws RecognitionException {
 
@@ -3832,7 +3950,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getInterfaceAccess().getFunctionFunctionParserRuleCall_3_0()); 
             pushFollow(FOLLOW_ruleFunction_in_rule__Interface__FunctionAssignment_32986);
             ruleFunction();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getInterfaceAccess().getFunctionFunctionParserRuleCall_3_0()); 
 
@@ -3853,10 +3972,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Interface__FunctionAssignment_3
+    // $ANTLR end "rule__Interface__FunctionAssignment_3"
 
 
-    // $ANTLR start rule__Function__NameAssignment_1
+    // $ANTLR start "rule__Function__NameAssignment_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1509:1: rule__Function__NameAssignment_1 : ( RULE_ID ) ;
     public final void rule__Function__NameAssignment_1() throws RecognitionException {
 
@@ -3890,10 +4009,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__NameAssignment_1
+    // $ANTLR end "rule__Function__NameAssignment_1"
 
 
-    // $ANTLR start rule__Function__ParametersAssignment_3
+    // $ANTLR start "rule__Function__ParametersAssignment_3"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1524:1: rule__Function__ParametersAssignment_3 : ( ruleParameter ) ;
     public final void rule__Function__ParametersAssignment_3() throws RecognitionException {
 
@@ -3909,7 +4028,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0()); 
             pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_33048);
             ruleParameter();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_3_0()); 
 
@@ -3930,10 +4050,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__ParametersAssignment_3
+    // $ANTLR end "rule__Function__ParametersAssignment_3"
 
 
-    // $ANTLR start rule__Function__ParametersAssignment_4_1
+    // $ANTLR start "rule__Function__ParametersAssignment_4_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1539:1: rule__Function__ParametersAssignment_4_1 : ( ruleParameter ) ;
     public final void rule__Function__ParametersAssignment_4_1() throws RecognitionException {
 
@@ -3949,7 +4069,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0()); 
             pushFollow(FOLLOW_ruleParameter_in_rule__Function__ParametersAssignment_4_13079);
             ruleParameter();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getFunctionAccess().getParametersParameterParserRuleCall_4_1_0()); 
 
@@ -3970,10 +4091,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Function__ParametersAssignment_4_1
+    // $ANTLR end "rule__Function__ParametersAssignment_4_1"
 
 
-    // $ANTLR start rule__Parameter__DirectionAssignment_0
+    // $ANTLR start "rule__Parameter__DirectionAssignment_0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1554:1: rule__Parameter__DirectionAssignment_0 : ( ruleDirection ) ;
     public final void rule__Parameter__DirectionAssignment_0() throws RecognitionException {
 
@@ -3989,7 +4110,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0()); 
             pushFollow(FOLLOW_ruleDirection_in_rule__Parameter__DirectionAssignment_03110);
             ruleDirection();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getParameterAccess().getDirectionDirectionEnumRuleCall_0_0()); 
 
@@ -4010,10 +4132,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__DirectionAssignment_0
+    // $ANTLR end "rule__Parameter__DirectionAssignment_0"
 
 
-    // $ANTLR start rule__Parameter__TypeAssignment_1
+    // $ANTLR start "rule__Parameter__TypeAssignment_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1569:1: rule__Parameter__TypeAssignment_1 : ( ruleTypeStar ) ;
     public final void rule__Parameter__TypeAssignment_1() throws RecognitionException {
 
@@ -4029,7 +4151,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0()); 
             pushFollow(FOLLOW_ruleTypeStar_in_rule__Parameter__TypeAssignment_13141);
             ruleTypeStar();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getParameterAccess().getTypeTypeStarParserRuleCall_1_0()); 
 
@@ -4050,10 +4173,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__TypeAssignment_1
+    // $ANTLR end "rule__Parameter__TypeAssignment_1"
 
 
-    // $ANTLR start rule__Parameter__NameAssignment_2
+    // $ANTLR start "rule__Parameter__NameAssignment_2"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1584:1: rule__Parameter__NameAssignment_2 : ( RULE_ID ) ;
     public final void rule__Parameter__NameAssignment_2() throws RecognitionException {
 
@@ -4087,10 +4210,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__Parameter__NameAssignment_2
+    // $ANTLR end "rule__Parameter__NameAssignment_2"
 
 
-    // $ANTLR start rule__TypeStar__BtypeAssignment_0
+    // $ANTLR start "rule__TypeStar__BtypeAssignment_0"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1599:1: rule__TypeStar__BtypeAssignment_0 : ( ruleBaseType ) ;
     public final void rule__TypeStar__BtypeAssignment_0() throws RecognitionException {
 
@@ -4106,7 +4229,8 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
              before(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0()); 
             pushFollow(FOLLOW_ruleBaseType_in_rule__TypeStar__BtypeAssignment_03203);
             ruleBaseType();
-            _fsp--;
+
+            state._fsp--;
 
              after(grammarAccess.getTypeStarAccess().getBtypeBaseTypeEnumRuleCall_0_0()); 
 
@@ -4127,10 +4251,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeStar__BtypeAssignment_0
+    // $ANTLR end "rule__TypeStar__BtypeAssignment_0"
 
 
-    // $ANTLR start rule__TypeStar__CtypeAssignment_1
+    // $ANTLR start "rule__TypeStar__CtypeAssignment_1"
     // ../org.ietr.preesm.editor.IDLEditor.ui/src-gen/org/ietr/preesm/editor/ui/contentassist/antlr/internal/InternalIDLLanguage.g:1614:1: rule__TypeStar__CtypeAssignment_1 : ( ( RULE_ID ) ) ;
     public final void rule__TypeStar__CtypeAssignment_1() throws RecognitionException {
 
@@ -4172,7 +4296,9 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
         }
         return ;
     }
-    // $ANTLR end rule__TypeStar__CtypeAssignment_1
+    // $ANTLR end "rule__TypeStar__CtypeAssignment_1"
+
+    // Delegated rules
 
 
  
@@ -4222,10 +4348,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     public static final BitSet FOLLOW_rule__Module__Group__2__Impl_in_rule__Module__Group__21033 = new BitSet(new long[]{0x0000000001A00000L});
     public static final BitSet FOLLOW_rule__Module__Group__3_in_rule__Module__Group__21036 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_20_in_rule__Module__Group__2__Impl1064 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Module__Group__3__Impl_in_rule__Module__Group__31095 = new BitSet(new long[]{0x0000000001200000L});
+    public static final BitSet FOLLOW_rule__Module__Group__3__Impl_in_rule__Module__Group__31095 = new BitSet(new long[]{0x0000000001A00000L});
     public static final BitSet FOLLOW_rule__Module__Group__4_in_rule__Module__Group__31098 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Module__TypesAssignment_3_in_rule__Module__Group__3__Impl1125 = new BitSet(new long[]{0x0000000000800002L});
-    public static final BitSet FOLLOW_rule__Module__Group__4__Impl_in_rule__Module__Group__41156 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_rule__Module__Group__4__Impl_in_rule__Module__Group__41156 = new BitSet(new long[]{0x0000000001A00000L});
     public static final BitSet FOLLOW_rule__Module__Group__5_in_rule__Module__Group__41159 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Module__InterfacesAssignment_4_in_rule__Module__Group__4__Impl1186 = new BitSet(new long[]{0x0000000001000002L});
     public static final BitSet FOLLOW_rule__Module__Group__5__Impl_in_rule__Module__Group__51217 = new BitSet(new long[]{0x0000000000400000L});
@@ -4270,10 +4396,10 @@ public class InternalIDLLanguageParser extends AbstractInternalContentAssistPars
     public static final BitSet FOLLOW_rule__Function__Group__2__Impl_in_rule__Function__Group__22100 = new BitSet(new long[]{0x0000000018060000L});
     public static final BitSet FOLLOW_rule__Function__Group__3_in_rule__Function__Group__22103 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_26_in_rule__Function__Group__2__Impl2131 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162 = new BitSet(new long[]{0x0000000018000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__3__Impl_in_rule__Function__Group__32162 = new BitSet(new long[]{0x0000000018060000L});
     public static final BitSet FOLLOW_rule__Function__Group__4_in_rule__Function__Group__32165 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Function__ParametersAssignment_3_in_rule__Function__Group__3__Impl2192 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42223 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_rule__Function__Group__4__Impl_in_rule__Function__Group__42223 = new BitSet(new long[]{0x0000000018060000L});
     public static final BitSet FOLLOW_rule__Function__Group__5_in_rule__Function__Group__42226 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rule__Function__Group_4__0_in_rule__Function__Group__4__Impl2253 = new BitSet(new long[]{0x0000000010000002L});
     public static final BitSet FOLLOW_rule__Function__Group__5__Impl_in_rule__Function__Group__52284 = new BitSet(new long[]{0x0000000000400000L});

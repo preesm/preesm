@@ -5,14 +5,17 @@
     nsURI="http://www.ietr.org/preesm/editor/IDLLanguage" nsPrefix="iDLLanguage">
   <eClassifiers xsi:type="ecore:EClass" name="IDL">
     <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
-        eType="#//Module" containment="true"/>
+        eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Module"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Module">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="types" upperBound="-1"
-        eType="#//DataType" containment="true"/>
+        eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="interfaces" upperBound="-1"
-        eType="#//Interface" containment="true"/>
+        eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Interface"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="BaseType">
     <eLiterals name="int" literal="int"/>
@@ -20,8 +23,8 @@
     <eLiterals name="char" value="2" literal="char"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="#//BaseType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="#//DataType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="ecore:EEnum platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="InterfaceName">
@@ -30,18 +33,19 @@
     <eLiterals name="end" value="2" literal="end"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Interface">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="#//InterfaceName"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="#//Function"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EEnum platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//InterfaceName"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Function"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Function">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-        eType="#//Parameter" containment="true"/>
+        eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Parameter"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="#//Direction"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//TypeStar"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="ecore:EEnum platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//Direction"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//TypeStar"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
@@ -50,7 +54,7 @@
     <eLiterals name="out" value="1" literal="out"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TypeStar">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="#//BaseType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="#//DataType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="btype" eType="ecore:EEnum platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//BaseType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ctype" eType="ecore:EClass platform:/resource/org.ietr.preesm.editor.IDLEditor/src-gen/org/ietr/preesm/editor/IDLLanguage.ecore#//DataType"/>
   </eClassifiers>
 </ecore:EPackage>

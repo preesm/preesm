@@ -39,6 +39,5 @@ public class IDLLanguageStandaloneSetupGenerated implements ISetup {
 
 
 
-
 	}
 }
