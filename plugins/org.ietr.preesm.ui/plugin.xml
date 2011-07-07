@@ -651,87 +651,6 @@
             </parameter>
          </vertexType>
       </configuration>
-      <configuration
-            extension="workflow"
-            name="Workflow"
-            type="text/xml"
-            validator="org.ietr.preesm.ui.editor.graph.validators.WorkflowValidator">
-         <graphType
-               name="DFTools Workflow">
-         </graphType>
-         <import>
-            <xslt
-                  name="xslt/org/ietr/preesm/workflow/input_workflow.xslt">
-            </xslt>
-         </import>
-         <export>
-            <xslt
-                  name="xslt/org/ietr/preesm/workflow/output_workflow.xslt">
-            </xslt>
-         </export>
-         <vertexType
-               name="Scenario source">
-            <color
-                  blue="77"
-                  green="80"
-                  red="192">
-            </color>
-            <shape
-                  type="roundedBox">
-            </shape>
-            <size
-                  height="30"
-                  width="30">
-            </size>
-            <parameter
-                  name="id"
-                  type="java.lang.String">
-            </parameter>
-            <parameter
-                  name="plugin identifier"
-                  type="java.lang.String">
-            </parameter>
-         </vertexType>
-         <vertexType
-               name="Task">
-            <color
-                  blue="125"
-                  green="73"
-                  red="31">
-            </color>
-            <shape
-                  type="roundedBox">
-            </shape>
-            <size
-                  height="40"
-                  width="40">
-            </size>
-            <parameter
-                  name="id"
-                  type="java.lang.String">
-            </parameter>
-            <parameter
-                  name="variable declaration"
-                  type="java.util.Map">
-            </parameter>
-            <parameter
-                  name="plugin identifier"
-                  type="java.lang.String">
-            </parameter>
-         </vertexType>
-         <edgeType
-               directed="true"
-               name="Data transfer">
-            <parameter
-                  name="source port"
-                  type="java.lang.String">
-            </parameter>
-            <parameter
-                  name="target port"
-                  type="java.lang.String">
-            </parameter>
-         </edgeType>
-      </configuration>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -739,7 +658,7 @@
             class="net.sf.graphiti.ui.editors.GraphEditor"
             contributorClass="net.sf.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
-            extensions="workflow, graphml, design, component"
+            extensions="graphml, design, component"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
@@ -758,11 +677,6 @@
                category="net.sf.graphiti.ui.properties.category.graph"
                id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
                label="Graph Variable Declarations">
-         </propertyTab>
-         <propertyTab
-               category="net.sf.graphiti.ui.properties.category.vertex"
-               id="org.ietr.preesm.ui.properties.tab.workflow.task.variables"
-               label="Task Variables">
          </propertyTab>
          <propertyTab
                category="net.sf.graphiti.ui.properties.category.vertex"
@@ -788,50 +702,12 @@
                tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
          </propertySection>
          <propertySection
-               class="org.ietr.preesm.ui.properties.WorkflowTaskVariablesMapSection"
-               filter="org.ietr.preesm.ui.properties.filters.WorkflowTaskFilter"
-               id="org.ietr.preesm.ui.properties.section.workflow.task.variables"
-               tab="org.ietr.preesm.ui.properties.tab.workflow.task.variables">
-         </propertySection>
-         <propertySection
                class="org.ietr.preesm.ui.properties.SDFVertexInstanceArgumentsMapSection"
                filter="org.ietr.preesm.ui.properties.filters.SDFVertexFilter"
                id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
                tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
          </propertySection>
       </propertySections>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-      <shortcut
-            class="net.sf.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
-            icon="icons/workflow.png"
-            id="net.sf.dftools.ui.workflow.workflowLaunchShortcut"
-            label="Preesm Workflow"
-            modes="run,debug">
-         <description
-               description="Launch a Preesm workflow"
-               mode="run">
-         </description>
-         <contextualLaunch>
-            <enablement>
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
-                  <iterate>
-                     <and>
-                        <test
-                              forcePluginActivation="true"
-                              property="net.sf.dftools.isWorkflow">
-                        </test>
-                     </and>
-                  </iterate>
-               </with>
-            </enablement>
-         </contextualLaunch>
-      </shortcut>
    </extension>
 
 </plugin>
