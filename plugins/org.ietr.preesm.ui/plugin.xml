@@ -756,6 +756,32 @@
             Create a new FU network.
          </description>
       </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.core.category"
+            class="org.ietr.preesm.ui.NewIPXACTDesignWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.ip-xact.design"
+            name="Architecture Design (IP-XACT)"
+            project="false">
+         <description>
+            Create a new FU network.
+         </description>
+      </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.core.category"
+            class="org.ietr.preesm.ui.NewIPXACTComponentWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.ip-xact.component"
+            name="Architecture Component (IP-XACT)"
+            project="false">
+         <description>
+            Create a new FU network.
+         </description>
+      </wizard>
    </extension>
 
 </plugin>
