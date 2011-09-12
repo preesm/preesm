@@ -3,100 +3,99 @@
     <files>
         <algorithm url="/tutorial1/Algo/TestCom.graphml"/>
         <architecture url="/tutorial1/Archi/8CoreX86.design"/>
-        <timingfile url="/tutorial1/Scenarii/TestComPC.xls"/>
         <codegenDirectory url="/tutorial1/Code/x86/generatedSrc"/>
     </files>
-    <constraints>
+    <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core7"/>
             <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
             <task name="Gen_int"/>
-            <task name="Sensor2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
             <task name="ParallelTest3"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Sensor2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
             <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
             <task name="Sensor2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
-            <task name="ParallelTest"/>
+            <task name="Copy"/>
             <task name="Actuator"/>
-            <task name="Sensor"/>
             <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Sensor2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="Sensor2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core6"/>
             <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
             <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
             <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
             <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
             <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
             <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="ParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="ParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
             <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="Sensor"/>
-            <task name="ParallelTest2"/>
-            <task name="ParallelTest3"/>
-            <task name="Copy"/>
             <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
             <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="ParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="ParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor"/>
+            <task name="Sensor2"/>
+            <task name="Copy"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
         </constraintGroup>
     </constraints>
-    <timings>
+    <timings excelUrl="">
         <timing opname="x86" time="10000" vertexname="Sensor"/>
         <timing opname="x86" time="10000" vertexname="Gen_int"/>
         <timing opname="x86" time="10000" vertexname="Copy"/>
@@ -110,6 +109,10 @@
         <mainCore>Core1</mainCore>
         <mainMedium>tcp</mainMedium>
         <averageDataSize>1000</averageDataSize>
-        <dataTypes/>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators/>
     </simuParams>
+    <variables excelUrl=""/>
 </scenario>

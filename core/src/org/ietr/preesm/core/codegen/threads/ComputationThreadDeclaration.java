@@ -72,6 +72,7 @@ public class ComputationThreadDeclaration extends ThreadDeclaration {
 	 * vertex, otherwise, returns the communication vertices following the
 	 * vertex. The communication vertices are returned in scheduling order
 	 */
+	@SuppressWarnings("unchecked")
 	public SortedSet<SDFAbstractVertex> getComVertices(
 			SDFAbstractVertex vertex, boolean preceding) {
 		SDFAbstractVertex currentVertex = null;

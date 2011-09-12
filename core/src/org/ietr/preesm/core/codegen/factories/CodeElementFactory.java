@@ -91,7 +91,6 @@ public class CodeElementFactory {
 		try {
 			if (vertex instanceof CodeGenSDFForkVertex) {
 				SDFEdge incomingEdge = null;
-				int i = 0;
 				for (SDFEdge inEdge : ((SDFGraph) vertex.getBase())
 						.incomingEdgesOf(vertex)) {
 					incomingEdge = inEdge;
@@ -119,11 +118,9 @@ public class CodeElementFactory {
 					parentContainer
 							.addSubBufferAllocation(new SubBufferAllocation(
 									subElt));
-					i++;
 				}
 			} else if (vertex instanceof CodeGenSDFJoinVertex) {
 				SDFEdge outgoingEdge = null;
-				int i = 0;
 				for (SDFEdge outEdge : ((SDFGraph) vertex.getBase())
 						.outgoingEdgesOf(vertex)) {
 					outgoingEdge = outEdge;
@@ -150,7 +147,6 @@ public class CodeElementFactory {
 					parentContainer
 							.addSubBufferAllocation(new SubBufferAllocation(
 									subElt));
-					i++;
 				}
 			} else if (vertex instanceof CodeGenSDFBroadcastVertex) {
 				SDFEdge incomingEdge = null;

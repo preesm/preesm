@@ -103,6 +103,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 	 * Such a call makes sense if the sender vertex has a function call in the
 	 * current code container and if the sender and function call uses the data
 	 */
+	@SuppressWarnings("unchecked")
 	protected List<CommunicationFunctionCall> createCalls(
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
 			CodeSectionType codeContainerType) {

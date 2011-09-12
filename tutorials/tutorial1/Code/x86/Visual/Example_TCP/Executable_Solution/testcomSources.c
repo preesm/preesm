@@ -13,6 +13,8 @@
 
 #define SIZE_LOCAL 1000
 
+int nbrand =6;
+
 void sensor_init(char* o1, char* o2, char* o3){
 
 }

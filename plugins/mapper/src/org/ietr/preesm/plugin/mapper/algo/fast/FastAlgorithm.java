@@ -175,7 +175,6 @@ public class FastAlgorithm extends Observable {
 
 		// step 3
 		long bestSL = Long.MAX_VALUE;
-		int searchcount = 0;
 
 		KwokListScheduler listscheduler = new KwokListScheduler();
 
@@ -227,8 +226,6 @@ public class FastAlgorithm extends Observable {
 		// Stopping after the given time in seconds is reached
 		while (fastParams.getFastTime() < 0
 				|| System.currentTimeMillis() < fastStopTime) {
-
-			searchcount++;
 
 			// Notifying display
 			iBest = (Long) bestSL;

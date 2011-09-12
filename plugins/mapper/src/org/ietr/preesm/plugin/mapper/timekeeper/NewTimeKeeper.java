@@ -332,12 +332,6 @@ public class NewTimeKeeper implements Observer {
 		while (iterator.hasNext()) {
 			currentvertex = (MapperDAGVertex) iterator.next();
 
-			if (currentvertex
-					.getName()
-					.equals("explode_RACHDecoding_3_broadcastRepIdxcircor_repetitionIndex_repetitionIndex")) {
-				int i = 0;
-				i++;
-			}
 			// Starting from end vertices, sets the b-levels of the preceding
 			// tasks
 			if (currentvertex.getSuccessorSet(false).isEmpty())

@@ -88,6 +88,7 @@ public class CompThreadCodeGenerator {
 	 * Adds semaphores to protect the data transmitted in this thread. Iterates
 	 * the task vertices in direct order and adds semaphore pending functions
 	 */
+	@SuppressWarnings("unchecked")
 	public void addSemaphoreFunctions(
 			SortedSet<SDFAbstractVertex> taskVertices,
 			CodeSectionType codeContainerType) {

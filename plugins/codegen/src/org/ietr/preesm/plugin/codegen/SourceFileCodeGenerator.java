@@ -144,6 +144,7 @@ public class SourceFileCodeGenerator {
 	 * Allocates buffers belonging to vertex. If isInputBuffer is true,
 	 * allocates the input buffers, otherwise allocates output buffers.
 	 */
+	@SuppressWarnings("unchecked")
 	public void allocateVertexOutputBuffers(SDFAbstractVertex vertex) {
 		Set<SDFEdge> edgeSet;
 

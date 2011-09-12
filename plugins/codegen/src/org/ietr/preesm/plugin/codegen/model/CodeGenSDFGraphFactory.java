@@ -812,7 +812,7 @@ public class CodeGenSDFGraphFactory {
 
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	protected void treatSinksInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
@@ -859,7 +859,7 @@ public class CodeGenSDFGraphFactory {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes","unchecked"})
 	protected void treatSourcesInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(

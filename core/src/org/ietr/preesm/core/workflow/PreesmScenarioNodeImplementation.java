@@ -18,9 +18,10 @@ import org.ietr.preesm.core.scenario.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
+ * Implementing the DFTools scenario node behavior for Preesm
+ * 
  * @author mpelcat
  * 
- *         Implementing the DFTools scenario node behavior for Preesm
  */
 public class PreesmScenarioNodeImplementation extends
 		AbstractScenarioImplementation {

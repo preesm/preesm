@@ -122,9 +122,6 @@ public class SynchronizedVertices implements IScheduleElement {
 		if (!vertices.isEmpty()) {
 			v.setTimingVertexProperty(vertices.get(0).getTimingVertexProperty()
 					.clone());
-		} else {
-			int i = 0;
-			i++;
 		}
 	}
 

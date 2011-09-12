@@ -402,11 +402,6 @@ public abstract class AbstractAbc implements IAbc {
 
 		if (rc != null) {
 			initOperators = rc.getOperatorsIntersection();
-
-			if (rc.getVertices().size() > 1) {
-				int i = 0;
-				i++;
-			}
 		} else {
 			initOperators = vertex.getInitialVertexProperty()
 					.getInitialOperatorList();

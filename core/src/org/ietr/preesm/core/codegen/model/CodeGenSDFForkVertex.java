@@ -188,7 +188,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 			AbstractBufferContainer parentContainer)
 			throws InvalidExpressionException {
 		SDFEdge incomingEdge = null;
-		int i = 0;
+		
 		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
 			incomingEdge = inEdge;
 		}
@@ -210,7 +210,6 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 				parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 						subElt));
 			}
-			i++;
 		}
 		return true;
 	}

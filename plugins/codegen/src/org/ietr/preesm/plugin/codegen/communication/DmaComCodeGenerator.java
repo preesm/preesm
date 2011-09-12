@@ -54,6 +54,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 	int sendNextCallIndex = 0;
 	int receiveNextCallIndex = 0;
 
+	@SuppressWarnings("unchecked")
 	public DmaComCodeGenerator(ComputationThreadDeclaration compThread,
 			CommunicationThreadDeclaration comThread,
 			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
@@ -176,6 +177,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 	 * Such a call makes sense if the sender vertex has a function call in the
 	 * current code container and if the sender and function call uses the data
 	 */
+	@SuppressWarnings("unchecked")
 	protected List<CommunicationFunctionCall> createCalls(
 			AbstractBufferContainer parentContainer, SDFAbstractVertex vertex,
 			CodeSectionType codeContainerType) {

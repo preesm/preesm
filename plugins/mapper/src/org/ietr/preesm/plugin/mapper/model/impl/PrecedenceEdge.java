@@ -60,11 +60,6 @@ public class PrecedenceEdge extends MapperDAGEdge {
 		return "precedence(" + sourceName + "," + destName + ")";
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public PrecedenceEdge() {
 		this(null, null);
 	}

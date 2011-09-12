@@ -169,7 +169,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 			AbstractBufferContainer parentContainer)
 			throws InvalidExpressionException {
 		SDFEdge outgoingEdge = null;
-		int i = 0;
+
 		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
 				.outgoingEdgesOf(this)) {
 			outgoingEdge = outEdge;
@@ -191,7 +191,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 				parentContainer.addSubBufferAllocation(new SubBufferAllocation(
 						subElt));
 			}
-			i++;
+
 		}
 		return true;
 	}

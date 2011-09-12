@@ -83,6 +83,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		callParameters = new Vector<FunctionArgument>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public UserFunctionCall(CodeGenSDFTokenInitVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSectionType section,
 			boolean ignoreSendReceive) {
@@ -304,6 +305,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Add input or output buffers for a vertex, depending on the direction
 	 */
+	@SuppressWarnings("unchecked")
 	public void addVertexBuffers(SDFAbstractVertex vertex, boolean isInputBuffer) {
 
 		Iterator<SDFEdge> eIterator;

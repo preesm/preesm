@@ -45,11 +45,6 @@ import org.sdf4j.model.dag.DAGEdge;
  */
 public class MapperDAGEdge extends DAGEdge {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8013444915048927047L;
-
 	protected InitialEdgeProperty initialEdgeProperty;
 
 	protected TimingEdgeProperty timingEdgeProperty;

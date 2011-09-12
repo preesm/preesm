@@ -56,19 +56,12 @@ public class ArchitectureInterface {
 	private ArchitectureComponent owner;
 
 	/**
-	 * Number of connected slots
-	 */
-	private int usedSlots;
-
-	/**
 	 * 
 	 * Constructor
 	 */
 	public ArchitectureInterface(BusReference busReference,
 			ArchitectureComponent owner) {
 		this.busReference = busReference;
-
-		this.usedSlots = 0;
 
 		this.owner = owner;
 	}
@@ -80,9 +73,6 @@ public class ArchitectureInterface {
 		// definition
 		ArchitectureInterface newintf = new ArchitectureInterface(
 				(BusReference) this.busReference.clone(), newOwner);
-
-		newintf.usedSlots = 0; // usedSlot will be incremented when
-		// interconnexions are added
 
 		return newintf;
 	}
@@ -100,13 +90,6 @@ public class ArchitectureInterface {
 
 	public BusReference getBusReference() {
 		return busReference;
-	}
-
-	/**
-	 * increments the number of used slots
-	 */
-	public void incrementUsedSlots() {
-		usedSlots += 1;
 	}
 
 	public ArchitectureComponent getOwner() {

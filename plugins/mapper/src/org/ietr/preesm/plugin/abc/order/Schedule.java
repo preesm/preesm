@@ -53,8 +53,6 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class Schedule {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * The ordered list of vertices in this schedule
 	 */

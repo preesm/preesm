@@ -79,6 +79,7 @@ public class CommThreadCodeGenerator {
 	/**
 	 * Adds semaphores to protect the data transmitted in this thread
 	 */
+	@SuppressWarnings("unchecked")
 	public void addSemaphoreFunctions(SortedSet<SDFAbstractVertex> comVertices,
 			CodeSectionType codeContainerType) {
 
