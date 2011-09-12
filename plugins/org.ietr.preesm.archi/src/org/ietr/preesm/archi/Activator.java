@@ -1,4 +1,4 @@
-package org.ietr.preesm.plugin.architransfo;
+package org.ietr.preesm.archi;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

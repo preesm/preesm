@@ -34,51 +34,80 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.plugin.architransfo.transforms;
+package org.ietr.preesm.archi.transforms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.writer.DesignWriter;
+import org.sdf4j.model.visitors.SDF4JException;
+import org.sdf4j.model.visitors.VisitorOutput;
 
 /**
- * Exporter for IP-XACT multicore architectures
+ * Flattening the hierarchy of a given architecture
  * 
  * @author mpelcat
  * 
  */
-public class ArchitectureExporter extends AbstractTaskImplementation {
+public class HierarchyFlattening extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
-
-		String path = parameters.get("path");
+		Map<String, Object> outputs = new HashMap<String, Object>();
 		MultiCoreArchitecture archi = (MultiCoreArchitecture) inputs
 				.get("architecture");
-		DesignWriter writer = new DesignWriter(archi);
-		writer.generateArchitectureDOM();
-		writer.writeDom(path);
+		String depthS = parameters.get("depth");
 
-		return new HashMap<String, Object>();
+		int depth;
+		if (depthS != null) {
+			depth = Integer.decode(depthS);
+		} else {
+			depth = 1;
+		}
+
+		Logger logger = AbstractWorkflowLogger.getLogger();
+		logger.setLevel(Level.FINEST);
+		VisitorOutput.setLogger(logger);
+
+		logger.log(Level.FINER, "flattening architecture " + archi.getName()
+				+ " at level " + depth);
+		ArchiHierarchyFlattening flatHier = new ArchiHierarchyFlattening();
+		VisitorOutput.setLogger(logger);
+
+		try {
+			flatHier.flattenGraph(archi.clone(), depth);
+		} catch (SDF4JException e) {
+			throw (new WorkflowException(e.getMessage()));
+		}
+
+		logger.log(Level.FINER, "flattening complete");
+		MultiCoreArchitecture resultGraph = (MultiCoreArchitecture) flatHier
+				.getOutput();
+
+		outputs.put("architecture", resultGraph);
+
+		return outputs;
 	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
 
-		parameters.put("path", "");
+		parameters.put("depth", "1");
 		return parameters;
 	}
 
 	@Override
 	public String monitorMessage() {
-		return "Exporting architecture.";
+		return "Flattening the architecture hierarchy.";
 	}
 }
