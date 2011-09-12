@@ -85,14 +85,14 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.plugin.architransform"
+         id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.ui"
+         id="org.ietr.preesm.archi"
          download-size="0"
          install-size="0"
          version="0.0.0"

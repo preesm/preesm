@@ -23,5 +23,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.plugin.mapper,
  org.ietr.preesm.plugin.mapper.exporter,
+ org.ietr.preesm.plugin.mapper.model,
  org.ietr.preesm.plugin.mapper.plot.stats,
  org.ietr.preesm.plugin.mapper.scenariogen
