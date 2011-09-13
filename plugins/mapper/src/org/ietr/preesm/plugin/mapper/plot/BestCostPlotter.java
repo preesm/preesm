@@ -157,8 +157,8 @@ public class BestCostPlotter extends ApplicationFrame implements
 		buttonAll.addActionListener(this);
 		buttonPanel.add(buttonAll);
 
-		final JButton buttonLecture = new JButton("Lecture");
-		buttonLecture.setActionCommand("Lecture");
+		final JButton buttonLecture = new JButton("Resume");
+		buttonLecture.setActionCommand("Resume");
 		buttonLecture.addActionListener(this);
 		buttonPanel.add(buttonLecture);
 
@@ -200,8 +200,8 @@ public class BestCostPlotter extends ApplicationFrame implements
 		final JFreeChart chart = new JFreeChart(title, plot);
 
 		chart.removeLegend();
-		// chart.getLegend().setPosition(RectangleEdge.BOTTOM);
-
+		//chart.getLegend().setPosition(RectangleEdge.BOTTOM);
+		
 		chart.setBorderPaint(Color.lightGray);
 		chart.setBorderVisible(true);
 
