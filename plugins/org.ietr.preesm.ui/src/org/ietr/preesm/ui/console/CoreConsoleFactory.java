@@ -34,49 +34,34 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.perspectives;
+package org.ietr.preesm.ui.console;
 
-import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.ui.IFolderLayout;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.console.IConsoleConstants;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.IConsoleFactory;
 
 /**
- * This class creates the layout associated with the preesm core perspective.
- * 
  * @author mpelcat
  * 
  */
-public class CorePerspectiveFactory implements IPerspectiveFactory {
-
-	public static final String ID = "org.ietr.preesm.core.ui.perspective";
-
+public class CoreConsoleFactory implements IConsoleFactory {
 	@Override
-	public void createInitialLayout(IPageLayout layout) {
+	public void openConsole() {
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
 
-		// Get the editor area.
-		String editorArea = layout.getEditorArea();
-
-		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout topLeft = layout.createFolder("topLeft",
-				IPageLayout.LEFT, 0.20f, editorArea);
-
-		// Adds the files navigator
-		topLeft.addView(IPageLayout.ID_PROJECT_EXPLORER);
-
-		// Bottom left: Outline view and Property Sheet view
-		IFolderLayout bottomRight = layout.createFolder("bottomRight",
-				IPageLayout.BOTTOM, 0.75f, editorArea);
-
-		// Adds the progress bar and console
-		bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);
-
-		bottomRight.addView(IConsoleConstants.ID_CONSOLE_VIEW);
-
-		// Adds the Run action set
-		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
-
+		if (window != null) {
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null) {
+				// Creates a console for the logger.ui
+				AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
+			}
+		}
 	}
 
 }

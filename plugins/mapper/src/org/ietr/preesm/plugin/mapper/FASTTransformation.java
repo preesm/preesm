@@ -145,12 +145,12 @@ public class FASTTransformation extends AbstractMapping {
 		// The transfers are reordered using the best found order during
 		// scheduling
 		simu2.reschedule(fastAlgorithm.getBestTotalOrder());
-		TagDAG tagSDF = new TagDAG();
+		TagDAG tagDAG = new TagDAG();
 
 		// The mapper dag properties are put in the property bean to be
 		// transfered to code generation
 		try {
-			tagSDF.tag(dag, architecture, scenario, simu2,
+			tagDAG.tag(dag, architecture, scenario, simu2,
 					abcParams.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
 			throw (new WorkflowException(e.getMessage()));

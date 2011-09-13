@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.core.ui;
+package org.ietr.preesm.ui;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.Viewer;

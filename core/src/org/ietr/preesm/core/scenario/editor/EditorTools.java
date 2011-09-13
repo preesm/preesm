@@ -54,7 +54,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.Activator;
 
 /**
  * Useful SWT methods

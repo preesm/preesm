@@ -34,34 +34,24 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.console;
+package org.ietr.preesm.ui.wizards;
 
-import java.util.logging.Level;
-
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
-
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.IConsoleFactory;
+import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 /**
  * @author mpelcat
- * 
  */
-public class CoreConsoleFactory implements IConsoleFactory {
-	@Override
-	public void openConsole() {
-		IWorkbenchWindow window = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
-		if (window != null) {
-			IWorkbenchPage page = window.getActivePage();
-			if (page != null) {
-				// Creates a console for the logger.ui
-				AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
-			}
-		}
+	@Override
+	public void addPages() {
+		super.addPages();
+		super.setWindowTitle("New Scenario File");
+	}
+
+	@Override
+	protected void initializeDefaultPageImageDescriptor() {
+		super.initializeDefaultPageImageDescriptor();
 	}
 
 }

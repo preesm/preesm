@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor/>
+    <spirit:name>top</spirit:name>
+    <spirit:library/>
+    <spirit:version/>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>tci6488_1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="tci6488"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>tci6488_2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="tci6488"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>RioSerialLink</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="RioSerialLink" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>w1aab2a</spirit:name>
+            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="tci6488_1"/>
+            <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RioSerialLink"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b1</spirit:name>
+            <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RioSerialLink"/>
+            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="tci6488_2"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections/>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription slam:componentRef="tci6488"
+                slam:componentType="Operator" slam:refinement="processor.slam"/>
+            <slam:componentDescription slam:componentRef="RioSerialLink"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="1"/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2a"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
+        </slam:linkDescriptions>
+    </spirit:vendorExtensions>
+</spirit:design>

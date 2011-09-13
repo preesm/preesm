@@ -34,13 +34,12 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.wizards;
+package org.ietr.preesm.ui.wizards;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-import org.ietr.preesm.core.ui.natures.PreesmProjectNature;
 
 /**
  * This class provides a wizard to create a new Preesm Project.

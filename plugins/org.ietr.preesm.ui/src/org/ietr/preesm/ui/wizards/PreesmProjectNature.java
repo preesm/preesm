@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.natures;
+package org.ietr.preesm.ui.wizards;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class PreesmProjectNature implements IProjectNature {
 
-	public static final String ID = "org.ietr.preesm.core.natures.PreesmProjectNature";
+	public static final String ID = "org.ietr.preesm.ProjectNature";
 
 	private IProject project;
 

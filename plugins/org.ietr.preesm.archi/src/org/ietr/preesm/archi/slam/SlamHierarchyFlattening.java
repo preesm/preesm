@@ -34,24 +34,73 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.ui.wizards;
+package org.ietr.preesm.archi.slam;
 
-import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.process.SlamFlattener;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
+ * Flattening the hierarchy of a given S-LAM architecture
+ * 
  * @author mpelcat
+ * 
  */
-public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
+public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 
 	@Override
-	public void addPages() {
-		super.addPages();
-		super.setWindowTitle("New Scenario File");
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName) throws WorkflowException {
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		Design design = (Design) inputs
+				.get("S-LAM");
+		String depthS = parameters.get("depth");
+
+		int depth;
+		if (depthS != null) {
+			depth = Integer.decode(depthS);
+		} else {
+			depth = 1;
+		}
+
+		Logger logger = AbstractWorkflowLogger.getLogger();
+		logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
+
+		//Copier copier = new Copier();
+		//  EObject result = copier.copy(design);
+		//  copier.copyReferences();
+
+		SlamFlattener flattener = new SlamFlattener();
+		flattener.flatten(design, depth);
+		
+		Design resultGraph = design ;
+		logger.log(Level.INFO, "flattening complete");
+
+		outputs.put("S-LAM", resultGraph);
+
+		return outputs;
 	}
 
 	@Override
-	protected void initializeDefaultPageImageDescriptor() {
-		super.initializeDefaultPageImageDescriptor();
+	public Map<String, String> getDefaultParameters() {
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		parameters.put("depth", "1");
+		return parameters;
 	}
 
+	@Override
+	public String monitorMessage() {
+		return "Flattening an S-LAM model hierarchy.";
+	}
 }

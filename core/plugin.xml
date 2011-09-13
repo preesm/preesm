@@ -2,135 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.ietr.preesm.core.ui.perspectives.CorePerspectiveFactory"
-            fixed="false"
-            icon="icons/preesmProject.png"
-            id="org.ietr.preesm.core.ui.perspective"
-            name="PreesmCore">
-      </perspective>
-   </extension>
-   <extension
-         id="org.ietr.preesm.core.natures.PreesmProjectNature"
-         name="Preesm Project"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="org.ietr.preesm.core.ui.natures.PreesmProjectNature">
-         </run>
-      </runtime>
-   </extension>
-   <extension
-         point="org.eclipse.ui.ide.projectNatureImages">
-      <image
-            icon="icons/preesmProjectNature.png"
-            id="org.ietr.preesm.core.projectNatureImage"
-            natureId="org.ietr.preesm.core.natures.PreesmProjectNature">
-         <description>
-            A Preesm project.
-         </description>
-      </image>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="org.ietr.preesm.core.category"
-            name="Preesm">
-      </category>
-      <wizard
-            category="org.ietr.preesm.core.category"
-            class="org.ietr.preesm.core.ui.wizards.NewPreesmProjectWizard"
-            finalPerspective="org.ietr.preesm.core.ui.perspective"
-            hasPages="true"
-            icon="icons/preesmProject.png"
-            id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
-            name="Preesm Project"
-            project="true">
-         <description>
-            Create a new Preesm project
-         </description>
-      </wizard>
-      <wizard
-            category="org.ietr.preesm.core.category"
-            class="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            hasPages="true"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            name="Scenario File"
-            project="false">
-         <description>
-            Create a new scenario file
-         </description>
-      </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.ietr.preesm.core.scenario.editor.ScenarioEditor"
-            default="true"
-            extensions="scenario"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.core.scenario.editor.ScenarioEditor"
-            name="Preesm scenario editor">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.console.consoleFactories">
-      <consoleFactory
-            class="org.ietr.preesm.core.ui.console.CoreConsoleFactory"
-            icon="icons/preesm2mini.PNG"
-            label="Preesm Core Console">
-      </consoleFactory>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.ietr.preesm.core.ui.perspective">
-      </perspectiveExtension>
-   </extension>
-   <extension
-         id="albert"
-         name="albert"
-         point="org.eclipse.ui.ide.resourceFilters">
-      <filter
-            pattern="*.layout"
-            selected="true">
-         <description>
-            albert
-         </description>
-      </filter>
-   </extension>
-   <extension
-         point="org.eclipse.ui.navigator.navigatorContent">
-      <commonFilter
-            activeByDefault="true"
-            class="org.ietr.preesm.core.ui.ProjectExplorerFilter"
-            description="Filters the *.layout files"
-            id="org.ietr.preesm.core.layoutfilefilter"
-            name="LayoutFileFilter"
-            visibleInUI="true">
-      </commonFilter>
-   </extension>
-   <extension
-         id="org.ietr.preesm.ui.projectexplorerviewer"
-         name="org.ietr.preesm.ui.projectexplorerviewer"
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.core.layoutfilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
-   </extension>
-   <extension
          point="net.sf.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
@@ -149,6 +20,23 @@
                   object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
             </output>
          </outputs>
+      </scenario>
+      <scenario
+            id="org.ietr.preesm.scenario.ibsdfandslam"
+            type="org.ietr.preesm.core.workflow.IBSDFAndSLAMScenario">
+         <outputs>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </output>
+            <output
+                  id="IBSDF"
+                  object="org.sdf4j.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="S-LAM"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </output></outputs>
       </scenario>
    </extension>
 

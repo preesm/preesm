@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="C64x+MM_1" x="57" y="70"/>
+      <vertex id="C64x+MM_2" x="57" y="328"/>
+      <vertex id="C64x+MM_3" x="57" y="199"/>
+      <vertex id="SCR" x="198" y="166"/>
+      <vertex id="EDMA3" x="417" y="193"/>
+      <vertex id="RapidIO" x="298" y="145"/>
+      <vertex id="RIO" x="417" y="100"/>
+   </vertices>
+</layout>

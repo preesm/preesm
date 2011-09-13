@@ -49,7 +49,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.preesm.core.ui.Activator;
+import org.ietr.preesm.core.Activator;
 
 /**
  * This class provides a save as excel sheet wizard

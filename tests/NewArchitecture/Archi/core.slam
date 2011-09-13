@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor/>
+    <spirit:name>core</spirit:name>
+    <spirit:library/>
+    <spirit:version/>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>C64x+</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="c64x+"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>L1Cache</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="L1Cache"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>L1Bus</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="internalBus" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>L2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="L2"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>L2Bus</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="internalBus" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>w1aab2a</spirit:name>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L1Bus"/>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="C64x+"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b1</spirit:name>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L1Cache"/>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L1Bus"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b2</spirit:name>
+            <spirit:activeInterface spirit:busRef="memControl" spirit:componentRef="C64x+"/>
+            <spirit:activeInterface spirit:busRef="control" spirit:componentRef="L1Cache"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b5</spirit:name>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L2Bus"/>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L1Cache"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b6</spirit:name>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L2"/>
+            <spirit:activeInterface spirit:busRef="bus" spirit:componentRef="L2Bus"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b7</spirit:name>
+            <spirit:activeInterface spirit:busRef="memControl" spirit:componentRef="C64x+"/>
+            <spirit:activeInterface spirit:busRef="control" spirit:componentRef="L2"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections>
+        <spirit:hierConnection spirit:interfaceRef="scr">
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="C64x+"/>
+        </spirit:hierConnection>
+        <spirit:hierConnection spirit:interfaceRef="edmactrl">
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="C64x+"/>
+        </spirit:hierConnection>
+    </spirit:hierConnections>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription slam:componentRef="c64x+"
+                slam:componentType="Operator" slam:refinement="test.cdl"/>
+            <slam:componentDescription slam:componentRef="L1Cache"
+                slam:componentType="Mem" slam:refinement="" slam:size="100"/>
+            <slam:componentDescription slam:componentRef="internalBus"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="2"/>
+            <slam:componentDescription slam:componentRef="L2"
+                slam:componentType="Mem" slam:refinement="" slam:size="100"/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2a"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b2" slam:setupTime="0"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b5"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b6"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b7" slam:setupTime="0"/>
+        </slam:linkDescriptions>
+    </spirit:vendorExtensions>
+</spirit:design>

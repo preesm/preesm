@@ -7,6 +7,5 @@
 	<buildSpec>
 	</buildSpec>
 	<natures>
-		<nature>org.ietr.preesm.core.natures.PreesmProjectNature</nature>
 	</natures>
 </projectDescription>

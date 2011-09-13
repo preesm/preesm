@@ -9,6 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.0",
  net.sf.dftools.workflow,
- org.ietr.libs;bundle-version="1.2.8"
+ org.ietr.libs;bundle-version="1.2.8",
+ net.sf.dftools.architecture;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.ietr.preesm.archi.transforms
