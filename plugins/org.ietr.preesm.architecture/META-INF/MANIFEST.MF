@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.libs;bundle-version="1.2.8",
  net.sf.dftools.architecture;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.ietr.preesm.archi.transforms
+Export-Package: org.ietr.preesm.archi.slam,
+ org.ietr.preesm.archi.transforms

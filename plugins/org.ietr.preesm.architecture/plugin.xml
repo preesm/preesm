@@ -30,9 +30,6 @@
             </input>
          </inputs>
       </task>
-   </extension>
-   <extension
-         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.archi.slam.flattening"
             name="Slam Hierarchy Flattening"

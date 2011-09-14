@@ -101,6 +101,11 @@ public final class ImplementationPropertyNames {
 	 */
 	public static final String Vertex_originalVertexId = "originalId";
 
+	/**
+	 * Starting Time of the Task in the simulation.
+	 */
+	public static final String Start_time = "TaskStartTime";
+
 	// Vertex of type send or receive properties
 	/**
 	 * Route step transfering the data.
@@ -134,4 +139,5 @@ public final class ImplementationPropertyNames {
 	 */
 	public static final String Receive_receiverGraphName = "receiverGraphName";
 
+	
 }

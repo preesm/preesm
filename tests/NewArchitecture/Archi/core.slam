@@ -101,5 +101,10 @@
             <slam:linkDescription slam:directedLink="directed"
                 slam:linkType="ControlLink" slam:referenceId="w1aab2b7" slam:setupTime="0"/>
         </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters>
+                <slam:parameter slam:key="L1Cache" slam:value="Mem"/>
+            </slam:parameters>
+        </slam:designDescription>
     </spirit:vendorExtensions>
 </spirit:design>

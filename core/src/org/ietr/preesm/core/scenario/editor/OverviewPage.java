@@ -112,7 +112,7 @@ public class OverviewPage extends FormPage {
 				algoExtensions);
 
 		Set<String> archiExtensions = new HashSet<String>();
-		archiExtensions.add("advds");
+		archiExtensions.add("slam");
 		archiExtensions.add("design");
 
 		// Architecture file chooser section

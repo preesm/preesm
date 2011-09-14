@@ -211,10 +211,6 @@ public abstract class AbstractAbc implements IAbc {
 		return dag;
 	}
 
-	public final MapperDAG getImpl() {
-		return implementation;
-	}
-
 	/**
 	 * Called whenever the implementation of a vertex occurs
 	 */
@@ -571,7 +567,7 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Gets the time of the given vertex
+	 * Gets the cost of the given vertex
 	 */
 	@Override
 	public final long getCost(MapperDAGVertex vertex) {
@@ -589,6 +585,9 @@ public abstract class AbstractAbc implements IAbc {
 
 	}
 
+	/**
+	 * Setting the cost of an edge is delegated to ABC implementations
+	 */
 	protected abstract void setEdgeCost(MapperDAGEdge edge);
 
 	/**

@@ -125,7 +125,7 @@ public class ScenarioParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		if (dom != null) {
 			// get the root elememt
 			Element docElt = dom.getDocumentElement();
@@ -154,7 +154,7 @@ public class ScenarioParser {
 			}
 		}
 
-		scenario.setScenarioURL(file.getFullPath().toString());      
+		scenario.setScenarioURL(file.getFullPath().toString());
 		return scenario;
 	}
 
@@ -276,8 +276,9 @@ public class ScenarioParser {
 		 * It is not possible to remove all operators from special vertex
 		 * executors: if no operator is selected, all of them are!!
 		 */
-		if (scenario.getSimulationManager().getSpecialVertexOperators()
-				.isEmpty()) {
+		if (archi != null
+				&& scenario.getSimulationManager().getSpecialVertexOperators()
+						.isEmpty()) {
 			for (ArchitectureComponent c : archi
 					.getComponents(ArchitectureComponentType.operator)) {
 				scenario.getSimulationManager().addSpecialVertexOperator(c);

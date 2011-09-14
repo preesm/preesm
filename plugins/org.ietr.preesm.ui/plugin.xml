@@ -792,7 +792,7 @@
             hasPages="true"
             icon="icons/preesmProject.png"
             id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
-            name="Preesm Project"
+            name="Project"
             project="true">
          <description>
             Create a new Preesm project
@@ -804,7 +804,7 @@
             hasPages="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            name="Scenario File"
+            name="Scenario"
             project="false">
          <description>
             Create a new scenario file

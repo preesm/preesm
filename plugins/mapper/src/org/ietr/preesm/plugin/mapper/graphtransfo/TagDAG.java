@@ -37,6 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import java.util.Iterator;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -50,6 +53,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
+import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.CommunicationRouter;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -109,7 +113,7 @@ public class TagDAG {
 				dag.getReferenceSdfGraph());
 
 		addSendReceive(dag, architecture, scenario);
-		addProperties(dag);
+		addProperties(dag, simu);
 		addAllAggregates(dag, scenario);
 	}
 
@@ -129,12 +133,17 @@ public class TagDAG {
 		orderMgr.tagDAG(dag);
 	}
 
-	public void addProperties(MapperDAG dag) {
+	public void addProperties(MapperDAG dag, IAbc simu) {
 
 		MapperDAGVertex currentVertex;
 
 		Iterator<DAGVertex> iter = dag.vertexSet().iterator();
 
+		// Updates graph time
+		if(simu instanceof LatencyAbc){
+			((LatencyAbc) simu).updateTimings();
+		}
+		
 		// Tagging the vertices with informations for code generation
 		while (iter.hasNext()) {
 			currentVertex = (MapperDAGVertex) iter.next();
@@ -236,6 +245,13 @@ public class TagDAG {
 				int totalTime = nbRepeat * singleRepeatTime;
 				bean.setValue(ImplementationPropertyNames.Task_duration,
 						totalTime);
+				
+				// Tags the DAG with vertex starttime when possible
+				if(simu instanceof LatencyAbc){
+					long startTime = ((LatencyAbc)simu).getTLevel(currentVertex, false);
+					bean.setValue(ImplementationPropertyNames.Start_time,
+							startTime);
+				}
 			}
 
 			// Setting the scheduling total order
