@@ -79,11 +79,11 @@ public class ConstraintGroupManager {
 
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperator(currentOp);
-			cg.addVertex(vertex);
+			cg.addOperatorId(currentOp.getName());
+			cg.addVertexPath(vertex.getInfo());
 			constraintgroups.add(cg);
 		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertex(vertex);
+			((ConstraintGroup) cgSet.toArray()[0]).addVertexPath(vertex.getInfo());
 		}
 	}
 
@@ -91,17 +91,17 @@ public class ConstraintGroupManager {
 	 * Adding a constraint group on several vertices and one core
 	 */
 	public void addConstraints(IOperator currentOp,
-			Set<SDFAbstractVertex> vertexSet) {
+			Set<String> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
 
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperator(currentOp);
-			cg.addVertices(vertexSet);
+			cg.addOperatorId(currentOp.getName());
+			cg.addVertexPaths(vertexSet);
 			constraintgroups.add(cg);
 		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertices(vertexSet);
+			((ConstraintGroup) cgSet.toArray()[0]).addVertexPaths(vertexSet);
 		}
 	}
 
@@ -114,22 +114,7 @@ public class ConstraintGroupManager {
 
 		if (!cgSet.isEmpty()) {
 			for (ConstraintGroup cg : cgSet) {
-				cg.removeVertex(vertex);
-			}
-		}
-	}
-
-	/**
-	 * Removing a constraint group on several vertices and one core
-	 */
-	public void removeConstraints(IOperator currentOp,
-			Set<SDFAbstractVertex> vertexSet) {
-
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
-
-		if (!cgSet.isEmpty()) {
-			for (ConstraintGroup cg : cgSet) {
-				cg.removeVertices(vertexSet);
+				cg.removeVertexPath(vertex.getInfo());
 			}
 		}
 	}
@@ -144,7 +129,7 @@ public class ConstraintGroupManager {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasVertex(vertex))
+			if (cg.hasVertexPath(vertex.getInfo()))
 				graphConstraintGroups.add(cg);
 		}
 
@@ -155,7 +140,7 @@ public class ConstraintGroupManager {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasOperator(currentOp))
+			if (cg.hasOperatorId(currentOp.getName()))
 				graphConstraintGroups.add(cg);
 		}
 

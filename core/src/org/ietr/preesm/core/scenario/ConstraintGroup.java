@@ -40,9 +40,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.IOperator;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-
 /**
  * A ConstraintGroup associates a set of graph definitions and a set of
  * processing units on which they can be matched
@@ -54,22 +51,22 @@ public class ConstraintGroup {
 	/**
 	 * The set of processing units available for the constraint group
 	 */
-	private Set<IOperator> operators;
+	private Set<String> operatorIds;
 
 	/**
 	 * The set of graphs belonging to the constraint group
 	 */
-	private Set<SDFAbstractVertex> vertices;
+	private Set<String> sdfVertexPaths;
 
 	public ConstraintGroup() {
-		operators = new HashSet<IOperator>();
-		vertices = new HashSet<SDFAbstractVertex>();
+		operatorIds = new HashSet<String>();
+		sdfVertexPaths = new HashSet<String>();
 
 	}
 
-	public void addOperator(IOperator opdef) {
-		if (!hasOperator(opdef)) {
-			operators.add(opdef);
+	public void addOperatorId(String opId) {
+		if (!hasOperatorId(opId)) {
+			operatorIds.add(opId);
 		}
 
 	}
@@ -78,75 +75,71 @@ public class ConstraintGroup {
 	 * When a vertex is added to the constraints, its hierarchical path is added
 	 * in its properties in order to separate distinct vertices with same name
 	 */
-	public void addVertex(SDFAbstractVertex vertex) {
-		if (!hasVertex(vertex)) {
-			vertices.add(vertex);
+	public void addVertexPath(String vertexId) {
+		if (!hasVertexPath(vertexId)) {
+			sdfVertexPaths.add(vertexId);
 
 		}
 	}
 
-	public void addVertices(Set<SDFAbstractVertex> vertexSet) {
-		for (SDFAbstractVertex vertex : vertexSet) {
-			addVertex(vertex);
+	public void addVertexPaths(Set<String> vertexIdSet) {
+		for (String vertexId : vertexIdSet) {
+			addVertexPath(vertexId);
 		}
 	}
 
-	public void removeVertices(Set<SDFAbstractVertex> vertexSet) {
-		for (SDFAbstractVertex vertex : vertexSet) {
-			removeVertex(vertex);
+	public void removeVertexPaths(Set<String> vertexIdSet) {
+		for (String vertexId : vertexIdSet) {
+			removeVertexPath(vertexId);
 		}
 	}
 
-	public Set<IOperator> getOperators() {
-		return new HashSet<IOperator>(operators);
+	public Set<String> getOperatorIds() {
+		return new HashSet<String>(operatorIds);
 	}
 
-	public Set<SDFAbstractVertex> getVertices() {
-		return new HashSet<SDFAbstractVertex>(vertices);
+	public Set<String> getVertexPaths() {
+		return new HashSet<String>(sdfVertexPaths);
 	}
 
-	public boolean hasOperator(IOperator operator) {
-		boolean b = false;
+	public boolean hasOperatorId(String operatorId) {
 
-		Iterator<IOperator> it = operators.iterator();
-		while (it.hasNext() && !b) {
-			IOperator currentop = it.next();
-			b = currentop.equals(operator);
+		for(String opId : operatorIds){
+			if(opId.equals(operatorId)){
+				return true;
+			}
 		}
 
-		return b;
+		return false;
 	}
 
-	public boolean hasVertex(SDFAbstractVertex vertex) {
-		boolean b = false;
+	public boolean hasVertexPath(String vertexInfo) {
 
-		Iterator<SDFAbstractVertex> it = vertices.iterator();
-		while (it.hasNext() && !b) {
-			SDFAbstractVertex v = it.next();
-			b = (v.getInfo().equals(vertex.getInfo()));
+		for(String vId : sdfVertexPaths){
+			if(vId.equals(vertexInfo)){
+				return true;
+			}
 		}
 
-		return b;
+		return false;
 	}
 
-	public void removeOperator(IOperator operator) {
-		Iterator<IOperator> it = operators.iterator();
+	public void removeOperatorId(String operatorId) {
+		Iterator<String> it = operatorIds.iterator();
 		while (it.hasNext()) {
-			IOperator currentop = it.next();
-			if (currentop.equals(operator)) {
+			String currentopId = it.next();
+			if (currentopId.equals(operatorId)) {
 				it.remove();
 			}
 		}
 	}
 
-	public void removeVertex(SDFAbstractVertex vertex) {
-
-		Iterator<SDFAbstractVertex> it = vertices.iterator();
+	public void removeVertexPath(String sdfVertexInfo) {
+		Iterator<String> it = sdfVertexPaths.iterator();
 		while (it.hasNext()) {
-			SDFAbstractVertex v = it.next();
-			if ((v.getInfo().equals(vertex.getInfo()))) {
+			String v = it.next();
+			if ((v.equals(sdfVertexInfo))) {
 				it.remove();
-
 			}
 		}
 
@@ -155,8 +148,8 @@ public class ConstraintGroup {
 	@Override
 	public String toString() {
 		String s = "<";
-		s += operators.toString();
-		s += vertices.toString();
+		s += operatorIds.toString();
+		s += sdfVertexPaths.toString();
 		s += ">";
 
 		return s;

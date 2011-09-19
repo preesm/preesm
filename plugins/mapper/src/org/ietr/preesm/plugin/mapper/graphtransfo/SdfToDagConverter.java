@@ -205,7 +205,8 @@ public class SdfToDagConverter {
 				for (ArchitectureComponent op : architecture
 						.getComponents(ArchitectureComponentType.operator)) {
 					Timing time = new Timing(op.getDefinition().getId(),
-							currentVertex.getCorrespondingSDFVertex().getId(), 1);
+							currentVertex.getCorrespondingSDFVertex().getId(),
+							1);
 					time.setTime(Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
@@ -283,52 +284,39 @@ public class SdfToDagConverter {
 		while (cgit.hasNext()) {
 			ConstraintGroup cg = cgit.next();
 
-			// Iterating over graphs in constraint groups
-			Iterator<SDFAbstractVertex> graphit = cg.getVertices().iterator();
+			// Iterating over vertices in DAG with their SDF ref in the
+			// constraint group
+			Set<String> sdfVertexIds = cg.getVertexPaths();
 
-			while (graphit.hasNext()) {
-				SDFAbstractVertex currentsdfvertex = graphit.next();
+			for (DAGVertex v : dag.vertexSet()) {
+				MapperDAGVertex mv = (MapperDAGVertex) v;
+				if (sdfVertexIds.contains(mv.getCorrespondingSDFVertex()
+						.getInfo())) {
 
-				// Getting all DAG vertices which corresponding SDF graph has
-				// the same id
-				// as the current sdf vertex.
-				Set<MapperDAGVertex> vertexset = dag
-						.getVertices(currentsdfvertex);
-
-				// Iterating over DAG vertices corresponding to the same sdf
-				// graph
-				Iterator<MapperDAGVertex> vertexit = vertexset.iterator();
-
-				while (vertexit.hasNext()) {
-					MapperDAGVertex currentvertex = vertexit.next();
-
-					// Iterating over operators in constraint group
-					Iterator<IOperator> opit = cg.getOperators().iterator();
-
-					while (opit.hasNext()) {
-						IOperator currentIOp = opit.next();
+					for (String opId : cg.getOperatorIds()) {
+						IOperator currentIOp = (IOperator) architecture
+								.getComponent(
+										ArchitectureComponentType.operator,
+										opId);
 						if (((ArchitectureComponent) currentIOp).getType() == ArchitectureComponentType.operator) {
 							Operator currentop = (Operator) currentIOp;
 
-							if (!currentvertex.getInitialVertexProperty()
-									.isMapable(currentop)) {
+							if (!mv.getInitialVertexProperty().isMapable(
+									currentop)) {
 
-								currentvertex.getInitialVertexProperty()
-										.addOperator(currentop);
+								mv.getInitialVertexProperty().addOperator(
+										currentop);
 
 								Timing newTiming = new Timing(currentop
-												.getDefinition().getId(),
-										currentsdfvertex.getId());
-								currentvertex.getInitialVertexProperty()
-										.addTiming(newTiming);
+										.getDefinition().getId(), mv.getName());
+								mv.getInitialVertexProperty().addTiming(
+										newTiming);
 							}
 
 						}
 					}
 				}
-
 			}
-
 		}
 
 		/*

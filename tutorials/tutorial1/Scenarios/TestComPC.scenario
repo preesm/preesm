@@ -7,92 +7,36 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core6"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
+            <operator name="Core4"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core3"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="ParallelTest3"/>
             <task name="Sensor2"/>
+            <task name="ParallelTest2"/>
             <task name="Actuator"/>
-            <task name="Copy"/>
+            <task name="Sensor"/>
             <task name="Gen_int"/>
             <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
+            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core7"/>
-            <task name="ParallelTest"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest3"/>
-            <task name="ParallelTest2"/>
-            <task name="Gen_int"/>
-            <task name="Sensor2"/>
-            <task name="Sensor"/>
-            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core4"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="Copy"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="ParallelTest3"/>
+            <operator name="Core6"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
@@ -113,14 +57,14 @@
             <dataType name="char" size="1"/>
         </dataTypes>
         <specialVertexOperators>
-            <specialVertexOperator path="Core7"/>
-            <specialVertexOperator path="Core2"/>
-            <specialVertexOperator path="Core3"/>
             <specialVertexOperator path="Core4"/>
-            <specialVertexOperator path="Core1"/>
-            <specialVertexOperator path="Core6"/>
             <specialVertexOperator path="Core5"/>
+            <specialVertexOperator path="Core6"/>
+            <specialVertexOperator path="Core2"/>
             <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core7"/>
         </specialVertexOperators>
     </simuParams>
     <variables excelUrl=""/>

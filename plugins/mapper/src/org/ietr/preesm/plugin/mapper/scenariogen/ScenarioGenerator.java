@@ -146,7 +146,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 										(Operator) op, sdfV);
 						((SDFAndArchitectureScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(
-										sdfV.getId(),
+										sdfV.getName(),
 										op
 												.getDefinition().getId(),
 										Integer.parseInt(timeStr));

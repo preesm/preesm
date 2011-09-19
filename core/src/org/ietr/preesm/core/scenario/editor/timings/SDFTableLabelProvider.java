@@ -102,7 +102,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			else if (columnIndex == 1 && scenario != null
 					&& currentOpDefId != null) {
 				int time = scenario.getTimingManager().getTimingOrDefault(
-						vertex, currentOpDefId);
+						vertex.getName(), currentOpDefId);
 
 				text = Integer.toString(time);
 			}
@@ -188,7 +188,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			String message = Messages.getString("Timings.dialog.message")
 					+ vertex.getName();
 			String init = String.valueOf(scenario.getTimingManager()
-					.getTimingOrDefault(vertex, currentOpDefId));
+					.getTimingOrDefault(vertex.getName(), currentOpDefId));
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,
@@ -196,7 +196,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			if (dialog.open() == Window.OK) {
 				String value = dialog.getValue();
 
-				scenario.getTimingManager().setTiming(vertex.getId(), currentOpDefId,
+				scenario.getTimingManager().setTiming(vertex.getName(), currentOpDefId,
 						Integer.valueOf(value));
 
 				tableViewer.refresh();

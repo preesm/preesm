@@ -20,7 +20,7 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="FAST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="false"/>
-            <dftools:variable name="dagExportPath" value=""/>
+            <dftools:variable name="dagExportPath" value="tutorial1/DAG"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Switcher"/>
             <dftools:variable name="fastLocalSearchTime" value="10"/>

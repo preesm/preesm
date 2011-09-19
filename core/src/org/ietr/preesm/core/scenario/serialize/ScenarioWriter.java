@@ -43,14 +43,11 @@ import java.util.Collection;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.model.parameters.Variable;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -245,19 +242,16 @@ public class ScenarioWriter {
 		Element constraintGroupElt = dom.createElement("constraintGroup");
 		parent.appendChild(constraintGroupElt);
 
-		for (IOperator opdef : cst.getOperators()) {
-			if (((ArchitectureComponent) opdef).getType() == ArchitectureComponentType.operator) {
-				Element opdefelt = dom.createElement("operator");
-				constraintGroupElt.appendChild(opdefelt);
-				opdefelt.setAttribute("name",
-						((ArchitectureComponent) opdef).getName());
-			}
+		for (String opId : cst.getOperatorIds()) {
+			Element opdefelt = dom.createElement("operator");
+			constraintGroupElt.appendChild(opdefelt);
+			opdefelt.setAttribute("name", opId);
 		}
 
-		for (SDFAbstractVertex vtx : cst.getVertices()) {
+		for (String vtxId : cst.getVertexPaths()) {
 			Element vtxelt = dom.createElement("task");
 			constraintGroupElt.appendChild(vtxelt);
-			vtxelt.setAttribute("name", vtx.getInfo());
+			vtxelt.setAttribute("name", vtxId);
 		}
 	}
 

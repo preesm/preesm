@@ -178,7 +178,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 				v.getInitialVertexProperty().addOperator(virtualDelayManager);
 				Timing timing = new Timing(virtualDelayManager.getDefinition()
-						.getId(), sdfV.getId(), iterationPeriod);
+						.getId(), sdfV.getName(), iterationPeriod);
 				v.getInitialVertexProperty().addTiming(timing);
 				dag.addVertex(v);
 

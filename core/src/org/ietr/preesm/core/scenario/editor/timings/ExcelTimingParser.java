@@ -155,7 +155,7 @@ public class ExcelTimingParser {
 								stringTiming = stringTiming.replaceAll(" ", "");
 
 								try {
-									Timing timing = new Timing(opDefId, vertex.getId(),
+									Timing timing = new Timing(opDefId, vertex.getName(),
 											Integer.valueOf(timingCell
 													.getContents()));
 

@@ -134,7 +134,7 @@ public class ExcelTimingWriter implements SelectionListener {
 					String vertexName = vertex.getName();
 
 					int time = scenario.getTimingManager().getTimingOrDefault(
-							vertex, opDefId);
+							vertex.getName(), opDefId);
 
 					WritableCell opCell = (WritableCell) sheet
 							.findCell(opDefId), vCell = (WritableCell) sheet

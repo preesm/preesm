@@ -235,9 +235,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 				// Retrieves the elements in the tree that have the same name as
 				// the ones to select in the constraint group
-				for (SDFAbstractVertex vertex : cg.getVertices()) {
+				for (String vertexId : cg.getVertexPaths()) {
 					SDFAbstractVertex v = currentGraph
-							.getHierarchicalVertexFromPath(vertex.getInfo());
+							.getHierarchicalVertexFromPath(vertexId);
 
 					if (v != null) {
 						cgSet.add(contentProvider.convertChild(v));

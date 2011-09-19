@@ -441,12 +441,12 @@ public class ScenarioParser {
 						SDFAbstractVertex vertex = algo
 								.getHierarchicalVertexFromPath(name);
 						if (vertex != null)
-							cg.addVertex(vertex);
+							cg.addVertexPath(name);
 					} else if (type.equals("operator")) {
-						Operator def = (Operator) archi.getComponent(
+						Operator op = (Operator) archi.getComponent(
 								ArchitectureComponentType.operator, name);
-						if (def != null)
-							cg.addOperator(def);
+						if (op != null)
+							cg.addOperatorId(name);
 					}
 				}
 
@@ -511,7 +511,7 @@ public class ScenarioParser {
 								ArchitectureComponentType.operator, opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {
-					timing = new Timing(opdef.getId(), vertex.getId(), time);
+					timing = new Timing(opdef.getId(), vertex.getName(), time);
 				}
 			}
 

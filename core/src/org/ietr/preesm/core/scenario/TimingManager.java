@@ -114,7 +114,7 @@ public class TimingManager {
 
 		if (sdfVertex.getGraphDescription() == null) {
 			for (Timing timing : timings) {
-				if (timing.getSdfVertexId().equals(sdfVertex.getId())) {
+				if (timing.getSdfVertexId().equals(sdfVertex.getName())) {
 					vals.add(timing);
 				}
 			}
@@ -135,7 +135,7 @@ public class TimingManager {
 
 	private Timing getVertexTiming(SDFAbstractVertex sdfVertex, String opDefId) {
 		for (Timing timing : timings) {
-			if (timing.getSdfVertexId().equals(sdfVertex.getId())
+			if (timing.getSdfVertexId().equals(sdfVertex.getName())
 					&& timing.getOperatorDefinitionId().equals(opDefId)) {
 				return timing;
 			}
@@ -170,7 +170,7 @@ public class TimingManager {
 			}
 		}
 		// TODO: time calculation for underlying tasks not ready
-		return (new Timing(opDefId, sdfVertex.getId(), maxTime));
+		return (new Timing(opDefId, sdfVertex.getName(), maxTime));
 
 		/*
 		 * SDFGraph graph = (SDFGraph)sdfVertex.getGraphDescription();
@@ -187,12 +187,12 @@ public class TimingManager {
 	 * Looks for a timing entered in scenario editor. If there is none, returns
 	 * a default value
 	 */
-	public int getTimingOrDefault(SDFAbstractVertex vertex,
+	public int getTimingOrDefault(String sdfVertexId,
 			String operatorDefinitionId) {
 		Timing val = null;
 
 		for (Timing timing : timings) {
-			if (timing.getSdfVertexId().equals(vertex.getName())
+			if (timing.getSdfVertexId().equals(sdfVertexId)
 					&& timing.getOperatorDefinitionId().equals(
 							operatorDefinitionId)) {
 				val = timing;
