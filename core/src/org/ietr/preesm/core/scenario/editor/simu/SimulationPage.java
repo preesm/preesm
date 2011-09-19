@@ -80,9 +80,9 @@ import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 
 /**
  * This page contains parameters to influence the deployment simulator
@@ -138,9 +138,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	/**
 	 * The current scenario being edited
 	 */
-	private PreesmScenario scenario;
+	private SDFAndArchitectureScenario scenario;
 
-	public SimulationPage(PreesmScenario scenario, FormEditor editor,
+	public SimulationPage(SDFAndArchitectureScenario scenario, FormEditor editor,
 			String id, String title) {
 		super(editor, id, title);
 

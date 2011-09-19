@@ -62,7 +62,8 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author mpelcat
  */
 public class MultiCoreArchitecture extends
-		AbstractGraph<ArchitectureComponent, Interconnection> {
+		AbstractGraph<ArchitectureComponent, Interconnection> implements
+		IDistributedArchitecture {
 
 	/**
 	 * 
@@ -598,5 +599,25 @@ public class MultiCoreArchitecture extends
 	public boolean validateModel(Logger logger) throws SDF4JException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	/**
+	 * Getting IDs identifying each operator definition.
+	 */
+	@Override
+	public Set<String> getOperatorDefinitionIds() {
+
+		Set<String> opdefs = new HashSet<String>();
+
+		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
+				.values()) {
+
+			if (def.getType() == ArchitectureComponentType.operator) {
+				opdefs.add(def.getId());
+			}
+		}
+
+		return opdefs;
+
 	}
 }

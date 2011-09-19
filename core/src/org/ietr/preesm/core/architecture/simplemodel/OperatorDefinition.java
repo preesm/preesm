@@ -63,12 +63,6 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 		return ArchitectureComponentType.operator;
 	}
 
-	/*
-	 * public OperatorDefinition clone() { // A new OperatorDefinition is
-	 * created with same id OperatorDefinition newdef = new
-	 * OperatorDefinition(this.getVlnv()); return newdef; }
-	 */
-
 	public float getDataCopySpeed() {
 		return dataCopySpeed;
 	}

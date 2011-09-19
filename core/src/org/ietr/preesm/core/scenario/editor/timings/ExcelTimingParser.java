@@ -54,13 +54,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -72,9 +69,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelTimingParser {
 
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
-	public ExcelTimingParser(PreesmScenario scenario) {
+	public ExcelTimingParser(SDFAndArchitectureScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}
@@ -105,17 +102,14 @@ public class ExcelTimingParser {
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
 
-			Set<ArchitectureComponentDefinition> opDefs = new HashSet<ArchitectureComponentDefinition>();
-
-			opDefs.addAll(currentArchi
-					.getComponentDefinitions(ArchitectureComponentType.operator));
+			Set<String> opDefIds = currentArchi.getOperatorDefinitionIds();
 
 			// Warnings are displayed once for each missing operator or vertex
 			// in the excel sheet
 			Set<String> missingVertices = new HashSet<String>();
 			Set<String> missingOperatorTypes = new HashSet<String>();
 
-			parseTimings(w, currentGraph, opDefs, missingVertices,
+			parseTimings(w, currentGraph, opDefIds, missingVertices,
 					missingOperatorTypes);
 
 		} catch (BiffException e) {
@@ -131,24 +125,21 @@ public class ExcelTimingParser {
 	}
 
 	private void parseTimings(Workbook w, SDFGraph currentGraph,
-			Set<ArchitectureComponentDefinition> opDefs,
-			Set<String> missingVertices, Set<String> missingOperatorTypes) {
+			Set<String> opDefIds, Set<String> missingVertices,
+			Set<String> missingOperatorTypes) {
 
 		for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
 
 			if (vertex.getGraphDescription() != null) {
 				parseTimings(w, (SDFGraph) vertex.getGraphDescription(),
-						opDefs, missingVertices, missingOperatorTypes);
+						opDefIds, missingVertices, missingOperatorTypes);
 			} else if (vertex.getKind() == "vertex") {
-				for (ArchitectureComponentDefinition operatorDef : opDefs) {
-
-					String operatorId = ((IOperatorDefinition) operatorDef)
-							.getVlnv().getName();
+				for (String opDefId : opDefIds) {
 					String vertexName = vertex.getName();
 
-					if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+					if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
 						Cell vertexCell = w.getSheet(0).findCell(vertexName);
-						Cell operatorCell = w.getSheet(0).findCell(operatorId);
+						Cell operatorCell = w.getSheet(0).findCell(opDefId);
 
 						if (vertexCell != null && operatorCell != null) {
 							Cell timingCell = w.getSheet(0).getCell(
@@ -164,9 +155,8 @@ public class ExcelTimingParser {
 								stringTiming = stringTiming.replaceAll(" ", "");
 
 								try {
-									Timing timing = new Timing(
-											((IOperatorDefinition) operatorDef),
-											vertex, Integer.valueOf(timingCell
+									Timing timing = new Timing(opDefId, vertex.getId(),
+											Integer.valueOf(timingCell
 													.getContents()));
 
 									scenario.getTimingManager().addTiming(
@@ -183,7 +173,7 @@ public class ExcelTimingParser {
 													"Problem importing timing of "
 															+ vertexName
 															+ " on "
-															+ operatorId
+															+ opDefId
 															+ ". Integer with no space or special character needed. Be careful on the special number formats.");
 								}
 							}
@@ -196,13 +186,12 @@ public class ExcelTimingParser {
 												+ vertexName);
 								missingVertices.add(vertexName);
 							} else if (operatorCell == null
-									&& !missingOperatorTypes
-											.contains(operatorId)) {
+									&& !missingOperatorTypes.contains(opDefId)) {
 								AbstractWorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No column found in excel sheet for operator type: "
-												+ operatorId);
-								missingOperatorTypes.add(operatorId);
+												+ opDefId);
+								missingOperatorTypes.add(opDefId);
 							}
 						}
 					}

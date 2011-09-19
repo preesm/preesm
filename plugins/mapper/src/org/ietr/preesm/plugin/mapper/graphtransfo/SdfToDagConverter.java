@@ -49,9 +49,8 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.InitialEdgeProperty;
@@ -88,8 +87,8 @@ public class SdfToDagConverter {
 	 * @author mpelcat
 	 */
 	public static MapperDAG convert(SDFGraph sdfIn,
-			MultiCoreArchitecture architecture, PreesmScenario scenario,
-			boolean display) {
+			MultiCoreArchitecture architecture,
+			SDFAndArchitectureScenario scenario, boolean display) {
 
 		AbstractWorkflowLogger.getLogger().log(Level.INFO,
 				"Converting from SDF to DAG.");
@@ -155,7 +154,8 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static MapperDAG addInitialProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture,
+			SDFAndArchitectureScenario scenario) {
 
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
@@ -170,7 +170,8 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialVertexProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture,
+			SDFAndArchitectureScenario scenario) {
 
 		/**
 		 * Importing default timings
@@ -203,9 +204,8 @@ public class SdfToDagConverter {
 			} else {
 				for (ArchitectureComponent op : architecture
 						.getComponents(ArchitectureComponentType.operator)) {
-					Timing time = new Timing(
-							(OperatorDefinition) op.getDefinition(),
-							currentVertex.getCorrespondingSDFVertex(), 1);
+					Timing time = new Timing(op.getDefinition().getId(),
+							currentVertex.getCorrespondingSDFVertex().getId(), 1);
 					time.setTime(Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
@@ -220,7 +220,8 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialEdgeProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture,
+			SDFAndArchitectureScenario scenario) {
 
 		/**
 		 * Importing data edge weights and multiplying by type size when
@@ -268,7 +269,8 @@ public class SdfToDagConverter {
 	 * Retrieves the constraints and adds them to the DAG initial properties
 	 */
 	public static void addInitialConstraintsProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture,
+			SDFAndArchitectureScenario scenario) {
 		/**
 		 * Importing scenario: Only the timings corresponding to allowed
 		 * mappings are set.
@@ -314,10 +316,9 @@ public class SdfToDagConverter {
 								currentvertex.getInitialVertexProperty()
 										.addOperator(currentop);
 
-								Timing newTiming = new Timing(
-										(OperatorDefinition) currentop
-												.getDefinition(),
-										currentsdfvertex);
+								Timing newTiming = new Timing(currentop
+												.getDefinition().getId(),
+										currentsdfvertex.getId());
 								currentvertex.getInitialVertexProperty()
 										.addTiming(newTiming);
 							}

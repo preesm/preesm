@@ -58,7 +58,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeSection;
@@ -73,10 +73,10 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Currently edited scenario
 	 */
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 	private ConstraintsCheckStateListener checkStateListener = null;
 
-	public ConstraintsPage(PreesmScenario scenario, FormEditor editor,
+	public ConstraintsPage(SDFAndArchitectureScenario scenario, FormEditor editor,
 			String id, String title) {
 		super(editor, id, title);
 		this.scenario = scenario;

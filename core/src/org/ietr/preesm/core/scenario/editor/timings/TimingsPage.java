@@ -77,10 +77,10 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 
 /**
  * Timing editor within the implementation editor
@@ -89,10 +89,10 @@ import org.ietr.preesm.core.scenario.editor.Messages;
  */
 public class TimingsPage extends FormPage implements IPropertyListener {
 
-	final PreesmScenario scenario;
+	final SDFAndArchitectureScenario scenario;
 	TableViewer tableViewer = null;
 
-	public TimingsPage(PreesmScenario scenario, FormEditor editor, String id,
+	public TimingsPage(SDFAndArchitectureScenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 

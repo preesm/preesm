@@ -52,7 +52,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -106,7 +106,8 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs
+				.get("scenario");
 
 		// The graph may be repeated a predefined number of times
 		// with a predefined period
@@ -176,10 +177,8 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				v.setId("VirtualDelay" + "__@" + (i + 2));
 				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 				v.getInitialVertexProperty().addOperator(virtualDelayManager);
-				Timing timing = new Timing(
-						(OperatorDefinition) virtualDelayManager
-								.getDefinition(),
-						sdfV, iterationPeriod);
+				Timing timing = new Timing(virtualDelayManager.getDefinition()
+						.getId(), sdfV.getId(), iterationPeriod);
 				v.getInitialVertexProperty().addTiming(timing);
 				dag.addVertex(v);
 

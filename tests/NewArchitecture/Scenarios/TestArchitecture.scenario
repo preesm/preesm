@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url=""/>
+        <architecture url="/NewArchitecture/Archi/top.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore/>
+        <mainMedium/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators/>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

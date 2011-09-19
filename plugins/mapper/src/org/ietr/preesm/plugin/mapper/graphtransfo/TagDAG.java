@@ -46,7 +46,7 @@ import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -98,7 +98,7 @@ public class TagDAG {
 	 * @throws InvalidExpressionException
 	 */
 	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
-			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType)
+			SDFAndArchitectureScenario scenario, IAbc simu, EdgeSchedType edgeSchedType)
 			throws InvalidExpressionException {
 
 		PropertyBean bean = dag.getPropertyBean();
@@ -118,7 +118,7 @@ public class TagDAG {
 	 * Adds send and receive without scheduling them
 	 */
 	public void addSendReceive(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, SDFAndArchitectureScenario scenario) {
 
 		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
@@ -264,7 +264,7 @@ public class TagDAG {
 	 * @throws InvalidExpressionException
 	 * @throws InvalidExpressionException
 	 */
-	public void addAllAggregates(MapperDAG dag, PreesmScenario scenario)
+	public void addAllAggregates(MapperDAG dag, SDFAndArchitectureScenario scenario)
 			throws InvalidExpressionException {
 
 		MapperDAGEdge edge;
@@ -290,7 +290,7 @@ public class TagDAG {
 	 * 
 	 * @throws InvalidExpressionException
 	 */
-	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario)
+	public void addAggregateFromSDF(MapperDAGEdge edge, SDFAndArchitectureScenario scenario)
 			throws InvalidExpressionException {
 
 		BufferAggregate agg = new BufferAggregate();

@@ -52,7 +52,7 @@ import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.workflow.PreesmException;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingCodeGenerator;
 import org.ietr.preesm.plugin.codegen.jobposting.JobPostingPrinter;
@@ -82,7 +82,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 				.get("architecture");
 		DirectedAcyclicGraph algorithm = (DirectedAcyclicGraph) inputs
 				.get("DAG");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs.get("scenario");
 
 		// Resets the parsed IDL prototypes
 		IDLFunctionFactory.getInstance().resetPrototypes();
@@ -168,7 +168,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 	 * @throws PreesmException
 	 */
 	private CodeGenSDFGraph generateCodegenGraph(
-			DirectedAcyclicGraph algorithm, PreesmScenario scenario)
+			DirectedAcyclicGraph algorithm, SDFAndArchitectureScenario scenario)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();

@@ -47,7 +47,7 @@ import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -113,13 +113,13 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Scenario with information common to algorithm and architecture
 	 */
-	protected PreesmScenario scenario;
+	protected SDFAndArchitectureScenario scenario;
 
 	/**
 	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
 
 		AbstractAbc abc = null;
 		AbcType simulatorType = params.getSimulatorType();
@@ -144,7 +144,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * ABC constructor
 	 */
 	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
-			AbcType abcType, PreesmScenario scenario) {
+			AbcType abcType, SDFAndArchitectureScenario scenario) {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager(archi);
@@ -229,7 +229,7 @@ public abstract class AbstractAbc implements IAbc {
 		return this.archi;
 	}
 
-	public final PreesmScenario getScenario() {
+	public final SDFAndArchitectureScenario getScenario() {
 		return scenario;
 	}
 

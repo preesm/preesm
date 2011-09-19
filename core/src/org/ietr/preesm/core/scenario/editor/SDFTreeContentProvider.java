@@ -44,8 +44,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.tools.PathComparator;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -133,8 +133,8 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Object[] table = new Object[1];
 
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+		if (inputElement instanceof SDFAndArchitectureScenario) {
+			SDFAndArchitectureScenario inputScenario = (SDFAndArchitectureScenario) inputElement;
 
 			// Opening algorithm from file
 			currentGraph = ScenarioParser.getAlgorithm(inputScenario

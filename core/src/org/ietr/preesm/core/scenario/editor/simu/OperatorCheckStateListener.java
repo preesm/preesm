@@ -50,7 +50,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.sdf4j.model.IRefinement;
 
 /**
@@ -64,7 +64,7 @@ public class OperatorCheckStateListener implements ICheckStateListener,
 	/**
 	 * Currently edited scenario
 	 */
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
 	/**
 	 * Current section (necessary to diplay busy status)
@@ -86,7 +86,7 @@ public class OperatorCheckStateListener implements ICheckStateListener,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public OperatorCheckStateListener(Section section, PreesmScenario scenario) {
+	public OperatorCheckStateListener(Section section, SDFAndArchitectureScenario scenario) {
 		super();
 		this.scenario = scenario;
 		this.section = section;

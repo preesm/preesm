@@ -39,18 +39,12 @@ package org.ietr.preesm.core.scenario;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.parser.VLNV;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
 
 /**
  * Manager of the graphs timings
@@ -77,15 +71,13 @@ public class TimingManager {
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
-		defaultTiming = new Timing(new OperatorDefinition(new VLNV("default",
-				"default", "default", "default")), new SDFVertex(),
+		defaultTiming = new Timing("default", "default",
 				Timing.DEFAULT_TASK_TIME);
 	}
 
-	public Timing addTiming(SDFAbstractVertex graph,
-			IOperatorDefinition operator) {
+	public Timing addTiming(String sdfVertexId, String operatorDefinitionId) {
 
-		Timing newt = new Timing(operator, graph);
+		Timing newt = new Timing(operatorDefinitionId, sdfVertexId);
 		for (Timing timing : timings) {
 			if (timing.equals(newt)) {
 				return timing;
@@ -96,10 +88,10 @@ public class TimingManager {
 		return newt;
 	}
 
-	public void setTiming(SDFAbstractVertex graph,
-			IOperatorDefinition operator, int time) {
+	public void setTiming(String sdfVertexId, String operatorDefinitionId,
+			int time) {
 
-		addTiming(graph, operator).setTime(time);
+		addTiming(sdfVertexId, operatorDefinitionId).setTime(time);
 	}
 
 	public Timing addTiming(Timing newt) {
@@ -122,7 +114,7 @@ public class TimingManager {
 
 		if (sdfVertex.getGraphDescription() == null) {
 			for (Timing timing : timings) {
-				if (timing.getVertex().getName().equals(sdfVertex.getId())) {
+				if (timing.getSdfVertexId().equals(sdfVertex.getId())) {
 					vals.add(timing);
 				}
 			}
@@ -130,11 +122,9 @@ public class TimingManager {
 			// Adds timings for all operators in hierarchy if they can be
 			// calculated
 			// from underlying vertices
-			for (ArchitectureComponentDefinition opDef : architecture
-					.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			for (String opDefId : architecture.getOperatorDefinitionIds()) {
 				Timing t = generateVertexTimingFromHierarchy(
-						dagVertex.getCorrespondingSDFVertex(),
-						(IOperatorDefinition) opDef);
+						dagVertex.getCorrespondingSDFVertex(), opDefId);
 				if (t != null)
 					vals.add(t);
 			}
@@ -143,11 +133,10 @@ public class TimingManager {
 		return vals;
 	}
 
-	private Timing getVertexTiming(SDFAbstractVertex sdfVertex,
-			IOperatorDefinition opDef) {
+	private Timing getVertexTiming(SDFAbstractVertex sdfVertex, String opDefId) {
 		for (Timing timing : timings) {
-			if (timing.getVertex().getName().equals(sdfVertex.getId())
-					&& timing.getOperatorDefinition().equals(opDef)) {
+			if (timing.getSdfVertexId().equals(sdfVertex.getId())
+					&& timing.getOperatorDefinitionId().equals(opDefId)) {
 				return timing;
 			}
 		}
@@ -158,16 +147,16 @@ public class TimingManager {
 	 * Calculates a vertex timing from its underlying vertices
 	 */
 	public Timing generateVertexTimingFromHierarchy(
-			SDFAbstractVertex sdfVertex, IOperatorDefinition opDef) {
+			SDFAbstractVertex sdfVertex, String opDefId) {
 		int maxTime = 0;
 		SDFGraph graphDescription = (SDFGraph) sdfVertex.getGraphDescription();
 
 		for (SDFAbstractVertex vertex : graphDescription.vertexSet()) {
 			Timing vertexTiming;
 			if (vertex.getGraphDescription() != null) {
-				maxTime += generateVertexTimingFromHierarchy(vertex, opDef)
+				maxTime += generateVertexTimingFromHierarchy(vertex, opDefId)
 						.getTime();
-			} else if ((vertexTiming = getVertexTiming(vertex, opDef)) != null) {
+			} else if ((vertexTiming = getVertexTiming(vertex, opDefId)) != null) {
 				try {
 					maxTime += vertexTiming.getTime()
 							* vertex.getNbRepeatAsInteger();
@@ -181,7 +170,7 @@ public class TimingManager {
 			}
 		}
 		// TODO: time calculation for underlying tasks not ready
-		return (new Timing(opDef, sdfVertex, maxTime));
+		return (new Timing(opDefId, sdfVertex.getId(), maxTime));
 
 		/*
 		 * SDFGraph graph = (SDFGraph)sdfVertex.getGraphDescription();
@@ -199,12 +188,13 @@ public class TimingManager {
 	 * a default value
 	 */
 	public int getTimingOrDefault(SDFAbstractVertex vertex,
-			IOperatorDefinition operator) {
+			String operatorDefinitionId) {
 		Timing val = null;
 
 		for (Timing timing : timings) {
-			if (timing.getVertex().getName().equals(vertex.getName())
-					&& timing.getOperatorDefinition().equals(operator)) {
+			if (timing.getSdfVertexId().equals(vertex.getName())
+					&& timing.getOperatorDefinitionId().equals(
+							operatorDefinitionId)) {
 				val = timing;
 			}
 		}
@@ -234,7 +224,7 @@ public class TimingManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importTimings(PreesmScenario currentScenario) {
+	public void importTimings(SDFAndArchitectureScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
 			parser.parse(excelFileURL);

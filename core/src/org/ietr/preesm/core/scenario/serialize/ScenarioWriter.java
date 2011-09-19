@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario;
+package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,6 +46,9 @@ import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.types.DataType;
+import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.model.parameters.Variable;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.w3c.dom.DOMImplementation;
@@ -71,9 +74,9 @@ public class ScenarioWriter {
 	/**
 	 * Current scenario
 	 */
-	private PreesmScenario scenario;
+	private SDFAndArchitectureScenario scenario;
 
-	public ScenarioWriter(PreesmScenario scenario) {
+	public ScenarioWriter(SDFAndArchitectureScenario scenario) {
 		super();
 
 		this.scenario = scenario;
@@ -275,9 +278,8 @@ public class ScenarioWriter {
 
 		Element timingelt = dom.createElement("timing");
 		parent.appendChild(timingelt);
-		timingelt.setAttribute("vertexname", timing.getVertex().getName());
-		timingelt.setAttribute("opname", timing.getOperatorDefinition()
-				.getVlnv().getName());
+		timingelt.setAttribute("vertexname", timing.getSdfVertexId());
+		timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
 	}
 }

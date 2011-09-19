@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor/>
+    <spirit:name>processor</spirit:name>
+    <spirit:library/>
+    <spirit:version/>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>C64x+MM_1</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="c64x+_module" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>C64x+MM_2</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="c64x+_module" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>C64x+MM_3</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="c64x+_module" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>SCR</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="scr"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>EDMA3</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="EDMA"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>RapidIO</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="RIO"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>C64x+MM_4</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="c64x+_module" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>w1aab2a</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="C64x+MM_1"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b1</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="C64x+MM_2"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b2</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="C64x+MM_3"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b3</spirit:name>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="C64x+MM_1"/>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b4</spirit:name>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="C64x+MM_2"/>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b5</spirit:name>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="C64x+MM_3"/>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b6</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b8</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="RapidIO"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b9</spirit:name>
+            <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RapidIO"/>
+            <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c10</spirit:name>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="C64x+MM_4"/>
+            <spirit:activeInterface spirit:busRef="scr" spirit:componentRef="SCR"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c11</spirit:name>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="C64x+MM_4"/>
+            <spirit:activeInterface spirit:busRef="edmactrl" spirit:componentRef="EDMA3"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections>
+        <spirit:hierConnection spirit:interfaceRef="RIO">
+            <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RapidIO"/>
+        </spirit:hierConnection>
+    </spirit:hierConnections>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription slam:componentRef="c64x+_module"
+                slam:componentType="Operator" slam:refinement="core.slam"/>
+            <slam:componentDescription slam:componentRef="scr"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="2"/>
+            <slam:componentDescription slam:componentRef="EDMA"
+                slam:componentType="Dma" slam:refinement=""/>
+            <slam:componentDescription slam:componentRef="RIO"
+                slam:componentType="contentionComNode"
+                slam:refinement="" slam:speed="0.125"/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2a"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b2"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b3" slam:setupTime="4000"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b4" slam:setupTime="4000"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b5" slam:setupTime="4000"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b6"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b8"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b9"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2c10"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c11" slam:setupTime="4000"/>
+        </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters/>
+        </slam:designDescription>
+    </spirit:vendorExtensions>
+</spirit:design>

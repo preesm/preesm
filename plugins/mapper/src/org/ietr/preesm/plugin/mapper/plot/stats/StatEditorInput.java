@@ -43,7 +43,7 @@ import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.mapper.activator.Activator;
@@ -56,10 +56,10 @@ import org.ietr.preesm.plugin.mapper.activator.Activator;
 public class StatEditorInput implements IEditorInput {
 
 	private IAbc abc = null;
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 	private Map<String, String> params = null;
 
-	public StatEditorInput(IAbc abc, PreesmScenario scenario,
+	public StatEditorInput(IAbc abc, SDFAndArchitectureScenario scenario,
 			Map<String, String> params) {
 		super();
 		this.abc = abc;
@@ -67,7 +67,7 @@ public class StatEditorInput implements IEditorInput {
 		this.scenario = scenario;
 	}
 
-	public PreesmScenario getScenario() {
+	public SDFAndArchitectureScenario getScenario() {
 		return scenario;
 	}
 

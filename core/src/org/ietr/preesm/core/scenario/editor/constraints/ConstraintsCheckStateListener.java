@@ -59,12 +59,12 @@ import org.ietr.preesm.core.architecture.ArchitectureComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.core.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.ietr.preesm.core.scenario.editor.SDFTreeContentProvider;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.IRefinement;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -81,7 +81,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Currently edited scenario
 	 */
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
 	/**
 	 * Current operator
@@ -109,7 +109,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	private IPropertyListener propertyListener = null;
 
 	public ConstraintsCheckStateListener(Section section,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		super();
 		this.scenario = scenario;
 		this.section = section;
@@ -196,42 +196,6 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 			}
 		}
 	}
-
-	/**
-	 * Adds or remove a constraint depending on the isChecked status. Removed
-	 * because the good handling of hierarchy makes that a task with children
-	 * should sometimes be checked even if some children are not (the whole
-	 */
-	/*
-	 * public void updateConstraints(SDFAbstractVertex currentVertex, SDFGraph
-	 * currentGraph) {
-	 * 
-	 * if (currentIOpDef != null) {
-	 * 
-	 * Set<VertexWithPath> appropriateChildrenSet = contentProvider
-	 * .keepAndConvertAppropriateChildren(currentGraph.vertexSet());
-	 * 
-	 * boolean allChildrenChecked = !appropriateChildrenSet.isEmpty();
-	 * 
-	 * for (VertexWithPath vertex : appropriateChildrenSet) {
-	 * 
-	 * SDFGraph graph = (SDFGraph)
-	 * vertex.getStoredVertex().getGraphDescription(); if (graph != null) {
-	 * updateConstraints(vertex.getStoredVertex(), graph); }
-	 * 
-	 * allChildrenChecked &= scenario.getConstraintGroupManager()
-	 * .isCompatibleToConstraints(vertex.getStoredVertex(), currentIOpDef); }
-	 * 
-	 * if (currentVertex != null) { if (!allChildrenChecked &&
-	 * scenario.getConstraintGroupManager()
-	 * .isCompatibleToConstraints(currentVertex, currentIOpDef)) {
-	 * scenario.getConstraintGroupManager().removeConstraint( currentIOpDef,
-	 * currentVertex); } else if (allChildrenChecked &&
-	 * !scenario.getConstraintGroupManager()
-	 * .isCompatibleToConstraints(currentVertex, currentIOpDef)) {
-	 * scenario.getConstraintGroupManager().addConstraint( currentIOpDef,
-	 * currentVertex); } } } }
-	 */
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
@@ -321,7 +285,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 			}
 
 		});
-
+		
 		combo.addSelectionListener(this);
 	}
 

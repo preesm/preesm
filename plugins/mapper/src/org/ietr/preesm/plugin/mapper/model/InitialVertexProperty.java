@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.scenario.Timing;
@@ -98,7 +97,7 @@ public class InitialVertexProperty {
 	}
 
 	public void addTiming(Timing timing) {
-		if (getTiming(timing.getOperatorDefinition()) == null)
+		if (getTiming(timing.getOperatorDefinitionId()) == null)
 			this.timings.add(timing);
 	}
 
@@ -174,8 +173,7 @@ public class InitialVertexProperty {
 
 		if (operator != Operator.NO_COMPONENT) {
 
-			Timing returntiming = getTiming((OperatorDefinition) operator
-					.getDefinition());
+			Timing returntiming = getTiming(operator.getDefinition().getId());
 
 			if (returntiming != Timing.UNAVAILABLE) {
 
@@ -270,7 +268,7 @@ public class InitialVertexProperty {
 
 	}
 
-	public Timing getTiming(IOperatorDefinition operatordef) {
+	public Timing getTiming(String operatordefId) {
 
 		Timing returntiming = Timing.UNAVAILABLE;
 
@@ -279,7 +277,7 @@ public class InitialVertexProperty {
 		while (iterator.hasNext()) {
 			Timing currenttiming = iterator.next();
 
-			if (operatordef.equals(currenttiming.getOperatorDefinition())) {
+			if (operatordefId.equals(currenttiming.getOperatorDefinitionId())) {
 				returntiming = currenttiming;
 				break;
 			}

@@ -6,14 +6,14 @@
     <spirit:version/>
     <spirit:componentInstances>
         <spirit:componentInstance>
-            <spirit:instanceName>tci6488_1</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="tci6488"
+            <spirit:instanceName>p1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="p1"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>tci6488_2</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="tci6488"
+            <spirit:instanceName>p2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="p2"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
@@ -27,20 +27,22 @@
     <spirit:interconnections>
         <spirit:interconnection>
             <spirit:name>w1aab2a</spirit:name>
-            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="tci6488_1"/>
+            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="p1"/>
             <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RioSerialLink"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>w1aab2b1</spirit:name>
             <spirit:activeInterface spirit:busRef="rio" spirit:componentRef="RioSerialLink"/>
-            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="tci6488_2"/>
+            <spirit:activeInterface spirit:busRef="RIO" spirit:componentRef="p2"/>
         </spirit:interconnection>
     </spirit:interconnections>
     <spirit:hierConnections/>
     <spirit:vendorExtensions>
         <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
-            <slam:componentDescription slam:componentRef="tci6488"
-                slam:componentType="Operator" slam:refinement="processor.slam"/>
+            <slam:componentDescription slam:componentRef="p1"
+                slam:componentType="Operator" slam:refinement="triprocessor.slam,quadriprocessor.slam"/>
+            <slam:componentDescription slam:componentRef="p2"
+                slam:componentType="Operator" slam:refinement="quadriprocessor.slam"/>
             <slam:componentDescription slam:componentRef="RioSerialLink"
                 slam:componentType="parallelComNode" slam:refinement="" slam:speed="1"/>
         </slam:componentDescriptions>
@@ -50,5 +52,8 @@
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
         </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters/>
+        </slam:designDescription>
     </spirit:vendorExtensions>
 </spirit:design>

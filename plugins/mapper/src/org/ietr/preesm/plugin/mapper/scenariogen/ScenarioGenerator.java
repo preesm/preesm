@@ -19,10 +19,9 @@ import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -75,7 +74,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(relativePath);
 
-			PreesmScenario scenario = parser.parseXmlFile(file);
+			SDFAndArchitectureScenario scenario = parser.parseXmlFile(file);
 
 			// Retrieving the algorithm
 			SDFGraph algo = ScenarioParser.getAlgorithm(scenario
@@ -114,9 +113,9 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
 
-			((PreesmScenario) outputs.get("scenario"))
+			((SDFAndArchitectureScenario) outputs.get("scenario"))
 					.getConstraintGroupManager().removeAll();
-			((PreesmScenario) outputs.get("scenario")).getTimingManager()
+			((SDFAndArchitectureScenario) outputs.get("scenario")).getTimingManager()
 					.removeAll();
 
 			try {
@@ -142,14 +141,14 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 							.get("architecture")).getComponent(opName);
 
 					if (sdfV != null && op != null && op instanceof Operator) {
-						((PreesmScenario) outputs.get("scenario"))
+						((SDFAndArchitectureScenario) outputs.get("scenario"))
 								.getConstraintGroupManager().addConstraint(
 										(Operator) op, sdfV);
-						((PreesmScenario) outputs.get("scenario"))
+						((SDFAndArchitectureScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(
-										sdfV,
-										(OperatorDefinition) (op
-												.getDefinition()),
+										sdfV.getId(),
+										op
+												.getDefinition().getId(),
 										Integer.parseInt(timeStr));
 					}
 				}

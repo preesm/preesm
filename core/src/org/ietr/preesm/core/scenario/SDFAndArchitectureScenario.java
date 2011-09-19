@@ -36,7 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-public class PreesmScenario {
+/**
+ * Storing all information of a scenario
+ * 
+ * @author mpelcat
+ */
+public class SDFAndArchitectureScenario {
 
 	/**
 	 * Manager of constraint groups
@@ -78,7 +83,7 @@ public class PreesmScenario {
 	 */
 	private String scenarioURL = "";
 
-	public PreesmScenario() {
+	public SDFAndArchitectureScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
 		simulationManager = new SimulationManager();

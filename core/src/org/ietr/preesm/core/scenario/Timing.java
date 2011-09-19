@@ -36,10 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
+ * A timing links a SDF vertex and an operator definition to a time.
+ * Ids are used to make the scenario independent from model implementations.
+ *  
  * @author mpelcat
  */
 public class Timing {
@@ -54,7 +55,7 @@ public class Timing {
 	/**
 	 * related operator
 	 */
-	private IOperatorDefinition operator;
+	private String operatorDefinitionId;
 
 	/**
 	 * Definition of the timing
@@ -64,18 +65,18 @@ public class Timing {
 	/**
 	 * related Graph
 	 */
-	private SDFAbstractVertex vertex;
+	private String sdfVertexId;
 
-	public Timing(IOperatorDefinition operator, SDFAbstractVertex vertex) {
+	public Timing(String operatorDefinitionId, String sdfVertexId) {
 
 		time = DEFAULT_TASK_TIME;
-		this.operator = operator;
-		this.vertex = vertex;
+		this.operatorDefinitionId = operatorDefinitionId;
+		this.sdfVertexId = sdfVertexId;
 	}
 
-	public Timing(IOperatorDefinition operator, SDFAbstractVertex vertex,
+	public Timing(String operatorId, String sdfVertexId,
 			int time) {
-		this(operator, vertex);
+		this(operatorId, sdfVertexId);
 		this.time = time;
 	}
 
@@ -86,15 +87,15 @@ public class Timing {
 
 		if (obj instanceof Timing) {
 			Timing otherT = (Timing) obj;
-			equals = operator.equals(otherT.getOperatorDefinition());
-			equals &= vertex.getName().equals((otherT.getVertex().getName()));
+			equals = operatorDefinitionId.equals(otherT.getOperatorDefinitionId());
+			equals &= sdfVertexId.equals((otherT.getSdfVertexId()));
 		}
 
 		return equals;
 	}
 
-	public IOperatorDefinition getOperatorDefinition() {
-		return operator;
+	public String getOperatorDefinitionId() {
+		return operatorDefinitionId;
 	}
 
 	public int getTime() {
@@ -102,8 +103,8 @@ public class Timing {
 		return time;
 	}
 
-	public SDFAbstractVertex getVertex() {
-		return vertex;
+	public String getSdfVertexId() {
+		return sdfVertexId;
 	}
 
 	public void setTime(int time) {
@@ -113,7 +114,7 @@ public class Timing {
 
 	@Override
 	public String toString() {
-		return "{" + vertex + "," + operator.getVlnv().getName() + "," + time
+		return "{" + sdfVertexId + "," + operatorDefinitionId + "," + time
 				+ "}";
 	}
 

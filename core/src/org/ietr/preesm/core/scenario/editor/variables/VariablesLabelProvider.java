@@ -47,7 +47,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.sdf4j.model.parameters.Variable;
 
@@ -58,7 +58,7 @@ import org.sdf4j.model.parameters.Variable;
  */
 public class VariablesLabelProvider implements ITableLabelProvider {
 
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
 	private TableViewer tableViewer = null;
 
@@ -67,7 +67,7 @@ public class VariablesLabelProvider implements ITableLabelProvider {
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public VariablesLabelProvider(PreesmScenario scenario,
+	public VariablesLabelProvider(SDFAndArchitectureScenario scenario,
 			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;

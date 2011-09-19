@@ -41,7 +41,7 @@ import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
@@ -65,7 +65,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * Constructor
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
 		this(params, dag, archi, TaskSchedType.Simple, scenario);
 	}
 
@@ -75,7 +75,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 

@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 
 /**
  * Table representing the different routes available to go from one operator to
@@ -144,9 +144,9 @@ public class RoutingTable {
 	/**
 	 * Scenario
 	 */
-	private PreesmScenario scenario;
+	private SDFAndArchitectureScenario scenario;
 
-	public RoutingTable(PreesmScenario scenario) {
+	public RoutingTable(SDFAndArchitectureScenario scenario) {
 		super();
 		table = new HashMap<OperatorCouple, RouteList>();
 		this.scenario = scenario;

@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
@@ -64,7 +64,7 @@ public interface IAbc extends IMapperAbc {
 	 */
 	public MultiCoreArchitecture getArchitecture();
 
-	public PreesmScenario getScenario();
+	public SDFAndArchitectureScenario getScenario();
 
 	public MapperDAG getDAG();
 

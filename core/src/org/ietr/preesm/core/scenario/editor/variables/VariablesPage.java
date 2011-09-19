@@ -76,10 +76,10 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.core.scenario.editor.Messages;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.parameters.Variable;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -90,7 +90,7 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class VariablesPage extends FormPage implements IPropertyListener {
 
-	final PreesmScenario scenario;
+	final SDFAndArchitectureScenario scenario;
 	TableViewer tableViewer = null;
 
 	/**
@@ -99,7 +99,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 	 */
 	SDFGraph currentGraph = null;
 
-	public VariablesPage(PreesmScenario scenario, FormEditor editor, String id,
+	public VariablesPage(SDFAndArchitectureScenario scenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);
 

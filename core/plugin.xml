@@ -5,11 +5,11 @@
          point="net.sf.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
-            type="org.ietr.preesm.core.workflow.PreesmScenarioNodeImplementation">
+            type="org.ietr.preesm.core.workflow.SDFAndArchitectureScenarioNode">
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
             </output>
             <output
                   id="SDF"
@@ -23,11 +23,11 @@
       </scenario>
       <scenario
             id="org.ietr.preesm.scenario.ibsdfandslam"
-            type="org.ietr.preesm.core.workflow.IBSDFAndSLAMScenario">
+            type="org.ietr.preesm.core.workflow.IBSDFAndSLAMScenarioNode">
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
             </output>
             <output
                   id="IBSDF"

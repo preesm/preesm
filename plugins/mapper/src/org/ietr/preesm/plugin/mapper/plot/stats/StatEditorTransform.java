@@ -45,7 +45,7 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 
 /**
@@ -62,7 +62,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
 			String nodeName) throws WorkflowException {
 
 		IAbc simulator = (IAbc) inputs.get("ABC");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs.get("scenario");
 
 		if (simulator instanceof IAbc) {
 			IAbc abc = (IAbc) simulator;

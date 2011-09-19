@@ -79,10 +79,14 @@ public abstract class ArchitectureComponentDefinition {
 
 		if (obj.getClass().equals(this.getClass())) {
 			ArchitectureComponentDefinition def = (ArchitectureComponentDefinition) obj;
-			return vlnv.equals(def.getVlnv())
+			return vlnv.equals(def.vlnv)
 					&& category.equalsIgnoreCase(def.category);
 		}
 		return false;
+	}
+
+	public String getId() {
+		return vlnv.getName();
 	}
 
 	public VLNV getVlnv() {
@@ -113,33 +117,33 @@ public abstract class ArchitectureComponentDefinition {
 		ArchitectureComponentDefinition newdef = null;
 
 		if (getType().equals(ArchitectureComponentType.contentionNode)) {
-			newdef = new ContentionNodeDefinition(this.getVlnv());
+			newdef = new ContentionNodeDefinition(this.vlnv);
 			((ContentionNodeDefinition) newdef)
 					.setDataRate(((ContentionNodeDefinition) this)
 							.getDataRate());
 		} else if (getType().equals(ArchitectureComponentType.dma)) {
 			DmaDefinition dmaDef = (DmaDefinition) this;
-			newdef = new DmaDefinition(this.getVlnv());
+			newdef = new DmaDefinition(this.vlnv);
 			for (String opName : dmaDef.getSetupTimes().keySet()) {
 				((DmaDefinition) newdef).addSetupTime(opName,
 						(int) dmaDef.getSetupTime(opName));
 			}
 		} else if (getType().equals(ArchitectureComponentType.medium)) {
 			MediumDefinition def = (MediumDefinition) this;
-			newdef = new MediumDefinition(this.getVlnv(), def.getDataRate(),
+			newdef = new MediumDefinition(this.vlnv, def.getDataRate(),
 					def.getOverheadTime());
 		} else if (getType().equals(ArchitectureComponentType.operator)) {
-			newdef = new OperatorDefinition(this.getVlnv());
+			newdef = new OperatorDefinition(this.vlnv);
 			((OperatorDefinition) newdef)
 					.setDataCopySpeed(((OperatorDefinition) this)
 							.getDataCopySpeed());
 		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
-			newdef = new ParallelNodeDefinition(this.getVlnv());
+			newdef = new ParallelNodeDefinition(this.vlnv);
 			((ParallelNodeDefinition) newdef)
 					.setDataRate(((ParallelNodeDefinition) this).getDataRate());
 		} else if (getType().equals(ArchitectureComponentType.ram)) {
 			RamDefinition ramDef = (RamDefinition) this;
-			newdef = new RamDefinition(this.getVlnv());
+			newdef = new RamDefinition(this.vlnv);
 			for (String opName : ramDef.getSetupTimes().keySet()) {
 				((RamDefinition) newdef).addSetupTime(opName,
 						(int) ramDef.getSetupTime(opName));

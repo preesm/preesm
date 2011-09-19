@@ -51,10 +51,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.core.scenario.editor.Messages;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFVertex;
@@ -67,9 +65,9 @@ import org.sdf4j.model.sdf.SDFVertex;
 public class SDFTableLabelProvider implements ITableLabelProvider,
 		SelectionListener {
 
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
-	private IOperatorDefinition currentOpDef = null;
+	private String currentOpDefId = null;
 
 	private TableViewer tableViewer = null;
 
@@ -78,7 +76,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(PreesmScenario scenario,
+	public SDFTableLabelProvider(SDFAndArchitectureScenario scenario,
 			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
@@ -102,9 +100,9 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			if (columnIndex == 0)
 				text = vertex.getName();
 			else if (columnIndex == 1 && scenario != null
-					&& currentOpDef != null) {
+					&& currentOpDefId != null) {
 				int time = scenario.getTimingManager().getTimingOrDefault(
-						vertex, currentOpDef);
+						vertex, currentOpDefId);
 
 				text = Integer.toString(time);
 			}
@@ -153,8 +151,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 			MultiCoreArchitecture archi = (MultiCoreArchitecture) combo
 					.getData();
-			currentOpDef = (OperatorDefinition) archi.getComponentDefinition(
-					ArchitectureComponentType.operator, item);
+			currentOpDefId = archi.getComponentDefinition(
+					ArchitectureComponentType.operator, item).getId();
 			tableViewer.refresh();
 		}
 
@@ -183,14 +181,14 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 		};
 
 		if (selection.getFirstElement() instanceof SDFVertex
-				&& currentOpDef != null) {
+				&& currentOpDefId != null) {
 			SDFVertex vertex = (SDFVertex) selection.getFirstElement();
 
 			String title = Messages.getString("Timings.dialog.title");
 			String message = Messages.getString("Timings.dialog.message")
 					+ vertex.getName();
 			String init = String.valueOf(scenario.getTimingManager()
-					.getTimingOrDefault(vertex, currentOpDef));
+					.getTimingOrDefault(vertex, currentOpDefId));
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,
@@ -198,7 +196,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			if (dialog.open() == Window.OK) {
 				String value = dialog.getValue();
 
-				scenario.getTimingManager().setTiming(vertex, currentOpDef,
+				scenario.getTimingManager().setTiming(vertex.getId(), currentOpDefId,
 						Integer.valueOf(value));
 
 				tableViewer.refresh();

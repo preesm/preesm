@@ -23,7 +23,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
             </input>
          </inputs>
       </task>

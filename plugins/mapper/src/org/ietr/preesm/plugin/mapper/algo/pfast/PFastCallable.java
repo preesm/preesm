@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.plugin.abc.taskscheduling.TopologicalTaskSched;
@@ -84,7 +84,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	// Variables to know if we have to do the initial scheduling or not
 	private boolean alreadyMapped;
 
-	private PreesmScenario scenario;
+	private SDFAndArchitectureScenario scenario;
 
 	/**
 	 * Constructor
@@ -103,7 +103,7 @@ class PFastCallable implements Callable<MapperDAG> {
 			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
 			boolean isDisplaySolutions, boolean alreadyMapped,
 			AbcParameters abcParams, FastAlgoParameters fastParams,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;

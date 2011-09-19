@@ -57,12 +57,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
@@ -72,9 +69,9 @@ import org.sdf4j.model.sdf.SDFAbstractVertex;
  */
 public class ExcelTimingWriter implements SelectionListener {
 
-	private PreesmScenario scenario;
+	private SDFAndArchitectureScenario scenario;
 
-	public ExcelTimingWriter(PreesmScenario scenario) {
+	public ExcelTimingWriter(SDFAndArchitectureScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}
@@ -131,22 +128,21 @@ public class ExcelTimingWriter implements SelectionListener {
 			MultiCoreArchitecture archi = ScenarioParser
 					.getArchitecture(scenario.getArchitectureURL());
 
-			for (ArchitectureComponentDefinition opDef : archi
-					.getComponentDefinitions(ArchitectureComponentType.operator)) {
+			for (String opDefId : archi
+					.getOperatorDefinitionIds()) {
 				for (SDFAbstractVertex vertex : vSet) {
-					String opDefName = opDef.getVlnv().getName();
 					String vertexName = vertex.getName();
 
 					int time = scenario.getTimingManager().getTimingOrDefault(
-							vertex, (IOperatorDefinition) opDef);
+							vertex, opDefId);
 
 					WritableCell opCell = (WritableCell) sheet
-							.findCell(opDefName), vCell = (WritableCell) sheet
+							.findCell(opDefId), vCell = (WritableCell) sheet
 							.findCell(vertexName);
 
 					try {
 						if (opCell == null) {
-							opCell = new Label(maxOpAbscissa, 0, opDefName);
+							opCell = new Label(maxOpAbscissa, 0, opDefId);
 							sheet.addCell(opCell);
 							maxOpAbscissa++;
 						}

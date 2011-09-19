@@ -42,8 +42,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.ScenarioParser;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.tools.NameComparator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -60,8 +60,8 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 
 		Object[] elementTable = null;
 
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+		if (inputElement instanceof SDFAndArchitectureScenario) {
+			SDFAndArchitectureScenario inputScenario = (SDFAndArchitectureScenario) inputElement;
 
 			elementTable = getSortedVertices(inputScenario).toArray();
 		}
@@ -69,7 +69,7 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 	}
 
 	static public Set<SDFAbstractVertex> getSortedVertices(
-			PreesmScenario inputScenario) {
+			SDFAndArchitectureScenario inputScenario) {
 		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
 		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario

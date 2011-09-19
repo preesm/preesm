@@ -55,7 +55,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
@@ -75,10 +75,10 @@ public class RouteCalculator {
 
 	private RouteStepFactory stepFactory = null;
 
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
 	public static RouteCalculator getInstance(MultiCoreArchitecture archi,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		if (instances.get(archi) == null) {
 			instances.put(archi, new RouteCalculator(archi, scenario));
 		}
@@ -86,19 +86,19 @@ public class RouteCalculator {
 	}
 
 	public static void recalculate(MultiCoreArchitecture archi,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		instances.put(archi, new RouteCalculator(archi, scenario));
 	}
 
 	public static void deleteRoutes(MultiCoreArchitecture archi,
-			PreesmScenario scenario) {
+			SDFAndArchitectureScenario scenario) {
 		instances.remove(archi);
 	}
 
 	/**
 	 * Constructor from a given architecture
 	 */
-	private RouteCalculator(MultiCoreArchitecture archi, PreesmScenario scenario) {
+	private RouteCalculator(MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
 
 		this.archi = archi;
 		this.table = new RoutingTable(scenario);

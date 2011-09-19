@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+<spirit:design
+    xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4" xmlns:slam="http://sourceforge.net/projects/dftools/slam">
     <spirit:vendor/>
-    <spirit:name>core</spirit:name>
     <spirit:library/>
+    <spirit:name>core</spirit:name>
     <spirit:version/>
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>C64x+</spirit:instanceName>
             <spirit:componentRef spirit:library="" spirit:name="c64x+"
                 spirit:vendor="" spirit:version=""/>
-            <spirit:configurableElementValues>
-                <spirit:configurableElementValue spirit:referenceId="superProperty">714</spirit:configurableElementValue>
-            </spirit:configurableElementValues>
+            <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>L1Cache</spirit:instanceName>
@@ -79,17 +78,17 @@
         </spirit:hierConnection>
     </spirit:hierConnections>
     <spirit:vendorExtensions>
-        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+        <slam:componentDescriptions>
             <slam:componentDescription slam:componentRef="c64x+"
                 slam:componentType="Operator" slam:refinement=""/>
             <slam:componentDescription slam:componentRef="L1Cache"
                 slam:componentType="Mem" slam:refinement="" slam:size="100"/>
             <slam:componentDescription slam:componentRef="internalBus"
-                slam:componentType="parallelComNode" slam:refinement="" slam:speed="2"/>
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="2.0"/>
             <slam:componentDescription slam:componentRef="L2"
                 slam:componentType="Mem" slam:refinement="" slam:size="100"/>
         </slam:componentDescriptions>
-        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+        <slam:linkDescriptions>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2a"/>
             <slam:linkDescription slam:directedLink="undirected"
@@ -103,7 +102,7 @@
             <slam:linkDescription slam:directedLink="directed"
                 slam:linkType="ControlLink" slam:referenceId="w1aab2b7" slam:setupTime="0"/>
         </slam:linkDescriptions>
-        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+        <slam:designDescription>
             <slam:parameters>
                 <slam:parameter slam:key="L1Cache" slam:value="Mem2"/>
             </slam:parameters>

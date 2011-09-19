@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario;
+package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,6 +55,9 @@ import org.ietr.preesm.core.architecture.parser.DesignParser;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.types.DataType;
+import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.importer.GMLGenericImporter;
 import org.sdf4j.importer.InvalidFileException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -79,7 +82,7 @@ public class ScenarioParser {
 	/**
 	 * scenario being retrieved
 	 */
-	private PreesmScenario scenario = null;
+	private SDFAndArchitectureScenario scenario = null;
 
 	/**
 	 * current algorithm
@@ -93,7 +96,7 @@ public class ScenarioParser {
 
 	public ScenarioParser() {
 
-		scenario = new PreesmScenario();
+		scenario = new SDFAndArchitectureScenario();
 	}
 
 	public Document getDom() {
@@ -103,7 +106,7 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public PreesmScenario parseXmlFile(IFile file) {
+	public SDFAndArchitectureScenario parseXmlFile(IFile file) {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -508,7 +511,7 @@ public class ScenarioParser {
 								ArchitectureComponentType.operator, opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {
-					timing = new Timing(opdef, vertex, time);
+					timing = new Timing(opdef.getId(), vertex.getId(), time);
 				}
 			}
 

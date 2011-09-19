@@ -196,7 +196,7 @@ public class ConstraintGroupManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importConstraints(PreesmScenario currentScenario) {
+	public void importConstraints(SDFAndArchitectureScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelConstraintsParser parser = new ExcelConstraintsParser(
 					currentScenario);

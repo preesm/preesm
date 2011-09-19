@@ -38,7 +38,7 @@ package org.ietr.preesm.core.scenario.editor.simu;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
 
 /**
  * Provides the elements contained in the data types editor
@@ -52,8 +52,8 @@ public class DataTypesContentProvider implements IStructuredContentProvider {
 	@Override
 	public Object[] getElements(Object inputElement) {
 
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+		if (inputElement instanceof SDFAndArchitectureScenario) {
+			SDFAndArchitectureScenario inputScenario = (SDFAndArchitectureScenario) inputElement;
 
 			// Retrieving the data types from the scenario
 			elementTable = inputScenario.getSimulationManager().getDataTypes()
