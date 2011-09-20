@@ -22,4 +22,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.scenario.editor,
+ org.ietr.preesm.ui.scenario.editor.codegen,
+ org.ietr.preesm.ui.scenario.editor.constraints,
+ org.ietr.preesm.ui.scenario.editor.simulation,
+ org.ietr.preesm.ui.scenario.editor.timings,
  org.ietr.preesm.ui.wizards

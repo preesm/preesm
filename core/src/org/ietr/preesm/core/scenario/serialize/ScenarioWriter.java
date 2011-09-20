@@ -42,7 +42,6 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
@@ -157,9 +156,9 @@ public class ScenarioWriter {
 		Element sVOperators = dom.createElement("specialVertexOperators");
 		params.appendChild(sVOperators);
 
-		for (ArchitectureComponent cmp : scenario.getSimulationManager()
-				.getSpecialVertexOperators()) {
-			addSpecialVertexOperator(sVOperators, cmp);
+		for (String opId : scenario.getSimulationManager()
+				.getSpecialVertexOperatorIds()) {
+			addSpecialVertexOperator(sVOperators, opId);
 		}
 	}
 
@@ -172,11 +171,11 @@ public class ScenarioWriter {
 	}
 
 	private void addSpecialVertexOperator(Element parent,
-			ArchitectureComponent cmp) {
+			String opId) {
 
 		Element dataTypeElt = dom.createElement("specialVertexOperator");
 		parent.appendChild(dataTypeElt);
-		dataTypeElt.setAttribute("path", cmp.getInfo());
+		dataTypeElt.setAttribute("path", opId);
 	}
 
 	public void writeDom(IFile file) {

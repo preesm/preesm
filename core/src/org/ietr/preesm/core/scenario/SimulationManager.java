@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.codegen.types.DataType;
 
@@ -74,13 +73,13 @@ public class SimulationManager {
 	/**
 	 * Operators able to execute special vertices
 	 */
-	private Set<ArchitectureComponent> specialVertexOperators;
+	private Set<String> specialVertexOperatorIds;
 
 	public SimulationManager() {
 		super();
 
 		dataTypes = new HashMap<String, DataType>();
-		specialVertexOperators = new HashSet<ArchitectureComponent>();
+		specialVertexOperatorIds = new HashSet<String>();
 	}
 
 	public String getMainMediumName() {
@@ -131,32 +130,30 @@ public class SimulationManager {
 		return averageDataSize;
 	}
 
-	public Set<ArchitectureComponent> getSpecialVertexOperators() {
-		return specialVertexOperators;
+	public Set<String> getSpecialVertexOperatorIds() {
+		return specialVertexOperatorIds;
 	}
 
-	public void addSpecialVertexOperator(ArchitectureComponent c) {
-		if (!hasSpecialVertexOperator(c)) {
-			specialVertexOperators.add(c);
+	public void addSpecialVertexOperatorId(String opId) {
+		if (!hasSpecialVertexOperatorId(opId)) {
+			specialVertexOperatorIds.add(opId);
 		}
 	}
 
-	public void removeSpecialVertexOperator(ArchitectureComponent c) {
-		Iterator<ArchitectureComponent> it = specialVertexOperators.iterator();
+	public void removeSpecialVertexOperatorId(String id) {
+		Iterator<String> it = specialVertexOperatorIds.iterator();
 		while (it.hasNext()) {
-			ArchitectureComponent cmp = it.next();
-			if ((cmp.getInfo().equals(c.getInfo()))) {
+			String cmpId = it.next();
+			if ((cmpId.equals(id))) {
 				it.remove();
 
 			}
 		}
 	}
 
-	public boolean hasSpecialVertexOperator(ArchitectureComponent c) {
-		Iterator<ArchitectureComponent> it = specialVertexOperators.iterator();
-		while (it.hasNext()) {
-			ArchitectureComponent cmp = it.next();
-			if ((cmp.getInfo().equals(c.getInfo()))) {
+	public boolean hasSpecialVertexOperatorId(String id) {
+		for (String currentId : specialVertexOperatorIds) {
+			if ((currentId.equals(id))) {
 				return true;
 			}
 		}

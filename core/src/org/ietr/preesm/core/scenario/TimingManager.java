@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.editor.timings.ExcelTimingParser;
+import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
 import org.sdf4j.model.sdf.SDFAbstractVertex;

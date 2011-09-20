@@ -620,4 +620,14 @@ public class MultiCoreArchitecture extends
 		return opdefs;
 
 	}
+	
+	public Set<String> getAllOperatorIds(){
+		Set<String> ids = new HashSet<String>();
+		
+		for(ArchitectureComponent c : getComponents(ArchitectureComponentType.operator)){
+			ids.add(c.getName());
+		}
+		
+		return ids;
+	}
 }

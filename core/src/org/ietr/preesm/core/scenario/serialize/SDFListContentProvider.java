@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.scenario.editor.timings;
+package org.ietr.preesm.core.scenario.serialize;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -43,7 +43,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.tools.NameComparator;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;

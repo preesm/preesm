@@ -4,7 +4,7 @@
    <extension
          point="net.sf.dftools.workflow.scenarios">
       <scenario
-            id="org.ietr.preesm.scenario"
+            id="org.ietr.preesm.scenario.task"
             type="org.ietr.preesm.core.workflow.SDFAndArchitectureScenarioNode">
          <outputs>
             <output

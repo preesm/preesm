@@ -825,11 +825,11 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.core.scenario.editor.ScenarioEditor"
+            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
             default="true"
             extensions="scenario"
             icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.core.scenario.editor.ScenarioEditor"
+            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
             name="Preesm scenario editor">
       </editor>
    </extension>

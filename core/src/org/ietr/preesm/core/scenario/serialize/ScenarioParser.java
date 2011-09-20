@@ -267,7 +267,7 @@ public class ScenarioParser {
 
 					if (cmp != null) {
 						scenario.getSimulationManager()
-								.addSpecialVertexOperator(cmp);
+								.addSpecialVertexOperatorId(cmp.getInfo());
 					}
 				}
 			}
@@ -280,11 +280,11 @@ public class ScenarioParser {
 		 * executors: if no operator is selected, all of them are!!
 		 */
 		if (archi != null
-				&& scenario.getSimulationManager().getSpecialVertexOperators()
+				&& scenario.getSimulationManager().getSpecialVertexOperatorIds()
 						.isEmpty()) {
 			for (ArchitectureComponent c : archi
 					.getComponents(ArchitectureComponentType.operator)) {
-				scenario.getSimulationManager().addSpecialVertexOperator(c);
+				scenario.getSimulationManager().addSpecialVertexOperatorId(c.getInfo());
 			}
 
 		}
@@ -320,6 +320,20 @@ public class ScenarioParser {
 		}
 	}
 
+	public static MultiCoreArchitecture getArchitecture(String path) {
+		DesignParser parser = new DesignParser();
+
+		Path relativePath = new Path(path);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+
+		MultiCoreArchitecture architecture = parser.parseXmlFile(file);
+
+		addVertexPathProperties(architecture, "");
+
+		return architecture;
+	}
+
 	public static SDFGraph getAlgorithm(String path) {
 		SDFGraph algorithm = null;
 		GMLGenericImporter importer = new GMLGenericImporter();
@@ -344,25 +358,11 @@ public class ScenarioParser {
 		return algorithm;
 	}
 
-	public static MultiCoreArchitecture getArchitecture(String path) {
-		DesignParser parser = new DesignParser();
-
-		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
-
-		MultiCoreArchitecture architecture = parser.parseXmlFile(file);
-
-		addVertexPathProperties(architecture, "");
-
-		return architecture;
-	}
-
 	/**
 	 * Adding an information that keeps the path of each vertex relative to the
 	 * hierarchy
 	 */
-	private static void addVertexPathProperties(
+	public static void addVertexPathProperties(
 			MultiCoreArchitecture architecture, String currentPath) {
 
 		for (ArchitectureComponent vertex : architecture.vertexSet()) {

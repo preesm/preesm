@@ -325,16 +325,18 @@ public class SdfToDagConverter {
 		 */
 		TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
 		List<DAGVertex> vList = new ArrayList<DAGVertex>();
-		Set<ArchitectureComponent> specialCmps = scenario
-				.getSimulationManager().getSpecialVertexOperators();
+		Set<String> specialOpIds = scenario.getSimulationManager()
+				.getSpecialVertexOperatorIds();
 
 		while (it.hasNext()) {
 			MapperDAGVertex v = (MapperDAGVertex) it.next();
 			if (SpecialVertexManager.isSpecial(v)) {
 				vList.add(v);
-				for (ArchitectureComponent o : specialCmps) {
+				for (String id : specialOpIds) {
+					Operator o = (Operator) architecture.getComponent(
+							ArchitectureComponentType.operator, id);
 					((MapperDAGVertex) v).getInitialVertexProperty()
-							.addOperator((Operator) o);
+							.addOperator(o);
 				}
 			}
 		}

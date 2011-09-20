@@ -1,6 +1,6 @@
 package org.ietr.preesm.core.scenario;
 
-import org.ietr.preesm.core.scenario.editor.variables.ExcelVariablesParser;
+import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
 import org.sdf4j.model.parameters.Variable;
 import org.sdf4j.model.parameters.VariableSet;
 

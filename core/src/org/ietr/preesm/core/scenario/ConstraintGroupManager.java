@@ -1,5 +1,5 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+ Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
 Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
@@ -40,7 +40,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.scenario.editor.constraints.ExcelConstraintsParser;
+import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
 /**
