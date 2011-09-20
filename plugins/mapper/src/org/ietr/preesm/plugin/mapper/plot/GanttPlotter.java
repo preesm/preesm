@@ -168,8 +168,8 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			Component cmp = currentVertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+			Component cmp = currentVertex.getImplementationVertexProperty()
+					.getEffectiveComponent();
 
 			if (cmp != Component.NO_COMPONENT) {
 				long start = currentVertex.getTimingVertexProperty()

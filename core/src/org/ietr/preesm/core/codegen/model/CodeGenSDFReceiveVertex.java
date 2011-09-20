@@ -52,8 +52,8 @@ public class CodeGenSDFReceiveVertex extends CodeGenSDFTaskVertex {
 	}
 
 	public Interface getInterface() {
-		return (Interface) this.getPropertyBean().getValue(
-				INTERFACE, Interface.class);
+		return (Interface) this.getPropertyBean().getValue(INTERFACE,
+				Interface.class);
 	}
 
 	public void setOperator(Interface inter) {

@@ -19,8 +19,7 @@ public class InterconnectionFactory implements
 	}
 
 	@Override
-	public Interconnection createEdge(Component cmp1,
-			Component cmp2) {
+	public Interconnection createEdge(Component cmp1, Component cmp2) {
 		return new Interconnection();
 	}
 

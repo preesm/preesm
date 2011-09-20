@@ -45,7 +45,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -54,7 +54,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -75,7 +74,7 @@ public class ExcelConstraintsParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url) {
+	public void parse(String url, Set<String> allOperatorIds) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -89,14 +88,12 @@ public class ExcelConstraintsParser {
 
 		SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
 				.getAlgorithmURL());
-		MultiCoreArchitecture currentArchi = ScenarioParser
-				.getArchitecture(scenario.getArchitectureURL());
 
 		Path path = new Path(url);
 		IFile file = workspace.getRoot().getFile(path);
 
 		scenario.getConstraintGroupManager().removeAll();
-		AbstractWorkflowLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
@@ -113,10 +110,9 @@ public class ExcelConstraintsParser {
 					.getHierarchicalVertexSet()) {
 
 				if (vertex.getKind() == "vertex") {
-					for (String operatorId : currentArchi
-							.getAllOperatorIds()) {
-						checkOpConstraint(w, operatorId, currentArchi,
-								vertex, missingVertices, missingOperators);
+					for (String operatorId : allOperatorIds) {
+						checkOpConstraint(w, operatorId, vertex,
+								missingVertices, missingOperators);
 					}
 				}
 			}
@@ -137,8 +133,8 @@ public class ExcelConstraintsParser {
 	 * Importing constraints from component names
 	 */
 	private void checkOpConstraint(Workbook w, String operatorId,
-			MultiCoreArchitecture archi, SDFAbstractVertex vertex,
-			Set<String> missingVertices, Set<String> missingOperators) {
+			SDFAbstractVertex vertex, Set<String> missingVertices,
+			Set<String> missingOperators) {
 		String vertexName = vertex.getName();
 
 		if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
@@ -155,26 +151,26 @@ public class ExcelConstraintsParser {
 					scenario.getConstraintGroupManager().addConstraint(
 							operatorId, vertex);
 
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
-							"Importing constraint: {" + operatorId
-									+ "," + vertex + ",yes}");
+							"Importing constraint: {" + operatorId + ","
+									+ vertex + ",yes}");
 
 				} else {
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
-							"Importing constraint: {" + operatorId
-									+ "," + vertex + ",no}");
+							"Importing constraint: {" + operatorId + ","
+									+ vertex + ",no}");
 				}
 			} else {
 				if (vertexCell == null && !missingVertices.contains(vertexName)) {
 					if (vertex.getGraphDescription() != null) {
-						AbstractWorkflowLogger.getLogger().log(
+						WorkflowLogger.getLogger().log(
 								Level.WARNING,
 								"No line found in excel sheet for hierarchical vertex: "
 										+ vertexName);
 					} else {
-						AbstractWorkflowLogger.getLogger().log(
+						WorkflowLogger.getLogger().log(
 								Level.SEVERE,
 								"No line found in excel sheet for atomic vertex: "
 										+ vertexName);
@@ -182,7 +178,7 @@ public class ExcelConstraintsParser {
 					missingVertices.add(vertexName);
 				} else if (operatorCell == null
 						&& !missingOperators.contains(operatorId)) {
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.SEVERE,
 							"No column found in excel sheet for operator: "
 									+ operatorId);

@@ -7,16 +7,27 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core7"/>
+            <operator name="Core2"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor2"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core2"/>
+            <operator name="Core5"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core6"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core3"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core4"/>
@@ -34,9 +45,6 @@
             <task name="Gen_int"/>
             <task name="ParallelTest"/>
             <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
@@ -57,12 +65,6 @@
             <dataType name="char" size="1"/>
         </dataTypes>
         <specialVertexOperators>
-            <specialVertexOperator path="Core7"/>
-            <specialVertexOperator path="Core4"/>
-            <specialVertexOperator path="Core3"/>
-            <specialVertexOperator path="Core6"/>
-            <specialVertexOperator path="Core5"/>
-            <specialVertexOperator path="Core0"/>
             <specialVertexOperator path="Core2"/>
             <specialVertexOperator path="Core1"/>
         </specialVertexOperators>

@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
@@ -62,11 +62,9 @@ import org.sdf4j.model.AbstractVertex;
  * 
  * @author mpelcat
  */
-public abstract class Component extends
-		AbstractVertex<MultiCoreArchitecture> {
+public abstract class Component extends AbstractVertex<MultiCoreArchitecture> {
 
-	public static class CmpComparator implements
-			Comparator<Component> {
+	public static class CmpComparator implements Comparator<Component> {
 		@Override
 		public int compare(Component o1, Component o2) {
 			return o1.getName().compareTo(o2.getName());
@@ -107,8 +105,7 @@ public abstract class Component extends
 	/**
 	 * Constructor from a type and a name
 	 */
-	public Component(String id,
-			ComponentDefinition definition) {
+	public Component(String id, ComponentDefinition definition) {
 		setId(id);
 		setName(id);
 		this.busTypes = new ArrayList<BusType>();
@@ -154,8 +151,7 @@ public abstract class Component extends
 
 		Interface searchedIntf = null;
 
-		ListIterator<Interface> it = getAvailableInterfaces()
-				.listIterator();
+		ListIterator<Interface> it = getAvailableInterfaces().listIterator();
 
 		while (it.hasNext()) {
 			Interface intf = it.next();
@@ -217,13 +213,12 @@ public abstract class Component extends
 		for (Interface itf : cmp.availableInterfaces) {
 
 			if (itf.getBusReference().getId().isEmpty()) {
-				AbstractWorkflowLogger.getLogger().log(Level.WARNING,
+				WorkflowLogger.getLogger().log(Level.WARNING,
 						"Dangerous unnamed ports in architecture.");
 			}
 
-			Interface newItf = new Interface(
-					newArchi.createBusReference(itf.getBusReference().getId()),
-					this);
+			Interface newItf = new Interface(newArchi.createBusReference(itf
+					.getBusReference().getId()), this);
 			this.getAvailableInterfaces().add(newItf);
 		}
 	}
@@ -273,13 +268,12 @@ public abstract class Component extends
 		} else if (this.getType().equals(ComponentType.operator)) {
 			newCmp = new Operator(getName(),
 					(OperatorDefinition) getDefinition());
-		} else if (this.getType()
-				.equals(ComponentType.parallelNode)) {
+		} else if (this.getType().equals(ComponentType.parallelNode)) {
 			newCmp = new ParallelNode(getName(), null);
 		} else if (this.getType().equals(ComponentType.ram)) {
 			newCmp = new Ram(getName(), null);
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component.");
 		}
 

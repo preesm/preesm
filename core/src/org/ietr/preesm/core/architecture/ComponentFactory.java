@@ -56,8 +56,7 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  */
 public class ComponentFactory {
 
-	public static Component createElement(
-			ComponentDefinition type, String id) {
+	public static Component createElement(ComponentDefinition type, String id) {
 
 		Component result = null;
 

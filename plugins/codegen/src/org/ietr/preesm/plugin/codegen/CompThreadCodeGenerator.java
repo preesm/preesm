@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -112,7 +112,7 @@ public class CompThreadCodeGenerator {
 				List<ICodeElement> taskElements = codeContainer
 						.getCodeElements(task);
 				if (taskElements.size() != 1) {
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
@@ -169,7 +169,7 @@ public class CompThreadCodeGenerator {
 				List<ICodeElement> loopElements = codeContainer
 						.getCodeElements(task);
 				if (loopElements.size() != 1) {
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.FINE,
 							"Not one single function call for function: "
 									+ task.getName() + " in section "
@@ -358,7 +358,7 @@ public class CompThreadCodeGenerator {
 						loopCode.addCodeElementFirst(loopCall);
 					} else {
 						// Adding loop call if any
-						AbstractWorkflowLogger.getLogger()
+						WorkflowLogger.getLogger()
 								.log(Level.FINE,
 										"Adding code elt "
 												+ loopCall.toString()

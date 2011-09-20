@@ -131,8 +131,7 @@ public class Chromosome {
 					.getVertexName());
 			currentVertex.getImplementationVertexProperty()
 					.setEffectiveComponent(
-							this.archi.getComponent(
-									ComponentType.operator,
+							this.archi.getComponent(ComponentType.operator,
 									currentGene.getOperatorId()));
 
 		}

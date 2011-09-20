@@ -38,7 +38,7 @@ package org.ietr.preesm.core.codegen.buffer;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.codegen.calls.FunctionArgument;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -105,7 +105,7 @@ public class Buffer extends FunctionArgument {
 		}
 
 		if (size == 0) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Adding a buffer of size 0: " + getName());
 		}
 
@@ -125,7 +125,7 @@ public class Buffer extends FunctionArgument {
 		this.destInputPortID = destInputPortID;
 
 		if (size == 0) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Adding a buffer of size 0: " + getName());
 		}
 

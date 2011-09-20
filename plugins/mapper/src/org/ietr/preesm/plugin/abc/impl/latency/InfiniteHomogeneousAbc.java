@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl.latency;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -80,11 +80,11 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		this.getType().setTaskSchedType(taskSchedType);
 
 		if (archi.getMainMedium() != null) {
-			AbstractWorkflowLogger.getLogger().info(
+			WorkflowLogger.getLogger().info(
 					"Infinite homogeneous simulation");
 		} else {
 
-			AbstractWorkflowLogger
+			WorkflowLogger
 					.getLogger()
 					.info("Current architecture has no main medium. infinite homogeneous simulator will use default speed");
 		}
@@ -120,7 +120,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 * is done through the unique type of medium
 		 */
 		if (effectiveOp == Operator.NO_COMPONENT) {
-			AbstractWorkflowLogger.getLogger().severe(
+			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 
 			vertex.getTimingVertexProperty().setCost(0);

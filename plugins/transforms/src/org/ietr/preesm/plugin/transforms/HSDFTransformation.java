@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -69,13 +69,13 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 
 		try {
-			Logger logger = AbstractWorkflowLogger.getLogger();
+			Logger logger = WorkflowLogger.getLogger();
 			logger.setLevel(Level.FINEST);
 			logger.log(Level.FINER,
 					"Transforming application " + algorithm.getName()
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
-			if (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
+			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
 				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 				try {
 					algorithm.accept(toHsdf);

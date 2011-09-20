@@ -70,11 +70,11 @@ public class Interconnection extends
 			return (intc.getSource().equals(this.getSource())
 					&& intc.getTarget().equals(this.getTarget())
 					&& intc.srcIf.equals(this.srcIf) && intc.tgtIf
-					.equals(this.tgtIf))
+						.equals(this.tgtIf))
 					|| (intc.getTarget().equals(this.getSource())
 							&& intc.getSource().equals(this.getTarget())
 							&& intc.tgtIf.equals(this.srcIf) && intc.srcIf
-							.equals(this.tgtIf));
+								.equals(this.tgtIf));
 		}
 		return false;
 	}

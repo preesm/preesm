@@ -70,8 +70,8 @@ public class CodeGenSDFBroadcastVertex extends SDFBroadcastVertex implements
 	}
 
 	public Component getOperator() {
-		return (Component) this.getPropertyBean().getValue(
-				OPERATOR, Component.class);
+		return (Component) this.getPropertyBean().getValue(OPERATOR,
+				Component.class);
 	}
 
 	public void setOperator(Component op) {

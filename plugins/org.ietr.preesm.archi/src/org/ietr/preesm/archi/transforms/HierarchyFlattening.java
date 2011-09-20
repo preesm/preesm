@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -74,7 +74,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 			depth = 1;
 		}
 
-		Logger logger = AbstractWorkflowLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 

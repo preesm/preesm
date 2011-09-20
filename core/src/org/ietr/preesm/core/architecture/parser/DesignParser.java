@@ -45,7 +45,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -118,16 +118,16 @@ public class DesignParser {
 			dom = db.parse(file.getContents());
 
 		} catch (ParserConfigurationException pce) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					pce.getMessage());
 		} catch (SAXException se) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					se.getMessage());
 		} catch (IOException ioe) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					ioe.getMessage());
 		} catch (CoreException e) {
-			AbstractWorkflowLogger.getLogger()
+			WorkflowLogger.getLogger()
 					.log(Level.SEVERE, e.getMessage());
 		}
 
@@ -154,7 +154,7 @@ public class DesignParser {
 						archi.setName(elt.getTextContent());
 					} else {
 						if (archi == null) {
-							AbstractWorkflowLogger.getLogger().log(
+							WorkflowLogger.getLogger().log(
 									Level.SEVERE,
 									"enter a name in the architecture");
 						}
@@ -293,13 +293,11 @@ public class DesignParser {
 
 		// If the component was well parsed, it is created and added to the
 		// architecture
-		ComponentType type = ComponentType
-				.getType(cmpType);
+		ComponentType type = ComponentType.getType(cmpType);
 
 		if (type != null) {
-			Component cmp = archi.addComponent(
-					ComponentType.getType(cmpType), cmpDefVLNV,
-					cmpName);
+			Component cmp = archi.addComponent(ComponentType.getType(cmpType),
+					cmpDefVLNV, cmpName);
 
 			cmp.setRefinementName(refinementName);
 
@@ -416,7 +414,7 @@ public class DesignParser {
 					&& path.getFileExtension().equals(fileExt)) {
 				file = workspace.getRoot().getFile(currentPath);
 			} else {
-				AbstractWorkflowLogger
+				WorkflowLogger
 						.getLogger()
 						.log(Level.SEVERE,
 								"The refinement of a component must exist and have the extension ."
@@ -487,18 +485,14 @@ public class DesignParser {
 
 		if (busRefList.size() == 2 && componentRefList.size() == 2) {
 
-			Component cmp1 = archi.getComponent(componentRefList
-					.get(0));
+			Component cmp1 = archi.getComponent(componentRefList.get(0));
 			cmp1 = archi.getComponent(componentRefList.get(0));
 			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
-			Interface if1 = cmp1
-					.addInterface(new Interface(busRef1, cmp1));
+			Interface if1 = cmp1.addInterface(new Interface(busRef1, cmp1));
 
-			Component cmp2 = archi.getComponent(componentRefList
-					.get(1));
+			Component cmp2 = archi.getComponent(componentRefList.get(1));
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
-			Interface if2 = cmp2
-					.addInterface(new Interface(busRef2, cmp2));
+			Interface if2 = cmp2.addInterface(new Interface(busRef2, cmp2));
 
 			// Simple architecture
 			if (isSetup) {
@@ -511,7 +505,7 @@ public class DesignParser {
 					try {
 						setupTime = Integer.valueOf(description);
 					} catch (NumberFormatException e) {
-						AbstractWorkflowLogger.getLogger().log(
+						WorkflowLogger.getLogger().log(
 								Level.INFO,
 								"No setup type entered for the setup link of "
 										+ cmp1 + " . 0 used.");
@@ -525,7 +519,7 @@ public class DesignParser {
 								.addSetupTime((Operator) cmp1, setupTime);
 					}
 				} else {
-					AbstractWorkflowLogger
+					WorkflowLogger
 							.getLogger()
 							.log(Level.SEVERE,
 									"a setup link must join an operator to a dma or a ram.");

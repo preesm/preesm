@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
@@ -46,7 +46,7 @@ public class RelativeConstraint {
 		List<Operator> operators = new ArrayList<Operator>();
 
 		if (vertices.isEmpty()) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Relative constraint with no vertex.");
 
 			return operators;

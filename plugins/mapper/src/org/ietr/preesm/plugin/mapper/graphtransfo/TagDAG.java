@@ -137,10 +137,10 @@ public class TagDAG {
 		Iterator<DAGVertex> iter = dag.vertexSet().iterator();
 
 		// Updates graph time
-		if(simu instanceof LatencyAbc){
+		if (simu instanceof LatencyAbc) {
 			((LatencyAbc) simu).updateTimings();
 		}
-		
+
 		// Tagging the vertices with informations for code generation
 		while (iter.hasNext()) {
 			currentVertex = (MapperDAGVertex) iter.next();
@@ -242,10 +242,11 @@ public class TagDAG {
 				int totalTime = nbRepeat * singleRepeatTime;
 				bean.setValue(ImplementationPropertyNames.Task_duration,
 						totalTime);
-				
+
 				// Tags the DAG with vertex starttime when possible
-				if(simu instanceof LatencyAbc){
-					long startTime = ((LatencyAbc)simu).getTLevel(currentVertex, false);
+				if (simu instanceof LatencyAbc) {
+					long startTime = ((LatencyAbc) simu).getTLevel(
+							currentVertex, false);
 					bean.setValue(ImplementationPropertyNames.Start_time,
 							startTime);
 				}

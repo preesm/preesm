@@ -73,7 +73,8 @@ public class NewIPXACTComponentWizard extends Wizard implements INewWizard {
 
 		Configuration configuration = GraphitiModelPlugin.getDefault()
 				.getConfiguration("IP-XACT Component");
-		ObjectType type = configuration.getGraphType("Spirit IP-XACT simple component");
+		ObjectType type = configuration
+				.getGraphType("Spirit IP-XACT simple component");
 
 		page.setGraph(new Graph(configuration, type, true));
 		page.setDescription("Create a new IP-XACT Component.");

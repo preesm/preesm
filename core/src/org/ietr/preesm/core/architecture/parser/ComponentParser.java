@@ -58,9 +58,9 @@ import org.xml.sax.SAXException;
 
 /**
  * An xml parser retrieving architecture data from an IP-XACT component. The
- * data from the IP-XACT component is set directly in the
- * {@link Component}. If the component contains one single
- * subDesign, this subdesign is set as the component refinement.
+ * data from the IP-XACT component is set directly in the {@link Component}. If
+ * the component contains one single subDesign, this subdesign is set as the
+ * component refinement.
  * 
  * @author mpelcat
  */
@@ -78,8 +78,7 @@ public class ComponentParser {
 
 	private IFile currentFile = null;
 
-	public ComponentParser(MultiCoreArchitecture archi,
-			Component cmp) {
+	public ComponentParser(MultiCoreArchitecture archi, Component cmp) {
 		this.cmp = cmp;
 	}
 

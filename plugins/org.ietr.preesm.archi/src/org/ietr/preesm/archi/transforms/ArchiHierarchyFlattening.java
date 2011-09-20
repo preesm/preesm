@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.BusReference;
 import org.ietr.preesm.core.architecture.Component;
@@ -60,7 +60,7 @@ public class ArchiHierarchyFlattening extends
 		// parent graph
 		for (Interface intf : subDesignCmp.getInterfaces()) {
 			if (subDesignCmp.getBusType(intf.getBusReference().getId()) == null) {
-				AbstractWorkflowLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"The component " + subDesignCmp.getName()
 								+ " should contain the port with id: "
@@ -71,7 +71,7 @@ public class ArchiHierarchyFlattening extends
 			HierarchyPort port = subDesign.getHierarchyPort(intf
 					.getBusReference().getId());
 			if (port == null) {
-				AbstractWorkflowLogger
+				WorkflowLogger
 						.getLogger()
 						.log(Level.SEVERE,
 								"The subdesign "

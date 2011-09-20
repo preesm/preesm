@@ -44,18 +44,14 @@ package org.ietr.preesm.core.architecture;
 public class ComponentType {
 
 	// Simple model
-	public static final ComponentType operator = new ComponentType(
-			"operator");
-	public static final ComponentType medium = new ComponentType(
-			"medium");
-	public static final ComponentType dma = new ComponentType(
-			"dma");
+	public static final ComponentType operator = new ComponentType("operator");
+	public static final ComponentType medium = new ComponentType("medium");
+	public static final ComponentType dma = new ComponentType("dma");
 	public static final ComponentType parallelNode = new ComponentType(
 			"parallelNode");
 	public static final ComponentType contentionNode = new ComponentType(
 			"contentionNode");
-	public static final ComponentType ram = new ComponentType(
-			"ram");
+	public static final ComponentType ram = new ComponentType("ram");
 
 	private String name = null;
 

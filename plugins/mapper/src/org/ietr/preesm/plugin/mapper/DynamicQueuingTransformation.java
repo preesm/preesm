@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.Component;
@@ -106,8 +106,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		PreesmScenario scenario = (PreesmScenario) inputs
-				.get("scenario");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// The graph may be repeated a predefined number of times
 		// with a predefined period
@@ -157,7 +156,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		// Repeating the graph to simulate several calls.
 		if (iterationNr != 0) {
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"Repetition of the graph " + iterationNr
 							+ " time(s) with period " + iterationPeriod
@@ -242,7 +241,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				architecture, abcParameters.getSimulatorType()
 						.getTaskSchedType(), scenario);
 
-		AbstractWorkflowLogger.getLogger()
+		WorkflowLogger.getLogger()
 				.log(Level.INFO, "Dynamic Scheduling");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
@@ -270,7 +269,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		super.clean(architecture, scenario);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"End of Dynamic Scheduling");
 
 		return outputs;

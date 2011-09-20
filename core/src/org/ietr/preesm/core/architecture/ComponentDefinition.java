@@ -38,7 +38,7 @@ package org.ietr.preesm.core.architecture;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.parser.VLNV;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
@@ -149,7 +149,7 @@ public abstract class ComponentDefinition {
 						(int) ramDef.getSetupTime(opName));
 			}
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Cloning unknown type archi component definition.");
 		}
 

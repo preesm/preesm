@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Specific parameters of genetic algorithm
@@ -98,7 +98,7 @@ public class GeneticAlgoParameters {
 			this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
 		}
 
-		AbstractWorkflowLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"The Genetic algo parameters are: generationNumber; populationSize; pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");

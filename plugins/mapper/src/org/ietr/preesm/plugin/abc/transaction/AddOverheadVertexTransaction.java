@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -116,7 +116,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
 
 		if (edge instanceof PrecedenceEdge) {
-			AbstractWorkflowLogger.getLogger().log(Level.INFO,
+			WorkflowLogger.getLogger().log(Level.INFO,
 					"no overhead vertex corresponding to a schedule edge");
 			return;
 		}
@@ -133,7 +133,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 					step.getSender());
 
 			if (!(currentTarget instanceof TransferVertex)) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"An overhead must be followed by a transfer");
 			}
 

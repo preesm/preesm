@@ -67,8 +67,8 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		Component component = vertex
-				.getImplementationVertexProperty().getEffectiveComponent();
+		Component component = vertex.getImplementationVertexProperty()
+				.getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(
 				component, source, target);

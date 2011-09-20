@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -109,7 +109,7 @@ public class KwokListScheduler {
 
 		// Variables
 		Operator chosenoperator = null;
-		Logger logger = AbstractWorkflowLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 
 		// Maps the fastest one to be ready among the operators in the vertex
 		// check the vertex by priority in the CPN-Dominant list

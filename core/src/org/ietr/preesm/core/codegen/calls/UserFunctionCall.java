@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.codegen.AbstractCodeElement;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -169,7 +169,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 											parentContainer), call
 									.getArguments().get(arg));
 						} else {
-							AbstractWorkflowLogger
+							WorkflowLogger
 									.getLogger()
 									.log(Level.SEVERE,
 											"Vertex: "
@@ -188,7 +188,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 							this.addArgument(funcArg,
 									call.getParameters().get(param));
 						} else {
-							AbstractWorkflowLogger
+							WorkflowLogger
 									.getLogger()
 									.log(Level.SEVERE,
 											"Vertex: "
@@ -218,7 +218,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 				break;
 			case loop:
 				if (call.getFunctionName().isEmpty()) {
-					AbstractWorkflowLogger.getLogger().log(
+					WorkflowLogger.getLogger().log(
 							Level.INFO,
 							"Name not found in the IDL for function: "
 									+ vertex.getName());
@@ -254,7 +254,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void addArgument(FunctionArgument param, int pos) {
 
 		if (param == null)
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE, "null buffer");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "null buffer");
 		else {
 			if (pos == callParameters.size()) {
 				callParameters.add(param);
@@ -278,7 +278,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	public void addArgument(String displayName, FunctionArgument param) {
 
 		if (param == null)
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"buffer or parameter was not found: " + displayName);
 		else
 			callParameters.add(param);

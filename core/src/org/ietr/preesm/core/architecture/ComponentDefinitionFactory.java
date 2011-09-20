@@ -51,8 +51,8 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  */
 public class ComponentDefinitionFactory {
 
-	public static ComponentDefinition createElement(
-			ComponentType type, VLNV vlnv) {
+	public static ComponentDefinition createElement(ComponentType type,
+			VLNV vlnv) {
 
 		ComponentDefinition result = null;
 

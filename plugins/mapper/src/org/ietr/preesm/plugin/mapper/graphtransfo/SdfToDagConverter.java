@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.ComponentType;
@@ -87,19 +87,19 @@ public class SdfToDagConverter {
 	 * @author mpelcat
 	 */
 	public static MapperDAG convert(SDFGraph sdfIn,
-			MultiCoreArchitecture architecture,
-			PreesmScenario scenario, boolean display) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario,
+			boolean display) {
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Converting from SDF to DAG.");
 
 		try {
 
-			if (!sdfIn.validateModel(AbstractWorkflowLogger.getLogger())) {
+			if (!sdfIn.validateModel(WorkflowLogger.getLogger())) {
 				return null;
 			}
 		} catch (SDF4JException e) {
-			AbstractWorkflowLogger.getLogger()
+			WorkflowLogger.getLogger()
 					.log(Level.SEVERE, e.getMessage());
 			return null;
 		}
@@ -117,7 +117,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			AbstractWorkflowLogger.getLogger()
+			WorkflowLogger.getLogger()
 					.log(Level.SEVERE, e.getMessage());
 		}
 
@@ -133,12 +133,12 @@ public class SdfToDagConverter {
 		}
 
 		if (dag.vertexSet().size() == 0) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Can not map a DAG with no vertex.");
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.INFO,
+			WorkflowLogger.getLogger().log(Level.INFO,
 					"Conversion finished.");
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"mapping a DAG with " + dag.vertexSet().size()
 							+ " vertices and " + dag.edgeSet().size()
@@ -154,8 +154,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static MapperDAG addInitialProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture,
-			PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
@@ -170,8 +169,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialVertexProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture,
-			PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing default timings
@@ -191,7 +189,8 @@ public class SdfToDagConverter {
 
 			// The SDF vertex id is used to reference the timings
 			List<Timing> timelist = scenario.getTimingManager()
-					.getGraphTimings(currentVertex, architecture);
+					.getGraphTimings(currentVertex,
+							architecture.getOperatorDefinitionIds());
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
@@ -221,8 +220,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialEdgeProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture,
-			PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing data edge weights and multiplying by type size when
@@ -270,8 +268,7 @@ public class SdfToDagConverter {
 	 * Retrieves the constraints and adds them to the DAG initial properties
 	 */
 	public static void addInitialConstraintsProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture,
-			PreesmScenario scenario) {
+			MultiCoreArchitecture architecture, PreesmScenario scenario) {
 		/**
 		 * Importing scenario: Only the timings corresponding to allowed
 		 * mappings are set.
@@ -295,9 +292,7 @@ public class SdfToDagConverter {
 
 					for (String opId : cg.getOperatorIds()) {
 						IOperator currentIOp = (IOperator) architecture
-								.getComponent(
-										ComponentType.operator,
-										opId);
+								.getComponent(ComponentType.operator, opId);
 						if (((Component) currentIOp).getType() == ComponentType.operator) {
 							Operator currentop = (Operator) currentIOp;
 

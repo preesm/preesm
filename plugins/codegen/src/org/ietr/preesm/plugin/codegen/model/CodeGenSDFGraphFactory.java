@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -475,7 +475,7 @@ public class CodeGenSDFGraphFactory {
 			List<SDFAbstractVertex> block, String name)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		try {
-			graph.validateModel(AbstractWorkflowLogger.getLogger());
+			graph.validateModel(WorkflowLogger.getLogger());
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -621,7 +621,7 @@ public class CodeGenSDFGraphFactory {
 			for (int r = 0; r < block.size(); r++) {
 				graph.removeVertex(block.get(r));
 			}
-			clusterGraph.validateModel(AbstractWorkflowLogger.getLogger());
+			clusterGraph.validateModel(WorkflowLogger.getLogger());
 			cluster.setNbRepeat(pgcd);
 			for (SDFAbstractVertex vertex : clusterGraph.vertexSet()) {
 				if (!(vertex instanceof SDFInterfaceVertex)) {
@@ -812,7 +812,7 @@ public class CodeGenSDFGraphFactory {
 
 	}
 
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void treatSinksInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(
@@ -859,7 +859,7 @@ public class CodeGenSDFGraphFactory {
 		}
 	}
 
-	@SuppressWarnings({"rawtypes","unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void treatSourcesInterface(AbstractGraph parentGraph)
 			throws InvalidExpressionException {
 		Vector<SDFAbstractVertex> vertices = new Vector<SDFAbstractVertex>(

@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.codegen.model.idl;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
@@ -65,7 +65,7 @@ public class IDLParser extends parser {
 
 			new parser().parse();
 		} catch (Exception e) {
-			AbstractWorkflowLogger.getLogger().log(Level.INFO,
+			WorkflowLogger.getLogger().log(Level.INFO,
 					"IDL Parser: " + e.getMessage());
 		}
 	}

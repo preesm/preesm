@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -97,8 +97,8 @@ public class PrecedenceEdgeAdder {
 	public void addPrecedenceEdges() {
 
 		TransactionManager localTransactionManager = new TransactionManager();
-		Iterator<Component> opIt = orderManager
-				.getArchitectureComponents().iterator();
+		Iterator<Component> opIt = orderManager.getArchitectureComponents()
+				.iterator();
 
 		// Iterates the schedules
 		while (opIt.hasNext()) {
@@ -145,7 +145,7 @@ public class PrecedenceEdgeAdder {
 
 		if (edges != null) {
 			if (edges.size() >= 2)
-				AbstractWorkflowLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"too many edges between " + v1.toString() + " and "
 								+ v2.toString());

@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -129,13 +129,13 @@ public class FASTTransformation extends AbstractMapping {
 
 		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Mapping");
+		WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
 
 		dag = fastAlgorithm.map("test", abcParams, fastParams, dag,
 				architecture, false, false, fastParams.isDisplaySolutions(),
 				monitor, taskSched);
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
+		WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture,
 				scenario);

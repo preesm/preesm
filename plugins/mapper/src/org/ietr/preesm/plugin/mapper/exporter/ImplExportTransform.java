@@ -42,7 +42,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -103,7 +103,7 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 		if (iGraphMLFile.getLocation() != null) {
 			exporter.export(clone, iGraphMLFile.getLocation().toOSString());
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"The output file " + path + " can not be written.");
 		}
 	}

@@ -139,5 +139,4 @@ public final class ImplementationPropertyNames {
 	 */
 	public static final String Receive_receiverGraphName = "receiverGraphName";
 
-	
 }

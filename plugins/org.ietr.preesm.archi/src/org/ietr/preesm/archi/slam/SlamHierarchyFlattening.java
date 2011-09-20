@@ -45,7 +45,7 @@ import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.process.SlamFlattener;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -62,8 +62,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design design = (Design) inputs
-				.get("S-LAM");
+		Design design = (Design) inputs.get("S-LAM");
 		String depthS = parameters.get("depth");
 
 		int depth;
@@ -73,17 +72,17 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 			depth = 1;
 		}
 
-		Logger logger = AbstractWorkflowLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 		logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
 
-		//Copier copier = new Copier();
-		//  EObject result = copier.copy(design);
-		//  copier.copyReferences();
+		// Copier copier = new Copier();
+		// EObject result = copier.copy(design);
+		// copier.copyReferences();
 
 		SlamFlattener flattener = new SlamFlattener();
 		flattener.flatten(design, depth);
-		
-		Design resultGraph = design ;
+
+		Design resultGraph = design;
 		logger.log(Level.INFO, "flattening complete");
 
 		outputs.put("S-LAM", resultGraph);

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -55,14 +55,14 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Generating scenario");
 
 		String scenarioFileName = parameters.get("scenarioFile");
 
 		// Retrieving the scenario
 		if (scenarioFileName.isEmpty()) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"lack of a scenarioFile parameter");
 			return null;
 		} else {
@@ -80,7 +80,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			SDFGraph algo = ScenarioParser.getAlgorithm(scenario
 					.getAlgorithmURL());
 			if (algo == null) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");
 				return null;
 			} else {
@@ -91,7 +91,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			MultiCoreArchitecture archi = ScenarioParser
 					.getArchitecture(scenario.getArchitectureURL());
 			if (archi == null) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
@@ -108,7 +108,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 		String dagFileName = parameters.get("dagFile");
 		// Parsing the output DAG if present and updating the constraints
 		if (dagFileName.isEmpty()) {
-			AbstractWorkflowLogger.getLogger().log(Level.WARNING,
+			WorkflowLogger.getLogger().log(Level.WARNING,
 					"No dagFile -> retrieving the scenario as is");
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
@@ -145,16 +145,14 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 								.getConstraintGroupManager().addConstraint(
 										opName, sdfV);
 						((PreesmScenario) outputs.get("scenario"))
-								.getTimingManager().setTiming(
-										sdfV.getName(),
-										op
-												.getDefinition().getId(),
+								.getTimingManager().setTiming(sdfV.getName(),
+										op.getDefinition().getId(),
 										Integer.parseInt(timeStr));
 					}
 				}
 
 			} catch (Exception e) {
-				AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+				WorkflowLogger.getLogger().log(Level.SEVERE,
 						e.getMessage());
 			}
 

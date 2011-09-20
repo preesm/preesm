@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.Component;
@@ -181,7 +181,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 				.getEffectiveOperator();
 
 		if (effectiveOp == Operator.NO_COMPONENT) {
-			AbstractWorkflowLogger.getLogger().severe(
+			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
 
@@ -261,7 +261,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime(vertex);
 
 		if (finalTime < 0) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative vertex final time");
 		}
 
@@ -304,7 +304,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		long finalTime = nTimeKeeper.getFinalTime();
 
 		if (finalTime < 0) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"negative implementation final latency");
 		}
 
@@ -514,7 +514,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	public void reschedule2() {
 
 		if (implementation != null && dag != null) {
-			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Reordering");
+			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
 					implementation);
 			adder.removePrecedenceEdges();
@@ -589,7 +589,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			updateTimings();
 			// this.plotImplementation(null);
 
-			AbstractWorkflowLogger.getLogger().log(Level.INFO, "Reordering");
+			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
 			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
 					orderManager.getTotalOrder().getList());
 

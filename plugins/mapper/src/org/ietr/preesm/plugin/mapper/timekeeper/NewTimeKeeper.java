@@ -11,7 +11,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
@@ -248,7 +248,7 @@ public class NewTimeKeeper implements Observer {
 		long timing = TimingVertexProperty.UNAVAILABLE;
 
 		if (!inputElt.getImplementationVertexProperty().hasEffectiveComponent()) {
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"tLevel unavailable for vertex " + inputElt
 							+ ". No effective component.");
@@ -275,7 +275,7 @@ public class NewTimeKeeper implements Observer {
 			if (!vertexTProperty.hasCost() && dirtyElt != null) {
 
 				calculateTLevel(dirtyElt);
-				AbstractWorkflowLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						"tLevel unavailable for vertex " + inputElt
 								+ ". Lacking information on predecessor "
@@ -376,7 +376,7 @@ public class NewTimeKeeper implements Observer {
 
 		} else {
 
-			AbstractWorkflowLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"Trying to start b_level calculation from a vertex with successors or without mapping.");

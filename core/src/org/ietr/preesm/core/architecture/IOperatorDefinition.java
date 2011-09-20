@@ -37,13 +37,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture;
 
 /**
- * Interface of an operator definition that can have multiple instances in the design
+ * Interface of an operator definition that can have multiple instances in the
+ * design
  * 
  * @author mpelcat
  * 
  */
 public interface IOperatorDefinition {
-	
+
 	/**
 	 * Getting a unique Id for the operator
 	 */

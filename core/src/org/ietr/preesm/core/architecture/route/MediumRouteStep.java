@@ -38,7 +38,7 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.simplemodel.Medium;
 import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
@@ -108,7 +108,7 @@ public class MediumRouteStep extends AbstractRouteStep {
 			return def.getTransferTime(transfersSize);
 		} else {
 
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Data could not be correctly transfered from "
 							+ getSender().getName() + " to "

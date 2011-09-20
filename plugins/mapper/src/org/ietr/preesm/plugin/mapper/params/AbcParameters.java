@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -95,7 +95,7 @@ public class AbcParameters {
 				.get("edgeSchedType"));
 		this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
 
-		AbstractWorkflowLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");

@@ -36,11 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
-
 /**
- * A timing links a SDF vertex and an operator definition to a time.
- * Ids are used to make the scenario independent from model implementations.
- *  
+ * A timing links a SDF vertex and an operator definition to a time. Ids are
+ * used to make the scenario independent from model implementations.
+ * 
  * @author mpelcat
  */
 public class Timing {
@@ -74,8 +73,7 @@ public class Timing {
 		this.sdfVertexId = sdfVertexId;
 	}
 
-	public Timing(String operatorId, String sdfVertexId,
-			int time) {
+	public Timing(String operatorId, String sdfVertexId, int time) {
 		this(operatorId, sdfVertexId);
 		this.time = time;
 	}
@@ -87,7 +85,8 @@ public class Timing {
 
 		if (obj instanceof Timing) {
 			Timing otherT = (Timing) obj;
-			equals = operatorDefinitionId.equals(otherT.getOperatorDefinitionId());
+			equals = operatorDefinitionId.equals(otherT
+					.getOperatorDefinitionId());
 			equals &= sdfVertexId.equals((otherT.getSdfVertexId()));
 		}
 

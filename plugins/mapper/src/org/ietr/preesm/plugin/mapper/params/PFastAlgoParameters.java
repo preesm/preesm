@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread
@@ -103,7 +103,7 @@ public class PFastAlgoParameters {
 			this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
 		}
 
-		AbstractWorkflowLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");

@@ -38,8 +38,8 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
 import org.sdf4j.model.dag.DAGVertex;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -108,7 +108,7 @@ public class TimingManager {
 	}
 
 	public List<Timing> getGraphTimings(DAGVertex dagVertex,
-			MultiCoreArchitecture architecture) {
+			Set<String> operatorDefinitionIds) {
 		SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
 		List<Timing> vals = new ArrayList<Timing>();
 
@@ -122,7 +122,7 @@ public class TimingManager {
 			// Adds timings for all operators in hierarchy if they can be
 			// calculated
 			// from underlying vertices
-			for (String opDefId : architecture.getOperatorDefinitionIds()) {
+			for (String opDefId : operatorDefinitionIds) {
 				Timing t = generateVertexTimingFromHierarchy(
 						dagVertex.getCorrespondingSDFVertex(), opDefId);
 				if (t != null)
@@ -227,7 +227,7 @@ public class TimingManager {
 	public void importTimings(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
-			parser.parse(excelFileURL);
+			parser.parse(excelFileURL, currentScenario.getOperatorDefinitionIds());
 		}
 	}
 }

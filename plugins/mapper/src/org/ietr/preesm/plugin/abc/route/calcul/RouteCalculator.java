@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.ComponentType;
@@ -116,19 +116,17 @@ public class RouteCalculator {
 	 * Creating recursively the route steps from the architecture.
 	 */
 	private void createRouteSteps() {
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"creating route steps.");
 
-		for (Component c : archi
-				.getComponents(ComponentType.operator)) {
+		for (Component c : archi.getComponents(ComponentType.operator)) {
 			Operator o = (Operator) c;
 
 			createRouteSteps(o);
 		}
 	}
 
-	private Component getOtherEnd(Interconnection i,
-			Component c) {
+	private Component getOtherEnd(Interconnection i, Component c) {
 		if (i.getTarget() != c)
 			return i.getTarget();
 		else
@@ -184,19 +182,17 @@ public class RouteCalculator {
 	 * Building recursively the routes between the cores.
 	 */
 	private void createRoutes() {
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Initializing routing table.");
 
-		floydWarshall(table,
-				archi.getComponents(ComponentType.operator));
+		floydWarshall(table, archi.getComponents(ComponentType.operator));
 	}
 
 	/**
 	 * The floydWarshall algorithm is used to add routes in the table in
 	 * increasing order of cost.
 	 */
-	private void floydWarshall(RoutingTable table,
-			Set<Component> operators) {
+	private void floydWarshall(RoutingTable table, Set<Component> operators) {
 
 		for (Component kC : operators) {
 			Operator k = (Operator) kC;
@@ -251,7 +247,7 @@ public class RouteCalculator {
 		Route r = table.getBestRoute(op1, op2);
 
 		if (r == null) {
-			AbstractWorkflowLogger.getLogger()
+			WorkflowLogger.getLogger()
 					.log(Level.SEVERE,
 							"Did not find a route between " + op1 + " and "
 									+ op2 + ".");

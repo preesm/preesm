@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.util.Set;
 
 /**
  * Storing all information of a scenario
@@ -78,6 +79,12 @@ public class PreesmScenario {
 	 * Path to the architecture file
 	 */
 	private String architectureURL = "";
+
+	/**
+	 * current architecture properties
+	 */
+	private Set<String> operatorIds = null;
+	private Set<String> operatorDefinitionIds = null;
 
 	/**
 	 * Path to the scenario file
@@ -135,6 +142,20 @@ public class PreesmScenario {
 	public void setScenarioURL(String scenarioURL) {
 		this.scenarioURL = scenarioURL;
 	}
-	
-	
+
+	public Set<String> getOperatorIds() {
+		return operatorIds;
+	}
+
+	public Set<String> getOperatorDefinitionIds() {
+		return operatorDefinitionIds;
+	}
+
+	public void setOperatorIds(Set<String> operatorIds) {
+		this.operatorIds = operatorIds;
+	}
+
+	public void setOperatorDefinitionIds(Set<String> operatorDefinitionIds) {
+		this.operatorDefinitionIds = operatorDefinitionIds;
+	}
 }

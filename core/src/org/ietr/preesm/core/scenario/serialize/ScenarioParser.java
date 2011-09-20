@@ -38,22 +38,21 @@ package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -88,11 +87,6 @@ public class ScenarioParser {
 	 * current algorithm
 	 */
 	private SDFGraph algo = null;
-
-	/**
-	 * current architecture
-	 */
-	private MultiCoreArchitecture archi = null;
 
 	public ScenarioParser() {
 
@@ -262,12 +256,9 @@ public class ScenarioParser {
 				if (type.equals("specialVertexOperator")) {
 					String path = elt.getAttribute("path");
 
-					Component cmp = archi
-							.getHierarchicalVertexFromPath(path);
-
-					if (cmp != null) {
+					if (path != null) {
 						scenario.getSimulationManager()
-								.addSpecialVertexOperatorId(cmp.getInfo());
+								.addSpecialVertexOperatorId(path);
 					}
 				}
 			}
@@ -279,12 +270,11 @@ public class ScenarioParser {
 		 * It is not possible to remove all operators from special vertex
 		 * executors: if no operator is selected, all of them are!!
 		 */
-		if (archi != null
-				&& scenario.getSimulationManager().getSpecialVertexOperatorIds()
-						.isEmpty()) {
-			for (Component c : archi
-					.getComponents(ComponentType.operator)) {
-				scenario.getSimulationManager().addSpecialVertexOperatorId(c.getInfo());
+		if (scenario.getSimulationManager().getSpecialVertexOperatorIds()
+				.isEmpty()) {
+			for (String opId : scenario.getOperatorIds()) {
+				scenario.getSimulationManager()
+						.addSpecialVertexOperatorId(opId);
 			}
 
 		}
@@ -309,7 +299,7 @@ public class ScenarioParser {
 						algo = getAlgorithm(url);
 					} else if (type.equals("architecture")) {
 						scenario.setArchitectureURL(url);
-						archi = getArchitecture(url);
+						initializeArchitectureInformation(url);
 					} else if (type.equals("codegenDirectory")) {
 						scenario.getCodegenManager().setCodegenDirectory(url);
 					}
@@ -317,6 +307,18 @@ public class ScenarioParser {
 			}
 
 			node = node.getNextSibling();
+		}
+	}
+
+	private void initializeArchitectureInformation(String url) {
+		if (url.contains(".design")) {
+			MultiCoreArchitecture archi = getArchitecture(url);
+
+			scenario.setOperatorIds(archi.getAllOperatorIds());
+			scenario.setOperatorDefinitionIds(archi.getOperatorDefinitionIds());
+		} else if (url.contains(".slam")) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"SLAM architecture not yet supported.");
 		}
 	}
 
@@ -427,7 +429,7 @@ public class ScenarioParser {
 
 		ConstraintGroup cg = new ConstraintGroup();
 
-		if (algo != null && archi != null) {
+		if (algo != null) {
 
 			Node node = cstGroupElt.getFirstChild();
 
@@ -443,9 +445,7 @@ public class ScenarioParser {
 						if (vertex != null)
 							cg.addVertexPath(name);
 					} else if (type.equals("operator")) {
-						Operator op = (Operator) archi.getComponent(
-								ComponentType.operator, name);
-						if (op != null)
+						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}
 				}
@@ -490,7 +490,7 @@ public class ScenarioParser {
 
 		Timing timing = null;
 
-		if (algo != null && archi != null) {
+		if (algo != null) {
 
 			String type = timingElt.getTagName();
 			if (type.equals("timing")) {
@@ -506,12 +506,10 @@ public class ScenarioParser {
 
 				SDFAbstractVertex vertex = algo
 						.getHierarchicalVertex(vertexpath);
-				IOperatorDefinition opdef = (OperatorDefinition) archi
-						.getComponentDefinition(
-								ComponentType.operator, opdefname);
 
-				if (vertex != null && opdef != null && time >= 0) {
-					timing = new Timing(opdef.getId(), vertex.getName(), time);
+				if (vertex != null && scenario.getOperatorDefinitionIds().contains(opdefname)
+						&& time >= 0) {
+					timing = new Timing(opdefname, vertex.getName(), time);
 				}
 			}
 
@@ -519,5 +517,4 @@ public class ScenarioParser {
 
 		return timing;
 	}
-
 }

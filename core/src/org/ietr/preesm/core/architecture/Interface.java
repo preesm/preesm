@@ -59,15 +59,13 @@ public class Interface {
 	 * 
 	 * Constructor
 	 */
-	public Interface(BusReference busReference,
-			Component owner) {
+	public Interface(BusReference busReference, Component owner) {
 		this.busReference = busReference;
 
 		this.owner = owner;
 	}
 
-	public Interface clone(BusReference busRef,
-			Component newOwner) {
+	public Interface clone(BusReference busRef, Component newOwner) {
 
 		// The interface definition is cloned and references the given medium
 		// definition

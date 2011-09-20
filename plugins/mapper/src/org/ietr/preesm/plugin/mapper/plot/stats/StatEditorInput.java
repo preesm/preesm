@@ -38,7 +38,7 @@ package org.ietr.preesm.plugin.mapper.plot.stats;
 
 import java.util.Map;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -102,9 +102,9 @@ public class StatEditorInput implements IEditorInput {
 			abc.updateFinalCosts();
 			return "Latency:" + ((LatencyAbc) abc).getFinalLatency() + " Cost:"
 					+ abc.getFinalCost() + " "
-					+ AbstractWorkflowLogger.getFormattedTime();
+					+ WorkflowLogger.getFormattedTime();
 		} else {
-			return "Stats " + AbstractWorkflowLogger.getFormattedTime();
+			return "Stats " + WorkflowLogger.getFormattedTime();
 		}
 	}
 

@@ -46,7 +46,7 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -132,7 +132,7 @@ public class SchedOrderManager extends Observable {
 				if (elt instanceof SynchronizedVertices) {
 					((SynchronizedVertices) elt).add(vertex);
 				} else {
-					AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+					WorkflowLogger.getLogger().log(Level.SEVERE,
 							"Error in sched order!!");
 				}
 			}
@@ -220,8 +220,8 @@ public class SchedOrderManager extends Observable {
 	public void addFirst(MapperDAGVertex vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
-			Component effectiveCmp = vertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+			Component effectiveCmp = vertex.getImplementationVertexProperty()
+					.getEffectiveComponent();
 
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
@@ -407,8 +407,8 @@ public class SchedOrderManager extends Observable {
 		Schedule sch = null;
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 
-			Component cmp = vertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+			Component cmp = vertex.getImplementationVertexProperty()
+					.getEffectiveComponent();
 			sch = getSchedule(cmp);
 		} else { // Looks for the right scheduling to remove the vertex
 			for (Schedule locSched : schedules.values()) {

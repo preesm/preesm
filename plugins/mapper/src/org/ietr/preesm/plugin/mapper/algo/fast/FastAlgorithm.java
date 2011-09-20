@@ -44,7 +44,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -168,7 +168,7 @@ public class FastAlgorithm extends Observable {
 		Operator operatortest;
 		Operator operatorfcp;
 		Operator operatorprec;
-		Logger logger = AbstractWorkflowLogger.getLogger();
+		Logger logger = WorkflowLogger.getLogger();
 
 		// these steps are linked to the description of the FAST algorithm to
 		// understand the steps, please refer to the Kwok thesis
@@ -195,7 +195,7 @@ public class FastAlgorithm extends Observable {
 					+ initial + " List");
 		}
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO,
+		WorkflowLogger.getLogger().log(Level.INFO,
 				"Found List solution; Cost:" + initial);
 
 		logger.log(Level.FINE, "InitialSP " + initial);
@@ -324,7 +324,7 @@ public class FastAlgorithm extends Observable {
 							"Cost:" + bestSL + " Fast");
 				}
 
-				AbstractWorkflowLogger.getLogger().log(Level.INFO,
+				WorkflowLogger.getLogger().log(Level.INFO,
 						"Found Fast solution; Cost:" + bestSL);
 
 				dagfinal.setScheduleCost(bestSL);

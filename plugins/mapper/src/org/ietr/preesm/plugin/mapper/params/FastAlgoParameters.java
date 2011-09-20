@@ -39,7 +39,7 @@ package org.ietr.preesm.plugin.mapper.params;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Class which purpose is setting the parameters for the fast algorithm
@@ -77,7 +77,7 @@ public class FastAlgoParameters {
 					.get("fastLocalSearchTime"));
 		}
 
-		AbstractWorkflowLogger
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");

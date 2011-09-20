@@ -200,8 +200,8 @@ public class BestCostPlotter extends ApplicationFrame implements
 		final JFreeChart chart = new JFreeChart(title, plot);
 
 		chart.removeLegend();
-		//chart.getLegend().setPosition(RectangleEdge.BOTTOM);
-		
+		// chart.getLegend().setPosition(RectangleEdge.BOTTOM);
+
 		chart.setBorderPaint(Color.lightGray);
 		chart.setBorderVisible(true);
 

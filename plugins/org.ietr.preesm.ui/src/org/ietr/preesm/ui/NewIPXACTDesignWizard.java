@@ -73,7 +73,8 @@ public class NewIPXACTDesignWizard extends Wizard implements INewWizard {
 
 		Configuration configuration = GraphitiModelPlugin.getDefault()
 				.getConfiguration("IP-XACT Design");
-		ObjectType type = configuration.getGraphType("Spirit IP-XACT simple design");
+		ObjectType type = configuration
+				.getGraphType("Spirit IP-XACT simple design");
 
 		page.setGraph(new Graph(configuration, type, true));
 		page.setDescription("Create a new IP-XACT Design.");

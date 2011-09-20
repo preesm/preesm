@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -237,8 +237,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the effective operator of the vertex. NO_OPERATOR if not set
 	 */
 	@Override
-	public final Component getEffectiveComponent(
-			MapperDAGVertex vertex) {
+	public final Component getEffectiveComponent(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 		return vertex.getImplementationVertexProperty().getEffectiveComponent();
 	}
@@ -299,7 +298,7 @@ public abstract class AbstractAbc implements IAbc {
 			boolean updateRank) {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
-		AbstractWorkflowLogger.getLogger().log(
+		WorkflowLogger.getLogger().log(
 				Level.FINE,
 				"mapping " + dagvertex.toString() + " on "
 						+ operator.toString());
@@ -326,13 +325,13 @@ public abstract class AbstractAbc implements IAbc {
 				fireNewMappedVertex(impvertex, updateRank);
 
 			} else {
-				AbstractWorkflowLogger.getLogger().log(
+				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						impvertex.toString() + " can not be mapped on "
 								+ operator.toString());
 			}
 		} else {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Operator asked may not exist");
 		}
 	}
@@ -371,10 +370,10 @@ public abstract class AbstractAbc implements IAbc {
 			if (adequateOp != null) {
 				map(currentvertex, adequateOp, true);
 			} else {
-				AbstractWorkflowLogger
+				WorkflowLogger
 						.getLogger()
 						.severe("The current mapping algorithm necessitates that all vertices can be mapped on an operator");
-				AbstractWorkflowLogger.getLogger().severe(
+				WorkflowLogger.getLogger().severe(
 						"Problem with: " + currentvertex.getName()
 								+ ". Consider changing the scenario.");
 
@@ -404,7 +403,7 @@ public abstract class AbstractAbc implements IAbc {
 		}
 
 		if (initOperators.isEmpty()) {
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Empty operator set for a vertex: " + vertex.getName()
 							+ ". Consider relaxing constraints in scenario.");
@@ -488,7 +487,7 @@ public abstract class AbstractAbc implements IAbc {
 				.getMapperDAGVertex(vertex.getName());
 
 		if (internalVertex == null) {
-			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,
+			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"No simulator internal vertex with id " + vertex.getName());
 		}
 		return internalVertex;
@@ -505,7 +504,7 @@ public abstract class AbstractAbc implements IAbc {
 				.getTarget());
 
 		if (destVertex == null || sourceVertex == null) {
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"Implementation vertex with id " + edge.getSource()
 							+ " or " + edge.getTarget() + " not found");

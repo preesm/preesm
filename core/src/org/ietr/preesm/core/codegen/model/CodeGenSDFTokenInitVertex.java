@@ -64,8 +64,8 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 	}
 
 	public Component getOperator() {
-		return (Component) this.getPropertyBean().getValue(
-				OPERATOR, Component.class);
+		return (Component) this.getPropertyBean().getValue(OPERATOR,
+				Component.class);
 	}
 
 	public void setOperator(Component op) {

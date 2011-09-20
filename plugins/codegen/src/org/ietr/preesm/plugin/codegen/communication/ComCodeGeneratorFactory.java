@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
@@ -60,7 +60,7 @@ public class ComCodeGeneratorFactory {
 		if (step.getType() == MediumRouteStep.type) {
 			generator = new MessageComCodeGenerator(compThread, comThread,
 					vertices, step);
-			AbstractWorkflowLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.FINE,
 							"A route step with type medium correspond to a message passing code generation: "
@@ -75,7 +75,7 @@ public class ComCodeGeneratorFactory {
 			generator = new RamComCodeGenerator(compThread, comThread,
 					vertices, step);
 		} else {
-			AbstractWorkflowLogger.getLogger().log(
+			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
 					"A route step with unknown type was found during code generation: "
 							+ step);

@@ -104,8 +104,8 @@ public class ConstraintGroup {
 
 	public boolean hasOperatorId(String operatorId) {
 
-		for(String opId : operatorIds){
-			if(opId.equals(operatorId)){
+		for (String opId : operatorIds) {
+			if (opId.equals(operatorId)) {
 				return true;
 			}
 		}
@@ -115,8 +115,8 @@ public class ConstraintGroup {
 
 	public boolean hasVertexPath(String vertexInfo) {
 
-		for(String vId : sdfVertexPaths){
-			if(vId.equals(vertexInfo)){
+		for (String vId : sdfVertexPaths) {
+			if (vId.equals(vertexInfo)) {
 				return true;
 			}
 		}

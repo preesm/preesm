@@ -82,15 +82,15 @@ public class ConstraintGroupManager {
 			cg.addVertexPath(vertex.getInfo());
 			constraintgroups.add(cg);
 		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertexPath(vertex.getInfo());
+			((ConstraintGroup) cgSet.toArray()[0]).addVertexPath(vertex
+					.getInfo());
 		}
 	}
 
 	/**
 	 * Adding a constraint group on several vertices and one core
 	 */
-	public void addConstraints(String opId,
-			Set<String> vertexSet) {
+	public void addConstraints(String opId, Set<String> vertexSet) {
 
 		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
@@ -184,7 +184,7 @@ public class ConstraintGroupManager {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelConstraintsParser parser = new ExcelConstraintsParser(
 					currentScenario);
-			parser.parse(excelFileURL);
+			parser.parse(excelFileURL, currentScenario.getOperatorIds());
 		}
 	}
 }

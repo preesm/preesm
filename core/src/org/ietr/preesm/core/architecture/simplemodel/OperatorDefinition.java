@@ -46,8 +46,8 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class OperatorDefinition extends ComponentDefinition
-		implements IOperatorDefinition {
+public class OperatorDefinition extends ComponentDefinition implements
+		IOperatorDefinition {
 
 	/*
 	 * a value (typically in byte/cycle) defining the speed of a local data copy

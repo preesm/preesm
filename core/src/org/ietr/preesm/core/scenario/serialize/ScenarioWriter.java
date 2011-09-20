@@ -170,8 +170,7 @@ public class ScenarioWriter {
 		dataTypeElt.setAttribute("size", Integer.toString(dataType.getSize()));
 	}
 
-	private void addSpecialVertexOperator(Element parent,
-			String opId) {
+	private void addSpecialVertexOperator(Element parent, String opId) {
 
 		Element dataTypeElt = dom.createElement("specialVertexOperator");
 		parent.appendChild(dataTypeElt);

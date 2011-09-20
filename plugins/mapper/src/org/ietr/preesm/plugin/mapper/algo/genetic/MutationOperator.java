@@ -82,12 +82,11 @@ public class MutationOperator {
 
 		// retrieve the operators which can execute the vertex
 		List<Component> list = new ArrayList<Component>();
-		list.addAll(chromosome.getArchi().getComponents(
-				ComponentType.operator));
+		list.addAll(chromosome.getArchi().getComponents(ComponentType.operator));
 
 		// chose one operator randomly
-		Iterator<Component> iterator = new RandomIterator<Component>(
-				list, new Random());
+		Iterator<Component> iterator = new RandomIterator<Component>(list,
+				new Random());
 		Operator operator = (Operator) iterator.next();
 		while (operator.getName().equals(currentGene.getOperatorId())) {
 			operator = (Operator) iterator.next();

@@ -339,7 +339,7 @@ public class MemoryExclusionGraph extends
 
 				// Add the new branch to the list
 				vertexBranch.put(forkID, branchID);
-				
+
 				branch++;
 			}
 		}

@@ -45,7 +45,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -54,7 +54,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -75,8 +74,8 @@ public class ExcelTimingParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url) {
-		AbstractWorkflowLogger
+	public void parse(String url, Set<String> opDefIds) {
+		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,
 						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
@@ -93,15 +92,11 @@ public class ExcelTimingParser {
 
 		SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
 				.getAlgorithmURL());
-		MultiCoreArchitecture currentArchi = ScenarioParser
-				.getArchitecture(scenario.getArchitectureURL());
 
 		Path path = new Path(url);
 		IFile file = workspace.getRoot().getFile(path);
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
-
-			Set<String> opDefIds = currentArchi.getOperatorDefinitionIds();
 
 			// Warnings are displayed once for each missing operator or vertex
 			// in the excel sheet
@@ -154,19 +149,20 @@ public class ExcelTimingParser {
 								stringTiming = stringTiming.replaceAll(" ", "");
 
 								try {
-									Timing timing = new Timing(opDefId, vertex.getName(),
+									Timing timing = new Timing(opDefId,
+											vertex.getName(),
 											Integer.valueOf(timingCell
 													.getContents()));
 
 									scenario.getTimingManager().addTiming(
 											timing);
 
-									AbstractWorkflowLogger.getLogger().log(
+									WorkflowLogger.getLogger().log(
 											Level.INFO,
 											"Importing timing: "
 													+ timing.toString());
 								} catch (NumberFormatException e) {
-									AbstractWorkflowLogger
+									WorkflowLogger
 											.getLogger()
 											.log(Level.SEVERE,
 													"Problem importing timing of "
@@ -179,14 +175,14 @@ public class ExcelTimingParser {
 						} else {
 							if (vertexCell == null
 									&& !missingVertices.contains(vertexName)) {
-								AbstractWorkflowLogger.getLogger().log(
+								WorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No line found in excel sheet for vertex: "
 												+ vertexName);
 								missingVertices.add(vertexName);
 							} else if (operatorCell == null
 									&& !missingOperatorTypes.contains(opDefId)) {
-								AbstractWorkflowLogger.getLogger().log(
+								WorkflowLogger.getLogger().log(
 										Level.WARNING,
 										"No column found in excel sheet for operator type: "
 												+ opDefId);

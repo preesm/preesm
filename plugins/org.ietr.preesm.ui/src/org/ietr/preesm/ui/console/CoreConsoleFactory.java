@@ -38,7 +38,7 @@ package org.ietr.preesm.ui.console;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -59,7 +59,7 @@ public class CoreConsoleFactory implements IConsoleFactory {
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null) {
 				// Creates a console for the logger.ui
-				AbstractWorkflowLogger.getLogger().log(Level.INFO, "");
+				WorkflowLogger.getLogger().log(Level.INFO, "");
 			}
 		}
 	}

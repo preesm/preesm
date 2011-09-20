@@ -73,8 +73,8 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 	}
 
 	public Component getOperator() {
-		return (Component) this.getPropertyBean().getValue(
-				OPERATOR, Component.class);
+		return (Component) this.getPropertyBean().getValue(OPERATOR,
+				Component.class);
 	}
 
 	public void setOperator(Component op) {
@@ -188,7 +188,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 			AbstractBufferContainer parentContainer)
 			throws InvalidExpressionException {
 		SDFEdge incomingEdge = null;
-		
+
 		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
 			incomingEdge = inEdge;
 		}

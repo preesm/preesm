@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
@@ -95,18 +95,16 @@ public class IntervalFinder {
 
 	}
 
-	public Interval findEarliestNonNullInterval(
-			Component component, IScheduleElement minVertex,
-			IScheduleElement maxVertex) {
+	public Interval findEarliestNonNullInterval(Component component,
+			IScheduleElement minVertex, IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.earliestBigEnoughInterval, 0);
 
 	}
 
-	public Interval findEarliestBigEnoughInterval(
-			Component component, IScheduleElement minVertex,
-			IScheduleElement maxVertex, long size) {
+	public Interval findEarliestBigEnoughInterval(Component component,
+			IScheduleElement minVertex, IScheduleElement maxVertex, long size) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.earliestBigEnoughInterval, size);
@@ -207,8 +205,8 @@ public class IntervalFinder {
 	public void displayCurrentSchedule(TransferVertex vertex,
 			MapperDAGVertex source) {
 
-		Component component = vertex
-				.getImplementationVertexProperty().getEffectiveComponent();
+		Component component = vertex.getImplementationVertexProperty()
+				.getEffectiveComponent();
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
 		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
@@ -228,7 +226,7 @@ public class IntervalFinder {
 			}
 		}
 
-		AbstractWorkflowLogger.getLogger().log(Level.INFO, trace);
+		WorkflowLogger.getLogger().log(Level.INFO, trace);
 	}
 
 	public SchedOrderManager getOrderManager() {

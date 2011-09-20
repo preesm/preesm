@@ -52,7 +52,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -164,7 +164,7 @@ public class PFastAlgorithm extends Observable {
 		nbsubsets = setThreadNumber(BNlist, nboperator, nodesmin);
 
 		if (nbsubsets == 0) {
-			AbstractWorkflowLogger
+			WorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"Not enough nodes to execute PFAST. Try reducing nodesmin in workflow or use another mapper.");
