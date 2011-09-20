@@ -38,7 +38,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
             <input
                   id="DAG"
@@ -70,7 +70,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -99,7 +99,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -128,7 +128,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -157,7 +157,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -186,7 +186,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -207,7 +207,7 @@
          <inputs>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
             <input
                   id="ABC"
@@ -230,7 +230,7 @@
             </input>
             <input
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
          <outputs>
@@ -251,7 +251,7 @@
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </output>
             <output
                   id="SDF"

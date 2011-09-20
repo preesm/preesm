@@ -39,7 +39,6 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 
@@ -71,15 +70,15 @@ public class ConstraintGroupManager {
 	}
 
 	/**
-	 * Adding a simple constraint on one vertex and one core
+	 * Adding a simple constraint on one vertex and one operator
 	 */
-	public void addConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
+	public void addConstraint(String opId, SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperatorId(currentOp.getName());
+			cg.addOperatorId(opId);
 			cg.addVertexPath(vertex.getInfo());
 			constraintgroups.add(cg);
 		} else {
@@ -90,14 +89,14 @@ public class ConstraintGroupManager {
 	/**
 	 * Adding a constraint group on several vertices and one core
 	 */
-	public void addConstraints(IOperator currentOp,
+	public void addConstraints(String opId,
 			Set<String> vertexSet) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperatorId(currentOp.getName());
+			cg.addOperatorId(opId);
 			cg.addVertexPaths(vertexSet);
 			constraintgroups.add(cg);
 		} else {
@@ -108,9 +107,9 @@ public class ConstraintGroupManager {
 	/**
 	 * Removing a simple constraint on one vertex and one core
 	 */
-	public void removeConstraint(IOperator currentOp, SDFAbstractVertex vertex) {
+	public void removeConstraint(String opId, SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(currentOp);
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
 		if (!cgSet.isEmpty()) {
 			for (ConstraintGroup cg : cgSet) {
@@ -136,11 +135,11 @@ public class ConstraintGroupManager {
 		return graphConstraintGroups;
 	}
 
-	public Set<ConstraintGroup> getOpConstraintGroups(IOperator currentOp) {
+	public Set<ConstraintGroup> getOpConstraintGroups(String opId) {
 		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
 
 		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasOperatorId(currentOp.getName()))
+			if (cg.hasOperatorId(opId))
 				graphConstraintGroups.add(cg);
 		}
 
@@ -148,8 +147,8 @@ public class ConstraintGroupManager {
 	}
 
 	public boolean isCompatibleToConstraints(SDFAbstractVertex vertex,
-			IOperator currentOp) {
-		Set<ConstraintGroup> opGroups = getOpConstraintGroups(currentOp);
+			String opId) {
+		Set<ConstraintGroup> opGroups = getOpConstraintGroups(opId);
 		Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
 
 		opGroups.retainAll(graphGroups);

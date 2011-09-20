@@ -143,7 +143,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 					if (sdfV != null && op != null && op instanceof Operator) {
 						((PreesmScenario) outputs.get("scenario"))
 								.getConstraintGroupManager().addConstraint(
-										(Operator) op, sdfV);
+										opName, sdfV);
 						((PreesmScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(
 										sdfV.getName(),
