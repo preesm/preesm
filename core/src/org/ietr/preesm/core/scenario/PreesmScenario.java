@@ -90,7 +90,7 @@ public class PreesmScenario {
 	 * Path to the scenario file
 	 */
 	private String scenarioURL = "";
-
+	
 	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();

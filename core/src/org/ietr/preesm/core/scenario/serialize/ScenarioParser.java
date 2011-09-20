@@ -38,18 +38,31 @@ package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.SlamPackage;
+import net.sf.dftools.architecture.slam.component.Operator;
+import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
@@ -271,12 +284,12 @@ public class ScenarioParser {
 		 * executors: if no operator is selected, all of them are!!
 		 */
 		if (scenario.getSimulationManager().getSpecialVertexOperatorIds()
-				.isEmpty()) {
+				.isEmpty()
+				&& scenario.getOperatorIds() != null) {
 			for (String opId : scenario.getOperatorIds()) {
 				scenario.getSimulationManager()
 						.addSpecialVertexOperatorId(opId);
 			}
-
 		}
 	}
 
@@ -310,6 +323,10 @@ public class ScenarioParser {
 		}
 	}
 
+	/**
+	 * Depending on the architecture model, parses the model and populates the
+	 * scenario
+	 */
 	private void initializeArchitectureInformation(String url) {
 		if (url.contains(".design")) {
 			MultiCoreArchitecture archi = getArchitecture(url);
@@ -317,8 +334,49 @@ public class ScenarioParser {
 			scenario.setOperatorIds(archi.getAllOperatorIds());
 			scenario.setOperatorDefinitionIds(archi.getOperatorDefinitionIds());
 		} else if (url.contains(".slam")) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"SLAM architecture not yet supported.");
+			WorkflowLogger.getLogger().log(Level.WARNING,
+					"You are using SLAM architecture 2.0.");
+			
+			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
+					.getExtensionToFactoryMap();
+			Object instance = extToFactoryMap.get("slam");
+			if (instance == null) {
+				instance = new IPXACTResourceFactoryImpl();
+				extToFactoryMap.put("slam", instance);
+			}
+
+			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
+				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
+						SlamPackage.eINSTANCE);
+			}
+
+			// Demand load the resource into the resource set.
+			ResourceSet resourceSet = new ResourceSetImpl();
+
+			Resource resource = resourceSet.getResource(
+					URI.createFileURI("D:/Projets/Preesm/trunk/tests/NewArchitecture/Archi/top.slam"), true);
+			// Extract the root object from the resource.
+			Design design = (Design) resource.getContents().get(0);
+			System.out.println(design.getVlnv().getName());
+
+			Set<String> operatorIds = new HashSet<String>();
+			Set<String> operatorDefinitionIds = new HashSet<String>();
+
+			for (ComponentInstance cmpInstance : design.getComponentInstances()) {
+				if (cmpInstance.getComponent() instanceof Operator) {
+					operatorIds.add(cmpInstance.getInstanceName());
+				}
+			}
+
+			for (net.sf.dftools.architecture.slam.component.Component component : design
+					.getComponentHolder().getComponents()) {
+				if (component instanceof Operator) {
+					operatorDefinitionIds.add(component.getVlnv().getName());
+				}
+			}
+
+			scenario.setOperatorIds(operatorIds);
+			scenario.setOperatorDefinitionIds(operatorDefinitionIds);
 		}
 	}
 
@@ -507,8 +565,9 @@ public class ScenarioParser {
 				SDFAbstractVertex vertex = algo
 						.getHierarchicalVertex(vertexpath);
 
-				if (vertex != null && scenario.getOperatorDefinitionIds().contains(opdefname)
-						&& time >= 0) {
+				if (vertex != null
+						&& scenario.getOperatorDefinitionIds().contains(
+								opdefname) && time >= 0) {
 					timing = new Timing(opdefname, vertex.getName(), time);
 				}
 			}
