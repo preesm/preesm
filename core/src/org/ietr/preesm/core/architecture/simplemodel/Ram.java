@@ -36,22 +36,22 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 
 /**
  * A Random Access memory
  * 
  * @author mpelcat
  */
-public class Ram extends ArchitectureComponent {
+public class Ram extends Component {
 
 	public Ram(String id, RamDefinition type) {
 		super(id, type);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.ram;
+	public ComponentType getType() {
+		return ComponentType.ram;
 	}
 
 	/*

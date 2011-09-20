@@ -54,11 +54,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -71,9 +71,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelConstraintsParser {
 
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public ExcelConstraintsParser(SDFAndArchitectureScenario scenario) {
+	public ExcelConstraintsParser(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}
@@ -116,8 +116,8 @@ public class ExcelConstraintsParser {
 					.getHierarchicalVertexSet()) {
 
 				if (vertex.getKind() == "vertex") {
-					for (ArchitectureComponent operator : currentArchi
-							.getComponents(ArchitectureComponentType.operator)) {
+					for (Component operator : currentArchi
+							.getComponents(ComponentType.operator)) {
 						checkOpConstraint(w, (Operator) operator, currentArchi,
 								vertex, missingVertices, missingOperators);
 					}

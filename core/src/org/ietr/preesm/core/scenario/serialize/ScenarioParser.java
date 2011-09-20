@@ -47,8 +47,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.DesignParser;
@@ -56,7 +56,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.importer.GMLGenericImporter;
 import org.sdf4j.importer.InvalidFileException;
@@ -82,7 +82,7 @@ public class ScenarioParser {
 	/**
 	 * scenario being retrieved
 	 */
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	/**
 	 * current algorithm
@@ -96,7 +96,7 @@ public class ScenarioParser {
 
 	public ScenarioParser() {
 
-		scenario = new SDFAndArchitectureScenario();
+		scenario = new PreesmScenario();
 	}
 
 	public Document getDom() {
@@ -106,7 +106,7 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public SDFAndArchitectureScenario parseXmlFile(IFile file) {
+	public PreesmScenario parseXmlFile(IFile file) {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -262,7 +262,7 @@ public class ScenarioParser {
 				if (type.equals("specialVertexOperator")) {
 					String path = elt.getAttribute("path");
 
-					ArchitectureComponent cmp = archi
+					Component cmp = archi
 							.getHierarchicalVertexFromPath(path);
 
 					if (cmp != null) {
@@ -282,8 +282,8 @@ public class ScenarioParser {
 		if (archi != null
 				&& scenario.getSimulationManager().getSpecialVertexOperatorIds()
 						.isEmpty()) {
-			for (ArchitectureComponent c : archi
-					.getComponents(ArchitectureComponentType.operator)) {
+			for (Component c : archi
+					.getComponents(ComponentType.operator)) {
 				scenario.getSimulationManager().addSpecialVertexOperatorId(c.getInfo());
 			}
 
@@ -365,7 +365,7 @@ public class ScenarioParser {
 	public static void addVertexPathProperties(
 			MultiCoreArchitecture architecture, String currentPath) {
 
-		for (ArchitectureComponent vertex : architecture.vertexSet()) {
+		for (Component vertex : architecture.vertexSet()) {
 			String newPath = currentPath + vertex.getName();
 			vertex.setInfo(newPath);
 			newPath += "/";
@@ -444,7 +444,7 @@ public class ScenarioParser {
 							cg.addVertexPath(name);
 					} else if (type.equals("operator")) {
 						Operator op = (Operator) archi.getComponent(
-								ArchitectureComponentType.operator, name);
+								ComponentType.operator, name);
 						if (op != null)
 							cg.addOperatorId(name);
 					}
@@ -508,7 +508,7 @@ public class ScenarioParser {
 						.getHierarchicalVertex(vertexpath);
 				IOperatorDefinition opdef = (OperatorDefinition) archi
 						.getComponentDefinition(
-								ArchitectureComponentType.operator, opdefname);
+								ComponentType.operator, opdefname);
 
 				if (vertex != null && opdef != null && time >= 0) {
 					timing = new Timing(opdef.getId(), vertex.getName(), time);

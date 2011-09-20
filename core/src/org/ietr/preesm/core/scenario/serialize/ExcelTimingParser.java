@@ -55,7 +55,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -68,9 +68,9 @@ import org.sdf4j.model.sdf.SDFGraph;
  */
 public class ExcelTimingParser {
 
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 
-	public ExcelTimingParser(SDFAndArchitectureScenario scenario) {
+	public ExcelTimingParser(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}

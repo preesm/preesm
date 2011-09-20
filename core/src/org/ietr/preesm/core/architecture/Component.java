@@ -62,18 +62,18 @@ import org.sdf4j.model.AbstractVertex;
  * 
  * @author mpelcat
  */
-public abstract class ArchitectureComponent extends
+public abstract class Component extends
 		AbstractVertex<MultiCoreArchitecture> {
 
 	public static class CmpComparator implements
-			Comparator<ArchitectureComponent> {
+			Comparator<Component> {
 		@Override
-		public int compare(ArchitectureComponent o1, ArchitectureComponent o2) {
+		public int compare(Component o1, Component o2) {
 			return o1.getName().compareTo(o2.getName());
 		}
 	}
 
-	public static final ArchitectureComponent NO_COMPONENT = null;
+	public static final Component NO_COMPONENT = null;
 
 	/**
 	 * Types of bus that can be connected to the current component. Can be
@@ -85,13 +85,13 @@ public abstract class ArchitectureComponent extends
 	 * media interfaces available in this architecture component. Interfaces are
 	 * connected via interconnections
 	 */
-	protected List<ArchitectureInterface> availableInterfaces;
+	protected List<Interface> availableInterfaces;
 
 	/**
 	 * The definition contains the category (medium or operator) and the id
 	 * (example: C64x+) as well as specific parameters
 	 */
-	private ArchitectureComponentDefinition definition;
+	private ComponentDefinition definition;
 
 	/**
 	 * Saving refinement name if present in IP-XACT in order to be able to
@@ -107,20 +107,20 @@ public abstract class ArchitectureComponent extends
 	/**
 	 * Constructor from a type and a name
 	 */
-	public ArchitectureComponent(String id,
-			ArchitectureComponentDefinition definition) {
+	public Component(String id,
+			ComponentDefinition definition) {
 		setId(id);
 		setName(id);
 		this.busTypes = new ArrayList<BusType>();
 		this.definition = definition;
 
-		availableInterfaces = new ArrayList<ArchitectureInterface>();
+		availableInterfaces = new ArrayList<Interface>();
 	}
 
 	/**
 	 * Adds an interface to the architecture component
 	 */
-	public final ArchitectureInterface addInterface(ArchitectureInterface intf) {
+	public final Interface addInterface(Interface intf) {
 
 		availableInterfaces.add(intf);
 
@@ -129,19 +129,19 @@ public abstract class ArchitectureComponent extends
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ArchitectureComponent) {
-			ArchitectureComponent op = (ArchitectureComponent) obj;
+		if (obj instanceof Component) {
+			Component op = (Component) obj;
 			return this.getName().compareTo(op.getName()) == 0;
 		}
 
 		return false;
 	}
 
-	public List<ArchitectureInterface> getAvailableInterfaces() {
+	public List<Interface> getAvailableInterfaces() {
 		return availableInterfaces;
 	}
 
-	public ArchitectureComponentDefinition getDefinition() {
+	public ComponentDefinition getDefinition() {
 		return definition;
 	}
 
@@ -150,22 +150,22 @@ public abstract class ArchitectureComponent extends
 	 * 
 	 * @return the interface or null if it does not exist
 	 */
-	public ArchitectureInterface getInterface(BusReference busRef) {
+	public Interface getInterface(BusReference busRef) {
 
-		ArchitectureInterface searchedIntf = null;
+		Interface searchedIntf = null;
 
-		ListIterator<ArchitectureInterface> it = getAvailableInterfaces()
+		ListIterator<Interface> it = getAvailableInterfaces()
 				.listIterator();
 
 		while (it.hasNext()) {
-			ArchitectureInterface intf = it.next();
+			Interface intf = it.next();
 			if (busRef.equals(intf.getBusReference())) {
 				searchedIntf = intf;
 			}
 		}
 
 		if (searchedIntf == null) {
-			searchedIntf = new ArchitectureInterface(busRef, this);
+			searchedIntf = new Interface(busRef, this);
 		}
 
 		return searchedIntf;
@@ -174,11 +174,11 @@ public abstract class ArchitectureComponent extends
 	/**
 	 * Gets the interfaces
 	 */
-	public List<ArchitectureInterface> getInterfaces() {
+	public List<Interface> getInterfaces() {
 		return Collections.unmodifiableList(availableInterfaces);
 	}
 
-	public abstract ArchitectureComponentType getType();
+	public abstract ComponentType getType();
 
 	public String getBaseAddress() {
 		return baseAddress;
@@ -202,11 +202,11 @@ public abstract class ArchitectureComponent extends
 
 	}
 
-	public void setDefinition(ArchitectureComponentDefinition definition) {
+	public void setDefinition(ComponentDefinition definition) {
 		this.definition = definition;
 	}
 
-	public void fill(ArchitectureComponent cmp, MultiCoreArchitecture newArchi) {
+	public void fill(Component cmp, MultiCoreArchitecture newArchi) {
 
 		this.setBaseAddress(cmp.getBaseAddress());
 		this.setRefinementName(cmp.getRefinementName());
@@ -214,14 +214,14 @@ public abstract class ArchitectureComponent extends
 		this.setDefinition(newArchi.getComponentDefinition(cmp.getDefinition()
 				.getType(), cmp.getDefinition().getVlnv()));
 
-		for (ArchitectureInterface itf : cmp.availableInterfaces) {
+		for (Interface itf : cmp.availableInterfaces) {
 
 			if (itf.getBusReference().getId().isEmpty()) {
 				AbstractWorkflowLogger.getLogger().log(Level.WARNING,
 						"Dangerous unnamed ports in architecture.");
 			}
 
-			ArchitectureInterface newItf = new ArchitectureInterface(
+			Interface newItf = new Interface(
 					newArchi.createBusReference(itf.getBusReference().getId()),
 					this);
 			this.getAvailableInterfaces().add(newItf);
@@ -259,24 +259,24 @@ public abstract class ArchitectureComponent extends
 		return null;
 	}
 
-	public final ArchitectureComponent clone() {
+	public final Component clone() {
 
 		// Definition is cloned
-		ArchitectureComponent newCmp = null;
+		Component newCmp = null;
 
-		if (this.getType().equals(ArchitectureComponentType.contentionNode)) {
+		if (this.getType().equals(ComponentType.contentionNode)) {
 			newCmp = new ContentionNode(getName(), null);
-		} else if (this.getType().equals(ArchitectureComponentType.dma)) {
+		} else if (this.getType().equals(ComponentType.dma)) {
 			newCmp = new Dma(getName(), null);
-		} else if (this.getType().equals(ArchitectureComponentType.medium)) {
+		} else if (this.getType().equals(ComponentType.medium)) {
 			newCmp = new Medium(getName(), (MediumDefinition) getDefinition());
-		} else if (this.getType().equals(ArchitectureComponentType.operator)) {
+		} else if (this.getType().equals(ComponentType.operator)) {
 			newCmp = new Operator(getName(),
 					(OperatorDefinition) getDefinition());
 		} else if (this.getType()
-				.equals(ArchitectureComponentType.parallelNode)) {
+				.equals(ComponentType.parallelNode)) {
 			newCmp = new ParallelNode(getName(), null);
-		} else if (this.getType().equals(ArchitectureComponentType.ram)) {
+		} else if (this.getType().equals(ComponentType.ram)) {
 			newCmp = new Ram(getName(), null);
 		} else {
 			AbstractWorkflowLogger.getLogger().log(Level.SEVERE,

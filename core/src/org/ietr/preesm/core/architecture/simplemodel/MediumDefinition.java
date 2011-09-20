@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
@@ -47,7 +47,7 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class MediumDefinition extends ArchitectureComponentDefinition {
+public class MediumDefinition extends ComponentDefinition {
 
 	/**
 	 * Properties used by architecture simulator
@@ -83,8 +83,8 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 		setOverhead(overhead);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.medium;
+	public ComponentType getType() {
+		return ComponentType.medium;
 	}
 
 	/*
@@ -93,7 +93,7 @@ public class MediumDefinition extends ArchitectureComponentDefinition {
 	 * this.getOverheadTime()); }
 	 */
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ComponentDefinition origin) {
 		this.dataRate = ((MediumDefinition) origin).getDataRate();
 		this.overhead = ((MediumDefinition) origin).getOverheadTime();
 	}

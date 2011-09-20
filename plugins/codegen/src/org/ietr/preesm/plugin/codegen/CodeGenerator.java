@@ -38,8 +38,8 @@ package org.ietr.preesm.plugin.codegen;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.SourceFile;
@@ -67,8 +67,8 @@ public class CodeGenerator {
 	 * Creates the source files from an architecture
 	 */
 	private void createSourceFiles(MultiCoreArchitecture architecture) {
-		Iterator<ArchitectureComponent> iterator = architecture.getComponents(
-				ArchitectureComponentType.operator).iterator();
+		Iterator<Component> iterator = architecture.getComponents(
+				ComponentType.operator).iterator();
 
 		// Generates and populates one source file per core
 		while (iterator.hasNext()) {

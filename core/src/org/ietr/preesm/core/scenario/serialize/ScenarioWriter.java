@@ -44,7 +44,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.sdf4j.model.parameters.Variable;
 import org.w3c.dom.DOMImplementation;
@@ -70,9 +70,9 @@ public class ScenarioWriter {
 	/**
 	 * Current scenario
 	 */
-	private SDFAndArchitectureScenario scenario;
+	private PreesmScenario scenario;
 
-	public ScenarioWriter(SDFAndArchitectureScenario scenario) {
+	public ScenarioWriter(PreesmScenario scenario) {
 		super();
 
 		this.scenario = scenario;

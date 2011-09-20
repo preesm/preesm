@@ -17,7 +17,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -49,7 +49,7 @@ public class IBSDFAndSLAMScenarioNode extends
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 
-		SDFAndArchitectureScenario scenario = scenarioParser.parseXmlFile(file);
+		PreesmScenario scenario = scenarioParser.parseXmlFile(file);
 
 		// Retrieving the algorithm
 		SDFGraph algorithm = ScenarioParser.getAlgorithm(scenario

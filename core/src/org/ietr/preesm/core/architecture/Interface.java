@@ -36,49 +36,64 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Ram;
-import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
-
 /**
- * Factory able to create an architecture component of any type
+ * a medium interface is contained by an architecture component. Containing a
+ * medium interface of type M and multiplicity N means that this operator can be
+ * connected to N media of type M
  * 
  * @author mpelcat
  */
-public class ArchitectureComponentFactory {
+public class Interface {
 
-	public static ArchitectureComponent createElement(
-			ArchitectureComponentDefinition type, String id) {
+	/**
+	 * type of the corresponding bus
+	 */
+	private BusReference busReference;
 
-		ArchitectureComponent result = null;
+	/**
+	 * owner of the corresponding interface
+	 */
+	private Component owner;
 
-		if (type != null) {
-			// Simple model
-			if (type instanceof MediumDefinition) {
-				result = new Medium(id, (MediumDefinition) type);
-			} else if (type instanceof OperatorDefinition) {
-				result = new Operator(id, (OperatorDefinition) type);
-			} else if (type instanceof ContentionNodeDefinition) {
-				result = new ContentionNode(id, (ContentionNodeDefinition) type);
-			} else if (type instanceof DmaDefinition) {
-				result = new Dma(id, (DmaDefinition) type);
-			} else if (type instanceof ParallelNodeDefinition) {
-				result = new ParallelNode(id, (ParallelNodeDefinition) type);
-			} else if (type instanceof RamDefinition) {
-				result = new Ram(id, (RamDefinition) type);
-			}
+	/**
+	 * 
+	 * Constructor
+	 */
+	public Interface(BusReference busReference,
+			Component owner) {
+		this.busReference = busReference;
 
-		}
-
-		return result;
+		this.owner = owner;
 	}
+
+	public Interface clone(BusReference busRef,
+			Component newOwner) {
+
+		// The interface definition is cloned and references the given medium
+		// definition
+		Interface newintf = new Interface(
+				(BusReference) this.busReference.clone(), newOwner);
+
+		return newintf;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Interface) {
+			Interface intf = (Interface) obj;
+			return owner.equals(intf.owner)
+					&& busReference.equals(intf.busReference);
+		}
+		return false;
+	}
+
+	public BusReference getBusReference() {
+		return busReference;
+	}
+
+	public Component getOwner() {
+		return owner;
+	}
+
 }

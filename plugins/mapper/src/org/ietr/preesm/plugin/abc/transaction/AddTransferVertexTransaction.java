@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -99,7 +99,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Component corresponding to this transfer vertex
 	 */
-	private ArchitectureComponent effectiveComponent = null;
+	private Component effectiveComponent = null;
 
 	/**
 	 * Original edge corresponding to this overhead
@@ -147,7 +147,7 @@ public class AddTransferVertexTransaction extends Transaction {
 			MapperDAGEdge edge, MapperDAG implementation,
 			SchedOrderManager orderManager, int routeIndex, int nodeIndex,
 			AbstractRouteStep step, long transferTime,
-			ArchitectureComponent effectiveComponent, boolean scheduleVertex) {
+			Component effectiveComponent, boolean scheduleVertex) {
 		super();
 		this.transferType = transferType;
 		this.precedingTransaction = precedingTransaction;

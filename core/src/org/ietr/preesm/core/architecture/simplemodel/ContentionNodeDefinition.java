@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
+public class ContentionNodeDefinition extends ComponentDefinition {
 
 	/**
 	 * Transfer speed in AU (Allocation Unit)/TU(Time Unit) The usual
@@ -60,8 +60,8 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 		super(vlnv, "contentionNode");
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.contentionNode;
+	public ComponentType getType() {
+		return ComponentType.contentionNode;
 	}
 
 	/*
@@ -73,7 +73,7 @@ public class ContentionNodeDefinition extends ArchitectureComponentDefinition {
 	 * newdef.setDataRate(this.getDataRate()); return newdef; }
 	 */
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ComponentDefinition origin) {
 		this.dataRate = ((ContentionNodeDefinition) origin).getDataRate();
 	}
 

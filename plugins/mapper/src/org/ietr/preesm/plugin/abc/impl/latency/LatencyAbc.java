@@ -47,10 +47,10 @@ import java.util.logging.Level;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
@@ -107,7 +107,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 */
 	public LatencyAbc(AbcParameters params, MapperDAG dag,
 			MultiCoreArchitecture archi, AbcType abcType,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
 		this.params = params;
@@ -274,7 +274,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * minimization)
 	 */
 	@Override
-	public final long getFinalCost(ArchitectureComponent component) {
+	public final long getFinalCost(Component component) {
 
 		long finalTime = nTimeKeeper.getFinalTime(component);
 
@@ -350,7 +350,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		List<Long> taskSums = new ArrayList<Long>();
 		long totalTaskSum = 0l;
 
-		for (ArchitectureComponent o : orderManager.getArchitectureComponents()) {
+		for (Component o : orderManager.getArchitectureComponents()) {
 			long load = getLoad(o);
 
 			if (load > 0) {
@@ -385,7 +385,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Returns the sum of execution times on the given component
 	 */
-	public final long getLoad(ArchitectureComponent component) {
+	public final long getLoad(Component component) {
 
 		long load2 = orderManager.getBusyTime(component);
 

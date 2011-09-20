@@ -42,12 +42,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
  * A schedule represents the consecutive tasks mapped on a single
- * {@link ArchitectureComponent}
+ * {@link Component}
  * 
  * @author mpelcat
  */

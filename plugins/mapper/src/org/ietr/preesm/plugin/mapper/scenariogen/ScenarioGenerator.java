@@ -16,11 +16,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -74,7 +74,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(relativePath);
 
-			SDFAndArchitectureScenario scenario = parser.parseXmlFile(file);
+			PreesmScenario scenario = parser.parseXmlFile(file);
 
 			// Retrieving the algorithm
 			SDFGraph algo = ScenarioParser.getAlgorithm(scenario
@@ -113,9 +113,9 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 		} else {
 			GMLMapperDAGImporter importer = new GMLMapperDAGImporter();
 
-			((SDFAndArchitectureScenario) outputs.get("scenario"))
+			((PreesmScenario) outputs.get("scenario"))
 					.getConstraintGroupManager().removeAll();
-			((SDFAndArchitectureScenario) outputs.get("scenario")).getTimingManager()
+			((PreesmScenario) outputs.get("scenario")).getTimingManager()
 					.removeAll();
 
 			try {
@@ -137,14 +137,14 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 							ImplementationPropertyNames.Task_duration);
 					SDFAbstractVertex sdfV = ((SDFGraph) outputs.get("SDF"))
 							.getVertex(vName);
-					ArchitectureComponent op = ((MultiCoreArchitecture) outputs
+					Component op = ((MultiCoreArchitecture) outputs
 							.get("architecture")).getComponent(opName);
 
 					if (sdfV != null && op != null && op instanceof Operator) {
-						((SDFAndArchitectureScenario) outputs.get("scenario"))
+						((PreesmScenario) outputs.get("scenario"))
 								.getConstraintGroupManager().addConstraint(
 										(Operator) op, sdfV);
-						((SDFAndArchitectureScenario) outputs.get("scenario"))
+						((PreesmScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(
 										sdfV.getName(),
 										op

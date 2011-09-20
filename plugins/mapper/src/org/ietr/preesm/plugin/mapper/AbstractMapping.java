@@ -44,7 +44,7 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -65,7 +65,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 
 		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
 				.get("architecture");
-		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs.get("scenario");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// Asking to recalculate routes
 		RouteCalculator.recalculate(architecture, scenario);
@@ -95,7 +95,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 	}
 
 	protected void clean(MultiCoreArchitecture architecture,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture, scenario);
 	}
@@ -106,7 +106,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 	 * transfer time to other operator)
 	 */
 	protected void calculateSpan(MapperDAG dag, MultiCoreArchitecture archi,
-			SDFAndArchitectureScenario scenario, AbcParameters parameters) {
+			PreesmScenario scenario, AbcParameters parameters) {
 
 		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,
 				dag, archi, parameters.getSimulatorType().getTaskSchedType(),

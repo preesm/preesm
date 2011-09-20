@@ -51,7 +51,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
@@ -83,12 +83,12 @@ public class FastAlgorithm extends Observable {
 	private VertexOrderList bestTotalOrder = null;
 
 	private InitialLists initialLists = null;
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	/**
 	 * Constructor
 	 */
-	public FastAlgorithm(InitialLists initialLists, SDFAndArchitectureScenario scenario) {
+	public FastAlgorithm(InitialLists initialLists, PreesmScenario scenario) {
 		super();
 		this.initialLists = initialLists;
 		this.scenario = scenario;

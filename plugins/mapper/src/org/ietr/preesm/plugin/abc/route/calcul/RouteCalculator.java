@@ -46,8 +46,8 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -55,7 +55,7 @@ import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
@@ -75,10 +75,10 @@ public class RouteCalculator {
 
 	private RouteStepFactory stepFactory = null;
 
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 
 	public static RouteCalculator getInstance(MultiCoreArchitecture archi,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		if (instances.get(archi) == null) {
 			instances.put(archi, new RouteCalculator(archi, scenario));
 		}
@@ -86,19 +86,19 @@ public class RouteCalculator {
 	}
 
 	public static void recalculate(MultiCoreArchitecture archi,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		instances.put(archi, new RouteCalculator(archi, scenario));
 	}
 
 	public static void deleteRoutes(MultiCoreArchitecture archi,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		instances.remove(archi);
 	}
 
 	/**
 	 * Constructor from a given architecture
 	 */
-	private RouteCalculator(MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
+	private RouteCalculator(MultiCoreArchitecture archi, PreesmScenario scenario) {
 
 		this.archi = archi;
 		this.table = new RoutingTable(scenario);
@@ -119,16 +119,16 @@ public class RouteCalculator {
 		AbstractWorkflowLogger.getLogger().log(Level.INFO,
 				"creating route steps.");
 
-		for (ArchitectureComponent c : archi
-				.getComponents(ArchitectureComponentType.operator)) {
+		for (Component c : archi
+				.getComponents(ComponentType.operator)) {
 			Operator o = (Operator) c;
 
 			createRouteSteps(o);
 		}
 	}
 
-	private ArchitectureComponent getOtherEnd(Interconnection i,
-			ArchitectureComponent c) {
+	private Component getOtherEnd(Interconnection i,
+			Component c) {
 		if (i.getTarget() != c)
 			return i.getTarget();
 		else
@@ -188,7 +188,7 @@ public class RouteCalculator {
 				"Initializing routing table.");
 
 		floydWarshall(table,
-				archi.getComponents(ArchitectureComponentType.operator));
+				archi.getComponents(ComponentType.operator));
 	}
 
 	/**
@@ -196,15 +196,15 @@ public class RouteCalculator {
 	 * increasing order of cost.
 	 */
 	private void floydWarshall(RoutingTable table,
-			Set<ArchitectureComponent> operators) {
+			Set<Component> operators) {
 
-		for (ArchitectureComponent kC : operators) {
+		for (Component kC : operators) {
 			Operator k = (Operator) kC;
 
-			for (ArchitectureComponent srcC : operators) {
+			for (Component srcC : operators) {
 				Operator src = (Operator) srcC;
 
-				for (ArchitectureComponent tgtC : operators) {
+				for (Component tgtC : operators) {
 					Operator tgt = (Operator) tgtC;
 
 					if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {

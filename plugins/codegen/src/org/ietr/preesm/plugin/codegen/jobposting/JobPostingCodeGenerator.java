@@ -20,7 +20,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
 import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
 import org.sdf4j.demo.SDFAdapterDemo;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -45,7 +45,7 @@ public class JobPostingCodeGenerator {
 	boolean timedSimulation;
 
 	public JobPostingCodeGenerator(CodeGenSDFGraph codeGenSDFGraph,
-			SDFAndArchitectureScenario scenario, boolean timedSimulation) {
+			PreesmScenario scenario, boolean timedSimulation) {
 		super();
 		this.codeGenSDFGraph = codeGenSDFGraph;
 		this.timedSimulation = timedSimulation;

@@ -50,7 +50,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
@@ -123,7 +123,7 @@ public class GenericPrinter {
 		IOperator operator = srcFile.getOperator();
 
 		// Generating an xml file corresponding to the code of one file
-		String fileName = ((ArchitectureComponent) operator).getName();
+		String fileName = ((Component) operator).getName();
 		IPath xmlPath = new Path(outputPath);
 		xmlPath = xmlPath.append(fileName + ".xml");
 
@@ -138,7 +138,7 @@ public class GenericPrinter {
 			specificPath = specificPath.append(fileName + ".c");
 
 			IPath xslFilePath = new Path(xslPath);
-			xslFilePath = xslFilePath.append(((ArchitectureComponent) operator)
+			xslFilePath = xslFilePath.append(((Component) operator)
 					.getDefinition().getVlnv().getName()
 					+ ".xslt");
 
@@ -160,9 +160,9 @@ public class GenericPrinter {
 	 */
 	public XMLPrinter createOperatorPrinter(IOperator opRef) {
 		XMLPrinter printer = null;
-		String opRefId = ((ArchitectureComponent) opRef).getDefinition()
+		String opRefId = ((Component) opRef).getDefinition()
 				.getVlnv().getName();
-		String opId = ((ArchitectureComponent) opRef).getName();
+		String opId = ((Component) opRef).getName();
 
 		printer = new XMLPrinter();
 		printer.setCoreType(opRefId);

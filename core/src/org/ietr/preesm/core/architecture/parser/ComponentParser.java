@@ -48,8 +48,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
 import org.ietr.preesm.core.architecture.BusType;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 /**
  * An xml parser retrieving architecture data from an IP-XACT component. The
  * data from the IP-XACT component is set directly in the
- * {@link ArchitectureComponent}. If the component contains one single
+ * {@link Component}. If the component contains one single
  * subDesign, this subdesign is set as the component refinement.
  * 
  * @author mpelcat
@@ -74,12 +74,12 @@ public class ComponentParser {
 	/**
 	 * current component
 	 */
-	private ArchitectureComponent cmp = null;
+	private Component cmp = null;
 
 	private IFile currentFile = null;
 
 	public ComponentParser(MultiCoreArchitecture archi,
-			ArchitectureComponent cmp) {
+			Component cmp) {
 		this.cmp = cmp;
 	}
 

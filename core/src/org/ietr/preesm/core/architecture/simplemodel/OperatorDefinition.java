@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.IOperatorDefinition;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class OperatorDefinition extends ArchitectureComponentDefinition
+public class OperatorDefinition extends ComponentDefinition
 		implements IOperatorDefinition {
 
 	/*
@@ -59,8 +59,8 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 		super(vlnv, "operator");
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.operator;
+	public ComponentType getType() {
+		return ComponentType.operator;
 	}
 
 	public float getDataCopySpeed() {
@@ -71,6 +71,6 @@ public class OperatorDefinition extends ArchitectureComponentDefinition
 		this.dataCopySpeed = dataCopySpeed;
 	}
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ComponentDefinition origin) {
 	}
 }

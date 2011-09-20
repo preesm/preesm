@@ -36,55 +36,44 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture;
 
+import org.ietr.preesm.core.architecture.parser.VLNV;
+import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
+
 /**
- * Representation of an architecture component type
+ * Factory able to create an architecture component of any type
  * 
  * @author mpelcat
  */
-public class ArchitectureComponentType {
+public class ComponentDefinitionFactory {
 
-	// Simple model
-	public static final ArchitectureComponentType operator = new ArchitectureComponentType(
-			"operator");
-	public static final ArchitectureComponentType medium = new ArchitectureComponentType(
-			"medium");
-	public static final ArchitectureComponentType dma = new ArchitectureComponentType(
-			"dma");
-	public static final ArchitectureComponentType parallelNode = new ArchitectureComponentType(
-			"parallelNode");
-	public static final ArchitectureComponentType contentionNode = new ArchitectureComponentType(
-			"contentionNode");
-	public static final ArchitectureComponentType ram = new ArchitectureComponentType(
-			"ram");
+	public static ComponentDefinition createElement(
+			ComponentType type, VLNV vlnv) {
 
-	private String name = null;
+		ComponentDefinition result = null;
 
-	public ArchitectureComponentType(String name) {
-		super();
-		this.name = name;
-	}
+		if (type != null) {
+			// Simple model
+			if (type == ComponentType.medium) {
+				result = new MediumDefinition(vlnv);
+			} else if (type == ComponentType.operator) {
+				result = new OperatorDefinition(vlnv);
+			} else if (type == ComponentType.contentionNode) {
+				result = new ContentionNodeDefinition(vlnv);
+			} else if (type == ComponentType.parallelNode) {
+				result = new ParallelNodeDefinition(vlnv);
+			} else if (type == ComponentType.dma) {
+				result = new DmaDefinition(vlnv);
+			} else if (type == ComponentType.ram) {
+				result = new RamDefinition(vlnv);
+			}
 
-	public static ArchitectureComponentType getType(String name) {
+		}
 
-		// Simple model
-		if (name.equalsIgnoreCase("operator"))
-			return operator;
-		else if (name.equalsIgnoreCase("medium"))
-			return medium;
-		else if (name.equalsIgnoreCase("dma"))
-			return dma;
-		else if (name.equalsIgnoreCase("parallelNode"))
-			return parallelNode;
-		else if (name.equalsIgnoreCase("contentionNode"))
-			return contentionNode;
-		else if (name.equalsIgnoreCase("ram"))
-			return ram;
-
-		else
-			return null;
-	}
-
-	public String getName() {
-		return name;
+		return result;
 	}
 }

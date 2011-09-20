@@ -38,8 +38,8 @@ package org.ietr.preesm.core.architecture.simplemodel;
 
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.IOperator;
 
 /**
@@ -48,15 +48,15 @@ import org.ietr.preesm.core.architecture.IOperator;
  * 
  * @author mpelcat
  */
-public class Operator extends ArchitectureComponent implements IOperator {
+public class Operator extends Component implements IOperator {
 
 	public Operator(String id, OperatorDefinition type) {
 		super(id, type);
 
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.operator;
+	public ComponentType getType() {
+		return ComponentType.operator;
 	}
 
 	/*

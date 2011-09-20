@@ -42,7 +42,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
@@ -87,7 +87,7 @@ public class IntervalFinder {
 	/**
 	 * Finds the largest free interval in a schedule
 	 */
-	public Interval findLargestFreeInterval(ArchitectureComponent component,
+	public Interval findLargestFreeInterval(Component component,
 			IScheduleElement minVertex, IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -96,7 +96,7 @@ public class IntervalFinder {
 	}
 
 	public Interval findEarliestNonNullInterval(
-			ArchitectureComponent component, IScheduleElement minVertex,
+			Component component, IScheduleElement minVertex,
 			IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -105,7 +105,7 @@ public class IntervalFinder {
 	}
 
 	public Interval findEarliestBigEnoughInterval(
-			ArchitectureComponent component, IScheduleElement minVertex,
+			Component component, IScheduleElement minVertex,
 			IScheduleElement maxVertex, long size) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -117,7 +117,7 @@ public class IntervalFinder {
 	 * Finds the largest free interval in a schedule between a minVertex and a
 	 * maxVertex
 	 */
-	public Interval findInterval(ArchitectureComponent component,
+	public Interval findInterval(Component component,
 			IScheduleElement minVertex, IScheduleElement maxVertex,
 			FindType type, long data) {
 
@@ -207,7 +207,7 @@ public class IntervalFinder {
 	public void displayCurrentSchedule(TransferVertex vertex,
 			MapperDAGVertex source) {
 
-		ArchitectureComponent component = vertex
+		Component component = vertex
 				.getImplementationVertexProperty().getEffectiveComponent();
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 

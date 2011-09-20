@@ -43,7 +43,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.plugin.abc.transaction.RemoveEdgeTransaction;
@@ -97,7 +97,7 @@ public class PrecedenceEdgeAdder {
 	public void addPrecedenceEdges() {
 
 		TransactionManager localTransactionManager = new TransactionManager();
-		Iterator<ArchitectureComponent> opIt = orderManager
+		Iterator<Component> opIt = orderManager
 				.getArchitectureComponents().iterator();
 
 		// Iterates the schedules

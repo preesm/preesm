@@ -40,11 +40,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
@@ -69,11 +69,11 @@ public class StatGenerator {
 
 	private IAbc abc = null;
 
-	private SDFAndArchitectureScenario scenario = null;
+	private PreesmScenario scenario = null;
 	private Map<String, String> params = null;
 	private long finalTime = 0;
 
-	public StatGenerator(IAbc abc, SDFAndArchitectureScenario scenario,
+	public StatGenerator(IAbc abc, PreesmScenario scenario,
 			Map<String, String> params) {
 		super();
 		this.params = params;
@@ -161,8 +161,8 @@ public class StatGenerator {
 	 */
 	public int getNbUsedOperators() {
 		int nbUsedOperators = 0;
-		for (ArchitectureComponent o : abc.getArchitecture().getComponents(
-				ArchitectureComponentType.operator)) {
+		for (Component o : abc.getArchitecture().getComponents(
+				ComponentType.operator)) {
 			if (abc.getFinalCost((Operator) o) > 0) {
 				nbUsedOperators++;
 			}
@@ -176,9 +176,9 @@ public class StatGenerator {
 	public int getNbMainTypeOperators() {
 		int nbMainTypeOperators = 0;
 		Operator main = abc.getArchitecture().getMainOperator();
-		ArchitectureComponentDefinition maindef = main.getDefinition();
-		for (ArchitectureComponent o : abc.getArchitecture().getComponents(
-				ArchitectureComponentType.operator)) {
+		ComponentDefinition maindef = main.getDefinition();
+		for (Component o : abc.getArchitecture().getComponents(
+				ComponentType.operator)) {
 			if (maindef.equals(o.getDefinition())) {
 				nbMainTypeOperators++;
 			}
@@ -232,7 +232,7 @@ public class StatGenerator {
 
 	}
 
-	public SDFAndArchitectureScenario getScenario() {
+	public PreesmScenario getScenario() {
 		return scenario;
 	}
 

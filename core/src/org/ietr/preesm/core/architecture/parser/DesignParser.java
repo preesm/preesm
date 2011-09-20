@@ -53,11 +53,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
-import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.HierarchyPort;
+import org.ietr.preesm.core.architecture.Interface;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
@@ -293,12 +293,12 @@ public class DesignParser {
 
 		// If the component was well parsed, it is created and added to the
 		// architecture
-		ArchitectureComponentType type = ArchitectureComponentType
+		ComponentType type = ComponentType
 				.getType(cmpType);
 
 		if (type != null) {
-			ArchitectureComponent cmp = archi.addComponent(
-					ArchitectureComponentType.getType(cmpType), cmpDefVLNV,
+			Component cmp = archi.addComponent(
+					ComponentType.getType(cmpType), cmpDefVLNV,
 					cmpName);
 
 			cmp.setRefinementName(refinementName);
@@ -307,18 +307,18 @@ public class DesignParser {
 			if (configElt != null) {
 				// Simple model
 				// Looking for definitions
-				if (type == ArchitectureComponentType.medium) {
+				if (type == ComponentType.medium) {
 					MediumParser.parse((MediumDefinition) cmp.getDefinition(),
 							configElt);
-				} else if (type == ArchitectureComponentType.operator) {
+				} else if (type == ComponentType.operator) {
 					OperatorParser
 							.parse((OperatorDefinition) cmp.getDefinition(),
 									configElt);
-				} else if (type == ArchitectureComponentType.contentionNode) {
+				} else if (type == ComponentType.contentionNode) {
 					ContentionNodeParser.parse(
 							(ContentionNodeDefinition) cmp.getDefinition(),
 							configElt);
-				} else if (type == ArchitectureComponentType.parallelNode) {
+				} else if (type == ComponentType.parallelNode) {
 					ParallelNodeParser.parse(
 							(ParallelNodeDefinition) cmp.getDefinition(),
 							configElt);
@@ -487,18 +487,18 @@ public class DesignParser {
 
 		if (busRefList.size() == 2 && componentRefList.size() == 2) {
 
-			ArchitectureComponent cmp1 = archi.getComponent(componentRefList
+			Component cmp1 = archi.getComponent(componentRefList
 					.get(0));
 			cmp1 = archi.getComponent(componentRefList.get(0));
 			BusReference busRef1 = archi.createBusReference(busRefList.get(0));
-			ArchitectureInterface if1 = cmp1
-					.addInterface(new ArchitectureInterface(busRef1, cmp1));
+			Interface if1 = cmp1
+					.addInterface(new Interface(busRef1, cmp1));
 
-			ArchitectureComponent cmp2 = archi.getComponent(componentRefList
+			Component cmp2 = archi.getComponent(componentRefList
 					.get(1));
 			BusReference busRef2 = archi.createBusReference(busRefList.get(1));
-			ArchitectureInterface if2 = cmp2
-					.addInterface(new ArchitectureInterface(busRef2, cmp2));
+			Interface if2 = cmp2
+					.addInterface(new Interface(busRef2, cmp2));
 
 			// Simple architecture
 			if (isSetup) {

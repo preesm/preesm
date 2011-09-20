@@ -38,7 +38,7 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.Map;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.codegen.Assignment;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
@@ -72,12 +72,12 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 		this.setRefinement(forkCall);
 	}
 
-	public ArchitectureComponent getOperator() {
-		return (ArchitectureComponent) this.getPropertyBean().getValue(
-				OPERATOR, ArchitectureComponent.class);
+	public Component getOperator() {
+		return (Component) this.getPropertyBean().getValue(
+				OPERATOR, Component.class);
 	}
 
-	public void setOperator(ArchitectureComponent op) {
+	public void setOperator(Component op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 

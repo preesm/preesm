@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 
 /**
@@ -49,7 +49,7 @@ public class ImplementationVertexProperty {
 	/**
 	 * Operator to which the vertex has been affected by the mapping algorithm
 	 */
-	private ArchitectureComponent effectiveComponent;
+	private Component effectiveComponent;
 
 	/**
 	 * This object is shared between all vertices that share relative
@@ -108,15 +108,15 @@ public class ImplementationVertexProperty {
 	/**
 	 * Effective component is common to communication and computation vertices
 	 */
-	public ArchitectureComponent getEffectiveComponent() {
+	public Component getEffectiveComponent() {
 		return effectiveComponent;
 	}
 
 	public boolean hasEffectiveComponent() {
-		return getEffectiveComponent() != ArchitectureComponent.NO_COMPONENT;
+		return getEffectiveComponent() != Component.NO_COMPONENT;
 	}
 
-	public void setEffectiveComponent(ArchitectureComponent component) {
+	public void setEffectiveComponent(Component component) {
 		this.effectiveComponent = component;
 	}
 

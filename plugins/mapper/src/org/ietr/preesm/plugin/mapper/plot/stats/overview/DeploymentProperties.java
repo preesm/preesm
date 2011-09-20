@@ -49,8 +49,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.mapper.plot.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
@@ -91,10 +91,10 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 	private void initData() {
-		Set<ArchitectureComponent> opSet = statGen.getAbc().getArchitecture()
-				.getComponents(ArchitectureComponentType.operator);
+		Set<Component> opSet = statGen.getAbc().getArchitecture()
+				.getComponents(ComponentType.operator);
 
-		for (ArchitectureComponent cmp : opSet) {
+		for (Component cmp : opSet) {
 			Operator op = (Operator) cmp;
 			loads.put(op, statGen.getLoad(op));
 			memoryNeeds.put(op, statGen.getMem(op));

@@ -39,8 +39,8 @@ package org.ietr.preesm.core.architecture.simplemodel;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
@@ -48,7 +48,7 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class RamDefinition extends ArchitectureComponentDefinition {
+public class RamDefinition extends ComponentDefinition {
 
 	/**
 	 * The time needed to set-up a communication depending on the operator doing
@@ -61,8 +61,8 @@ public class RamDefinition extends ArchitectureComponentDefinition {
 		setupTimes = new HashMap<String, Integer>();
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.ram;
+	public ComponentType getType() {
+		return ComponentType.ram;
 	}
 
 	/*
@@ -72,7 +72,7 @@ public class RamDefinition extends ArchitectureComponentDefinition {
 	 * return newdef; }
 	 */
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ComponentDefinition origin) {
 	}
 
 	public void addSetupTime(String opName, int time) {

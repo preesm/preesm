@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentDefinition;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentDefinition;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.parser.VLNV;
 
 /**
@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.parser.VLNV;
  * 
  * @author mpelcat
  */
-public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
+public class ParallelNodeDefinition extends ComponentDefinition {
 
 	/**
 	 * Transfer speed in AU (Allocation Unit)/TU(Time Unit) The usual
@@ -60,8 +60,8 @@ public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 		super(vlnv, "parallelNode");
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.parallelNode;
+	public ComponentType getType() {
+		return ComponentType.parallelNode;
 	}
 
 	/*
@@ -74,7 +74,7 @@ public class ParallelNodeDefinition extends ArchitectureComponentDefinition {
 	 * return newdef; }
 	 */
 
-	public void fill(ArchitectureComponentDefinition origin) {
+	public void fill(ComponentDefinition origin) {
 	}
 
 	public float getDataRate() {

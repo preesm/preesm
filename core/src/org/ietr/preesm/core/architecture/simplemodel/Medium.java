@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentType;
 
 /**
  * defines a communication medium between 2 operators. It represents a bus and
@@ -50,8 +50,8 @@ public class Medium extends AbstractNode {
 		super(id, def);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.medium;
+	public ComponentType getType() {
+		return ComponentType.medium;
 	}
 
 	/*

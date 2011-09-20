@@ -9,7 +9,7 @@
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </output>
             <output
                   id="SDF"
@@ -27,7 +27,7 @@
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.SDFAndArchitectureScenario">
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </output>
             <output
                   id="IBSDF"

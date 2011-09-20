@@ -45,19 +45,19 @@ import org.sdf4j.model.AbstractEdge;
  * @author mpelcat
  */
 public class Interconnection extends
-		AbstractEdge<MultiCoreArchitecture, ArchitectureComponent> {
+		AbstractEdge<MultiCoreArchitecture, Component> {
 
 	private boolean directed = false;
 	private boolean setup = false;
 
-	private ArchitectureInterface srcIf = null;
-	private ArchitectureInterface tgtIf = null;
+	private Interface srcIf = null;
+	private Interface tgtIf = null;
 
 	public Interconnection() {
 
 	}
 
-	public Interconnection(ArchitectureInterface if1, ArchitectureInterface if2) {
+	public Interconnection(Interface if1, Interface if2) {
 		this.srcIf = if1;
 		this.tgtIf = if2;
 	}
@@ -79,23 +79,23 @@ public class Interconnection extends
 		return false;
 	}
 
-	public ArchitectureInterface getSrcIf() {
+	public Interface getSrcIf() {
 		return srcIf;
 	}
 
-	public ArchitectureInterface getTgtIf() {
+	public Interface getTgtIf() {
 		return tgtIf;
 	}
 
-	public void setSrcIf(ArchitectureInterface srcIf) {
+	public void setSrcIf(Interface srcIf) {
 		this.srcIf = srcIf;
 	}
 
-	public void setTgtIf(ArchitectureInterface tgtIf) {
+	public void setTgtIf(Interface tgtIf) {
 		this.tgtIf = tgtIf;
 	}
 
-	public ArchitectureInterface getInterface(ArchitectureComponent cmp) {
+	public Interface getInterface(Component cmp) {
 
 		if (getSource().equals(cmp))
 			return srcIf;

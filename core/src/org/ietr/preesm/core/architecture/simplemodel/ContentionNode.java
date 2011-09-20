@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentType;
 
 /**
  * A contention node is a communication node which contention is taken into
@@ -50,8 +50,8 @@ public class ContentionNode extends AbstractNode {
 		super(id, type);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.contentionNode;
+	public ComponentType getType() {
+		return ComponentType.contentionNode;
 	}
 
 	/*

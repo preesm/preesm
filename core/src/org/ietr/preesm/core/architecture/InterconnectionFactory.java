@@ -10,7 +10,7 @@ import org.jgrapht.EdgeFactory;
  * 
  */
 public class InterconnectionFactory implements
-		EdgeFactory<ArchitectureComponent, Interconnection> {
+		EdgeFactory<Component, Interconnection> {
 
 	boolean isDirected = false;
 
@@ -19,8 +19,8 @@ public class InterconnectionFactory implements
 	}
 
 	@Override
-	public Interconnection createEdge(ArchitectureComponent cmp1,
-			ArchitectureComponent cmp2) {
+	public Interconnection createEdge(Component cmp1,
+			Component cmp2) {
 		return new Interconnection();
 	}
 

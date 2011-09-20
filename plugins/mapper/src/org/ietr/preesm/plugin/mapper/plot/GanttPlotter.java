@@ -51,7 +51,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -154,10 +154,10 @@ public class GanttPlotter extends ApplicationFrame implements
 		Map<String, Long> finalCosts = new HashMap<String, Long>();
 
 		// Creating the Operator lines
-		List<ArchitectureComponent> cmps = archi.getComponents();
-		Collections.sort(cmps, new ArchitectureComponent.CmpComparator());
+		List<Component> cmps = archi.getComponents();
+		Collections.sort(cmps, new Component.CmpComparator());
 
-		for (ArchitectureComponent cmp : cmps) {
+		for (Component cmp : cmps) {
 			currenttask = new Task(cmp.getName(), new SimpleTimePeriod(0, 1));
 			series.add(currenttask);
 			finalCosts.put(cmp.getName(), 0l);
@@ -168,10 +168,10 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			ArchitectureComponent cmp = currentVertex
+			Component cmp = currentVertex
 					.getImplementationVertexProperty().getEffectiveComponent();
 
-			if (cmp != ArchitectureComponent.NO_COMPONENT) {
+			if (cmp != Component.NO_COMPONENT) {
 				long start = currentVertex.getTimingVertexProperty()
 						.getNewtLevel();
 				long end = start
@@ -192,7 +192,7 @@ public class GanttPlotter extends ApplicationFrame implements
 		}
 
 		// Setting the series length to the maximum end time of a task
-		for (ArchitectureComponent cmp : cmps) {
+		for (Component cmp : cmps) {
 			long finalCost = finalCosts.get(cmp.getName());
 			if (finalCost > 0) {
 				series.get(cmp.getName()).setDuration(

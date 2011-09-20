@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -73,7 +73,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	// number of tries to do locally probabilistic jump maximum authorized
 	private int populationSize;
 
-	private SDFAndArchitectureScenario scenario;
+	private PreesmScenario scenario;
 
 	/**
 	 * Constructor
@@ -86,7 +86,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param threadName
 	 */
 	public PGeneticAlgoCallable(MultiCoreArchitecture architecture,
-			SDFAndArchitectureScenario scenario, int generationNumber,
+			PreesmScenario scenario, int generationNumber,
 			List<Chromosome> population, int populationSize,
 			AbcParameters abcParams, String threadName) {
 		super();

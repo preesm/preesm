@@ -41,7 +41,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
@@ -167,7 +167,7 @@ public class RouteStepFactory {
 	/**
 	 * Checks if a setup link exists between cmp and operator
 	 */
-	private boolean existSetup(ArchitectureComponent cmp, Operator op) {
+	private boolean existSetup(Component cmp, Operator op) {
 
 		for (Interconnection i : archi.incomingEdgesOf(cmp)) {
 			if (i.getSource().equals(op) && i.isSetup()) {

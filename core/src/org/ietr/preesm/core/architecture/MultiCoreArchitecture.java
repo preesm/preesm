@@ -62,7 +62,7 @@ import org.sdf4j.model.visitors.SDF4JException;
  * @author mpelcat
  */
 public class MultiCoreArchitecture extends
-		AbstractGraph<ArchitectureComponent, Interconnection> implements
+		AbstractGraph<Component, Interconnection> implements
 		IDistributedArchitecture {
 
 	/**
@@ -73,7 +73,7 @@ public class MultiCoreArchitecture extends
 	/**
 	 * List of the component definitions with their IDs.
 	 */
-	private Map<VLNV, ArchitectureComponentDefinition> architectureComponentDefinitions;
+	private Map<VLNV, ComponentDefinition> architectureComponentDefinitions;
 
 	/**
 	 * List of the bus references associated to interfaces
@@ -109,7 +109,7 @@ public class MultiCoreArchitecture extends
 	 */
 	public MultiCoreArchitecture(String name) {
 		super(new InterconnectionFactory());
-		architectureComponentDefinitions = new HashMap<VLNV, ArchitectureComponentDefinition>();
+		architectureComponentDefinitions = new HashMap<VLNV, ComponentDefinition>();
 		busReferences = new HashMap<String, BusReference>();
 		hierarchyPorts = new HashSet<HierarchyPort>();
 
@@ -140,8 +140,8 @@ public class MultiCoreArchitecture extends
 	 * Adds the definition of a component and returns it to let the user add
 	 * specific properties
 	 */
-	public ArchitectureComponentDefinition addComponentDefinition(
-			ArchitectureComponentType type, VLNV vlnv) {
+	public ComponentDefinition addComponentDefinition(
+			ComponentType type, VLNV vlnv) {
 
 		if (vlnv.getName().isEmpty()) {
 			AbstractWorkflowLogger
@@ -156,7 +156,7 @@ public class MultiCoreArchitecture extends
 			}
 		}
 
-		ArchitectureComponentDefinition def = ArchitectureComponentDefinitionFactory
+		ComponentDefinition def = ComponentDefinitionFactory
 				.createElement(type, vlnv);
 		addComponentDefinition(def);
 		return def;
@@ -167,8 +167,8 @@ public class MultiCoreArchitecture extends
 	 * Adds the definition of a component and returns it to let the user add
 	 * specific properties
 	 */
-	public ArchitectureComponentDefinition addComponentDefinition(
-			ArchitectureComponentDefinition def) {
+	public ComponentDefinition addComponentDefinition(
+			ComponentDefinition def) {
 
 		architectureComponentDefinitions.put(def.getVlnv(), def);
 		return def;
@@ -177,14 +177,14 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Creates and adds a component
 	 */
-	public ArchitectureComponent addComponent(ArchitectureComponentType type,
+	public Component addComponent(ComponentType type,
 			VLNV defVLNV, String name) {
 		if (getVertex(name) != null) {
 			return getVertex(name);
 		} else {
-			ArchitectureComponentDefinition newDef = addComponentDefinition(
+			ComponentDefinition newDef = addComponentDefinition(
 					type, defVLNV);
-			ArchitectureComponent cmp = ArchitectureComponentFactory
+			Component cmp = ComponentFactory
 					.createElement(newDef, name);
 			addVertex(cmp);
 			return cmp;
@@ -194,7 +194,7 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Creates and adds a component
 	 */
-	public ArchitectureComponent addComponent(ArchitectureComponent component) {
+	public Component addComponent(Component component) {
 		if (getVertex(component.getName()) != null) {
 			return getVertex(component.getName());
 		} else {
@@ -247,8 +247,8 @@ public class MultiCoreArchitecture extends
 	 * source and target components relatively.
 	 * 
 	 */
-	public void connect(ArchitectureComponent cmp1, ArchitectureInterface if1,
-			ArchitectureComponent cmp2, ArchitectureInterface if2,
+	public void connect(Component cmp1, Interface if1,
+			Component cmp2, Interface if2,
 			boolean isDirected, boolean isSetup) {
 		if (!existInterconnection(cmp1, if1, cmp2, if2)) {
 			Interconnection itc = this.addEdge(cmp1, cmp2);
@@ -265,9 +265,9 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Interconnections have no direction
 	 */
-	private boolean existInterconnection(ArchitectureComponent cmp1,
-			ArchitectureInterface if1, ArchitectureComponent cmp2,
-			ArchitectureInterface if2) {
+	private boolean existInterconnection(Component cmp1,
+			Interface if1, Component cmp2,
+			Interface if2) {
 
 		Set<Interconnection> iSet = getAllEdges(cmp1, cmp2);
 		Interconnection testInter = new Interconnection(if1, if2);
@@ -283,7 +283,7 @@ public class MultiCoreArchitecture extends
 		return false;
 	}
 
-	public Set<Interconnection> undirectedEdgesOf(ArchitectureComponent cmp) {
+	public Set<Interconnection> undirectedEdgesOf(Component cmp) {
 		Set<Interconnection> iSet = new HashSet<Interconnection>();
 
 		for (Interconnection incoming : incomingEdgesOf(cmp)) {
@@ -299,12 +299,12 @@ public class MultiCoreArchitecture extends
 		return iSet;
 	}
 
-	private boolean existInterconnection(ArchitectureComponent cmp1,
-			ArchitectureComponent cmp2) {
+	private boolean existInterconnection(Component cmp1,
+			Component cmp2) {
 
 		// Traduction in case the components are equal in names but notas java
 		// objects
-		for (ArchitectureComponent cmp : vertexSet()) {
+		for (Component cmp : vertexSet()) {
 			if (cmp.equals(cmp1))
 				cmp1 = cmp;
 			if (cmp.equals(cmp2))
@@ -333,9 +333,9 @@ public class MultiCoreArchitecture extends
 
 	public Medium getMainMedium() {
 		if (mainMedium == null) {
-			Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.medium);
+			Set<Component> cmpSet = getComponents(ComponentType.medium);
 			if (!cmpSet.isEmpty())
-				return (Medium) getComponents(ArchitectureComponentType.medium)
+				return (Medium) getComponents(ComponentType.medium)
 						.toArray()[0];
 			else
 				return null;
@@ -346,10 +346,10 @@ public class MultiCoreArchitecture extends
 
 	public Operator getMainOperator() {
 		if (mainOperator == null) {
-			Set<ArchitectureComponent> cmpSet = getComponents(ArchitectureComponentType.operator);
+			Set<Component> cmpSet = getComponents(ComponentType.operator);
 			if (!cmpSet.isEmpty())
 				return (Operator) getComponents(
-						ArchitectureComponentType.operator).toArray()[0];
+						ComponentType.operator).toArray()[0];
 			else
 				return null;
 		} else {
@@ -362,8 +362,8 @@ public class MultiCoreArchitecture extends
 	 */
 	public Set<Medium> getMedia(Operator op) {
 		Set<Medium> media = new HashSet<Medium>();
-		Iterator<ArchitectureComponent> iterator = getComponents(
-				ArchitectureComponentType.medium).iterator();
+		Iterator<Component> iterator = getComponents(
+				ComponentType.medium).iterator();
 
 		while (iterator.hasNext()) {
 
@@ -386,13 +386,13 @@ public class MultiCoreArchitecture extends
 	}
 
 	public int getNumberOfOperators() {
-		return getComponents(ArchitectureComponentType.operator).size();
+		return getComponents(ComponentType.operator).size();
 	}
 
 	/**
 	 * Returns the Component with the given type and name
 	 */
-	public ArchitectureComponent getComponent(ArchitectureComponentType type,
+	public Component getComponent(ComponentType type,
 			String name) {
 		return (getVertex(name));
 	}
@@ -400,8 +400,8 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Returns the Component with the given name
 	 */
-	public ArchitectureComponent getComponent(String id) {
-		for (ArchitectureComponent component : getComponents()) {
+	public Component getComponent(String id) {
+		for (Component component : getComponents()) {
 			if (component.getName().equals(id)) {
 				return component;
 			}
@@ -414,15 +414,15 @@ public class MultiCoreArchitecture extends
 	 * Returns all the components of type type in alphabetical order of their
 	 * names
 	 */
-	public Set<ArchitectureComponent> getComponents(
-			ArchitectureComponentType type) {
-		Set<ArchitectureComponent> ops = new ConcurrentSkipListSet<ArchitectureComponent>(
-				new ArchitectureComponent.CmpComparator());
+	public Set<Component> getComponents(
+			ComponentType type) {
+		Set<Component> ops = new ConcurrentSkipListSet<Component>(
+				new Component.CmpComparator());
 
-		Iterator<ArchitectureComponent> iterator = vertexSet().iterator();
+		Iterator<Component> iterator = vertexSet().iterator();
 
 		while (iterator.hasNext()) {
-			ArchitectureComponent currentCmp = iterator.next();
+			Component currentCmp = iterator.next();
 
 			if (currentCmp.getType() == type) {
 				ops.add(currentCmp);
@@ -435,22 +435,22 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Returns all the components
 	 */
-	public List<ArchitectureComponent> getComponents() {
-		return new ArrayList<ArchitectureComponent>(vertexSet());
+	public List<Component> getComponents() {
+		return new ArrayList<Component>(vertexSet());
 	}
 
 	/**
 	 * Returns all the components definitions of type type
 	 */
-	public Set<ArchitectureComponentDefinition> getComponentDefinitions(
-			ArchitectureComponentType type) {
-		Set<ArchitectureComponentDefinition> opdefs = new HashSet<ArchitectureComponentDefinition>();
+	public Set<ComponentDefinition> getComponentDefinitions(
+			ComponentType type) {
+		Set<ComponentDefinition> opdefs = new HashSet<ComponentDefinition>();
 
-		Iterator<ArchitectureComponentDefinition> iterator = architectureComponentDefinitions
+		Iterator<ComponentDefinition> iterator = architectureComponentDefinitions
 				.values().iterator();
 
 		while (iterator.hasNext()) {
-			ArchitectureComponentDefinition currentCmp = iterator.next();
+			ComponentDefinition currentCmp = iterator.next();
 
 			if (currentCmp.getType() == type) {
 				opdefs.add(currentCmp);
@@ -463,10 +463,10 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Returns the component definition with the given id and type
 	 */
-	public ArchitectureComponentDefinition getComponentDefinition(
-			ArchitectureComponentType type, String id) {
+	public ComponentDefinition getComponentDefinition(
+			ComponentType type, String id) {
 
-		ArchitectureComponentDefinition def = null;
+		ComponentDefinition def = null;
 		for (VLNV vlnv : architectureComponentDefinitions.keySet()) {
 			if (vlnv.getName().equals(id)) {
 				def = architectureComponentDefinitions.get(vlnv);
@@ -483,10 +483,10 @@ public class MultiCoreArchitecture extends
 	/**
 	 * Returns the component definition with the given vlnv and type
 	 */
-	public ArchitectureComponentDefinition getComponentDefinition(
-			ArchitectureComponentType type, VLNV vlnv) {
+	public ComponentDefinition getComponentDefinition(
+			ComponentType type, VLNV vlnv) {
 
-		ArchitectureComponentDefinition def = architectureComponentDefinitions
+		ComponentDefinition def = architectureComponentDefinitions
 				.get(vlnv);
 
 		if (def != null && def.getType() == type) {
@@ -505,21 +505,21 @@ public class MultiCoreArchitecture extends
 
 	public void setMainOperator(String mainOperatorName) {
 		Operator o = (Operator) getComponent(
-				ArchitectureComponentType.operator, mainOperatorName);
+				ComponentType.operator, mainOperatorName);
 		if (o != null) {
 			this.mainOperator = o;
 		}
 	}
 
 	public void setMainMedium(String mainMediumName) {
-		if (!(getComponent(ArchitectureComponentType.medium, mainMediumName) instanceof Medium)) {
+		if (!(getComponent(ComponentType.medium, mainMediumName) instanceof Medium)) {
 			this.mainMedium = null;
 			AbstractWorkflowLogger
 					.getLogger()
 					.log(Level.SEVERE,
 							"Add a medium in the architecture. Even if not connected, it specifies the default transfer parameters.");
 		}
-		Medium m = (Medium) getComponent(ArchitectureComponentType.medium,
+		Medium m = (Medium) getComponent(ComponentType.medium,
 				mainMediumName);
 		if (m != null) {
 			this.mainMedium = m;
@@ -539,19 +539,19 @@ public class MultiCoreArchitecture extends
 		// Creating archi
 		MultiCoreArchitecture newArchi = new MultiCoreArchitecture(this.name);
 		newArchi.setId(this.getId());
-		HashMap<ArchitectureComponent, ArchitectureComponent> matchCopies = new HashMap<ArchitectureComponent, ArchitectureComponent>();
+		HashMap<Component, Component> matchCopies = new HashMap<Component, Component>();
 
 		for (BusReference ref : busReferences.values()) {
 			newArchi.createBusReference(ref.getId());
 		}
 
-		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
+		for (ComponentDefinition def : architectureComponentDefinitions
 				.values()) {
 			newArchi.addComponentDefinition(def.clone());
 		}
 
-		for (ArchitectureComponent vertex : vertexSet()) {
-			ArchitectureComponent newVertex = (ArchitectureComponent) vertex
+		for (Component vertex : vertexSet()) {
+			Component newVertex = (Component) vertex
 					.clone();
 
 			newVertex.getPropertyBean().setValue(AbstractVertex.BASE, this);
@@ -562,8 +562,8 @@ public class MultiCoreArchitecture extends
 		}
 
 		for (Interconnection edge : edgeSet()) {
-			ArchitectureComponent newSource = matchCopies.get(edge.getSource());
-			ArchitectureComponent newTarget = matchCopies.get(edge.getTarget());
+			Component newSource = matchCopies.get(edge.getSource());
+			Component newTarget = matchCopies.get(edge.getTarget());
 			Interconnection newEdge = newArchi.addEdge(newSource, newTarget);
 			newEdge.setSrcIf(newSource.getInterface(edge.getSrcIf()
 					.getBusReference()));
@@ -609,10 +609,10 @@ public class MultiCoreArchitecture extends
 
 		Set<String> opdefs = new HashSet<String>();
 
-		for (ArchitectureComponentDefinition def : architectureComponentDefinitions
+		for (ComponentDefinition def : architectureComponentDefinitions
 				.values()) {
 
-			if (def.getType() == ArchitectureComponentType.operator) {
+			if (def.getType() == ComponentType.operator) {
 				opdefs.add(def.getId());
 			}
 		}
@@ -624,7 +624,7 @@ public class MultiCoreArchitecture extends
 	public Set<String> getAllOperatorIds(){
 		Set<String> ids = new HashSet<String>();
 		
-		for(ArchitectureComponent c : getComponents(ArchitectureComponentType.operator)){
+		for(Component c : getComponents(ComponentType.operator)){
 			ids.add(c.getName());
 		}
 		

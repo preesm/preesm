@@ -13,7 +13,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
 
@@ -43,7 +43,7 @@ public class SDFAndArchitectureScenarioNode extends
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 
-		SDFAndArchitectureScenario scenario = scenarioParser.parseXmlFile(file);
+		PreesmScenario scenario = scenarioParser.parseXmlFile(file);
 
 		// Retrieving the algorithm
 		SDFGraph algorithm = ScenarioParser.getAlgorithm(scenario

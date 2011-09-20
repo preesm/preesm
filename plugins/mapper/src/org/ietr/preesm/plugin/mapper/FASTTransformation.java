@@ -45,7 +45,7 @@ import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -94,7 +94,7 @@ public class FASTTransformation extends AbstractMapping {
 		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs.get("scenario");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		super.execute(inputs, parameters, monitor, nodeName);
 

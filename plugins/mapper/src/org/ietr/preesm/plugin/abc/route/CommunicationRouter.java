@@ -55,7 +55,7 @@ import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
@@ -89,7 +89,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	private RouteCalculator calculator = null;
 
 	public CommunicationRouter(MultiCoreArchitecture archi,
-			SDFAndArchitectureScenario scenario, MapperDAG implementation,
+			PreesmScenario scenario, MapperDAG implementation,
 			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
 		this.calculator = RouteCalculator.getInstance(archi, scenario);

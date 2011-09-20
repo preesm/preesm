@@ -44,10 +44,10 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -113,13 +113,13 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Scenario with information common to algorithm and architecture
 	 */
-	protected SDFAndArchitectureScenario scenario;
+	protected PreesmScenario scenario;
 
 	/**
 	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
+			MultiCoreArchitecture archi, PreesmScenario scenario) {
 
 		AbstractAbc abc = null;
 		AbcType simulatorType = params.getSimulatorType();
@@ -144,7 +144,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * ABC constructor
 	 */
 	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
-			AbcType abcType, SDFAndArchitectureScenario scenario) {
+			AbcType abcType, PreesmScenario scenario) {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager(archi);
@@ -229,7 +229,7 @@ public abstract class AbstractAbc implements IAbc {
 		return this.archi;
 	}
 
-	public final SDFAndArchitectureScenario getScenario() {
+	public final PreesmScenario getScenario() {
 		return scenario;
 	}
 
@@ -237,7 +237,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the effective operator of the vertex. NO_OPERATOR if not set
 	 */
 	@Override
-	public final ArchitectureComponent getEffectiveComponent(
+	public final Component getEffectiveComponent(
 			MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 		return vertex.getImplementationVertexProperty().getEffectiveComponent();
@@ -254,7 +254,7 @@ public abstract class AbstractAbc implements IAbc {
 	public abstract long getFinalCost(MapperDAGVertex vertex);
 
 	@Override
-	public abstract long getFinalCost(ArchitectureComponent component);
+	public abstract long getFinalCost(Component component);
 
 	/**
 	 * *********Implementation accesses**********

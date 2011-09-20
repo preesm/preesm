@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -87,7 +87,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, AbcParameters abcParams,
-			MultiCoreArchitecture archi, SDFAndArchitectureScenario scenario) {
+			MultiCoreArchitecture archi, PreesmScenario scenario) {
 		super();
 		this.populationNum = populationNum;
 		this.abcParams = abcParams;
@@ -148,7 +148,7 @@ public class FastPopulation {
 	 * @param MAXSTEP
 	 * @param MARGIN
 	 */
-	public void constructPopulation(MapperDAG dag, SDFAndArchitectureScenario scenario,
+	public void constructPopulation(MapperDAG dag, PreesmScenario scenario,
 			FastAlgoParameters fastParams) {
 
 		// create the population

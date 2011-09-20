@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentType;
 
 /**
  * A parallel node is a communication node which contention is not taken into
@@ -50,8 +50,8 @@ public class ParallelNode extends AbstractNode {
 		super(id, type);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.parallelNode;
+	public ComponentType getType() {
+		return ComponentType.parallelNode;
 	}
 
 	/*

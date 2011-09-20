@@ -8,11 +8,11 @@ import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureInterface;
 import org.ietr.preesm.core.architecture.BusReference;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.HierarchyPort;
 import org.ietr.preesm.core.architecture.Interconnection;
+import org.ietr.preesm.core.architecture.Interface;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Dma;
 import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
@@ -41,7 +41,7 @@ public class ArchiHierarchyFlattening extends
 	 *            The new parent graph
 	 * @throws InvalidExpressionException
 	 */
-	private void treatSubDesign(ArchitectureComponent subDesignCmp,
+	private void treatSubDesign(Component subDesignCmp,
 			MultiCoreArchitecture parentGraph)
 			throws InvalidExpressionException {
 		MultiCoreArchitecture subDesign = (MultiCoreArchitecture) subDesignCmp
@@ -52,13 +52,13 @@ public class ArchiHierarchyFlattening extends
 
 		// An interface in the component of the upper design corresponds to a
 		// hierarchy port in the subDesign.
-		Map<ArchitectureInterface, HierarchyPort> refSubdesignPorts = new HashMap<ArchitectureInterface, HierarchyPort>();
+		Map<Interface, HierarchyPort> refSubdesignPorts = new HashMap<Interface, HierarchyPort>();
 
 		String prefix = subDesignCmp.getName() + "_";
 
 		// Checking correct component definition and linking hierarchy with
 		// parent graph
-		for (ArchitectureInterface intf : subDesignCmp.getInterfaces()) {
+		for (Interface intf : subDesignCmp.getInterfaces()) {
 			if (subDesignCmp.getBusType(intf.getBusReference().getId()) == null) {
 				AbstractWorkflowLogger.getLogger().log(
 						Level.SEVERE,
@@ -86,7 +86,7 @@ public class ArchiHierarchyFlattening extends
 		}
 
 		// Adding the subgraphs components
-		for (ArchitectureComponent component : subDesign.getComponents()) {
+		for (Component component : subDesign.getComponents()) {
 			component.setName(prefix + component.getName());
 			parentGraph.addComponent(component);
 		}
@@ -103,33 +103,33 @@ public class ArchiHierarchyFlattening extends
 
 		// Retrieving the upper graph input connections
 		for (Interconnection i : parentGraph.incomingEdgesOf(subDesignCmp)) {
-			ArchitectureInterface sourceIntf = i.getInterface(i.getSource());
+			Interface sourceIntf = i.getInterface(i.getSource());
 			HierarchyPort targetHPort = refSubdesignPorts.get(i.getInterface(i
 					.getTarget()));
 
-			ArchitectureComponent target = parentGraph.getComponent(targetHPort
+			Component target = parentGraph.getComponent(targetHPort
 					.getConnectedCmpId());
 			BusReference busRef = parentGraph.getBusReference(targetHPort
 					.getBusRefName());
 			Interconnection newI = parentGraph.addEdge(i.getSource(), target);
 			newI.setSrcIf(sourceIntf);
-			newI.setTgtIf(new ArchitectureInterface(busRef, target));
+			newI.setTgtIf(new Interface(busRef, target));
 			newI.setDirected(i.isDirected());
 			newI.setSetup(i.isSetup());
 		}
 
 		// Retrieving the upper graph output connections
 		for (Interconnection i : parentGraph.outgoingEdgesOf(subDesignCmp)) {
-			ArchitectureInterface targetIntf = i.getInterface(i.getTarget());
+			Interface targetIntf = i.getInterface(i.getTarget());
 			HierarchyPort sourceHPort = refSubdesignPorts.get(i.getInterface(i
 					.getSource()));
 
-			ArchitectureComponent source = parentGraph.getComponent(sourceHPort
+			Component source = parentGraph.getComponent(sourceHPort
 					.getConnectedCmpId());
 			BusReference busRef = parentGraph.createBusReference(sourceHPort
 					.getBusRefName());
 			Interconnection newI = parentGraph.addEdge(source, i.getTarget());
-			newI.setSrcIf(new ArchitectureInterface(busRef, source));
+			newI.setSrcIf(new Interface(busRef, source));
 			newI.setTgtIf(targetIntf);
 			newI.setDirected(i.isDirected());
 			newI.setSetup(i.isSetup());
@@ -177,13 +177,13 @@ public class ArchiHierarchyFlattening extends
 			throws SDF4JException {
 
 		// Treating each component with subgraph
-		Set<ArchitectureComponent> subDesignCmps = new HashSet<ArchitectureComponent>();
+		Set<Component> subDesignCmps = new HashSet<Component>();
 		if (depth > 0) {
 
 			int newDepth = depth - 1;
-			Set<ArchitectureComponent> originalComponents = new HashSet<ArchitectureComponent>(
+			Set<Component> originalComponents = new HashSet<Component>(
 					archi.vertexSet());
-			for (ArchitectureComponent cmp : originalComponents) {
+			for (Component cmp : originalComponents) {
 				if (cmp.getRefinement() != null
 						&& cmp.getRefinement() instanceof MultiCoreArchitecture) {
 					MultiCoreArchitecture subDesign = (MultiCoreArchitecture) cmp
@@ -204,7 +204,7 @@ public class ArchiHierarchyFlattening extends
 
 		for (HierarchyPort port : new HashSet<HierarchyPort>(
 				archi.getHierarchyPorts())) {
-			for (ArchitectureComponent cmp : subDesignCmps) {
+			for (Component cmp : subDesignCmps) {
 				if (cmp.getName().equals(port.getConnectedCmpId())) {
 					archi.removeHierarchyPort(port);
 				}
@@ -212,7 +212,7 @@ public class ArchiHierarchyFlattening extends
 		}
 
 		// Removing original vertices with subgraph and corresponding edges
-		for (ArchitectureComponent cmp : subDesignCmps) {
+		for (Component cmp : subDesignCmps) {
 			for (Interconnection i : new HashSet<Interconnection>(
 					archi.edgesOf(cmp))) {
 				archi.removeEdge(i);

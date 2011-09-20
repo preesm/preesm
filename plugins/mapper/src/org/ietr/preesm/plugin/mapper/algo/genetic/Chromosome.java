@@ -40,9 +40,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.ComponentType;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -72,7 +72,7 @@ public class Chromosome {
 	// and scheduling)
 	private MultiCoreArchitecture archi;
 
-	private SDFAndArchitectureScenario scenario;
+	private PreesmScenario scenario;
 
 	/**
 	 * Constructor
@@ -92,7 +92,7 @@ public class Chromosome {
 	 * @param architecture
 	 */
 	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture,
-			SDFAndArchitectureScenario scenario) {
+			PreesmScenario scenario) {
 		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList()
 				.listIterator();
 		MapperDAGVertex currentVertex = null;
@@ -132,7 +132,7 @@ public class Chromosome {
 			currentVertex.getImplementationVertexProperty()
 					.setEffectiveComponent(
 							this.archi.getComponent(
-									ArchitectureComponentType.operator,
+									ComponentType.operator,
 									currentGene.getOperatorId()));
 
 		}
@@ -201,7 +201,7 @@ public class Chromosome {
 		this.dag = dag;
 	}
 
-	public void setScenario(SDFAndArchitectureScenario scenario) {
+	public void setScenario(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 

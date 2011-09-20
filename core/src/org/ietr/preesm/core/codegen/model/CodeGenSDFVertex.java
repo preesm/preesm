@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.model;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.sdf4j.model.sdf.SDFVertex;
 
@@ -51,12 +51,12 @@ public class CodeGenSDFVertex extends SDFVertex {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
 	}
 
-	public ArchitectureComponent getOperator() {
-		return (ArchitectureComponent) this.getPropertyBean().getValue(
-				OPERATOR, ArchitectureComponent.class);
+	public Component getOperator() {
+		return (Component) this.getPropertyBean().getValue(
+				OPERATOR, Component.class);
 	}
 
-	public void setOperator(ArchitectureComponent op) {
+	public void setOperator(Component op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 

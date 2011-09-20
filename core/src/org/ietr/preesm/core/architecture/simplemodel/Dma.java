@@ -36,22 +36,22 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.simplemodel;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
-import org.ietr.preesm.core.architecture.ArchitectureComponentType;
+import org.ietr.preesm.core.architecture.Component;
+import org.ietr.preesm.core.architecture.ComponentType;
 
 /**
  * A Direct Memory Access is set up by an operator to transfer data
  * 
  * @author mpelcat
  */
-public class Dma extends ArchitectureComponent {
+public class Dma extends Component {
 
 	public Dma(String id, DmaDefinition type) {
 		super(id, type);
 	}
 
-	public ArchitectureComponentType getType() {
-		return ArchitectureComponentType.dma;
+	public ComponentType getType() {
+		return ComponentType.dma;
 	}
 
 	/*

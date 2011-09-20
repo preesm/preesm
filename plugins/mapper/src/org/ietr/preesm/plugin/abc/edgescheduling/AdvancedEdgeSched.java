@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.edgescheduling;
 
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
@@ -67,7 +67,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		ArchitectureComponent component = vertex
+		Component component = vertex
 				.getImplementationVertexProperty().getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(

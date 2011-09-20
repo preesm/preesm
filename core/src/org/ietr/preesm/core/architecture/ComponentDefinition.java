@@ -53,7 +53,7 @@ import org.ietr.preesm.core.architecture.simplemodel.RamDefinition;
  * 
  * @author mpelcat
  */
-public abstract class ArchitectureComponentDefinition {
+public abstract class ComponentDefinition {
 
 	/**
 	 * Category of the component definition: "medium" or "operator"
@@ -68,7 +68,7 @@ public abstract class ArchitectureComponentDefinition {
 	/**
 	 * Constructor
 	 */
-	public ArchitectureComponentDefinition(VLNV vlnv, String category) {
+	public ComponentDefinition(VLNV vlnv, String category) {
 		this.vlnv = vlnv;
 
 		this.category = new String(category);
@@ -78,7 +78,7 @@ public abstract class ArchitectureComponentDefinition {
 	public final boolean equals(Object obj) {
 
 		if (obj.getClass().equals(this.getClass())) {
-			ArchitectureComponentDefinition def = (ArchitectureComponentDefinition) obj;
+			ComponentDefinition def = (ComponentDefinition) obj;
 			return vlnv.equals(def.vlnv)
 					&& category.equalsIgnoreCase(def.category);
 		}
@@ -96,52 +96,52 @@ public abstract class ArchitectureComponentDefinition {
 	/**
 	 * Compares two definitions for category
 	 */
-	public boolean sameCategory(ArchitectureComponentDefinition othertype) {
+	public boolean sameCategory(ComponentDefinition othertype) {
 		return (category.compareTo(othertype.category) == 0);
 	}
 
 	/**
 	 * Compares two definitions for id
 	 */
-	public boolean sameId(ArchitectureComponentDefinition othertype) {
+	public boolean sameId(ComponentDefinition othertype) {
 		return (vlnv.equals(othertype.vlnv));
 	}
 
-	public abstract ArchitectureComponentType getType();
+	public abstract ComponentType getType();
 
 	/**
 	 * Cloning a definition and its properties
 	 */
-	public final ArchitectureComponentDefinition clone() {
+	public final ComponentDefinition clone() {
 
-		ArchitectureComponentDefinition newdef = null;
+		ComponentDefinition newdef = null;
 
-		if (getType().equals(ArchitectureComponentType.contentionNode)) {
+		if (getType().equals(ComponentType.contentionNode)) {
 			newdef = new ContentionNodeDefinition(this.vlnv);
 			((ContentionNodeDefinition) newdef)
 					.setDataRate(((ContentionNodeDefinition) this)
 							.getDataRate());
-		} else if (getType().equals(ArchitectureComponentType.dma)) {
+		} else if (getType().equals(ComponentType.dma)) {
 			DmaDefinition dmaDef = (DmaDefinition) this;
 			newdef = new DmaDefinition(this.vlnv);
 			for (String opName : dmaDef.getSetupTimes().keySet()) {
 				((DmaDefinition) newdef).addSetupTime(opName,
 						(int) dmaDef.getSetupTime(opName));
 			}
-		} else if (getType().equals(ArchitectureComponentType.medium)) {
+		} else if (getType().equals(ComponentType.medium)) {
 			MediumDefinition def = (MediumDefinition) this;
 			newdef = new MediumDefinition(this.vlnv, def.getDataRate(),
 					def.getOverheadTime());
-		} else if (getType().equals(ArchitectureComponentType.operator)) {
+		} else if (getType().equals(ComponentType.operator)) {
 			newdef = new OperatorDefinition(this.vlnv);
 			((OperatorDefinition) newdef)
 					.setDataCopySpeed(((OperatorDefinition) this)
 							.getDataCopySpeed());
-		} else if (getType().equals(ArchitectureComponentType.parallelNode)) {
+		} else if (getType().equals(ComponentType.parallelNode)) {
 			newdef = new ParallelNodeDefinition(this.vlnv);
 			((ParallelNodeDefinition) newdef)
 					.setDataRate(((ParallelNodeDefinition) this).getDataRate());
-		} else if (getType().equals(ArchitectureComponentType.ram)) {
+		} else if (getType().equals(ComponentType.ram)) {
 			RamDefinition ramDef = (RamDefinition) this;
 			newdef = new RamDefinition(this.vlnv);
 			for (String opName : ramDef.getSetupTimes().keySet()) {
@@ -160,5 +160,5 @@ public abstract class ArchitectureComponentDefinition {
 	 * Duplicates in the common definition the parameters from the input
 	 * definition
 	 */
-	public abstract void fill(ArchitectureComponentDefinition origin);
+	public abstract void fill(ComponentDefinition origin);
 }

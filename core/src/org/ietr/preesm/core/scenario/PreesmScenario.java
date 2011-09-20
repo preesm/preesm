@@ -42,7 +42,7 @@ package org.ietr.preesm.core.scenario;
  * 
  * @author mpelcat
  */
-public class SDFAndArchitectureScenario {
+public class PreesmScenario {
 
 	/**
 	 * Manager of constraint groups
@@ -84,7 +84,7 @@ public class SDFAndArchitectureScenario {
 	 */
 	private String scenarioURL = "";
 
-	public SDFAndArchitectureScenario() {
+	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		timingmanager = new TimingManager();
 		simulationManager = new SimulationManager();

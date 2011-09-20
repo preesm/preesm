@@ -39,10 +39,10 @@ package org.ietr.preesm.plugin.abc;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
@@ -64,14 +64,14 @@ public interface IAbc extends IMapperAbc {
 	 */
 	public MultiCoreArchitecture getArchitecture();
 
-	public SDFAndArchitectureScenario getScenario();
+	public PreesmScenario getScenario();
 
 	public MapperDAG getDAG();
 
 	/**
 	 * Gets the effective operator of the vertex. NO_OPERATOR if not set
 	 */
-	public ArchitectureComponent getEffectiveComponent(MapperDAGVertex vertex);
+	public Component getEffectiveComponent(MapperDAGVertex vertex);
 
 	/**
 	 * Updates the internal state so as to allow final cost processing
@@ -96,7 +96,7 @@ public interface IAbc extends IMapperAbc {
 	 * Gives the implementation time on the given operator if possible. It
 	 * considers a partially mapped graph and ignores the non mapped vertices
 	 */
-	public long getFinalCost(ArchitectureComponent component);
+	public long getFinalCost(Component component);
 
 	/**
 	 * Gets the rank of the given vertex on its operator. -1 if the vertex has

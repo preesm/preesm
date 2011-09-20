@@ -44,7 +44,7 @@ import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.AbstractWorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.parser.VLNV;
@@ -52,7 +52,7 @@ import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
 import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
-import org.ietr.preesm.core.scenario.SDFAndArchitectureScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -106,7 +106,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		SDFAndArchitectureScenario scenario = (SDFAndArchitectureScenario) inputs
+		PreesmScenario scenario = (PreesmScenario) inputs
 				.get("scenario");
 
 		// The graph may be repeated a predefined number of times
@@ -127,7 +127,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			architecture.addComponent(virtualDelayManager);
 
 			// Connecting the virtual component to all cores
-			for (ArchitectureComponent cmp : architecture.getComponents()) {
+			for (Component cmp : architecture.getComponents()) {
 				if (cmp instanceof Operator
 						&& !cmp.getId().equals("VirtualDelayManager")) {
 					Operator op = (Operator) cmp;

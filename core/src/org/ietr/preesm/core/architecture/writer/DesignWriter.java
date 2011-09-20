@@ -47,7 +47,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.ArchitectureComponent;
+import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.architecture.HierarchyPort;
 import org.ietr.preesm.core.architecture.Interconnection;
 import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
@@ -260,12 +260,12 @@ public class DesignWriter {
 		Element cmpsElt = dom.createElement("spirit:componentInstances");
 		parent.appendChild(cmpsElt);
 
-		for (ArchitectureComponent cmp : archi.getComponents()) {
+		for (Component cmp : archi.getComponents()) {
 			addComponentInstance(cmpsElt, cmp);
 		}
 	}
 
-	private void addComponentInstance(Element parent, ArchitectureComponent cmp) {
+	private void addComponentInstance(Element parent, Component cmp) {
 
 		Element cmpElt = dom.createElement("spirit:componentInstance");
 		parent.appendChild(cmpElt);
@@ -279,7 +279,7 @@ public class DesignWriter {
 		addConfigurableElementValues(cmpElt, cmp);
 	}
 
-	private void addVLNV(Element parent, ArchitectureComponent cmp) {
+	private void addVLNV(Element parent, Component cmp) {
 
 		Element vlnvElt = dom.createElement("spirit:componentRef");
 		parent.appendChild(vlnvElt);
@@ -295,7 +295,7 @@ public class DesignWriter {
 	}
 
 	private void addConfigurableElementValues(Element parent,
-			ArchitectureComponent cmp) {
+			Component cmp) {
 
 		Element confsElt = dom
 				.createElement("spirit:configurableElementValues");
