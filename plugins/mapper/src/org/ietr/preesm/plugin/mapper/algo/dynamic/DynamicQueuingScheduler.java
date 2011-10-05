@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.order.VertexOrderList;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -113,11 +113,11 @@ public class DynamicQueuingScheduler {
 
 	public void mapOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
 
-		List<Operator> adequateOps = abc.getCandidateOperators(currentvertex);
+		List<ComponentInstance> adequateOps = abc.getCandidateOperators(currentvertex);
 		long currentMinCost = Long.MAX_VALUE;
-		Operator currentMinOp = null;
+		ComponentInstance currentMinOp = null;
 
-		for (Operator op : adequateOps) {
+		for (ComponentInstance op : adequateOps) {
 			abc.updateFinalCosts();
 			long newCost = abc.getFinalCost(op);
 			if (newCost < currentMinCost) {

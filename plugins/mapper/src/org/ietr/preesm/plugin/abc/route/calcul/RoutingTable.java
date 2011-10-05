@@ -41,8 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.architecture.route.Route;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
@@ -58,10 +59,10 @@ public class RoutingTable {
 	 */
 	private class OperatorCouple {
 
-		private Operator op1;
-		private Operator op2;
+		private ComponentInstance op1;
+		private ComponentInstance op2;
 
-		public OperatorCouple(Operator op1, Operator op2) {
+		public OperatorCouple(ComponentInstance op1, ComponentInstance op2) {
 			super();
 			this.op1 = op1;
 			this.op2 = op2;
@@ -71,8 +72,8 @@ public class RoutingTable {
 		public boolean equals(Object obj) {
 			if (obj instanceof OperatorCouple) {
 				OperatorCouple doublet = (OperatorCouple) obj;
-				if (doublet.getOp1().equals(getOp1())
-						&& doublet.getOp2().equals(getOp2())) {
+				if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
+						&& doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
 					return true;
 				}
 			}
@@ -84,11 +85,11 @@ public class RoutingTable {
 			return "(" + op1 + "," + op2 + ")";
 		}
 
-		public Operator getOp1() {
+		public ComponentInstance getOp1() {
 			return op1;
 		}
 
-		public Operator getOp2() {
+		public ComponentInstance getOp2() {
 			return op2;
 		}
 	}
@@ -155,7 +156,7 @@ public class RoutingTable {
 	/**
 	 * Gets a route with a given index
 	 */
-	public Route getBestRoute(Operator op1, Operator op2) {
+	public Route getBestRoute(ComponentInstance op1, ComponentInstance op2) {
 		for (OperatorCouple c : table.keySet()) {
 			if (c.equals(new OperatorCouple(op1, op2))) {
 				return table.get(c).first();
@@ -167,7 +168,7 @@ public class RoutingTable {
 	/**
 	 * Removes all the routes corresponding to the operator couple
 	 */
-	public void removeRoutes(Operator op1, Operator op2) {
+	public void removeRoutes(ComponentInstance op1, ComponentInstance op2) {
 		OperatorCouple key = null;
 		for (OperatorCouple c : table.keySet()) {
 			if (c.equals(new OperatorCouple(op1, op2))) {
@@ -183,7 +184,7 @@ public class RoutingTable {
 	/**
 	 * Adds a new route
 	 */
-	public void addRoute(Operator op1, Operator op2, Route route) {
+	public void addRoute(ComponentInstance op1, ComponentInstance op2, Route route) {
 		OperatorCouple key = null;
 		for (OperatorCouple c : table.keySet()) {
 			if (c.equals(new OperatorCouple(op1, op2))) {

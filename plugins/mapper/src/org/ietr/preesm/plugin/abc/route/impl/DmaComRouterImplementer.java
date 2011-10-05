@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.component.Dma;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.DmaDefinition;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
@@ -73,10 +72,10 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 				// to transfer the data on the slowest contention node
 				long transferTime = dmaStep.getWorstTransferTime(edge
 						.getInitialEdgeProperty().getDataSize());
-				List<ContentionNode> nodes = dmaStep.getContentionNodes();
+				List<ComponentInstance> nodes = dmaStep.getContentionNodes();
 				AddTransferVertexTransaction transaction = null;
 
-				for (ContentionNode node : nodes) {
+				for (ComponentInstance node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
 					transaction = new AddTransferVertexTransaction("transfer",
 							lastTransaction, getEdgeScheduler(), edge,
@@ -106,9 +105,8 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
 					}
 				}
 
-				DmaDefinition dmaDef = (DmaDefinition) ((Dma) dmaStep.getDma())
-						.getDefinition();
-				long overheadTime = dmaDef.getSetupTime(dmaStep.getSender());
+				Dma dmaDef = dmaStep.getDma();
+				long overheadTime = dmaDef.getSetupTime();
 				if (incomingEdge != null) {
 					transactions.add(new AddOverheadVertexTransaction(
 							incomingEdge, getImplementation(), routeStep,

@@ -43,8 +43,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.SourceFile;
@@ -99,10 +100,10 @@ public class SourceFileCodeGenerator {
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
 			// retrieving the operator where the vertex is allocated
-			Operator vertexOperator = (Operator) vertex.getPropertyBean()
+			ComponentInstance vertexOperator = (ComponentInstance) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 			if (vertex instanceof ICodeGenSDFVertex && vertexOperator != null
-					&& vertexOperator.equals(file.getOperator())) {
+					&& vertexOperator.getInstanceName().equals(file.getOperator().getInstanceName())) {
 				// Allocating all output buffers of vertex
 				allocateVertexOutputBuffers(vertex);
 			}
@@ -162,7 +163,7 @@ public class SourceFileCodeGenerator {
 	 * Fills its source file from an SDF and an architecture
 	 */
 	public void generateSource(CodeGenSDFGraph algorithm,
-			MultiCoreArchitecture architecture) {
+			Design architecture) {
 
 		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
@@ -262,7 +263,7 @@ public class SourceFileCodeGenerator {
 			SDFAbstractVertex vertex = iterator.next();
 
 			// retrieving the operator where the vertex is allocated
-			Operator vertexOperator = (Operator) vertex.getPropertyBean()
+			ComponentInstance vertexOperator = (ComponentInstance) vertex.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 
 			// retrieving the type of the vertex
@@ -272,7 +273,7 @@ public class SourceFileCodeGenerator {
 			// If the vertex is allocated on the current operator, we add it to
 			// the set in scheduling order
 			if (vertexOperator != null
-					&& vertexOperator.equals(file.getOperator())
+					&& vertexOperator.getInstanceName().equals(file.getOperator().getInstanceName())
 					&& vertexType != null && vertexType.equals(currentType)
 					&& !schedule.contains(vertex)) {
 				schedule.add(vertex);

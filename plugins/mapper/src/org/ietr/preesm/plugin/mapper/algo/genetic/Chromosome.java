@@ -40,8 +40,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -70,7 +71,7 @@ public class Chromosome {
 
 	// Architecture on which this chromosome will be used (chromosome = mapping
 	// and scheduling)
-	private MultiCoreArchitecture archi;
+	private Design archi;
 
 	private PreesmScenario scenario;
 
@@ -91,7 +92,7 @@ public class Chromosome {
 	 * @param dag
 	 * @param architecture
 	 */
-	public Chromosome(MapperDAG dag, MultiCoreArchitecture architecture,
+	public Chromosome(MapperDAG dag, Design architecture,
 			PreesmScenario scenario) {
 		Iterator<MapperDAGVertex> iterator = dag.getVertexTopologicalList()
 				.listIterator();
@@ -131,7 +132,7 @@ public class Chromosome {
 					.getVertexName());
 			currentVertex.getImplementationVertexProperty()
 					.setEffectiveComponent(
-							this.archi.getComponent(ComponentType.operator,
+							DesignTools.getComponentInstance(this.archi,
 									currentGene.getOperatorId()));
 
 		}
@@ -165,7 +166,7 @@ public class Chromosome {
 	 */
 	public Chromosome clone() {
 		Chromosome chromosome = new Chromosome();
-		chromosome.setArchi(this.archi.clone());
+		chromosome.setArchi(this.archi);
 		chromosome.setScenario(this.scenario);
 		chromosome.setDag(this.dag.clone());
 		chromosome.setDirty(this.dirty);
@@ -184,11 +185,11 @@ public class Chromosome {
 	/**
 	 * Getters and Setters
 	 */
-	public MultiCoreArchitecture getArchi() {
+	public Design getArchi() {
 		return archi;
 	}
 
-	public void setArchi(MultiCoreArchitecture archi) {
+	public void setArchi(Design archi) {
 		this.archi = archi;
 	}
 

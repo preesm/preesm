@@ -38,13 +38,13 @@ package org.ietr.preesm.archi.transforms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.writer.DesignWriter;
 
 /**
  * Exporter for IP-XACT multicore architectures
@@ -58,14 +58,15 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
-
+/*
 		String path = parameters.get("path");
 		MultiCoreArchitecture archi = (MultiCoreArchitecture) inputs
 				.get("architecture");
 		DesignWriter writer = new DesignWriter(archi);
 		writer.generateArchitectureDOM();
-		writer.writeDom(path);
+		writer.writeDom(path);*/
 
+		WorkflowLogger.getLogger().log(Level.SEVERE,"ArchitectureExporter is no more supported");
 		return new HashMap<String, Object>();
 	}
 

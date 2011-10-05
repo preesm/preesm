@@ -42,7 +42,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Component;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -105,10 +106,10 @@ public class SynchronizedVertices implements IScheduleElement {
 		return vertices.contains(vertex);
 	}
 
-	public MapperDAGVertex getVertex(Component cmp) {
+	public MapperDAGVertex getVertex(ComponentInstance cmp) {
 		for (MapperDAGVertex v : vertices) {
 			if (v.getImplementationVertexProperty().getEffectiveComponent()
-					.equals(cmp)) {
+					.getInstanceName().equals(cmp.getInstanceName())) {
 				return v;
 			}
 		}

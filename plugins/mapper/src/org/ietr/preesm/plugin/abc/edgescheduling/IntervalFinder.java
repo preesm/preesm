@@ -40,10 +40,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -87,7 +86,7 @@ public class IntervalFinder {
 	/**
 	 * Finds the largest free interval in a schedule
 	 */
-	public Interval findLargestFreeInterval(Component component,
+	public Interval findLargestFreeInterval(ComponentInstance component,
 			IScheduleElement minVertex, IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -95,7 +94,7 @@ public class IntervalFinder {
 
 	}
 
-	public Interval findEarliestNonNullInterval(Component component,
+	public Interval findEarliestNonNullInterval(ComponentInstance component,
 			IScheduleElement minVertex, IScheduleElement maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -103,7 +102,7 @@ public class IntervalFinder {
 
 	}
 
-	public Interval findEarliestBigEnoughInterval(Component component,
+	public Interval findEarliestBigEnoughInterval(ComponentInstance component,
 			IScheduleElement minVertex, IScheduleElement maxVertex, long size) {
 
 		return findInterval(component, minVertex, maxVertex,
@@ -115,7 +114,7 @@ public class IntervalFinder {
 	 * Finds the largest free interval in a schedule between a minVertex and a
 	 * maxVertex
 	 */
-	public Interval findInterval(Component component,
+	public Interval findInterval(ComponentInstance component,
 			IScheduleElement minVertex, IScheduleElement maxVertex,
 			FindType type, long data) {
 
@@ -205,7 +204,7 @@ public class IntervalFinder {
 	public void displayCurrentSchedule(TransferVertex vertex,
 			MapperDAGVertex source) {
 
-		Component component = vertex.getImplementationVertexProperty()
+		ComponentInstance component = vertex.getImplementationVertexProperty()
 				.getEffectiveComponent();
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
@@ -241,7 +240,7 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		Operator op = vertex.getImplementationVertexProperty()
+		ComponentInstance op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 		IScheduleElement source = (latePred == -1) ? null : orderManager
 				.get(latePred);
@@ -283,7 +282,7 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		Operator op = vertex.getImplementationVertexProperty()
+		ComponentInstance op = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 		IScheduleElement source = (latePred == -1) ? null : orderManager
 				.get(latePred);

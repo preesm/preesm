@@ -44,17 +44,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.Operator;
+import net.sf.dftools.architecture.slam.component.impl.ComNodeImpl;
+import net.sf.dftools.architecture.slam.link.Link;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.Interconnection;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -67,9 +67,9 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
  */
 public class RouteCalculator {
 
-	private static Map<MultiCoreArchitecture, RouteCalculator> instances = new HashMap<MultiCoreArchitecture, RouteCalculator>();
+	private static Map<Design, RouteCalculator> instances = new HashMap<Design, RouteCalculator>();
 
-	private MultiCoreArchitecture archi;
+	private Design archi;
 
 	private RoutingTable table = null;
 
@@ -77,7 +77,7 @@ public class RouteCalculator {
 
 	private PreesmScenario scenario = null;
 
-	public static RouteCalculator getInstance(MultiCoreArchitecture archi,
+	public static RouteCalculator getInstance(Design archi,
 			PreesmScenario scenario) {
 		if (instances.get(archi) == null) {
 			instances.put(archi, new RouteCalculator(archi, scenario));
@@ -85,12 +85,12 @@ public class RouteCalculator {
 		return instances.get(archi);
 	}
 
-	public static void recalculate(MultiCoreArchitecture archi,
+	public static void recalculate(Design archi,
 			PreesmScenario scenario) {
 		instances.put(archi, new RouteCalculator(archi, scenario));
 	}
 
-	public static void deleteRoutes(MultiCoreArchitecture archi,
+	public static void deleteRoutes(Design archi,
 			PreesmScenario scenario) {
 		instances.remove(archi);
 	}
@@ -98,7 +98,7 @@ public class RouteCalculator {
 	/**
 	 * Constructor from a given architecture
 	 */
-	private RouteCalculator(MultiCoreArchitecture archi, PreesmScenario scenario) {
+	private RouteCalculator(Design archi, PreesmScenario scenario) {
 
 		this.archi = archi;
 		this.table = new RoutingTable(scenario);
@@ -119,58 +119,51 @@ public class RouteCalculator {
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"creating route steps.");
 
-		for (Component c : archi.getComponents(ComponentType.operator)) {
-			Operator o = (Operator) c;
+		for (ComponentInstance c : DesignTools.getOperatorInstances(archi)) {
+			ComponentInstance o = (ComponentInstance) c;
 
 			createRouteSteps(o);
 		}
 	}
 
-	private Component getOtherEnd(Interconnection i, Component c) {
-		if (i.getTarget() != c)
-			return i.getTarget();
-		else
-			return i.getSource();
-	}
-
-	private void createRouteSteps(Operator source) {
+	private void createRouteSteps(ComponentInstance source) {
 
 		// Iterating on outgoing and undirected edges
-		Set<Interconnection> outgoingAndUndirected = new HashSet<Interconnection>();
-		outgoingAndUndirected.addAll(archi.undirectedEdgesOf(source));
-		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(source));
+		Set<Link> outgoingAndUndirected = new HashSet<Link>();
+		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,source));
+		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(archi,source));
 
-		for (Interconnection i : outgoingAndUndirected) {
-			if (getOtherEnd(i, source).isNode()) {
-				AbstractNode node = (AbstractNode) getOtherEnd(i, source);
+		for (Link i : outgoingAndUndirected) {
+			if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
+				ComponentInstance node = DesignTools.getOtherEnd(i, source);
 
-				List<AbstractNode> alreadyVisitedNodes = new ArrayList<AbstractNode>();
+				List<ComponentInstance> alreadyVisitedNodes = new ArrayList<ComponentInstance>();
 				alreadyVisitedNodes.add(node);
 				exploreRoute(source, node, alreadyVisitedNodes);
 			}
 		}
 	}
 
-	private void exploreRoute(Operator source, AbstractNode node,
-			List<AbstractNode> alreadyVisitedNodes) {
+	private void exploreRoute(ComponentInstance source, ComponentInstance node,
+			List<ComponentInstance> alreadyVisitedNodes) {
 
 		// Iterating on outgoing and undirected edges
-		Set<Interconnection> outgoingAndUndirected = new HashSet<Interconnection>();
-		outgoingAndUndirected.addAll(archi.undirectedEdgesOf(node));
-		outgoingAndUndirected.addAll(archi.outgoingEdgesOf(node));
+		Set<Link> outgoingAndUndirected = new HashSet<Link>();
+		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,node));
+		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(archi,node));
 
-		for (Interconnection i : outgoingAndUndirected) {
-			if (getOtherEnd(i, node).isNode()) {
-				AbstractNode newNode = (AbstractNode) getOtherEnd(i, node);
+		for (Link i : outgoingAndUndirected) {
+			if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
+				ComponentInstance newNode = DesignTools.getOtherEnd(i, node);
 				if (!alreadyVisitedNodes.contains(newNode)) {
-					List<AbstractNode> newAlreadyVisitedNodes = new ArrayList<AbstractNode>(
+					List<ComponentInstance> newAlreadyVisitedNodes = new ArrayList<ComponentInstance>(
 							alreadyVisitedNodes);
 					newAlreadyVisitedNodes.add(newNode);
 					exploreRoute(source, newNode, newAlreadyVisitedNodes);
 				}
-			} else if (getOtherEnd(i, node) instanceof Operator
-					&& getOtherEnd(i, node) != source) {
-				Operator target = (Operator) getOtherEnd(i, node);
+			} else if (DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator
+					&& !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
+				ComponentInstance target = DesignTools.getOtherEnd(i, node);
 				AbstractRouteStep step = stepFactory.getRouteStep(source,
 						alreadyVisitedNodes, target);
 				table.addRoute(source, target, new Route(step));
@@ -185,23 +178,20 @@ public class RouteCalculator {
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"Initializing routing table.");
 
-		floydWarshall(table, archi.getComponents(ComponentType.operator));
+		floydWarshall(table, DesignTools.getOperatorInstances(archi));
 	}
 
 	/**
 	 * The floydWarshall algorithm is used to add routes in the table in
 	 * increasing order of cost.
 	 */
-	private void floydWarshall(RoutingTable table, Set<Component> operators) {
+	private void floydWarshall(RoutingTable table, Set<ComponentInstance> operators) {
 
-		for (Component kC : operators) {
-			Operator k = (Operator) kC;
+		for (ComponentInstance k : operators) {
 
-			for (Component srcC : operators) {
-				Operator src = (Operator) srcC;
+			for (ComponentInstance src : operators) {
 
-				for (Component tgtC : operators) {
-					Operator tgt = (Operator) tgtC;
+				for (ComponentInstance tgt : operators) {
 
 					if (!k.equals(src) && !k.equals(tgt) && !src.equals(tgt)) {
 						Route routeSrcK = table.getBestRoute(src, k);
@@ -243,7 +233,7 @@ public class RouteCalculator {
 	/**
 	 * Choosing a route between 2 operators
 	 */
-	public Route getRoute(Operator op1, Operator op2) {
+	public Route getRoute(ComponentInstance op1, ComponentInstance op2) {
 		Route r = table.getBestRoute(op1, op2);
 
 		if (r == null) {
@@ -262,9 +252,9 @@ public class RouteCalculator {
 	public Route getRoute(MapperDAGEdge edge) {
 		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-		Operator sourceOp = source.getImplementationVertexProperty()
+		ComponentInstance sourceOp = source.getImplementationVertexProperty()
 				.getEffectiveOperator();
-		Operator targetOp = target.getImplementationVertexProperty()
+		ComponentInstance targetOp = target.getImplementationVertexProperty()
 				.getEffectiveOperator();
 		return getRoute(sourceOp, targetOp);
 	}

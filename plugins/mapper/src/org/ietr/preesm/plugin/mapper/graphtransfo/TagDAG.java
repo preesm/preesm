@@ -38,9 +38,11 @@ package org.ietr.preesm.plugin.mapper.graphtransfo;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
@@ -97,7 +99,7 @@ public class TagDAG {
 	 * 
 	 * @throws InvalidExpressionException
 	 */
-	public void tag(MapperDAG dag, MultiCoreArchitecture architecture,
+	public void tag(MapperDAG dag, Design architecture,
 			PreesmScenario scenario, IAbc simu, EdgeSchedType edgeSchedType)
 			throws InvalidExpressionException {
 
@@ -117,8 +119,8 @@ public class TagDAG {
 	/**
 	 * Adds send and receive without scheduling them
 	 */
-	public void addSendReceive(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+	public void addSendReceive(MapperDAG dag, Design architecture,
+			PreesmScenario scenario) {
 
 		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
@@ -176,10 +178,16 @@ public class TagDAG {
 
 				// Setting the address of the operator on which vertex is
 				// executed
-				bean.setValue(
-						ImplementationPropertyNames.SendReceive_Operator_address,
-						((SendVertex) currentVertex).getRouteStep().getSender()
-								.getBaseAddress());
+				String baseAddress = DesignTools
+						.getParameter(((SendVertex) currentVertex)
+								.getRouteStep().getSender(), DesignTools.OPERATOR_BASE_ADDRESS);
+
+				if (baseAddress != null) {
+					bean.setValue(
+							ImplementationPropertyNames.SendReceive_Operator_address,
+							baseAddress);
+				}
+
 			} else if (currentVertex instanceof ReceiveVertex) {
 
 				MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex)
@@ -212,10 +220,15 @@ public class TagDAG {
 
 				// Setting the address of the operator on which vertex is
 				// executed
-				bean.setValue(
-						ImplementationPropertyNames.SendReceive_Operator_address,
-						((ReceiveVertex) currentVertex).getRouteStep()
-								.getReceiver().getBaseAddress());
+				String baseAddress = DesignTools
+						.getParameter(((ReceiveVertex) currentVertex)
+								.getRouteStep().getReceiver(), "BaseAddress");
+
+				if (baseAddress != null) {
+					bean.setValue(
+							ImplementationPropertyNames.SendReceive_Operator_address,
+							baseAddress);
+				}
 			} else {
 
 				// Setting the operator on which vertex is executed
@@ -232,7 +245,7 @@ public class TagDAG {
 						currentVertex.getCorrespondingSDFVertex().getId());
 
 				// Setting the task duration
-				Operator effectiveOperator = currentVertex
+				ComponentInstance effectiveOperator = currentVertex
 						.getImplementationVertexProperty()
 						.getEffectiveOperator();
 				int singleRepeatTime = currentVertex.getInitialVertexProperty()

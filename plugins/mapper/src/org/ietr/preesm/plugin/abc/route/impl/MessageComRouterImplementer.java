@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
@@ -71,10 +71,10 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 
 			// Adding the transfers of a message route step
 			if (type == CommunicationRouter.transferType) {
-				List<ContentionNode> nodes = messageStep.getContentionNodes();
+				List<ComponentInstance> nodes = messageStep.getContentionNodes();
 				AddTransferVertexTransaction transaction = null;
 
-				for (ContentionNode node : nodes) {
+				for (ComponentInstance node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
 					transaction = new AddTransferVertexTransaction("transfer",
 							lastTransaction, getEdgeScheduler(), edge,

@@ -44,13 +44,14 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -96,7 +97,7 @@ public class FastAlgorithm extends Observable {
 
 	public MapperDAG map(String threadName, AbcParameters abcParams,
 			FastAlgoParameters fastParams, MapperDAG dag,
-			MultiCoreArchitecture archi, boolean alreadyMapped,
+			Design archi, boolean alreadyMapped,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, AbstractTaskSched taskSched) {
 
@@ -126,7 +127,7 @@ public class FastAlgorithm extends Observable {
 	 */
 	public MapperDAG map(String threadName, AbcParameters abcParams,
 			FastAlgoParameters fastParams, MapperDAG dag,
-			MultiCoreArchitecture archi, boolean alreadyMapped,
+			Design archi, boolean alreadyMapped,
 			boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
@@ -165,9 +166,9 @@ public class FastAlgorithm extends Observable {
 				finalcriticalpathList, randomGenerator);
 		MapperDAGVertex currentvertex = null;
 		MapperDAGVertex fcpvertex = null;
-		Operator operatortest;
-		Operator operatorfcp;
-		Operator operatorprec;
+		ComponentInstance operatortest;
+		ComponentInstance operatorfcp;
+		ComponentInstance operatorprec;
 		Logger logger = WorkflowLogger.getLogger();
 
 		// these steps are linked to the description of the FAST algorithm to
@@ -218,7 +219,7 @@ public class FastAlgorithm extends Observable {
 				* fastParams.getFastTime();
 		// the number of local solutions searched in a neighborhood is the size
 		// of the graph
-		int maxStep = dag.vertexSet().size() * archi.getNumberOfOperators();
+		int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
 		// the number of better solutions found in a neighborhood is limited
 		int margin = Math.max(maxStep / 10, 1);
 
@@ -260,7 +261,7 @@ public class FastAlgorithm extends Observable {
 
 				// step 7
 				// Selecting random vertex with operator set of size > 1
-				List<Operator> operatorList = null;
+				List<ComponentInstance> operatorList = null;
 				int nonBlockingIndex = 0;
 
 				do {
@@ -277,9 +278,9 @@ public class FastAlgorithm extends Observable {
 				// The mapping can reaffect the same operator as before,
 				// refining the edge scheduling
 				int randomIndex = randomGenerator.nextInt(operatorList.size());
-				operatortest = (Operator) operatorList.toArray()[randomIndex];
+				operatortest = (ComponentInstance)operatorList.toArray()[randomIndex];
 
-				operatorprec = (Operator) simulator
+				operatorprec = simulator
 						.getEffectiveComponent(currentvertex);
 
 				// step 9 TODO: check if ok to use mapWithGroup
@@ -333,7 +334,7 @@ public class FastAlgorithm extends Observable {
 			// step 16
 			// Choosing a vertex in critical path with an operator set of more
 			// than 1 element
-			List<Operator> operatorList = null;
+			List<ComponentInstance> operatorList = null;
 			int nonBlockingIndex = 0;
 
 			do {
@@ -343,14 +344,14 @@ public class FastAlgorithm extends Observable {
 			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 			// Choosing an operator different from the current vertex operator
-			Operator currentOp = dagfinal
+			ComponentInstance currentOp = dagfinal
 					.getMapperDAGVertex(fcpvertex.getName())
 					.getImplementationVertexProperty().getEffectiveOperator();
 
 			do {
 				int randomIndex = randomGenerator.nextInt(operatorList.size());
-				operatorfcp = (Operator) operatorList.toArray()[randomIndex];
-			} while (operatorfcp.equals(currentOp) && operatorList.size() > 1);
+				operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
+			} while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName()) && operatorList.size() > 1);
 
 			// step 15
 			List<MapperDAGVertex> toRemapList = cpnDominantList;

@@ -40,18 +40,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.SlamFactory;
+import net.sf.dftools.architecture.slam.attributes.AttributesFactory;
+import net.sf.dftools.architecture.slam.attributes.VLNV;
+import net.sf.dftools.architecture.slam.component.ComNode;
+import net.sf.dftools.architecture.slam.component.Component;
+import net.sf.dftools.architecture.slam.component.ComponentFactory;
+import net.sf.dftools.architecture.slam.component.Operator;
+import net.sf.dftools.architecture.slam.link.Link;
+import net.sf.dftools.architecture.slam.link.LinkFactory;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.Interconnection;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.parser.VLNV;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -103,7 +107,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+		Design architecture = (Design) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -117,32 +121,53 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 		// Repeating the graph to simulate several calls. Repetitions are
 		// delayed through
 		// Special dependencies to virtual operator tasks
-		Operator virtualDelayManager = null;
+		ComponentInstance virtualDelayManager = null;
 		if (iterationNr != 0) {
 			// Creating a virtual component
-			VLNV v = new VLNV("nobody", "none", "DelayManager", "1.0");
-			OperatorDefinition opdef = new OperatorDefinition(v);
-			virtualDelayManager = new Operator("VirtualDelayManager", opdef);
-			architecture.addComponent(virtualDelayManager);
+			VLNV v = AttributesFactory.eINSTANCE.createVLNV();
+			v.setVendor("nobody");
+			v.setLibrary("none");
+			v.setName("DelayManager");
+			v.setVersion("1.0");
+			
+			Component component = (Component) ComponentFactory.eINSTANCE
+					.createOperator();
+			component.setVlnv(v);
+			architecture.getComponentHolder().getComponents().add(component);
+			SlamFactory.eINSTANCE.createComponentInstance();
+			virtualDelayManager = SlamFactory.eINSTANCE.createComponentInstance();
+			virtualDelayManager.setInstanceName("VirtualDelayManager");
+			virtualDelayManager.setComponent(component);
+			architecture.getComponentInstances().add(virtualDelayManager);
 
 			// Connecting the virtual component to all cores
-			for (Component cmp : architecture.getComponents()) {
-				if (cmp instanceof Operator
-						&& !cmp.getId().equals("VirtualDelayManager")) {
-					Operator op = (Operator) cmp;
-					VLNV v2 = new VLNV("nobody", "none", "DelayManagerNodeTo"
-							+ op.getId(), "1.0");
-					ParallelNodeDefinition nodeDef = new ParallelNodeDefinition(
-							v2);
-					nodeDef.setDataRate(1000000);
-					ParallelNode virtualNode = new ParallelNode("virtualNodeTo"
-							+ op.getId(), nodeDef);
-					architecture.addComponent(virtualNode);
-					Interconnection c1 = architecture.addEdge(virtualNode, op);
+			for (ComponentInstance cmp : DesignTools.getComponentInstances(architecture)) {
+				if (cmp.getComponent() instanceof Operator
+						&& !cmp.getInstanceName().equals("VirtualDelayManager")) {
+					VLNV v2 = AttributesFactory.eINSTANCE.createVLNV();
+					v.setVendor("nobody");
+					v.setLibrary("none");
+					v.setName("DelayManagerNodeTo" + cmp.getInstanceName());
+					v.setVersion("1.0");
+					ComNode nodeDef = ComponentFactory.eINSTANCE.createComNode();
+					nodeDef.setParallel(true);
+					nodeDef.setVlnv(v2);
+					nodeDef.setSpeed(1000000);
+					ComponentInstance virtualNode = SlamFactory.eINSTANCE.createComponentInstance();
+					virtualDelayManager.setInstanceName("virtualNodeTo" + cmp.getInstanceName());
+					virtualDelayManager.setComponent(nodeDef);
+					architecture.getComponentInstances().add(virtualNode);
+					architecture.getComponentHolder().getComponents().add(nodeDef);
+					Link c1 = LinkFactory.eINSTANCE.createDataLink();
 					c1.setDirected(false);
-					Interconnection c2 = architecture.addEdge(virtualNode,
-							virtualDelayManager);
+					c1.setSourceComponentInstance(virtualNode);
+					c1.setDestinationComponentInstance(cmp);
+					architecture.getLinks().add(c1);
+					Link c2 = LinkFactory.eINSTANCE.createDataLink();
 					c2.setDirected(false);
+					c2.setSourceComponentInstance(virtualNode);
+					c2.setDestinationComponentInstance(virtualDelayManager);
+					architecture.getLinks().add(c2);
 				}
 			}
 		}
@@ -176,8 +201,8 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				v.setId("VirtualDelay" + "__@" + (i + 2));
 				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
 				v.getInitialVertexProperty().addOperator(virtualDelayManager);
-				Timing timing = new Timing(virtualDelayManager.getDefinition()
-						.getId(), sdfV.getName(), iterationPeriod);
+				Timing timing = new Timing(virtualDelayManager.getComponent()
+						.getVlnv().getName(), sdfV.getName(), iterationPeriod);
 				v.getInitialVertexProperty().addTiming(timing);
 				dag.addVertex(v);
 

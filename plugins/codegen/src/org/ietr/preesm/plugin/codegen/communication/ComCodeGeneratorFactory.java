@@ -12,9 +12,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.sdf4j.model.sdf.SDFAbstractVertex;
@@ -57,21 +56,13 @@ public class ComCodeGeneratorFactory {
 	private IComCodeGenerator createCodeGenerator(AbstractRouteStep step) {
 		IComCodeGenerator generator = null;
 
-		if (step.getType() == MediumRouteStep.type) {
-			generator = new MessageComCodeGenerator(compThread, comThread,
-					vertices, step);
-			WorkflowLogger
-					.getLogger()
-					.log(Level.FINE,
-							"A route step with type medium correspond to a message passing code generation: "
-									+ step);
-		} else if (step.getType() == DmaRouteStep.type) {
+		if (step.getType() == DmaRouteStep.type) {
 			generator = new DmaComCodeGenerator(compThread, comThread,
 					vertices, step);
 		} else if (step.getType() == MessageRouteStep.type) {
 			generator = new MessageComCodeGenerator(compThread, comThread,
 					vertices, step);
-		} else if (step.getType() == RamRouteStep.type) {
+		} else if (step.getType() == MemRouteStep.type) {
 			generator = new RamComCodeGenerator(compThread, comThread,
 					vertices, step);
 		} else {

@@ -51,9 +51,9 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
@@ -131,7 +131,7 @@ public class PGeneticAlgo extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			MultiCoreArchitecture archi, PreesmScenario scenario,
+			Design archi, PreesmScenario scenario,
 			AbcParameters abcParams, int populationSize, int generationNumber,
 			int processorNumber) {
 

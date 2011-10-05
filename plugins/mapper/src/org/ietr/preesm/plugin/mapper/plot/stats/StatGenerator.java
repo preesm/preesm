@@ -40,10 +40,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentDefinition;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.LatencyAbc;
@@ -117,7 +116,10 @@ public class StatGenerator {
 
 		long work = 0;
 		MapperDAG dag = abc.getDAG();
-		Operator mainOp = abc.getArchitecture().getMainOperator();
+
+		ComponentInstance mainOp = DesignTools.getComponentInstance(abc
+				.getArchitecture(), scenario.getSimulationManager()
+				.getMainOperatorName());
 
 		for (DAGVertex vertex : dag.vertexSet()) {
 			if (!(vertex instanceof TransferVertex)
@@ -127,7 +129,7 @@ public class StatGenerator {
 				// Looks for an operator able to execute currentvertex
 				// (preferably
 				// the given operator)
-				Operator adequateOp = abc.findOperator(
+				ComponentInstance adequateOp = abc.findOperator(
 						(MapperDAGVertex) vertex, mainOp);
 
 				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
@@ -161,9 +163,9 @@ public class StatGenerator {
 	 */
 	public int getNbUsedOperators() {
 		int nbUsedOperators = 0;
-		for (Component o : abc.getArchitecture().getComponents(
-				ComponentType.operator)) {
-			if (abc.getFinalCost((Operator) o) > 0) {
+		for (ComponentInstance o : DesignTools.getOperatorInstances(abc
+				.getArchitecture())) {
+			if (abc.getFinalCost(o) > 0) {
 				nbUsedOperators++;
 			}
 		}
@@ -175,14 +177,11 @@ public class StatGenerator {
 	 */
 	public int getNbMainTypeOperators() {
 		int nbMainTypeOperators = 0;
-		Operator main = abc.getArchitecture().getMainOperator();
-		ComponentDefinition maindef = main.getDefinition();
-		for (Component o : abc.getArchitecture().getComponents(
-				ComponentType.operator)) {
-			if (maindef.equals(o.getDefinition())) {
-				nbMainTypeOperators++;
-			}
-		}
+		ComponentInstance mainOp = DesignTools.getComponentInstance(abc
+				.getArchitecture(), scenario.getSimulationManager()
+				.getMainOperatorName());
+		nbMainTypeOperators = DesignTools.getInstancesOfComponent(
+				abc.getArchitecture(), mainOp.getComponent()).size();
 		return nbMainTypeOperators;
 	}
 
@@ -190,7 +189,7 @@ public class StatGenerator {
 	 * The load is the percentage of a processing resource used for the given
 	 * algorithm
 	 */
-	public long getLoad(Operator operator) {
+	public long getLoad(ComponentInstance operator) {
 
 		if (abc instanceof LatencyAbc) {
 			return ((LatencyAbc) abc).getLoad(operator);
@@ -202,7 +201,7 @@ public class StatGenerator {
 	/**
 	 * The memory is the sum of all buffers allocated by the mapping
 	 */
-	public Integer getMem(Operator operator) {
+	public Integer getMem(ComponentInstance operator) {
 
 		int mem = 0;
 
@@ -214,14 +213,17 @@ public class StatGenerator {
 				MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
 
 				if (!(me instanceof PrecedenceEdge)) {
-					Operator srcOp = (Operator) scr
+					ComponentInstance srcOp = scr
 							.getImplementationVertexProperty()
 							.getEffectiveComponent();
-					Operator tgtOp = (Operator) tgt
+					ComponentInstance tgtOp = tgt
 							.getImplementationVertexProperty()
 							.getEffectiveComponent();
 
-					if (srcOp.equals(operator) || tgtOp.equals(operator)) {
+					if (srcOp.getInstanceName().equals(
+							operator.getInstanceName())
+							|| tgtOp.getInstanceName().equals(
+									operator.getInstanceName())) {
 						mem += me.getInitialEdgeProperty().getDataSize();
 					}
 				}

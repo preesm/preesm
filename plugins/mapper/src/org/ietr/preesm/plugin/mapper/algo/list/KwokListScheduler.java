@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -72,7 +72,7 @@ public class KwokListScheduler {
 	 *            considered operator
 	 */
 	public long listImplementationCost(MapperDAG dag, MapperDAGVertex vertex,
-			Operator operator, IAbc simu, boolean minimizeVStartorOpEnd) {
+			ComponentInstance operator, IAbc simu, boolean minimizeVStartorOpEnd) {
 
 		// check the vertex is into the DAG
 		vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -103,12 +103,12 @@ public class KwokListScheduler {
 	 */
 
 	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
-			IAbc archisimu, Operator operatorfcp, MapperDAGVertex fcpvertex) {
+			IAbc archisimu, ComponentInstance operatorfcp, MapperDAGVertex fcpvertex) {
 
 		boolean minimizeVStartorOpEnd = false;
 
 		// Variables
-		Operator chosenoperator = null;
+		ComponentInstance chosenoperator = null;
 		Logger logger = WorkflowLogger.getLogger();
 
 		// Maps the fastest one to be ready among the operators in the vertex
@@ -124,12 +124,12 @@ public class KwokListScheduler {
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
-				List<Operator> opList = archisimu
+				List<ComponentInstance> opList = archisimu
 						.getCandidateOperators(currentvertex);
 				if (opList.size() == 1) {
-					chosenoperator = (Operator) opList.toArray()[0];
+					chosenoperator = (ComponentInstance)opList.toArray()[0];
 				} else {
-					for (Operator currentoperator : opList) {
+					for (ComponentInstance currentoperator : opList) {
 
 						long test = listImplementationCost(dag, currentvertex,
 								currentoperator, archisimu,

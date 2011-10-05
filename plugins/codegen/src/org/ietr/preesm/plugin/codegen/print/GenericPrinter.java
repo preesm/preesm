@@ -41,6 +41,7 @@ import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
@@ -50,8 +51,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.IOperator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.tools.XsltTransformer;
@@ -120,10 +119,10 @@ public class GenericPrinter {
 	 */
 	public void print(SourceFile srcFile) {
 
-		IOperator operator = srcFile.getOperator();
+		ComponentInstance operator = srcFile.getOperator();
 
 		// Generating an xml file corresponding to the code of one file
-		String fileName = ((Component) operator).getName();
+		String fileName = operator.getInstanceName();
 		IPath xmlPath = new Path(outputPath);
 		xmlPath = xmlPath.append(fileName + ".xml");
 
@@ -138,8 +137,8 @@ public class GenericPrinter {
 			specificPath = specificPath.append(fileName + ".c");
 
 			IPath xslFilePath = new Path(xslPath);
-			xslFilePath = xslFilePath.append(((Component) operator)
-					.getDefinition().getVlnv().getName()
+			xslFilePath = xslFilePath.append(operator
+					.getComponent().getVlnv().getName()
 					+ ".xslt");
 
 			try {
@@ -158,15 +157,15 @@ public class GenericPrinter {
 	/**
 	 * Getting the file printer corresponding to a given operator
 	 */
-	public XMLPrinter createOperatorPrinter(IOperator opRef) {
+	public XMLPrinter createOperatorPrinter(ComponentInstance opRef) {
 		XMLPrinter printer = null;
-		String opRefId = ((Component) opRef).getDefinition().getVlnv()
+		String opId = opRef.getComponent().getVlnv()
 				.getName();
-		String opId = ((Component) opRef).getName();
+		String opRefId = opRef.getInstanceName();
 
 		printer = new XMLPrinter();
-		printer.setCoreType(opRefId);
-		printer.setCoreName(opId);
+		printer.setCoreType(opId);
+		printer.setCoreName(opRefId);
 
 		return printer;
 	}

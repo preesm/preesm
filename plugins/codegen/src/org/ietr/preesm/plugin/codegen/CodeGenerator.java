@@ -38,13 +38,14 @@ package org.ietr.preesm.plugin.codegen;
 
 import java.util.Iterator;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Top-level code generation class. Creates and fills source files
@@ -66,21 +67,22 @@ public class CodeGenerator {
 	/**
 	 * Creates the source files from an architecture
 	 */
-	private void createSourceFiles(MultiCoreArchitecture architecture) {
-		Iterator<Component> iterator = architecture.getComponents(
-				ComponentType.operator).iterator();
+	private void createSourceFiles(Design architecture, PreesmScenario scenario) {
+		Iterator<ComponentInstance> iterator = DesignTools
+				.getOperatorInstances(architecture).iterator();
 
 		// Generates and populates one source file per core
 		while (iterator.hasNext()) {
 
-			Operator currentOp = (Operator) iterator.next();
+			ComponentInstance currentOp = (ComponentInstance) iterator.next();
 
-			SourceFile sourceFile = new SourceFile(currentOp.getName(),
+			SourceFile sourceFile = new SourceFile(currentOp.getInstanceName(),
 					currentOp, list);
 			list.add(sourceFile);
 
 			// The main operator leads to the main source file
-			if (architecture.getMainOperator().equals(currentOp)) {
+			if (scenario.getSimulationManager().getMainOperatorName()
+					.equals(currentOp.getInstanceName())) {
 				list.setMain(sourceFile);
 			}
 		}
@@ -90,9 +92,9 @@ public class CodeGenerator {
 	 * Creates and fills source files from an SDF and an architecture
 	 */
 	public void generateSourceFiles(CodeGenSDFGraph algorithm,
-			MultiCoreArchitecture architecture) {
+			Design architecture, PreesmScenario scenario) {
 		// Creates one source file per operator
-		createSourceFiles(architecture);
+		createSourceFiles(architecture, scenario);
 
 		// For each source file, generates source code
 		for (SourceFile file : list) {

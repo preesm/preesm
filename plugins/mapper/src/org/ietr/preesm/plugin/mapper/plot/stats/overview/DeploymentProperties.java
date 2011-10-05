@@ -44,14 +44,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.plugin.mapper.plot.Messages;
 import org.ietr.preesm.plugin.mapper.plot.stats.StatGenerator;
 
@@ -68,8 +68,8 @@ public class DeploymentProperties implements IStructuredContentProvider,
 
 	private StatGenerator statGen;
 
-	private Map<Operator, Long> loads;
-	private Map<Operator, Integer> memoryNeeds;
+	private Map<ComponentInstance, Long> loads;
+	private Map<ComponentInstance, Integer> memoryNeeds;
 
 	private long repetitionPeriod;
 
@@ -81,8 +81,8 @@ public class DeploymentProperties implements IStructuredContentProvider,
 		super();
 		this.statGen = statGen;
 
-		loads = new HashMap<Operator, Long>();
-		memoryNeeds = new HashMap<Operator, Integer>();
+		loads = new HashMap<ComponentInstance, Long>();
+		memoryNeeds = new HashMap<ComponentInstance, Integer>();
 
 		repetitionPeriod = statGen.getFinalTime();
 		columnOrder = Messages.getString("Overview.properties.opColumn");
@@ -91,44 +91,42 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 	private void initData() {
-		Set<Component> opSet = statGen.getAbc().getArchitecture()
-				.getComponents(ComponentType.operator);
+		Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(statGen.getAbc().getArchitecture());
 
-		for (Component cmp : opSet) {
-			Operator op = (Operator) cmp;
-			loads.put(op, statGen.getLoad(op));
-			memoryNeeds.put(op, statGen.getMem(op));
+		for (ComponentInstance cmp : opSet) {
+			loads.put(cmp, statGen.getLoad(cmp));
+			memoryNeeds.put(cmp, statGen.getMem(cmp));
 		}
 
 	}
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		List<Operator> elements = new ArrayList<Operator>(loads.keySet());
+		List<ComponentInstance> elements = new ArrayList<ComponentInstance>(loads.keySet());
 
-		Comparator<Operator> comparator = null;
+		Comparator<ComponentInstance> comparator = null;
 
 		if (columnOrder.equals(Messages
 				.getString("Overview.properties.opColumn"))) {
-			comparator = new Comparator<Operator>() {
+			comparator = new Comparator<ComponentInstance>() {
 				@Override
-				public int compare(Operator o1, Operator o2) {
-					return o1.getName().compareTo(o2.getName());
+				public int compare(ComponentInstance o1, ComponentInstance o2) {
+					return o1.getInstanceName().compareTo(o2.getInstanceName());
 				}
 			};
 		} else if (columnOrder.equals(Messages
 				.getString("Overview.properties.loadColumn"))) {
-			comparator = new Comparator<Operator>() {
+			comparator = new Comparator<ComponentInstance>() {
 				@Override
-				public int compare(Operator o1, Operator o2) {
+				public int compare(ComponentInstance o1, ComponentInstance o2) {
 					return (int) (loads.get(o1) - loads.get(o2));
 				}
 			};
 		} else if (columnOrder.equals(Messages
 				.getString("Overview.properties.memColumn"))) {
-			comparator = new Comparator<Operator>() {
+			comparator = new Comparator<ComponentInstance>() {
 				@Override
-				public int compare(Operator o1, Operator o2) {
+				public int compare(ComponentInstance o1, ComponentInstance o2) {
 					return (int) (memoryNeeds.get(o1) - memoryNeeds.get(o2));
 				}
 			};
@@ -160,11 +158,11 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	public String getColumnText(Object element, int columnIndex) {
 		String text = "";
 
-		if (element instanceof Operator) {
-			Operator op = (Operator) element;
+		if (element instanceof ComponentInstance) {
+			ComponentInstance op = (ComponentInstance) element;
 
 			if (columnIndex == 0) {
-				text = op.getName();
+				text = op.getInstanceName();
 			} else if (columnIndex == 1) {
 				double d = loads.get(op);
 				d = d * 10000;

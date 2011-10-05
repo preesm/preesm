@@ -3,9 +3,10 @@ package org.ietr.preesm.plugin.abc.route.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
+import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.edgescheduling.SimpleEdgeSched;
 import org.ietr.preesm.plugin.abc.impl.ImplementationCleaner;
@@ -58,9 +59,9 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 			int routeStepIndex, Transaction lastTransaction,
 			List<Object> alreadyCreatedVertices) {
 
-		if (routeStep instanceof RamRouteStep) {
+		if (routeStep instanceof MemRouteStep) {
 			// Adding the transfers
-			RamRouteStep ramStep = ((RamRouteStep) routeStep);
+			MemRouteStep ramStep = ((MemRouteStep) routeStep);
 			// All the transfers along the path have the same time: the time
 			// to transfer the data on the slowest contention node
 			long senderTransferTime = ramStep
@@ -72,11 +73,11 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 
 			// Adding the transfers of a ram route step
 			if (type == CommunicationRouter.transferType) {
-				List<ContentionNode> nodes = ramStep
+				List<ComponentInstance> nodes = ramStep
 						.getSenderSideContentionNodes();
 				AddTransferVertexTransaction transaction = null;
 
-				for (ContentionNode node : nodes) {
+				for (ComponentInstance node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
 					transaction = new AddTransferVertexTransaction("write",
 							lastTransaction, getEdgeScheduler(), edge,
@@ -89,7 +90,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
 				lastTransaction = transaction;
 
 				nodes = ramStep.getReceiverSideContentionNodes();
-				for (ContentionNode node : nodes) {
+				for (ComponentInstance node : nodes) {
 					int nodeIndex = nodes.indexOf(node);
 					transaction = new AddTransferVertexTransaction("read",
 							lastTransaction, getEdgeScheduler(), edge,

@@ -36,8 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.component.Operator;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 
 /**
  * Properties of a mapped vertex
@@ -49,7 +51,7 @@ public class ImplementationVertexProperty {
 	/**
 	 * Operator to which the vertex has been affected by the mapping algorithm
 	 */
-	private Component effectiveComponent;
+	private ComponentInstance effectiveComponent;
 
 	/**
 	 * This object is shared between all vertices that share relative
@@ -65,7 +67,7 @@ public class ImplementationVertexProperty {
 
 	public ImplementationVertexProperty(MapperDAGVertex parentVertex) {
 		super();
-		effectiveComponent = Operator.NO_COMPONENT;
+		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
 		schedulingTotalOrder = -1;
 	}
 
@@ -90,33 +92,34 @@ public class ImplementationVertexProperty {
 	/**
 	 * A computation vertex has an effective operator
 	 */
-	public Operator getEffectiveOperator() {
-		if (effectiveComponent instanceof Operator)
-			return (Operator) effectiveComponent;
+	public ComponentInstance getEffectiveOperator() {
+		if (effectiveComponent != null
+				&& effectiveComponent.getComponent() instanceof Operator)
+			return effectiveComponent;
 		else
-			return (Operator) Operator.NO_COMPONENT;
+			return DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
 	public boolean hasEffectiveOperator() {
-		return getEffectiveOperator() != Operator.NO_COMPONENT;
+		return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
-	public void setEffectiveOperator(Operator effectiveOperator) {
+	public void setEffectiveOperator(ComponentInstance effectiveOperator) {
 		this.effectiveComponent = effectiveOperator;
 	}
 
 	/**
 	 * Effective component is common to communication and computation vertices
 	 */
-	public Component getEffectiveComponent() {
+	public ComponentInstance getEffectiveComponent() {
 		return effectiveComponent;
 	}
 
 	public boolean hasEffectiveComponent() {
-		return getEffectiveComponent() != Component.NO_COMPONENT;
+		return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
-	public void setEffectiveComponent(Component component) {
+	public void setEffectiveComponent(ComponentInstance component) {
 		this.effectiveComponent = component;
 	}
 

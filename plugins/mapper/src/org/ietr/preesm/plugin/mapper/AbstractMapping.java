@@ -39,11 +39,11 @@ package org.ietr.preesm.plugin.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
@@ -63,7 +63,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
 
-		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+		Design architecture = (Design) inputs
 				.get("architecture");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
@@ -94,7 +94,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 		return parameters;
 	}
 
-	protected void clean(MultiCoreArchitecture architecture,
+	protected void clean(Design architecture,
 			PreesmScenario scenario) {
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture, scenario);
@@ -105,7 +105,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 	 * tasks that cannot be executed by the main operator are deported without
 	 * transfer time to other operator)
 	 */
-	protected void calculateSpan(MapperDAG dag, MultiCoreArchitecture archi,
+	protected void calculateSpan(MapperDAG dag, Design archi,
 			PreesmScenario scenario, AbcParameters parameters) {
 
 		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,

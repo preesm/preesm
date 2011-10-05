@@ -11,9 +11,9 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.abc.order.IScheduleElement;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.order.SynchronizedVertices;
@@ -464,7 +464,7 @@ public class NewTimeKeeper implements Observer {
 
 		long finaltime = TimingVertexProperty.UNAVAILABLE;
 
-		for (Component o : orderManager.getArchitectureComponents()) {
+		for (ComponentInstance o : orderManager.getArchitectureComponents()) {
 			long nextFinalTime = getFinalTime(o);
 			// Returns TimingVertexProperty.UNAVAILABLE if at least one
 			// vertex has no final time. Otherwise returns the highest final
@@ -482,13 +482,13 @@ public class NewTimeKeeper implements Observer {
 	 * Gives the implementation time on the given operator if possible. It
 	 * considers a partially mapped graph and ignores the non mapped vertices
 	 */
-	public long getFinalTime(Component component) {
+	public long getFinalTime(ComponentInstance component) {
 
 		long finaltime = TimingVertexProperty.UNAVAILABLE;
 
-		Component finalTimeRefCmp = null;
-		for (Component o : orderManager.getArchitectureComponents()) {
-			if (o.equals(component)) {
+		ComponentInstance finalTimeRefCmp = null;
+		for (ComponentInstance o : orderManager.getArchitectureComponents()) {
+			if (o.getInstanceName().equals(component.getInstanceName())) {
 				finalTimeRefCmp = o;
 			}
 		}

@@ -41,7 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.algo.genetic.Chromosome;
 import org.ietr.preesm.plugin.mapper.algo.genetic.StandardGeneticAlgorithm;
@@ -59,7 +60,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	private AbcParameters abcParams;
 
 	// Architecture chosen
-	private MultiCoreArchitecture architecture;
+	private Design architecture;
 
 	// thread named by threadName
 	private String threadName;
@@ -85,7 +86,7 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param simulatorType
 	 * @param threadName
 	 */
-	public PGeneticAlgoCallable(MultiCoreArchitecture architecture,
+	public PGeneticAlgoCallable(Design architecture,
 			PreesmScenario scenario, int generationNumber,
 			List<Chromosome> population, int populationSize,
 			AbcParameters abcParams, String threadName) {

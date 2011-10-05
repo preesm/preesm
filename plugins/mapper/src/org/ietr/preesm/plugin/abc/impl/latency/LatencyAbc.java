@@ -44,12 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
@@ -106,7 +106,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public LatencyAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType,
+			Design archi, AbcType abcType,
 			PreesmScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
@@ -144,17 +144,17 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// timeKeeper.resetTimings();
 
 		// Forces the unmapping process before the new mapping process
-		HashMap<MapperDAGVertex, Operator> operators = new HashMap<MapperDAGVertex, Operator>();
+		HashMap<MapperDAGVertex, ComponentInstance> operators = new HashMap<MapperDAGVertex, ComponentInstance>();
 
 		for (DAGVertex v : dag.vertexSet()) {
 			MapperDAGVertex mdv = (MapperDAGVertex) v;
 			operators.put(mdv, mdv.getImplementationVertexProperty()
 					.getEffectiveOperator());
 			mdv.getImplementationVertexProperty().setEffectiveComponent(
-					Operator.NO_COMPONENT);
+					DesignTools.NO_COMPONENT_INSTANCE);
 			implementation.getMapperDAGVertex(mdv.getName())
 					.getImplementationVertexProperty()
-					.setEffectiveComponent(Operator.NO_COMPONENT);
+					.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
 			;
 		}
 
@@ -167,7 +167,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex vertex = iterator.next();
-			Operator operator = operators.get(vertex);
+			ComponentInstance operator = operators.get(vertex);
 
 			map(vertex, operator, false);
 		}
@@ -177,10 +177,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
+		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp == Operator.NO_COMPONENT) {
+		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
@@ -274,7 +274,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * minimization)
 	 */
 	@Override
-	public final long getFinalCost(Component component) {
+	public final long getFinalCost(ComponentInstance component) {
 
 		long finalTime = nTimeKeeper.getFinalTime(component);
 
@@ -350,7 +350,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		List<Long> taskSums = new ArrayList<Long>();
 		long totalTaskSum = 0l;
 
-		for (Component o : orderManager.getArchitectureComponents()) {
+		for (ComponentInstance o : orderManager.getArchitectureComponents()) {
 			long load = getLoad(o);
 
 			if (load > 0) {
@@ -385,7 +385,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Returns the sum of execution times on the given component
 	 */
-	public final long getLoad(Component component) {
+	public final long getLoad(ComponentInstance component) {
 
 		long load2 = orderManager.getBusyTime(component);
 

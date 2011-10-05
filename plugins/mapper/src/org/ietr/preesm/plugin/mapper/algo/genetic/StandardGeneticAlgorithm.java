@@ -44,7 +44,8 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
@@ -119,7 +120,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return List<Chromosome>
 	 */
 	public List<Chromosome> convertListDAGtoListChromo(List<MapperDAG> list,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) {
 
 		// create the list of chromosome
 		List<Chromosome> population3 = new ArrayList<Chromosome>();
@@ -151,7 +152,7 @@ public class StandardGeneticAlgorithm extends Observable {
 	 * @return ConcurrentSkipListSet<Chromosome>
 	 */
 	public ConcurrentSkipListSet<Chromosome> runGeneticAlgo(String threadname,
-			List<MapperDAG> populationDAG, MultiCoreArchitecture archi,
+			List<MapperDAG> populationDAG, Design archi,
 			PreesmScenario scenario, AbcParameters abcParams,
 			int populationSize, int generationNumber, boolean pgeneticalgo) {
 

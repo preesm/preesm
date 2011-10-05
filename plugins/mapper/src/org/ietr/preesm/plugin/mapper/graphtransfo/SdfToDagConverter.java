@@ -42,13 +42,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.Operator;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.IOperator;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
@@ -86,9 +85,8 @@ public class SdfToDagConverter {
 	 * 
 	 * @author mpelcat
 	 */
-	public static MapperDAG convert(SDFGraph sdfIn,
-			MultiCoreArchitecture architecture, PreesmScenario scenario,
-			boolean display) {
+	public static MapperDAG convert(SDFGraph sdfIn, Design architecture,
+			PreesmScenario scenario, boolean display) {
 
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"Converting from SDF to DAG.");
@@ -99,8 +97,7 @@ public class SdfToDagConverter {
 				return null;
 			}
 		} catch (SDF4JException e) {
-			WorkflowLogger.getLogger()
-					.log(Level.SEVERE, e.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 		SDFGraph sdf = sdfIn.clone();
@@ -117,8 +114,7 @@ public class SdfToDagConverter {
 		} catch (SDF4JException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			WorkflowLogger.getLogger()
-					.log(Level.SEVERE, e.getMessage());
+			WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 		}
 
 		// Adds the necessary properties to vertices and edges
@@ -136,8 +132,7 @@ public class SdfToDagConverter {
 			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"Can not map a DAG with no vertex.");
 		} else {
-			WorkflowLogger.getLogger().log(Level.INFO,
-					"Conversion finished.");
+			WorkflowLogger.getLogger().log(Level.INFO, "Conversion finished.");
 			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"mapping a DAG with " + dag.vertexSet().size()
@@ -154,7 +149,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static MapperDAG addInitialProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			Design architecture, PreesmScenario scenario) {
 
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
@@ -169,7 +164,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialVertexProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			Design architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing default timings
@@ -190,7 +185,7 @@ public class SdfToDagConverter {
 			// The SDF vertex id is used to reference the timings
 			List<Timing> timelist = scenario.getTimingManager()
 					.getGraphTimings(currentVertex,
-							architecture.getOperatorDefinitionIds());
+							DesignTools.getOperatorComponentIds(architecture));
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
@@ -201,11 +196,11 @@ public class SdfToDagConverter {
 					currentVertexInit.addTiming(timing);
 				}
 			} else {
-				for (Component op : architecture
-						.getComponents(ComponentType.operator)) {
-					Timing time = new Timing(op.getDefinition().getId(),
-							currentVertex.getCorrespondingSDFVertex().getId(),
-							1);
+				for (ComponentInstance op : DesignTools
+						.getOperatorInstances(architecture)) {
+					Timing time = new Timing(op.getComponent().getVlnv()
+							.getName(), currentVertex
+							.getCorrespondingSDFVertex().getId(), 1);
 					time.setTime(Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
@@ -220,7 +215,7 @@ public class SdfToDagConverter {
 	 * @return The DAG with initial properties
 	 */
 	public static void addInitialEdgeProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			Design architecture, PreesmScenario scenario) {
 
 		/**
 		 * Importing data edge weights and multiplying by type size when
@@ -268,7 +263,7 @@ public class SdfToDagConverter {
 	 * Retrieves the constraints and adds them to the DAG initial properties
 	 */
 	public static void addInitialConstraintsProperties(MapperDAG dag,
-			MultiCoreArchitecture architecture, PreesmScenario scenario) {
+			Design architecture, PreesmScenario scenario) {
 		/**
 		 * Importing scenario: Only the timings corresponding to allowed
 		 * mappings are set.
@@ -291,19 +286,18 @@ public class SdfToDagConverter {
 						.getInfo())) {
 
 					for (String opId : cg.getOperatorIds()) {
-						IOperator currentIOp = (IOperator) architecture
-								.getComponent(ComponentType.operator, opId);
-						if (((Component) currentIOp).getType() == ComponentType.operator) {
-							Operator currentop = (Operator) currentIOp;
+						ComponentInstance currentIOp = DesignTools
+								.getComponentInstance(architecture, opId);
+						if (currentIOp.getComponent() instanceof Operator) {
 
 							if (!mv.getInitialVertexProperty().isMapable(
-									currentop)) {
+									currentIOp)) {
 
 								mv.getInitialVertexProperty().addOperator(
-										currentop);
+										currentIOp);
 
-								Timing newTiming = new Timing(currentop
-										.getDefinition().getId(), mv.getName());
+								Timing newTiming = new Timing(currentIOp
+										.getComponent().getVlnv().getName(), mv.getName());
 								mv.getInitialVertexProperty().addTiming(
 										newTiming);
 							}
@@ -328,8 +322,8 @@ public class SdfToDagConverter {
 			if (SpecialVertexManager.isSpecial(v)) {
 				vList.add(v);
 				for (String id : specialOpIds) {
-					Operator o = (Operator) architecture.getComponent(
-							ComponentType.operator, id);
+					ComponentInstance o = DesignTools
+							.getComponentInstance(architecture, id);
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator(o);
 				}

@@ -41,9 +41,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.ComponentType;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.tools.RandomIterator;
 
@@ -81,19 +81,19 @@ public class MutationOperator {
 		Gene currentGene = iter.next();
 
 		// retrieve the operators which can execute the vertex
-		List<Component> list = new ArrayList<Component>();
-		list.addAll(chromosome.getArchi().getComponents(ComponentType.operator));
+		List<ComponentInstance> list = new ArrayList<ComponentInstance>();
+		list.addAll(DesignTools.getOperatorInstances(chromosome.getArchi()));
 
 		// chose one operator randomly
-		Iterator<Component> iterator = new RandomIterator<Component>(list,
+		Iterator<ComponentInstance> iterator = new RandomIterator<ComponentInstance>(list,
 				new Random());
-		Operator operator = (Operator) iterator.next();
-		while (operator.getName().equals(currentGene.getOperatorId())) {
-			operator = (Operator) iterator.next();
+		ComponentInstance operator = (ComponentInstance) iterator.next();
+		while (operator.getInstanceName().equals(currentGene.getOperatorId())) {
+			operator = iterator.next();
 		}
 
 		// set the change in the gene
-		currentGene.setOperatorId(operator.getName());
+		currentGene.setOperatorId(operator.getInstanceName());
 		chromosome.evaluate(abcParams);
 
 		return chromosome;

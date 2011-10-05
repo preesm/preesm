@@ -41,10 +41,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -101,7 +101,7 @@ public class PGeneticTransformation extends AbstractMapping {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+		Design architecture = (Design) inputs
 				.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

@@ -497,7 +497,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element) currentLocation).appendChild(send);
 			domElt.getRouteStep().appendRouteStep(dom, send);
 
-			send.setAttribute("target", domElt.getTarget().getName());
+			send.setAttribute("target", domElt.getTarget().getInstanceName());
 			currentLocation = send;
 		}
 
@@ -513,7 +513,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element) currentLocation).appendChild(receive);
 			domElt.getRouteStep().appendRouteStep(dom, receive);
 
-			receive.setAttribute("source", domElt.getSource().getName());
+			receive.setAttribute("source", domElt.getSource().getInstanceName());
 			currentLocation = receive;
 		}
 
@@ -528,7 +528,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element) currentLocation).appendChild(send);
 			domElt.getRouteStep().appendRouteStep(dom, send);
 
-			send.setAttribute("target", domElt.getTarget().getName());
+			send.setAttribute("target", domElt.getTarget().getInstanceName());
 
 			Element addressBuffer = dom.createElement("addressBuffer");
 			send.appendChild(addressBuffer);
@@ -552,7 +552,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element) currentLocation).appendChild(receive);
 			domElt.getRouteStep().appendRouteStep(dom, receive);
 
-			receive.setAttribute("source", domElt.getSource().getName());
+			receive.setAttribute("source", domElt.getSource().getInstanceName());
 			int callIndex = domElt.getCallIndex();
 			receive.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = receive;

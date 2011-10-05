@@ -46,10 +46,11 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
@@ -68,26 +69,26 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	private Map<Component, Schedule> schedules = null;
+	private Map<ComponentInstance, Schedule> schedules = null;
 
 	/**
 	 * total order of the vertices in the implementation
 	 */
 	Schedule totalOrder = null;
 
-	public SchedOrderManager(MultiCoreArchitecture archi) {
+	public SchedOrderManager(Design archi) {
 
-		schedules = new HashMap<Component, Schedule>();
+		schedules = new HashMap<ComponentInstance, Schedule>();
 
 		// Adding one schedule per component
-		for (Component cmp : archi.getComponents()) {
+		for (ComponentInstance cmp : DesignTools.getComponentInstances(archi)) {
 			schedules.put(cmp, new Schedule());
 		}
 
 		totalOrder = new Schedule();
 	}
 
-	public int findLastestPredIndexForOp(Component cmp, int refIndex) {
+	public int findLastestPredIndexForOp(ComponentInstance cmp, int refIndex) {
 
 		// Retrieves the schedule corresponding to the component
 		Schedule currentSched = getSchedule(cmp);
@@ -119,7 +120,7 @@ public class SchedOrderManager extends Observable {
 
 		if (currImpProp.hasEffectiveComponent()) {
 
-			Component cmp = currImpProp.getEffectiveComponent();
+			ComponentInstance cmp = currImpProp.getEffectiveComponent();
 			int newSchedulingTotalOrder = totalIndexOf(vertex);
 			int maxPrec = findLastestPredIndexForOp(
 					currImpProp.getEffectiveComponent(),
@@ -168,7 +169,7 @@ public class SchedOrderManager extends Observable {
 			MapperDAGVertex vertex = (MapperDAGVertex) elt;
 			if (vertex.getImplementationVertexProperty()
 					.hasEffectiveComponent()) {
-				Component effectiveCmp = vertex
+				ComponentInstance effectiveCmp = vertex
 						.getImplementationVertexProperty()
 						.getEffectiveComponent();
 
@@ -193,7 +194,7 @@ public class SchedOrderManager extends Observable {
 			for (MapperDAGVertex vertex : synchros.vertices()) {
 				if (vertex.getImplementationVertexProperty()
 						.hasEffectiveComponent()) {
-					Component effectiveCmp = vertex
+					ComponentInstance effectiveCmp = vertex
 							.getImplementationVertexProperty()
 							.getEffectiveComponent();
 
@@ -220,7 +221,7 @@ public class SchedOrderManager extends Observable {
 	public void addFirst(MapperDAGVertex vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
-			Component effectiveCmp = vertex.getImplementationVertexProperty()
+			ComponentInstance effectiveCmp = vertex.getImplementationVertexProperty()
 					.getEffectiveComponent();
 
 			// Gets the schedule of vertex
@@ -317,7 +318,7 @@ public class SchedOrderManager extends Observable {
 			MapperDAGVertex vertex) {
 
 		SynchronizedVertices synchroVs = null;
-		Component nCmp = vertex.getImplementationVertexProperty()
+		ComponentInstance nCmp = vertex.getImplementationVertexProperty()
 				.getEffectiveComponent();
 		Schedule sched = getSchedule(nCmp);
 
@@ -382,7 +383,7 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the scheduling components
 	 */
-	public Set<Component> getArchitectureComponents() {
+	public Set<ComponentInstance> getArchitectureComponents() {
 
 		return schedules.keySet();
 
@@ -407,7 +408,7 @@ public class SchedOrderManager extends Observable {
 		Schedule sch = null;
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
 
-			Component cmp = vertex.getImplementationVertexProperty()
+			ComponentInstance cmp = vertex.getImplementationVertexProperty()
 					.getEffectiveComponent();
 			sch = getSchedule(cmp);
 		} else { // Looks for the right scheduling to remove the vertex
@@ -534,7 +535,7 @@ public class SchedOrderManager extends Observable {
 
 		IScheduleElement prevElt = null;
 		MapperDAGVertex prevVertex = null;
-		Component cmp = vertex.getImplementationVertexProperty()
+		ComponentInstance cmp = vertex.getImplementationVertexProperty()
 				.getEffectiveComponent();
 		Schedule schedule = getSchedule(cmp);
 
@@ -558,7 +559,7 @@ public class SchedOrderManager extends Observable {
 		IScheduleElement nextElement = null;
 		MapperDAGVertex nextVertex = null;
 
-		Component cmp = vertex.getImplementationVertexProperty()
+		ComponentInstance cmp = vertex.getImplementationVertexProperty()
 				.getEffectiveComponent();
 		Schedule schedule = getSchedule(cmp);
 
@@ -588,11 +589,11 @@ public class SchedOrderManager extends Observable {
 	/**
 	 * Gets the schedule of a given component
 	 */
-	private Schedule getSchedule(Component cmp) {
+	private Schedule getSchedule(ComponentInstance cmp) {
 
 		// Preventing from creating several schedules with same name
-		for (Component o : schedules.keySet()) {
-			if (o.equals(cmp)) {
+		for (ComponentInstance o : schedules.keySet()) {
+			if (o.getInstanceName().equals(cmp.getInstanceName())) {
 				return schedules.get(o);
 			}
 		}
@@ -603,14 +604,14 @@ public class SchedOrderManager extends Observable {
 	 * Gets the mapperdag vertex list of a given component. Splits the
 	 * synchronized vertices objects into their components
 	 */
-	public List<MapperDAGVertex> getVertexList(Component cmp) {
+	public List<MapperDAGVertex> getVertexList(ComponentInstance cmp) {
 
 		Schedule s = null;
 		List<MapperDAGVertex> vList = new ArrayList<MapperDAGVertex>();
 
 		// Preventing from creating several schedules with same name
-		for (Component o : schedules.keySet()) {
-			if (o.equals(cmp)) {
+		for (ComponentInstance o : schedules.keySet()) {
+			if (o.getInstanceName().equals(cmp.getInstanceName())) {
 				s = schedules.get(o);
 			}
 		}
@@ -623,7 +624,7 @@ public class SchedOrderManager extends Observable {
 					for (MapperDAGVertex sVertex : ((SynchronizedVertices) elt)
 							.vertices()) {
 						if (sVertex.getImplementationVertexProperty()
-								.getEffectiveComponent().equals(cmp)) {
+								.getEffectiveComponent().getInstanceName().equals(cmp.getInstanceName())) {
 							vList.add(sVertex);
 						}
 					}
@@ -634,7 +635,7 @@ public class SchedOrderManager extends Observable {
 		return vList;
 	}
 
-	public long getBusyTime(Component c) {
+	public long getBusyTime(ComponentInstance c) {
 		Schedule sched = getSchedule(c);
 		if (sched != null) {
 			return sched.getBusyTime();

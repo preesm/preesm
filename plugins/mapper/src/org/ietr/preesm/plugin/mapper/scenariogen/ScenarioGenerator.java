@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.Operator;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
@@ -16,9 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
@@ -88,18 +89,13 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			}
 
 			// Retrieving the architecture
-			MultiCoreArchitecture archi = ScenarioParser
-					.getArchitecture(scenario.getArchitectureURL());
+			Design archi = ScenarioParser
+					.parseSlamDesign(scenario.getArchitectureURL());
 			if (archi == null) {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
 				return null;
 			} else {
-				// Setting main core and medium
-				archi.setMainOperator(scenario.getSimulationManager()
-						.getMainOperatorName());
-				archi.setMainMedium(scenario.getSimulationManager()
-						.getMainMediumName());
 				outputs.put("architecture", archi);
 			}
 
@@ -137,16 +133,16 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 							ImplementationPropertyNames.Task_duration);
 					SDFAbstractVertex sdfV = ((SDFGraph) outputs.get("SDF"))
 							.getVertex(vName);
-					Component op = ((MultiCoreArchitecture) outputs
-							.get("architecture")).getComponent(opName);
+					ComponentInstance op = DesignTools.getComponentInstance((Design) outputs
+							.get("architecture"),opName);
 
-					if (sdfV != null && op != null && op instanceof Operator) {
+					if (sdfV != null && op != null && op.getComponent() instanceof Operator) {
 						((PreesmScenario) outputs.get("scenario"))
 								.getConstraintGroupManager().addConstraint(
 										opName, sdfV);
 						((PreesmScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(sdfV.getName(),
-										op.getDefinition().getId(),
+										op.getComponent().getVlnv().getName(),
 										Integer.parseInt(timeStr));
 					}
 				}

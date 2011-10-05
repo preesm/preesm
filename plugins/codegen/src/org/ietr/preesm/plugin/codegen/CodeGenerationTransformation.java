@@ -39,6 +39,7 @@ package org.ietr.preesm.plugin.codegen;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
@@ -47,7 +48,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
@@ -78,7 +78,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		MultiCoreArchitecture architecture = (MultiCoreArchitecture) inputs
+		Design architecture = (Design) inputs
 				.get("architecture");
 		DirectedAcyclicGraph algorithm = (DirectedAcyclicGraph) inputs
 				.get("DAG");
@@ -119,7 +119,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			SourceFileList list = new SourceFileList();
 			CodeGenerator codegen = new CodeGenerator(list);
 			// Generate source files
-			codegen.generateSourceFiles(codeGenSDFGraph, architecture);
+			codegen.generateSourceFiles(codeGenSDFGraph, architecture, scenario);
 
 			// Generates the code in xml and translates it to c using XSLT
 			// sheets

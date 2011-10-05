@@ -39,8 +39,10 @@ package org.ietr.preesm.plugin.abc.impl.latency;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -65,7 +67,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public AccuratelyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType,
+			Design archi, AbcType abcType,
 			PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 
@@ -85,10 +87,10 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 
 		super.fireNewMappedVertex(vertex, updateRank);
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
+		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp != Operator.NO_COMPONENT) {
+		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			new PrecedenceEdgeAdder(orderManager, implementation)
 					.scheduleVertex(vertex);
 			comRouter.routeNewVertex(vertex, types);

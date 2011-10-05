@@ -45,22 +45,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
-import org.ietr.preesm.core.architecture.route.MediumRouteStep;
+import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.architecture.route.RamRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.plugin.abc.route.impl.DmaComRouterImplementer;
-import org.ietr.preesm.plugin.abc.route.impl.MediumRouterImplementer;
 import org.ietr.preesm.plugin.abc.route.impl.MessageComRouterImplementer;
 import org.ietr.preesm.plugin.abc.route.impl.SharedRamRouterImplementer;
 import org.ietr.preesm.plugin.abc.transaction.Transaction;
@@ -88,7 +86,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	private RouteCalculator calculator = null;
 
-	public CommunicationRouter(MultiCoreArchitecture archi,
+	public CommunicationRouter(Design archi,
 			PreesmScenario scenario, MapperDAG implementation,
 			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
@@ -97,11 +95,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		// Initializing the available router implementers
 		this.addImplementer(DmaRouteStep.type,
 				new DmaComRouterImplementer(this));
-		this.addImplementer(MediumRouteStep.type, new MediumRouterImplementer(
-				this));
 		this.addImplementer(MessageRouteStep.type,
 				new MessageComRouterImplementer(this));
-		this.addImplementer(RamRouteStep.type, new SharedRamRouterImplementer(
+		this.addImplementer(MemRouteStep.type, new SharedRamRouterImplementer(
 				this));
 	}
 
@@ -237,8 +233,8 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
 				.getTarget()).getImplementationVertexProperty();
 
-		Operator sourceOp = sourceimp.getEffectiveOperator();
-		Operator destOp = destimp.getEffectiveOperator();
+		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
+		ComponentInstance destOp = destimp.getEffectiveOperator();
 
 		long cost = 0;
 

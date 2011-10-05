@@ -42,17 +42,20 @@ import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
@@ -147,20 +150,21 @@ public class GanttPlotter extends ApplicationFrame implements
 	 * @return The dataset.
 	 */
 	private static IntervalCategoryDataset createDataset(MapperDAG dag,
-			MultiCoreArchitecture archi) {
+			Design archi) {
 
 		TaskSeries series = new TaskSeries("Scheduled");
 		Task currenttask;
 		Map<String, Long> finalCosts = new HashMap<String, Long>();
 
 		// Creating the Operator lines
-		List<Component> cmps = archi.getComponents();
-		Collections.sort(cmps, new Component.CmpComparator());
+		List<ComponentInstance> cmps = new ArrayList<ComponentInstance>();
+		cmps.addAll(DesignTools.getComponentInstances(archi));
+		Collections.sort(cmps, new DesignTools.ComponentInstanceComparator());
 
-		for (Component cmp : cmps) {
-			currenttask = new Task(cmp.getName(), new SimpleTimePeriod(0, 1));
+		for (ComponentInstance cmp : cmps) {
+			currenttask = new Task(cmp.getInstanceName(), new SimpleTimePeriod(0, 1));
 			series.add(currenttask);
-			finalCosts.put(cmp.getName(), 0l);
+			finalCosts.put(cmp.getInstanceName(), 0l);
 		}
 
 		// Populating the Operator lines
@@ -168,10 +172,10 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			Component cmp = currentVertex.getImplementationVertexProperty()
+			ComponentInstance cmp = currentVertex.getImplementationVertexProperty()
 					.getEffectiveComponent();
 
-			if (cmp != Component.NO_COMPONENT) {
+			if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
 				long start = currentVertex.getTimingVertexProperty()
 						.getNewtLevel();
 				long end = start
@@ -181,24 +185,24 @@ public class GanttPlotter extends ApplicationFrame implements
 						+ currentVertex.getInitialVertexProperty()
 								.getNbRepeat() + ")";
 				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
-				series.get(cmp.getName()).addSubtask(t);
+				series.get(cmp.getInstanceName()).addSubtask(t);
 
 				// Updating the component final cost
-				long finalCost = finalCosts.get(cmp.getName());
+				long finalCost = finalCosts.get(cmp.getInstanceName());
 				if (finalCost < end) {
-					finalCosts.put(cmp.getName(), end);
+					finalCosts.put(cmp.getInstanceName(), end);
 				}
 			}
 		}
 
 		// Setting the series length to the maximum end time of a task
-		for (Component cmp : cmps) {
-			long finalCost = finalCosts.get(cmp.getName());
+		for (ComponentInstance cmp : cmps) {
+			long finalCost = finalCosts.get(cmp.getInstanceName());
 			if (finalCost > 0) {
-				series.get(cmp.getName()).setDuration(
+				series.get(cmp.getInstanceName()).setDuration(
 						new SimpleTimePeriod(0, finalCost));
 			} else {
-				series.remove(series.get(cmp.getName()));
+				series.remove(series.get(cmp.getInstanceName()));
 			}
 		}
 
@@ -210,7 +214,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	}
 
 	public static void plotDeployment(MapperDAG dag,
-			MultiCoreArchitecture archi, Composite delegateDisplay) {
+			Design archi, Composite delegateDisplay) {
 
 		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag, archi);
 
@@ -227,7 +231,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	 * @param args
 	 *            ignored.
 	 */
-	public void plot(MapperDAG dag, MultiCoreArchitecture archi) {
+	public void plot(MapperDAG dag, Design archi) {
 
 		pack();
 		RefineryUtilities.centerFrameOnScreen(this);
@@ -238,7 +242,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Gantt chart plotting function in a given composite
 	 */
-	public void plotInComposite(MapperDAG dag, MultiCoreArchitecture archi,
+	public void plotInComposite(MapperDAG dag, Design archi,
 			Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
@@ -255,7 +259,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Plotting a Gantt chart
 	 */
-	public GanttPlotter(String title, MapperDAG dag, MultiCoreArchitecture archi) {
+	public GanttPlotter(String title, MapperDAG dag, Design archi) {
 		super(title);
 
 		chart = createChart(createDataset(dag, archi));

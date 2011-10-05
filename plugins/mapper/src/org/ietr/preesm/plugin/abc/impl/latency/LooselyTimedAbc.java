@@ -36,8 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl.latency;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -63,7 +65,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public LooselyTimedAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, AbcType abcType,
+			Design archi, AbcType abcType,
 			PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 	}
@@ -74,10 +76,10 @@ public class LooselyTimedAbc extends LatencyAbc {
 
 		super.fireNewMappedVertex(vertex, updateRank);
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
+		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
-		if (effectiveOp != Operator.NO_COMPONENT) {
+		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			// Adding precedence edges for an automatic graph timings
 			// calculation
 			new PrecedenceEdgeAdder(orderManager, implementation)
@@ -97,12 +99,12 @@ public class LooselyTimedAbc extends LatencyAbc {
 		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
 				.getTarget()).getImplementationVertexProperty();
 
-		Operator sourceOp = sourceimp.getEffectiveOperator();
-		Operator destOp = destimp.getEffectiveOperator();
+		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
+		ComponentInstance destOp = destimp.getEffectiveOperator();
 
-		if (sourceOp != Operator.NO_COMPONENT
-				&& destOp != Operator.NO_COMPONENT) {
-			if (sourceOp.equals(destOp)) {
+		if (sourceOp != DesignTools.NO_COMPONENT_INSTANCE
+				&& destOp != DesignTools.NO_COMPONENT_INSTANCE) {
+			if (sourceOp.getInstanceName().equals(destOp.getInstanceName())) {
 				edge.getTimingEdgeProperty().setCost(0);
 			} else {
 

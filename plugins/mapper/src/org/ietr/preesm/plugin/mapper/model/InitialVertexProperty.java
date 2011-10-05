@@ -40,8 +40,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.OperatorDefinition;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
@@ -67,7 +68,7 @@ public class InitialVertexProperty {
 	/**
 	 * Available operators
 	 */
-	private List<Operator> operators;
+	private List<ComponentInstance> operators;
 
 	/**
 	 * Number of repetitions that ponderates the timing
@@ -88,7 +89,7 @@ public class InitialVertexProperty {
 		timings = new ArrayList<Timing>();
 		this.nbRepeat = 1;
 		parentVertex = null;
-		operators = new ArrayList<Operator>();
+		operators = new ArrayList<ComponentInstance>();
 		this.topologicalLevel = -1;
 	}
 
@@ -106,7 +107,7 @@ public class InitialVertexProperty {
 	 * straightforward for normal vertices. For special vertices, a test is done
 	 * on the neighbors.
 	 */
-	public void addOperator(Operator operator) {
+	public void addOperator(ComponentInstance operator) {
 		this.operators.add(operator);
 	}
 
@@ -123,9 +124,9 @@ public class InitialVertexProperty {
 			property.addTiming(next);
 		}
 
-		Iterator<Operator> it2 = operators.iterator();
+		Iterator<ComponentInstance> it2 = operators.iterator();
 		while (it2.hasNext()) {
-			Operator next = it2.next();
+			ComponentInstance next = it2.next();
 			property.addOperator(next);
 		}
 
@@ -140,7 +141,7 @@ public class InitialVertexProperty {
 	 * are originally enabled on every operator but their status is updated
 	 * depending on the mapping of their neighbors
 	 */
-	public List<Operator> getInitialOperatorList() {
+	public List<ComponentInstance> getInitialOperatorList() {
 		return operators;
 	}
 
@@ -149,10 +150,10 @@ public class InitialVertexProperty {
 	 * operator. For special vertices, the predecessors and successor mapping
 	 * possibilities are studied
 	 */
-	public boolean isMapable(Operator operator) {
+	public boolean isMapable(ComponentInstance operator) {
 
-		for (Operator op : operators) {
-			if (op.equals(operator))
+		for (ComponentInstance op : operators) {
+			if (op.getInstanceName().equals(operator.getInstanceName()))
 				return true;
 		}
 
@@ -167,13 +168,13 @@ public class InitialVertexProperty {
 	 * Returns the timing of the operation = number of repetitions * scenario
 	 * time
 	 */
-	public int getTime(Operator operator) {
+	public int getTime(ComponentInstance operator) {
 
 		int time = 0;
 
-		if (operator != Operator.NO_COMPONENT) {
+		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 
-			Timing returntiming = getTiming(operator.getDefinition().getId());
+			Timing returntiming = getTiming(operator.getComponent().getVlnv().getName());
 
 			if (returntiming != Timing.UNAVAILABLE) {
 
@@ -189,11 +190,15 @@ public class InitialVertexProperty {
 					if (SpecialVertexManager.isBroadCast(parentVertex)) {
 						// Broadcast time is calculated from its output size
 						// if a memory copy speed is set in the operator
-						OperatorDefinition def = (OperatorDefinition) operator
-								.getDefinition();
 						time = Timing.DEFAULT_BROADCAST_TIME;
 
-						float dataCopySpeed = def.getDataCopySpeed();
+						String stringCopySpeed = DesignTools.getParameter(operator, DesignTools.OPERATOR_COPY_SPEED);
+						float dataCopySpeed = 0;
+						
+						if(stringCopySpeed != null){
+							dataCopySpeed = Float.valueOf(stringCopySpeed);
+						}
+						
 						if (dataCopySpeed > 0) {
 							// Calculating the sum of output data sizes
 							int inputDataSize = getVertexInputBuffersSize(parentVertex);
@@ -214,11 +219,15 @@ public class InitialVertexProperty {
 					} else if (SpecialVertexManager.isJoin(parentVertex)) {
 						// Join time is calculated from its input size
 						// if a memory copy speed is set in the operator
-						OperatorDefinition def = (OperatorDefinition) operator
-								.getDefinition();
 						time = Timing.DEFAULT_BROADCAST_TIME;
 
-						float dataCopySpeed = def.getDataCopySpeed();
+						String stringCopySpeed = DesignTools.getParameter(operator, DesignTools.OPERATOR_COPY_SPEED);
+						float dataCopySpeed = 0;
+						
+						if(stringCopySpeed != null){
+							dataCopySpeed = Float.valueOf(stringCopySpeed);
+						}
+						
 						if (dataCopySpeed > 0) {
 							// Calculating the sum of input data sizes
 							// A join creates a memory copy with a given speed
@@ -294,7 +303,7 @@ public class InitialVertexProperty {
 	 * Checks if the vertex first non special predecessors can be mapped on the
 	 * given operator.
 	 */
-	public boolean isPredMapable(Operator operator) {
+	public boolean isPredMapable(ComponentInstance operator) {
 
 		boolean predMapable = false;
 
@@ -317,7 +326,7 @@ public class InitialVertexProperty {
 	 * Checks if the vertex first non special successor can be mapped on the
 	 * given operator.
 	 */
-	public boolean isSuccMapable(Operator operator) {
+	public boolean isSuccMapable(ComponentInstance operator) {
 
 		boolean succMapable = false;
 

@@ -140,7 +140,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 					ImplementationPropertyNames.SendReceive_OperatorDef);
 			opDefElt.setTextContent(((MapperDAGVertex) vertex)
 					.getImplementationVertexProperty().getEffectiveOperator()
-					.getDefinition().getVlnv().getName());
+					.getComponent().getVlnv().getName());
 
 			// Adding route step to the node
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
@@ -159,7 +159,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 					ImplementationPropertyNames.Vertex_OperatorDef);
 			opDefElt.setTextContent(((MapperDAGVertex) vertex)
 					.getImplementationVertexProperty().getEffectiveOperator()
-					.getDefinition().getVlnv().getName());
+					.getComponent().getVlnv().getName());
 
 			// Adding available operators to the newly created element
 			Element opsElt = domDocument.createElement("data");

@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 
 /**
  * Centralizing constraints of related vertices
@@ -41,9 +42,9 @@ public class RelativeConstraint {
 		}
 	}
 
-	public List<Operator> getOperatorsIntersection() {
+	public List<ComponentInstance> getOperatorsIntersection() {
 
-		List<Operator> operators = new ArrayList<Operator>();
+		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
 
 		if (vertices.isEmpty()) {
 			WorkflowLogger.getLogger().log(Level.SEVERE,
@@ -52,7 +53,7 @@ public class RelativeConstraint {
 			return operators;
 		} else {
 			MapperDAGVertex firstVertex = vertices.get(0);
-			Operator op = firstVertex.getImplementationVertexProperty()
+			ComponentInstance op = firstVertex.getImplementationVertexProperty()
 					.getEffectiveOperator();
 			if (op != null && vertices.size() > 1) {
 				// Forcing the mapper to put together related vertices
@@ -65,17 +66,17 @@ public class RelativeConstraint {
 
 		for (int i = 1; i < vertices.size(); i++) {
 			MapperDAGVertex vertex = vertices.get(i);
-			Operator op = vertex.getImplementationVertexProperty()
+			ComponentInstance op = vertex.getImplementationVertexProperty()
 					.getEffectiveOperator();
 			if (op != null) {
-				if (operators.contains(op)) {
+				if (DesignTools.contains(operators,op)) {
 					operators.clear();
 					operators.add(op);
 				} else {
 					operators.clear();
 				}
 			} else {
-				operators.retainAll(vertex.getInitialVertexProperty()
+				DesignTools.retainAll(operators,vertex.getInitialVertexProperty()
 						.getInitialOperatorList());
 			}
 		}

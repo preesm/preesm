@@ -3,7 +3,8 @@
  */
 package org.ietr.preesm.plugin.abc.impl.latency;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.taskscheduling.TaskSchedType;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
@@ -20,7 +21,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 	public static final String DAG_SPAN = "dag span length";
 
 	public SpanLengthCalculator(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
+			Design archi, TaskSchedType taskSchedType,
 			PreesmScenario scenario) {
 		super(params, dag, archi, taskSchedType, scenario);
 

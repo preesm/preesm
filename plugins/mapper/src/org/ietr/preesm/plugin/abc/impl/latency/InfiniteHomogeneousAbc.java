@@ -36,11 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.abc.impl.latency;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.ComNode;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.MediumDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -65,7 +66,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * Constructor
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) {
 		this(params, dag, archi, TaskSchedType.Simple, scenario);
 	}
 
@@ -74,12 +75,13 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, TaskSchedType taskSchedType,
+			Design archi, TaskSchedType taskSchedType,
 			PreesmScenario scenario) {
 		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 
-		if (archi.getMainMedium() != null) {
+		ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,scenario.getSimulationManager().getMainComNodeName());
+		if (mainComNode != null) {
 			WorkflowLogger.getLogger().info(
 					"Infinite homogeneous simulation");
 		} else {
@@ -92,7 +94,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
 		// to map all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
-		mapAllVerticesOnOperator(archi.getMainOperator());
+		mapAllVerticesOnOperator(mainComNode);
 
 		updateFinalCosts();
 		orderManager.resetTotalOrder();
@@ -110,7 +112,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		Operator effectiveOp = vertex.getImplementationVertexProperty()
+		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
 				.getEffectiveOperator();
 
 		/*
@@ -119,7 +121,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 * As we have an infinite homogeneous architecture, each communication
 		 * is done through the unique type of medium
 		 */
-		if (effectiveOp == Operator.NO_COMPONENT) {
+		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 
@@ -182,10 +184,15 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 * supposed to be done on the main medium. The communication cost is
 		 * simply calculated from the main medium speed.
 		 */
-		if (archi.getMainMedium() != null) {
-			MediumDefinition def = (MediumDefinition) archi.getMainMedium()
-					.getDefinition();
-			edge.getTimingEdgeProperty().setCost(def.getTransferTime(edgesize));
+		String mainComName = scenario.getSimulationManager().getMainComNodeName();
+		ComponentInstance mainCom = DesignTools.getComponentInstance(archi, mainComName);
+		
+		if (mainCom != null) {
+						
+			long cost = (long) (edgesize / ((ComNode) mainCom
+					.getComponent()).getSpeed());
+					
+			edge.getTimingEdgeProperty().setCost(cost);
 		} else {
 			Float speed = 1f;
 			speed = edgesize * speed;

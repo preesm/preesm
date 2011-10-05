@@ -15,7 +15,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="DAG"

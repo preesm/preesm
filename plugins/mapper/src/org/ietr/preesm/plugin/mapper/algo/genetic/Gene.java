@@ -84,7 +84,7 @@ public class Gene {
 		super();
 		VertexName = vertex.getName();
 		OperatorId = vertex.getImplementationVertexProperty()
-				.getEffectiveComponent().getName();
+				.getEffectiveComponent().getInstanceName();
 	}
 
 	/**

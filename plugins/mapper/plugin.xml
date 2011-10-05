@@ -46,7 +46,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
          </inputs>
       </task>
@@ -66,7 +66,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -95,7 +95,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -124,7 +124,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -153,7 +153,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -182,7 +182,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -226,7 +226,7 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -259,7 +259,7 @@
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </task>

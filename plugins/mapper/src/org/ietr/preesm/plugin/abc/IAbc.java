@@ -38,10 +38,10 @@ package org.ietr.preesm.plugin.abc;
 
 import java.util.List;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.plugin.abc.edgescheduling.EdgeSchedType;
@@ -62,7 +62,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Gets the architecture and scenario
 	 */
-	public MultiCoreArchitecture getArchitecture();
+	public Design getArchitecture();
 
 	public PreesmScenario getScenario();
 
@@ -71,7 +71,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Gets the effective operator of the vertex. NO_OPERATOR if not set
 	 */
-	public Component getEffectiveComponent(MapperDAGVertex vertex);
+	public ComponentInstance getEffectiveComponent(MapperDAGVertex vertex);
 
 	/**
 	 * Updates the internal state so as to allow final cost processing
@@ -96,7 +96,7 @@ public interface IAbc extends IMapperAbc {
 	 * Gives the implementation time on the given operator if possible. It
 	 * considers a partially mapped graph and ignores the non mapped vertices
 	 */
-	public long getFinalCost(Component component);
+	public long getFinalCost(ComponentInstance component);
 
 	/**
 	 * Gets the rank of the given vertex on its operator. -1 if the vertex has
@@ -138,7 +138,7 @@ public interface IAbc extends IMapperAbc {
 	 * rank to the current one or to keep the sank set during last
 	 * implementation
 	 */
-	public void map(MapperDAGVertex vertex, Operator operator,
+	public void map(MapperDAGVertex vertex, ComponentInstance operator,
 			boolean updateRank);
 
 	public void unmap(MapperDAGVertex dagvertex);
@@ -146,13 +146,13 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * maps all the vertices on the given operator
 	 */
-	public boolean mapAllVerticesOnOperator(Operator operator);
+	public boolean mapAllVerticesOnOperator(ComponentInstance operator);
 
 	/**
 	 * Checks in the vertex implementation properties if it can be mapped on the
 	 * given operator
 	 */
-	public boolean isMapable(MapperDAGVertex vertex, Operator operator);
+	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator);
 
 	/**
 	 * Plots the current implementation
@@ -201,12 +201,12 @@ public interface IAbc extends IMapperAbc {
 	 * Looks for an operator able to execute currentvertex (preferably the given
 	 * operator)
 	 */
-	public Operator findOperator(MapperDAGVertex currentvertex,
-			Operator preferedOperator);
+	public ComponentInstance findOperator(MapperDAGVertex currentvertex,
+			ComponentInstance preferedOperator);
 
 	/**
 	 * Looks for operators able to execute currentvertex
 	 */
-	public List<Operator> getCandidateOperators(MapperDAGVertex currentvertex);
+	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex currentvertex);
 
 }

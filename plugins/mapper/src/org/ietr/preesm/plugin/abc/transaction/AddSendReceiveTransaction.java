@@ -39,10 +39,10 @@ package org.ietr.preesm.plugin.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
@@ -165,8 +165,8 @@ public class AddSendReceiveTransaction extends Transaction {
 			return;
 		}
 
-		Operator senderOperator = step.getSender();
-		Operator receiverOperator = step.getReceiver();
+		ComponentInstance senderOperator = step.getSender();
+		ComponentInstance receiverOperator = step.getReceiver();
 
 		sendVertex = new SendVertex(sendVertexID, implementation);
 		sendVertex.setRouteStep(step);

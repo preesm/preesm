@@ -9,7 +9,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;bundle-version="2.6.0",
  net.sf.dftools.workflow,
  org.ietr.libs;bundle-version="1.2.8",
- org.ietr.preesm.core;bundle-version="0.6.1"
+ org.ietr.preesm.core;bundle-version="0.6.1",
+ net.sf.dftools.architecture;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,

@@ -42,11 +42,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.ApproximatelyTimedAbc;
@@ -82,7 +82,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Architecture related to the current simulator
 	 */
-	protected MultiCoreArchitecture archi;
+	protected Design archi;
 
 	/**
 	 * Contains the rank list of all the vertices in an implementation
@@ -119,7 +119,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) {
 
 		AbstractAbc abc = null;
 		AbcType simulatorType = params.getSimulatorType();
@@ -143,7 +143,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * ABC constructor
 	 */
-	protected AbstractAbc(MapperDAG dag, MultiCoreArchitecture archi,
+	protected AbstractAbc(MapperDAG dag, Design archi,
 			AbcType abcType, PreesmScenario scenario) {
 
 		this.abcType = abcType;
@@ -225,7 +225,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture
 	 */
-	public final MultiCoreArchitecture getArchitecture() {
+	public final Design getArchitecture() {
 		return this.archi;
 	}
 
@@ -237,7 +237,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets the effective operator of the vertex. NO_OPERATOR if not set
 	 */
 	@Override
-	public final Component getEffectiveComponent(MapperDAGVertex vertex) {
+	public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
 		return vertex.getImplementationVertexProperty().getEffectiveComponent();
 	}
@@ -253,7 +253,7 @@ public abstract class AbstractAbc implements IAbc {
 	public abstract long getFinalCost(MapperDAGVertex vertex);
 
 	@Override
-	public abstract long getFinalCost(Component component);
+	public abstract long getFinalCost(ComponentInstance component);
 
 	/**
 	 * *********Implementation accesses**********
@@ -294,7 +294,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * where to schedule it.
 	 */
 	@Override
-	public final void map(MapperDAGVertex dagvertex, Operator operator,
+	public final void map(MapperDAGVertex dagvertex, ComponentInstance operator,
 			boolean updateRank) {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
@@ -303,14 +303,14 @@ public abstract class AbstractAbc implements IAbc {
 				"mapping " + dagvertex.toString() + " on "
 						+ operator.toString());
 
-		if (operator != Operator.NO_COMPONENT) {
+		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 			ImplementationVertexProperty dagprop = dagvertex
 					.getImplementationVertexProperty();
 
 			ImplementationVertexProperty impprop = impvertex
 					.getImplementationVertexProperty();
 
-			if (impprop.getEffectiveOperator() != Operator.NO_COMPONENT) {
+			if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
 				// Unmapping if necessary before mapping
 				unmap(dagvertex);
 			}
@@ -350,7 +350,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * same type. If again none is found, looks for any other operator able to
 	 * execute the vertex.
 	 */
-	public final boolean mapAllVerticesOnOperator(Operator operator) {
+	public final boolean mapAllVerticesOnOperator(ComponentInstance operator) {
 
 		boolean possible = true;
 		MapperDAGVertex currentvertex;
@@ -365,7 +365,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Looks for an operator able to execute currentvertex (preferably
 			// the given operator)
-			Operator adequateOp = findOperator(currentvertex, operator);
+			ComponentInstance adequateOp = findOperator(currentvertex, operator);
 
 			if (adequateOp != null) {
 				map(currentvertex, adequateOp, true);
@@ -387,11 +387,11 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Looks for operators able to execute currentvertex
 	 */
-	public List<Operator> getCandidateOperators(MapperDAGVertex vertex) {
+	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex) {
 
 		vertex = translateInImplementationVertex(vertex);
 
-		List<Operator> initOperators = null;
+		List<ComponentInstance> initOperators = null;
 		RelativeConstraint rc = vertex.getImplementationVertexProperty()
 				.getRelativeConstraint();
 
@@ -418,27 +418,28 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	@Override
-	public final Operator findOperator(MapperDAGVertex currentvertex,
-			Operator preferedOperator) {
+	public final ComponentInstance findOperator(MapperDAGVertex currentvertex,
+			ComponentInstance preferedOperator) {
 
-		Operator adequateOp = null;
-		List<Operator> opList = getCandidateOperators(currentvertex);
+		ComponentInstance adequateOp = null;
+		List<ComponentInstance> opList = getCandidateOperators(currentvertex);
 
-		if (Operator.contains(opList, preferedOperator)) {
+		if (DesignTools.contains(opList, preferedOperator)) {
 			adequateOp = preferedOperator;
 		} else {
 
 			// Search among the operators with same type than the prefered one
-			for (Operator op : opList) {
-				if (op.getDefinition().equals(preferedOperator.getDefinition())) {
+			for (ComponentInstance op : opList) {
+				if (op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
 					adequateOp = op;
 				}
 			}
 
 			// Search among the operators with other type than the prefered one
 			if (adequateOp == null) {
-				for (Operator op : opList) {
+				for (ComponentInstance op : opList) {
 					adequateOp = op;
+					return adequateOp;
 				}
 			}
 		}
@@ -452,11 +453,11 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	@Override
-	public final boolean isMapable(MapperDAGVertex vertex, Operator operator) {
+	public final boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator) {
 
 		vertex = translateInImplementationVertex(vertex);
 
-		return Operator.contains(getCandidateOperators(vertex), operator);
+		return DesignTools.contains(getCandidateOperators(vertex), operator);
 	}
 
 	/**
@@ -559,10 +560,10 @@ public abstract class AbstractAbc implements IAbc {
 		fireNewUnmappedVertex(impvertex);
 
 		dagvertex.getImplementationVertexProperty().setEffectiveOperator(
-				(Operator) Operator.NO_COMPONENT);
+				DesignTools.NO_COMPONENT_INSTANCE);
 
 		impvertex.getImplementationVertexProperty().setEffectiveOperator(
-				(Operator) Operator.NO_COMPONENT);
+				DesignTools.NO_COMPONENT_INSTANCE);
 	}
 
 	/**

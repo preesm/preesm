@@ -41,7 +41,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.IAbc;
 import org.ietr.preesm.plugin.abc.impl.latency.InfiniteHomogeneousAbc;
@@ -70,7 +71,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	private MapperDAG inputDAG;
 
 	// Architecture used to implement the DAG
-	private MultiCoreArchitecture inputArchi;
+	private Design inputArchi;
 
 	// Set of the nodes upon which we used fast algorithm in the thread
 	private Set<String> blockingNodeNames;
@@ -100,7 +101,7 @@ class PFastCallable implements Callable<MapperDAG> {
 	 * @param simulatorType
 	 */
 	public PFastCallable(String name, MapperDAG inputDAG,
-			MultiCoreArchitecture inputArchi, Set<String> blockingNodeNames,
+			Design inputArchi, Set<String> blockingNodeNames,
 			boolean isDisplaySolutions, boolean alreadyMapped,
 			AbcParameters abcParams, FastAlgoParameters fastParams,
 			PreesmScenario scenario) {
@@ -127,7 +128,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		// intern variables
 		MapperDAG callableDAG;
 		MapperDAG outputDAG;
-		MultiCoreArchitecture callableArchi;
+		Design callableArchi;
 		List<MapperDAGVertex> callableBlockingNodes = new ArrayList<MapperDAGVertex>();
 
 		// Critical sections where the data from the main thread are copied for
@@ -137,7 +138,7 @@ class PFastCallable implements Callable<MapperDAG> {
 		}
 
 		synchronized (inputArchi) {
-			callableArchi = inputArchi.clone();
+			callableArchi = inputArchi;
 		}
 
 		synchronized (blockingNodeNames) {

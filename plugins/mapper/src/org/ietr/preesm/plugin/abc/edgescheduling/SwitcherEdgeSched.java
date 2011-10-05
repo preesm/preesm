@@ -38,7 +38,8 @@ package org.ietr.preesm.plugin.abc.edgescheduling;
 
 import java.util.Random;
 
-import org.ietr.preesm.core.architecture.Component;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
@@ -70,7 +71,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		Component component = vertex.getImplementationVertexProperty()
+		ComponentInstance component = vertex.getImplementationVertexProperty()
 				.getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval largestInterval = intervalFinder.findLargestFreeInterval(

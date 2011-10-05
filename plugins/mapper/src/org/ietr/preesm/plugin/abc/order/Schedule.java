@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**

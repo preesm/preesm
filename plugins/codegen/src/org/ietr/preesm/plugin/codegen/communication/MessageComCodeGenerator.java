@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.ietr.preesm.core.architecture.IOperator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
@@ -55,14 +56,14 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendMsg) {
 			SendMsg send = (SendMsg) call;
 
-			init = new SendInit(bufferContainer, send.getTarget().getName(),
+			init = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
 					send.getRouteStep(), -1);
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 		} else if (call instanceof ReceiveMsg) {
 			ReceiveMsg receive = (ReceiveMsg) call;
 
 			init = new ReceiveInit(bufferContainer, receive.getSource()
-					.getName(), receive.getRouteStep(), -1);
+					.getInstanceName(), receive.getRouteStep(), -1);
 			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 		}
 
@@ -140,7 +141,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// receive operation is mapped
 					SDFAbstractVertex receive = (SDFAbstractVertex) (succList
 							.get(0));
-					IOperator target = (IOperator) receive
+					ComponentInstance target = (ComponentInstance) receive
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);
@@ -175,7 +176,7 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 					// The source is the operator on which the corresponding
 					// send
 					// operation is allocated
-					IOperator source = (IOperator) send
+					ComponentInstance source = (ComponentInstance) send
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);

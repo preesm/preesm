@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
@@ -113,23 +114,23 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendDma) {
 			SendDma send = (SendDma) call;
 
-			initCom = new SendInit(bufferContainer, send.getTarget().getName(),
+			initCom = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
 					send.getRouteStep(), send.getCallIndex());
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 
 			initAddress = new ReceiveAddress(bufferContainer, send
-					.getRouteStep().getReceiver().getName(),
+					.getRouteStep().getReceiver().getInstanceName(),
 					send.getRouteStep(), send.getCallIndex(), addressBuffer);
 
 		} else if (call instanceof ReceiveDma) {
 			ReceiveDma receive = (ReceiveDma) call;
 
 			initCom = new ReceiveInit(bufferContainer, receive.getSource()
-					.getName(), receive.getRouteStep(), receive.getCallIndex());
+					.getInstanceName(), receive.getRouteStep(), receive.getCallIndex());
 			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 
 			initAddress = new SendAddress(bufferContainer, receive
-					.getRouteStep().getSender().getName(),
+					.getRouteStep().getSender().getInstanceName(),
 					receive.getRouteStep(), receive.getCallIndex(), receive
 							.getBufferSet().get(0));
 		}
@@ -216,7 +217,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					SDFAbstractVertex receive = (SDFAbstractVertex) (succList
 							.get(0));
 
-					Operator target = (Operator) receive
+					ComponentInstance target = (ComponentInstance) receive
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);
@@ -253,7 +254,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 					// The source is the operator on which the corresponding
 					// send
 					// operation is allocated
-					Operator source = (Operator) send
+					ComponentInstance source = (ComponentInstance) send
 							.getPropertyBean()
 							.getValue(
 									ImplementationPropertyNames.Vertex_Operator);

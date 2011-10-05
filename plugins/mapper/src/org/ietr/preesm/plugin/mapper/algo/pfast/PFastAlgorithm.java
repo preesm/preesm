@@ -52,9 +52,9 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbstractAbc;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -119,7 +119,7 @@ public class PFastAlgorithm extends Observable {
 		 * 
 		 */
 		public FinalTimeComparator(AbcParameters abcParams, MapperDAG dag,
-				MultiCoreArchitecture archi, PreesmScenario scenario) {
+				Design archi, PreesmScenario scenario) {
 			super();
 		}
 
@@ -284,7 +284,7 @@ public class PFastAlgorithm extends Observable {
 	 * 
 	 * @return MapperDAG
 	 */
-	public MapperDAG map(MapperDAG dag, MultiCoreArchitecture archi,
+	public MapperDAG map(MapperDAG dag, Design archi,
 			PreesmScenario scenario, InitialLists initialLists,
 			AbcParameters abcParams, PFastAlgoParameters pFastParams,
 			boolean population, int populationsize, boolean isDisplaySolutions,

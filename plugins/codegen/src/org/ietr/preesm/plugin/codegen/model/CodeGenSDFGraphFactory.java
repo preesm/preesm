@@ -43,10 +43,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
@@ -150,13 +150,13 @@ public class CodeGenSDFGraphFactory {
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
 			VertexType targetType = (VertexType) target.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
-			Operator operatorSource = (Operator) source.getPropertyBean()
+			ComponentInstance operatorSource = (ComponentInstance) source.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			Operator operatorTarget = (Operator) target.getPropertyBean()
+			ComponentInstance operatorTarget = (ComponentInstance) target.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_Operator);
 			if ((sourceType.equals(VertexType.send) && targetType
 					.equals(VertexType.receive))
-					|| operatorSource.equals(operatorTarget)) {
+					|| operatorSource.getInstanceName().equals(operatorTarget.getInstanceName())) {
 				SDFAbstractVertex newSource = aliases.get(source);
 				SDFAbstractVertex newTarget = aliases.get(target);
 				for (AbstractEdge subEdge : edge.getAggregate()) {

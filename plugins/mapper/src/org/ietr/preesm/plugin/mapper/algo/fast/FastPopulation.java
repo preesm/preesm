@@ -39,7 +39,8 @@ package org.ietr.preesm.plugin.mapper.algo.fast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.plugin.abc.AbcType;
 import org.ietr.preesm.plugin.abc.IAbc;
@@ -68,7 +69,7 @@ public class FastPopulation {
 	private AbcParameters abcParams;
 
 	// architecture used to make this population
-	private MultiCoreArchitecture archi;
+	private Design archi;
 
 	// private IScenario scenario;
 
@@ -87,7 +88,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, AbcParameters abcParams,
-			MultiCoreArchitecture archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) {
 		super();
 		this.populationNum = populationNum;
 		this.abcParams = abcParams;
@@ -103,7 +104,7 @@ public class FastPopulation {
 	 * @param archi
 	 */
 	public FastPopulation(int populationNum, List<MapperDAG> population,
-			AbcParameters abcParams, MultiCoreArchitecture archi) {
+			AbcParameters abcParams, Design archi) {
 		super();
 		this.populationNum = populationNum;
 		this.population = population;
@@ -115,11 +116,11 @@ public class FastPopulation {
 	 * Getters and setters
 	 */
 
-	public MultiCoreArchitecture getArchi() {
+	public Design getArchi() {
 		return archi;
 	}
 
-	public void setArchi(MultiCoreArchitecture archi) {
+	public void setArchi(Design archi) {
 		this.archi = archi;
 	}
 
