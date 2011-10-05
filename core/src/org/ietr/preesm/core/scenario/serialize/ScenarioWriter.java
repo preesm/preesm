@@ -138,7 +138,7 @@ public class ScenarioWriter {
 		Element medium = dom.createElement("mainMedium");
 		params.appendChild(medium);
 		medium.setTextContent(scenario.getSimulationManager()
-				.getMainMediumName());
+				.getMainComNodeName());
 
 		Element dataSize = dom.createElement("averageDataSize");
 		params.appendChild(dataSize);

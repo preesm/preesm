@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.model;
 
-import org.ietr.preesm.core.architecture.Interface;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 
 public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex {
@@ -47,7 +46,7 @@ public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex {
 	public CodeGenSDFSendVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.send);
 	}
-
+/*
 	public Interface getInterface() {
 		return (Interface) this.getPropertyBean().getValue(INTERFACE,
 				Interface.class);
@@ -55,6 +54,6 @@ public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex {
 
 	public void setOperator(Interface inter) {
 		this.getPropertyBean().setValue(INTERFACE, getInterface(), inter);
-	}
+	}*/
 
 }

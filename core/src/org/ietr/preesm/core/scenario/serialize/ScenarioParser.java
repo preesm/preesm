@@ -38,19 +38,15 @@ package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.SlamPackage;
-import net.sf.dftools.architecture.slam.component.Operator;
 import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -63,9 +59,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.parser.DesignParser;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -209,9 +203,9 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
 				if (type.equals("mainCore")) {
-					scenario.getSimulationManager().setMainOperatorId(content);
+					scenario.getSimulationManager().setMainOperatorName(content);
 				} else if (type.equals("mainMedium")) {
-					scenario.getSimulationManager().setMainMediumName(content);
+					scenario.getSimulationManager().setMainComNodeName(content);
 				} else if (type.equals("averageDataSize")) {
 					scenario.getSimulationManager().setAverageDataSize(
 							Long.valueOf(content));
@@ -329,10 +323,8 @@ public class ScenarioParser {
 	 */
 	private void initializeArchitectureInformation(String url) {
 		if (url.contains(".design")) {
-			MultiCoreArchitecture archi = getArchitecture(url);
-
-			scenario.setOperatorIds(archi.getAllOperatorIds());
-			scenario.setOperatorDefinitionIds(archi.getOperatorDefinitionIds());
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
 		} else if (url.contains(".slam")) {
 			WorkflowLogger.getLogger().log(Level.WARNING,
 					"You are using SLAM architecture 2.0.");
@@ -350,49 +342,36 @@ public class ScenarioParser {
 						SlamPackage.eINSTANCE);
 			}
 
-			// Demand load the resource into the resource set.
-			ResourceSet resourceSet = new ResourceSetImpl();
 
-			Resource resource = resourceSet.getResource(
-					URI.createFileURI("D:/Projets/Preesm/trunk/tests/NewArchitecture/Archi/top.slam"), true);
+			Path relativePath = new Path(url);
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+			String completePath = file.getLocation().toString();
+			
 			// Extract the root object from the resource.
-			Design design = (Design) resource.getContents().get(0);
+			Design design = parseSlamDesign(completePath);
+			
+			
 			System.out.println(design.getVlnv().getName());
 
-			Set<String> operatorIds = new HashSet<String>();
-			Set<String> operatorDefinitionIds = new HashSet<String>();
-
-			for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-				if (cmpInstance.getComponent() instanceof Operator) {
-					operatorIds.add(cmpInstance.getInstanceName());
-				}
-			}
-
-			for (net.sf.dftools.architecture.slam.component.Component component : design
-					.getComponentHolder().getComponents()) {
-				if (component instanceof Operator) {
-					operatorDefinitionIds.add(component.getVlnv().getName());
-				}
-			}
-
-			scenario.setOperatorIds(operatorIds);
-			scenario.setOperatorDefinitionIds(operatorDefinitionIds);
+			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
+			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
+			scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
 		}
 	}
 
-	public static MultiCoreArchitecture getArchitecture(String path) {
-		DesignParser parser = new DesignParser();
+	public static  Design parseSlamDesign(String completePath) {
+		// Demand load the resource into the resource set.
+		ResourceSet resourceSet = new ResourceSetImpl();
 
-		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
+		// resourceSet.
+		Resource resource = resourceSet.getResource(URI.createFileURI(completePath),
+				true);
+		// Extract the root object from the resource.
+		Design design = (Design) resource.getContents().get(0);
 
-		MultiCoreArchitecture architecture = parser.parseXmlFile(file);
-
-		addVertexPathProperties(architecture, "");
-
-		return architecture;
+		return design;
 	}
+	
 
 	public static SDFGraph getAlgorithm(String path) {
 		SDFGraph algorithm = null;
@@ -416,25 +395,6 @@ public class ScenarioParser {
 		}
 
 		return algorithm;
-	}
-
-	/**
-	 * Adding an information that keeps the path of each vertex relative to the
-	 * hierarchy
-	 */
-	public static void addVertexPathProperties(
-			MultiCoreArchitecture architecture, String currentPath) {
-
-		for (Component vertex : architecture.vertexSet()) {
-			String newPath = currentPath + vertex.getName();
-			vertex.setInfo(newPath);
-			newPath += "/";
-			if (vertex.getGraphDescription() != null) {
-				addVertexPathProperties(
-						(MultiCoreArchitecture) vertex.getGraphDescription(),
-						newPath);
-			}
-		}
 	}
 
 	/**

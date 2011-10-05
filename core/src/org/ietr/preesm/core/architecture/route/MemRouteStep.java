@@ -39,20 +39,18 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.component.ComNode;
+import net.sf.dftools.architecture.slam.component.Mem;
 
 /**
  * Route step where the sender uses a shared RAM to send data
  * 
  * @author mpelcat
  */
-public class RamRouteStep extends MessageRouteStep {
+public class MemRouteStep extends MessageRouteStep {
 
-	private Ram ram;
+	private Mem mem;
 
 	/**
 	 * Index of the communication node connected to the shared ram
@@ -64,10 +62,11 @@ public class RamRouteStep extends MessageRouteStep {
 	 */
 	public static final String type = "RamRouteStep";
 
-	public RamRouteStep(Operator sender, List<AbstractNode> nodes,
-			Operator receiver, Ram ram, int ramNodeIndex) {
+	public MemRouteStep(ComponentInstance sender,
+			List<ComponentInstance> nodes, ComponentInstance receiver, Mem mem,
+			int ramNodeIndex) {
 		super(sender, nodes, receiver);
-		this.ram = ram;
+		this.mem = mem;
 		this.ramNodeIndex = ramNodeIndex;
 	}
 
@@ -79,24 +78,22 @@ public class RamRouteStep extends MessageRouteStep {
 		return type;
 	}
 
-	public Ram getRam() {
-		return ram;
+	public Mem getMem() {
+		return mem;
 	}
 
 	@Override
 	public String toString() {
 		String trace = super.toString();
 		trace = trace.substring(0, trace.length() - 1);
-		trace += "[" + ram + "]}";
+		trace += "[" + mem + "]}";
 		return trace;
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		Ram newRam = (Ram) ram.clone();
-		newRam.setDefinition(ram.getDefinition());
-		return new RamRouteStep((Operator) getSender().clone(), getNodes(),
-				(Operator) getReceiver().clone(), newRam, ramNodeIndex);
+		return new MemRouteStep(getSender(), getNodes(), getReceiver(), mem,
+				ramNodeIndex);
 	}
 
 	/**
@@ -106,10 +103,9 @@ public class RamRouteStep extends MessageRouteStep {
 	public long getSenderSideWorstTransferTime(long transfersSize) {
 		long time = 0;
 
-		for (ContentionNode node : getSenderSideContentionNodes()) {
-			ContentionNodeDefinition def = (ContentionNodeDefinition) node
-					.getDefinition();
-			time = Math.max(time, def.getTransferTime(transfersSize));
+		for (ComponentInstance node : getSenderSideContentionNodes()) {
+			time = Math.max(time, (long) (transfersSize / ((ComNode) node
+					.getComponent()).getSpeed()));
 		}
 		return time;
 	}
@@ -121,31 +117,30 @@ public class RamRouteStep extends MessageRouteStep {
 	public long getReceiverSideWorstTransferTime(long transfersSize) {
 		long time = 0;
 
-		for (ContentionNode node : getReceiverSideContentionNodes()) {
-			ContentionNodeDefinition def = (ContentionNodeDefinition) node
-					.getDefinition();
-			time = Math.max(time, def.getTransferTime(transfersSize));
+		for (ComponentInstance node : getReceiverSideContentionNodes()) {
+			time = Math.max(time, (long) (transfersSize / ((ComNode) node
+					.getComponent()).getSpeed()));
 		}
 		return time;
 	}
 
-	public List<ContentionNode> getSenderSideContentionNodes() {
-		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
+	public List<ComponentInstance> getSenderSideContentionNodes() {
+		List<ComponentInstance> contentionNodes = new ArrayList<ComponentInstance>();
 		for (int i = 0; i <= ramNodeIndex; i++) {
-			AbstractNode node = nodes.get(i);
-			if (node instanceof ContentionNode) {
-				contentionNodes.add((ContentionNode) node);
+			ComponentInstance node = nodes.get(i);
+			if (!((ComNode) node.getComponent()).isParallel()) {
+				contentionNodes.add(node);
 			}
 		}
 		return contentionNodes;
 	}
 
-	public List<ContentionNode> getReceiverSideContentionNodes() {
-		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
+	public List<ComponentInstance> getReceiverSideContentionNodes() {
+		List<ComponentInstance> contentionNodes = new ArrayList<ComponentInstance>();
 		for (int i = ramNodeIndex; i < nodes.size(); i++) {
-			AbstractNode node = nodes.get(i);
-			if (node instanceof ContentionNode) {
-				contentionNodes.add((ContentionNode) node);
+			ComponentInstance node = nodes.get(i);
+			if (!((ComNode) node.getComponent()).isParallel()) {
+				contentionNodes.add(node);
 			}
 		}
 		return contentionNodes;

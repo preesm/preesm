@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 /**
  * A route contains several Route Steps. It links operators. To operators
@@ -93,11 +93,11 @@ public class Route extends ArrayList<AbstractRouteStep> {
 	}
 
 	/**
-	 * Returns true if each operato in the route appears only once
+	 * Returns true if each operator in the route appears only once
 	 */
 	public boolean isSingleAppearance() {
 		boolean isIt = true;
-		Set<Operator> opSet = new HashSet<Operator>();
+		Set<ComponentInstance> opSet = new HashSet<ComponentInstance>();
 		// Iterating the route and testing number of occurences in sender
 		for (AbstractRouteStep step : this) {
 			if (opSet.contains(step.getSender())) {

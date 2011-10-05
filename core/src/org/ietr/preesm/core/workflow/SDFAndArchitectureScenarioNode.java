@@ -6,25 +6,26 @@ package org.ietr.preesm.core.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
 
 /**
- * Implementing the DFTools scenario node behavior for Preesm
+ * Implementing the new DFTools scenario node behavior for Preesm. This version
+ * generates an architecture with the S-LAM2 meta-model type and an algorithm
+ * with the IBSDF type
  * 
  * @author mpelcat
  * 
  */
-public class SDFAndArchitectureScenarioNode extends
-		AbstractScenarioImplementation {
+public class SDFAndArchitectureScenarioNode extends AbstractScenarioImplementation {
 
 	/**
 	 * The scenario node in Preesm outputs three elements: SDF, architecture and
@@ -50,12 +51,11 @@ public class SDFAndArchitectureScenarioNode extends
 				.getAlgorithmURL());
 
 		// Retrieving the architecture
-		MultiCoreArchitecture architecture = ScenarioParser
-				.getArchitecture(scenario.getArchitectureURL());
+		Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
 
 		outputs.put("scenario", scenario);
 		outputs.put("SDF", algorithm);
-		outputs.put("architecture", architecture);
+		outputs.put("architecture", slamDesign);
 		return outputs;
 	}
 

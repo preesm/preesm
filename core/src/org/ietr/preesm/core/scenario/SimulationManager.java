@@ -53,9 +53,9 @@ import org.ietr.preesm.core.codegen.types.DataType;
 public class SimulationManager {
 
 	/**
-	 * Names of the main operator and medium
+	 * Names of the main operator and com node
 	 */
-	private String mainMediumName = "";
+	private String mainComNodeName = "";
 	private String mainOperatorName = "";
 
 	/**
@@ -82,19 +82,19 @@ public class SimulationManager {
 		specialVertexOperatorIds = new HashSet<String>();
 	}
 
-	public String getMainMediumName() {
-		return mainMediumName;
+	public String getMainComNodeName() {
+		return mainComNodeName;
 	}
 
-	public void setMainMediumName(String mainMediumName) {
-		this.mainMediumName = mainMediumName;
+	public void setMainComNodeName(String mainComNodeName) {
+		this.mainComNodeName = mainComNodeName;
 	}
 
 	public String getMainOperatorName() {
 		return mainOperatorName;
 	}
 
-	public void setMainOperatorId(String mainOperatorName) {
+	public void setMainOperatorName(String mainOperatorName) {
 		this.mainOperatorName = mainOperatorName;
 	}
 

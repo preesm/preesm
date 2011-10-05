@@ -13,10 +13,6 @@ import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.sdf4j.model.sdf.SDFGraph;
@@ -55,7 +51,7 @@ public class IBSDFAndSLAMScenarioNode extends AbstractScenarioImplementation {
 				.getAlgorithmURL());
 
 		// Retrieving the architecture
-		Design slamDesign = parseSlamDesign(scenario.getArchitectureURL());
+		Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
 
 		outputs.put("scenario", scenario);
 		outputs.put("IBSDF", algorithm);
@@ -66,19 +62,6 @@ public class IBSDFAndSLAMScenarioNode extends AbstractScenarioImplementation {
 	@Override
 	public String monitorMessage() {
 		return "Scenario, algorithm and architecture parsing.";
-	}
-
-	private Design parseSlamDesign(String path) {
-		// Demand load the resource into the resource set.
-		ResourceSet resourceSet = new ResourceSetImpl();
-
-		// resourceSet.
-		Resource resource = resourceSet.getResource(URI.createFileURI(path),
-				true);
-		// Extract the root object from the resource.
-		Design design = (Design) resource.getContents().get(0);
-
-		return design;
 	}
 
 }

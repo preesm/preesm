@@ -39,16 +39,14 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNode;
-import org.ietr.preesm.core.architecture.simplemodel.ContentionNodeDefinition;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNode;
-import org.ietr.preesm.core.architecture.simplemodel.ParallelNodeDefinition;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.component.ComNode;
+import net.sf.dftools.architecture.slam.component.Component;
+import net.sf.dftools.architecture.slam.component.impl.ComNodeImpl;
 
 /**
  * Represents a single step in a route between two operators separated by
- * contention nodes and parallel nodes
+ * communication nodes
  * 
  * @author mpelcat
  */
@@ -57,22 +55,20 @@ public class MessageRouteStep extends AbstractRouteStep {
 	/**
 	 * Communication nodes separating the sender and the receiver
 	 */
-	protected List<AbstractNode> nodes = null;
+	protected List<ComponentInstance> nodes = null;
 
 	/**
 	 * The route step type determines how the communication will be simulated.
 	 */
 	public static final String type = "NodeRouteStep";
 
-	public MessageRouteStep(Operator sender, List<AbstractNode> inNodes,
-			Operator receiver) {
+	public MessageRouteStep(ComponentInstance sender,
+			List<ComponentInstance> inNodes, ComponentInstance receiver) {
 		super(sender, receiver);
-		nodes = new ArrayList<AbstractNode>();
+		nodes = new ArrayList<ComponentInstance>();
 
-		for (AbstractNode node : inNodes) {
-			AbstractNode newNode = (AbstractNode) node.clone();
-			newNode.setDefinition(node.getDefinition());
-			this.nodes.add(newNode);
+		for (ComponentInstance node : inNodes) {
+			this.nodes.add(node);
 		}
 	}
 
@@ -91,23 +87,25 @@ public class MessageRouteStep extends AbstractRouteStep {
 	@Override
 	public String getId() {
 		String id = "";
-		for (AbstractNode node : nodes) {
-			id += node.getDefinition().getVlnv().getName();
+		for (ComponentInstance node : nodes) {
+			id += node.getComponent().getVlnv().getName();
 		}
 		return id;
 	}
 
-	public List<ContentionNode> getContentionNodes() {
-		List<ContentionNode> contentionNodes = new ArrayList<ContentionNode>();
-		for (AbstractNode node : nodes) {
-			if (node instanceof ContentionNode) {
-				contentionNodes.add((ContentionNode) node);
+	public List<ComponentInstance> getContentionNodes() {
+		List<ComponentInstance> contentionNodes = new ArrayList<ComponentInstance>();
+		for (ComponentInstance node : nodes) {
+			if (node.getComponent() instanceof ComNodeImpl) {
+				if (!((ComNode) node.getComponent()).isParallel()) {
+					contentionNodes.add(node);
+				}
 			}
 		}
 		return contentionNodes;
 	}
 
-	public List<AbstractNode> getNodes() {
+	public List<ComponentInstance> getNodes() {
 		return nodes;
 	}
 
@@ -118,15 +116,11 @@ public class MessageRouteStep extends AbstractRouteStep {
 	public final long getWorstTransferTime(long transfersSize) {
 		long time = 0;
 
-		for (AbstractNode node : nodes) {
-			if (node instanceof ContentionNode) {
-				ContentionNodeDefinition def = (ContentionNodeDefinition) node
-						.getDefinition();
-				time = Math.max(time, def.getTransferTime(transfersSize));
-			} else if (node instanceof ParallelNode) {
-				ParallelNodeDefinition def = (ParallelNodeDefinition) node
-						.getDefinition();
-				time = Math.max(time, def.getTransferTime(transfersSize));
+		for (ComponentInstance node : nodes) {
+			Component def = node.getComponent();
+			if (def instanceof ComNodeImpl) {
+				time = Math.max(time,
+						(long) (transfersSize / ((ComNode) def).getSpeed()));
 			}
 		}
 		return time;
@@ -144,8 +138,8 @@ public class MessageRouteStep extends AbstractRouteStep {
 	@Override
 	public String toString() {
 		String trace = "{" + getSender().toString() + " -> ";
-		for (AbstractNode node : nodes) {
-			trace += node + " ";
+		for (ComponentInstance node : nodes) {
+			trace += node.getInstanceName() + " ";
 		}
 		trace += "-> " + getReceiver().toString() + "}";
 		return trace;
@@ -153,8 +147,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new MessageRouteStep((Operator) getSender().clone(), nodes,
-				(Operator) getReceiver().clone());
+		return new MessageRouteStep(getSender(), nodes, getReceiver());
 	}
 
 }

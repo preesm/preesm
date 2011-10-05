@@ -85,6 +85,7 @@ public class PreesmScenario {
 	 */
 	private Set<String> operatorIds = null;
 	private Set<String> operatorDefinitionIds = null;
+	private Set<String> comNodeIds = null;
 
 	/**
 	 * Path to the scenario file
@@ -157,5 +158,13 @@ public class PreesmScenario {
 
 	public void setOperatorDefinitionIds(Set<String> operatorDefinitionIds) {
 		this.operatorDefinitionIds = operatorDefinitionIds;
+	}
+
+	public Set<String> getComNodeIds() {
+		return comNodeIds;
+	}
+
+	public void setComNodeIds(Set<String> comNodeIds) {
+		this.comNodeIds = comNodeIds;
 	}
 }

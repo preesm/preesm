@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.model;
 
-import org.ietr.preesm.core.architecture.Component;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 import org.sdf4j.model.parameters.InvalidExpressionException;
@@ -45,12 +46,12 @@ import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
 public class CodeGenSDFSinkInterfaceVertex extends SDFSinkInterfaceVertex
 		implements ICodeGenSDFVertex {
 
-	public Component getOperator() {
-		return (Component) this.getPropertyBean().getValue(OPERATOR,
-				Component.class);
+	public ComponentInstance getOperator() {
+		return (ComponentInstance) this.getPropertyBean().getValue(OPERATOR,
+				ComponentInstance.class);
 	}
 
-	public void setOperator(Component op) {
+	public void setOperator(ComponentInstance op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 

@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.model;
 
-import org.ietr.preesm.core.architecture.Component;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
@@ -53,9 +54,9 @@ public interface ICodeGenSDFVertex {
 	@SuppressWarnings("rawtypes")
 	public AbstractGraph getGraphDescription();
 
-	public abstract Component getOperator();
+	public abstract ComponentInstance getOperator();
 
-	public abstract void setOperator(Component op);
+	public abstract void setOperator(ComponentInstance op);
 
 	public int getPos();
 

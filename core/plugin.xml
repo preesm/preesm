@@ -17,7 +17,7 @@
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.preesm.core.architecture.MultiCoreArchitecture">
+                  object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </scenario>

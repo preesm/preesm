@@ -37,18 +37,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
-import java.util.logging.Level;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
-import org.ietr.preesm.core.architecture.Component;
-import org.ietr.preesm.core.architecture.Interconnection;
-import org.ietr.preesm.core.architecture.MultiCoreArchitecture;
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.Medium;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
-import org.ietr.preesm.core.architecture.simplemodel.Ram;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.Dma;
+import net.sf.dftools.architecture.slam.component.Mem;
+import net.sf.dftools.architecture.slam.component.impl.DmaImpl;
+import net.sf.dftools.architecture.slam.component.impl.MemImpl;
+import net.sf.dftools.architecture.slam.link.ControlLink;
+import net.sf.dftools.architecture.slam.link.Link;
 
 /**
  * Depending on the architecture nodes separating two operators, generates a
@@ -59,9 +56,9 @@ import org.ietr.preesm.core.architecture.simplemodel.Ram;
  */
 public class RouteStepFactory {
 
-	private MultiCoreArchitecture archi = null;
+	private Design archi = null;
 
-	public RouteStepFactory(MultiCoreArchitecture archi) {
+	public RouteStepFactory(Design archi) {
 		super();
 		this.archi = archi;
 	}
@@ -69,29 +66,19 @@ public class RouteStepFactory {
 	/**
 	 * Generates the suited route steps from intermediate nodes
 	 */
-	public AbstractRouteStep getRouteStep(Operator source,
-			List<AbstractNode> nodes, Operator target) {
+	public AbstractRouteStep getRouteStep(ComponentInstance source,
+			List<ComponentInstance> nodes, ComponentInstance target) {
 		AbstractRouteStep step = null;
 
-		if (nodes.get(0) instanceof Medium) {
-			if (nodes.size() == 1) {
-				return new MediumRouteStep(source, (Medium) nodes.get(0),
-						target);
-			} else {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
-						"A medium must be connected only to operators.");
-			}
+		Dma dma = getDma(nodes, source);
+		Mem mem = getRam(nodes, source);
+		if (dma != null) {
+			step = new DmaRouteStep(source, nodes, target, dma);
+		} else if (mem != null) {
+			step = new MemRouteStep(source, nodes, target, mem,
+					getRamNodeIndex(nodes));
 		} else {
-			Dma dma = getDma(nodes, source);
-			Ram ram = getRam(nodes, source);
-			if (dma != null) {
-				step = new DmaRouteStep(source, nodes, target, dma);
-			} else if (ram != null) {
-				step = new RamRouteStep(source, nodes, target, ram,
-						getRamNodeIndex(nodes));
-			} else {
-				step = new MessageRouteStep(source, nodes, target);
-			}
+			step = new MessageRouteStep(source, nodes, target);
 		}
 
 		return step;
@@ -101,18 +88,24 @@ public class RouteStepFactory {
 	 * Gets the dma corresponding to the step if any exists. The Dma must have a
 	 * setup link with the source.
 	 */
-	private Dma getDma(List<AbstractNode> nodes, Operator dmaSetup) {
-		Dma dma = null;
-		for (AbstractNode node : nodes) {
-			for (Interconnection i : archi.undirectedEdgesOf(node)) {
-				if (i.getSource() instanceof Dma)
-					dma = (Dma) i.getSource();
-				if (i.getTarget() instanceof Dma)
-					dma = (Dma) i.getTarget();
+	private Dma getDma(List<ComponentInstance> nodes, ComponentInstance dmaSetup) {
+		ComponentInstance dmaInst = null;
+		for (ComponentInstance node : nodes) {
+			for (Link i : archi.getLinks()) {
+				if (i.getSourceComponentInstance().getInstanceName()
+						.equals(node.getInstanceName())
+						|| i.getDestinationComponentInstance()
+								.getInstanceName()
+								.equals(node.getInstanceName())) {
+					if (i.getSourceComponentInstance().getComponent() instanceof DmaImpl)
+						dmaInst = i.getSourceComponentInstance();
+					if (i.getDestinationComponentInstance().getComponent() instanceof DmaImpl)
+						dmaInst = i.getDestinationComponentInstance();
 
-				if (dma != null) {
-					if (existSetup(dma, dmaSetup)) {
-						return dma;
+					if (dmaInst != null) {
+						if (existSetup(dmaInst, dmaSetup)) {
+							return (Dma) dmaInst.getComponent();
+						}
 					}
 				}
 			}
@@ -124,18 +117,24 @@ public class RouteStepFactory {
 	 * Gets the ram corresponding to the step if any exists. The ram must have a
 	 * setup link with the source.
 	 */
-	private Ram getRam(List<AbstractNode> nodes, Operator ramSetup) {
-		Ram ram = null;
-		for (AbstractNode node : nodes) {
-			for (Interconnection i : archi.undirectedEdgesOf(node)) {
-				if (i.getSource() instanceof Ram)
-					ram = (Ram) i.getSource();
-				if (i.getTarget() instanceof Ram)
-					ram = (Ram) i.getTarget();
+	private Mem getRam(List<ComponentInstance> nodes, ComponentInstance ramSetup) {
+		ComponentInstance ramInst = null;
+		for (ComponentInstance node : nodes) {
+			for (Link i : archi.getLinks()) {
+				if (i.getSourceComponentInstance().getInstanceName()
+						.equals(node.getInstanceName())
+						|| i.getDestinationComponentInstance()
+								.getInstanceName()
+								.equals(node.getInstanceName())) {
+					if (i.getSourceComponentInstance().getComponent() instanceof MemImpl)
+						ramInst = i.getSourceComponentInstance();
+					if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl)
+						ramInst = i.getDestinationComponentInstance();
 
-				if (ram != null) {
-					if (existSetup(ram, ramSetup)) {
-						return ram;
+					if (ramInst != null) {
+						if (existSetup(ramInst, ramSetup)) {
+							return (Mem) ramInst.getComponent();
+						}
 					}
 				}
 			}
@@ -147,17 +146,23 @@ public class RouteStepFactory {
 	 * Gets the ram corresponding to the step if any exists. The ram must have a
 	 * setup link with the source.
 	 */
-	private int getRamNodeIndex(List<AbstractNode> nodes) {
-		Ram ram = null;
-		for (AbstractNode node : nodes) {
-			for (Interconnection i : archi.undirectedEdgesOf(node)) {
-				if (i.getSource() instanceof Ram)
-					ram = (Ram) i.getSource();
-				if (i.getTarget() instanceof Ram)
-					ram = (Ram) i.getTarget();
+	private int getRamNodeIndex(List<ComponentInstance> nodes) {
+		ComponentInstance ramInst = null;
+		for (ComponentInstance node : nodes) {
+			for (Link i : archi.getLinks()) {
+				if (i.getSourceComponentInstance().getInstanceName()
+						.equals(node.getInstanceName())
+						|| i.getDestinationComponentInstance()
+								.getInstanceName()
+								.equals(node.getInstanceName())) {
+					if (i.getSourceComponentInstance().getComponent() instanceof MemImpl)
+						ramInst = i.getSourceComponentInstance();
+					if (i.getDestinationComponentInstance().getComponent() instanceof MemImpl)
+						ramInst = i.getDestinationComponentInstance();
 
-				if (ram != null) {
-					return nodes.indexOf(node);
+					if (ramInst != null) {
+						return nodes.indexOf(node);
+					}
 				}
 			}
 		}
@@ -167,10 +172,14 @@ public class RouteStepFactory {
 	/**
 	 * Checks if a setup link exists between cmp and operator
 	 */
-	private boolean existSetup(Component cmp, Operator op) {
+	private boolean existSetup(ComponentInstance cmp, ComponentInstance op) {
 
-		for (Interconnection i : archi.incomingEdgesOf(cmp)) {
-			if (i.getSource().equals(op) && i.isSetup()) {
+		for (Link i : archi.getLinks()) {
+			if (i.getSourceComponentInstance().getInstanceName()
+					.equals(op.getInstanceName())
+					&& i.getDestinationComponentInstance().getInstanceName()
+							.equals(cmp.getInstanceName())
+					&& (i instanceof ControlLink)) {
 				return true;
 			}
 		}

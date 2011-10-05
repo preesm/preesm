@@ -38,9 +38,9 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.logging.Level;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.core.architecture.Component;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.calls.Constant;
@@ -61,12 +61,12 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
 	}
 
-	public Component getOperator() {
-		return (Component) this.getPropertyBean().getValue(OPERATOR,
-				Component.class);
+	public ComponentInstance getOperator() {
+		return (ComponentInstance) this.getPropertyBean().getValue(OPERATOR,
+				ComponentInstance.class);
 	}
 
-	public void setOperator(Component op) {
+	public void setOperator(ComponentInstance op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 

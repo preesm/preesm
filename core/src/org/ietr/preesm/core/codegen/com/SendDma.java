@@ -38,8 +38,9 @@ package org.ietr.preesm.core.codegen.com;
 
 import java.util.List;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
@@ -56,7 +57,7 @@ public class SendDma extends CommunicationFunctionCall {
 	/**
 	 * Target of the currently sent communication
 	 */
-	private Operator target;
+	private ComponentInstance target;
 
 	/**
 	 * Buffer containing the distant location where to store the data. Ther
@@ -66,7 +67,7 @@ public class SendDma extends CommunicationFunctionCall {
 
 	public SendDma(AbstractBufferContainer parentContainer,
 			SDFAbstractVertex vertex, List<Buffer> bufferSet,
-			AbstractRouteStep routeStep, Operator target, int callIndex,
+			AbstractRouteStep routeStep, ComponentInstance target, int callIndex,
 			Buffer addressBuffer) {
 		super("send", parentContainer, bufferSet, routeStep, vertex, callIndex);
 
@@ -79,7 +80,7 @@ public class SendDma extends CommunicationFunctionCall {
 		super.accept(printer, currentLocation);
 	}
 
-	public Operator getTarget() {
+	public ComponentInstance getTarget() {
 		return target;
 	}
 
@@ -92,7 +93,7 @@ public class SendDma extends CommunicationFunctionCall {
 
 		String code = super.toString();
 
-		code = getName() + "(" + target.getName() + "," + code + ");";
+		code = getName() + "(" + target.getInstanceName() + "," + code + ");";
 
 		return code;
 	}

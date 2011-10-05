@@ -38,9 +38,8 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
 
-import org.ietr.preesm.core.architecture.simplemodel.AbstractNode;
-import org.ietr.preesm.core.architecture.simplemodel.Dma;
-import org.ietr.preesm.core.architecture.simplemodel.Operator;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.component.Dma;
 
 /**
  * Route step where the sender uses a dma to send data in parallel with its
@@ -57,8 +56,8 @@ public class DmaRouteStep extends MessageRouteStep {
 	 */
 	public static final String type = "DmaRouteStep";
 
-	public DmaRouteStep(Operator sender, List<AbstractNode> nodes,
-			Operator receiver, Dma dma) {
+	public DmaRouteStep(ComponentInstance sender, List<ComponentInstance> nodes,
+			ComponentInstance receiver, Dma dma) {
 		super(sender, nodes, receiver);
 		this.dma = dma;
 	}
@@ -85,9 +84,7 @@ public class DmaRouteStep extends MessageRouteStep {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		Dma newDma = (Dma) dma.clone();
-		newDma.setDefinition(dma.getDefinition());
-		return new DmaRouteStep((Operator) getSender().clone(), getNodes(),
-				(Operator) getReceiver().clone(), newDma);
+		return new DmaRouteStep(getSender(), getNodes(),
+				getReceiver(), dma);
 	}
 }
