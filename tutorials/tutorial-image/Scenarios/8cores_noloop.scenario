@@ -2,7 +2,7 @@
 <scenario>
     <files>
         <algorithm url="/tutorial-image/Algo/top_noloop.graphml"/>
-        <architecture url="/tutorial-image/Archi/8CoreX86.design"/>
+        <architecture url="/tutorial-image/Archi/8CoreX86.slam"/>
         <codegenDirectory url="/tutorial-image/Code/generated"/>
     </files>
     <constraints excelUrl="">

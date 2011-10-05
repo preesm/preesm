@@ -2,7 +2,7 @@
 <scenario>
     <files>
         <algorithm url="/tutorial1/Algo/TestCom.graphml"/>
-        <architecture url="/tutorial1/Archi/8CoreX86.design"/>
+        <architecture url="/tutorial1/Archi/8CoreX86.slam"/>
         <codegenDirectory url="/tutorial1/Code/x86/generatedSrc"/>
     </files>
     <constraints excelUrl="">

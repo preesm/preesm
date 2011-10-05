@@ -117,7 +117,7 @@
             <slam:componentDescription slam:componentRef="scr"
                 slam:componentType="parallelComNode" slam:refinement="" slam:speed="2"/>
             <slam:componentDescription slam:componentRef="EDMA"
-                slam:componentType="Dma" slam:refinement=""/>
+                slam:componentType="Dma" slam:refinement="" slam:setupTime="713"/>
             <slam:componentDescription slam:componentRef="RIO"
                 slam:componentType="contentionComNode"
                 slam:refinement="" slam:speed="0.125"/>
@@ -130,11 +130,11 @@
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b2"/>
             <slam:linkDescription slam:directedLink="directed"
-                slam:linkType="ControlLink" slam:referenceId="w1aab2b3" slam:setupTime="4000"/>
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b3"/>
             <slam:linkDescription slam:directedLink="directed"
-                slam:linkType="ControlLink" slam:referenceId="w1aab2b4" slam:setupTime="4000"/>
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b4"/>
             <slam:linkDescription slam:directedLink="directed"
-                slam:linkType="ControlLink" slam:referenceId="w1aab2b5" slam:setupTime="4000"/>
+                slam:linkType="ControlLink" slam:referenceId="w1aab2b5"/>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b6"/>
             <slam:linkDescription slam:directedLink="undirected"
@@ -144,7 +144,7 @@
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2c10"/>
             <slam:linkDescription slam:directedLink="directed"
-                slam:linkType="ControlLink" slam:referenceId="w1aab2c11" slam:setupTime="4000"/>
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c11"/>
         </slam:linkDescriptions>
         <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:parameters/>
