@@ -7,7 +7,7 @@ package org.ietr.preesm.plugin.codegen.memory;
  * @author kdesnos
  * 
  */
-public class MemoryExclusionGraphNode {
+public class MemoryExclusionGraphNode implements WeightedVertex<Integer>, Comparable<MemoryExclusionGraphNode> {
 
 	/**
 	 * ID of the task producing the memory.
@@ -70,5 +70,14 @@ public class MemoryExclusionGraphNode {
 		else
 			return false;
 
+	}
+
+	public Integer getWeight() {
+		
+		return size;
+	}
+
+	public int compareTo(MemoryExclusionGraphNode o) {
+		return this.size - o.size;
 	}
 }

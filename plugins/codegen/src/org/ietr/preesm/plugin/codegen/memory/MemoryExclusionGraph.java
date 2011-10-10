@@ -550,4 +550,40 @@ public class MemoryExclusionGraph extends
 
 		}
 	}
+
+	/**
+	 * Get the complementary graph of the exclusion graph.
+	 * The complementary graph posess the same nodes but the complementary edges.
+	 * i.e. if there is an edge between vi and vj in the exclusion graph, there will
+	 * be no edge in the complementary.
+	 * 
+	 * @return
+	 */
+	public SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> GetComplementary()
+	{
+		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> result;
+		
+		result = new SimpleGraph<MemoryExclusionGraphNode, DefaultEdge>(DefaultEdge.class);
+		
+		for(MemoryExclusionGraphNode vertex : this.vertexSet())
+		{
+			result.addVertex(vertex);			
+		}
+		
+		MemoryExclusionGraphNode[] vertices = this.vertexSet().toArray( new MemoryExclusionGraphNode[0]);
+		// MemoryExclusionGraphNode[] vertices = this.vertexSet().toArray(MemoryExclusionGraphNode.class);
+		
+		for(int i = 0; i < this.vertexSet().size() ; i++)
+		{
+			for(int j = i+1; j < this.vertexSet().size() ; j++)
+			{
+				if(! this.containsEdge(vertices[i], vertices[j]))
+				{
+					result.addEdge(vertices[i], vertices[j]);
+				}				
+			}			
+		}
+		
+		return result;
+	}
 }
