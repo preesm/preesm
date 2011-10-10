@@ -189,7 +189,7 @@ public class SdfToDagConverter {
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
-
+			
 			if (timelist.size() != 0) {
 				while (listiterator.hasNext()) {
 					Timing timing = listiterator.next();

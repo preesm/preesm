@@ -114,7 +114,7 @@ public class TimingManager {
 
 		if (sdfVertex.getGraphDescription() == null) {
 			for (Timing timing : timings) {
-				if (timing.getSdfVertexId().equals(sdfVertex.getName())) {
+				if (timing.getSdfVertexId().equals(sdfVertex.getId())) {
 					vals.add(timing);
 				}
 			}
