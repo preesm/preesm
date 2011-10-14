@@ -30,11 +30,86 @@ import org.sdf4j.model.parameters.InvalidExpressionException;
  */
 public class MemoryExclusionGraph extends
 		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> {
-
 	/**
 	 * Mandatory when extending SimpleGraph
 	 */
 	private static final long serialVersionUID = 6491894138235944107L;
+
+	/**
+	 * Method to check is all boolean of a tab are false.
+	 * 
+	 * @param a
+	 *            the tab.
+	 * @return true if all elements are false. false else.
+	 */
+	public static boolean allFalse(boolean[] a) {
+		boolean res = false;
+
+		for (boolean elem : a) {
+			res = elem | res;
+		}
+		return !res;
+	}
+
+	/**
+	 * Method to check is all boolean of a tab are true.
+	 * 
+	 * @param a
+	 *            the tab.
+	 * @return true if all elements are true. false else.
+	 */
+	public static boolean allTrue(boolean[] a) {
+		boolean res = true;
+
+		for (boolean elem : a) {
+			res = elem & res;
+		}
+		return res;
+	}
+
+	/**
+	 * Method to apply bitwise-like operator AND to two boolean table.
+	 * 
+	 * @warning <b> The two table MUST have the same size </b>
+	 * 
+	 * @param a
+	 *            first boolean table
+	 * @param b
+	 *            second boolean table
+	 * @return the result of a AND b
+	 */
+	public static boolean[] and(boolean[] a, boolean[] b) throws Exception {
+		if (a.length != b.length) {
+			throw new Exception("and : Size of boolean tabs do not match.");
+		}
+		boolean c[] = new boolean[a.length];
+		for (int i = 0; i < a.length; i++) {
+			c[i] = a[i] & b[i];
+		}
+		return c;
+	}
+
+	/**
+	 * Method to apply bitwise-like operator OR to two boolean table.
+	 * 
+	 * @warning <b> The two table MUST have the same size </b>
+	 * 
+	 * @param a
+	 *            first boolean table
+	 * @param b
+	 *            second boolean table
+	 * @return the result of a OR b
+	 */
+	public static boolean[] or(boolean[] a, boolean[] b) throws Exception {
+		if (a.length != b.length) {
+			throw new Exception("or : Size of boolean tabs do not match.");
+		}
+		boolean c[] = new boolean[a.length];
+		for (int i = 0; i < a.length; i++) {
+			c[i] = a[i] | b[i];
+		}
+		return c;
+	}
 
 	/**
 	 * Each element of this list is a map containing all
@@ -127,88 +202,6 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
-	 * Method to apply bitwise-like operator OR to two boolean table.
-	 * 
-	 * @warning <b> The two table MUST have the same size </b>
-	 * 
-	 * @param a
-	 *            first boolean table
-	 * @param b
-	 *            second boolean table
-	 * @return the result of a OR b
-	 */
-	public static boolean[] or(boolean[] a, boolean[] b) throws Exception {
-		if (a.length != b.length) {
-			throw new Exception("or : Size of boolean tabs do not match.");
-		}
-
-		boolean c[] = new boolean[a.length];
-
-		for (int i = 0; i < a.length; i++) {
-			c[i] = a[i] | b[i];
-		}
-
-		return c;
-	}
-
-	/**
-	 * Method to apply bitwise-like operator AND to two boolean table.
-	 * 
-	 * @warning <b> The two table MUST have the same size </b>
-	 * 
-	 * @param a
-	 *            first boolean table
-	 * @param b
-	 *            second boolean table
-	 * @return the result of a AND b
-	 */
-	public static boolean[] and(boolean[] a, boolean[] b) throws Exception {
-		if (a.length != b.length) {
-			throw new Exception("and : Size of boolean tabs do not match.");
-		}
-
-		boolean c[] = new boolean[a.length];
-
-		for (int i = 0; i < a.length; i++) {
-			c[i] = a[i] & b[i];
-		}
-
-		return c;
-	}
-
-	/**
-	 * Method to check is all boolean of a tab are true.
-	 * 
-	 * @param a
-	 *            the tab.
-	 * @return true if all elements are true. false else.
-	 */
-	public static boolean allTrue(boolean[] a) {
-		boolean res = true;
-
-		for (boolean elem : a) {
-			res = elem & res;
-		}
-		return res;
-	}
-
-	/**
-	 * Method to check is all boolean of a tab are false.
-	 * 
-	 * @param a
-	 *            the tab.
-	 * @return true if all elements are false. false else.
-	 */
-	public static boolean allFalse(boolean[] a) {
-		boolean res = false;
-
-		for (boolean elem : a) {
-			res = elem | res;
-		}
-		return !res;
-	}
-
-	/**
 	 * This method add the node corresponding to the passed edge to the
 	 * ExclusionGraph. If the source or targeted vertex isn't a task vertex,
 	 * nothing is added.
@@ -221,7 +214,6 @@ public class MemoryExclusionGraph extends
 		// If the target and source vertices are tasks,
 		// add a node corresponding to the memory transfer
 		// to the exclusion graph. Else, nothing
-
 		MemoryExclusionGraphNode newNode = null;
 
 		// As the non-task vertices are removed at the beginning of the build
@@ -269,9 +261,8 @@ public class MemoryExclusionGraph extends
 	 * @throws InvalidExpressionException
 	 * @throws WorkflowException
 	 */
-	public void BuildGraph(DirectedAcyclicGraph dag)
+	public void buildGraph(DirectedAcyclicGraph dag)
 			throws InvalidExpressionException, WorkflowException {
-
 		/*
 		 * Declarations & initializations
 		 */
@@ -297,9 +288,7 @@ public class MemoryExclusionGraph extends
 			}
 		}
 		iter = new DAGIterator(dag); // Iterator on DAG vertices
-
 		dag.removeAllVertices(toRemove);
-
 		exclusionLists = new ArrayList<HashMap<MemoryExclusionGraphNode, boolean[]>>();
 		verticesBranch = new ArrayList<HashMap<Integer, boolean[]>>(dag
 				.vertexSet().size());
@@ -318,15 +307,11 @@ public class MemoryExclusionGraph extends
 			// Retrieve the index of the list which is also the unique ID of
 			// the fork.
 			int forkID = exclusionLists.size() - 1;
-
-			int nbBranches = sources.size(); // Number of
-												// outgoing
-												// branches
+			int nbBranches = sources.size(); // Number of outgoing branches
 			int branch = 0; // index of the current branch
 
 			// For each source node
 			for (DAGVertex sourceNode : sources) {
-
 				// get a reference to the list of branches
 				// to which the current DAG Vertex belongs
 				HashMap<Integer, boolean[]> vertexBranch = verticesBranch
@@ -339,7 +324,6 @@ public class MemoryExclusionGraph extends
 
 				// Add the new branch to the list
 				vertexBranch.put(forkID, branchID);
-
 				branch++;
 			}
 		}
@@ -354,12 +338,10 @@ public class MemoryExclusionGraph extends
 			DAGVertex vertexDAG = iter.next(); // Retrieve the vertex to process
 			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
 					"schedulingOrder"); // Retrieve the vertex unique ID
-
 			/*
 			 * Part 1.1: Merge vertex processing
 			 */
 			if ((vertexDAG.incomingEdges()).size() > 1) {
-
 				HashMap<Integer, boolean[]> vertexBranch = verticesBranch
 						.get(vertexID);
 
@@ -371,18 +353,14 @@ public class MemoryExclusionGraph extends
 						removed.add(fork);
 					}
 				}
-
 				for (int fork : removed) {
 					vertexBranch.remove(fork);
 				}
-
 			}
-
 			/*
 			 * Part 1.2 Fork vertex processing
 			 */
 			if ((vertexDAG.outgoingEdges()).size() > 1) {
-
 				// Creation of the new exclusion list
 				HashMap<MemoryExclusionGraphNode, boolean[]> list = new HashMap<MemoryExclusionGraphNode, boolean[]>();
 				exclusionLists.add(list);
@@ -390,7 +368,6 @@ public class MemoryExclusionGraph extends
 				// Retrieve the index of the list which is also the unique ID of
 				// the fork.
 				int forkID = exclusionLists.size() - 1;
-
 				int nbBranches = vertexDAG.outgoingEdges().size(); // Number of
 																	// outgoing
 																	// branches
@@ -398,7 +375,6 @@ public class MemoryExclusionGraph extends
 
 				// For each outgoing edge
 				for (DAGEdge edge : vertexDAG.outgoingEdges()) {
-
 					// Retrieve a copy of the list of branches
 					// to which the current DAG Vertex belongs
 					HashMap<Integer, boolean[]> vertexBranch = new HashMap<Integer, boolean[]>(
@@ -419,11 +395,9 @@ public class MemoryExclusionGraph extends
 						for (int fork : vertexBranch.keySet()) {
 							HashMap<MemoryExclusionGraphNode, boolean[]> forkList = exclusionLists
 									.get(fork);
-
 							forkList.put(newNode, vertexBranch.get(fork));
 						}
 					}
-
 					// Copy the list of branch of the current vertex (+ new fork
 					// branches)
 					// to the list of branch of the target vertex
@@ -456,17 +430,14 @@ public class MemoryExclusionGraph extends
 									.put(fork, vertexBranch.get(fork));
 						}
 					}
-
 					// Increment index branch
 					branch++;
 				}
-
 			} else {
 				/*
 				 * Part 1.3 Unique-output vertex processing
 				 */
 				if ((vertexDAG.outgoingEdges()).size() == 1) {
-
 					DAGEdge edge = vertexDAG.outgoingEdges().iterator().next();
 
 					// Retrieve the list of branches
@@ -482,11 +453,9 @@ public class MemoryExclusionGraph extends
 						for (int fork : vertexBranch.keySet()) {
 							HashMap<MemoryExclusionGraphNode, boolean[]> forkList = exclusionLists
 									.get(fork);
-
 							forkList.put(newNode, vertexBranch.get(fork));
 						}
 					}
-
 					// Copy the list of branch of the current vertex
 					// to the list of branch of the target vertex
 					int targetVertexID = (Integer) edge.getTarget()
@@ -495,7 +464,6 @@ public class MemoryExclusionGraph extends
 					// Get the list of branch of target vertex
 					HashMap<Integer, boolean[]> targetVertexBranch = verticesBranch
 							.get(targetVertexID);
-
 					for (int fork : vertexBranch.keySet()) {
 						// If the target vertex already has a branch for
 						// this fork
@@ -521,16 +489,13 @@ public class MemoryExclusionGraph extends
 				}
 			}
 		}
-
 		/*
 		 * Part 2: Scan of the exclusion lists to add exclusion between
 		 * potentially concurrent memory transfer.
 		 */
-
 		// For each exclusion list
 		for (HashMap<MemoryExclusionGraphNode, boolean[]> list : exclusionLists) {
 			Object[] keyList = (list.keySet().toArray());
-
 			for (int i = 0; i < list.size() - 1; i++) {
 				for (int j = i + 1; j < list.size(); j++) {
 					try {
@@ -544,46 +509,35 @@ public class MemoryExclusionGraph extends
 								e.getLocalizedMessage());
 						throw er;
 					}
-
 				}
 			}
-
 		}
 	}
 
 	/**
-	 * Get the complementary graph of the exclusion graph.
-	 * The complementary graph posess the same nodes but the complementary edges.
-	 * i.e. if there is an edge between vi and vj in the exclusion graph, there will
-	 * be no edge in the complementary.
+	 * Get the complementary graph of the exclusion graph. The complementary
+	 * graph posess the same nodes but the complementary edges. i.e. if there is
+	 * an edge between vi and vj in the exclusion graph, there will be no edge
+	 * in the complementary.
 	 * 
 	 * @return
 	 */
-	public SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> GetComplementary()
-	{
+	public SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> getComplementary() {
 		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> result;
-		
-		result = new SimpleGraph<MemoryExclusionGraphNode, DefaultEdge>(DefaultEdge.class);
-		
-		for(MemoryExclusionGraphNode vertex : this.vertexSet())
-		{
-			result.addVertex(vertex);			
+		result = new SimpleGraph<MemoryExclusionGraphNode, DefaultEdge>(
+				DefaultEdge.class);
+		for (MemoryExclusionGraphNode vertex : this.vertexSet()) {
+			result.addVertex(vertex);
 		}
-		
-		MemoryExclusionGraphNode[] vertices = this.vertexSet().toArray( new MemoryExclusionGraphNode[0]);
-		// MemoryExclusionGraphNode[] vertices = this.vertexSet().toArray(MemoryExclusionGraphNode.class);
-		
-		for(int i = 0; i < this.vertexSet().size() ; i++)
-		{
-			for(int j = i+1; j < this.vertexSet().size() ; j++)
-			{
-				if(! this.containsEdge(vertices[i], vertices[j]))
-				{
+		MemoryExclusionGraphNode[] vertices = this.vertexSet().toArray(
+				new MemoryExclusionGraphNode[0]);
+		for (int i = 0; i < this.vertexSet().size(); i++) {
+			for (int j = i + 1; j < this.vertexSet().size(); j++) {
+				if (!this.containsEdge(vertices[i], vertices[j])) {
 					result.addEdge(vertices[i], vertices[j]);
-				}				
-			}			
+				}
+			}
 		}
-		
 		return result;
 	}
 }

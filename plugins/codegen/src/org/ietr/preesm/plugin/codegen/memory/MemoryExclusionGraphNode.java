@@ -7,13 +7,8 @@ package org.ietr.preesm.plugin.codegen.memory;
  * @author kdesnos
  * 
  */
-public class MemoryExclusionGraphNode implements WeightedVertex<Integer>, Comparable<MemoryExclusionGraphNode> {
-
-	/**
-	 * ID of the task producing the memory.
-	 */
-	private String source;
-
+public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
+		Comparable<MemoryExclusionGraphNode> {
 	/**
 	 * ID of the task consuming the memory.
 	 */
@@ -23,6 +18,11 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>, Compar
 	 * Size of the memory used
 	 */
 	private int size;
+
+	/**
+	 * ID of the task producing the memory.
+	 */
+	private String source;
 
 	/**
 	 * Constructor of the class
@@ -41,16 +41,8 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>, Compar
 		size = sizeMem;
 	}
 
-	/**
-	 * Method added to enable the use of contains() method in
-	 * Set<MemoryExclusionGraphNode>
-	 */
-	public int hashCode() {
-		return sink.hashCode() | source.hashCode();
-	}
-
-	public String toString() {
-		return source + "=>" + sink + ":" + size;
+	public int compareTo(MemoryExclusionGraphNode o) {
+		return this.size - o.size;
 	}
 
 	/**
@@ -63,21 +55,27 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>, Compar
 	 * @return true if the object is a node a similar, false else.
 	 */
 	public boolean equals(Object o) {
-
-		if (o instanceof MemoryExclusionGraphNode)
+		if (o instanceof MemoryExclusionGraphNode) {
 			return (this.source.equals(((MemoryExclusionGraphNode) o).source) && this.sink
 					.equals(((MemoryExclusionGraphNode) o).sink));
-		else
+		} else {
 			return false;
-
+		}
 	}
 
 	public Integer getWeight() {
-		
 		return size;
 	}
 
-	public int compareTo(MemoryExclusionGraphNode o) {
-		return this.size - o.size;
+	/**
+	 * Method added to enable the use of contains() method in
+	 * Set<MemoryExclusionGraphNode>
+	 */
+	public int hashCode() {
+		return sink.hashCode() | source.hashCode();
+	}
+
+	public String toString() {
+		return source + "=>" + sink + ":" + size;
 	}
 }

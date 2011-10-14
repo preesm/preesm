@@ -36,86 +36,44 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class YamaguchiBisSolver<V extends WeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
 		extends MaximumWeightCliqueSolver<V, E> {
-
+	/**
+	 * The costs computed by orderVertexSet function
+	 */
 	private ArrayList<Integer> cost;
 
+	/**
+	 * The ordered vertex set
+	 */
 	private ArrayList<V> orderedVertexSet;
 
+	/**
+	 * Constructor of the solver
+	 * 
+	 * @param graph
+	 *            The graph to analyze
+	 */
 	public YamaguchiBisSolver(SimpleGraph<V, E> graph) {
 		super(graph);
-
 		cost = new ArrayList<Integer>();
 		min = -1;
-
 	}
 
 	/**
-	 * This method:
-	 * <ul>
-	 * <li>orders this vertex set according to Algorithm 1 of the paper
-	 * <li>return the resulting vertex set
-	 * <li>compute the upper bounds a(pi<sub>i</sub>) and store them in cost
-	 * </ul>
+	 * This method returns the subset S<sub>i</sub> of the orderedVertexSet.
 	 * 
-	 * @param subgraphVertices
-	 *            The vertices to order
-	 * @param cost
-	 *            the list in which the resulting costs will be stored (in the
-	 *            order of the returned list)
-	 * @return the ordered list of vertices.
+	 * S<sub>i</sub> is defined as S<sub>i</sub> =
+	 * {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }
+	 * 
+	 * @param i
+	 *            the vertex index of the desired subset
+	 * @return the subset S<sub>i</sub>
 	 */
-	public ArrayList<V> OrderVertexSet(HashSet<V> subgraphVertices,
-			ArrayList<Integer> cost) {
-		// (1) let PI be the empty sequence
-		ArrayList<V> orderedVertexSet = new ArrayList<V>();
-
-		// (2) For each v € V, les a(v) <- w(v)
-		HashMap<V, Integer> tempCost = new HashMap<V, Integer>();
-
-		for (V vertex : subgraphVertices) {
-			tempCost.put(vertex, vertex.getWeight());
+	protected ArrayList<V> getSeti(int i) {
+		ArrayList<V> si = new ArrayList<V>();
+		for (int j = 0; j <= i; j++) {
+			si.add(orderedVertexSet.get(j));
 		}
-
-		// (3) let S <- V
-		ArrayList<V> unorderedVertexSet = new ArrayList<V>();
-		unorderedVertexSet.addAll(subgraphVertices);
-
-		// (8) Halt if set(PI) = V
-		// & (9) Goto (4)
-		while (!unorderedVertexSet.isEmpty()) {
-			// (4) Choose a vertex v' from S that minimize a(v')
-			V selectedVertex = unorderedVertexSet.get(0);
-			int minCost = tempCost.get(selectedVertex);
-			for (V vertex : unorderedVertexSet) {
-				if (tempCost.get(vertex) < minCost) {
-					selectedVertex = vertex;
-					minCost = tempCost.get(vertex);
-				}
-			}
-
-			// (5) let S <- S - {v'}
-			unorderedVertexSet.remove(selectedVertex);
-
-			// (6) for each u€N(v) inter S, let a(u) <- a(v') + w(u)
-			@SuppressWarnings("unchecked")
-			HashSet<V> vertexSet = (HashSet<V>) GetN(selectedVertex).clone();
-			vertexSet.retainAll(unorderedVertexSet);
-
-			for (V vertex : vertexSet) {
-				tempCost.put(vertex,
-						tempCost.get(selectedVertex) + vertex.getWeight());
-			}
-
-			// (7) Insert v' into PI such that PI becomes increasing order
-			// according to a(.)
-			orderedVertexSet.add(selectedVertex);
-
-			// save tempCost(v') in cost in the order of ordered vertex
-			cost.add(tempCost.get(selectedVertex));
-			tempCost.remove(selectedVertex);
-		}
-
-		return orderedVertexSet;
+		return si;
 	}
 
 	/**
@@ -150,7 +108,7 @@ public class YamaguchiBisSolver<V extends WeightedVertex<Integer> & Comparable<V
 
 			// (5) Get the maximum Weight clique C' of Pi(G,PI)
 			// subgraphVertices.remove(currentVertex);
-			ArrayList<V> subGraph = GetSeti(indexVertex);
+			ArrayList<V> subGraph = getSeti(indexVertex);
 			subGraph.retainAll(subgraphVertices);
 
 			// N(v)
@@ -159,7 +117,7 @@ public class YamaguchiBisSolver<V extends WeightedVertex<Integer> & Comparable<V
 			// this.GetN(currentVertex).clone();
 
 			// N(v) inter Si
-			subGraph.retainAll(GetN(currentVertex));
+			subGraph.retainAll(adjacentVerticesOf(currentVertex));
 
 			// Recursive Call
 			HashSet<V> subClique = maxWeightClique(subGraph, thresold
@@ -174,43 +132,81 @@ public class YamaguchiBisSolver<V extends WeightedVertex<Integer> & Comparable<V
 				clique = subClique;
 			}
 		}
-
 		return clique;
 	}
 
-	@Override
-	public void Solve() {
-
-		HashSet<V> graphVertices = new HashSet<V>();
-		graphVertices.addAll(graph.vertexSet());
-
-		orderedVertexSet = OrderVertexSet(graphVertices, cost);
-
-		this.heaviestClique = maxWeightClique(orderedVertexSet, min);
-
-		max = sumWeight(heaviestClique);
-
-	}
-
 	/**
-	 * This method returns the subset S<sub>i</sub> of the orderedVertexSet.
+	 * This method:
+	 * <ul>
+	 * <li>orders this vertex set according to Algorithm 1 of the paper
+	 * <li>return the resulting vertex set
+	 * <li>compute the upper bounds a(pi<sub>i</sub>) and store them in cost
+	 * </ul>
 	 * 
-	 * S<sub>i</sub> is defined as S<sub>i</sub> =
-	 * {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }
-	 * 
-	 * @param i
-	 *            the vertex index of the desired subset
-	 * @return the subset S<sub>i</sub>
+	 * @param subgraphVertices
+	 *            The vertices to order
+	 * @param cost
+	 *            the list in which the resulting costs will be stored (in the
+	 *            order of the returned list)
+	 * @return the ordered list of vertices.
 	 */
-	protected ArrayList<V> GetSeti(int i) {
+	public ArrayList<V> orderVertexSet(HashSet<V> subgraphVertices,
+			ArrayList<Integer> cost) {
+		// (1) let PI be the empty sequence
+		ArrayList<V> orderedVertexSet = new ArrayList<V>();
 
-		ArrayList<V> si = new ArrayList<V>();
-
-		for (int j = 0; j <= i; j++) {
-			si.add(orderedVertexSet.get(j));
+		// (2) For each v € V, les a(v) <- w(v)
+		HashMap<V, Integer> tempCost = new HashMap<V, Integer>();
+		for (V vertex : subgraphVertices) {
+			tempCost.put(vertex, vertex.getWeight());
 		}
 
-		return si;
+		// (3) let S <- V
+		ArrayList<V> unorderedVertexSet = new ArrayList<V>();
+		unorderedVertexSet.addAll(subgraphVertices);
+
+		// (8) Halt if set(PI) = V
+		// & (9) Goto (4)
+		while (!unorderedVertexSet.isEmpty()) {
+			// (4) Choose a vertex v' from S that minimize a(v')
+			V selectedVertex = unorderedVertexSet.get(0);
+			int minCost = tempCost.get(selectedVertex);
+			for (V vertex : unorderedVertexSet) {
+				if (tempCost.get(vertex) < minCost) {
+					selectedVertex = vertex;
+					minCost = tempCost.get(vertex);
+				}
+			}
+			// (5) let S <- S - {v'}
+			unorderedVertexSet.remove(selectedVertex);
+
+			// (6) for each u€N(v) inter S, let a(u) <- a(v') + w(u)
+			@SuppressWarnings("unchecked")
+			HashSet<V> vertexSet = (HashSet<V>) adjacentVerticesOf(
+					selectedVertex).clone();
+			vertexSet.retainAll(unorderedVertexSet);
+			for (V vertex : vertexSet) {
+				tempCost.put(vertex,
+						tempCost.get(selectedVertex) + vertex.getWeight());
+			}
+
+			// (7) Insert v' into PI such that PI becomes increasing order
+			// according to a(.)
+			orderedVertexSet.add(selectedVertex);
+
+			// save tempCost(v') in cost in the order of ordered vertex
+			cost.add(tempCost.get(selectedVertex));
+			tempCost.remove(selectedVertex);
+		}
+		return orderedVertexSet;
 	}
 
+	@Override
+	public void solve() {
+		HashSet<V> graphVertices = new HashSet<V>();
+		graphVertices.addAll(graph.vertexSet());
+		orderedVertexSet = orderVertexSet(graphVertices, cost);
+		this.heaviestClique = maxWeightClique(orderedVertexSet, min);
+		max = sumWeight(heaviestClique);
+	}
 }

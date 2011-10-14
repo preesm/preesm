@@ -3,9 +3,7 @@
  */
 package org.ietr.preesm.plugin.codegen.memory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,13 +39,12 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 
 		// Rem: Logger is used to display messages in the console
 		Logger logger = WorkflowLogger.getLogger();
-
 		logger.log(Level.INFO, "Memory exclusion graph : start building");
 
 		
 		MemoryExclusionGraph memex = new MemoryExclusionGraph();
 		try {
-			memex.BuildGraph(localDAG);
+			memex.buildGraph(localDAG);
 		} catch (InvalidExpressionException e) {
 			throw new WorkflowException(e.getLocalizedMessage());
 		}
@@ -212,10 +209,10 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		mcliqueHybr = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
 		
 		logger.log(Level.INFO, "Hybrid Start");
-		mcliqueHybr.Solve();
+		mcliqueHybr.solve();
 		logger.log(Level.INFO, "Hybrid Stop");
 		
-		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.GetHeaviestClique());
+		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.getHeaviestClique());
 		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.max);
 		
 		 

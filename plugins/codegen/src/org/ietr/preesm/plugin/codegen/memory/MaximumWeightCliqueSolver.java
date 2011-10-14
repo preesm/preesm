@@ -9,21 +9,28 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 /**
- * This abstract class is both a tool-box for Maximum-Weight Clique Solvers and an interface.
+ * This abstract class is both a tool-box for Maximum-Weight Clique Solvers and
+ * an interface.
+ * 
  * @author kdesnos
- *
+ * 
  * @param <V>
- *  The vertices class
+ *            The vertices class
  * @param <E>
- *  The edges class
+ *            The edges class
  */
 public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge> {
+	/**
+	 * This attribute is used by the getN function to store its results. No
+	 * other method should neither access nor modify it.
+	 */
+	protected HashMap<V, HashSet<V>> getNBackup;
+
 	/**
 	 * The Graph to analyze
 	 */
 	protected SimpleGraph<V, E> graph;
 
-	
 	/**
 	 * The heaviest clique encountered running the algorithm
 	 */
@@ -33,7 +40,7 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 * Store the weight of the heaviestClique
 	 */
 	protected int max;
-	
+
 	/**
 	 * Store the minimum weight of the clique searched.
 	 */
@@ -43,49 +50,21 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 * Store the number of vertices of the graph
 	 */
 	protected int numberVertices;
-	
-	/**
-	 * This attribute is used by the getN function to store its results. No
-	 * other method should neither access nor modify it.
-	 */
-	protected HashMap<V, HashSet<V>> getNBackup;
-	
-	
+
 	/**
 	 * Constructor of the solver
+	 * 
 	 * @param graph
-	 * the graph to analyze.
+	 *            the graph to analyze.
 	 */
-	public MaximumWeightCliqueSolver(SimpleGraph<V, E> graph){
-		
+	public MaximumWeightCliqueSolver(SimpleGraph<V, E> graph) {
 		// Keep a reference to the graph
 		this.graph = graph;
-		
 		numberVertices = graph.vertexSet().size();
-		
 		heaviestClique = new HashSet<V>();
-
 		getNBackup = new HashMap<V, HashSet<V>>();
-		
 		min = 0;
 	}
-	
-	/**
-	 * This method is used to set the minimum weight of the clique to find.
-	 * @param minimum the desired weight
-	 */
-	public void SetMin(int minimum)
-	{
-		min = minimum;
-	}
-	
-	
-	/**
-	 * This method will be called to solve the maximum clique problem on the graph.
-	 */
-	public abstract void Solve();
-	
-
 
 	/**
 	 * This method returns the subset of vertex adjacent to vertex.
@@ -99,10 +78,10 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 *            the vertex
 	 * @return the subset of vertices adjacent to vertex.
 	 * 
-	 * @warning <b>The returned subset must not be modified. Make a copy for local use.</b>
+	 * @warning <b>The returned subset must not be modified. Make a copy for
+	 *          local use.</b>
 	 */
-	protected HashSet<V> GetN(V vertex) {
-
+	protected HashSet<V> adjacentVerticesOf(V vertex) {
 		// If this node was already treated
 		if (getNBackup.containsKey(vertex))
 			return getNBackup.get(vertex);
@@ -122,9 +101,34 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 
 		// Save the result.
 		getNBackup.put(vertex, result);
-
 		return result;
 	}
+
+	/**
+	 * Return the heaviest clique found.
+	 * 
+	 * @return the heaviest clique found.
+	 */
+	@SuppressWarnings("unchecked")
+	public HashSet<V> getHeaviestClique() {
+		return (HashSet<V>) heaviestClique.clone();
+	}
+
+	/**
+	 * This method is used to set the minimum weight of the clique to find.
+	 * 
+	 * @param minimum
+	 *            the desired weight
+	 */
+	public void setMin(int minimum) {
+		min = minimum;
+	}
+
+	/**
+	 * This method will be called to solve the maximum clique problem on the
+	 * graph.
+	 */
+	public abstract void solve();
 
 	/**
 	 * This method computes and returns the sum of the weights of the vertices
@@ -135,23 +139,10 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 * @return The sum of the vertices weights
 	 */
 	public int sumWeight(Collection<V> vertexSet) {
-
 		int result = 0;
-
 		for (V vertex : vertexSet) {
 			result += vertex.getWeight();
 		}
-
 		return result;
 	}
-
-	/**
-	 * Return the heaviest clique found.
-	 * @return the heaviest clique found.
-	 */
-	@SuppressWarnings("unchecked")
-	public HashSet<V> GetHeaviestClique() {
-		return (HashSet<V>) heaviestClique.clone();
-	}
-
 }

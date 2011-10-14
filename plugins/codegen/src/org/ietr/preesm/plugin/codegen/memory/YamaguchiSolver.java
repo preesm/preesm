@@ -3,6 +3,7 @@ package org.ietr.preesm.plugin.codegen.memory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -26,12 +27,72 @@ import org.jgrapht.graph.SimpleGraph;
 public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
 		extends MaximumWeightCliqueSolver<V, E> {
 
-
+	/**
+	 * Solver constructor
+	 * 
+	 * @param graph
+	 *            The graph to analyze
+	 */
 	public YamaguchiSolver(SimpleGraph<V, E> graph) {
 		super(graph);
-		
 		min = -1;
+	}
 
+	/**
+	 * This method corresponds to the algorithm 2 in <a href =
+	 * "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this
+	 * paper </a>. This method will return the vertices of the maximum-weight
+	 * clique for the subgraph passed as a parameter.
+	 * 
+	 * @param subgraphVertices
+	 *            The vertices of the subgraph to search
+	 * @param thresold
+	 *            The minimum weight of the clique to find
+	 * @return The Maximum-Weight Clique of the subgraph (if any)
+	 */
+	public HashSet<V> maxWeightClique(HashSet<V> subgraphVertices, int thresold) {
+		// (1) let C <- 0
+		HashSet<V> clique = new HashSet<V>();
+
+		// (2) get a sequence PI and a(.)
+		ArrayList<Integer> cost = new ArrayList<Integer>();
+		ArrayList<V> orderedVertexSet = orderVertexSet(subgraphVertices, cost);
+
+		// (3) let i <- |V|
+		// (8) let i <- i-1
+		// (9) Go to (4) if i>0
+		for (int i = subgraphVertices.size() - 1; i >= 0; i--) {
+			// (4) Exit if a(pi_i) <= theta
+			if (cost.get(i) <= thresold) {
+				break;
+			}
+
+			// (5) Get the maximum Weight clique C' of Pi(G,PI)
+			V currentVertex = orderedVertexSet.get(i);
+			subgraphVertices.remove(currentVertex);
+
+			// N(v)
+			@SuppressWarnings("unchecked")
+			HashSet<V> subGraph = (HashSet<V>) this.adjacentVerticesOf(
+					currentVertex).clone();
+
+			// N(v) inter Si
+			subGraph.retainAll(subgraphVertices);
+
+			// Recursive Call
+			HashSet<V> subClique = maxWeightClique(subGraph, thresold
+					- currentVertex.getWeight());
+			subClique.add(currentVertex);
+			int weightSubClique = sumWeight(subClique);
+
+			// (6) Goto (8) if w(C') < theta
+			if (weightSubClique > thresold) {
+				// (7) Let C <- C' and Theta <- w(C')
+				thresold = weightSubClique;
+				clique = subClique;
+			}
+		}
+		return clique;
 	}
 
 	/**
@@ -49,15 +110,13 @@ public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	 *            order of the returned list)
 	 * @return the ordered list of vertices.
 	 */
-	public ArrayList<V> OrderVertexSet(HashSet<V> subgraphVertices, ArrayList<Integer> cost) {
-	
+	public ArrayList<V> orderVertexSet(HashSet<V> subgraphVertices,
+			ArrayList<Integer> cost) {
 		// (1) let PI be the empty sequence
 		ArrayList<V> orderedVertexSet = new ArrayList<V>();
-		
 
 		// (2) For each v € V, les a(v) <- w(v)
 		HashMap<V, Integer> tempCost = new HashMap<V, Integer>();
-
 		for (V vertex : subgraphVertices) {
 			tempCost.put(vertex, vertex.getWeight());
 		}
@@ -78,97 +137,34 @@ public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 					minCost = tempCost.get(vertex);
 				}
 			}
-			
 			// (5) let S <- S - {v'}
 			unorderedVertexSet.remove(selectedVertex);
-			
+
 			// (6) for each u€N(v) inter S, let a(u) <- a(v') + w(u)
 			@SuppressWarnings("unchecked")
-			HashSet<V> vertexSet = (HashSet<V>) GetN(selectedVertex).clone();
+			HashSet<V> vertexSet = (HashSet<V>) adjacentVerticesOf(
+					selectedVertex).clone();
 			vertexSet.retainAll(unorderedVertexSet);
-			
-			for(V vertex : vertexSet ){
-				tempCost.put(vertex, tempCost.get(selectedVertex) + vertex.getWeight());
+			for (V vertex : vertexSet) {
+				tempCost.put(vertex,
+						tempCost.get(selectedVertex) + vertex.getWeight());
 			}
-			
-			// (7) Insert v' into PI such that PI becomes increasing order according to a(.)
+			// (7) Insert v' into PI such that PI becomes increasing order
+			// according to a(.)
 			orderedVertexSet.add(selectedVertex);
-			
+
 			// save tempCost(v') in cost in the order of ordered vertex
 			cost.add(tempCost.get(selectedVertex));
 			tempCost.remove(selectedVertex);
-		}		
-		
-	
-		return orderedVertexSet;
-	}
-	
-	/**
-	 * This method corresponds to the algorithm 2 in <a href =
-	 * "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this
-	 * paper </a>. This method will return the vertices of the maximum-weight
-	 * clique for the subgraph passed as a parameter.
-	 * 
-	 * @param subgraphVertices
-	 *            The vertices of the subgraph to search
-	 * @param thresold
-	 *            The minimum weight of the clique to find
-	 * @return The Maximum-Weight Clique of the subgraph (if any)
-	 */
-	public HashSet<V> maxWeightClique(HashSet<V> subgraphVertices, int thresold){
-		// (1) let C <- 0
-		HashSet<V> clique = new HashSet<V>();
-		
-		// (2) get a sequence PI and a(.) 
-		ArrayList<Integer> cost = new ArrayList<Integer>();
-		ArrayList<V> orderedVertexSet = OrderVertexSet(subgraphVertices, cost);
-		
-		// (3) let i <- |V|
-		// (8) let i <- i-1
-		// (9) Go to (4) if i>0
-		for( int i = subgraphVertices.size()-1; i>= 0 ; i--)
-		{
-			// (4) Exit if a(pi_i) <= theta
-			if(cost.get(i) <= thresold )
-				break;
-			
-			// (5) Get the maximum Weight clique C' of Pi(G,PI)
-			V currentVertex = orderedVertexSet.get(i);
-			subgraphVertices.remove(currentVertex);
-			
-			// N(v)
-			@SuppressWarnings("unchecked")
-			HashSet<V> subGraph = (HashSet<V>) this.GetN(currentVertex).clone();
-			
-			// N(v) inter Si
-			subGraph.retainAll(subgraphVertices);
-			
-			// Recursive Call
-			HashSet<V> subClique = maxWeightClique(subGraph, thresold - currentVertex.getWeight());
-			subClique.add(currentVertex);
-			int weightSubClique = sumWeight(subClique);
-			
-			// (6) Goto (8) if w(C') < theta
-			if( weightSubClique > thresold)
-			{
-				// (7) Let C <- C' and Theta <- w(C')
-				thresold = weightSubClique;
-				clique = subClique;
-			}			
 		}
-				
-		return clique;
+		return orderedVertexSet;
 	}
 
 	@Override
-	public void Solve() {
-
+	public void solve() {
 		HashSet<V> graphVertices = new HashSet<V>();
 		graphVertices.addAll(graph.vertexSet());
-		this.heaviestClique = maxWeightClique( graphVertices , min);
-		
+		this.heaviestClique = maxWeightClique(graphVertices, min);
 		max = sumWeight(heaviestClique);
-
 	}
-
 }

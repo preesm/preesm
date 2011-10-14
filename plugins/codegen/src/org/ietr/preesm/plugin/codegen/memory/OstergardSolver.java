@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -26,17 +27,6 @@ import org.jgrapht.graph.SimpleGraph;
  */
 public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, E extends DefaultEdge>
 		extends MaximumWeightCliqueSolver<V, E> {
-	
-	/**
-	 * This vertex set will be used as the iteration base of the algorithm.
-	 */
-	protected ArrayList<V> orderedVertexSet;
-
-	/**
-	 * This vertex set is the current set of fixed vertices of the algorithm.
-	 */
-	private ArrayList<V> workingSet;
-
 	/**
 	 * cost corresponds to the c(i) function in <a href =
 	 * "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this
@@ -63,41 +53,21 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	 */
 	private boolean found;
 
+	/**
+	 * This vertex set will be used as the iteration base of the algorithm.
+	 */
+	protected ArrayList<V> orderedVertexSet;
+
+	/**
+	 * Specify if the speed-up technique is used or not (May not be efficient
+	 * for graphs with high edge density)
+	 */
 	final private boolean speedup;
 
 	/**
-	 * Initialize the MaximumWeightCliqueSolver with a graph instance
-	 * 
-	 * @param graph
-	 *            the graph to analyze.
-	 * @param speedUp
-	 *            true if the computation of D(i) must be performed to speed-up
-	 *            the algorithm
+	 * This vertex set is the current set of fixed vertices of the algorithm.
 	 */
-	public OstergardSolver(SimpleGraph<V, E> graph, boolean speedUp) {
-
-		super(graph);
-		
-		orderedVertexSet = new ArrayList<V>(numberVertices);
-
-		workingSet = new ArrayList<V>();
-
-		// Initialize cost Array with 0 values. An extra 0 is added to enable
-		// c(i+1) for all i=0..n-1
-		cost = new ArrayList<Integer>(
-				Collections.nCopies(numberVertices + 1, 0));
-
-		// Initialize dcost Array with 0 values
-		dcost = new ArrayList<Integer>(Collections.nCopies(numberVertices, 0));
-
-		this.speedup = speedUp;
-
-		// The constructor might be filled with graph checks in the future.
-		// For example, the edge density could be computed here in order to
-		// select a more efficient algorithm in case where this density is >
-		// 0.8.
-
-	}
+	private ArrayList<V> workingSet;
 
 	/**
 	 ** Initialize the MaximumWeightCliqueSolver with a graph instance.
@@ -112,6 +82,53 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	}
 
 	/**
+	 * Initialize the MaximumWeightCliqueSolver with a graph instance
+	 * 
+	 * @param graph
+	 *            the graph to analyze.
+	 * @param speedUp
+	 *            true if the computation of D(i) must be performed to speed-up
+	 *            the algorithm
+	 */
+	public OstergardSolver(SimpleGraph<V, E> graph, boolean speedUp) {
+		super(graph);
+		orderedVertexSet = new ArrayList<V>(numberVertices);
+		workingSet = new ArrayList<V>();
+
+		// Initialize cost Array with 0 values. An extra 0 is added to enable
+		// c(i+1) for all i=0..n-1
+		cost = new ArrayList<Integer>(
+				Collections.nCopies(numberVertices + 1, 0));
+
+		// Initialize dcost Array with 0 values
+		dcost = new ArrayList<Integer>(Collections.nCopies(numberVertices, 0));
+		this.speedup = speedUp;
+
+		// The constructor might be filled with graph checks in the future.
+		// For example, the edge density could be computed here in order to
+		// select a more efficient algorithm in case where this density is >
+		// 0.8.
+	}
+
+	/**
+	 * This method returns the subset S<sub>i</sub> of the orderedVertexSet.
+	 * 
+	 * S<sub>i</sub> is defined as S<sub>i</sub> =
+	 * {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }
+	 * 
+	 * @param i
+	 *            the vertex index of the desired subset
+	 * @return the subset S<sub>i</sub>
+	 */
+	protected ArrayList<V> GetSi(int i) {
+		ArrayList<V> si = new ArrayList<V>();
+		for (; i < orderedVertexSet.size(); i++) {
+			si.add(orderedVertexSet.get(i));
+		}
+		return si;
+	}
+
+	/**
 	 * This method:
 	 * <ul>
 	 * <li>retrieves the vertex set from the graph
@@ -120,7 +137,6 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	 * </ul>
 	 */
 	public void OrderVertexSet() {
-
 		// Retrieve the vertices of the graph
 		ArrayList<V> unorderedSet = new ArrayList<V>(numberVertices);
 		unorderedSet.addAll(graph.vertexSet());
@@ -138,13 +154,11 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 			// Select the vertex with the smallest weight but the largest sum of
 			// weight of adjacent nodes
 			Iterator<V> iter = unorderedSet.iterator();
-
 			V selectedVertex = unorderedSet.get(0);
 			int selectedWeight = unorderedSet.get(0).getWeight();
 			int selectedAdjacentWeight = 0;
 
 			while (iter.hasNext()) {
-
 				V currentVertex = iter.next();
 
 				// If the vertex weight is equal to the selectedWeight
@@ -178,7 +192,6 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 					break;
 				}
 			}
-
 			// Add the selected vertex to the ordered set
 			orderedVertexSet.add(0, selectedVertex);
 
@@ -189,119 +202,10 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 		}
 	}
 
-	/**
-	 * This method corresponds to the wnew function in Algorithm 1 in <a href =
-	 * "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this
-	 * paper </a>.
-	 */
-	public void Wnew() {
-
-		 //Logger logger = WorkflowLogger.getLogger();
-
-		if (speedup) {
-			/* Speed-Up 2 : Compute D(i) (i=1..n/2) */
-
-			// Reverse the order of the list to treat it backward
-			// From this point until the re-reversion, indice i = numberVertices
-			// - j -1
-			Collections.reverse(orderedVertexSet);
-
-			max = min;
-
-			// Compute D(i) with j = n-1 .. ceil((n)/2).
-			// As the order of the list was reversed, this corresponds to the
-			// calculation of D(i) for i=0..floor((n-1)/2)
-			for (int j = numberVertices - 1; j >= Math
-					.ceil(numberVertices / 2.0); j--) {
-
-				// logger.log(
-				// Level.INFO,
-				// "PreIter : "
-				// + (-j + numberVertices)
-				// + "/"
-				// + (numberVertices - Math
-				// .ceil(numberVertices / 2.0)));
-
-				// wclique(S'i inter N(vi), w(i))
-				ArrayList<V> vertexSet = GetSi(j); // Get S'i
-				V fixedVertex = vertexSet.get(0);
-				vertexSet.retainAll(GetN(fixedVertex));
-
-				// for speed-up purpose
-				found = false;
-
-				// Add the fixed vertex to the working set
-				workingSet.add(fixedVertex);
-
-				Wclique(vertexSet, fixedVertex.getWeight());
-
-				// Remove the fixedVertex from the working set before next
-				// iteration
-				workingSet.remove(fixedVertex);
-
-				// C[j] := max (Ci is used here because it is global and used in
-				// wclique, in reality, D(i) is calculated)
-				cost.set(j, max);
-
-				// D[i] := max
-				dcost.set(numberVertices - j - 1, max);
-
-			}
-
-			// Clean-up cost
-			cost = new ArrayList<Integer>(Collections.nCopies(
-					numberVertices + 1, 0));
-
-			// Re-reverse the list order for the algo
-			Collections.reverse(orderedVertexSet);
-		}
-
-		/* End of the Speed-Up 2 */
-
-		// Algorithm 1 (as in the paper)
-
-		// max := 0
-		max = min;
-
-		// for i:=n downto 1 do
-		for (int i = numberVertices - 1; i >= 0; i--) {
-
-	//		 logger.log(Level.INFO, "Iter : " + (-i + numberVertices) + "/"
-		//	 + numberVertices);
-
-			// if D(i) was not calculated for this i or
-			// D(i) + C(i+1) > max, compute the wclique
-			if (!speedup || (dcost.get(i) == 0)
-					|| (dcost.get(i) + cost.get(i + 1) > max)) {
-
-				// wclique(Si inter N(vi), w(i))
-				ArrayList<V> vertexSet = GetSi(i);
-				V fixedVertex = vertexSet.get(0);
-				vertexSet.retainAll(GetN(fixedVertex));
-
-				// for speed-up purpose
-				found = false;
-
-				// Add the fixed vertex to the working set
-				workingSet.add(fixedVertex);
-
-				Wclique(vertexSet, fixedVertex.getWeight());
-
-				// Remove the fixedVertex from the working set before next
-				// iteration
-				workingSet.remove(fixedVertex);
-			} else {
-				// This code is reached if D(i) was calculated for the current i
-				// and D(i) + C(i+1) <= max
-				cost.set(i, max);
-
-				// Then, exit the search !
-				return;
-			}
-
-			// C[i] := max
-			cost.set(i, max);
-		}
+	@Override
+	public void solve() {
+		OrderVertexSet();
+		wNew();
 	}
 
 	/**
@@ -314,7 +218,7 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	 * @param weight
 	 *            of the vertices fixed so far
 	 */
-	public void Wclique(ArrayList<V> vertexSet, int weight) {
+	public void wClique(ArrayList<V> vertexSet, int weight) {
 		// if |U| = 0 then
 		if (vertexSet.isEmpty()) {
 			// if weight > max then
@@ -371,9 +275,9 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 			@SuppressWarnings("unchecked")
 			ArrayList<V> vertexSetCopy = (ArrayList<V>) vertexSet.clone();
 			// Compute the intersection of vertexSet and N(i)
-			vertexSetCopy.retainAll(GetN(fixedVertex));
+			vertexSetCopy.retainAll(adjacentVerticesOf(fixedVertex));
 			// recursive call
-			Wclique(vertexSetCopy, weight + fixedVertex.getWeight());
+			wClique(vertexSetCopy, weight + fixedVertex.getWeight());
 
 			// Remove the fixedVertex from the working set before next iteration
 			workingSet.remove(fixedVertex);
@@ -385,34 +289,105 @@ public class OstergardSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 		}
 		return;
 	}
-	
+
 	/**
-	 * This method returns the subset S<sub>i</sub> of the orderedVertexSet.
-	 * 
-	 * S<sub>i</sub> is defined as S<sub>i</sub> =
-	 * {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }
-	 * 
-	 * @param i
-	 *            the vertex index of the desired subset
-	 * @return the subset S<sub>i</sub>
+	 * This method corresponds to the wnew function in Algorithm 1 in <a href =
+	 * "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this
+	 * paper </a>.
 	 */
-	protected ArrayList<V> GetSi(int i) {
+	public void wNew() {
+		if (speedup) {
+			/* Speed-Up 2 : Compute D(i) (i=1..n/2) */
+			// Reverse the order of the list to treat it backward
+			// From this point until the re-reversion, indice i = numberVertices
+			// - j -1
+			Collections.reverse(orderedVertexSet);
+			max = min;
 
-		ArrayList<V> si = new ArrayList<V>();
+			// Compute D(i) with j = n-1 .. ceil((n)/2).
+			// As the order of the list was reversed, this corresponds to the
+			// calculation of D(i) for i=0..floor((n-1)/2)
+			for (int j = numberVertices - 1; j >= Math
+					.ceil(numberVertices / 2.0); j--) {
+				// logger.log(
+				// Level.INFO,
+				// "PreIter : "
+				// + (-j + numberVertices)
+				// + "/"
+				// + (numberVertices - Math
+				// .ceil(numberVertices / 2.0)));
 
-		for (; i < orderedVertexSet.size(); i++) {
-			si.add(orderedVertexSet.get(i));
+				// wclique(S'i inter N(vi), w(i))
+				ArrayList<V> vertexSet = GetSi(j); // Get S'i
+				V fixedVertex = vertexSet.get(0);
+				vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
+
+				// for speed-up purpose
+				found = false;
+
+				// Add the fixed vertex to the working set
+				workingSet.add(fixedVertex);
+				wClique(vertexSet, fixedVertex.getWeight());
+
+				// Remove the fixedVertex from the working set before next
+				// iteration
+				workingSet.remove(fixedVertex);
+
+				// C[j] := max (Ci is used here because it is global and used in
+				// wclique, in reality, D(i) is calculated)
+				cost.set(j, max);
+
+				// D[i] := max
+				dcost.set(numberVertices - j - 1, max);
+			}
+			// Clean-up cost
+			cost = new ArrayList<Integer>(Collections.nCopies(
+					numberVertices + 1, 0));
+
+			// Re-reverse the list order for the algo
+			Collections.reverse(orderedVertexSet);
 		}
+		/* End of the Speed-Up 2 */
 
-		return si;
-	}
+		// Algorithm 1 (as in the paper)
+		// max := 0
+		max = min;
 
-	@Override
-	public void Solve() {
-		
-		OrderVertexSet();	
-		
-		Wnew();
+		// for i:=n downto 1 do
+		for (int i = numberVertices - 1; i >= 0; i--) {
+			// logger.log(Level.INFO, "Iter : " + (-i + numberVertices) + "/"
+			// + numberVertices);
 
+			// if D(i) was not calculated for this i or
+			// D(i) + C(i+1) > max, compute the wclique
+			if (!speedup || (dcost.get(i) == 0)
+					|| (dcost.get(i) + cost.get(i + 1) > max)) {
+
+				// wclique(Si inter N(vi), w(i))
+				ArrayList<V> vertexSet = GetSi(i);
+				V fixedVertex = vertexSet.get(0);
+				vertexSet.retainAll(adjacentVerticesOf(fixedVertex));
+
+				// for speed-up purpose
+				found = false;
+
+				// Add the fixed vertex to the working set
+				workingSet.add(fixedVertex);
+				wClique(vertexSet, fixedVertex.getWeight());
+
+				// Remove the fixedVertex from the working set before next
+				// iteration
+				workingSet.remove(fixedVertex);
+			} else {
+				// This code is reached if D(i) was calculated for the current i
+				// and D(i) + C(i+1) <= max
+				cost.set(i, max);
+
+				// Then, exit the search !
+				return;
+			}
+			// C[i] := max
+			cost.set(i, max);
+		}
 	}
 }
