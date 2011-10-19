@@ -59,27 +59,8 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 
 		logger.log(Level.INFO, "The edge density of the graph is "
 				+ memex.edgeSet().size() / maxEdges + ".");
+		
 				
-
-		//OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> mclique;
-		
-		
-		/*
-		 * mclique = new MaximumWeightCliqueSolver<MemoryExclusionGraphNode,
-		 * DefaultEdge>( memex);
-		 * 
-		 * logger.log(Level.INFO,
-		 * "Maximum-Weight Clique: Starting Pre-Ordering");
-		 * mclique.OrderVertexSet();
-		 * 
-		 * logger.log(Level.INFO, "Maximum-Weight Clique: Starting Search");
-		 * mclique.Wnew();
-		 * 
-		 * logger.log(Level.INFO, "Maximum-Weight Clique is :" +
-		 * mclique.GetHeaviestClique()); logger.log(Level.INFO, "With weight :"
-		 * + mclique.sumWeight(mclique.GetHeaviestClique()));
-		 */
-		
 		/*
 
 		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> meminc = memex
@@ -103,10 +84,9 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 				"With weight :"
 						+ mclique.sumWeight(mclique.GetHeaviestClique()));
 						*/
-
 		/*
 		// Test prog for MaxCliqueProbSolv 
-		MemoryExclusionGraph memex = new MemoryExclusionGraph();
+		memex = new MemoryExclusionGraph();
 		MemoryExclusionGraphNode n1 = new MemoryExclusionGraphNode("A", "A", 1);
 		MemoryExclusionGraphNode n2 = new MemoryExclusionGraphNode("B", "B", 2);
 		MemoryExclusionGraphNode n3 = new MemoryExclusionGraphNode("C", "C", 2);
@@ -126,85 +106,11 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		memex.addEdge(n2, n3);
 		memex.addEdge(n3, n4);
 		
-*/
-		/*
-		
-		YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge>
-		mclique;
+		*/
 
-		mclique = new YamaguchiSolver<MemoryExclusionGraphNode,
-				DefaultEdge>( memex);
-		
-		logger.log(Level.INFO, "Yama Start");
-		mclique.Solve();
-		logger.log(Level.INFO, "Yama Stop");
 				
-		logger.log(Level.INFO, "yamabis" + mclique.GetHeaviestClique());
-		logger.log(Level.INFO, "yamabis" + mclique.max);
-		*/
-		
-		
-		
 		/*
-		
-		OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> mclique2;
-		
-		mclique2 = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
-		
-		logger.log(Level.INFO, "Ost Start");
-		mclique2.Solve();
-		logger.log(Level.INFO, "Ost Stop");
-		*/
-		/*
-		
-		YamaguchiTerSolver<MemoryExclusionGraphNode, DefaultEdge>
-		mclique3;
-
-		mclique3 = new YamaguchiTerSolver<MemoryExclusionGraphNode,
-				DefaultEdge>( memex);
-		
-		logger.log(Level.INFO, "Yama Start");
-		mclique3.Solve();
-		logger.log(Level.INFO, "Yama Stop");
-		
-		logger.log(Level.INFO, "yamater" + mclique3.GetHeaviestClique());
-		logger.log(Level.INFO, "yamater" + mclique3.max);
-		*/
-		
-		//logger.log(Level.INFO, "1" + mclique.GetHeaviestClique());
-		//logger.log(Level.INFO, "OST" + mclique2.GetHeaviestClique());
-		//logger.log(Level.INFO, "OST" + mclique2.max);
-
-	
-		//mclique.Wnew();
-
-		//logger.log(Level.INFO, "Maximum-Weight Clique is :" +
-		//		mclique.GetHeaviestClique());
-		/*
-		YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge> mcliqueHybr1;
-		mcliqueHybr1 = new YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
-		
-		OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> mcliqueHybr2;
-		mcliqueHybr2 = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
-		mcliqueHybr2.OrderVertexSet();
-		
-		HashSet<MemoryExclusionGraphNode> vertexSet = new HashSet<MemoryExclusionGraphNode>();
-		vertexSet.addAll(memex.vertexSet());
-		
-		ArrayList<Integer> cost = new ArrayList<Integer>();
-		mcliqueHybr1.OrderVertexSet(vertexSet, cost);
-		
-		for(int i = cost.size() -1 ; i>=0 && mcliqueHybr2.GetHeaviestClique().isEmpty() ; i--)
-		{
-			logger.log(Level.INFO, "Cost : " + cost.get(i));
-			mcliqueHybr2.max = cost.get(i);
-			mcliqueHybr2.Wnew();
-		}
-		
-		logger.log(Level.INFO, "OST : " + mcliqueHybr2.GetHeaviestClique());
-		logger.log(Level.INFO, "OST : " + mcliqueHybr2.max);
-		*/
-		
+		// Test program for HybridSolver
 		HybridSolver<MemoryExclusionGraphNode, DefaultEdge> mcliqueHybr;
 		mcliqueHybr = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
 		
@@ -214,8 +120,70 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		
 		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.getHeaviestClique());
 		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.max);
+		*/
 		
-		 
+		long tStart;
+		long tFinish;
+		
+		WeightedGraphGenerator gGen = new WeightedGraphGenerator();
+		
+		//for(int aa=0; aa < 250 ; aa+=10){
+		
+		gGen.setNumberVertices(100);
+		gGen.setEdgeDensity(0.9);
+		gGen.setMinimumWeight(1001);
+		gGen.setMaximumWeight(1010);
+		
+		
+		//for(int ii = 0; ii< 10 ; ii++){
+		//	logger.log(Level.INFO, "NODE : " + aa + " ITER  : " + ii);
+		//memex = gGen.generateMemoryExclusionGraph();
+		
+		memex.saveToFile("C:/TEMP/graph.csv");
+
+
+		OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> ostSolver;
+		ostSolver = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(	memex);
+		
+		YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge> yamaSolver;
+		yamaSolver = new YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
+		
+		HybridSolver<MemoryExclusionGraphNode, DefaultEdge> hybrSolver;
+		hybrSolver = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
+		
+		
+		logger.log(Level.INFO, "Yama Start");
+		tStart = System.currentTimeMillis();
+		yamaSolver.solve();
+		tFinish = System.currentTimeMillis();
+		
+		logger.log(Level.INFO, "Yama [" + (tFinish - tStart) + "]");
+		logger.log(Level.INFO, "Yama " + yamaSolver.sumWeight(yamaSolver.getHeaviestClique()));
+		
+		
+		logger.log(Level.INFO, "Ost Start");
+		tStart = System.currentTimeMillis();
+		ostSolver.solve();
+		tFinish = System.currentTimeMillis();
+		
+		logger.log(Level.INFO, "Ost [" + (tFinish - tStart) + "]");
+		logger.log(Level.INFO, "Ost " + ostSolver.sumWeight(ostSolver.getHeaviestClique()));	
+		
+		
+		
+		logger.log(Level.INFO, "Hybrr Start");
+		tStart = System.currentTimeMillis();
+		//if(aa<70)
+			hybrSolver.solve();
+		tFinish = System.currentTimeMillis();
+		
+		logger.log(Level.INFO, "Hybr [" + (tFinish - tStart) + "]");
+		logger.log(Level.INFO, "Hybr " + hybrSolver.sumWeight(hybrSolver.getHeaviestClique()));
+		//}
+		//}
+		
+		
+		
 		return outputs;
 	}
 

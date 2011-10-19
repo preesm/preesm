@@ -1,5 +1,9 @@
 package org.ietr.preesm.plugin.codegen.memory;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -228,7 +232,7 @@ public class MemoryExclusionGraph extends
 						.getName(), edge.getTarget().getName(), edge
 						.getWeight().intValue());
 
-				this.addVertex(newNode);
+				this.addVertex(newNode);			
 
 				// Add exclusion corresponding to all incoming edges of the
 				// source vertex.
@@ -540,4 +544,29 @@ public class MemoryExclusionGraph extends
 		}
 		return result;
 	}
+	
+	/**
+	 * Save the Graph in a text file
+	 * @param fileName The file
+	 */
+	public void saveToFile(String fileName){
+		PrintWriter ecrivain;
+	    try {
+			ecrivain =  new PrintWriter(new BufferedWriter
+			   (new FileWriter(fileName)));
+		
+			ecrivain.println("Graph vertices\n");			
+			for(MemoryExclusionGraphNode vertex : this.vertexSet()){
+				ecrivain.println(vertex.getSource() + "," + vertex.getSink() + "," + vertex.getWeight());
+			}			
+			ecrivain.println("\nGraph vertices\n");
+			for(DefaultEdge edge : this.edgeSet()) {
+				ecrivain.println(",,," + edge.toString());
+			}
+			ecrivain.close();			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	    
+	}	
 }

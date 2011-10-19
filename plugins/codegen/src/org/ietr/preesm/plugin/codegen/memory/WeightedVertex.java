@@ -15,4 +15,8 @@ public interface WeightedVertex<W> {
 	 * @return the weight of the vertex
 	 */
 	abstract public W getWeight();
+
+	abstract public int getIdentifier();
+	
+	abstract public void setIdentifier(int id);
 }

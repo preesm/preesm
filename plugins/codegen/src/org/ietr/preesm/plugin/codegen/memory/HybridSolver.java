@@ -1,8 +1,7 @@
 package org.ietr.preesm.plugin.codegen.memory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-
+import java.util.HashMap;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -53,7 +52,17 @@ public class HybridSolver<V extends WeightedVertex<Integer> & Comparable<V>, E e
 	public void solve() {
 		// First retrieve the costs from Yamaguchi
 		ArrayList<Integer> cost = new ArrayList<Integer>();
-		HashSet<V> graphVertices = new HashSet<V>(graph.vertexSet());
+	
+		
+		HashMap<Integer,V> graphVertices = new HashMap<Integer,V>();
+		int index=0;
+		for(V vertex : graph.vertexSet()){
+			vertex.setIdentifier(index++);
+			graphVertices.put(vertex.getIdentifier(), vertex);
+		}
+		
+		
+		yamaSolver.setGraphVertices(graphVertices);
 		yamaSolver.orderVertexSet(graphVertices, cost);
 
 		// Pre-order Ostergard
@@ -62,9 +71,11 @@ public class HybridSolver<V extends WeightedVertex<Integer> & Comparable<V>, E e
 				&& ostSolver.getHeaviestClique().isEmpty(); i--) {
 			if (cost.get(i) < min) {
 				break;
-			}
-			ostSolver.setMin(cost.get(i));
-			ostSolver.wNew();
+			}			
+				ostSolver.setMin(cost.get(i));
+				ostSolver.wNew();
+
+			
 		}
 		heaviestClique = ostSolver.getHeaviestClique();
 		max = sumWeight(heaviestClique);

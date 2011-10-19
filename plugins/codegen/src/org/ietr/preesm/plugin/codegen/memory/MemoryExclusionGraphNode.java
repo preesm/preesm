@@ -9,6 +9,12 @@ package org.ietr.preesm.plugin.codegen.memory;
  */
 public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 		Comparable<MemoryExclusionGraphNode> {
+	
+	/**
+	 * unique identifier of node for user convenience 
+	 */
+	private int identifier;
+	
 	/**
 	 * ID of the task consuming the memory.
 	 */
@@ -38,9 +44,10 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 			int sizeMem) {
 		source = sourceTask;
 		sink = sinkTask;
-		size = sizeMem;
+		size = sizeMem;		
 	}
-
+	
+	
 	public int compareTo(MemoryExclusionGraphNode o) {
 		return this.size - o.size;
 	}
@@ -63,6 +70,27 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 		}
 	}
 
+	/**
+	 * @return the unique identifier of the node
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+
+	/**
+	 * @return the sink
+	 */
+	public String getSink() {
+		return sink;
+	}
+
+	/**
+	 * @return the source
+	 */
+	public String getSource() {
+		return source;
+	}
+
 	public Integer getWeight() {
 		return size;
 	}
@@ -74,6 +102,15 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 	public int hashCode() {
 		return sink.hashCode() | source.hashCode();
 	}
+
+
+	/**
+	 * @param identifier the identifier to set
+	 */
+	public void setIdentifier(int identifier) {
+		this.identifier = identifier;
+	}
+
 
 	public String toString() {
 		return source + "=>" + sink + ":" + size;
