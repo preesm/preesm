@@ -36,6 +36,50 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 
 		// Make a copy of the Input DAG for treatment
 		DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
+		
+//		// Test prog for MemoryAllocators 
+//		localDAG = new DirectedAcyclicGraph();
+//		DAGDefaultVertexPropertyType prop = new DAGDefaultVertexPropertyType(1);
+//		
+//		DAGVertex v1 = new DAGVertex("A",prop,prop);
+//		v1.setName("A");
+//		v1.getPropertyBean().setValue("vertexType", "task");
+//		
+//		
+//		DAGVertex v2 = new DAGVertex("B",prop,prop);
+//		v2.setName("B");
+//		v2.getPropertyBean().setValue("vertexType", "task");
+//		
+//		DAGVertex v3 = new DAGVertex("C",prop,prop);
+//		v3.setName("C");
+//		v3.getPropertyBean().setValue("vertexType", "task");
+//		
+//		DAGVertex v4 = new DAGVertex("D",prop,prop);
+//		v4.setName("D");
+//		v4.getPropertyBean().setValue("vertexType", "task");
+//		
+//		DAGVertex v5 = new DAGVertex("E",prop,prop);
+//		v5.setName("E");
+//		v5.getPropertyBean().setValue("vertexType", "task");
+//		
+//		DAGVertex v6 = new DAGVertex("F",prop,prop);
+//		v6.setName("F");
+//		v6.getPropertyBean().setValue("vertexType", "task");
+//		
+//		localDAG.addVertex(v1);
+//		localDAG.addVertex(v2);
+//		localDAG.addVertex(v3);
+//		localDAG.addVertex(v4);
+//		localDAG.addVertex(v5);
+//		localDAG.addVertex(v6);
+//		
+//		
+//		(localDAG.addEdge(v1, v2)).setWeight(new DAGDefaultEdgePropertyType(200));
+//		(localDAG.addEdge(v2, v3)).setWeight(new DAGDefaultEdgePropertyType(50));
+//		(localDAG.addEdge(v1, v4)).setWeight(new DAGDefaultEdgePropertyType(50));
+//		(localDAG.addEdge(v4, v3)).setWeight(new DAGDefaultEdgePropertyType(50));
+//		(localDAG.addEdge(v3, v5)).setWeight(new DAGDefaultEdgePropertyType(150));
+//		(localDAG.addEdge(v3, v6)).setWeight(new DAGDefaultEdgePropertyType(100));
 
 		// Rem: Logger is used to display messages in the console
 		Logger logger = WorkflowLogger.getLogger();
@@ -49,6 +93,8 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 			throw new WorkflowException(e.getLocalizedMessage());
 		}
 		logger.log(Level.INFO, "Memory exclusion graph : graph built");
+		
+		
 		logger.log(Level.INFO, "There are " + memex.vertexSet().size()
 				+ " memory transfers.");
 		logger.log(Level.INFO, "There are " + memex.edgeSet().size()
@@ -60,30 +106,55 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		logger.log(Level.INFO, "The edge density of the graph is "
 				+ memex.edgeSet().size() / maxEdges + ".");
 		
+		BasicAllocator baAlloc = new BasicAllocator(localDAG);
+		
+		baAlloc.allocate();
+		
+		logger.log(Level.INFO, "Maximum Memory Size is : "+baAlloc.getMemorySize());
+		
+		logger.log(Level.INFO, "Custom Alloc Start");
+		CustomAllocator cuAlloc = new CustomAllocator(memex);
+		
+		cuAlloc.allocate();
+		
+		logger.log(Level.INFO, "Allocated Memory Size is : "+cuAlloc.getMemorySize());
+		logger.log(Level.INFO, ""+((1.0 - (double)cuAlloc.getMemorySize()/(double)baAlloc.getMemorySize())*100.0) + "% was saved over worst allocation possible.");
+		
+		HybridSolver<MemoryExclusionGraphNode, DefaultEdge> hybrSolver;
+		hybrSolver = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
+		hybrSolver.solve();
+		
+		logger.log(Level.INFO, ""+ ((double)cuAlloc.getMemorySize()/(double)hybrSolver.sumWeight(hybrSolver.getHeaviestClique())) + "x the minimum limit.");
+		
+		logger.log(Level.INFO, "Allocation is  : "+ cuAlloc.memExNodeAllocation);
+		
+		// Those two line will probably corrupt the allocation
+		//DAGEdge edge  = cuAlloc.getAllocation().keySet().iterator().next();
+		//cuAlloc.getAllocation().put(edge, cuAlloc.getAllocation().get(edge)+1);
+		
+		logger.log(Level.INFO,"Allocation check : " + ((cuAlloc.checkAllocation().isEmpty())?"OK":"Problem"));	
+				
 				
 		/*
 
 		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> meminc = memex
-				.GetComplementary();
+				.getComplementary();
 		logger.log(Level.INFO, "Memory Inclusion Graph built");
 
-		mclique = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(
+		OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> mclique = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(
 				meminc);
 
-		logger.log(Level.INFO,
-				"Maximum-Weight Stable Set: Starting Pre-Ordering");
-		mclique.OrderVertexSet();
-
 		logger.log(Level.INFO, "Maximum-Weight Stable Set: Starting Search");
-		mclique.Wnew();
+		mclique.solve();
 
 		logger.log(Level.INFO,
-				"Maximum-Weight Stable is: " + mclique.GetHeaviestClique());
+				"Maximum-Weight Stable is: " + mclique.getHeaviestClique());
 		logger.log(
 				Level.INFO,
 				"With weight :"
-						+ mclique.sumWeight(mclique.GetHeaviestClique()));
+						+ mclique.sumWeight(mclique.getHeaviestClique()));
 						*/
+						
 		/*
 		// Test prog for MaxCliqueProbSolv 
 		memex = new MemoryExclusionGraph();
@@ -122,6 +193,7 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		logger.log(Level.INFO, "Hybrid" + mcliqueHybr.max);
 		*/
 		
+		/*
 		long tStart;
 		long tFinish;
 		
@@ -148,10 +220,10 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge> yamaSolver;
 		yamaSolver = new YamaguchiSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
 		
-		HybridSolver<MemoryExclusionGraphNode, DefaultEdge> hybrSolver;
+		//HybridSolver<MemoryExclusionGraphNode, DefaultEdge> hybrSolver;
 		hybrSolver = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
 		
-		
+		/*
 		logger.log(Level.INFO, "Yama Start");
 		tStart = System.currentTimeMillis();
 		yamaSolver.solve();
@@ -181,6 +253,8 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		logger.log(Level.INFO, "Hybr " + hybrSolver.sumWeight(hybrSolver.getHeaviestClique()));
 		//}
 		//}
+		 
+		 */
 		
 		
 		

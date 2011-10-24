@@ -24,7 +24,7 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 * This attribute is used by the getN function to store its results. No
 	 * other method should neither access nor modify it.
 	 */
-	protected HashMap<V, HashSet<V>> getNBackup;
+	protected HashMap<V, HashSet<V>> adjacentVerticesBackup;
 
 	/**
 	 * The Graph to analyze
@@ -62,7 +62,7 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 		this.graph = graph;
 		numberVertices = graph.vertexSet().size();
 		heaviestClique = new HashSet<V>();
-		getNBackup = new HashMap<V, HashSet<V>>();
+		adjacentVerticesBackup = new HashMap<V, HashSet<V>>();
 		min = 0;
 	}
 
@@ -81,10 +81,10 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 	 * @warning <b>The returned subset must not be modified. Make a copy for
 	 *          local use.</b>
 	 */
-	protected HashSet<V> adjacentVerticesOf(V vertex) {
+	public HashSet<V> adjacentVerticesOf(V vertex) {
 		// If this node was already treated
-		if (getNBackup.containsKey(vertex))
-			return getNBackup.get(vertex);
+		if (adjacentVerticesBackup.containsKey(vertex))
+			return adjacentVerticesBackup.get(vertex);
 
 		// Else, treat the node
 		HashSet<V> result = new HashSet<V>();
@@ -100,7 +100,7 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 		result.remove(vertex);
 
 		// Save the result.
-		getNBackup.put(vertex, result);
+		adjacentVerticesBackup.put(vertex, result);
 		return result;
 	}
 

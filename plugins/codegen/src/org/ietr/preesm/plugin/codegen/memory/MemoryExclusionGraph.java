@@ -227,27 +227,16 @@ public class MemoryExclusionGraph extends
 				.toString().equals("task")
 				&& edge.getTarget().getPropertyBean().getValue("vertexType")
 						.toString().equals("task")) {
-			try {
-				newNode = new MemoryExclusionGraphNode(edge.getSource()
-						.getName(), edge.getTarget().getName(), edge
-						.getWeight().intValue());
+			newNode = new MemoryExclusionGraphNode(edge);
 
-				this.addVertex(newNode);			
+			this.addVertex(newNode);			
 
-				// Add exclusion corresponding to all incoming edges of the
-				// source vertex.
-				for (DAGEdge incomingEdge : edge.getSource().incomingEdges()) {
-					MemoryExclusionGraphNode memExGrNo = new MemoryExclusionGraphNode(
-							incomingEdge.getSource().getName(), edge
-									.getSource().getName(), incomingEdge
-									.getWeight().intValue());
+			// Add exclusion corresponding to all incoming edges of the
+			// source vertex.
+			for (DAGEdge incomingEdge : edge.getSource().incomingEdges()) {
+				MemoryExclusionGraphNode memExGrNo = new MemoryExclusionGraphNode(incomingEdge);
 
-					this.addEdge(memExGrNo, newNode);
-				}
-
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				this.addEdge(memExGrNo, newNode);
 			}
 		}
 		return newNode;

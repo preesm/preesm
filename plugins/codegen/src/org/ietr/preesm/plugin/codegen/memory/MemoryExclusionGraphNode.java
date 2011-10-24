@@ -1,5 +1,8 @@
 package org.ietr.preesm.plugin.codegen.memory;
 
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.parameters.InvalidExpressionException;
+
 /**
  * MemoryExclusionGraphNode is used to represent vertices in the Exclusion
  * graph.
@@ -29,6 +32,11 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 	 * ID of the task producing the memory.
 	 */
 	private String source;
+	
+	/**
+	 * The edge corresponding to the Node
+	 */
+	private DAGEdge edge;
 
 	/**
 	 * Constructor of the class
@@ -45,6 +53,23 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 		source = sourceTask;
 		sink = sinkTask;
 		size = sizeMem;		
+	}
+	
+	/**
+	 * Constructor of the class
+	 * 
+	 * @param inputEdge
+	 * the DAG edge corresponding to the new node
+	 */
+	public MemoryExclusionGraphNode(DAGEdge inputEdge){
+		source = inputEdge.getSource().getName();
+		sink = inputEdge.getTarget().getName();
+		try {
+			size = inputEdge.getWeight().intValue();
+		} catch (InvalidExpressionException e) {
+			e.printStackTrace();
+		}		
+		this.edge = inputEdge;		
 	}
 	
 	
@@ -93,6 +118,13 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 
 	public Integer getWeight() {
 		return size;
+	}
+	
+	/**
+	 * @return the edge
+	 */
+	public DAGEdge getEdge(){
+		return edge;
 	}
 
 	/**

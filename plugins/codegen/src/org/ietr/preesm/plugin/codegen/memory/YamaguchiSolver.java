@@ -211,16 +211,16 @@ public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 	 * @param vertex
 	 * @return
 	 */
-	protected HashSet<V> adjacentVerticesOf(V vertex){		
+	public HashSet<V> adjacentVerticesOf(V vertex){		
 		// If this node was already treated
-		if (getNBackup.containsKey(vertex)){
-			return getNBackup.get(vertex);
+		if (adjacentVerticesBackup.containsKey(vertex)){
+			return adjacentVerticesBackup.get(vertex);
 		}
 		
 		// else		
 		super.adjacentVerticesOf(vertex);
 		
-		for(V vert : getNBackup.get(vertex)){
+		for(V vert : adjacentVerticesBackup.get(vertex)){
 			for(V vertin : this.graphVertices.values()){
 				if(vert.equals(vertin)){
 					vert.setIdentifier(vertin.getIdentifier());
@@ -229,7 +229,7 @@ public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 			}
 		}
 		
-		return getNBackup.get(vertex);
+		return adjacentVerticesBackup.get(vertex);
 		
 	}
 }
