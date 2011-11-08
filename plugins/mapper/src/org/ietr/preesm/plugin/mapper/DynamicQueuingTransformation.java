@@ -107,8 +107,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs
-				.get("architecture");
+		Design architecture = (Design) inputs.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
@@ -129,19 +128,21 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			v.setLibrary("none");
 			v.setName("DelayManager");
 			v.setVersion("1.0");
-			
+
 			Component component = (Component) ComponentFactory.eINSTANCE
 					.createOperator();
 			component.setVlnv(v);
 			architecture.getComponentHolder().getComponents().add(component);
 			SlamFactory.eINSTANCE.createComponentInstance();
-			virtualDelayManager = SlamFactory.eINSTANCE.createComponentInstance();
+			virtualDelayManager = SlamFactory.eINSTANCE
+					.createComponentInstance();
 			virtualDelayManager.setInstanceName("VirtualDelayManager");
 			virtualDelayManager.setComponent(component);
 			architecture.getComponentInstances().add(virtualDelayManager);
 
 			// Connecting the virtual component to all cores
-			for (ComponentInstance cmp : DesignTools.getComponentInstances(architecture)) {
+			for (ComponentInstance cmp : DesignTools
+					.getComponentInstances(architecture)) {
 				if (cmp.getComponent() instanceof Operator
 						&& !cmp.getInstanceName().equals("VirtualDelayManager")) {
 					VLNV v2 = AttributesFactory.eINSTANCE.createVLNV();
@@ -149,15 +150,19 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 					v.setLibrary("none");
 					v.setName("DelayManagerNodeTo" + cmp.getInstanceName());
 					v.setVersion("1.0");
-					ComNode nodeDef = ComponentFactory.eINSTANCE.createComNode();
+					ComNode nodeDef = ComponentFactory.eINSTANCE
+							.createComNode();
 					nodeDef.setParallel(true);
 					nodeDef.setVlnv(v2);
 					nodeDef.setSpeed(1000000);
-					ComponentInstance virtualNode = SlamFactory.eINSTANCE.createComponentInstance();
-					virtualDelayManager.setInstanceName("virtualNodeTo" + cmp.getInstanceName());
+					ComponentInstance virtualNode = SlamFactory.eINSTANCE
+							.createComponentInstance();
+					virtualDelayManager.setInstanceName("virtualNodeTo"
+							+ cmp.getInstanceName());
 					virtualDelayManager.setComponent(nodeDef);
 					architecture.getComponentInstances().add(virtualNode);
-					architecture.getComponentHolder().getComponents().add(nodeDef);
+					architecture.getComponentHolder().getComponents()
+							.add(nodeDef);
 					Link c1 = LinkFactory.eINSTANCE.createDataLink();
 					c1.setDirected(false);
 					c1.setSourceComponentInstance(virtualNode);
@@ -266,8 +271,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 				architecture, abcParameters.getSimulatorType()
 						.getTaskSchedType(), scenario);
 
-		WorkflowLogger.getLogger()
-				.log(Level.INFO, "Dynamic Scheduling");
+		WorkflowLogger.getLogger().log(Level.INFO, "Dynamic Scheduling");
 
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
@@ -294,8 +298,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 
 		super.clean(architecture, scenario);
 
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"End of Dynamic Scheduling");
+		WorkflowLogger.getLogger().log(Level.INFO, "End of Dynamic Scheduling");
 
 		return outputs;
 	}

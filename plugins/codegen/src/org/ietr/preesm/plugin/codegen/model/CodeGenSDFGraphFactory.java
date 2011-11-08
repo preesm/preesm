@@ -150,13 +150,16 @@ public class CodeGenSDFGraphFactory {
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
 			VertexType targetType = (VertexType) target.getPropertyBean()
 					.getValue(ImplementationPropertyNames.Vertex_vertexType);
-			ComponentInstance operatorSource = (ComponentInstance) source.getPropertyBean()
-					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			ComponentInstance operatorTarget = (ComponentInstance) target.getPropertyBean()
-					.getValue(ImplementationPropertyNames.Vertex_Operator);
+			ComponentInstance operatorSource = (ComponentInstance) source
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.Vertex_Operator);
+			ComponentInstance operatorTarget = (ComponentInstance) target
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.Vertex_Operator);
 			if ((sourceType.equals(VertexType.send) && targetType
 					.equals(VertexType.receive))
-					|| operatorSource.getInstanceName().equals(operatorTarget.getInstanceName())) {
+					|| operatorSource.getInstanceName().equals(
+							operatorTarget.getInstanceName())) {
 				SDFAbstractVertex newSource = aliases.get(source);
 				SDFAbstractVertex newTarget = aliases.get(target);
 				for (AbstractEdge subEdge : edge.getAggregate()) {

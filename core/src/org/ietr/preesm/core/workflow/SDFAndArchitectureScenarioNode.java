@@ -25,7 +25,8 @@ import org.sdf4j.model.sdf.SDFGraph;
  * @author mpelcat
  * 
  */
-public class SDFAndArchitectureScenarioNode extends AbstractScenarioImplementation {
+public class SDFAndArchitectureScenarioNode extends
+		AbstractScenarioImplementation {
 
 	/**
 	 * The scenario node in Preesm outputs three elements: SDF, architecture and
@@ -51,7 +52,8 @@ public class SDFAndArchitectureScenarioNode extends AbstractScenarioImplementati
 				.getAlgorithmURL());
 
 		// Retrieving the architecture
-		Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
+		Design slamDesign = ScenarioParser.parseSlamDesign(scenario
+				.getArchitectureURL());
 
 		outputs.put("scenario", scenario);
 		outputs.put("SDF", algorithm);

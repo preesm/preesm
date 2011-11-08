@@ -284,10 +284,10 @@ public class PFastAlgorithm extends Observable {
 	 * 
 	 * @return MapperDAG
 	 */
-	public MapperDAG map(MapperDAG dag, Design archi,
-			PreesmScenario scenario, InitialLists initialLists,
-			AbcParameters abcParams, PFastAlgoParameters pFastParams,
-			boolean population, int populationsize, boolean isDisplaySolutions,
+	public MapperDAG map(MapperDAG dag, Design archi, PreesmScenario scenario,
+			InitialLists initialLists, AbcParameters abcParams,
+			PFastAlgoParameters pFastParams, boolean population,
+			int populationsize, boolean isDisplaySolutions,
 			List<MapperDAG> populationList, AbstractTaskSched taskSched) {
 
 		int i = 0;

@@ -75,20 +75,18 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType,
-			PreesmScenario scenario) {
+			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) {
 		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 
-		ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,scenario.getSimulationManager().getMainComNodeName());
+		ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
+				scenario.getSimulationManager().getMainComNodeName());
 		if (mainComNode != null) {
-			WorkflowLogger.getLogger().info(
-					"Infinite homogeneous simulation");
+			WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
 		} else {
-
 			WorkflowLogger
 					.getLogger()
-					.info("Current architecture has no main medium. infinite homogeneous simulator will use default speed");
+					.info("Current architecture has no main communication node. infinite homogeneous simulator will use default speed");
 		}
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
@@ -112,8 +110,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
+		ComponentInstance effectiveOp = vertex
+				.getImplementationVertexProperty().getEffectiveOperator();
 
 		/*
 		 * mapping a vertex sets the cost of the current vertex and its edges
@@ -184,14 +182,16 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 * supposed to be done on the main medium. The communication cost is
 		 * simply calculated from the main medium speed.
 		 */
-		String mainComName = scenario.getSimulationManager().getMainComNodeName();
-		ComponentInstance mainCom = DesignTools.getComponentInstance(archi, mainComName);
-		
+		String mainComName = scenario.getSimulationManager()
+				.getMainComNodeName();
+		ComponentInstance mainCom = DesignTools.getComponentInstance(archi,
+				mainComName);
+
 		if (mainCom != null) {
-						
-			long cost = (long) (edgesize / ((ComNode) mainCom
-					.getComponent()).getSpeed());
-					
+
+			long cost = (long) (edgesize / ((ComNode) mainCom.getComponent())
+					.getSpeed());
+
 			edge.getTimingEdgeProperty().setCost(cost);
 		} else {
 			Float speed = 1f;

@@ -135,7 +135,7 @@ public class ScenarioWriter {
 		core.setTextContent(scenario.getSimulationManager()
 				.getMainOperatorName());
 
-		Element medium = dom.createElement("mainMedium");
+		Element medium = dom.createElement("mainComNode");
 		params.appendChild(medium);
 		medium.setTextContent(scenario.getSimulationManager()
 				.getMainComNodeName());

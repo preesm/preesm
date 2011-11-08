@@ -103,7 +103,8 @@ public class KwokListScheduler {
 	 */
 
 	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
-			IAbc archisimu, ComponentInstance operatorfcp, MapperDAGVertex fcpvertex) {
+			IAbc archisimu, ComponentInstance operatorfcp,
+			MapperDAGVertex fcpvertex) {
 
 		boolean minimizeVStartorOpEnd = false;
 
@@ -127,7 +128,7 @@ public class KwokListScheduler {
 				List<ComponentInstance> opList = archisimu
 						.getCandidateOperators(currentvertex);
 				if (opList.size() == 1) {
-					chosenoperator = (ComponentInstance)opList.toArray()[0];
+					chosenoperator = (ComponentInstance) opList.toArray()[0];
 				} else {
 					for (ComponentInstance currentoperator : opList) {
 

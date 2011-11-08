@@ -100,11 +100,10 @@ class PFastCallable implements Callable<MapperDAG> {
 	 * @param alreadyMapped
 	 * @param simulatorType
 	 */
-	public PFastCallable(String name, MapperDAG inputDAG,
-			Design inputArchi, Set<String> blockingNodeNames,
-			boolean isDisplaySolutions, boolean alreadyMapped,
-			AbcParameters abcParams, FastAlgoParameters fastParams,
-			PreesmScenario scenario) {
+	public PFastCallable(String name, MapperDAG inputDAG, Design inputArchi,
+			Set<String> blockingNodeNames, boolean isDisplaySolutions,
+			boolean alreadyMapped, AbcParameters abcParams,
+			FastAlgoParameters fastParams, PreesmScenario scenario) {
 		threadName = name;
 		this.inputDAG = inputDAG;
 		this.inputArchi = inputArchi;

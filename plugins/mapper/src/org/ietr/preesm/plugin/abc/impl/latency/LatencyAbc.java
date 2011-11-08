@@ -105,9 +105,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been mapped yet.
 	 */
-	public LatencyAbc(AbcParameters params, MapperDAG dag,
-			Design archi, AbcType abcType,
-			PreesmScenario scenario) {
+	public LatencyAbc(AbcParameters params, MapperDAG dag, Design archi,
+			AbcType abcType, PreesmScenario scenario) {
 		super(dag, archi, abcType, scenario);
 
 		this.params = params;
@@ -177,8 +176,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 	protected void fireNewMappedVertex(MapperDAGVertex vertex,
 			boolean updateRank) {
 
-		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
+		ComponentInstance effectiveOp = vertex
+				.getImplementationVertexProperty().getEffectiveOperator();
 
 		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(

@@ -143,8 +143,8 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * ABC constructor
 	 */
-	protected AbstractAbc(MapperDAG dag, Design archi,
-			AbcType abcType, PreesmScenario scenario) {
+	protected AbstractAbc(MapperDAG dag, Design archi, AbcType abcType,
+			PreesmScenario scenario) {
 
 		this.abcType = abcType;
 		orderManager = new SchedOrderManager(archi);
@@ -294,8 +294,8 @@ public abstract class AbstractAbc implements IAbc {
 	 * where to schedule it.
 	 */
 	@Override
-	public final void map(MapperDAGVertex dagvertex, ComponentInstance operator,
-			boolean updateRank) {
+	public final void map(MapperDAGVertex dagvertex,
+			ComponentInstance operator, boolean updateRank) {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		WorkflowLogger.getLogger().log(
@@ -430,7 +430,11 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Search among the operators with same type than the prefered one
 			for (ComponentInstance op : opList) {
-				if (op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
+				if (op.getComponent()
+						.getVlnv()
+						.getName()
+						.equals(preferedOperator.getComponent().getVlnv()
+								.getName())) {
 					adequateOp = op;
 				}
 			}
@@ -453,7 +457,8 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 
 	@Override
-	public final boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator) {
+	public final boolean isMapable(MapperDAGVertex vertex,
+			ComponentInstance operator) {
 
 		vertex = translateInImplementationVertex(vertex);
 

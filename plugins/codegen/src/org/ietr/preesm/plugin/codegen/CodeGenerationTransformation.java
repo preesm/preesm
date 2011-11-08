@@ -78,8 +78,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs
-				.get("architecture");
+		Design architecture = (Design) inputs.get("architecture");
 		DirectedAcyclicGraph algorithm = (DirectedAcyclicGraph) inputs
 				.get("DAG");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

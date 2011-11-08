@@ -86,10 +86,9 @@ public class PGeneticAlgoCallable implements Callable<List<Chromosome>> {
 	 * @param simulatorType
 	 * @param threadName
 	 */
-	public PGeneticAlgoCallable(Design architecture,
-			PreesmScenario scenario, int generationNumber,
-			List<Chromosome> population, int populationSize,
-			AbcParameters abcParams, String threadName) {
+	public PGeneticAlgoCallable(Design architecture, PreesmScenario scenario,
+			int generationNumber, List<Chromosome> population,
+			int populationSize, AbcParameters abcParams, String threadName) {
 		super();
 		this.architecture = architecture;
 		this.scenario = scenario;

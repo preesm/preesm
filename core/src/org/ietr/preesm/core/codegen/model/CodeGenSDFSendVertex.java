@@ -46,14 +46,12 @@ public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex {
 	public CodeGenSDFSendVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.send);
 	}
-/*
-	public Interface getInterface() {
-		return (Interface) this.getPropertyBean().getValue(INTERFACE,
-				Interface.class);
-	}
-
-	public void setOperator(Interface inter) {
-		this.getPropertyBean().setValue(INTERFACE, getInterface(), inter);
-	}*/
+	/*
+	 * public Interface getInterface() { return (Interface)
+	 * this.getPropertyBean().getValue(INTERFACE, Interface.class); }
+	 * 
+	 * public void setOperator(Interface inter) {
+	 * this.getPropertyBean().setValue(INTERFACE, getInterface(), inter); }
+	 */
 
 }

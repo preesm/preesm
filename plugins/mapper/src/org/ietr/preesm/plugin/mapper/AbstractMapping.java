@@ -63,8 +63,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
 
-		Design architecture = (Design) inputs
-				.get("architecture");
+		Design architecture = (Design) inputs.get("architecture");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// Asking to recalculate routes
@@ -94,8 +93,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 		return parameters;
 	}
 
-	protected void clean(Design architecture,
-			PreesmScenario scenario) {
+	protected void clean(Design architecture, PreesmScenario scenario) {
 		// Asking to delete route
 		RouteCalculator.deleteRoutes(architecture, scenario);
 	}

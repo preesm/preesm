@@ -100,10 +100,13 @@ public class SourceFileCodeGenerator {
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
 			// retrieving the operator where the vertex is allocated
-			ComponentInstance vertexOperator = (ComponentInstance) vertex.getPropertyBean()
-					.getValue(ImplementationPropertyNames.Vertex_Operator);
-			if (vertex instanceof ICodeGenSDFVertex && vertexOperator != null
-					&& vertexOperator.getInstanceName().equals(file.getOperator().getInstanceName())) {
+			ComponentInstance vertexOperator = (ComponentInstance) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.Vertex_Operator);
+			if (vertex instanceof ICodeGenSDFVertex
+					&& vertexOperator != null
+					&& vertexOperator.getInstanceName().equals(
+							file.getOperator().getInstanceName())) {
 				// Allocating all output buffers of vertex
 				allocateVertexOutputBuffers(vertex);
 			}
@@ -162,8 +165,7 @@ public class SourceFileCodeGenerator {
 	/**
 	 * Fills its source file from an SDF and an architecture
 	 */
-	public void generateSource(CodeGenSDFGraph algorithm,
-			Design architecture) {
+	public void generateSource(CodeGenSDFGraph algorithm, Design architecture) {
 
 		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
@@ -263,8 +265,9 @@ public class SourceFileCodeGenerator {
 			SDFAbstractVertex vertex = iterator.next();
 
 			// retrieving the operator where the vertex is allocated
-			ComponentInstance vertexOperator = (ComponentInstance) vertex.getPropertyBean()
-					.getValue(ImplementationPropertyNames.Vertex_Operator);
+			ComponentInstance vertexOperator = (ComponentInstance) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.Vertex_Operator);
 
 			// retrieving the type of the vertex
 			VertexType vertexType = (VertexType) vertex.getPropertyBean()
@@ -273,7 +276,8 @@ public class SourceFileCodeGenerator {
 			// If the vertex is allocated on the current operator, we add it to
 			// the set in scheduling order
 			if (vertexOperator != null
-					&& vertexOperator.getInstanceName().equals(file.getOperator().getInstanceName())
+					&& vertexOperator.getInstanceName().equals(
+							file.getOperator().getInstanceName())
 					&& vertexType != null && vertexType.equals(currentType)
 					&& !schedule.contains(vertex)) {
 				schedule.add(vertex);

@@ -53,8 +53,8 @@ public class RelativeConstraint {
 			return operators;
 		} else {
 			MapperDAGVertex firstVertex = vertices.get(0);
-			ComponentInstance op = firstVertex.getImplementationVertexProperty()
-					.getEffectiveOperator();
+			ComponentInstance op = firstVertex
+					.getImplementationVertexProperty().getEffectiveOperator();
 			if (op != null && vertices.size() > 1) {
 				// Forcing the mapper to put together related vertices
 				operators.add(op);
@@ -69,15 +69,15 @@ public class RelativeConstraint {
 			ComponentInstance op = vertex.getImplementationVertexProperty()
 					.getEffectiveOperator();
 			if (op != null) {
-				if (DesignTools.contains(operators,op)) {
+				if (DesignTools.contains(operators, op)) {
 					operators.clear();
 					operators.add(op);
 				} else {
 					operators.clear();
 				}
 			} else {
-				DesignTools.retainAll(operators,vertex.getInitialVertexProperty()
-						.getInitialOperatorList());
+				DesignTools.retainAll(operators, vertex
+						.getInitialVertexProperty().getInitialOperatorList());
 			}
 		}
 

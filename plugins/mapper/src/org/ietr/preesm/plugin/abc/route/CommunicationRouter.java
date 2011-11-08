@@ -86,9 +86,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	private RouteCalculator calculator = null;
 
-	public CommunicationRouter(Design archi,
-			PreesmScenario scenario, MapperDAG implementation,
-			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
+	public CommunicationRouter(Design archi, PreesmScenario scenario,
+			MapperDAG implementation, IEdgeSched edgeScheduler,
+			SchedOrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
 		this.calculator = RouteCalculator.getInstance(archi, scenario);
 

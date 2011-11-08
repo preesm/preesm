@@ -174,7 +174,8 @@ public class InitialVertexProperty {
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 
-			Timing returntiming = getTiming(operator.getComponent().getVlnv().getName());
+			Timing returntiming = getTiming(operator.getComponent().getVlnv()
+					.getName());
 
 			if (returntiming != Timing.UNAVAILABLE) {
 
@@ -192,13 +193,14 @@ public class InitialVertexProperty {
 						// if a memory copy speed is set in the operator
 						time = Timing.DEFAULT_BROADCAST_TIME;
 
-						String stringCopySpeed = DesignTools.getParameter(operator, DesignTools.OPERATOR_COPY_SPEED);
+						String stringCopySpeed = DesignTools.getParameter(
+								operator, DesignTools.OPERATOR_COPY_SPEED);
 						float dataCopySpeed = 0;
-						
-						if(stringCopySpeed != null){
+
+						if (stringCopySpeed != null) {
 							dataCopySpeed = Float.valueOf(stringCopySpeed);
 						}
-						
+
 						if (dataCopySpeed > 0) {
 							// Calculating the sum of output data sizes
 							int inputDataSize = getVertexInputBuffersSize(parentVertex);
@@ -221,13 +223,14 @@ public class InitialVertexProperty {
 						// if a memory copy speed is set in the operator
 						time = Timing.DEFAULT_BROADCAST_TIME;
 
-						String stringCopySpeed = DesignTools.getParameter(operator, DesignTools.OPERATOR_COPY_SPEED);
+						String stringCopySpeed = DesignTools.getParameter(
+								operator, DesignTools.OPERATOR_COPY_SPEED);
 						float dataCopySpeed = 0;
-						
-						if(stringCopySpeed != null){
+
+						if (stringCopySpeed != null) {
 							dataCopySpeed = Float.valueOf(stringCopySpeed);
 						}
-						
+
 						if (dataCopySpeed > 0) {
 							// Calculating the sum of input data sizes
 							// A join creates a memory copy with a given speed

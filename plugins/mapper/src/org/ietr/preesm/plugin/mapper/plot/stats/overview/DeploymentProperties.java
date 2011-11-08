@@ -91,7 +91,8 @@ public class DeploymentProperties implements IStructuredContentProvider,
 	}
 
 	private void initData() {
-		Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(statGen.getAbc().getArchitecture());
+		Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(statGen
+				.getAbc().getArchitecture());
 
 		for (ComponentInstance cmp : opSet) {
 			loads.put(cmp, statGen.getLoad(cmp));
@@ -102,7 +103,8 @@ public class DeploymentProperties implements IStructuredContentProvider,
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		List<ComponentInstance> elements = new ArrayList<ComponentInstance>(loads.keySet());
+		List<ComponentInstance> elements = new ArrayList<ComponentInstance>(
+				loads.keySet());
 
 		Comparator<ComponentInstance> comparator = null;
 

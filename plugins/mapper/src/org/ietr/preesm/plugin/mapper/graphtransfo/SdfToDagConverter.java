@@ -189,7 +189,7 @@ public class SdfToDagConverter {
 
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
-			
+
 			if (timelist.size() != 0) {
 				while (listiterator.hasNext()) {
 					Timing timing = listiterator.next();
@@ -297,7 +297,8 @@ public class SdfToDagConverter {
 										currentIOp);
 
 								Timing newTiming = new Timing(currentIOp
-										.getComponent().getVlnv().getName(), mv.getName());
+										.getComponent().getVlnv().getName(),
+										mv.getName());
 								mv.getInitialVertexProperty().addTiming(
 										newTiming);
 							}
@@ -322,8 +323,8 @@ public class SdfToDagConverter {
 			if (SpecialVertexManager.isSpecial(v)) {
 				vList.add(v);
 				for (String id : specialOpIds) {
-					ComponentInstance o = DesignTools
-							.getComponentInstance(architecture, id);
+					ComponentInstance o = DesignTools.getComponentInstance(
+							architecture, id);
 					((MapperDAGVertex) v).getInitialVertexProperty()
 							.addOperator(o);
 				}

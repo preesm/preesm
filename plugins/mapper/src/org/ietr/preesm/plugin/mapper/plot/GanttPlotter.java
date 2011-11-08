@@ -162,7 +162,8 @@ public class GanttPlotter extends ApplicationFrame implements
 		Collections.sort(cmps, new DesignTools.ComponentInstanceComparator());
 
 		for (ComponentInstance cmp : cmps) {
-			currenttask = new Task(cmp.getInstanceName(), new SimpleTimePeriod(0, 1));
+			currenttask = new Task(cmp.getInstanceName(), new SimpleTimePeriod(
+					0, 1));
 			series.add(currenttask);
 			finalCosts.put(cmp.getInstanceName(), 0l);
 		}
@@ -172,8 +173,8 @@ public class GanttPlotter extends ApplicationFrame implements
 
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			ComponentInstance cmp = currentVertex.getImplementationVertexProperty()
-					.getEffectiveComponent();
+			ComponentInstance cmp = currentVertex
+					.getImplementationVertexProperty().getEffectiveComponent();
 
 			if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
 				long start = currentVertex.getTimingVertexProperty()
@@ -213,8 +214,8 @@ public class GanttPlotter extends ApplicationFrame implements
 
 	}
 
-	public static void plotDeployment(MapperDAG dag,
-			Design archi, Composite delegateDisplay) {
+	public static void plotDeployment(MapperDAG dag, Design archi,
+			Composite delegateDisplay) {
 
 		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag, archi);
 
@@ -242,8 +243,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Gantt chart plotting function in a given composite
 	 */
-	public void plotInComposite(MapperDAG dag, Design archi,
-			Composite parent) {
+	public void plotInComposite(MapperDAG dag, Design archi, Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
 		parent.setLayout(new FillLayout());

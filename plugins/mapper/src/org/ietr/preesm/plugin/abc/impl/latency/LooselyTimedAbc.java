@@ -64,9 +64,8 @@ public class LooselyTimedAbc extends LatencyAbc {
 	 * Constructor of the simulator from a "blank" implementation where every
 	 * vertex has not been mapped yet.
 	 */
-	public LooselyTimedAbc(AbcParameters params, MapperDAG dag,
-			Design archi, AbcType abcType,
-			PreesmScenario scenario) {
+	public LooselyTimedAbc(AbcParameters params, MapperDAG dag, Design archi,
+			AbcType abcType, PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 	}
 
@@ -76,8 +75,8 @@ public class LooselyTimedAbc extends LatencyAbc {
 
 		super.fireNewMappedVertex(vertex, updateRank);
 
-		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
+		ComponentInstance effectiveOp = vertex
+				.getImplementationVertexProperty().getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			// Adding precedence edges for an automatic graph timings

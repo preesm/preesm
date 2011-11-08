@@ -56,8 +56,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Generating scenario");
+		WorkflowLogger.getLogger().log(Level.INFO, "Generating scenario");
 
 		String scenarioFileName = parameters.get("scenarioFile");
 
@@ -89,8 +88,8 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			}
 
 			// Retrieving the architecture
-			Design archi = ScenarioParser
-					.parseSlamDesign(scenario.getArchitectureURL());
+			Design archi = ScenarioParser.parseSlamDesign(scenario
+					.getArchitectureURL());
 			if (archi == null) {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve architecture");
@@ -133,10 +132,11 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 							ImplementationPropertyNames.Task_duration);
 					SDFAbstractVertex sdfV = ((SDFGraph) outputs.get("SDF"))
 							.getVertex(vName);
-					ComponentInstance op = DesignTools.getComponentInstance((Design) outputs
-							.get("architecture"),opName);
+					ComponentInstance op = DesignTools.getComponentInstance(
+							(Design) outputs.get("architecture"), opName);
 
-					if (sdfV != null && op != null && op.getComponent() instanceof Operator) {
+					if (sdfV != null && op != null
+							&& op.getComponent() instanceof Operator) {
 						((PreesmScenario) outputs.get("scenario"))
 								.getConstraintGroupManager().addConstraint(
 										opName, sdfV);
@@ -148,8 +148,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 				}
 
 			} catch (Exception e) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
-						e.getMessage());
+				WorkflowLogger.getLogger().log(Level.SEVERE, e.getMessage());
 			}
 
 		}

@@ -21,8 +21,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 	public static final String DAG_SPAN = "dag span length";
 
 	public SpanLengthCalculator(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType,
-			PreesmScenario scenario) {
+			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) {
 		super(params, dag, archi, taskSchedType, scenario);
 
 		this.updateTimings();

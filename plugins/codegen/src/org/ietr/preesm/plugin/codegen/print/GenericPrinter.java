@@ -137,8 +137,8 @@ public class GenericPrinter {
 			specificPath = specificPath.append(fileName + ".c");
 
 			IPath xslFilePath = new Path(xslPath);
-			xslFilePath = xslFilePath.append(operator
-					.getComponent().getVlnv().getName()
+			xslFilePath = xslFilePath.append(operator.getComponent().getVlnv()
+					.getName()
 					+ ".xslt");
 
 			try {
@@ -148,8 +148,7 @@ public class GenericPrinter {
 							specificPath.toOSString());
 				}
 			} catch (TransformerConfigurationException e) {
-				WorkflowLogger.getLogger().log(Level.INFO,
-						e.getMessage());
+				WorkflowLogger.getLogger().log(Level.INFO, e.getMessage());
 			}
 		}
 	}
@@ -159,8 +158,7 @@ public class GenericPrinter {
 	 */
 	public XMLPrinter createOperatorPrinter(ComponentInstance opRef) {
 		XMLPrinter printer = null;
-		String opId = opRef.getComponent().getVlnv()
-				.getName();
+		String opId = opRef.getComponent().getVlnv().getName();
 		String opRefId = opRef.getInstanceName();
 
 		printer = new XMLPrinter();

@@ -96,9 +96,8 @@ public class FastAlgorithm extends Observable {
 	}
 
 	public MapperDAG map(String threadName, AbcParameters abcParams,
-			FastAlgoParameters fastParams, MapperDAG dag,
-			Design archi, boolean alreadyMapped,
-			boolean pfastused, boolean displaySolutions,
+			FastAlgoParameters fastParams, MapperDAG dag, Design archi,
+			boolean alreadyMapped, boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, AbstractTaskSched taskSched) {
 
 		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
@@ -126,9 +125,8 @@ public class FastAlgorithm extends Observable {
 	 * 
 	 */
 	public MapperDAG map(String threadName, AbcParameters abcParams,
-			FastAlgoParameters fastParams, MapperDAG dag,
-			Design archi, boolean alreadyMapped,
-			boolean pfastused, boolean displaySolutions,
+			FastAlgoParameters fastParams, MapperDAG dag, Design archi,
+			boolean alreadyMapped, boolean pfastused, boolean displaySolutions,
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
 			List<MapperDAGVertex> finalcriticalpathList,
@@ -219,7 +217,8 @@ public class FastAlgorithm extends Observable {
 				* fastParams.getFastTime();
 		// the number of local solutions searched in a neighborhood is the size
 		// of the graph
-		int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
+		int maxStep = dag.vertexSet().size()
+				* DesignTools.getNumberOfOperatorInstances(archi);
 		// the number of better solutions found in a neighborhood is limited
 		int margin = Math.max(maxStep / 10, 1);
 
@@ -278,10 +277,9 @@ public class FastAlgorithm extends Observable {
 				// The mapping can reaffect the same operator as before,
 				// refining the edge scheduling
 				int randomIndex = randomGenerator.nextInt(operatorList.size());
-				operatortest = (ComponentInstance)operatorList.toArray()[randomIndex];
+				operatortest = (ComponentInstance) operatorList.toArray()[randomIndex];
 
-				operatorprec = simulator
-						.getEffectiveComponent(currentvertex);
+				operatorprec = simulator.getEffectiveComponent(currentvertex);
 
 				// step 9 TODO: check if ok to use mapWithGroup
 				// simulator.map(currentvertex, operatortest, false);
@@ -351,7 +349,9 @@ public class FastAlgorithm extends Observable {
 			do {
 				int randomIndex = randomGenerator.nextInt(operatorList.size());
 				operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
-			} while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName()) && operatorList.size() > 1);
+			} while (operatorfcp.getInstanceName().equals(
+					currentOp.getInstanceName())
+					&& operatorList.size() > 1);
 
 			// step 15
 			List<MapperDAGVertex> toRemapList = cpnDominantList;

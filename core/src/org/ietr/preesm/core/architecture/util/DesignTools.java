@@ -81,7 +81,6 @@ public class DesignTools {
 
 		return operatorInstanceIds;
 	}
-	
 
 	/**
 	 * Getting all operator instances in architecture

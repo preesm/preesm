@@ -203,8 +203,9 @@ public class ScenarioParser {
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
 				if (type.equals("mainCore")) {
-					scenario.getSimulationManager().setMainOperatorName(content);
-				} else if (type.equals("mainMedium")) {
+					scenario.getSimulationManager()
+							.setMainOperatorName(content);
+				} else if (type.equals("mainComNode")) {
 					scenario.getSimulationManager().setMainComNodeName(content);
 				} else if (type.equals("averageDataSize")) {
 					scenario.getSimulationManager().setAverageDataSize(
@@ -323,12 +324,14 @@ public class ScenarioParser {
 	 */
 	private void initializeArchitectureInformation(String url) {
 		if (url.contains(".design")) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+			WorkflowLogger
+					.getLogger()
+					.log(Level.SEVERE,
+							"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
 		} else if (url.contains(".slam")) {
 			WorkflowLogger.getLogger().log(Level.WARNING,
 					"You are using SLAM architecture 2.0.");
-			
+
 			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
 					.getExtensionToFactoryMap();
 			Object instance = extToFactoryMap.get("slam");
@@ -342,36 +345,35 @@ public class ScenarioParser {
 						SlamPackage.eINSTANCE);
 			}
 
-
 			Path relativePath = new Path(url);
-			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+			IFile file = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(relativePath);
 			String completePath = file.getLocation().toString();
-			
+
 			// Extract the root object from the resource.
 			Design design = parseSlamDesign(completePath);
-			
-			
+
 			System.out.println(design.getVlnv().getName());
 
 			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
 			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-			scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
+			scenario.setOperatorDefinitionIds(DesignTools
+					.getOperatorComponentIds(design));
 		}
 	}
 
-	public static  Design parseSlamDesign(String completePath) {
+	public static Design parseSlamDesign(String completePath) {
 		// Demand load the resource into the resource set.
 		ResourceSet resourceSet = new ResourceSetImpl();
 
 		// resourceSet.
-		Resource resource = resourceSet.getResource(URI.createFileURI(completePath),
-				true);
+		Resource resource = resourceSet.getResource(
+				URI.createFileURI(completePath), true);
 		// Extract the root object from the resource.
 		Design design = (Design) resource.getContents().get(0);
 
 		return design;
 	}
-	
 
 	public static SDFGraph getAlgorithm(String path) {
 		SDFGraph algorithm = null;

@@ -56,8 +56,8 @@ public class DmaRouteStep extends MessageRouteStep {
 	 */
 	public static final String type = "DmaRouteStep";
 
-	public DmaRouteStep(ComponentInstance sender, List<ComponentInstance> nodes,
-			ComponentInstance receiver, Dma dma) {
+	public DmaRouteStep(ComponentInstance sender,
+			List<ComponentInstance> nodes, ComponentInstance receiver, Dma dma) {
 		super(sender, nodes, receiver);
 		this.dma = dma;
 	}
@@ -84,7 +84,6 @@ public class DmaRouteStep extends MessageRouteStep {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new DmaRouteStep(getSender(), getNodes(),
-				getReceiver(), dma);
+		return new DmaRouteStep(getSender(), getNodes(), getReceiver(), dma);
 	}
 }

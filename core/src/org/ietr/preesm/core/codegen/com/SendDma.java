@@ -67,8 +67,8 @@ public class SendDma extends CommunicationFunctionCall {
 
 	public SendDma(AbstractBufferContainer parentContainer,
 			SDFAbstractVertex vertex, List<Buffer> bufferSet,
-			AbstractRouteStep routeStep, ComponentInstance target, int callIndex,
-			Buffer addressBuffer) {
+			AbstractRouteStep routeStep, ComponentInstance target,
+			int callIndex, Buffer addressBuffer) {
 		super("send", parentContainer, bufferSet, routeStep, vertex, callIndex);
 
 		this.target = target;

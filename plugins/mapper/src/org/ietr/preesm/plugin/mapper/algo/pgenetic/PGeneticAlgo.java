@@ -130,10 +130,9 @@ public class PGeneticAlgo extends Observable {
 	 * 
 	 * @return List<Chromosome>
 	 */
-	public List<Chromosome> map(List<MapperDAG> populationDAG,
-			Design archi, PreesmScenario scenario,
-			AbcParameters abcParams, int populationSize, int generationNumber,
-			int processorNumber) {
+	public List<Chromosome> map(List<MapperDAG> populationDAG, Design archi,
+			PreesmScenario scenario, AbcParameters abcParams,
+			int populationSize, int generationNumber, int processorNumber) {
 
 		// variables
 		processorNumber = processorNumber - 1;

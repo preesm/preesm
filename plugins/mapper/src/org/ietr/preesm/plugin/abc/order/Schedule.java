@@ -45,8 +45,7 @@ import java.util.Set;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 
 /**
- * A schedule represents the consecutive tasks mapped on a single
- * {@link Component}
+ * A schedule represents the consecutive tasks mapped on a single component
  * 
  * @author mpelcat
  */

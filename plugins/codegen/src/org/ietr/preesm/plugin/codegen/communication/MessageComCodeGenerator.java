@@ -56,8 +56,8 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendMsg) {
 			SendMsg send = (SendMsg) call;
 
-			init = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
-					send.getRouteStep(), -1);
+			init = new SendInit(bufferContainer, send.getTarget()
+					.getInstanceName(), send.getRouteStep(), -1);
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 		} else if (call instanceof ReceiveMsg) {
 			ReceiveMsg receive = (ReceiveMsg) call;

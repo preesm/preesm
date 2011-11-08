@@ -85,13 +85,11 @@ public class RouteCalculator {
 		return instances.get(archi);
 	}
 
-	public static void recalculate(Design archi,
-			PreesmScenario scenario) {
+	public static void recalculate(Design archi, PreesmScenario scenario) {
 		instances.put(archi, new RouteCalculator(archi, scenario));
 	}
 
-	public static void deleteRoutes(Design archi,
-			PreesmScenario scenario) {
+	public static void deleteRoutes(Design archi, PreesmScenario scenario) {
 		instances.remove(archi);
 	}
 
@@ -116,8 +114,7 @@ public class RouteCalculator {
 	 * Creating recursively the route steps from the architecture.
 	 */
 	private void createRouteSteps() {
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"creating route steps.");
+		WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
 
 		for (ComponentInstance c : DesignTools.getOperatorInstances(archi)) {
 			ComponentInstance o = (ComponentInstance) c;
@@ -130,8 +127,10 @@ public class RouteCalculator {
 
 		// Iterating on outgoing and undirected edges
 		Set<Link> outgoingAndUndirected = new HashSet<Link>();
-		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,source));
-		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(archi,source));
+		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,
+				source));
+		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(
+				archi, source));
 
 		for (Link i : outgoingAndUndirected) {
 			if (DesignTools.getOtherEnd(i, source).getComponent() instanceof ComNodeImpl) {
@@ -149,8 +148,10 @@ public class RouteCalculator {
 
 		// Iterating on outgoing and undirected edges
 		Set<Link> outgoingAndUndirected = new HashSet<Link>();
-		outgoingAndUndirected.addAll(DesignTools.getUndirectedLinks(archi,node));
-		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(archi,node));
+		outgoingAndUndirected.addAll(DesignTools
+				.getUndirectedLinks(archi, node));
+		outgoingAndUndirected.addAll(DesignTools.getOutgoingDirectedLinks(
+				archi, node));
 
 		for (Link i : outgoingAndUndirected) {
 			if (DesignTools.getOtherEnd(i, node).getComponent() instanceof ComNodeImpl) {
@@ -162,7 +163,8 @@ public class RouteCalculator {
 					exploreRoute(source, newNode, newAlreadyVisitedNodes);
 				}
 			} else if (DesignTools.getOtherEnd(i, node).getComponent() instanceof Operator
-					&& !DesignTools.getOtherEnd(i, node).getInstanceName().equals(source.getInstanceName())) {
+					&& !DesignTools.getOtherEnd(i, node).getInstanceName()
+							.equals(source.getInstanceName())) {
 				ComponentInstance target = DesignTools.getOtherEnd(i, node);
 				AbstractRouteStep step = stepFactory.getRouteStep(source,
 						alreadyVisitedNodes, target);
@@ -185,7 +187,8 @@ public class RouteCalculator {
 	 * The floydWarshall algorithm is used to add routes in the table in
 	 * increasing order of cost.
 	 */
-	private void floydWarshall(RoutingTable table, Set<ComponentInstance> operators) {
+	private void floydWarshall(RoutingTable table,
+			Set<ComponentInstance> operators) {
 
 		for (ComponentInstance k : operators) {
 

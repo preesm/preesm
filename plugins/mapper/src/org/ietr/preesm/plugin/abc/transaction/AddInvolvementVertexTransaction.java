@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.abc.transaction;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import net.sf.dftools.workflow.tools.WorkflowLogger;
@@ -154,6 +155,12 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
 				MapperDAGVertex receiverVertex = currentTarget;
 				do {
+					Set<MapperDAGVertex> succs = receiverVertex
+					.getSuccessorSet(false);
+					if(succs.isEmpty() && receiverVertex instanceof TransferVertex){
+						WorkflowLogger.getLogger().log(Level.SEVERE,"Transfer has no successor: " + receiverVertex.getName());
+					}
+					
 					for (MapperDAGVertex next : receiverVertex
 							.getSuccessorSet(false)) {
 						if (next != null) {

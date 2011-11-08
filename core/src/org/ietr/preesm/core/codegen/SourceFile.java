@@ -84,7 +84,8 @@ public class SourceFile extends AbstractBufferContainer {
 	 * @param operator
 	 *            The operator it is created on.
 	 */
-	public SourceFile(String name, ComponentInstance operator, SourceFileList fileList) {
+	public SourceFile(String name, ComponentInstance operator,
+			SourceFileList fileList) {
 		super(null);
 		this.name = name;
 		this.operator = operator;

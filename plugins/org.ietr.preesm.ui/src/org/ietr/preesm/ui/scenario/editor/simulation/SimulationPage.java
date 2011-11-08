@@ -116,11 +116,9 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				String item = combo.getItem(combo.getSelectionIndex());
 
 				if (type.equals("operator")) {
-					scenario.getSimulationManager().setMainOperatorName(
-							item);
-				} else if (type.equals("medium")) {
-					WorkflowLogger.getLogger().log(Level.SEVERE,
-							"TODO: fix main medium.");
+					scenario.getSimulationManager().setMainOperatorName(item);
+				} else if (type.equals("comNode")) {
+					scenario.getSimulationManager().setMainComNodeName(item);
 				}
 			}
 

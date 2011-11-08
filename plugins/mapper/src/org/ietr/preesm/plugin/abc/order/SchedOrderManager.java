@@ -221,8 +221,8 @@ public class SchedOrderManager extends Observable {
 	public void addFirst(MapperDAGVertex vertex) {
 
 		if (vertex.getImplementationVertexProperty().hasEffectiveComponent()) {
-			ComponentInstance effectiveCmp = vertex.getImplementationVertexProperty()
-					.getEffectiveComponent();
+			ComponentInstance effectiveCmp = vertex
+					.getImplementationVertexProperty().getEffectiveComponent();
 
 			// Gets the schedule of vertex
 			Schedule currentSchedule = getSchedule(effectiveCmp);
@@ -624,7 +624,8 @@ public class SchedOrderManager extends Observable {
 					for (MapperDAGVertex sVertex : ((SynchronizedVertices) elt)
 							.vertices()) {
 						if (sVertex.getImplementationVertexProperty()
-								.getEffectiveComponent().getInstanceName().equals(cmp.getInstanceName())) {
+								.getEffectiveComponent().getInstanceName()
+								.equals(cmp.getInstanceName())) {
 							vList.add(sVertex);
 						}
 					}

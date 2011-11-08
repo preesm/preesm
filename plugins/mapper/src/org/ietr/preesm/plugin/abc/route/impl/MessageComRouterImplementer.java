@@ -71,7 +71,8 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 
 			// Adding the transfers of a message route step
 			if (type == CommunicationRouter.transferType) {
-				List<ComponentInstance> nodes = messageStep.getContentionNodes();
+				List<ComponentInstance> nodes = messageStep
+						.getContentionNodes();
 				AddTransferVertexTransaction transaction = null;
 
 				for (ComponentInstance node : nodes) {

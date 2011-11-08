@@ -180,7 +180,8 @@ public class TagDAG {
 				// executed
 				String baseAddress = DesignTools
 						.getParameter(((SendVertex) currentVertex)
-								.getRouteStep().getSender(), DesignTools.OPERATOR_BASE_ADDRESS);
+								.getRouteStep().getSender(),
+								DesignTools.OPERATOR_BASE_ADDRESS);
 
 				if (baseAddress != null) {
 					bean.setValue(
@@ -220,9 +221,9 @@ public class TagDAG {
 
 				// Setting the address of the operator on which vertex is
 				// executed
-				String baseAddress = DesignTools
-						.getParameter(((ReceiveVertex) currentVertex)
-								.getRouteStep().getReceiver(), "BaseAddress");
+				String baseAddress = DesignTools.getParameter(
+						((ReceiveVertex) currentVertex).getRouteStep()
+								.getReceiver(), "BaseAddress");
 
 				if (baseAddress != null) {
 					bean.setValue(

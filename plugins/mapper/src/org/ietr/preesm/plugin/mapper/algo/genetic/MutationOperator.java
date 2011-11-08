@@ -85,8 +85,8 @@ public class MutationOperator {
 		list.addAll(DesignTools.getOperatorInstances(chromosome.getArchi()));
 
 		// chose one operator randomly
-		Iterator<ComponentInstance> iterator = new RandomIterator<ComponentInstance>(list,
-				new Random());
+		Iterator<ComponentInstance> iterator = new RandomIterator<ComponentInstance>(
+				list, new Random());
 		ComponentInstance operator = (ComponentInstance) iterator.next();
 		while (operator.getInstanceName().equals(currentGene.getOperatorId())) {
 			operator = iterator.next();

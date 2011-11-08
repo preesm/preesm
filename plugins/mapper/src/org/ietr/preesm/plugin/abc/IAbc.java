@@ -207,6 +207,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Looks for operators able to execute currentvertex
 	 */
-	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex currentvertex);
+	public List<ComponentInstance> getCandidateOperators(
+			MapperDAGVertex currentvertex);
 
 }

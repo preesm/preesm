@@ -92,8 +92,7 @@ public class PFASTTransformation extends AbstractMapping {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs
-				.get("architecture");
+		Design architecture = (Design) inputs.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 

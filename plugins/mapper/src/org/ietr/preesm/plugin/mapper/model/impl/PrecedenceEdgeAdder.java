@@ -97,8 +97,8 @@ public class PrecedenceEdgeAdder {
 	public void addPrecedenceEdges() {
 
 		TransactionManager localTransactionManager = new TransactionManager();
-		Iterator<ComponentInstance> opIt = orderManager.getArchitectureComponents()
-				.iterator();
+		Iterator<ComponentInstance> opIt = orderManager
+				.getArchitectureComponents().iterator();
 
 		// Iterates the schedules
 		while (opIt.hasNext()) {

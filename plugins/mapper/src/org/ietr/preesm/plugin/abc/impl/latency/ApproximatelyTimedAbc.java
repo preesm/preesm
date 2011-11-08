@@ -71,8 +71,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public ApproximatelyTimedAbc(AbcParameters params, MapperDAG dag,
-			Design archi, AbcType abcType,
-			PreesmScenario scenario) {
+			Design archi, AbcType abcType, PreesmScenario scenario) {
 		super(params, dag, archi, abcType, scenario);
 
 		types = new ArrayList<Integer>();
@@ -89,8 +88,8 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
 		super.fireNewMappedVertex(vertex, updateRank);
 
-		ComponentInstance effectiveOp = vertex.getImplementationVertexProperty()
-				.getEffectiveOperator();
+		ComponentInstance effectiveOp = vertex
+				.getImplementationVertexProperty().getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 

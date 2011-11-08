@@ -86,8 +86,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 			String nodeName) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs
-				.get("architecture");
+		Design architecture = (Design) inputs.get("architecture");
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
@@ -115,8 +114,7 @@ public class ListSchedulingTransformation extends AbstractMapping {
 		InitialLists initial = new InitialLists();
 
 		if (!initial.constructInitialLists(dag, simu)) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"Error in scheduling");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Error in scheduling");
 			return null;
 		}
 

@@ -227,7 +227,8 @@ public class TimingManager {
 	public void importTimings(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
-			parser.parse(excelFileURL, currentScenario.getOperatorDefinitionIds());
+			parser.parse(excelFileURL,
+					currentScenario.getOperatorDefinitionIds());
 		}
 	}
 }

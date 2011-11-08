@@ -72,8 +72,10 @@ public class RoutingTable {
 		public boolean equals(Object obj) {
 			if (obj instanceof OperatorCouple) {
 				OperatorCouple doublet = (OperatorCouple) obj;
-				if (doublet.getOp1().getInstanceName().equals(getOp1().getInstanceName())
-						&& doublet.getOp2().getInstanceName().equals(getOp2().getInstanceName())) {
+				if (doublet.getOp1().getInstanceName()
+						.equals(getOp1().getInstanceName())
+						&& doublet.getOp2().getInstanceName()
+								.equals(getOp2().getInstanceName())) {
 					return true;
 				}
 			}
@@ -184,7 +186,8 @@ public class RoutingTable {
 	/**
 	 * Adds a new route
 	 */
-	public void addRoute(ComponentInstance op1, ComponentInstance op2, Route route) {
+	public void addRoute(ComponentInstance op1, ComponentInstance op2,
+			Route route) {
 		OperatorCouple key = null;
 		for (OperatorCouple c : table.keySet()) {
 			if (c.equals(new OperatorCouple(op1, op2))) {

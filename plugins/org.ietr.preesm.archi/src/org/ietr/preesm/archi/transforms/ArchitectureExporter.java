@@ -58,15 +58,15 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
-/*
-		String path = parameters.get("path");
-		MultiCoreArchitecture archi = (MultiCoreArchitecture) inputs
-				.get("architecture");
-		DesignWriter writer = new DesignWriter(archi);
-		writer.generateArchitectureDOM();
-		writer.writeDom(path);*/
+		/*
+		 * String path = parameters.get("path"); MultiCoreArchitecture archi =
+		 * (MultiCoreArchitecture) inputs .get("architecture"); DesignWriter
+		 * writer = new DesignWriter(archi); writer.generateArchitectureDOM();
+		 * writer.writeDom(path);
+		 */
 
-		WorkflowLogger.getLogger().log(Level.SEVERE,"ArchitectureExporter is no more supported");
+		WorkflowLogger.getLogger().log(Level.SEVERE,
+				"ArchitectureExporter is no more supported");
 		return new HashMap<String, Object>();
 	}
 

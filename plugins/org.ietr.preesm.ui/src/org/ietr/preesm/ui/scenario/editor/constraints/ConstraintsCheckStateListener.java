@@ -172,8 +172,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	public void fireOnCheck(HierarchicalSDFVertex vertex, boolean isChecked) {
 		if (currentOpId != null) {
 			if (isChecked) {
-				scenario.getConstraintGroupManager().addConstraint(
-						currentOpId, vertex.getStoredVertex());
+				scenario.getConstraintGroupManager().addConstraint(currentOpId,
+						vertex.getStoredVertex());
 			} else {
 				scenario.getConstraintGroupManager().removeConstraint(
 						currentOpId, vertex.getStoredVertex());

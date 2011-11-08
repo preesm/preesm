@@ -51,7 +51,8 @@ public class IBSDFAndSLAMScenarioNode extends AbstractScenarioImplementation {
 				.getAlgorithmURL());
 
 		// Retrieving the architecture
-		Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
+		Design slamDesign = ScenarioParser.parseSlamDesign(scenario
+				.getArchitectureURL());
 
 		outputs.put("scenario", scenario);
 		outputs.put("IBSDF", algorithm);
