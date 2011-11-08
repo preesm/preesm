@@ -9,14 +9,12 @@
         <constraintGroup>
             <operator name="Core6"/>
         </constraintGroup>
+        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core4"/>
+            <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
         </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
@@ -28,6 +26,12 @@
             <task name="substract_pic_slices"/>
         </constraintGroup>
         <constraintGroup>
+            <operator name="Core4"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup>
             <operator name="Core0"/>
             <task name="display_pic2"/>
             <task name="substract_pic_slices/substract_pic"/>
@@ -35,12 +39,8 @@
             <task name="display_pic"/>
             <task name="substract_pic_slices"/>
         </constraintGroup>
-        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core5"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
+            <operator name="Core3"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
@@ -51,7 +51,7 @@
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
-        <mainMedium>tcp</mainMedium>
+        <mainComNode>tcp</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes/>
         <specialVertexOperators>

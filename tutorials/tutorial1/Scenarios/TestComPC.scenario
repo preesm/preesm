@@ -7,33 +7,13 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core2"/>
-            <task name="ParallelTest3"/>
-            <task name="Sensor2"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="ParallelTest"/>
-            <task name="Copy"/>
+            <operator name="Core6"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core6"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core4"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core0"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
@@ -45,6 +25,26 @@
             <task name="Gen_int"/>
             <task name="ParallelTest"/>
             <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="ParallelTest3"/>
+            <task name="Sensor2"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="ParallelTest"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
@@ -59,7 +59,7 @@
     </timings>
     <simuParams>
         <mainCore>Core1</mainCore>
-        <mainMedium>tcp</mainMedium>
+        <mainComNode>tcp</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="char" size="1"/>

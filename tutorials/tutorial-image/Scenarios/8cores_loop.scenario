@@ -7,7 +7,6 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="Core1"/>
             <task name="Read_YUV"/>
@@ -20,6 +19,7 @@
             <task name="display_pic"/>
             <task name="substract_pic"/>
         </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <timings excelUrl="">
         <timing opname="x86" time="10000" vertexname="Read_YUV"/>
@@ -28,7 +28,7 @@
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
-        <mainMedium>tcp</mainMedium>
+        <mainComNode>tcp</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes/>
         <specialVertexOperators>

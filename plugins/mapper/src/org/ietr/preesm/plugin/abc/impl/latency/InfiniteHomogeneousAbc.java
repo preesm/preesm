@@ -86,7 +86,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		} else {
 			WorkflowLogger
 					.getLogger()
-					.info("Current architecture has no main communication node. infinite homogeneous simulator will use default speed");
+					.severe("Current architecture has no main communication node. Please set a main communication node.");
 		}
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done

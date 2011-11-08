@@ -6,9 +6,25 @@
         <codegenDirectory url="/tutorial-image/Code/generated"/>
     </files>
     <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="substract_pic_slices/substract_pic"/>
+            <task name="display_pic2"/>
+            <task name="Read_YUV"/>
+            <task name="display_pic"/>
+            <task name="substract_pic_slices"/>
+        </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
             <operator name="Core7"/>
+            <task name="substract_pic_slices/substract_pic"/>
+            <task name="display_pic2"/>
+            <task name="Read_YUV"/>
+            <task name="display_pic"/>
+            <task name="substract_pic_slices"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
             <task name="substract_pic_slices/substract_pic"/>
             <task name="display_pic2"/>
             <task name="Read_YUV"/>
@@ -23,9 +39,8 @@
             <task name="display_pic"/>
             <task name="substract_pic_slices"/>
         </constraintGroup>
-        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core6"/>
+            <operator name="Core2"/>
             <task name="substract_pic_slices/substract_pic"/>
             <task name="display_pic2"/>
             <task name="Read_YUV"/>
@@ -48,22 +63,7 @@
             <task name="display_pic"/>
             <task name="substract_pic_slices"/>
         </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
-            <task name="substract_pic_slices/substract_pic"/>
-            <task name="display_pic2"/>
-            <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core0"/>
-            <task name="substract_pic_slices/substract_pic"/>
-            <task name="display_pic2"/>
-            <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
-        </constraintGroup>
+        <constraintGroup/>
         <constraintGroup>
             <operator name="Core5"/>
             <task name="substract_pic_slices/substract_pic"/>
@@ -81,7 +81,7 @@
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
-        <mainMedium>tcp</mainMedium>
+        <mainComNode>tcp</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="uchar" size="1"/>
