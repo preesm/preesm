@@ -62,7 +62,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName) throws WorkflowException {
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design design = (Design) inputs.get("S-LAM");
+		Design design = (Design) inputs.get("architecture");
 		String depthS = parameters.get("depth");
 
 		int depth;
@@ -85,7 +85,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 		Design resultGraph = design;
 		logger.log(Level.INFO, "flattening complete");
 
-		outputs.put("S-LAM", resultGraph);
+		outputs.put("architecture", resultGraph);
 
 		return outputs;
 	}

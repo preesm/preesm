@@ -18,6 +18,18 @@
             id="org.ietr.preesm.archi.slam.flattening"
             name="Slam Hierarchy Flattening"
             type="org.ietr.preesm.archi.slam.SlamHierarchyFlattening">
+         <inputs>
+            <input
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </output>
+         </outputs>
       </task>
    </extension>
 

@@ -115,7 +115,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 	// Generated objects
 	/**
-	 * overhead vertex added
+	 * transfer vertex added
 	 */
 	private TransferVertex tVertex = null;
 
@@ -162,6 +162,9 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.nodeIndex = nodeIndex;
 		this.transferTime = transferTime;
 
+		if(transferTime == 0){
+			WorkflowLogger.getLogger().log(Level.WARNING,"adding a transfer of size 0.");
+		}
 	}
 
 	@Override

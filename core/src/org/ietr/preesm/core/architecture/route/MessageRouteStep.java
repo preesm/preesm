@@ -123,6 +123,12 @@ public class MessageRouteStep extends AbstractRouteStep {
 						(long) (transfersSize / ((ComNode) def).getSpeed()));
 			}
 		}
+
+		// No zero transfer time is alloweds
+		if (time <= 0) {
+			time = 1;
+		}
+
 		return time;
 	}
 

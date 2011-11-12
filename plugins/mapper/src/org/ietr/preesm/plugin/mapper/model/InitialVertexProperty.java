@@ -108,7 +108,9 @@ public class InitialVertexProperty {
 	 * on the neighbors.
 	 */
 	public void addOperator(ComponentInstance operator) {
-		this.operators.add(operator);
+		if(operator != null){
+			this.operators.add(operator);
+		}
 	}
 
 	public InitialVertexProperty clone(MapperDAGVertex parentVertex) {
