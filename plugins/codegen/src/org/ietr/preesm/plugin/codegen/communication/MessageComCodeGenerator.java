@@ -24,8 +24,8 @@ import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.plugin.codegen.SourceFileCodeGenerator;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generating communication code (initialization and calls) for a message Route

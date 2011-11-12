@@ -39,7 +39,7 @@ package org.ietr.preesm.core.codegen.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.sdf4j.model.IRefinement;
+import net.sf.dftools.algorithm.model.IRefinement;
 
 public class FunctionCall implements IRefinement {
 

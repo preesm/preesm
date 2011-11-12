@@ -24,8 +24,8 @@ import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * New version of the time keeper. Trying to minimize the mapping time by

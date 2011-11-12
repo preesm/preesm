@@ -44,8 +44,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.NameComparator;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Provides the elements contained in the timing editor

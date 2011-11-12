@@ -46,7 +46,7 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.plugin.abc.SpecialVertexManager;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.sdf4j.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag

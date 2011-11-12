@@ -1,8 +1,8 @@
 package org.ietr.preesm.core.scenario;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
-import org.sdf4j.model.parameters.Variable;
-import org.sdf4j.model.parameters.VariableSet;
+import net.sf.dftools.algorithm.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.parameters.VariableSet;
 
 /**
  * Handles graph variables which values are redefined in the scenario

@@ -41,7 +41,7 @@ import java.util.Set;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
-import org.sdf4j.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * Element containing either a simple vertex or a group of synchronized elements

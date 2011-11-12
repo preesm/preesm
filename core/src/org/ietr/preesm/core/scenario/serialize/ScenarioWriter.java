@@ -46,7 +46,7 @@ import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.sdf4j.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.parameters.Variable;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

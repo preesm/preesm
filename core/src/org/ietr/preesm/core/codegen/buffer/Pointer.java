@@ -2,7 +2,7 @@ package org.ietr.preesm.core.codegen.buffer;
 
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 public class Pointer extends Buffer {
 

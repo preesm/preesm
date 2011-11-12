@@ -46,11 +46,11 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.visitors.ConsistencyChecker;
-import org.sdf4j.model.sdf.visitors.SDFHierarchyFlattening;
-import org.sdf4j.model.visitors.SDF4JException;
-import org.sdf4j.model.visitors.VisitorOutput;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.visitors.ConsistencyChecker;
+import net.sf.dftools.algorithm.model.sdf.visitors.SDFHierarchyFlattening;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 
 /**
  * Class used to flatten the hierarchy of a given graph

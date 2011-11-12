@@ -2,13 +2,13 @@ package org.ietr.preesm.plugin.mapper.scenariogen;
 
 import java.util.HashMap;
 
-import org.sdf4j.factories.SDFEdgeFactory;
-import org.sdf4j.factories.SDFVertexFactory;
-import org.sdf4j.importer.GMLImporter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.factories.SDFEdgeFactory;
+import net.sf.dftools.algorithm.factories.SDFVertexFactory;
+import net.sf.dftools.algorithm.importer.GMLImporter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

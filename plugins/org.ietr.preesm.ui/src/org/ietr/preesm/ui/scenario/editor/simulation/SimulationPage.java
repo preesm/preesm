@@ -37,9 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.ui.scenario.editor.simulation;
 
 import java.util.Set;
-import java.util.logging.Level;
-
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;

@@ -43,7 +43,7 @@ import org.ietr.preesm.plugin.abc.order.SchedOrderManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
-import org.sdf4j.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * A transaction that removes one vertex in an implementation

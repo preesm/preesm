@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.plugin.mapper.model.impl;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.dag.types.DAGDefaultVertexPropertyType;
+import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 
 /**
  * Vertex corresponding to sending a data. This vertex is mapped on the sender

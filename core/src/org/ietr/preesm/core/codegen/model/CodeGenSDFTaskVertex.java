@@ -47,8 +47,8 @@ import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.containers.FiniteForLoop;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 
 public class CodeGenSDFTaskVertex extends SDFVertex implements
 		ICodeGenSDFVertex {

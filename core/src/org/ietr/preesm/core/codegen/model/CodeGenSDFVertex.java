@@ -39,7 +39,7 @@ package org.ietr.preesm.core.codegen.model;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.sdf4j.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 
 public class CodeGenSDFVertex extends SDFVertex {
 

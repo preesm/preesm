@@ -56,8 +56,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Generating the statistics to be displayed in stat editor

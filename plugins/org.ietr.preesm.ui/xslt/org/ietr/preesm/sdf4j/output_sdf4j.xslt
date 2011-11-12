@@ -30,16 +30,16 @@
             <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
             <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
             <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-                <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
             </key>
             <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-                <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
             </key>
             <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-                <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
             </key>
             <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-                <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
             </key>
 
             <graph edgedefault="directed">

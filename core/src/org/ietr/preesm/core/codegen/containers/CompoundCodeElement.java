@@ -65,16 +65,16 @@ import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.parameters.Parameter;
-import org.sdf4j.model.psdf.parameters.PSDFDynamicParameter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFInterfaceVertex;
-import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
-import org.sdf4j.model.sdf.esdf.SDFRoundBufferVertex;
-import org.sdf4j.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.sdf4j.model.sdf.esdf.SDFSourceInterfaceVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.Parameter;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 /**
  * A compound element is a code element containing multiple call or code

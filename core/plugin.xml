@@ -13,7 +13,7 @@
             </output>
             <output
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
@@ -31,7 +31,7 @@
             </output>
             <output
                   id="IBSDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="S-LAM"

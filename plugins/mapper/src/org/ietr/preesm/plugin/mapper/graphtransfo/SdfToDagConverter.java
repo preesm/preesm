@@ -60,17 +60,17 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.plugin.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.sdf4j.demo.SDFAdapterDemo;
-import org.sdf4j.demo.SDFtoDAGDemo;
-import org.sdf4j.model.AbstractEdge;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.visitors.DAGTransformation;
-import org.sdf4j.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.demo.SDFAdapterDemo;
+import net.sf.dftools.algorithm.demo.SDFtoDAGDemo;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.visitors.DAGTransformation;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.

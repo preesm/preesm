@@ -50,7 +50,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 
 /**
  * Block in workflow exporting a DAG that contains all information of an

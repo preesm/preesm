@@ -67,11 +67,11 @@ import org.ietr.preesm.core.codegen.threads.LaunchThread;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.plugin.codegen.communication.CommThreadCodeGenerator;
-import org.sdf4j.iterators.SDFIterator;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.iterators.SDFIterator;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Generates code for a source file

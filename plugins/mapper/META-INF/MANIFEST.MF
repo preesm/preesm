@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.forms,
  net.sf.dftools.workflow,
  org.ietr.libs,
- net.sf.dftools.architecture;bundle-version="0.0.1"
+ net.sf.dftools.architecture;bundle-version="0.0.1",
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  lib/jfreechart.jar,
  lib/jetm.jar,

@@ -45,7 +45,7 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * code Element used to launch inter-core communication send or receive

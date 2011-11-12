@@ -54,7 +54,7 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * The scheduling order manager keeps a total order of the vertices and a

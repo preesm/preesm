@@ -5,8 +5,8 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.psdf.PSDFInitVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
 
 public class CodeGenSDFSubInitVertex extends PSDFInitVertex implements
 		ICodeGenSDFVertex {

@@ -44,7 +44,7 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Each thread runs indefinitely. It contains a for loop. Thanks to SDF

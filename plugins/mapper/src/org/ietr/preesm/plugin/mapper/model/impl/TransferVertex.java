@@ -39,8 +39,8 @@ package org.ietr.preesm.plugin.mapper.model.impl;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 
 /**
  * A transfer vertex represents a route step

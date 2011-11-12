@@ -61,14 +61,14 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.SendVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.sdf4j.model.AbstractEdge;
-import org.sdf4j.model.PropertyBean;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.PropertyBean;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Tags an SDF with the implementation information necessary for code

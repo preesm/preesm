@@ -15,7 +15,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version

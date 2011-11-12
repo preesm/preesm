@@ -40,7 +40,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * container and manager of Constraint groups. It can load and store constraint

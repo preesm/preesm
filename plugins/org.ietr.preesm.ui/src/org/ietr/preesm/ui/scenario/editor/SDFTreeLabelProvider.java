@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.ui.scenario.editor;
 
 import org.eclipse.jface.viewers.LabelProvider;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * The label provider displays the name of the vertex displayed in a SDF tree

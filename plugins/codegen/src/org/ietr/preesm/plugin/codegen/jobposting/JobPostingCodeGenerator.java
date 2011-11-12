@@ -22,9 +22,9 @@ import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.demo.SDFAdapterDemo;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.demo.SDFAdapterDemo;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generating code to address a job posting runtime system. It generates xml

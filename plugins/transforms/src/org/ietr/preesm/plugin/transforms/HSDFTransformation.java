@@ -46,10 +46,10 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor;
-import org.sdf4j.model.visitors.SDF4JException;
-import org.sdf4j.model.visitors.VisitorOutput;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph
@@ -76,7 +76,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
 			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
-				org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+				net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
 				try {
 					algorithm.accept(toHsdf);
 				} catch (SDF4JException e) {
@@ -112,7 +112,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 	 * logger.log(Level.FINER, "Transforming application " + algorithm.getName()
 	 * + " to HSDF"); VisitorOutput.setLogger(logger); if
 	 * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
-	 * org.sdf4j.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new
+	 * net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new
 	 * OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch
 	 * (SDF4JException e) { e.printStackTrace(); throw (new
 	 * PreesmException(e.getMessage())); } logger.log(Level.FINER,

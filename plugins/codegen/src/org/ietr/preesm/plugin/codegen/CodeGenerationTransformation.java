@@ -60,9 +60,9 @@ import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
 /**
  * Code generation.

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 public interface IBufferAllocator {
 

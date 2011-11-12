@@ -41,10 +41,10 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
-import org.sdf4j.importer.GMLImporter;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.importer.GMLImporter;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 

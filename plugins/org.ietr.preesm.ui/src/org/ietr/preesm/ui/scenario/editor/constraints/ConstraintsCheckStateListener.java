@@ -60,9 +60,9 @@ import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.SDFTreeContentProvider;
-import org.sdf4j.model.IRefinement;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.IRefinement;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection

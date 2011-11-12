@@ -3,7 +3,7 @@
  */
 package org.ietr.preesm.plugin.codegen.communication;
 
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Generating communication code (initialization and calls) for a given type of

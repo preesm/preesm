@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor;
 
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Class used as a scenario editor tree content to distinguish two vertices with

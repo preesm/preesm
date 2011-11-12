@@ -45,10 +45,10 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.jgrapht.Graph;
-import org.sdf4j.exporter.GMLExporter;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.dag.types.DAGDefaultEdgePropertyType;
+import net.sf.dftools.algorithm.exporter.GMLExporter;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.w3c.dom.Element;
 
 /**

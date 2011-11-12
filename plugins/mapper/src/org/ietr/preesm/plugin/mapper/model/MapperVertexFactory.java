@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-import org.sdf4j.factories.DAGVertexFactory;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.factories.DAGVertexFactory;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Creates vertices of type {@link MapperDAGVertex}

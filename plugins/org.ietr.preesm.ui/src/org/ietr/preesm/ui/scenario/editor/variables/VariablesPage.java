@@ -80,8 +80,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.sdf4j.model.parameters.Variable;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Variables values overriding editor within the scenario editor

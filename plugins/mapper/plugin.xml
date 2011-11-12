@@ -34,7 +34,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -42,7 +42,7 @@
             </input>
             <input
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="architecture"
@@ -62,7 +62,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -76,7 +76,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -91,7 +91,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -105,7 +105,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -120,7 +120,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -134,7 +134,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -149,7 +149,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -163,7 +163,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -178,7 +178,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -192,7 +192,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -222,7 +222,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
@@ -236,7 +236,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -255,7 +255,7 @@
             </output>
             <output
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"

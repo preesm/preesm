@@ -48,8 +48,8 @@ import org.ietr.preesm.plugin.mapper.model.impl.InvolvementVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Class cleaning an implementation i.e. removing added transfers and edges.

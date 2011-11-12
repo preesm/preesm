@@ -10,12 +10,12 @@ import org.ietr.preesm.core.codegen.expression.BinaryExpression;
 import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.expression.StringExpression;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.psdf.parameters.DynamicParameterRange;
-import org.sdf4j.model.psdf.parameters.PSDFDynamicParameter;
-import org.sdf4j.model.psdf.types.PSDFEdgePropertyType;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.types.SDFIntEdgePropertyType;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.psdf.parameters.DynamicParameterRange;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.psdf.types.PSDFEdgePropertyType;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 
 public class BufferToolBox {
 

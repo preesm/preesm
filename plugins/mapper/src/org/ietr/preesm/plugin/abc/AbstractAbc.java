@@ -66,10 +66,10 @@ import org.ietr.preesm.plugin.mapper.model.impl.PrecedenceEdge;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
 import org.ietr.preesm.plugin.mapper.params.AbcParameters;
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.esdf.SDFEndVertex;
-import org.sdf4j.model.sdf.esdf.SDFInitVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 
 /**
  * An architecture simulator calculates costs for a given partial or total

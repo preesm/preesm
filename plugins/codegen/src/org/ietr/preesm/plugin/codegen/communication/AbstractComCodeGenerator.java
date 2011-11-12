@@ -21,7 +21,7 @@ import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Generating communication code (initialization and calls) for a given type of

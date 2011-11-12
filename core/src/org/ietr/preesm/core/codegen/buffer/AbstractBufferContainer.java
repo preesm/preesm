@@ -50,7 +50,7 @@ import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreContainer;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * A thread can contain buffer allocations as well as a source file (for static

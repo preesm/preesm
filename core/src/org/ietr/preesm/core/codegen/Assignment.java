@@ -3,7 +3,7 @@ package org.ietr.preesm.core.codegen;
 import org.ietr.preesm.core.codegen.calls.FunctionArgument;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 public class Assignment implements ICodeElement {
 

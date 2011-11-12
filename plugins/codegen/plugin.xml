@@ -19,7 +19,7 @@
             </input>
             <input
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
@@ -34,13 +34,13 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAG"
-                  object="org.sdf4j.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
          </outputs>
       </task>

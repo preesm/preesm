@@ -46,11 +46,11 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import org.sdf4j.model.IRefinement;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
-import org.sdf4j.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.IRefinement;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each

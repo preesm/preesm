@@ -52,7 +52,7 @@ import org.ietr.preesm.plugin.abc.transaction.TransactionManager;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
-import org.sdf4j.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * The edge adder automatically generates edges between vertices successive on a

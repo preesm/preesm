@@ -50,8 +50,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.sdf4j.exporter.GMLSDFExporter;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
 

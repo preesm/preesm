@@ -38,7 +38,7 @@ package org.ietr.preesm.core.codegen;
 
 import java.util.Comparator;
 
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Compares two SDF vertices using their scheduling orders

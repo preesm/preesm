@@ -14,13 +14,13 @@ import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSubInitVertex;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.parameters.NoIntegerValueException;
-import org.sdf4j.model.psdf.parameters.PSDFDynamicArgument;
-import org.sdf4j.model.psdf.parameters.PSDFDynamicParameter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.NoIntegerValueException;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicArgument;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 public class FunctionArgumentFactory {
 

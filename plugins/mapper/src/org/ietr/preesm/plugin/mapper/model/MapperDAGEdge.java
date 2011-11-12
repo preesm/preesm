@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-import org.sdf4j.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper

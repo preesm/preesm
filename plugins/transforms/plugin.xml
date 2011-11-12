@@ -10,7 +10,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
       </task>
@@ -21,13 +21,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -38,13 +38,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="org.sdf4j.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>

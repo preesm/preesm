@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Manager of the graphs timings

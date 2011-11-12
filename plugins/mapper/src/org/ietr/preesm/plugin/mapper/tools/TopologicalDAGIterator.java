@@ -38,8 +38,8 @@ package org.ietr.preesm.plugin.mapper.tools;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Just parameterizing TopologicalOrderIterator

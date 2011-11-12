@@ -45,8 +45,8 @@ import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.core.codegen.model.VertexType;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Declaration of a communication thread for code generation. A computation

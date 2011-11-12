@@ -73,7 +73,7 @@ import org.ietr.preesm.plugin.mapper.plot.GanttPlotter;
 import org.ietr.preesm.plugin.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.plugin.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.plugin.mapper.tools.TLevelIterator;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Abc that minimizes latency

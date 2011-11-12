@@ -16,7 +16,7 @@ import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Given a route step, returns the correct communication code generator

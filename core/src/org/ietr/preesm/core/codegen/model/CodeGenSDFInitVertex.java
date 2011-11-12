@@ -12,11 +12,11 @@ import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.psdf.PSDFInitVertex;
-import org.sdf4j.model.psdf.types.PSDFEdgePropertyType;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
+import net.sf.dftools.algorithm.model.psdf.types.PSDFEdgePropertyType;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 public class CodeGenSDFInitVertex extends PSDFInitVertex implements
 		ICodeGenSDFVertex {

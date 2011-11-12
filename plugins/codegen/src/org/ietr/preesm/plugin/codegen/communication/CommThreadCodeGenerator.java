@@ -56,8 +56,8 @@ import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generates code for a communication thread

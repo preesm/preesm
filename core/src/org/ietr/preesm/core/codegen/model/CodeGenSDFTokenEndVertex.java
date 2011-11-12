@@ -47,10 +47,10 @@ import org.ietr.preesm.core.codegen.calls.Constant;
 import org.ietr.preesm.core.codegen.calls.PointerOn;
 import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 
 public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 		ICodeGenSDFVertex {

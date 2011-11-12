@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide;bundle-version="3.7.0",
  net.sf.dftools.workflow;bundle-version="0.0.1",
  org.eclipse.ui.console;bundle-version="3.5.100",
- org.ietr.preesm.core;bundle-version="0.6.1"
+ org.ietr.preesm.core;bundle-version="0.6.1",
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global

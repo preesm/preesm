@@ -54,8 +54,8 @@ import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.tools.BLevelIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * Creates the CPN dominant list

@@ -52,8 +52,8 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 
 /**
  * Displays the labels for tasks timings. These labels are the time of each task

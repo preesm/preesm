@@ -51,10 +51,10 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.types.DataType;
-import org.sdf4j.model.parameters.InvalidExpressionException;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Creating code elements from a vertex

@@ -62,13 +62,13 @@ import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import org.sdf4j.model.parameters.Parameter;
-import org.sdf4j.model.parameters.ParameterSet;
-import org.sdf4j.model.psdf.PSDFInitVertex;
-import org.sdf4j.model.psdf.PSDFSubInitVertex;
-import org.sdf4j.model.psdf.parameters.PSDFDynamicParameter;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.parameters.Parameter;
+import net.sf.dftools.algorithm.model.parameters.ParameterSet;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
+import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generates code for a computation thread

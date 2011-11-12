@@ -38,7 +38,7 @@ package org.ietr.preesm.core.tools;
 
 import java.util.Comparator;
 
-import org.sdf4j.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * @author mpelcat

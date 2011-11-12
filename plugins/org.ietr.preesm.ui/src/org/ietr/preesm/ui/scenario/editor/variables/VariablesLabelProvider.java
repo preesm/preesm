@@ -49,7 +49,7 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.sdf4j.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.parameters.Variable;
 
 /**
  * Displays the labels for variables names and values

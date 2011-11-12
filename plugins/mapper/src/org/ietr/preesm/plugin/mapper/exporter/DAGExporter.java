@@ -41,15 +41,15 @@ import java.io.FileOutputStream;
 
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.jgrapht.Graph;
-import org.sdf4j.exporter.GMLExporter;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DAGVertex;
-import org.sdf4j.model.sdf.SDFAbstractVertex;
-import org.sdf4j.model.sdf.SDFEdge;
-import org.sdf4j.model.sdf.SDFGraph;
-import org.sdf4j.model.sdf.SDFVertex;
-import org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory;
-import org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory;
+import net.sf.dftools.algorithm.exporter.GMLExporter;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory;
+import net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory;
 import org.w3c.dom.Element;
 
 /**
