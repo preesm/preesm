@@ -26,7 +26,7 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 	/**
 	 * Size of the memory used
 	 */
-	private int size;
+	private Integer size;
 
 	/**
 	 * ID of the task producing the memory.
@@ -53,6 +53,14 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 		source = sourceTask;
 		sink = sinkTask;
 		size = sizeMem;		
+	}
+	
+	public MemoryExclusionGraphNode getClone(){
+		MemoryExclusionGraphNode copy;
+		copy = new MemoryExclusionGraphNode(this.source,this.sink,this.size);
+		copy.setIdentifier(getIdentifier());
+		copy.edge = this.edge;
+		return copy;
 	}
 	
 	/**
@@ -118,6 +126,12 @@ public class MemoryExclusionGraphNode implements WeightedVertex<Integer>,
 
 	public Integer getWeight() {
 		return size;
+	}
+	
+	// TODO
+	// Supprimer si pas de fonction simplifier dans memoryExclusionGraph
+	public void setWeight(Integer w) {
+		size = w.intValue();
 	}
 	
 	/**

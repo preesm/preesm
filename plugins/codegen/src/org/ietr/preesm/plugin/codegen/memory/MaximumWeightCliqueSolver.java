@@ -1,5 +1,6 @@
 package org.ietr.preesm.plugin.codegen.memory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -142,6 +143,50 @@ public abstract class MaximumWeightCliqueSolver<V extends WeightedVertex<Integer
 		int result = 0;
 		for (V vertex : vertexSet) {
 			result += vertex.getWeight();
+		}
+		return result;
+	}
+
+	/**
+	 * Method to clear the adjacent vertices lists. (cf.
+	 * MemoryExclusionGraph.clearAdjacentVerticesBackup comments for more info.)
+	 */
+	public void clearAdjacentVerticesBackup() {
+		adjacentVerticesBackup = new HashMap<V, HashSet<V>>();
+
+		if (graph instanceof MemoryExclusionGraph) {
+			((MemoryExclusionGraph) graph).clearAdjacentVerticesBackup();
+		}
+	}
+	
+	/**
+	 * Remove vertices from a graph and keep the "adjacentVerticesBackup" up to date.
+	 * @param set the set of vertices to remove
+	 * @return see SimpleGraph.removeAll() comments
+	 */
+	protected boolean removeAllVertices(Collection <? extends V> set){
+		boolean result = graph.removeAllVertices(set);
+		
+		for(HashSet<V> backup : adjacentVerticesBackup.values()){
+			result |= backup.removeAll(set);			
+		}
+		
+		return result;		
+	}
+	
+	/**
+	 * This method checks if a subset of vertices is a clique of the graph.
+	 * @param subset the subset to check
+	 * @return true if the subset is a clique
+	 */
+	public boolean checkClique(Collection<? extends V> subset){
+		ArrayList<V> vertices = new ArrayList<V>(subset);
+		boolean result = true;
+		
+		for(int i = 0;result && (i< vertices.size()-1);i++){
+			for(int j = i+1;result && (j<vertices.size());j++){
+				result |= this.graph.containsEdge(vertices.get(i), vertices.get(j));
+			}
 		}
 		return result;
 	}

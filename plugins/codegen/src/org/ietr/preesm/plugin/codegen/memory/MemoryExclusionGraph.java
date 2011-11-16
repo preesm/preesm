@@ -5,8 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.dftools.workflow.WorkflowException;
 
@@ -34,6 +37,7 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
  */
 public class MemoryExclusionGraph extends
 		SimpleGraph<MemoryExclusionGraphNode, DefaultEdge> {
+
 	/**
 	 * Mandatory when extending SimpleGraph
 	 */
@@ -203,6 +207,7 @@ public class MemoryExclusionGraph extends
 	 */
 	public MemoryExclusionGraph() {
 		super(DefaultEdge.class);
+		adjacentVerticesBackup = new HashMap<MemoryExclusionGraphNode, HashSet<MemoryExclusionGraphNode>>();
 	}
 
 	/**
@@ -229,12 +234,13 @@ public class MemoryExclusionGraph extends
 						.toString().equals("task")) {
 			newNode = new MemoryExclusionGraphNode(edge);
 
-			this.addVertex(newNode);			
+			this.addVertex(newNode);
 
 			// Add exclusion corresponding to all incoming edges of the
 			// source vertex.
 			for (DAGEdge incomingEdge : edge.getSource().incomingEdges()) {
-				MemoryExclusionGraphNode memExGrNo = new MemoryExclusionGraphNode(incomingEdge);
+				MemoryExclusionGraphNode memExGrNo = new MemoryExclusionGraphNode(
+						incomingEdge);
 
 				this.addEdge(memExGrNo, newNode);
 			}
@@ -508,6 +514,84 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
+	 * This method is used to access all the neighbors of a given vertex.
+	 * 
+	 * @param vertex
+	 *            the vertex whose neighbors are retrieved
+	 * @return a a set containing the neighbor vertices
+	 */
+	public HashSet<MemoryExclusionGraphNode> getAdjacentVertexOf(
+			MemoryExclusionGraphNode vertex) {
+		HashSet<MemoryExclusionGraphNode> result;
+		
+		if((result = adjacentVerticesBackup.get(vertex))!= null){
+			return result;			
+		}
+
+			// treat the node		
+			result = new HashSet<MemoryExclusionGraphNode>();
+
+		// Add to result all vertices that have an edge with vertex
+		Set<DefaultEdge> edges = this.edgesOf(vertex);
+		for (DefaultEdge edge : edges) {
+			result.add(this.getEdgeSource(edge));
+			result.add(this.getEdgeTarget(edge));
+		}
+
+		// Remove vertex from result
+		result.remove(vertex);
+		
+		adjacentVerticesBackup.put(vertex, result);
+		
+		HashSet<MemoryExclusionGraphNode> toAdd = new HashSet<MemoryExclusionGraphNode>();
+		
+		for(MemoryExclusionGraphNode vert : result){
+			for(MemoryExclusionGraphNode vertin : this.vertexSet()){
+				if(vert.equals(vertin)){
+					// Correct the reference
+					toAdd.add(vertin);
+					break;
+				}
+			}
+		}
+		
+
+				
+				result.clear();
+				result.addAll(toAdd);
+		
+		return result;
+	}
+
+	/**
+	 * @override
+	 */
+	public boolean removeAllVertices(Collection<? extends MemoryExclusionGraphNode> arg0){
+		boolean result = super.removeAllVertices(arg0);
+		
+		for(HashSet<MemoryExclusionGraphNode> backup : adjacentVerticesBackup.values()){
+			result |= backup.removeAll(arg0);			
+		}
+		return result;
+	}
+	
+	/**
+	 * Backup the vertex adjacent to a given vertex for speed-up purposes.
+	 */
+	private HashMap<MemoryExclusionGraphNode,HashSet<MemoryExclusionGraphNode>> adjacentVerticesBackup;
+	
+	/**
+	 * @override
+	 */
+	public Object clone(){
+		Object o = super.clone();
+		((MemoryExclusionGraph)o).adjacentVerticesBackup = new HashMap<MemoryExclusionGraphNode, HashSet<MemoryExclusionGraphNode>>();
+		
+		return o;
+		
+	}
+
+	/**
 	 * Get the complementary graph of the exclusion graph. The complementary
 	 * graph posess the same nodes but the complementary edges. i.e. if there is
 	 * an edge between vi and vj in the exclusion graph, there will be no edge
@@ -533,29 +617,114 @@ public class MemoryExclusionGraph extends
 		}
 		return result;
 	}
+
+	public void simplifier() {
+
+		ArrayList<MemoryExclusionGraphNode> nodes = new ArrayList<MemoryExclusionGraphNode>(
+				this.vertexSet());
+		HashSet<MemoryExclusionGraphNode> fusionned = new HashSet<MemoryExclusionGraphNode>();
+
+		for (MemoryExclusionGraphNode node : nodes) {
+
+			if (!fusionned.contains(node)) {
+				// Retrieve the neighbors
+				HashSet<MemoryExclusionGraphNode> neighbors = this
+						.getAdjacentVertexOf(node);
+				neighbors.add(node);
+
+				for (MemoryExclusionGraphNode neighbor : neighbors) {
+
+					if (!neighbor.equals(node)) {
+						HashSet<MemoryExclusionGraphNode> nextNeighbors = getAdjacentVertexOf(neighbor);
+						nextNeighbors.add(neighbor);
+
+						if (neighbors.size() == nextNeighbors.size()) {
+							if (neighbors.containsAll(nextNeighbors)) {
+								// fusion
+								node.setWeight(node.getWeight()
+										+ neighbor.getWeight());
+								fusionned.add(neighbor);
+							}
+						}
+					}
+				}
+				this.removeAllVertices(fusionned);
+			}
+		}
+		adjacentVerticesBackup = new HashMap<MemoryExclusionGraphNode, HashSet<MemoryExclusionGraphNode>>();		
+	}
 	
+	public void simplifierTwo() {
+
+		ArrayList<MemoryExclusionGraphNode> nodes = new ArrayList<MemoryExclusionGraphNode>(
+				this.vertexSet());
+		
+		Collections.sort(nodes,Collections.reverseOrder());
+
+		HashSet<MemoryExclusionGraphNode> fusionned = new HashSet<MemoryExclusionGraphNode>();
+
+		for (MemoryExclusionGraphNode node : nodes) {
+			if (!fusionned.contains(node)) {
+				HashSet<MemoryExclusionGraphNode> nonAdjacentSet = new HashSet<MemoryExclusionGraphNode>(
+						this.vertexSet());
+				nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
+				nonAdjacentSet.remove(node);
+
+				for (MemoryExclusionGraphNode notNeighbor : nonAdjacentSet) {
+					if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(
+							node).size()) {
+						if (getAdjacentVertexOf(notNeighbor).containsAll(
+								getAdjacentVertexOf(node))) {
+
+							// Keep only the one with the max weight
+							fusionned.add(notNeighbor);
+
+						}
+					}
+				}
+				this.removeAllVertices(fusionned);
+			}
+		}
+		adjacentVerticesBackup = new HashMap<MemoryExclusionGraphNode, HashSet<MemoryExclusionGraphNode>>();
+	}
+
 	/**
 	 * Save the Graph in a text file
-	 * @param fileName The file
+	 * 
+	 * @param fileName
+	 *            The file
 	 */
-	public void saveToFile(String fileName){
+	public void saveToFile(String fileName) {
 		PrintWriter ecrivain;
-	    try {
-			ecrivain =  new PrintWriter(new BufferedWriter
-			   (new FileWriter(fileName)));
-		
-			ecrivain.println("Graph vertices\n");			
-			for(MemoryExclusionGraphNode vertex : this.vertexSet()){
-				ecrivain.println(vertex.getSource() + "," + vertex.getSink() + "," + vertex.getWeight());
-			}			
-			ecrivain.println("\nGraph vertices\n");
-			for(DefaultEdge edge : this.edgeSet()) {
-				ecrivain.println(",,," + edge.toString());
+		try {
+			ecrivain = new PrintWriter(new BufferedWriter(new FileWriter(
+					fileName)));
+
+			ecrivain.println("Graph vertices\n");
+			for (MemoryExclusionGraphNode vertex : this.vertexSet()) {
+				ecrivain.println(vertex.getSource() + ";" + vertex.getSink()
+						+ ";" + vertex.getWeight());
 			}
-			ecrivain.close();			
+			ecrivain.println("\nGraph vertices\n");
+			for (DefaultEdge edge : this.edgeSet()) {
+				ecrivain.println(";;;" + edge.toString());
+			}
+			ecrivain.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	    
-	}	
+		}
+	}
+	
+	/**
+	 * Method to clear the adjacent vertices list.
+	 * As the adjacent vertices lists are passed as references, their content might be corrupted if they are modified by the user of the class.
+	 * Moreover, if a vertex is removed from the class without using the removeAllVertices overrode method, the list will still contain the vertice.
+	 * Clearing the lists is left to the user's care. Indeed, a systematic clear to maintain the integrity of the lists would considerably reduce the performances of some algorithms.
+	 * A solution to that problem would be to use a faster implementation of simpleGraphs that would provide fast methods to retrieve adjacent neighbors of a vertex !
+	 *  
+	 */
+	public void clearAdjacentVerticesBackup(){
+		adjacentVerticesBackup.clear();
+	}
 }

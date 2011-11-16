@@ -9,15 +9,19 @@ package org.ietr.preesm.plugin.codegen.memory;
  * @param <W>
  *            is the type of the weight
  */
-public interface WeightedVertex<W> {
+public interface WeightedVertex<W>  {
 	/**
 	 * Accessor to the weight of the vertex
 	 * 
 	 * @return the weight of the vertex
 	 */
 	abstract public W getWeight();
+	
+	abstract public void setWeight(W weight);
 
 	abstract public int getIdentifier();
 	
 	abstract public void setIdentifier(int id);
+	
+	abstract public WeightedVertex<W> getClone();
 }

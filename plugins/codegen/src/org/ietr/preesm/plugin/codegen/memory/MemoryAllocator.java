@@ -10,6 +10,7 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * This class is both an interface and toolbox class for memory allocator.
+ * 
  * @author kdesnos
  */
 public abstract class MemoryAllocator {
@@ -50,6 +51,10 @@ public abstract class MemoryAllocator {
 	 */
 	protected final DirectedAcyclicGraph graph;
 
+	protected HashMap<MemoryExclusionGraphNode, Integer> memExNodeAllocation;
+
+	protected MemoryExclusionGraph inputExclusionGraph;
+
 	/**
 	 * Constructor of the MemoryAllocator
 	 * 
@@ -59,6 +64,23 @@ public abstract class MemoryAllocator {
 	protected MemoryAllocator(DirectedAcyclicGraph graph) {
 		this.graph = graph;
 		allocation = new HashMap<DAGEdge, Integer>();
+
+		memExNodeAllocation = null;
+		inputExclusionGraph = null;
+	}
+
+	/**
+	 * Constructor of the MemoryAllocator
+	 * 
+	 * @param memEx
+	 *            The exclusion graph to analyze
+	 */
+	protected MemoryAllocator(MemoryExclusionGraph memEx) {
+		this.graph = null;
+		allocation = new HashMap<DAGEdge, Integer>();
+
+		memExNodeAllocation = new HashMap<MemoryExclusionGraphNode, Integer>();
+		inputExclusionGraph = memEx;
 	}
 
 	/**
@@ -77,9 +99,10 @@ public abstract class MemoryAllocator {
 	 * 
 	 * @return An allocation
 	 */
-	public HashMap<DAGEdge, Integer> getAllocation(){
+	public HashMap<DAGEdge, Integer> getAllocation() {
 		return allocation;
 	}
+	
 
 	/**
 	 * This method computes and return the size of the allocated memory.
@@ -88,41 +111,56 @@ public abstract class MemoryAllocator {
 	 */
 	public int getMemorySize() {
 		int memorySize = 0;
-		
-		try {
-			// Look for the maximum value of (offset + edge.size) in allocation
-			// map
-			for (DAGEdge edge : allocation.keySet()) {
-				if ((allocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
-					memorySize = allocation.get(edge) + edge.getWeight().intValue();
+
+		// Use the memExNodeAllocation if available
+		if (memExNodeAllocation != null) {
+			for (MemoryExclusionGraphNode vertex : memExNodeAllocation.keySet()) {
+				if ((memExNodeAllocation.get(vertex) + vertex.getWeight()) > memorySize) {
+					memorySize = memExNodeAllocation.get(vertex)
+							+ vertex.getWeight();
 				}
 			}
-		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return memorySize;
 		}
-
-		return memorySize;
-	}
-	
-	/**
-	 * This method is responsible for checking the conformity of a DAG memory allocation with the following constraints :
-	 * <li> An input buffer of an actor can not share a memory space with an output.
-	 * <li> As all actors are considered self-scheduled, buffers in parallel branches of the DAG can not share the same memory space.
-	 * @return The list of conflicting memory elements. Empty list if allocation follow the rules.
-	 */
-	public HashMap<DAGEdge, Integer> checkAllocation(){
-		HashMap<DAGEdge, Integer> conflictingElements;
-		conflictingElements = new HashMap<DAGEdge, Integer>();
 		
-		// If this allocator did not build the exclusion graph, build it
-		MemoryExclusionGraph memEx;
-		if((this instanceof CustomAllocator)){
-			memEx = ((CustomAllocator)this).inputExclusionGraph;			
-		}else{
-			memEx = new MemoryExclusionGraph();
+		if (! allocation.isEmpty()) {
 			try {
-				memEx.buildGraph(graph);
+				// Look for the maximum value of (offset + edge.size) in
+				// allocation map
+				for (DAGEdge edge : allocation.keySet()) {
+					if ((allocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
+						memorySize = allocation.get(edge)
+								+ edge.getWeight().intValue();
+						}
+				}
+			} catch (InvalidExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return memorySize;
+		}
+		return -1;
+	}
+
+	/**
+	 * This method is responsible for checking the conformity of a DAG memory
+	 * allocation with the following constraints : <li>An input buffer of an
+	 * actor can not share a memory space with an output. <li>As all actors are
+	 * considered self-scheduled, buffers in parallel branches of the DAG can
+	 * not share the same memory space.
+	 * 
+	 * @return The list of conflicting memory elements. Empty list if allocation
+	 *         follow the rules.
+	 */
+	public HashMap<MemoryExclusionGraphNode, Integer> checkAllocation() {
+		HashMap<MemoryExclusionGraphNode, Integer> conflictingElements;
+		conflictingElements = new HashMap<MemoryExclusionGraphNode, Integer>();
+
+		// If this allocator did not build the exclusion graph, build it
+		if (this.inputExclusionGraph == null && graph != null) {
+			try {
+				inputExclusionGraph = new MemoryExclusionGraph();
+				this.inputExclusionGraph.buildGraph(graph);
 			} catch (InvalidExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -131,22 +169,36 @@ public abstract class MemoryAllocator {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// Check that no edge of the exclusion graph is violated
-		for(DefaultEdge edge : memEx.edgeSet()){
-			MemoryExclusionGraphNode source = memEx.getEdgeSource(edge);
-			MemoryExclusionGraphNode target = memEx.getEdgeTarget(edge);
-			
-			int sourceOffset = allocation.get(source.getEdge());
-			int targetOffset = allocation.get(target.getEdge());
-			
-			// If the memory element share memory space
-			if((sourceOffset < (targetOffset + target.getWeight()))
-					&& ((sourceOffset + source.getWeight()) > targetOffset)){
-				conflictingElements.put(source.getEdge(), sourceOffset);
-				conflictingElements.put(target.getEdge(), targetOffset);
+		for (DefaultEdge edge : inputExclusionGraph.edgeSet()) {
+			MemoryExclusionGraphNode source = inputExclusionGraph
+					.getEdgeSource(edge);
+			MemoryExclusionGraphNode target = inputExclusionGraph
+					.getEdgeTarget(edge);
+
+			int sourceOffset;
+			int targetOffset;
+
+			// If an allocation was created only based on a memory exclusion
+			// graph, the edge attribute of MemoryExclusionGraphNodes will be
+			// null and
+			// allocation table won't be valid.
+			if (memExNodeAllocation != null) {
+				sourceOffset = memExNodeAllocation.get(source);
+				targetOffset = memExNodeAllocation.get(target);
+			} else {
+				sourceOffset = allocation.get(source.getEdge());
+				targetOffset = allocation.get(target.getEdge());
 			}
-		}				
+
+			// If the memory element share memory space
+			if ((sourceOffset < (targetOffset + target.getWeight()))
+					&& ((sourceOffset + source.getWeight()) > targetOffset)) {
+				conflictingElements.put(source, sourceOffset);
+				conflictingElements.put(target, targetOffset);
+			}
+		}
 		return conflictingElements;
 	}
 }

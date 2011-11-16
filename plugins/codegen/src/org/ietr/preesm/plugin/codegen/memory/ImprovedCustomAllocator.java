@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import net.sf.dftools.workflow.WorkflowException;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom
@@ -21,7 +20,7 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
  * @author kdesnos
  * 
  */
-public class CustomAllocator extends MemoryAllocator {
+public class ImprovedCustomAllocator extends MemoryAllocator {
 
 	/**
 	 * Constructor of the allocator.
@@ -29,7 +28,7 @@ public class CustomAllocator extends MemoryAllocator {
 	 * @param graph
 	 *            the graph whose edges are to allocate in memory
 	 */
-	public CustomAllocator(DirectedAcyclicGraph graph) {
+	public ImprovedCustomAllocator(DirectedAcyclicGraph graph) {
 		super(graph);
 	}
 
@@ -42,7 +41,7 @@ public class CustomAllocator extends MemoryAllocator {
 	 * @param memExclusionGraph
 	 *            The exclusion graph whose vertices are to allocate in memory
 	 */
-	public CustomAllocator(MemoryExclusionGraph memExclusionGraph) {
+	public ImprovedCustomAllocator(MemoryExclusionGraph memExclusionGraph) {
 		super(memExclusionGraph);
 	}
 
@@ -127,14 +126,8 @@ public class CustomAllocator extends MemoryAllocator {
 			HashSet<MemoryExclusionGraphNode> cliqueSet = ostSolver
 					.getHeaviestClique();
 
-			// Convert cliqueSet to a list of elt (where elt is a set of
-			// vertices)
-			// logger.log(Level.INFO, "4 - Fill arrayList");
-			ArrayList<HashSet<MemoryExclusionGraphNode>> clique = new ArrayList<HashSet<MemoryExclusionGraphNode>>();
+			// Allocate Clique elements
 			for (MemoryExclusionGraphNode node : cliqueSet) {
-				HashSet<MemoryExclusionGraphNode> element = new HashSet<MemoryExclusionGraphNode>();
-				element.add(node);
-				clique.add(element);
 				// (10) Allocate clique elements
 				allocation.put(node.getEdge(), cliqueOffset);
 				memExNodeAllocation.put(node, cliqueOffset);
@@ -142,101 +135,145 @@ public class CustomAllocator extends MemoryAllocator {
 
 			// This boolean is used to iterate over the list as long as a vertex
 			// is added to an element of the list during an iteration
-			boolean loopAgain = !clique.isEmpty(); // Loop only if clique is not
-													// empty (should always be
-													// true when reached...)
+			boolean loopAgain = !cliqueSet.isEmpty(); // Loop only if clique is
+														// not
+														// empty (should always
+														// be
+														// true when reached...)
 
-			// the cliqueWeight will store the weight of the current clique Ci
-			int cliqueWeight = 0;
-			while (loopAgain) {
-				loopAgain = false;
+			// the cliqueWeight will store the weight of the current max element
+			// of clique
+			int cliqueWeight = Collections.max(cliqueSet).getWeight();
+			int maximumSize = 2*cliqueWeight;
 
-				// (5)
-				// logger.log(Level.INFO, "5 - Order List");
-				orderElementList(clique);
-				cliqueWeight = maxElementWeight(clique, true);
 
-				Iterator<HashSet<MemoryExclusionGraphNode>> iterElements;
-				iterElements = clique.iterator();
 
-				// List the neighbors of elements that were already tested.
-				// This prevent the allocation of a neighbor in an elements once
-				// it has been proved incompatible with a larger one.
-				ArrayList<MemoryExclusionGraphNode> treatedNeighbors;
-				treatedNeighbors = new ArrayList<MemoryExclusionGraphNode>();
+				ArrayList<MemoryExclusionGraphNode> nonAllocatedVertex;
+				nonAllocatedVertex = new ArrayList<MemoryExclusionGraphNode>(
+						exclusionGraph.vertexSet());
+				Collections
+						.sort(nonAllocatedVertex, Collections.reverseOrder());
+				
+				while (loopAgain) {
+					loopAgain = false;
 
-				// (6)
-				while (iterElements.hasNext()) {
-					// The first iteration will never add any vertex to the
-					// considered element. Indeed, as it is the largest element,
-					// newWeight < cliqueWeight + neighbor.getWeight() will
-					// always be false.
-					// However, we keep the first iteration in order to fill the
-					// treatedNeighbors List and thus make impossible the
-					// allocation of first element neighbors in following
-					// elements.
-					HashSet<MemoryExclusionGraphNode> element = iterElements
-							.next();
-					int elementWeight = weight(element);
-					// logger.log(Level.INFO, "6 - Get neighbors");
-					// get all the neighbors of elements vertices
-					ArrayList<MemoryExclusionGraphNode> neighbors;
-					// The vertex are added to a set to avoid duplicates.
-					// Then they will be stored in ArrayList neighbors
-					HashSet<MemoryExclusionGraphNode> temporary = new HashSet<MemoryExclusionGraphNode>();
-					// TODO Move adjacentVertex from solver to graph
-					// Use a Solver to retrieve adjacent Vertex
-					OstergardSolver<MemoryExclusionGraphNode, DefaultEdge> toolSolver;
-					toolSolver = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(
-							exclusionGraph);
-					for (MemoryExclusionGraphNode vertex : element) {
-						temporary.addAll(toolSolver.adjacentVerticesOf(vertex));
-					}
-					neighbors = new ArrayList<MemoryExclusionGraphNode>(
-							temporary);
+				for (MemoryExclusionGraphNode vertex : nonAllocatedVertex) {
+					// Get vertex neighbors
+					HashSet<MemoryExclusionGraphNode> neighbors = exclusionGraph
+							.getAdjacentVertexOf(vertex);
 
-					// logger.log(Level.INFO, "7 - Sort neighbors");
-					// (6.1)
-					// Sort neighbors in descending order of weights
-					Collections.sort(neighbors, Collections.reverseOrder());
-					// Vertex already in cliqueSet are not considered.
-					// As neighbors is ordered, a custom remove function might
-					// be a good idea
-					neighbors.removeAll(cliqueSet);
-					neighbors.removeAll(treatedNeighbors);
+					// The offset to begin the search
+					int offset = cliqueOffset;
 
-					// logger.log(Level.INFO, "8 - Iterate Neighbors");
-					for (MemoryExclusionGraphNode neighbor : neighbors) {
-						// (6.1.1)
-						// Compute the weight of the element if neighbor was
-						// added to it
-						int newWeight = elementWeight + neighbor.getWeight();
-						if (newWeight < cliqueWeight + neighbor.getWeight()) {
-							// logger.log(Level.INFO, "9 - new Element Found");
-							element.add(neighbor);
-							cliqueSet.add(neighbor);
-							loopAgain = true;
-							// (10)
-							allocation.put(neighbor.getEdge(), cliqueOffset
-									+ elementWeight);
-							memExNodeAllocation.put(neighbor, cliqueOffset
-									+ elementWeight);
-							break; // break the neighbors loop (goto 5)
+					// This boolean indicate that the offset chosen for the
+					// vertex is
+					// compatible with all the neighbors that are already
+					// allocated.
+					boolean validOffset = false;
+
+					// Iterate until a valid offset is found (this offset will
+					// be the
+					// smallest possible)
+					while (!validOffset) {
+						validOffset = true;
+						for (MemoryExclusionGraphNode neighbor : neighbors) {
+							Integer neighborOffset;
+							if ((neighborOffset = memExNodeAllocation
+									.get(neighbor)) != null) {
+								
+								if (neighborOffset < (offset + vertex
+										.getWeight())
+										&& (neighborOffset + neighbor
+												.getWeight()) > offset) {
+									validOffset = false;
+									offset += neighbor.getWeight();
+									break;
+								}
+							}
 						}
 					}
-
-					// if the neighbors loop was broken, break the elements loop
-					// too (goto (5))
-					if (loopAgain) {
+					// Allocate the vertex at the resulting offset if the set is not enlarged by the weight of the node
+					if ((offset-cliqueOffset) < cliqueWeight && ((offset-cliqueOffset)+vertex.getWeight()) < maximumSize) {
+						memExNodeAllocation.put(vertex, offset);
+						allocation.put(vertex.getEdge(), offset);
+						cliqueSet.add(vertex);
+						nonAllocatedVertex.remove(vertex);
+						loopAgain = true;
+						cliqueWeight = (((offset-cliqueOffset)+vertex.getWeight()) > cliqueWeight)?(offset-cliqueOffset)+vertex.getWeight() : cliqueWeight;
 						break;
 					}
-
-					// else, neighbors loop was not broken, element iteration
-					// continue.
-					// Add the treated neighbors to the list
-					treatedNeighbors.addAll(neighbors);
 				}
 			}
+			// ABORTED
+			// // Improvement Try to add neighbors of cliqueSet
+			// // neighbors are treated in decreasing weight order and added in
+			// the best-fit fashion.
+			// // However, the CWeight cannot be changed !
+			//
+			// // Sort the neighbors list in decreasing order of weight
+			// Collections.sort(treatedNeighbors,Collections.reverseOrder());
+			//
+			// // Best-fit alloc aborted
+			// for(MemoryExclusionGraphNode currentNeighbor : treatedNeighbors){
+			// // retrieve the vertices of Ci that are neighbors of the current
+			// neighbor.
+			// HashSet<MemoryExclusionGraphNode> adjacent =
+			// exclusionGraph.getAdjacentVertexOf(currentNeighbor);
+			// adjacent.retainAll(cliqueSet);
+			//
+			// // Retrieve all the exclusions. Each node has a starting address
+			// (its offset) and occupy memory up to (offset + size)
+			// // The current neighbor cannot be allocated between those
+			// addresses.
+			// ArrayList<Integer> excludeFrom = new
+			// ArrayList<Integer>(adjacent.size());
+			// ArrayList<Integer> excludeTo = new
+			// ArrayList<Integer>(adjacent.size());
+			// for(MemoryExclusionGraphNode adjacentNode : adjacent){
+			// excludeFrom.add(memExNodeAllocation.get(adjacentNode));
+			// excludeTo.add(memExNodeAllocation.get(adjacentNode)+
+			// adjacentNode.getWeight());
+			// }
+			//
+			// // merge the two lists
+			// Collections.sort(excludeFrom);
+			// Collections.sort(excludeTo);
+			// Iterator<Integer> iterFrom = excludeFrom.iterator();
+			// Iterator<Integer> iterTo = excludeFrom.iterator();
+			//
+			//
+			// int from = 0;
+			// int to = 0;
+			// int freeFrom = 0;
+			// int offset = -1;
+			// float occupation = (float)0.0; // Occupation rate of the best
+			// fitted space (<=1)
+			// int numberExcludingElements = 0;
+			//
+			// while(iterFrom.hasNext() && iterTo.hasNext()){
+			// if(from <= to){
+			// // If this is the end of a free space.
+			// if(numberExcludingElements == 0 ){
+			// // check if neighbor fits in the space left empty
+			// if(currentNeighbor.getWeight() <= (freeFrom - from)){
+			// // It fits ! But, does it BEST fits ?
+			// if(((float)currentNeighbor.getWeight()/(float)(freeFrom - from))
+			// > occupation){
+			// // It does best fit !(yet)
+			// occupation = ((float)currentNeighbor.getWeight()/(float)(freeFrom
+			// - from));
+			// offset = freeFrom;
+			// }
+			// }
+			// }
+			// numberExcludingElements++;
+			// from = iterFrom.next();
+			// }
+			//
+			// }
+			//
+			// }
+
 			// (7)
 			// logger.log(Level.INFO, "10 - Remmoving vertex");
 			// logger.log(Level.INFO, "Vertex  "+ cliqueSet);

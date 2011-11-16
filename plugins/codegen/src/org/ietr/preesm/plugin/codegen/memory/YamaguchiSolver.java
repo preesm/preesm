@@ -224,6 +224,7 @@ public class YamaguchiSolver<V extends WeightedVertex<Integer> & Comparable<V>, 
 			for(V vertin : this.graphVertices.values()){
 				if(vert.equals(vertin)){
 					vert.setIdentifier(vertin.getIdentifier());
+					vert.setWeight(vertin.getWeight());
 					break;
 				}
 			}

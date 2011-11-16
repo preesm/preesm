@@ -1,8 +1,8 @@
 package org.ietr.preesm.plugin.codegen.memory;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import org.sdf4j.model.dag.DAGEdge;
+import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import org.sdf4j.model.parameters.InvalidExpressionException;
 
 /**
  * This implementation of the MemoryAllocator mainly is an implementation
@@ -23,12 +23,23 @@ public class BasicAllocator extends MemoryAllocator {
 	public BasicAllocator(DirectedAcyclicGraph graph) {
 		super(graph);
 	}
+	
+	/**
+	 * Constructor of the MemoryAllocator
+	 * 
+	 * @param memEx
+	 *            The exclusion graph to analyze
+	 */
+	public BasicAllocator(MemoryExclusionGraph memEx){
+		super(memEx); 
+	}
 
 	/**
 	 * Each edge of the graph is given a dedicated memory space.
 	 */
 	public void allocate() {
 		int offset = 0;
+		if(this.graph != null){
 		try {
 			for (DAGEdge edge : graph.edgeSet()) {
 				allocation.put(edge, offset);
@@ -37,6 +48,13 @@ public class BasicAllocator extends MemoryAllocator {
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		}
+		else if(inputExclusionGraph != null){
+			for(MemoryExclusionGraphNode vertex : inputExclusionGraph.vertexSet()){
+				memExNodeAllocation.put(vertex, offset);
+				offset += vertex.getWeight();
+			}
 		}
 	}
 }
