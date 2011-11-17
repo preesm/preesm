@@ -7,8 +7,8 @@ import java.util.HashSet;
 import net.sf.dftools.workflow.WorkflowException;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom

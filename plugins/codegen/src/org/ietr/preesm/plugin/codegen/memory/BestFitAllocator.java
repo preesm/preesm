@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 
 /**
  * In this class, an adapted version of the best fit allocator is implemented.

@@ -7,9 +7,9 @@ import java.util.HashSet;
 import net.sf.dftools.workflow.WorkflowException;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.sdf4j.model.dag.DAGEdge;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * In this class, an adapted version of the first fit allocator is implemented.

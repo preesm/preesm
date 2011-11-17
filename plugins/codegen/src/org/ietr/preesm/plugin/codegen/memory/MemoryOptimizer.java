@@ -15,8 +15,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.plugin.codegen.memory.FirstFitAllocator.Policy;
 import org.jgrapht.graph.DefaultEdge;
-import org.sdf4j.model.dag.DirectedAcyclicGraph;
-import org.sdf4j.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * Testing methods to optimize DAG memory use
