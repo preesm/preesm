@@ -151,16 +151,18 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 //		memex.addEdge(n5, n6);
 		
 		// Test of heuristicSolver
-		//for(int iter = 0; iter < 5; iter++){
+//		//for(int iter = 0; iter < 5; iter++){
 		//Prepare the exclusionGraph
 		WeightedGraphGenerator gGen = new WeightedGraphGenerator();
-		gGen.setNumberVertices(500);
-		gGen.setEdgeDensity(0.83);
+		gGen.setNumberVertices(150);
+		gGen.setEdgeDensity(0.80);
 		gGen.setMinimumWeight(1001);
 		gGen.setMaximumWeight(1010);
 		memex = gGen.generateMemoryExclusionGraph();
 		
 		HeuristicSolver<MemoryExclusionGraphNode, DefaultEdge> hSolver = new HeuristicSolver<MemoryExclusionGraphNode, DefaultEdge>(memex);
+		
+		memex.saveToFile("C:/TEMP/graph.csv");
 		
 		logger.log(Level.INFO, "Heur Start");
 		long tStart = System.currentTimeMillis();
@@ -172,22 +174,22 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 
 		
 		MaximumWeightCliqueSolver<MemoryExclusionGraphNode, DefaultEdge> solver;
-		solver = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(
+		solver = new HybridSolver<MemoryExclusionGraphNode, DefaultEdge>(
 				memex);
 		
 		logger.log(Level.INFO, "Yama Start");
 		tStart = System.currentTimeMillis();
-		//solver.solve();
+		solver.solve();
 		tStop = System.currentTimeMillis();
 		logger.log(Level.INFO, "Yama Stop :"  + solver.sumWeight(solver.getHeaviestClique()) + " in " + (tStop - tStart));
 		solver.sumWeight(memex.vertexSet());
 
 		logger.log(Level.INFO, "Before : " + memex.vertexSet().size() +" With density "+ memex.edgeSet().size()*2.0/(double)(memex.vertexSet().size()*(memex.vertexSet().size()-1)));
 		long tSStart = System.currentTimeMillis();
-		memex.simplifier();
+		//memex.simplifier();
 		long tSStop = System.currentTimeMillis();
 		logger.log(Level.INFO, "Then : " + memex.vertexSet().size() +" With density "+ memex.edgeSet().size()*2.0/(double)(memex.vertexSet().size()*(memex.vertexSet().size()-1)));
-		memex.simplifierTwo();
+		//memex.simplifierTwo();
 		logger.log(Level.INFO, "Simplified : " + memex.vertexSet().size() + " With density " + memex.edgeSet().size()*2.0/(double)(memex.vertexSet().size()*(memex.vertexSet().size()-1)));
 
 		solver = new OstergardSolver<MemoryExclusionGraphNode, DefaultEdge>(
@@ -197,7 +199,7 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 
 		logger.log(Level.INFO, "Start");
 		tStart = System.currentTimeMillis();
-		//solver.solve();
+		solver.solve();
 		tStop = System.currentTimeMillis();
 
 		logger.log(Level.INFO,
@@ -209,7 +211,7 @@ public class MemoryOptimizer extends AbstractTaskImplementation {
 		BasicAllocator baAlloc = new BasicAllocator(localDAG);
 		
 		baAlloc.allocate();
-		System.out.print("worst : "+ baAlloc.getMemorySize());
+		logger.log(Level.INFO,"worst : "+ baAlloc.getMemorySize());
 		
 		
 		
