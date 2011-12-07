@@ -18,5 +18,4 @@ Bundle-ClassPath: lib/JFlex.jar,
  .,
  lib/idl.jar
 Bundle-Vendor: IETR/INSA of Rennes
-Export-Package: org.ietr.preesm.plugin.codegen,
- org.ietr.preesm.plugin.codegen.memory
+Export-Package: org.ietr.preesm.plugin.codegen

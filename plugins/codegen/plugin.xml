@@ -27,23 +27,6 @@
             </input>
          </inputs>
       </task>
-      <task
-            id="org.ietr.preesm.plugin.codegen.memory.MemoryOptimizer"
-            name="Memory Optimizer"
-            type="org.ietr.preesm.plugin.codegen.memory.MemoryOptimizer">
-         <inputs>
-            <input
-                  id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </output>
-         </outputs>
-      </task>
    </extension>
 
 </plugin>
