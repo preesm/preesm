@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,15 +41,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
-import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph
@@ -76,7 +76,9 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
 			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
-				net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+
+				OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+
 				try {
 					algorithm.accept(toHsdf);
 				} catch (SDF4JException e) {
@@ -112,8 +114,8 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 	 * logger.log(Level.FINER, "Transforming application " + algorithm.getName()
 	 * + " to HSDF"); VisitorOutput.setLogger(logger); if
 	 * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
-	 * net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new
-	 * OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch
+	 * net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf
+	 * = new OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch
 	 * (SDF4JException e) { e.printStackTrace(); throw (new
 	 * PreesmException(e.getMessage())); } logger.log(Level.FINER,
 	 * "HSDF transformation complete"); TaskResult result = new TaskResult();

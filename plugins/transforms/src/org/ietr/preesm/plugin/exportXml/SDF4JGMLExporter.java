@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,6 +39,8 @@ package org.ietr.preesm.plugin.exportXml;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
@@ -50,8 +52,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
 
