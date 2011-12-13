@@ -73,7 +73,7 @@ public class NewGraphMLWizard extends Wizard implements INewWizard {
 
 		Configuration configuration = GraphitiModelPlugin.getDefault()
 				.getConfiguration("GraphML");
-		ObjectType type = configuration.getGraphType("SDF Graph");
+		ObjectType type = configuration.getGraphType("Dataflow Graph");
 
 		page.setGraph(new Graph(configuration, type, true));
 		page.setDescription("Create a new graphml algorithm.");

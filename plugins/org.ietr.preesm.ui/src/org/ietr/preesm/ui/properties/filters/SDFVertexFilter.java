@@ -21,7 +21,7 @@ public class SDFVertexFilter implements IFilter {
 			if (model instanceof Vertex) {
 				Vertex vertex = (Vertex) model;
 				Graph graph = vertex.getParent();
-				return graph.getType().getName().equals("SDF Graph");
+				return graph.getType().getName().equals("Dataflow Graph");
 			}
 		}
 		return false;

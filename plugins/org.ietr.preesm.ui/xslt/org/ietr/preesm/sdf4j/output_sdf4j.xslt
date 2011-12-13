@@ -23,28 +23,26 @@
 
         <!-- graph -->
         <graphml>
-            <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-            <key attr.name="name" attr.type="string" for="graph" id="name"/>
-            <key attr.name="name" attr.type="string" for="node" id="name"/>
-            <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-            <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-            <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-            <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-            </key>
-            <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-            </key>
-            <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-            </key>
-            <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-                <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-            </key>
-
+			<key attr.name="arguments" for="node" id="arguments"/>
+   			<key attr.name="parameters" for="graph" id="parameters"/>
+  			<key attr.name="variables" for="graph" id="variables"/>
+   			<key attr.name="name" attr.type="string" for="graph"/>
+			<key attr.name="model" attr.type="string" for="graph"/>
+    		<key attr.name="name" attr.type="string" for="node"/>
+    		<key attr.name="kind" attr.type="string" for="node"/>
+   			<key attr.name="port_direction" attr.type="string" for="node"/>
+    		<key attr.name="graph_desc" attr.type="string" for="node"/>
+    		<key attr.name="nbRepeat" attr.type="int" for="node"/>
+    		<key attr.name="edge_cons" attr.type="string" for="edge"/>
+    		<key attr.name="edge_delay" attr.type="string" for="edge"/>
+    		<key attr.name="edge_prod" attr.type="string" for="edge"/>
+    		<key attr.name="data_type" attr.type="string" for="edge"/>
             <graph edgedefault="directed">
                 <data key="name">
                     <xsl:value-of select="parameters/parameter[@name = 'name']/@value"/>
+                </data>
+                <data key="kind">
+                    <xsl:value-of select="parameters/parameter[@name = 'kind']/@value"/>
                 </data>
                 <xsl:apply-templates select="parameters/parameter[@name = 'graph parameter']"/>
                 <xsl:apply-templates select="parameters/parameter[@name = 'graph variable']"/>
@@ -70,17 +68,29 @@
     </xsl:template>
 
     <!-- node -->
-    <xsl:template match="vertex[@type = 'Vertex']">
-        <node kind="vertex" id="{parameters/parameter[@name = 'id']/@value}">
-            <data key="graph_desc">
-                <xsl:value-of select="parameters/parameter[@name = 'refinement']/@value"/>
-            </data>
-            
+    <xsl:template match="vertex">
+        <node id="{parameters/parameter[@name = 'id']/@value}">
             <data key="name">
                 <xsl:value-of select="parameters/parameter[@name = 'id']/@value"/>
             </data>
+            <data key="kind">
+                <xsl:value-of select="parameters/parameter[@name = 'kind']/@value"/>
+            </data>
+            <data key="graph_desc">
+                <xsl:value-of select="parameters/parameter[@name = 'refinement']/@value"/>
+            </data>
 
             <xsl:apply-templates select="parameters/parameter[@name = 'instance argument']"/>
+			
+			<xsl:choose>
+				<xsl:when test="@type= 'Input port'">
+					<data key="port_direction">Input</data>
+				</xsl:when>
+				<xsl:when test="@type= 'Output port'">
+					<data key="port_direction">Output</data>
+				</xsl:when>
+				<xsl:otherwise></xsl:otherwise>
+			</xsl:choose>
 
         </node>
     </xsl:template>
@@ -106,27 +116,6 @@
     <!-- parameters parameter -->
     <xsl:template match="element">
         <parameter name="{@value}"/>
-    </xsl:template>
-
-    <!-- input/output port -->
-    <xsl:template match="vertex[@type = 'Input port' or @type = 'Output port']">
-        <node id="{parameters/parameter[@name = 'id']/@value}" kind="port"
-            port_direction="{replace(@type, '(Input|Output) port', '$1')}"/>
-    </xsl:template>
-
-    <!-- broadcast vertex -->
-    <xsl:template match="vertex[@type = 'Broadcast']">
-        <node id="{parameters/parameter[@name = 'id']/@value}" kind="Broadcast"/>
-    </xsl:template>
-
-    <!-- fork vertex -->
-    <xsl:template match="vertex[@type = 'fork']">
-        <node id="{parameters/parameter[@name = 'id']/@value}" kind="fork"/>
-    </xsl:template>
-
-    <!-- join  vertex -->
-    <xsl:template match="vertex[@type = 'join']">
-        <node id="{parameters/parameter[@name = 'id']/@value}" kind="join"/>
     </xsl:template>
 
     <!-- edge -->

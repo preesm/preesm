@@ -28,12 +28,23 @@
     <!-- Top-level: graph -> graph -->
     <xsl:template match="graphml:graph[position() = 1 and @edgedefault = 'directed']">
         <xsl:element name="graph">
-            <xsl:attribute name="type">SDF Graph</xsl:attribute>
+            <xsl:attribute name="type">Dataflow Graph</xsl:attribute>
 
             <xsl:element name="parameters">
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">name</xsl:attribute>
                     <xsl:attribute name="value" select="graphml:data[@key = 'name']/text()"/>
+                </xsl:element>
+                <xsl:element name="parameter">
+                    <xsl:attribute name="name">kind</xsl:attribute>
+                    <xsl:choose>
+                   	 	<xsl:when test="string(graphml:data[@key='kind'])">
+                   	 		<xsl:attribute name="value" select="graphml:data[@key = 'kind']/text()"/>
+                    	</xsl:when>
+                    	<xsl:otherwise>
+                    		<xsl:attribute name="value">sdf</xsl:attribute>
+                    	</xsl:otherwise>
+                    </xsl:choose>
                 </xsl:element>
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">graph parameter</xsl:attribute>
@@ -67,18 +78,61 @@
     </xsl:template>
 
     <!-- node -->
-    <xsl:template match="graphml:node[@kind = 'vertex']">
+    <xsl:template match="graphml:node">
         <xsl:element name="vertex">
-            <xsl:attribute name="type">Vertex</xsl:attribute>
+            
             <xsl:call-template name="getVertexLayoutAttributes">
                 <xsl:with-param name="vertexId" select="@id"/>
             </xsl:call-template>
-
+		
+		
+			<xsl:attribute name="type">
+				<xsl:choose>
+					<xsl:when test="@kind = 'vertex'">Vertex</xsl:when>
+ 					<xsl:when test="@kind = 'Broadcast'">Broadcast</xsl:when>
+ 					<xsl:when test="@kind = 'fork'">fork</xsl:when>
+ 					<xsl:when test="@kind = 'join'">join</xsl:when>
+ 					<xsl:when test="@kind = 'port'">
+ 						<xsl:choose>
+ 							<xsl:when test="@port_direction = 'Input'">Input port</xsl:when>
+ 							<xsl:otherwise>Output port</xsl:otherwise>
+ 						</xsl:choose>
+ 					</xsl:when>
+					<xsl:when test="graphml:data[@key = 'kind']/text() = 'vertex'">Vertex</xsl:when>
+ 					<xsl:when test="graphml:data[@key = 'kind']/text() = 'Broadcast'">Broadcast</xsl:when>
+ 					<xsl:when test="graphml:data[@key = 'kind']/text() = 'fork'">fork</xsl:when>
+ 					<xsl:when test="graphml:data[@key = 'kind']/text() = 'join'">join</xsl:when>
+ 					<xsl:when test="graphml:data[@key = 'kind']/text() = 'port'">
+ 						<xsl:choose>
+ 							<xsl:when test="graphml:data[@key = 'port_direction']/text() = 'Input'">Input port</xsl:when>
+ 							<xsl:otherwise>Output port</xsl:otherwise>
+ 						</xsl:choose>
+ 					</xsl:when>
+  					<xsl:otherwise>SpecificType</xsl:otherwise>
+				</xsl:choose>
+				<xsl:if test="graphml:data[@key = 'kind']/text() = vertex">
+				</xsl:if>
+			
+			</xsl:attribute>
+			
             <xsl:element name="parameters">
+
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">id</xsl:attribute>
                     <xsl:attribute name="value" select="@id"/>
                 </xsl:element>
+
+                <xsl:element name="parameter">
+            		<xsl:attribute name="name">kind</xsl:attribute>
+            		<xsl:choose>
+            			<xsl:when test="@kind" >
+            				<xsl:attribute name="value" select="@kind"/>
+            			</xsl:when>
+            			<xsl:otherwise>
+            				<xsl:attribute name="value" select="graphml:data[@key = 'kind']/text()"/>
+            			</xsl:otherwise>
+            		</xsl:choose>
+            	</xsl:element>
 
                 <xsl:element name="parameter">
                     <xsl:attribute name="name">refinement</xsl:attribute>
@@ -90,6 +144,7 @@
                     <xsl:apply-templates select="graphml:data[@key = 'arguments']"/>
                 </xsl:element>
             </xsl:element>
+         
         </xsl:element>
     </xsl:template>
  
@@ -123,7 +178,7 @@
     </xsl:template>
 
     <!-- input/output port -->
-    <xsl:template match="graphml:node[@kind = 'port']">
+<!--    <xsl:template match="graphml:node[@kind = 'port']">
         <xsl:element name="vertex">
             <xsl:attribute name="type" select="concat(@port_direction, ' port')"/>
             <xsl:call-template name="getVertexLayoutAttributes">
@@ -137,58 +192,7 @@
                 </xsl:element>
             </xsl:element>
         </xsl:element>
-    </xsl:template>
-
-	<!-- broadcast -->
-	<xsl:template match="graphml:node[@kind = 'Broadcast']">
-	    <xsl:element name="vertex">
-	        <xsl:attribute name="type">Broadcast</xsl:attribute>
-	        <xsl:call-template name="getVertexLayoutAttributes">
-	            <xsl:with-param name="vertexId" select="@id"/>
-	        </xsl:call-template>
-
-			<xsl:element name="parameters">
-				<xsl:element name="parameter">
-					<xsl:attribute name="name">id</xsl:attribute>
-					<xsl:attribute name="value" select="@id"/>
-				</xsl:element>
-			</xsl:element>
-		</xsl:element>
-	</xsl:template>
-
-	<!-- join -->
-	<xsl:template match="graphml:node[@kind = 'join']">
-		<xsl:element name="vertex">
-		    <xsl:attribute name="type">join</xsl:attribute>
-		    <xsl:call-template name="getVertexLayoutAttributes">
-		        <xsl:with-param name="vertexId" select="@id"/>
-		    </xsl:call-template>
-
-			<xsl:element name="parameters">
-				<xsl:element name="parameter">
-					<xsl:attribute name="name">id</xsl:attribute>
-					<xsl:attribute name="value" select="@id"/>
-				</xsl:element>
-			</xsl:element>
-		</xsl:element>
-	</xsl:template>
-
-	<!-- fork -->
-	<xsl:template match="graphml:node[@kind = 'fork']">
-		<xsl:element name="vertex">
-		    <xsl:attribute name="type">fork</xsl:attribute>
-		    <xsl:call-template name="getVertexLayoutAttributes">
-		        <xsl:with-param name="vertexId" select="@id"/>
-		    </xsl:call-template>
-
-			<xsl:element name="parameters">
-				<xsl:element name="parameter">
-					<xsl:attribute name="name">id</xsl:attribute>
-					<xsl:attribute name="value" select="@id"/>
-				</xsl:element>
-			</xsl:element>
-		</xsl:element>
-	</xsl:template>
+    </xsl:template>-->
 
     <!-- edge -->
     <xsl:template match="graphml:edge">

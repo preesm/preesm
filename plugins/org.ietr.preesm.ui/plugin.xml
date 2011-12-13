@@ -9,7 +9,11 @@
             type="text/xml"
             validator="org.ietr.preesm.ui.editor.graph.validators.SDFValidator">
          <graphType
-               name="SDF Graph">
+               name="Dataflow Graph">
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
             <parameter
                   name="name"
                   type="java.lang.String">
@@ -28,6 +32,18 @@
             <parameter
                   name="id"
                   type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
             </parameter>
             <color
                   blue="100"
@@ -48,6 +64,18 @@
                   name="id"
                   type="java.lang.String">
             </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
             <color
                   blue="100"
                   green="0"
@@ -65,6 +93,10 @@
                name="Vertex">
             <parameter
                   name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
                   type="java.lang.String">
             </parameter>
             <parameter
@@ -136,6 +168,18 @@
                   name="id"
                   type="java.lang.String">
             </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
             <color
                   blue="10"
                   green="120"
@@ -154,6 +198,18 @@
             <parameter
                   name="id"
                   type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
             </parameter>
             <color
                   blue="0"
@@ -174,10 +230,53 @@
                   name="id"
                   type="java.lang.String">
             </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
             <color
                   blue="120"
                   green="0"
                   red="10">
+            </color>
+            <size
+                  height="30"
+                  width="30">
+            </size>
+            <shape
+                  type="circle">
+            </shape>
+         </vertexType>
+         <vertexType
+               name="SpecificType">
+            <parameter
+                  name="id"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="kind"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="refinement"
+                  type="java.lang.String">
+            </parameter>
+            <parameter
+                  name="instance argument"
+                  type="java.util.Map">
+            </parameter>
+            <color
+                  blue="211"
+                  green="211"
+                  red="211">
             </color>
             <size
                   height="30"
