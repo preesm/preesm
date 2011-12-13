@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,15 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.graphtransfo;
 
+import net.sf.dftools.algorithm.importer.GMLImporter;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.MapperEdgeFactory;
-import net.sf.dftools.algorithm.importer.GMLImporter;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -76,13 +77,13 @@ public class GMLMapperDAGImporter extends
 
 		DAGEdge edge = parentGraph.addEdge(vertexSource, vertexTarget);
 
-		parseKeys(edgeElt, edge.getPropertyBean(), "edge");
+		parseKeys(edgeElt, edge);
 	}
 
 	@Override
 	public MapperDAG parseGraph(Element graphElt) {
 		MapperDAG graph = new MapperDAG(localFactory, null);
-		parseKeys(graphElt, graph.getPropertyBean(), "graph");
+		parseKeys(graphElt, graph);
 		graph.setReferenceSdfGraph((SDFGraph) graph.getPropertyBean().getValue(
 				ImplementationPropertyNames.Graph_SdfReferenceGraph));
 		NodeList childList = graphElt.getChildNodes();
@@ -112,7 +113,7 @@ public class GMLMapperDAGImporter extends
 		MapperDAGVertex vertex = new MapperDAGVertex();
 		vertex.setId(vertexElt.getAttribute("id"));
 		vertexFromId.put(vertex.getId(), vertex);
-		parseKeys(vertexElt, vertex.getPropertyBean(), "vertex");
+		parseKeys(vertexElt, vertex);
 		return vertex;
 	}
 

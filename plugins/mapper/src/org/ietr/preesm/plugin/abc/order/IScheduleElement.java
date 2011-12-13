@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,10 +38,11 @@ package org.ietr.preesm.plugin.abc.order;
 
 import java.util.Set;
 
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+
 import org.ietr.preesm.plugin.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.plugin.mapper.model.TimingVertexProperty;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * Element containing either a simple vertex or a group of synchronized elements

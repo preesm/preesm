@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,17 +39,13 @@ package org.ietr.preesm.plugin.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.jgrapht.Graph;
 import net.sf.dftools.algorithm.exporter.GMLExporter;
+import net.sf.dftools.algorithm.model.AbstractGraph;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.SDFVertex;
-import net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory;
-import net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory;
+
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 
 /**
@@ -66,20 +62,19 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	 */
 	public DAGExporter() {
 		super();
-		addKey(SDFEdge.EDGE_PROD, SDFEdge.EDGE_PROD, "edge", "int",
-				SDFNumericalEdgePropertyTypeFactory.class);
-		addKey(SDFEdge.EDGE_DELAY, SDFEdge.EDGE_DELAY, "edge", "int",
-				SDFNumericalEdgePropertyTypeFactory.class);
-		addKey(SDFEdge.EDGE_CONS, SDFEdge.EDGE_CONS, "edge", "int",
-				SDFNumericalEdgePropertyTypeFactory.class);
-		addKey(SDFVertex.REFINEMENT, SDFVertex.REFINEMENT, "node", "string",
-				null);
-		addKey(SDFAbstractVertex.ARGUMENTS, SDFAbstractVertex.ARGUMENTS,
-				"node", null, null);
-		addKey(SDFGraph.PARAMETERS, SDFGraph.PARAMETERS, "graph", null, null);
-		addKey(SDFGraph.VARIABLES, SDFGraph.VARIABLES, "graph", null, null);
-		addKey(SDFEdge.DATA_TYPE, SDFEdge.DATA_TYPE, "edge", "string",
-				SDFTextualEdgePropertyTypeFactory.class);
+		/*
+		 * addKey(SDFEdge.EDGE_PROD, SDFEdge.EDGE_PROD, "edge", "int",
+		 * SDFNumericalEdgePropertyTypeFactory.class);
+		 * addKey(SDFEdge.EDGE_DELAY, SDFEdge.EDGE_DELAY, "edge", "int",
+		 * SDFNumericalEdgePropertyTypeFactory.class); addKey(SDFEdge.EDGE_CONS,
+		 * SDFEdge.EDGE_CONS, "edge", "int",
+		 * SDFNumericalEdgePropertyTypeFactory.class);
+		 * addKey(SDFVertex.REFINEMENT, SDFVertex.REFINEMENT, "node", "string",
+		 * null); addKey(SDFAbstractVertex.ARGUMENTS,
+		 * SDFAbstractVertex.ARGUMENTS, "node", null, null);
+		 * addKey(SDFEdge.DATA_TYPE, SDFEdge.DATA_TYPE, "edge", "string",
+		 * SDFTextualEdgePropertyTypeFactory.class);
+		 */
 	}
 
 	@Override
@@ -88,7 +83,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		String targetPort = "in";
 		Element edgeElt = createEdge(parentELement, edge.getSource().getName(),
 				edge.getTarget().getName(), sourcePort, targetPort);
-		exportKeys("edge", edgeElt, edge.getPropertyBean());
+		exportKeys(edge, "edge", edgeElt);
 
 		Element data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "edge_prod");
@@ -105,14 +100,13 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return edgeElt;
 	}
 
-	@Override
-	public Element exportGraph(Graph<DAGVertex, DAGEdge> graph) {
+	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
 		addKeySet(rootElt);
 		MapperDAG myGraph = (MapperDAG) graph;
 		Element graphElt = createGraph(rootElt, true);
 		graphElt.setAttribute("edgedefault", "directed");
 		graphElt.setAttribute("kind", "sdf");
-		exportKeys("graph", graphElt, myGraph.getPropertyBean());
+		exportKeys(myGraph, "graph", graphElt);
 		if (myGraph.getParameters() != null) {
 			exportParameters(myGraph.getParameters(), graphElt);
 		}
@@ -134,7 +128,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		Element vertexElt = createNode(parentELement, vertex.getName());
 		vertexElt.setAttribute(SDFAbstractVertex.KIND, "vertex");
 
-		exportKeys("node", vertexElt, vertex.getPropertyBean());
+		exportKeys(vertex, "node", vertexElt);
 
 		Element data = appendChild(vertexElt, "data");
 		data.setAttribute("key", "graph_desc");
@@ -143,8 +137,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return vertexElt;
 	}
 
-	@Override
-	public void export(Graph<DAGVertex, DAGEdge> graph, String path) {
+	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {
 		this.path = path;
 		try {
 			exportGraph(graph);

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,8 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.impl;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
+
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+
 
 /**
  * Vertex corresponding to sending a data. This vertex is mapped on the sender
@@ -47,6 +50,12 @@ import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
  */
 public class SendVertex extends TransferVertex {
 
+	static {
+		{
+			public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+		}
+	};
+	
 	public SendVertex(String id, MapperDAG base) {
 		super(id, base, null, null, 0, 0);
 	}

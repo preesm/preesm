@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,21 +36,49 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model;
 
-import net.sf.dftools.algorithm.factories.DAGVertexFactory;
+import net.sf.dftools.algorithm.factories.ModelVertexFactory;
+import net.sf.dftools.algorithm.model.AbstractVertex;
+import net.sf.dftools.algorithm.model.IInterface;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
+
+import org.w3c.dom.Element;
 
 /**
  * Creates vertices of type {@link MapperDAGVertex}
  * 
  * @author mpelcat
  */
-public class MapperVertexFactory extends DAGVertexFactory {
+public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
 
-	@Override
+	private static MapperVertexFactory instance;
+
+	private MapperVertexFactory() {
+		super();
+	}
+
+	public static MapperVertexFactory getInstance() {
+		if (instance == null) {
+			instance = new MapperVertexFactory();
+		}
+		return instance;
+	}
+
 	public DAGVertex createVertex(String kind) {
 		DAGVertex result = new MapperDAGVertex();
 		result.setKind(kind);
 		return result;
+	}
+
+	@Override
+	public DAGVertex createVertex(Element vertexElt) {
+		String kind = this.getProperty(vertexElt, AbstractVertex.KIND);
+		return this.createVertex(kind);
+	}
+
+	@Override
+	public IInterface createInterface(String name, int dir) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

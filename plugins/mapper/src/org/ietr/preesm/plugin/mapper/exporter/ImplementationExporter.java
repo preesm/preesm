@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,16 +39,15 @@ package org.ietr.preesm.plugin.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import net.sf.dftools.algorithm.exporter.GMLExporter;
+import net.sf.dftools.algorithm.model.AbstractGraph;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.plugin.mapper.model.impl.TransferVertex;
-import org.jgrapht.Graph;
-import net.sf.dftools.algorithm.exporter.GMLExporter;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType;
 import org.w3c.dom.Element;
 
 /**
@@ -65,53 +64,24 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	 */
 	public ImplementationExporter() {
 		super();
-		addKey(DAGVertex.NAME, DAGVertex.NAME, "vertex", "string", String.class);
-
-		addKey(ImplementationPropertyNames.Vertex_vertexType,
-				ImplementationPropertyNames.Vertex_vertexType, "vertex",
-				"string", String.class);
-		addKey(ImplementationPropertyNames.Vertex_Operator,
-				ImplementationPropertyNames.Vertex_Operator, "vertex",
-				"string", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Vertex_schedulingOrder,
-				ImplementationPropertyNames.Vertex_schedulingOrder, "vertex",
-				"int", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_dataSize,
-				ImplementationPropertyNames.SendReceive_dataSize, "vertex",
-				"int", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Task_duration,
-				ImplementationPropertyNames.Task_duration, "vertex", "int",
-				DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Send_senderGraphName,
-				ImplementationPropertyNames.Send_senderGraphName, "vertex",
-				"string", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Receive_receiverGraphName,
-				ImplementationPropertyNames.Receive_receiverGraphName,
-				"vertex", "string", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.SendReceive_Operator_address,
-				ImplementationPropertyNames.SendReceive_Operator_address,
-				"vertex", "string", DAGDefaultEdgePropertyType.class);
-		addKey(ImplementationPropertyNames.Vertex_originalVertexId,
-				ImplementationPropertyNames.Vertex_originalVertexId, "vertex",
-				"string", DAGDefaultEdgePropertyType.class);
 	}
 
 	@Override
 	protected Element exportEdge(DAGEdge edge, Element parentELement) {
 		Element edgeElt = createEdge(parentELement, edge.getSource().getId(),
 				edge.getTarget().getId());
-		exportKeys("edge", edgeElt, edge.getPropertyBean());
+		exportKeys(edge, "edge", edgeElt);
 		return edgeElt;
 	}
 
 	@Override
-	public Element exportGraph(Graph<DAGVertex, DAGEdge> graph) {
+	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
 		try {
 			addKeySet(rootElt);
 			MapperDAG myGraph = (MapperDAG) graph;
 			Element graphElt = createGraph(rootElt, true);
 			graphElt.setAttribute("edgedefault", "directed");
-			exportKeys("graph", graphElt, myGraph.getPropertyBean());
+			exportKeys(myGraph, "graph", graphElt);
 			for (DAGVertex child : myGraph.vertexSet()) {
 				exportNode(child, graphElt);
 			}
@@ -130,18 +100,9 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	@Override
 	protected Element exportNode(DAGVertex vertex, Element parentELement) {
 		Element vertexElt = createNode(parentELement, vertex.getId());
-		exportKeys("vertex", vertexElt, vertex.getPropertyBean());
+		exportKeys(vertex, "vertex", vertexElt);
 
 		if (vertex instanceof TransferVertex) {
-			// Adding operator definition type to the newly created element
-			Element opDefElt = domDocument.createElement("data");
-			vertexElt.appendChild(opDefElt);
-			opDefElt.setAttribute("key",
-					ImplementationPropertyNames.SendReceive_OperatorDef);
-			opDefElt.setTextContent(((MapperDAGVertex) vertex)
-					.getImplementationVertexProperty().getEffectiveOperator()
-					.getComponent().getVlnv().getName());
-
 			// Adding route step to the node
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
@@ -150,25 +111,6 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			if (routeStep != null) {
 				exportRouteStep(routeStep, vertexElt);
 			}
-
-		} else {
-			// Adding operator definition type to the newly created element
-			Element opDefElt = domDocument.createElement("data");
-			vertexElt.appendChild(opDefElt);
-			opDefElt.setAttribute("key",
-					ImplementationPropertyNames.Vertex_OperatorDef);
-			opDefElt.setTextContent(((MapperDAGVertex) vertex)
-					.getImplementationVertexProperty().getEffectiveOperator()
-					.getComponent().getVlnv().getName());
-
-			// Adding available operators to the newly created element
-			Element opsElt = domDocument.createElement("data");
-			vertexElt.appendChild(opsElt);
-			opsElt.setAttribute("key",
-					ImplementationPropertyNames.Vertex_Available_Operators);
-			opsElt.setTextContent(((MapperDAGVertex) vertex)
-					.getInitialVertexProperty().getInitialOperatorList()
-					.toString());
 
 		}
 		return vertexElt;
@@ -184,8 +126,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return null;
 	}
 
-	@Override
-	public void export(Graph<DAGVertex, DAGEdge> graph, String path) {
+	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {
 		this.path = path;
 		try {
 			exportGraph(graph);

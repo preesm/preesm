@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -42,12 +42,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
+import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
+
 
 /**
  * @author mpelcat
@@ -69,7 +71,13 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	/**
 	 * The cost of the implementation
 	 */
-	private long ScheduleCost;
+	private final static String SCHEDULE_COST = "SCHEDULE_COST";
+
+	static {
+		{
+			public_properties.add(SCHEDULE_COST);
+		}
+	};
 
 	/**
 	 * Creactor of a DAG from a edge factory and a converted graph
@@ -77,7 +85,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public MapperDAG(MapperEdgeFactory factory, SDFGraph graph) {
 		super(factory);
 		this.sdfGraph = graph;
-		this.ScheduleCost = 0;
+		this.getPropertyBean().setValue(SCHEDULE_COST, 0);
 	}
 
 	/**
@@ -99,11 +107,11 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	}
 
 	public long getScheduleCost() {
-		return ScheduleCost;
+		return (long) this.getPropertyBean().getValue(SCHEDULE_COST);
 	}
 
 	public void setScheduleCost(long scheduleLatency) {
-		ScheduleCost = scheduleLatency;
+		this.getPropertyBean().setValue(SCHEDULE_COST, scheduleLatency);
 	}
 
 	public SDFGraph getReferenceSdfGraph() {

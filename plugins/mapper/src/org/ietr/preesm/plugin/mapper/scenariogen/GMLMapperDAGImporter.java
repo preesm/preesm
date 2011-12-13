@@ -1,14 +1,12 @@
 package org.ietr.preesm.plugin.mapper.scenariogen;
 
-import java.util.HashMap;
-
 import net.sf.dftools.algorithm.factories.SDFEdgeFactory;
 import net.sf.dftools.algorithm.factories.SDFVertexFactory;
 import net.sf.dftools.algorithm.importer.GMLImporter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.SDFVertex;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -64,7 +62,7 @@ public class GMLMapperDAGImporter extends
 				parseEdge(edgeElt, graph);
 			}
 		}
-		parseKeys(graphElt, graph.getPropertyBean(), "graph");
+		parseKeys(graphElt, graph);
 		return graph;
 	}
 
@@ -78,14 +76,15 @@ public class GMLMapperDAGImporter extends
 	public SDFAbstractVertex parseNode(Element vertexElt) {
 
 		SDFAbstractVertex vertex;
-		HashMap<String, String> attributes = new HashMap<String, String>();
-		for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
-			attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
-					vertexElt.getAttributes().item(i).getNodeValue());
-		}
-
-		attributes.put("kind", SDFVertex.VERTEX);
-		vertex = SDFVertexFactory.createVertex(attributes);
+		/*
+		 * HashMap<String, String> attributes = new HashMap<String, String>();
+		 * for (int i = 0; i < vertexElt.getAttributes().getLength(); i++) {
+		 * attributes.put(vertexElt.getAttributes().item(i).getNodeName(),
+		 * vertexElt.getAttributes().item(i).getNodeValue()); }
+		 * 
+		 * attributes.put("kind", SDFVertex.VERTEX);
+		 */
+		vertex = SDFVertexFactory.getInstance().createVertex(vertexElt);
 
 		vertex.setId(vertexElt.getAttribute("id"));
 
@@ -98,7 +97,7 @@ public class GMLMapperDAGImporter extends
 			}
 		}
 
-		parseKeys(vertexElt, vertex.getPropertyBean(), "node");
+		parseKeys(vertexElt, vertex);
 		vertexFromId.put(vertex.getId(), vertex);
 		parseArguments(vertex, vertexElt);
 		return vertex;

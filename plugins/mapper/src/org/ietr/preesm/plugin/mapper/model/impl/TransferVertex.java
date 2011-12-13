@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,11 +36,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.mapper.model.impl;
 
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
-import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
+import org.ietr.preesm.plugin.mapper.model.MapperDAGVertex;
+
 
 /**
  * A transfer vertex represents a route step
@@ -73,6 +76,15 @@ public class TransferVertex extends MapperDAGVertex {
 	 * Sets the involvement (if any) corresponding to this transfer
 	 */
 	private InvolvementVertex involvementVertex = null;
+	
+	
+	static {
+		{
+			public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+			public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
+		}
+	};
+	
 
 	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source,
 			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
@@ -133,4 +145,12 @@ public class TransferVertex extends MapperDAGVertex {
 		this.involvementVertex = involvementVertex;
 	}
 
+	public String getPropertyStringValue(String propertyName){
+		if(propertyName.equals(ImplementationPropertyNames.SendReceive_OperatorDef)){
+			return getImplementationVertexProperty().getEffectiveOperator()
+			.getComponent().getVlnv().getName();
+		}
+		return super.getPropertyStringValue(propertyName);
+	}
+	
 }
