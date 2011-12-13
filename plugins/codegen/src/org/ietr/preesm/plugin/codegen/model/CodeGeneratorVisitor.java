@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,12 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.model;
 
-import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.visitors.GraphVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+
+import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 
 /**
  * Visitor of a graph of type CodegenSDF

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,6 +36,24 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.plugin.codegen.model;
 
+import net.sf.dftools.algorithm.model.CodeRefinement;
+import net.sf.dftools.algorithm.model.CodeRefinement.Language;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.Argument;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
+import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -59,23 +77,6 @@ import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.model.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
-import net.sf.dftools.algorithm.model.CodeRefinement;
-import net.sf.dftools.algorithm.model.CodeRefinement.Language;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.parameters.Argument;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
-import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
 /**
  * @author jpiat

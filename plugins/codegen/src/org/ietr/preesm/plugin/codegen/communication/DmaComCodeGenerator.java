@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -30,8 +32,6 @@ import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.plugin.codegen.SourceFileCodeGenerator;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generating communication code (initialization and calls) for a dma Route Step
@@ -114,9 +114,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendDma) {
 			SendDma send = (SendDma) call;
 
-			initCom = new SendInit(bufferContainer, send.getTarget()
-					.getInstanceName(), send.getRouteStep(),
-					send.getCallIndex());
+			initCom = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
+					send.getRouteStep(), send.getCallIndex());
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 
 			initAddress = new ReceiveAddress(bufferContainer, send
@@ -127,8 +126,7 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			ReceiveDma receive = (ReceiveDma) call;
 
 			initCom = new ReceiveInit(bufferContainer, receive.getSource()
-					.getInstanceName(), receive.getRouteStep(),
-					receive.getCallIndex());
+					.getInstanceName(), receive.getRouteStep(), receive.getCallIndex());
 			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 
 			initAddress = new SendAddress(bufferContainer, receive

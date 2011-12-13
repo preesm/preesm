@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,6 +41,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
+import net.sf.dftools.algorithm.model.parameters.Parameter;
+import net.sf.dftools.algorithm.model.parameters.ParameterSet;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
+import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.codegen.ICodeElement;
@@ -62,13 +69,7 @@ import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import net.sf.dftools.algorithm.model.parameters.Parameter;
-import net.sf.dftools.algorithm.model.parameters.ParameterSet;
-import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
-import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
-import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 
 /**
  * Generates code for a computation thread

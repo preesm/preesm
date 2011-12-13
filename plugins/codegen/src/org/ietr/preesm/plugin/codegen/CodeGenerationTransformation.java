@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,6 +39,9 @@ package org.ietr.preesm.plugin.codegen;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
@@ -60,9 +63,6 @@ import org.ietr.preesm.plugin.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.plugin.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.plugin.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.plugin.codegen.print.GenericPrinter;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
 /**
  * Code generation.

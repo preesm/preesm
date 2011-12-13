@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -43,22 +43,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
-import org.eclipse.core.resources.IFile;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.workflow.PreesmException;
-import org.jgrapht.alg.StrongConnectivityInspector;
 import net.sf.dftools.algorithm.SDFMath;
 import net.sf.dftools.algorithm.iterators.SDFIterator;
 import net.sf.dftools.algorithm.model.AbstractEdge;
@@ -68,6 +52,7 @@ import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.Parameter;
 import net.sf.dftools.algorithm.model.psdf.PSDFGraph;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -85,6 +70,22 @@ import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.eclipse.core.resources.IFile;
+import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
+import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
+import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.core.codegen.model.VertexType;
+import org.ietr.preesm.core.workflow.PreesmException;
+import org.jgrapht.alg.StrongConnectivityInspector;
 
 /**
  * Code generation necessitates a specific model preparing the different types
@@ -128,11 +129,12 @@ public class CodeGenSDFGraphFactory {
 				codeGenVertex.getPropertyBean().setValue(
 						ImplementationPropertyNames.Vertex_schedulingOrder, -1);
 			}
-			if (((PSDFGraph) dag.getCorrespondingSDFGraph())
-					.getDynamicParameters() != null) {
-				for (PSDFDynamicParameter dParam : ((PSDFGraph) dag
-						.getCorrespondingSDFGraph()).getDynamicParameters()) {
-					output.addParameter(dParam);
+			if (((PSDFGraph) dag.getCorrespondingSDFGraph()).getParameters() != null) {
+				for (Parameter dParam : ((PSDFGraph) dag
+						.getCorrespondingSDFGraph()).getParameters().values()) {
+					if (dParam instanceof PSDFDynamicParameter) {
+						output.addParameter(dParam);
+					}
 				}
 			}
 
@@ -436,9 +438,11 @@ public class CodeGenSDFGraphFactory {
 			newEdge.setDelay(edge.getDelay().clone());
 			newEdge.setDataType(edge.getDataType());
 		}
-		if (sdf.getDynamicParameters() != null) {
-			for (PSDFDynamicParameter dParam : sdf.getDynamicParameters()) {
-				output.addParameter(dParam);
+		if (sdf.getParameters() != null) {
+			for (Parameter dParam : sdf.getParameters().values()) {
+				if (dParam instanceof PSDFDynamicParameter) {
+					output.addParameter(dParam);
+				}
 			}
 		}
 

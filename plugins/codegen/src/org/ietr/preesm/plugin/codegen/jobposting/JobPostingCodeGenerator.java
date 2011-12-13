@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.sf.dftools.algorithm.demo.SDFAdapterDemo;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
@@ -22,9 +26,7 @@ import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import net.sf.dftools.algorithm.demo.SDFAdapterDemo;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 
 /**
  * Generating code to address a job posting runtime system. It generates xml

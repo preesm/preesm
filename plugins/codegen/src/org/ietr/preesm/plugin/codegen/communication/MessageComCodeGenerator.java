@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -24,8 +26,6 @@ import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.plugin.codegen.SourceFileCodeGenerator;
 import org.jgrapht.alg.DirectedNeighborIndex;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 
 /**
  * Generating communication code (initialization and calls) for a message Route
@@ -56,8 +56,8 @@ public class MessageComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendMsg) {
 			SendMsg send = (SendMsg) call;
 
-			init = new SendInit(bufferContainer, send.getTarget()
-					.getInstanceName(), send.getRouteStep(), -1);
+			init = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
+					send.getRouteStep(), -1);
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 		} else if (call instanceof ReceiveMsg) {
 			ReceiveMsg receive = (ReceiveMsg) call;

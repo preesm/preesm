@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
@@ -21,7 +23,6 @@ import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Generating communication code (initialization and calls) for a given type of
