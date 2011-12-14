@@ -346,13 +346,10 @@ public class ScenarioParser {
 						SlamPackage.eINSTANCE);
 			}
 
-			Path relativePath = new Path(url);
-			IFile file = ResourcesPlugin.getWorkspace().getRoot()
-					.getFile(relativePath);
-			String completePath = file.getLocation().toString();
+			
 
 			// Extract the root object from the resource.
-			Design design = parseSlamDesign(completePath);
+			Design design = parseSlamDesign(url);
 
 			System.out.println(design.getVlnv().getName());
 
@@ -363,10 +360,15 @@ public class ScenarioParser {
 		}
 	}
 
-	public static Design parseSlamDesign(String completePath) {
+	public static Design parseSlamDesign(String url) {
 		// Demand load the resource into the resource set.
 		ResourceSet resourceSet = new ResourceSetImpl();
-
+		
+		Path relativePath = new Path(url);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(relativePath);
+		String completePath = file.getLocation().toString();
+		
 		// resourceSet.
 		Resource resource = resourceSet.getResource(
 				URI.createFileURI(completePath), true);
