@@ -1,5 +1,9 @@
 package org.ietr.preesm.core.codegen.model;
 
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.codegen.ICodeElement;
@@ -16,10 +20,7 @@ import org.ietr.preesm.core.codegen.expression.BinaryExpression;
 import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+
 
 public class CodeGenSDFRoundBufferVertex extends SDFRoundBufferVertex implements
 		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {

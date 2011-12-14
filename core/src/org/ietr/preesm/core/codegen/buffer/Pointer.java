@@ -1,8 +1,10 @@
 package org.ietr.preesm.core.codegen.buffer;
 
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 
 public class Pointer extends Buffer {
 

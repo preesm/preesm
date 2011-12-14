@@ -6,6 +6,7 @@ package org.ietr.preesm.core.workflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
@@ -15,7 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version

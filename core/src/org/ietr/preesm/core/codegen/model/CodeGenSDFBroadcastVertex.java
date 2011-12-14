@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,6 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.codegen.model;
 
+import net.sf.dftools.algorithm.SDFMath;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.codegen.Assignment;
@@ -54,12 +60,7 @@ import org.ietr.preesm.core.codegen.expression.BinaryExpression;
 import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
-import net.sf.dftools.algorithm.SDFMath;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+
 
 public class CodeGenSDFBroadcastVertex extends SDFBroadcastVertex implements
 		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {

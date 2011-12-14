@@ -2,9 +2,11 @@ package org.ietr.preesm.core.codegen.buffer;
 
 import java.util.List;
 
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 
 public interface IBufferAllocator {
 

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -45,6 +45,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.dftools.algorithm.importer.GMLGenericImporter;
+import net.sf.dftools.algorithm.importer.InvalidModelException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.SlamPackage;
 import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
@@ -64,10 +68,6 @@ import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import net.sf.dftools.algorithm.importer.GMLGenericImporter;
-import net.sf.dftools.algorithm.importer.InvalidFileException;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -388,7 +388,7 @@ public class ScenarioParser {
 					.getLocation().toOSString());
 
 			addVertexPathProperties(algorithm, "");
-		} catch (InvalidFileException e) {
+		} catch (InvalidModelException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
 			e.printStackTrace();

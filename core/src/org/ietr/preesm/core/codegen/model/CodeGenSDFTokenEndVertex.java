@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,6 +38,10 @@ package org.ietr.preesm.core.codegen.model;
 
 import java.util.logging.Level;
 
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -47,10 +51,7 @@ import org.ietr.preesm.core.codegen.calls.Constant;
 import org.ietr.preesm.core.codegen.calls.PointerOn;
 import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+
 
 public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 		ICodeGenSDFVertex {

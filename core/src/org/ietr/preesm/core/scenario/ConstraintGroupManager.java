@@ -1,6 +1,6 @@
 /*********************************************************
- Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+ Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,8 +39,10 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+
+import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
+
 
 /**
  * container and manager of Constraint groups. It can load and store constraint

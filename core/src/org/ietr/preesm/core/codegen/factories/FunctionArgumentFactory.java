@@ -3,6 +3,14 @@ package org.ietr.preesm.core.codegen.factories;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.NoIntegerValueException;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicArgument;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.calls.Constant;
@@ -14,13 +22,7 @@ import org.ietr.preesm.core.codegen.model.CodeGenParameter;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSubInitVertex;
 import org.ietr.preesm.core.codegen.types.DataType;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.parameters.NoIntegerValueException;
-import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicArgument;
-import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 
 public class FunctionArgumentFactory {
 

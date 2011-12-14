@@ -1,12 +1,13 @@
 package org.ietr.preesm.core.codegen.model;
 
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
+
 
 public class CodeGenSDFSubInitVertex extends PSDFInitVertex implements
 		ICodeGenSDFVertex {

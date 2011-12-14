@@ -4,18 +4,19 @@ import jscl.math.Expression;
 import jscl.math.Generic;
 import jscl.math.JSCLInteger;
 import jscl.math.Variable;
-
-import org.ietr.preesm.core.codegen.LoopIndex;
-import org.ietr.preesm.core.codegen.expression.BinaryExpression;
-import org.ietr.preesm.core.codegen.expression.ConstantExpression;
-import org.ietr.preesm.core.codegen.expression.IExpression;
-import org.ietr.preesm.core.codegen.expression.StringExpression;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.psdf.parameters.DynamicParameterRange;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.psdf.types.PSDFEdgePropertyType;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+
+import org.ietr.preesm.core.codegen.LoopIndex;
+import org.ietr.preesm.core.codegen.expression.BinaryExpression;
+import org.ietr.preesm.core.codegen.expression.ConstantExpression;
+import org.ietr.preesm.core.codegen.expression.IExpression;
+import org.ietr.preesm.core.codegen.expression.StringExpression;
+
 
 public class BufferToolBox {
 
