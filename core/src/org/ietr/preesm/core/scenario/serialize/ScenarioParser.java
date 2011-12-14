@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.serialize;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
@@ -45,7 +46,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.algorithm.importer.GMLGenericImporter;
+import net.sf.dftools.algorithm.importer.GMLSDFImporter;
 import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
@@ -377,20 +378,18 @@ public class ScenarioParser {
 
 	public static SDFGraph getAlgorithm(String path) {
 		SDFGraph algorithm = null;
-		GMLGenericImporter importer = new GMLGenericImporter();
+		GMLSDFImporter importer = new GMLSDFImporter();
 
 		Path relativePath = new Path(path);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 
 		try {
-			algorithm = (SDFGraph) importer.parse(file.getContents(), file
-					.getLocation().toOSString());
+			algorithm = (SDFGraph) importer.parse(new File(file.getLocation()
+					.toOSString()));
 
 			addVertexPathProperties(algorithm, "");
 		} catch (InvalidModelException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -464,7 +463,7 @@ public class ScenarioParser {
 								.getHierarchicalVertexFromPath(name);
 						if (vertex != null)
 							cg.addVertexPath(name);
-					} else if (type.equals("operator")) {
+					} else if (type.equals("operator") && scenario.getOperatorIds() != null) {
 						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}
