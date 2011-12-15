@@ -39,7 +39,9 @@
     		<key attr.name="data_type" attr.type="string" for="edge"/>
             <graph edgedefault="directed">
                 <data key="name">
-                    <xsl:value-of select="parameters/parameter[@name = 'name']/@value"/>
+                	<xsl:call-template name="fileName">
+       					<xsl:with-param name="path" select="$path" />
+      				</xsl:call-template>
                 </data>
                 <data key="kind">
                     <xsl:value-of select="parameters/parameter[@name = 'kind']/@value"/>
@@ -141,5 +143,25 @@
             </data>
         </edge>
     </xsl:template>
+    
+    
+    <xsl:template name="fileName">
+  		<xsl:param name="path" />
+ 			<xsl:choose>
+    			<xsl:when test="contains($path,'\')">
+     				<xsl:call-template name="fileName">
+       					<xsl:with-param name="path" select="substring-after($path,'\')" />
+      				</xsl:call-template>
+   				 </xsl:when>
+    			 <xsl:when test="contains($path,'/')">
+      				<xsl:call-template name="fileName">
+        				<xsl:with-param name="path" select="substring-after($path,'/')" />
+      				</xsl:call-template>
+    			 </xsl:when>
+    			 <xsl:otherwise>
+      				<xsl:value-of select="substring-before($path,'.')" />
+    			 </xsl:otherwise>
+  		</xsl:choose>
+	</xsl:template>
 
 </xsl:stylesheet>
