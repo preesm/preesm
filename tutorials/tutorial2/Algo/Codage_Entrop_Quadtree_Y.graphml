@@ -1,65 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">CodeurEntroQuadY</data>
+        <data key="kind">sdf</data>
         <data key="parameters">
             <parameter name="xsizeDiv2"/>
             <parameter name="ysizeDiv2"/>
         </data>
         <data key="variables"/>
-        <node id="im_tailles_i" kind="port" port_direction="Input"/>
-        <node id="Global" kind="port" port_direction="Input"/>
-        <node id="stream_quad" kind="port" port_direction="Output"/>
-        <node id="Taille_fluxquad_o" kind="port" port_direction="Output"/>
-        <node id="Code_taille_quadtree" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Code_taille_quadtree_16.idl</data>
+        <node id="im_tailles_i">
+            <data key="name">im_tailles_i</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Global">
+            <data key="name">Global</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="stream_quad">
+            <data key="name">stream_quad</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="Taille_fluxquad_o">
+            <data key="name">Taille_fluxquad_o</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="Code_taille_quadtree">
             <data key="name">Code_taille_quadtree</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Code_taille_quadtree_16.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Bin_to_uchar_L1" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+        <node id="Bin_to_uchar_L1">
             <data key="name">Bin_to_uchar_L1</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Bin_to_uchar_L2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+        <node id="Bin_to_uchar_L2">
             <data key="name">Bin_to_uchar_L2</data>
-            <data key="arguments">
-                <argument name="ratio" value="1"/>
-            </data>
-        </node>
-        <node id="Bin_to_uchar_L3" kind="vertex">
+            <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
-            <data key="name">Bin_to_uchar_L3</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Concat_stream_quad" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Concate_stream_quad.idl</data>
+        <node id="Bin_to_uchar_L3">
+            <data key="name">Bin_to_uchar_L3</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Bin_to_Uchar.idl</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Concat_stream_quad">
             <data key="name">Concat_stream_quad</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Concate_stream_quad.idl</data>
             <data key="arguments"/>
         </node>
         <edge source="Global" sourceport=""

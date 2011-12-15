@@ -10,7 +10,7 @@
       <vertex id="CreateVertis" x="514" y="386"/>
       <vertex id="Codage_entrop_err_Y" x="945" y="437"/>
       <vertex id="stream_ErPred" x="1192" y="417"/>
-      <vertex id="Codage_Entrop_Quadtree_Y" x="515" y="248"/>
+      <vertex id="Codage_Entrop_Quadtree_Y" x="489" y="216"/>
       <vertex id="stream_quad" x="734" y="257"/>
       <vertex id="bidon2" x="402" y="593"/>
       <vertex id="bidon3" x="734" y="443"/>

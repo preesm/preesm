@@ -8,7 +8,7 @@
       <vertex id="Max4x4" x="302" y="369"/>
       <vertex id="Init_im_taille" x="438" y="56"/>
       <vertex id="Gray_step_4" x="607" y="114"/>
-      <vertex id="Min2x2" x="166" y="177"/>
+      <vertex id="Min2x2" x="177" y="131"/>
       <vertex id="Min4x4" x="302" y="198"/>
       <vertex id="Min8x8" x="607" y="318"/>
       <vertex id="Max16x16" x="918" y="489"/>

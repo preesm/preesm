@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">DecodeurEntroErrY</data>
+        <data key="kind">sdf</data>
         <data key="parameters">
             <parameter name="xsizeDiv2"/>
             <parameter name="ysizeDiv2"/>
@@ -34,17 +31,37 @@
             <variable name="bitstream_signe_4" value="792"/>
             <variable name="bitstream_signe_8" value="198"/>
         </data>
-        <node id="Global" kind="port" port_direction="Input"/>
-        <node id="im_tailles_i" kind="port" port_direction="Input"/>
-        <node id="stream_Error_Pred_i" kind="port" port_direction="Input"/>
-        <node id="Explode_stream_err_pred" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Explode_stream_err_pred_16.idl</data>
+        <node id="Global">
+            <data key="name">Global</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="im_tailles_i">
+            <data key="name">im_tailles_i</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="stream_Error_Pred_i">
+            <data key="name">stream_Error_Pred_i</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Explode_stream_err_pred">
             <data key="name">Explode_stream_err_pred</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Explode_stream_err_pred_16.idl</data>
             <data key="arguments"/>
         </node>
-        <node id="Decode_rice_buff_error_2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
+        <node id="Decode_rice_buff_error_2">
             <data key="name">Decode_rice_buff_error_2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
             <data key="arguments">
                 <argument name="SizeLevel" value="1"/>
                 <argument name="TailleOctet" value="1"/>
@@ -53,9 +70,10 @@
                 <argument name="yPR" value="ysizeDiv2"/>
             </data>
         </node>
-        <node id="Decode_rice_buff_error_4" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
+        <node id="Decode_rice_buff_error_4">
             <data key="name">Decode_rice_buff_error_4</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
             <data key="arguments">
                 <argument name="SizeLevel" value="1"/>
                 <argument name="TailleOctet" value="1"/>
@@ -64,20 +82,10 @@
                 <argument name="yPR" value="ysizeDiv2"/>
             </data>
         </node>
-        <node id="Decode_rice_buff_error_8" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
+        <node id="Decode_rice_buff_error_8">
             <data key="name">Decode_rice_buff_error_8</data>
-            <data key="arguments">
-                <argument name="SizeLevel" value="1"/>
-                <argument name="TailleOctet" value="1"/>
-                <argument name="ratio" value="1"/>
-                <argument name="xPR" value="xsizeDiv2"/>
-                <argument name="yPR" value="ysizeDiv2"/>
-            </data>
-        </node>
-        <node id="Decode_rice_buff_error_16" kind="vertex">
+            <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
-            <data key="name">Decode_rice_buff_error_16</data>
             <data key="arguments">
                 <argument name="SizeLevel" value="1"/>
                 <argument name="TailleOctet" value="1"/>
@@ -86,45 +94,69 @@
                 <argument name="yPR" value="ysizeDiv2"/>
             </data>
         </node>
-        <node id="Uchar_to_bin_signe_2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
+        <node id="Decode_rice_buff_error_16">
+            <data key="name">Decode_rice_buff_error_16</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Decode_rice_buff_error.idl</data>
+            <data key="arguments">
+                <argument name="SizeLevel" value="1"/>
+                <argument name="TailleOctet" value="1"/>
+                <argument name="ratio" value="1"/>
+                <argument name="xPR" value="xsizeDiv2"/>
+                <argument name="yPR" value="ysizeDiv2"/>
+            </data>
+        </node>
+        <node id="Uchar_to_bin_signe_2">
             <data key="name">Uchar_to_bin_signe_2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Uchar_to_bin_signe_4" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
+        <node id="Uchar_to_bin_signe_4">
             <data key="name">Uchar_to_bin_signe_4</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Uchar_to_bin_signe_8" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
+        <node id="Uchar_to_bin_signe_8">
             <data key="name">Uchar_to_bin_signe_8</data>
-            <data key="arguments">
-                <argument name="ratio" value="1"/>
-            </data>
-        </node>
-        <node id="Uchar_to_bin_signe_16" kind="vertex">
+            <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
+            <data key="arguments">
+                <argument name="ratio" value="1"/>
+            </data>
+        </node>
+        <node id="Uchar_to_bin_signe_16">
             <data key="name">Uchar_to_bin_signe_16</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Uchar_to_bin.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="Rebuild_error_symb" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Rebuild_Error_Symb_16.idl</data>
+        <node id="Rebuild_error_symb">
             <data key="name">Rebuild_error_symb</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Rebuild_Error_Symb_16.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
             </data>
         </node>
-        <node id="im_ErPred" kind="port" port_direction="Output"/>
-        <node id="bidon9" kind="vertex">
-            <data key="graph_desc">../Code/IDL/bidon.idl</data>
+        <node id="im_ErPred">
+            <data key="name">im_ErPred</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="bidon9">
             <data key="name">bidon9</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/bidon.idl</data>
             <data key="arguments">
                 <argument name="NULL" value="0"/>
             </data>

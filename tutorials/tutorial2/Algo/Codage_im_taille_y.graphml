@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">CodeurImTailleY</data>
+        <data key="kind">sdf</data>
         <data key="parameters">
             <parameter name="xsize"/>
             <parameter name="ysize"/>
@@ -28,9 +25,10 @@
             <variable name="bloc" value="2"/>
             <variable name="k" value="2"/>
         </data>
-        <node id="Max2x2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
+        <node id="Max2x2">
             <data key="name">Max2x2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="2"/>
                 <argument name="k" value="1"/>
@@ -39,12 +37,31 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Global" kind="port" port_direction="Input"/>
-        <node id="im_i" kind="port" port_direction="Input"/>
-        <node id="taille_max" kind="port" port_direction="Output"/>
-        <node id="Max4x4" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
+        <node id="Global">
+            <data key="name">Global</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="im_i">
+            <data key="name">im_i</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="taille_max">
+            <data key="name">taille_max</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="Max4x4">
             <data key="name">Max4x4</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="4"/>
                 <argument name="k" value="2"/>
@@ -53,18 +70,20 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Init_im_taille" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Init_im_taille.idl</data>
+        <node id="Init_im_taille">
             <data key="name">Init_im_taille</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Init_im_taille.idl</data>
             <data key="arguments">
                 <argument name="ratio" value="1"/>
                 <argument name="xsize" value="xsize"/>
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Gray_step_4" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
+        <node id="Gray_step_4">
             <data key="name">Gray_step_4</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
             <data key="arguments">
                 <argument name="decal" value="2"/>
                 <argument name="k" value="4"/>
@@ -73,9 +92,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Min2x2" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
+        <node id="Min2x2">
             <data key="name">Min2x2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="2"/>
                 <argument name="k" value="1"/>
@@ -84,9 +104,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Min4x4" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
+        <node id="Min4x4">
             <data key="name">Min4x4</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="4"/>
                 <argument name="k" value="2"/>
@@ -95,9 +116,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Min8x8" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
+        <node id="Min8x8">
             <data key="name">Min8x8</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="8"/>
                 <argument name="k" value="3"/>
@@ -106,9 +128,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Max16x16" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
+        <node id="Max16x16">
             <data key="name">Max16x16</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="16"/>
                 <argument name="k" value="4"/>
@@ -117,9 +140,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Max8x8" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
+        <node id="Max8x8">
             <data key="name">Max8x8</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Max2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="8"/>
                 <argument name="k" value="3"/>
@@ -128,9 +152,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Gray_step_8" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
+        <node id="Gray_step_8">
             <data key="name">Gray_step_8</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
             <data key="arguments">
                 <argument name="decal" value="3"/>
                 <argument name="k" value="8"/>
@@ -139,9 +164,10 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="Gray_step_16" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
+        <node id="Gray_step_16">
             <data key="name">Gray_step_16</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Gray_step_k.idl</data>
             <data key="arguments">
                 <argument name="decal" value="4"/>
                 <argument name="k" value="16"/>
@@ -150,13 +176,34 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="bro_2" kind="Broadcast"/>
-        <node id="bro_3" kind="Broadcast"/>
-        <node id="bro_4" kind="Broadcast"/>
-        <node id="bro_5" kind="Broadcast"/>
-        <node id="Min16x16" kind="vertex">
-            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
+        <node id="bro_2">
+            <data key="name">bro_2</data>
+            <data key="kind">Broadcast</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="bro_3">
+            <data key="name">bro_3</data>
+            <data key="kind">Broadcast</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="bro_4">
+            <data key="name">bro_4</data>
+            <data key="kind">Broadcast</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="bro_5">
+            <data key="name">bro_5</data>
+            <data key="kind">Broadcast</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="Min16x16">
             <data key="name">Min16x16</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Min2x2.idl</data>
             <data key="arguments">
                 <argument name="bloc" value="16"/>
                 <argument name="k" value="4"/>
@@ -165,7 +212,13 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="im_tailles_out" kind="port" port_direction="Output"/>
+        <node id="im_tailles_out">
+            <data key="name">im_tailles_out</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
         <edge source="Global" sourceport="" target="Max2x2" targetport="Global">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>

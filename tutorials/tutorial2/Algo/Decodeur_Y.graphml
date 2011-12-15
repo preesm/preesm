@@ -1,136 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="string" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
-        <data key="name">DecodeurY</data>
+        <data key="name">Decodeur_Y.graphml</data>
+        <data key="kind">sdf</data>
         <data key="parameters">
-            <parameter name="xsize"/>
             <parameter name="ysize"/>
+            <parameter name="xsize"/>
         </data>
-        <data key="variables"/>
-        <node id="Decodage_DPCM_Y" kind="vertex">
-            <data key="graph_desc">Decodage_DPCM.graphml</data>
+        <node id="Decodage_DPCM_Y">
+            <data key="graph_desc">DecodeurDCPM.graphml</data>
             <data key="name">Decodage_DPCM_Y</data>
+            <data key="kind">vertex</data>
             <data key="arguments">
                 <argument name="xsizeDiv2" value="xsize/2"/>
                 <argument name="ysizeDiv2" value="ysize/2"/>
             </data>
         </node>
-        <node id="Decodage_entrop_err_Y" kind="vertex">
-            <data key="graph_desc">Decodage_Entrop_Err_Y.graphml</data>
+        <node id="Decodage_entrop_err_Y">
+            <data key="graph_desc">DecodeurEntroErrY.graphml</data>
             <data key="name">Decodage_entrop_err_Y</data>
+            <data key="kind">vertex</data>
             <data key="arguments">
                 <argument name="xsizeDiv2" value="xsize/2"/>
                 <argument name="ysizeDiv2" value="ysize/2"/>
             </data>
         </node>
-        <node id="Decodage_Entrop_Quadtree_Y" kind="vertex">
-            <data key="graph_desc">Decodage_Entrop_Quadtree_Y.graphml</data>
+        <node id="Decodage_Entrop_Quadtree_Y">
+            <data key="graph_desc">DecodeurEntroQuadY.graphml</data>
             <data key="name">Decodage_Entrop_Quadtree_Y</data>
+            <data key="kind">vertex</data>
             <data key="arguments">
                 <argument name="xsizeDiv2" value="xsize/2"/>
                 <argument name="ysizeDiv2" value="ysize/2"/>
             </data>
         </node>
-        <node id="stream_quad" kind="port" port_direction="Input"/>
-        <node id="Global" kind="port" port_direction="Input"/>
-        <node id="stream_ErPred" kind="port" port_direction="Input"/>
-        <node id="Y" kind="port" port_direction="Output"/>
-        <node id="Bro" kind="Broadcast"/>
-        <node id="bidon7" kind="vertex">
+        <node id="stream_quad">
+            <data key="graph_desc"/>
+            <data key="name">stream_quad</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Global">
+            <data key="graph_desc"/>
+            <data key="name">Global</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="stream_ErPred">
+            <data key="graph_desc"/>
+            <data key="name">stream_ErPred</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Y">
+            <data key="graph_desc"/>
+            <data key="name">Y</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="Bro">
+            <data key="graph_desc"/>
+            <data key="name">Bro</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="bidon7">
             <data key="graph_desc">../Code/IDL/bidon.idl</data>
             <data key="name">bidon7</data>
+            <data key="kind">vertex</data>
             <data key="arguments">
                 <argument name="NULL" value="0"/>
             </data>
         </node>
         <edge source="Global" sourceport=""
             target="Decodage_Entrop_Quadtree_Y" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
             <data key="data_type">LAR</data>
         </edge>
         <edge source="Global" sourceport=""
             target="Decodage_entrop_err_Y" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
             <data key="data_type">LAR</data>
         </edge>
         <edge source="Global" sourceport="" target="Decodage_DPCM_Y" targetport="Global">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
             <data key="data_type">LAR</data>
         </edge>
         <edge source="Decodage_DPCM_Y" sourceport="Y" target="Y" targetport="">
-            <data key="edge_prod">xsize*ysize/4</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">xsize*ysize/4</data>
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Decodage_entrop_err_Y" sourceport="im_ErPred"
             target="Decodage_DPCM_Y" targetport="im_Error_Pred">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="data_type">int</data>
         </edge>
         <edge source="stream_ErPred" sourceport=""
             target="Decodage_entrop_err_Y" targetport="stream_Error_Pred_i">
-            <data key="edge_prod">37876</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">37876</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">37876</data>
             <data key="data_type">int</data>
         </edge>
         <edge source="stream_quad" sourceport=""
             target="Decodage_Entrop_Quadtree_Y" targetport="Stream_quad_i">
-            <data key="edge_prod">1040</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">1040</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1040</data>
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Bro" sourceport="" target="Decodage_DPCM_Y" targetport="im_tailles_i">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Decodage_Entrop_Quadtree_Y"
             sourceport="im_tailles_o" target="Bro" targetport="">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay"/>
             <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="edge_delay"/>
+            <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Bro" sourceport="" target="bidon7" targetport="">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="data_type">unsigned char</data>
         </edge>
         <edge source="Bro" sourceport="" target="Decodage_entrop_err_Y" targetport="im_tailles_i">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="data_type">unsigned char</data>
         </edge>
     </graph>

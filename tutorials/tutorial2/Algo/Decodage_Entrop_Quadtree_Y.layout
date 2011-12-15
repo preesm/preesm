@@ -5,7 +5,7 @@
       <vertex id="Global" x="599" y="78"/>
       <vertex id="im_tailles_o" x="862" y="170"/>
       <vertex id="Explode_stream_quad_16" x="168" y="162"/>
-      <vertex id="Uchar_to_bin_L1" x="398" y="71"/>
+      <vertex id="Uchar_to_bin_L1" x="415" y="40"/>
       <vertex id="Uchar_to_bin_L2" x="407" y="175"/>
       <vertex id="Uchar_to_bin_L3" x="400" y="272"/>
       <vertex id="Concat_stream_quad" x="688" y="164"/>

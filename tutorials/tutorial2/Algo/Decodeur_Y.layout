@@ -3,7 +3,7 @@
    <vertices>
       <vertex id="Decodage_DPCM_Y" x="786" y="160"/>
       <vertex id="Decodage_entrop_err_Y" x="556" y="291"/>
-      <vertex id="Decodage_Entrop_Quadtree_Y" x="208" y="164"/>
+      <vertex id="Decodage_Entrop_Quadtree_Y" x="222" y="99"/>
       <vertex id="stream_quad" x="57" y="164"/>
       <vertex id="Global" x="57" y="257"/>
       <vertex id="stream_ErPred" x="57" y="350"/>

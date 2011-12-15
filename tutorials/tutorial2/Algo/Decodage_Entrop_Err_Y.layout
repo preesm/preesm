@@ -5,7 +5,7 @@
       <vertex id="im_tailles_i" x="640" y="160"/>
       <vertex id="stream_Error_Pred_i" x="8" y="794"/>
       <vertex id="Explode_stream_err_pred" x="156" y="645"/>
-      <vertex id="Decode_rice_buff_error_2" x="459" y="267"/>
+      <vertex id="Decode_rice_buff_error_2" x="406" y="240"/>
       <vertex id="Decode_rice_buff_error_4" x="462" y="395"/>
       <vertex id="Decode_rice_buff_error_8" x="462" y="524"/>
       <vertex id="Decode_rice_buff_error_16" x="462" y="653"/>
