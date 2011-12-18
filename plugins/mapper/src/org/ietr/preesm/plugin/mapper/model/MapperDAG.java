@@ -85,7 +85,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public MapperDAG(MapperEdgeFactory factory, SDFGraph graph) {
 		super(factory);
 		this.sdfGraph = graph;
-		this.getPropertyBean().setValue(SCHEDULE_COST, 0);
+		this.getPropertyBean().setValue(SCHEDULE_COST, (Long)0l);
 	}
 
 	/**
@@ -107,11 +107,12 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	}
 
 	public long getScheduleCost() {
-		return (long) this.getPropertyBean().getValue(SCHEDULE_COST);
+		long cost = (Long) this.getPropertyBean().getValue(SCHEDULE_COST);
+		return cost;
 	}
 
 	public void setScheduleCost(long scheduleLatency) {
-		this.getPropertyBean().setValue(SCHEDULE_COST, scheduleLatency);
+		this.getPropertyBean().setValue(SCHEDULE_COST, (Long)scheduleLatency);
 	}
 
 	public SDFGraph getReferenceSdfGraph() {
