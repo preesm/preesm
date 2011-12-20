@@ -50,7 +50,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 import org.ietr.preesm.plugin.mapper.tools.TopologicalDAGIterator;
 
-
 /**
  * @author mpelcat
  * 
@@ -85,7 +84,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	public MapperDAG(MapperEdgeFactory factory, SDFGraph graph) {
 		super(factory);
 		this.sdfGraph = graph;
-		this.getPropertyBean().setValue(SCHEDULE_COST, (Long)0l);
+		this.setScheduleCost(0L);
 	}
 
 	/**
@@ -112,7 +111,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	}
 
 	public void setScheduleCost(long scheduleLatency) {
-		this.getPropertyBean().setValue(SCHEDULE_COST, (Long)scheduleLatency);
+		this.getPropertyBean().setValue(SCHEDULE_COST, (Long) scheduleLatency);
 	}
 
 	public SDFGraph getReferenceSdfGraph() {

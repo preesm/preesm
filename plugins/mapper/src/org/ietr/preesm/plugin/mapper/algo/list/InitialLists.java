@@ -295,7 +295,7 @@ public class InitialLists {
 					commax = edgeCost;
 					tempvertex = currentvertex;
 				} else if (edgeCost == commax) {
-					if (abc.getTLevel(currentvertex, false) < abc.getTLevel(
+					if (tempvertex == null || abc.getTLevel(currentvertex, false) < abc.getTLevel(
 							tempvertex, false)) {
 						tempvertex = currentvertex;
 					}

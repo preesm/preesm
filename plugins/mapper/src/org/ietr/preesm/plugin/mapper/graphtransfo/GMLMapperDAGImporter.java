@@ -90,7 +90,7 @@ public class GMLMapperDAGImporter extends
 		for (int i = 0; i < childList.getLength(); i++) {
 			if (childList.item(i).getNodeName().equals("node")) {
 				Element vertexElt = (Element) childList.item(i);
-				graph.addVertex(parseNode(vertexElt));
+				parseNode(vertexElt, graph);
 			}
 		}
 		for (int i = 0; i < childList.getLength(); i++) {
@@ -103,14 +103,15 @@ public class GMLMapperDAGImporter extends
 	}
 
 	@Override
-	public MapperDAGVertex parsePort(Element portElt) {
+	public MapperDAGVertex parsePort(Element portElt, MapperDAG parentGraph) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MapperDAGVertex parseNode(Element vertexElt) {
+	public MapperDAGVertex parseNode(Element vertexElt, MapperDAG parentGraph) {
 		MapperDAGVertex vertex = new MapperDAGVertex();
+		parentGraph.addVertex(vertex);
 		vertex.setId(vertexElt.getAttribute("id"));
 		vertexFromId.put(vertex.getId(), vertex);
 		parseKeys(vertexElt, vertex);

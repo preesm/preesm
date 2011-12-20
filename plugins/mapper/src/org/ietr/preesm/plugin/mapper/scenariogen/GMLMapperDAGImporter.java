@@ -7,6 +7,7 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
+import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -53,7 +54,7 @@ public class GMLMapperDAGImporter extends
 		for (int i = 0; i < childList.getLength(); i++) {
 			if (childList.item(i).getNodeName().equals("node")) {
 				Element vertexElt = (Element) childList.item(i);
-				graph.addVertex(parseNode(vertexElt));
+				parseNode(vertexElt, graph);
 			}
 		}
 		for (int i = 0; i < childList.getLength(); i++) {
@@ -73,7 +74,7 @@ public class GMLMapperDAGImporter extends
 	 *            The node Element in the DOM document
 	 * @return The parsed node
 	 */
-	public SDFAbstractVertex parseNode(Element vertexElt) {
+	public SDFAbstractVertex parseNode(Element vertexElt, SDFGraph parentGraph) {
 
 		SDFAbstractVertex vertex;
 		/*
@@ -104,7 +105,7 @@ public class GMLMapperDAGImporter extends
 	}
 
 	@Override
-	public SDFAbstractVertex parsePort(Element portElt) {
+	public SDFAbstractVertex parsePort(Element portElt, SDFGraph parentGraph) {
 		return null;
 	}
 
