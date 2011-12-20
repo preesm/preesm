@@ -1,0 +1,5 @@
+module generate_sample {
+	interface loop {
+		 void generate_sample(out char outS);
+	};
+};

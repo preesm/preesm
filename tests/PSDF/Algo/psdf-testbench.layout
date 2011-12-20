@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="sub-sampler-1" x="359" y="204"/>
+      <vertex id="generate_sample" x="78" y="168"/>
+      <vertex id="collect_sample" x="584" y="204"/>
+      <vertex id="generate_phase" x="109" y="329"/>
+   </vertices>
+</layout>

@@ -1,0 +1,5 @@
+module collect_sample {
+	interface loop {
+		 void collect_sample(in char inS);
+	};
+};

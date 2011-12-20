@@ -1,0 +1,5 @@
+module generate_phase {
+	interface loop {
+		 void generate_phase(out char outP);
+	};
+};
