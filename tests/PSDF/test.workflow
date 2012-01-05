@@ -10,6 +10,7 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.codegen" taskId="CodeGen">
         <dftools:data key="variables">
             <dftools:variable name="allocationPolicy" value="Global"/>
+            <dftools:variable name="printer" value="xml"/>
             <dftools:variable name="sourcePath" value="PSDF-test-case"/>
             <dftools:variable name="xslLibraryPath" value="PSDF-test-case/Code/XSL"/>
         </dftools:data>

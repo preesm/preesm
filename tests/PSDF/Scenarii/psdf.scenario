@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/PSDF-test-case/Algo/psdf-testbench.graphml"/>
+        <architecture url="/PSDF-test-case/Archi/x86.slam"/>
+        <codegenDirectory url="/PSDF-test-case/Code"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="x86"/>
+            <task name="sub-sampler-1"/>
+            <task name="collect_sample"/>
+            <task name="generate_sample"/>
+            <task name="generate_phase"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>x86</mainCore>
+        <mainComNode/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="x86"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

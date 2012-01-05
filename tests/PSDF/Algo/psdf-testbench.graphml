@@ -45,7 +45,7 @@
         </node>
         <edge source="generate_sample" sourceport="outS"
             target="sub-sampler-1" targetport="samples">
-            <data key="edge_prod">1</data>
+            <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">$n</data>
             <data key="data_type">char</data>
