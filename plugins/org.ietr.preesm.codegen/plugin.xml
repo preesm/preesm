@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="net.sf.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.plugin.codegen"
+            name="Default code generation"
+            type="org.ietr.preesm.codegen.CodeGenerationTransformation">
+         <outputs>
+            <output
+                  id="SourceFileList"
+                  object="org.ietr.preesm.core.codegen.SourceFileList"></output>
+         </outputs>
+         <inputs>
+            <input
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="DAG"
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+      </task>
+   </extension>
+
+</plugin>

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Preesm graph transformation plug-in
+Bundle-SymbolicName: org.ietr.preesm.plugin.transforms;singleton:=true
+Bundle-Version: 0.6.1
+Bundle-Activator: org.ietr.preesm.algorithm.transforms.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.preesm.core;bundle-version="0.0.1",
+ org.eclipse.ui.workbench;bundle-version="3.4.0",
+ org.eclipse.core.resources;bundle-version="3.4.0",
+ net.sf.dftools.workflow,
+ org.ietr.libs;bundle-version="1.2.8",
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: IETR/INSA of Rennes
+Export-Package: org.ietr.preesm.algorithm.exportXml,
+ org.ietr.preesm.algorithm.transforms

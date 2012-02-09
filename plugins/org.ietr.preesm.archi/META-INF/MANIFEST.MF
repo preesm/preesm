@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.ietr.preesm.archi
-Bundle-SymbolicName: org.ietr.preesm.archi;singleton:=true
+Bundle-SymbolicName: org.ietr.preesm.architecture;singleton:=true
 Bundle-Version: 0.6.1
-Bundle-Activator: org.ietr.preesm.archi.Activator
+Bundle-Activator: org.ietr.preesm.architecture.Activator
 Bundle-Vendor: IETR
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core;bundle-version="0.0.4",
@@ -14,5 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  net.sf.dftools.architecture;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.ietr.preesm.archi.slam,
- org.ietr.preesm.archi.transforms
+Export-Package: org.ietr.preesm.architecture.slam,
+ org.ietr.preesm.architecture.transforms

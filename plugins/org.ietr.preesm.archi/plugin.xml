@@ -6,7 +6,7 @@
       <task
             id="org.ietr.preesm.plugin.architransfo.transforms.ArchitectureExporter"
             name="Architecture exporter"
-            type="org.ietr.preesm.archi.transforms.ArchitectureExporter">
+            type="org.ietr.preesm.architecture.transforms.ArchitectureExporter">
          <inputs>
             <input
                   id="architecture"
@@ -17,7 +17,7 @@
       <task
             id="org.ietr.preesm.archi.slam.flattening"
             name="Slam Hierarchy Flattening"
-            type="org.ietr.preesm.archi.slam.SlamHierarchyFlattening">
+            type="org.ietr.preesm.architecture.slam.SlamHierarchyFlattening">
          <inputs>
             <input
                   id="architecture"
