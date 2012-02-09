@@ -7,7 +7,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
-import org.ietr.preesm.plugin.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

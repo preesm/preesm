@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
     <spirit:vendor>ietr</spirit:vendor>
-    <spirit:name>8CoreX86_</spirit:name>
+    <spirit:name>8CoreX86</spirit:name>
     <spirit:library>preesm</spirit:library>
-    <spirit:version/>
+    <spirit:version>1</spirit:version>
     <spirit:componentInstances>
         <spirit:componentInstance>
             <spirit:instanceName>Core1</spirit:instanceName>
