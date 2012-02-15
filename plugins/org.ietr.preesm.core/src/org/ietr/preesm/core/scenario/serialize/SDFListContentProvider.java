@@ -104,9 +104,9 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
 
-			if (vertex.getKind() == "Broadcast") {
+			if (vertex.getKind().equalsIgnoreCase("Broadcast")) {
 				iterator.remove();
-			} else if (vertex.getKind() == "port") {
+			} else if (vertex.getKind().equalsIgnoreCase("port")) {
 				iterator.remove();
 			} else if (vertex.getGraphDescription() != null) {
 				// Timings of vertices with graph description are deduced and

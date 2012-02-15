@@ -128,7 +128,7 @@ public class ExcelTimingParser {
 			if (vertex.getGraphDescription() != null) {
 				parseTimings(w, (SDFGraph) vertex.getGraphDescription(),
 						opDefIds, missingVertices, missingOperatorTypes);
-			} else if (vertex.getKind() == "vertex") {
+			} else if (vertex.getKind().equalsIgnoreCase("vertex")) {
 				for (String opDefId : opDefIds) {
 					String vertexName = vertex.getName();
 

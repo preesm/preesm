@@ -109,7 +109,7 @@ public class ExcelConstraintsParser {
 			for (SDFAbstractVertex vertex : currentGraph
 					.getHierarchicalVertexSet()) {
 
-				if (vertex.getKind() == "vertex") {
+				if (vertex.getKind().equalsIgnoreCase("vertex")) {
 					for (String operatorId : allOperatorIds) {
 						checkOpConstraint(w, operatorId, vertex,
 								missingVertices, missingOperators);

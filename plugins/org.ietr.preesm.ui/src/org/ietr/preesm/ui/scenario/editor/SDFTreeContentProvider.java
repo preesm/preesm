@@ -168,7 +168,7 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 				new PathComparator());
 
 		for (SDFAbstractVertex v : children) {
-			if (v.getKind() == "vertex") {
+			if (v.getKind().equalsIgnoreCase("vertex")) {
 				appropriateChildren.add(convertChild(v));
 			}
 		}
