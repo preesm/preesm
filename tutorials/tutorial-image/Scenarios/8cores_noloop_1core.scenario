@@ -6,30 +6,28 @@
         <codegenDirectory url="/tutorial-image/Code/generated"/>
     </files>
     <constraints excelUrl="">
-        <constraintGroup>
-            <operator name="Core6"/>
-        </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
             <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core2"/>
+            <operator name="Core3"/>
         </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
-            <operator name="Core1"/>
-            <task name="display_pic2"/>
-            <task name="substract_pic_slices/substract_pic"/>
-            <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="substract_pic_slices"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
+            <operator name="Core2"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
@@ -38,9 +36,6 @@
             <task name="Read_YUV"/>
             <task name="display_pic"/>
             <task name="substract_pic_slices"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
