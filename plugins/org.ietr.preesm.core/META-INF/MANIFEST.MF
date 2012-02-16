@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.expressions,
  org.junit,
  org.eclipse.ui.navigator,
  net.sf.dftools.workflow,
- org.ietr.libs,
+ org.jgrapht,
  net.sf.dftools.architecture;bundle-version="0.0.1",
  net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-ClassPath: .,
