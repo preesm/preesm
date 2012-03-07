@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor;
+import net.sf.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 import net.sf.dftools.workflow.WorkflowException;
@@ -52,7 +53,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
- * Class used to transform a SDF graph into a HSDF graph
+ * Class used to transform a SDF graph into a HSDF graph.
+ * Actually into a single rate graph (close enough :->)
  * 
  * @author jpiat
  * @author mpelcat
@@ -77,7 +79,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 			VisitorOutput.setLogger(logger);
 			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
 
-				OptimizedToHSDFVisitor toHsdf = new OptimizedToHSDFVisitor();
+				ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 
 				try {
 					algorithm.accept(toHsdf);
