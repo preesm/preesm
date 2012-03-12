@@ -2,11 +2,11 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="Executable_Solution"
-	ProjectGUID="{26B76651-195D-48C2-86D6-E5265CDC66DA}"
-	RootNamespace="Executable_Solution"
+	Name="tutorial1"
+	ProjectGUID="{449C3A55-4FFC-4D58-A7E0-54D2ABEE7EF9}"
+	RootNamespace="tutorial1"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -41,16 +41,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MVS;WIN_TCP"
+				AdditionalIncludeDirectories="../pthread/include;../include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WIN_TCP, _MVS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="false"
-				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,13 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib setupapi.lib"
+				AdditionalDependencies="vfw32.lib winmm.lib kernel32.lib Ws2_32.lib ../pthread/lib/pthreadVC2.lib"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="LIBCMTD"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -119,12 +115,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\Lib_com\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MVS"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -138,14 +135,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ..\..\..\..\Lib_com\lib\Os_Com.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -180,55 +174,51 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core0.c"
+				RelativePath="..\src\communication.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core1.c"
+				RelativePath="..\generatedSrc\Core0.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core2.c"
+				RelativePath="..\generatedSrc\Core1.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core3.c"
+				RelativePath="..\generatedSrc\Core2.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core4.c"
+				RelativePath="..\generatedSrc\Core3.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core5.c"
+				RelativePath="..\generatedSrc\Core4.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core6.c"
+				RelativePath="..\generatedSrc\Core5.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\generatedSrc\Core7.c"
+				RelativePath="..\generatedSrc\Core6.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\OS_Com.c"
+				RelativePath="..\generatedSrc\Core7.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\PC_x86_SEM.c"
+				RelativePath="..\src\tcp.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\PC_x86_TCP.c"
+				RelativePath="..\src\testComSources.c"
 				>
 			</File>
 			<File
-				RelativePath=".\TestCom.c"
-				>
-			</File>
-			<File
-				RelativePath=".\testcomSources.c"
+				RelativePath="..\src\tutorial1.c"
 				>
 			</File>
 		</Filter>
@@ -238,15 +228,21 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\testcomSources.h"
+				RelativePath="..\include\communication.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Fichiers de ressources"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath="..\include\tcp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\testcomSources.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\x86.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

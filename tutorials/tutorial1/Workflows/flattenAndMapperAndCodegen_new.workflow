@@ -35,7 +35,7 @@
     </dftools:task>
     <dftools:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">
         <dftools:data key="variables">
-            <dftools:variable name="path" value="/tutorial1/DAG/flatten.graphml"/>
+            <dftools:variable name="path" value="/tutorial1/DAG/singlerate.graphml"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
@@ -45,6 +45,19 @@
         pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
         <dftools:data key="variables">
             <dftools:variable name="depth" value="2"/>
+        </dftools:data>
+    </dftools:task>
+    <dftools:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter2">
+        <dftools:data key="variables">
+            <dftools:variable name="openFile" value="false"/>
+            <dftools:variable name="path" value="/tutorial1/DAG/flatten.graphml"/>
+        </dftools:data>
+    </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.mapper.exporter.DAGExportTransform" taskId="DAGExporter">
+        <dftools:data key="variables">
+            <dftools:variable name="openFile" value="false"/>
+            <dftools:variable name="path" value="/tutorial1/DAG/dag.graphml"/>
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -75,4 +88,8 @@
     <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="codegen"/>
+    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
+        targetport="SDF" to="Exporter2"/>
+    <dftools:dataTransfer from="FAST scheduler" sourceport="DAG"
+        targetport="DAG" to="DAGExporter"/>
 </dftools:workflow>

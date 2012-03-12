@@ -7,13 +7,7 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core6"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core5"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core4"/>
+            <operator name="Core3"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
@@ -27,13 +21,22 @@
             <task name="Copy"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core3"/>
+            <operator name="Core7"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core0"/>
+            <operator name="Core5"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
             <task name="ParallelTest3"/>
             <task name="Sensor2"/>
             <task name="Actuator"/>
@@ -42,9 +45,6 @@
             <task name="Gen_int"/>
             <task name="ParallelTest"/>
             <task name="Copy"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core7"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
@@ -65,7 +65,7 @@
             <dataType name="char" size="1"/>
         </dataTypes>
         <specialVertexOperators>
-            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core0"/>
             <specialVertexOperator path="Core1"/>
         </specialVertexOperators>
     </simuParams>

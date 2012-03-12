@@ -1,15 +1,13 @@
-/***********************************************************************************\
- *                                                                                 
- *		This file contains the different fonctions allowing to send, to receive,
- *		to initialize a TCP communication
- *                                                                                 
- *                                                                                 
- *		Cible faraday TMS320TCI6487 DSP Platform                                     
- *                                                                                 
-\***********************************************************************************/
-
-
-#include "PC_X86_TCP.h"
+/*
+	============================================================================
+	Name        : tcp.c
+	Author      : mpelcat
+	Version     :
+	Copyright   : implementing TCP on different targets
+	Description :
+	============================================================================
+*/
+#include "tcp.h"
 
 
 int begin_socklib ( void )
@@ -96,7 +94,6 @@ unsigned int init_TCP_server ( Media_TCP MediaName )
 unsigned int init_TCP_client ( Media_TCP MediaName, char *processor_name )
 {
 	char              *server_name = NULL ;
-	unsigned int      addr ;
 	int               socket_type = SOCK_STREAM ;
 	struct sockaddr_in server ;
 	struct hostent     *hp ;
@@ -168,7 +165,7 @@ void Receive_TCP ( Media_TCP MediaName, unsigned int *Buffer, const int NB_bytes
 	while ( retval != NB_bytes ) 
 	{
 		retval += recv(MediaName.socket, (char *)Buffer + retval, NB_bytes - retval , 0);
-		printf("Received %d bytes, data from client\n",retval);
+		//printf("Received %d bytes, data from client\n",retval);
 	}
 }
 
@@ -177,6 +174,5 @@ void Send_TCP ( Media_TCP MediaName, unsigned int *Buffer, const int NB_bytes )
 	int retval ;
 
 	retval = send(MediaName.socket, (char *)Buffer, NB_bytes, 0);
-
-	printf("Sent Data %d\n",retval);
+	//printf("Sent Data %d\n",retval);
 }
