@@ -46,14 +46,15 @@ import net.sf.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
- * Class used to transform a SDF graph into a HSDF graph.
- * Actually into a single rate graph (close enough :->)
+ * Class used to transform a SDF graph into a HSDF graph. Actually into a single
+ * rate graph (close enough :->)
  * 
  * @author jpiat
  * @author mpelcat
@@ -64,7 +65,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");

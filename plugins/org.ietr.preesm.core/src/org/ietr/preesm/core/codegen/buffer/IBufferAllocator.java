@@ -7,7 +7,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public interface IBufferAllocator {
 
 	public Buffer addBuffer(SDFEdge edge, String name, int size, DataType type);

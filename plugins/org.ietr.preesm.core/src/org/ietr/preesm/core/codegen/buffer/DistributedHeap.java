@@ -7,7 +7,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class DistributedHeap implements IBufferAllocator {
 
 	@Override

@@ -72,7 +72,6 @@ import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
-
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
  * 

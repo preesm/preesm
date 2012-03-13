@@ -4,7 +4,6 @@ import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 
 import org.ietr.preesm.core.codegen.calls.Variable;
 
-
 public class DynamicParameterAllocation extends VariableAllocation {
 
 	PSDFDynamicParameter parameter;

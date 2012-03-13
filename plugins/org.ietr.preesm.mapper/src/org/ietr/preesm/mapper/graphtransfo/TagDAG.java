@@ -70,7 +70,6 @@ import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.mapper.model.impl.SendVertex;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 
-
 /**
  * Tags an SDF with the implementation information necessary for code
  * generation, and DAG exporting

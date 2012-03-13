@@ -48,7 +48,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.NameComparator;
 
-
 /**
  * Provides the elements contained in the timing editor
  * 

@@ -143,64 +143,6 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.plugin.mapper.pgenetic"
-            name="Parallel genetic scheduling algorithm"
-            type="org.ietr.preesm.mapper.PGeneticTransformation">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </output>
-            <output
-                  id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
-            </output>
-         </outputs>
-      </task>
-      <task
-            id="org.ietr.preesm.plugin.mapper.standardgenetic"
-            name="Standard genetic scheduling algorithm"
-            type="org.ietr.preesm.mapper.StandardGeneticTransformation">
-         <inputs>
-            <input
-                  id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
-            </input>
-            <input
-                  id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-         <outputs>
-            <output
-                  id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </output>
-            <output
-                  id="ABC"
-                  object="org.ietr.preesm.mapper.abc.IAbc">
-            </output>
-         </outputs>
-      </task>
-      <task
             id="org.ietr.preesm.plugin.mapper.plot"
             name="Gantt plot transform"
             type="org.ietr.preesm.mapper.plot.stats.StatEditorTransform">
@@ -262,6 +204,17 @@
                   object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.mapper.exporter.DAGExportTransform"
+            name="DAG Exporter"
+            type="org.ietr.preesm.mapper.exporter.DAGExportTransform">
+         <inputs>
+            <input
+                  id="DAG"
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
       </task>
    </extension>
 

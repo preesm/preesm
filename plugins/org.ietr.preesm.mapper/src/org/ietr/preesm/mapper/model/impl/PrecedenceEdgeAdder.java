@@ -54,7 +54,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-
 /**
  * The edge adder automatically generates edges between vertices successive on a
  * single operator. It can also remove all the edges of type PrecedenceEdgeAdder

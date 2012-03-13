@@ -44,6 +44,7 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.resources.IFile;
@@ -57,11 +58,13 @@ import org.ietr.preesm.codegen.jobposting.JobPostingSource;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.codegen.print.GenericPrinter;
+import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
 import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.core.workflow.PreesmException;
 
 /**
@@ -75,7 +78,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		Design architecture = (Design) inputs.get("architecture");
@@ -87,7 +90,8 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		IDLFunctionFactory.getInstance().resetPrototypes();
 
 		// Default source path is given in the workflow
-		String sourcePath = parameters.get("sourcePath");
+		String sourcePath = PathTools.getAbsolutePath(
+				parameters.get("sourcePath"), workflow.getProjectName());
 
 		// If a source path is defined in the scenario, it overrides the one
 		// from the workflow
@@ -95,7 +99,8 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			sourcePath = scenario.getCodegenManager().getCodegenDirectory();
 		}
 
-		String xslPath = parameters.get("xslLibraryPath");
+		String xslPath = PathTools.getAbsolutePath(
+				parameters.get("xslLibraryPath"), workflow.getProjectName());
 
 		String allocPolicy = parameters.get("allocationPolicy");
 		if (allocPolicy != null
@@ -139,6 +144,8 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			printer.writeDom(GenericPrinter.createFile("jobList.xml",
 					sourcePath));
 		}
+
+		Activator.updateWorkspace();
 
 		return outputs;
 	}

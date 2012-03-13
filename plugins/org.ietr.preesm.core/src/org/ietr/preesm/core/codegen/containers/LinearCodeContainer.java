@@ -43,7 +43,6 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 /**
  * Code container executed once (no loop)
  * 

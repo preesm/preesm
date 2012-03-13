@@ -52,7 +52,9 @@ import org.w3c.dom.Element;
 
 /**
  * Exporter for the mapper DAG graph that represents the implementation. The
- * attributes contain every information on the deployment.
+ * attributes contain every information on the deployment. It should not be
+ * displayed right away by Graphiti and its purpose is to be transformed into
+ * another tool's input
  * 
  * @author mpelcat
  * 

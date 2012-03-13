@@ -47,7 +47,6 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 /**
  * A send function transfers a message to another core
  * 

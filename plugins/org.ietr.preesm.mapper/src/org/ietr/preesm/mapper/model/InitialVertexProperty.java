@@ -48,7 +48,6 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 
-
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag
  * 
@@ -109,7 +108,7 @@ public class InitialVertexProperty {
 	 * on the neighbors.
 	 */
 	public void addOperator(ComponentInstance operator) {
-		if(operator != null){
+		if (operator != null) {
 			this.operators.add(operator);
 		}
 	}

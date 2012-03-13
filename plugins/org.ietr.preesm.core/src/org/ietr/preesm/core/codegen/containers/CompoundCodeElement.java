@@ -77,7 +77,6 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 /**
  * A compound element is a code element containing multiple call or code
  * elements limited by closure. All buffer defined in this elemen have a local

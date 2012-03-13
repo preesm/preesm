@@ -46,7 +46,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
 
-
 /**
  * A transaction that removes one vertex in an implementation
  * 

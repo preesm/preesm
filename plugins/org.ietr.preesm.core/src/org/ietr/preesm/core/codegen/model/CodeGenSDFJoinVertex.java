@@ -61,7 +61,6 @@ import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {
 

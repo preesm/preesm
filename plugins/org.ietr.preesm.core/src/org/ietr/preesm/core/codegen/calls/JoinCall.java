@@ -40,7 +40,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 
-
 public class JoinCall extends SpecialBehaviorCall {
 
 	private final String JOIN = "join";

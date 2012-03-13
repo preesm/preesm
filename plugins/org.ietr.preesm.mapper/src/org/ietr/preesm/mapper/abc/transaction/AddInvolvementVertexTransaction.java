@@ -156,11 +156,15 @@ public class AddInvolvementVertexTransaction extends Transaction {
 				MapperDAGVertex receiverVertex = currentTarget;
 				do {
 					Set<MapperDAGVertex> succs = receiverVertex
-					.getSuccessorSet(false);
-					if(succs.isEmpty() && receiverVertex instanceof TransferVertex){
-						WorkflowLogger.getLogger().log(Level.SEVERE,"Transfer has no successor: " + receiverVertex.getName());
+							.getSuccessorSet(false);
+					if (succs.isEmpty()
+							&& receiverVertex instanceof TransferVertex) {
+						WorkflowLogger.getLogger().log(
+								Level.SEVERE,
+								"Transfer has no successor: "
+										+ receiverVertex.getName());
 					}
-					
+
 					for (MapperDAGVertex next : receiverVertex
 							.getSuccessorSet(false)) {
 						if (next != null) {

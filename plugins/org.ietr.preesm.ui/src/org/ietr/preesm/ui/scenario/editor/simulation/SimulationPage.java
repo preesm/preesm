@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.simulation;
 
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -283,7 +283,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		combo.setToolTipText(tooltip);
 
 		if (type.equals("operator")) {
-			for (String opId : scenario.getOperatorIds()) {
+			for (String opId : scenario.getOrderedOperatorIds()) {
 				combo.add(opId);
 			}
 
@@ -526,8 +526,8 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 			@Override
 			@SuppressWarnings("unchecked")
 			public Object[] getChildren(Object parentElement) {
-				if (parentElement instanceof Set<?>) {
-					return ((Set<String>) parentElement).toArray();
+				if (parentElement instanceof List<?>) {
+					return ((List<String>) parentElement).toArray();
 				}
 				return null;
 			}
@@ -549,7 +549,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		treeviewer.getTree().setLayoutData(gd);
 
 		treeviewer.setUseHashlookup(true);
-		treeviewer.setInput(scenario.getOperatorIds());
+		treeviewer.setInput(scenario.getOrderedOperatorIds());
 		toolkit.paintBordersFor(container);
 
 		// Tree is refreshed in case of algorithm modifications

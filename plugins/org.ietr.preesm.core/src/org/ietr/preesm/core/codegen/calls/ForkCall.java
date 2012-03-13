@@ -40,7 +40,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 
-
 public class ForkCall extends SpecialBehaviorCall {
 
 	private final String FORK = "fork";

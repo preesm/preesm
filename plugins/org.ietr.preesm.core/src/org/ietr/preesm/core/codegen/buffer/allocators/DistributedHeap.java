@@ -10,7 +10,6 @@ import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class DistributedHeap implements IBufferAllocator {
 
 	@Override

@@ -27,7 +27,6 @@ import org.ietr.preesm.core.codegen.types.DataType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.jgrapht.alg.DirectedNeighborIndex;
 
-
 /**
  * Generating code to address a job posting runtime system. It generates xml
  * data converted in a .h with useful data sizes and a .h with a list of task

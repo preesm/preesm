@@ -57,7 +57,6 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 /**
  * Creating code elements from a vertex
  * 

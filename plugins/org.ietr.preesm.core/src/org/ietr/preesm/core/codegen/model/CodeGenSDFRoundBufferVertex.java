@@ -21,7 +21,6 @@ import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class CodeGenSDFRoundBufferVertex extends SDFRoundBufferVertex implements
 		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {
 

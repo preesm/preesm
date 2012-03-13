@@ -51,7 +51,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
-
 /**
  * Scheduling the tasks in topological order and alphabetical order
  * 

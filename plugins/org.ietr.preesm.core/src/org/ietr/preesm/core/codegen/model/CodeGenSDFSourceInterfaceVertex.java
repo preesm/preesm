@@ -43,7 +43,6 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 
-
 public class CodeGenSDFSourceInterfaceVertex extends SDFSourceInterfaceVertex
 		implements ICodeGenSDFVertex {
 

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -59,7 +60,7 @@ public class StatEditorTransform extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		IAbc simulator = (IAbc) inputs.get("ABC");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");

@@ -75,7 +75,6 @@ import org.ietr.preesm.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
 
-
 /**
  * Abc that minimizes latency
  * 

@@ -10,7 +10,8 @@
 
 #include "x86.h"
 
-int nbrand =6;
+int sensorIncrement = 0;
+int actuatorIncrement = 0;
 
 void sensor_init(char* o1, char* o2, char* o3, int size){
 
@@ -47,8 +48,10 @@ void sensor(char* o1, char* o2, char* o3, int size){
 	int i = 0;
 
 	for(i=0;i<size;i++){
-		o3[i] = o2[i] = o1[i] = i%128;
+		o3[i] = o2[i] = o1[i] = (i + sensorIncrement) % 128;
 	}
+
+	sensorIncrement++;
 }
 
 void sensor2(char* o1, int size){
@@ -112,11 +115,11 @@ void actuator(char* i1,char* i2,char* i3, int size){
 	int bSuccess = 1;
 
 	for(i=0;i<size;i++){
-		if(i1[i] != i%128){
+		if(i1[i] != (i + actuatorIncrement) %128){
 			bSuccess = 0;
 			break;
 		}
-		if(i2[i] != i%128){
+		if(i2[i] != (i + actuatorIncrement) %128){
 			bSuccess = 0;
 			break;
 		}
@@ -125,6 +128,8 @@ void actuator(char* i1,char* i2,char* i3, int size){
 			break;
 		}
 	}
+
+	actuatorIncrement++;
 
 	if(bSuccess){
 		printf("Actuator received the right data\n");

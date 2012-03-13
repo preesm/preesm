@@ -49,13 +49,13 @@ import org.ietr.preesm.mapper.model.MapperDAG;
  */
 public class ReceiveVertex extends TransferVertex {
 
-	
 	static {
 		{
-			public_properties.add(ImplementationPropertyNames.Receive_receiverGraphName);
+			public_properties
+					.add(ImplementationPropertyNames.Receive_receiverGraphName);
 		}
 	};
-	
+
 	public ReceiveVertex(String id, MapperDAG base) {
 		super(id, base, null, null, 0, 0);
 	}

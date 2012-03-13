@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,40 +34,53 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.architecture.transforms;
+package org.ietr.preesm.mapper.exporter;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.Activator;
+import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
- * Exporter for IP-XACT multicore architectures
+ * Block in workflow exporting a DAG that can be displayed in Graphiti
  * 
  * @author mpelcat
  * 
  */
-public class ArchitectureExporter extends AbstractTaskImplementation {
+public class DAGExportTransform extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		/*
-		 * String path = parameters.get("path"); MultiCoreArchitecture archi =
-		 * (MultiCoreArchitecture) inputs .get("architecture"); DesignWriter
-		 * writer = new DesignWriter(archi); writer.generateArchitectureDOM();
-		 * writer.writeDom(path);
-		 */
 
-		WorkflowLogger.getLogger().log(Level.SEVERE,
-				"ArchitectureExporter is no more supported");
+		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+
+		String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
+				workflow.getProjectName());
+		Path graphmlPath = new Path(sGraphmlPath);
+
+		// Exporting the DAG in a GraphML
+		if (graphmlPath != null) {
+			exportGraphML(dag, graphmlPath);
+		}
+
+		Activator.updateWorkspace();
+
 		return new HashMap<String, Object>();
 	}
 
@@ -81,6 +94,24 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
 
 	@Override
 	public String monitorMessage() {
-		return "Exporting architecture.";
+		return "Exporting DAG.";
 	}
+
+	private void exportGraphML(DirectedAcyclicGraph dag, Path path) {
+
+		MapperDAG mapperDag = (MapperDAG) dag;
+
+		DAGExporter exporter = new DAGExporter();
+		MapperDAG clone = mapperDag.clone();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile iGraphMLFile = workspace.getRoot().getFile(path);
+
+		if (iGraphMLFile.getLocation() != null) {
+			exporter.export(clone, iGraphMLFile.getLocation().toOSString());
+		} else {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"The output file " + path + " can not be written.");
+		}
+	}
+
 }

@@ -57,7 +57,6 @@ import org.ietr.preesm.mapper.tools.BLevelIterator;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 
-
 /**
  * Creates the CPN dominant list
  * 
@@ -295,8 +294,9 @@ public class InitialLists {
 					commax = edgeCost;
 					tempvertex = currentvertex;
 				} else if (edgeCost == commax) {
-					if (tempvertex == null || abc.getTLevel(currentvertex, false) < abc.getTLevel(
-							tempvertex, false)) {
+					if (tempvertex == null
+							|| abc.getTLevel(currentvertex, false) < abc
+									.getTLevel(tempvertex, false)) {
 						tempvertex = currentvertex;
 					}
 				}

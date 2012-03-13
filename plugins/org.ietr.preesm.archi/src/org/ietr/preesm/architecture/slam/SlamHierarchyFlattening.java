@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.process.SlamFlattener;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -60,7 +61,7 @@ public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		Design design = (Design) inputs.get("architecture");
 		String depthS = parameters.get("depth");

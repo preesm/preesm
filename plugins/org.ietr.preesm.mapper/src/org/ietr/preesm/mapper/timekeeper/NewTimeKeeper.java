@@ -27,7 +27,6 @@ import org.ietr.preesm.mapper.model.impl.TransferVertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.DirectedNeighborIndex;
 
-
 /**
  * New version of the time keeper. Trying to minimize the mapping time by
  * reducing the evaluation time of timings.

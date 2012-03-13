@@ -62,19 +62,21 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	 */
 	public DAGExporter() {
 		super();
-		/*
-		 * addKey(SDFEdge.EDGE_PROD, SDFEdge.EDGE_PROD, "edge", "int",
-		 * SDFNumericalEdgePropertyTypeFactory.class);
-		 * addKey(SDFEdge.EDGE_DELAY, SDFEdge.EDGE_DELAY, "edge", "int",
-		 * SDFNumericalEdgePropertyTypeFactory.class); addKey(SDFEdge.EDGE_CONS,
-		 * SDFEdge.EDGE_CONS, "edge", "int",
-		 * SDFNumericalEdgePropertyTypeFactory.class);
-		 * addKey(SDFVertex.REFINEMENT, SDFVertex.REFINEMENT, "node", "string",
-		 * null); addKey(SDFAbstractVertex.ARGUMENTS,
-		 * SDFAbstractVertex.ARGUMENTS, "node", null, null);
-		 * addKey(SDFEdge.DATA_TYPE, SDFEdge.DATA_TYPE, "edge", "string",
-		 * SDFTextualEdgePropertyTypeFactory.class);
-		 */
+	}
+
+	@Override
+	protected Element exportNode(DAGVertex vertex, Element parentELement) {
+
+		Element vertexElt = createNode(parentELement, vertex.getName());
+		vertexElt.setAttribute(SDFAbstractVertex.KIND, "vertex");
+
+		exportKeys(vertex, "node", vertexElt);
+
+		Element data = appendChild(vertexElt, "data");
+		data.setAttribute("key", "graph_desc");
+		data = appendChild(vertexElt, "data");
+		data.setAttribute("key", "arguments");
+		return vertexElt;
 	}
 
 	@Override
@@ -87,16 +89,30 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 		Element data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "edge_prod");
-		data.setTextContent("0");
+
+		if (edge.getWeight() != null) {
+			data.setTextContent(edge.getWeight().toString());
+		} else {
+			data.setTextContent("0");
+		}
+
 		data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "edge_delay");
 		data.setTextContent("0");
+
 		data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "edge_cons");
-		data.setTextContent("0");
+
+		if (edge.getWeight() != null) {
+			data.setTextContent(edge.getWeight().toString());
+		} else {
+			data.setTextContent("0");
+		}
+
 		data = appendChild(edgeElt, "data");
 		data.setAttribute("key", "data_type");
-		data.setTextContent("0");
+		data.setTextContent("memUnit");
+
 		return edgeElt;
 	}
 
@@ -120,21 +136,6 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			exportEdge(edge, graphElt);
 		}
 		return null;
-	}
-
-	@Override
-	protected Element exportNode(DAGVertex vertex, Element parentELement) {
-
-		Element vertexElt = createNode(parentELement, vertex.getName());
-		vertexElt.setAttribute(SDFAbstractVertex.KIND, "vertex");
-
-		exportKeys(vertex, "node", vertexElt);
-
-		Element data = appendChild(vertexElt, "data");
-		data.setAttribute("key", "graph_desc");
-		data = appendChild(vertexElt, "data");
-		data.setAttribute("key", "arguments");
-		return vertexElt;
 	}
 
 	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {

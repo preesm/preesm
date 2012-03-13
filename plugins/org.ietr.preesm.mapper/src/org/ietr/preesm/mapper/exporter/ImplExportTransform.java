@@ -42,6 +42,7 @@ import java.util.logging.Level;
 
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -50,6 +51,8 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.Activator;
+import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
@@ -64,16 +67,20 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		Path graphmlPath = new Path(parameters.get("path"));
+		String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
+				workflow.getProjectName());
+		Path graphmlPath = new Path(sGraphmlPath);
 
 		// Exporting the DAG in a GraphML
 		if (!graphmlPath.isEmpty()) {
 			exportGraphML(dag, graphmlPath);
 		}
+
+		Activator.updateWorkspace();
 
 		return new HashMap<String, Object>();
 	}

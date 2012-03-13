@@ -47,11 +47,11 @@ import net.sf.dftools.algorithm.model.sdf.visitors.SDFHierarchyFlattening;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-
 
 /**
  * Class used to flatten the hierarchy of a given graph
@@ -64,7 +64,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
@@ -78,6 +78,13 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		}
 
 		Logger logger = WorkflowLogger.getLogger();
+
+		if (depth == 0) {
+			outputs.put("SDF", (SDFGraph) algorithm.clone());
+			logger.log(Level.INFO, "flattening depth = 0: no flattening");
+			return outputs;
+		}
+
 		logger.setLevel(Level.FINEST);
 		VisitorOutput.setLogger(logger);
 		ConsistencyChecker checkConsistent = new ConsistencyChecker();

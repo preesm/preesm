@@ -17,7 +17,6 @@ import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class GlobalAllocator implements IBufferAllocator {
 
 	protected AbstractBufferContainer container;

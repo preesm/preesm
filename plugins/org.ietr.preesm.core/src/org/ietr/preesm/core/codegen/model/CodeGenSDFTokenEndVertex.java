@@ -52,7 +52,6 @@ import org.ietr.preesm.core.codegen.calls.PointerOn;
 import org.ietr.preesm.core.codegen.calls.UserFunctionCall;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 
-
 public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 		ICodeGenSDFVertex {
 
@@ -96,26 +95,26 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 				incomingEdge = inEdge;
 			}
 			if (incomingEdge != null) {
-				UserFunctionCall delayCall = new UserFunctionCall(
-						"write_delay", parentContainer);
+				UserFunctionCall delayCall = new UserFunctionCall("push",
+						parentContainer);
 				if (((CodeGenSDFTokenInitVertex) this.getEndReference())
 						.getDelayVariable() == null) {
 					WorkflowLogger.getLogger().log(
 							Level.SEVERE,
-							"Delay variable nor found for vertex "
+							"Fifo variable not found for vertex "
 									+ this.getName() + " with end reference "
 									+ this.getEndReference().getName());
 					return null;
 				}
 
 				delayCall.addArgument(
-						"delay",
+						"fifo",
 						new PointerOn(((CodeGenSDFTokenInitVertex) this
 								.getEndReference()).getDelayVariable()));
 				delayCall.addArgument("buffer",
 						parentContainer.getBuffer(incomingEdge));
 				try {
-					delayCall.addArgument("nb_elt", new Constant("nb_elt",
+					delayCall.addArgument("nb_token", new Constant("nb_token",
 							incomingEdge.getCons().intValue()));
 					return delayCall;
 				} catch (InvalidExpressionException e) {

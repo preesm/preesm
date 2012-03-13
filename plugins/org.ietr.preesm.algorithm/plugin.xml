@@ -6,7 +6,7 @@
       <task
             id="org.ietr.preesm.plugin.exportXml.sdf4jgml"
             name="SDF4J GML Exporter "
-            type="org.ietr.preesm.algorithm.exportXml.SDF4JGMLExporter">
+            type="org.ietr.preesm.algorithm.exportXml.SDFExporter">
          <inputs>
             <input
                   id="SDF"

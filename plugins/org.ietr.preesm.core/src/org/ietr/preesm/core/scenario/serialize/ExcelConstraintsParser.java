@@ -50,12 +50,11 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
@@ -78,13 +77,7 @@ public class ExcelConstraintsParser {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		try {
-			workspace.getRoot().refreshLocal(IResource.DEPTH_INFINITE,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Activator.updateWorkspace();
 
 		SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
 				.getAlgorithmURL());

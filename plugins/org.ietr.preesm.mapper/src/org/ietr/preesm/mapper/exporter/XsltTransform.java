@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import javax.xml.transform.TransformerConfigurationException;
 
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -63,7 +64,7 @@ public class XsltTransform extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Path inputPath = new Path(parameters.get("inputFile"));
 		Path outputPath = new Path(parameters.get("outputFile"));

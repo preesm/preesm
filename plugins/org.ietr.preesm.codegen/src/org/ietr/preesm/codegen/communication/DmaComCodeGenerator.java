@@ -114,8 +114,9 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 		if (call instanceof SendDma) {
 			SendDma send = (SendDma) call;
 
-			initCom = new SendInit(bufferContainer, send.getTarget().getInstanceName(),
-					send.getRouteStep(), send.getCallIndex());
+			initCom = new SendInit(bufferContainer, send.getTarget()
+					.getInstanceName(), send.getRouteStep(),
+					send.getCallIndex());
 			wait = new WaitForCore(bufferContainer, send.getRouteStep());
 
 			initAddress = new ReceiveAddress(bufferContainer, send
@@ -126,7 +127,8 @@ public class DmaComCodeGenerator extends AbstractComCodeGenerator {
 			ReceiveDma receive = (ReceiveDma) call;
 
 			initCom = new ReceiveInit(bufferContainer, receive.getSource()
-					.getInstanceName(), receive.getRouteStep(), receive.getCallIndex());
+					.getInstanceName(), receive.getRouteStep(),
+					receive.getCallIndex());
 			wait = new WaitForCore(bufferContainer, receive.getRouteStep());
 
 			initAddress = new SendAddress(bufferContainer, receive

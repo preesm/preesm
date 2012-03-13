@@ -42,7 +42,6 @@ import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-
 /**
  * Just parameterizing TopologicalOrderIterator
  * 

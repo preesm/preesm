@@ -5,7 +5,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class Pointer extends Buffer {
 
 	private IExpression symbolicSize;

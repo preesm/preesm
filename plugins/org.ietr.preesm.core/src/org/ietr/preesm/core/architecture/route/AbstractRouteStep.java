@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.architecture.route;
 
-
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.w3c.dom.Document;

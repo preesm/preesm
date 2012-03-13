@@ -8,7 +8,6 @@ import org.ietr.preesm.core.codegen.ICodeElement;
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 
-
 public class CodeGenSDFSubInitVertex extends PSDFInitVertex implements
 		ICodeGenSDFVertex {
 

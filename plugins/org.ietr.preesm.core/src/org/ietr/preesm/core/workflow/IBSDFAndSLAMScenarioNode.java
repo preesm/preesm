@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 
-
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version
  * generates an architecture with the S-LAM2 meta-model type and an algorithm

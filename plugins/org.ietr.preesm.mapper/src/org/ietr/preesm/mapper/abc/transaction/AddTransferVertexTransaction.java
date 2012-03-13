@@ -162,8 +162,9 @@ public class AddTransferVertexTransaction extends Transaction {
 		this.nodeIndex = nodeIndex;
 		this.transferTime = transferTime;
 
-		if(transferTime == 0){
-			WorkflowLogger.getLogger().log(Level.WARNING,"adding a transfer of size 0.");
+		if (transferTime == 0) {
+			WorkflowLogger.getLogger().log(Level.WARNING,
+					"adding a transfer of size 0.");
 		}
 	}
 

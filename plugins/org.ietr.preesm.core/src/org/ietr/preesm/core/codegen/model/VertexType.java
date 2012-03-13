@@ -42,7 +42,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 
-
 /**
  * Represents the type of a vertex in its propertybeans
  * 

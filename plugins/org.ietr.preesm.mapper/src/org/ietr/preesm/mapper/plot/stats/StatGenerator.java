@@ -59,7 +59,6 @@ import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.mapper.model.impl.SendVertex;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 
-
 /**
  * Generating the statistics to be displayed in stat editor
  * 

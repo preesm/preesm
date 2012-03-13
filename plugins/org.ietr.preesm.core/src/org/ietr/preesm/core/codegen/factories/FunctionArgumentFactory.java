@@ -23,7 +23,6 @@ import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.core.codegen.model.CodeGenSDFSubInitVertex;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 public class FunctionArgumentFactory {
 
 	public static FunctionArgument createFunctionArgument(CodeGenArgument arg,

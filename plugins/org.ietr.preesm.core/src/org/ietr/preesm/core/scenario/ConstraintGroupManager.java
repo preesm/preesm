@@ -43,7 +43,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 
-
 /**
  * container and manager of Constraint groups. It can load and store constraint
  * groups

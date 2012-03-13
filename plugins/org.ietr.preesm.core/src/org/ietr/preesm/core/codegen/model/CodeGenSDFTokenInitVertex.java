@@ -54,7 +54,6 @@ import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.containers.ForLoop;
 
-
 public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 		ICodeGenSDFVertex {
 
@@ -111,14 +110,14 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 				outgoingEdge = outEdge;
 			}
 			if (outgoingEdge != null) {
-				UserFunctionCall delayCall = new UserFunctionCall("read_delay",
+				UserFunctionCall delayCall = new UserFunctionCall("pull",
 						parentContainer);
-				delayCall.addArgument("delay",
+				delayCall.addArgument("fifo",
 						new PointerOn(this.getDelayVariable()));
 				delayCall.addArgument("buffer",
 						parentContainer.getBuffer(outgoingEdge));
 				try {
-					delayCall.addArgument("nb_elt", new Constant("nb_elt",
+					delayCall.addArgument("nb_token", new Constant("nb_token",
 							outgoingEdge.getProd().intValue()));
 					return delayCall;
 				} catch (InvalidExpressionException e) {

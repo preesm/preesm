@@ -50,7 +50,6 @@ import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.containers.FiniteForLoop;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 
-
 public class CodeGenSDFTaskVertex extends SDFVertex implements
 		ICodeGenSDFVertex {
 

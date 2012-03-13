@@ -39,6 +39,10 @@ package org.ietr.preesm.ui.scenario.editor.constraints;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.dftools.algorithm.model.IRefinement;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
@@ -60,9 +64,6 @@ import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.SDFTreeContentProvider;
-import net.sf.dftools.algorithm.model.IRefinement;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection
@@ -284,7 +285,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
 		combo.removeAll();
 
-		for (String id : scenario.getOperatorIds()) {
+		for (String id : scenario.getOrderedOperatorIds()) {
 			combo.add(id);
 		}
 	}

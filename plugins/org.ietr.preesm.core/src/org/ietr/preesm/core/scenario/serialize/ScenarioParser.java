@@ -346,8 +346,6 @@ public class ScenarioParser {
 						SlamPackage.eINSTANCE);
 			}
 
-			
-
 			// Extract the root object from the resource.
 			Design design = parseSlamDesign(url);
 
@@ -363,12 +361,12 @@ public class ScenarioParser {
 	public static Design parseSlamDesign(String url) {
 		// Demand load the resource into the resource set.
 		ResourceSet resourceSet = new ResourceSetImpl();
-		
+
 		Path relativePath = new Path(url);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 		String completePath = file.getLocation().toString();
-		
+
 		// resourceSet.
 		Resource resource = resourceSet.getResource(
 				URI.createFileURI(completePath), true);
@@ -465,7 +463,8 @@ public class ScenarioParser {
 								.getHierarchicalVertexFromPath(name);
 						if (vertex != null)
 							cg.addVertexPath(name);
-					} else if (type.equals("operator") && scenario.getOperatorIds() != null) {
+					} else if (type.equals("operator")
+							&& scenario.getOperatorIds() != null) {
 						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}

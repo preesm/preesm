@@ -38,6 +38,7 @@ package org.ietr.preesm.core.tools;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 
 import javax.xml.transform.Transformer;
@@ -128,8 +129,13 @@ public class XsltTransformer {
 			String destFileLoc = destFile.getLocation().toOSString();
 
 			try {
+				FileOutputStream outStream = new FileOutputStream(destFileLoc);
+				StreamResult outResult = new StreamResult(outStream);
 				transformer.transform(new StreamSource(sourceFileLoc),
-						new StreamResult(new FileOutputStream(destFileLoc)));
+						outResult);
+				outStream.flush();
+				outStream.close();
+
 			} catch (FileNotFoundException e1) {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
@@ -138,7 +144,11 @@ public class XsltTransformer {
 			} catch (TransformerException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
 		}
 
 	}

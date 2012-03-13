@@ -44,7 +44,6 @@ import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-
 /**
  * A transfer vertex represents a route step
  * 
@@ -76,15 +75,15 @@ public class TransferVertex extends MapperDAGVertex {
 	 * Sets the involvement (if any) corresponding to this transfer
 	 */
 	private InvolvementVertex involvementVertex = null;
-	
-	
+
 	static {
 		{
-			public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-			public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
+			public_properties
+					.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+			public_properties
+					.add(ImplementationPropertyNames.SendReceive_dataSize);
 		}
 	};
-	
 
 	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source,
 			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
@@ -145,12 +144,13 @@ public class TransferVertex extends MapperDAGVertex {
 		this.involvementVertex = involvementVertex;
 	}
 
-	public String getPropertyStringValue(String propertyName){
-		if(propertyName.equals(ImplementationPropertyNames.SendReceive_OperatorDef)){
+	public String getPropertyStringValue(String propertyName) {
+		if (propertyName
+				.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
 			return getImplementationVertexProperty().getEffectiveOperator()
-			.getComponent().getVlnv().getName();
+					.getComponent().getVlnv().getName();
 		}
 		return super.getPropertyStringValue(propertyName);
 	}
-	
+
 }

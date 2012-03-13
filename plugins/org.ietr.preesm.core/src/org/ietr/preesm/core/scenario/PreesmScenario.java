@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -146,6 +150,19 @@ public class PreesmScenario {
 
 	public Set<String> getOperatorIds() {
 		return operatorIds;
+	}
+
+	public List<String> getOrderedOperatorIds() {
+		List<String> opIdList = new ArrayList<String>(getOperatorIds());
+		Collections.sort(opIdList, new Comparator<String>() {
+
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+
+		return opIdList;
 	}
 
 	public Set<String> getOperatorDefinitionIds() {

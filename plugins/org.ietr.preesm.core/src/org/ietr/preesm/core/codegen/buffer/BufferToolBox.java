@@ -17,7 +17,6 @@ import org.ietr.preesm.core.codegen.expression.ConstantExpression;
 import org.ietr.preesm.core.codegen.expression.IExpression;
 import org.ietr.preesm.core.codegen.expression.StringExpression;
 
-
 public class BufferToolBox {
 
 	public static int getBufferSize(SDFEdge edge) {

@@ -50,7 +50,6 @@ import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
 import org.ietr.preesm.mapper.model.impl.SendVertex;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 
-
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper
  * 
@@ -61,30 +60,34 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 	/**
 	 * Properties set by mapper algorithm via architecture model
 	 */
-	//protected ImplementationVertexProperty implementationVertexProperty;
+	// protected ImplementationVertexProperty implementationVertexProperty;
 	private static final String IMPLEMENTATION_PROPERTY = "IMPLEMENTATION_PROPERTY";
 
 	/**
 	 * Properties set when converting sdf to dag
 	 */
 	private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
-	//protected InitialVertexProperty initialVertexProperty;
+	// protected InitialVertexProperty initialVertexProperty;
 
 	/**
 	 * Properties set by timekeeper
 	 */
 	private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
-	//protected TimingVertexProperty timingVertexProperty;
-	
+	// protected TimingVertexProperty timingVertexProperty;
+
 	static {
 		{
-			public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
-			public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
-			public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
+			public_properties
+					.add(ImplementationPropertyNames.Vertex_OperatorDef);
+			public_properties
+					.add(ImplementationPropertyNames.Vertex_Available_Operators);
+			public_properties
+					.add(ImplementationPropertyNames.Vertex_originalVertexId);
 			public_properties.add(ImplementationPropertyNames.Task_duration);
-			public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
+			public_properties
+					.add(ImplementationPropertyNames.Vertex_schedulingOrder);
 			public_properties.add(ImplementationPropertyNames.Vertex_Operator);
-			
+
 		}
 	};
 
@@ -103,11 +106,13 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		super();
 
 		this.setName(name);
-		this.getPropertyBean().setValue(INITIAL_PROPERTY, new InitialVertexProperty());
+		this.getPropertyBean().setValue(INITIAL_PROPERTY,
+				new InitialVertexProperty());
 		this.getInitialVertexProperty().setParentVertex(this);
-		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY,new ImplementationVertexProperty(
-				this));
-		this.getPropertyBean().setValue(TIMING_PROPERTY, new TimingVertexProperty());
+		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY,
+				new ImplementationVertexProperty(this));
+		this.getPropertyBean().setValue(TIMING_PROPERTY,
+				new TimingVertexProperty());
 
 		this.setBase(base);
 	}
@@ -151,30 +156,35 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 	}
 
 	public ImplementationVertexProperty getImplementationVertexProperty() {
-		return (ImplementationVertexProperty) this.getPropertyBean().getValue(IMPLEMENTATION_PROPERTY);
+		return (ImplementationVertexProperty) this.getPropertyBean().getValue(
+				IMPLEMENTATION_PROPERTY);
 	}
 
 	public InitialVertexProperty getInitialVertexProperty() {
-		return (InitialVertexProperty) this.getPropertyBean().getValue(INITIAL_PROPERTY);
+		return (InitialVertexProperty) this.getPropertyBean().getValue(
+				INITIAL_PROPERTY);
 	}
 
 	public TimingVertexProperty getTimingVertexProperty() {
-		return (TimingVertexProperty) this.getPropertyBean().getValue(TIMING_PROPERTY);
+		return (TimingVertexProperty) this.getPropertyBean().getValue(
+				TIMING_PROPERTY);
 	}
 
 	public void setImplementationVertexProperty(
 			ImplementationVertexProperty implementationVertexProperty) {
-		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY, implementationVertexProperty);
+		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY,
+				implementationVertexProperty);
 	}
 
 	public void setInitialVertexProperty(
 			InitialVertexProperty initialVertexProperty) {
-		this.getPropertyBean().setValue(INITIAL_PROPERTY, initialVertexProperty);
+		this.getPropertyBean()
+				.setValue(INITIAL_PROPERTY, initialVertexProperty);
 	}
 
 	public void setTimingVertexProperty(
 			TimingVertexProperty timingVertexProperty) {
-		this.getPropertyBean().setValue(TIMING_PROPERTY, timingVertexProperty) ;
+		this.getPropertyBean().setValue(TIMING_PROPERTY, timingVertexProperty);
 	}
 
 	@Override
@@ -195,16 +205,20 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 			// If the vertex is mapped, displays its component and rank
 			toString = getName()
 					+ "("
-					+ this.getImplementationVertexProperty().getEffectiveComponent()
-							.toString() + ","
-					+ this.getImplementationVertexProperty().getSchedTotalOrder() + ")";
+					+ this.getImplementationVertexProperty()
+							.getEffectiveComponent().toString()
+					+ ","
+					+ this.getImplementationVertexProperty()
+							.getSchedTotalOrder() + ")";
 		} else {
 			// If the vertex is not mapped, displays its weight
 			toString = getName() + "(" + this.getNbRepeat() + ")";
 		}
 
 		if (this.getInitialVertexProperty().getTopologicalLevel() != -1) {
-			toString += "[" + this.getInitialVertexProperty().getTopologicalLevel() + "]";
+			toString += "["
+					+ this.getInitialVertexProperty().getTopologicalLevel()
+					+ "]";
 		}
 
 		return toString;
@@ -265,22 +279,29 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		// TODO Auto-generated method stub
 		return super.outgoingEdges();
 	}
-	
-	public String getPropertyStringValue(String propertyName){
-		if(propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)){
+
+	public String getPropertyStringValue(String propertyName) {
+		if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
 			return getImplementationVertexProperty().getEffectiveOperator()
-			.getComponent().getVlnv().getName();
-		}else if(propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)){
+					.getComponent().getVlnv().getName();
+		} else if (propertyName
+				.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
 			return getInitialVertexProperty().getInitialOperatorList()
-			.toString() ;
-		}else if(propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)){
-			return getInitialVertexProperty().getParentVertex().getId() ;
-		}else if(propertyName.equals(ImplementationPropertyNames.Task_duration)){
-			return String.valueOf(getTimingVertexProperty().getCost() );
-		}else if(propertyName.equals(ImplementationPropertyNames.Vertex_schedulingOrder)){
-			return String.valueOf(this.getImplementationVertexProperty().getSchedTotalOrder());
-		}else if(propertyName.equals(ImplementationPropertyNames.Vertex_Operator)){
-			return this.getImplementationVertexProperty().getEffectiveComponent().getInstanceName();
+					.toString();
+		} else if (propertyName
+				.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+			return getInitialVertexProperty().getParentVertex().getId();
+		} else if (propertyName
+				.equals(ImplementationPropertyNames.Task_duration)) {
+			return String.valueOf(getTimingVertexProperty().getCost());
+		} else if (propertyName
+				.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
+			return String.valueOf(this.getImplementationVertexProperty()
+					.getSchedTotalOrder());
+		} else if (propertyName
+				.equals(ImplementationPropertyNames.Vertex_Operator)) {
+			return this.getImplementationVertexProperty()
+					.getEffectiveComponent().getInstanceName();
 		}
 		return super.getPropertyStringValue(propertyName);
 	}

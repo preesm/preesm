@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,40 +34,61 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.architecture.transforms;
+package org.ietr.preesm.algorithm.exportXml;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
+import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.Activator;
+import org.ietr.preesm.core.tools.PathTools;
 
-/**
- * Exporter for IP-XACT multicore architectures
- * 
- * @author mpelcat
- * 
- */
-public class ArchitectureExporter extends AbstractTaskImplementation {
+public class SDFExporter extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		/*
-		 * String path = parameters.get("path"); MultiCoreArchitecture archi =
-		 * (MultiCoreArchitecture) inputs .get("architecture"); DesignWriter
-		 * writer = new DesignWriter(archi); writer.generateArchitectureDOM();
-		 * writer.writeDom(path);
-		 */
 
-		WorkflowLogger.getLogger().log(Level.SEVERE,
-				"ArchitectureExporter is no more supported");
+		String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"),
+				workflow.getProjectName());
+		IPath xmlPath = new Path(sXmlPath);
+
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		GMLSDFExporter exporter = new GMLSDFExporter();
+		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
+		if (xmlPath.getFileExtension() == null
+				|| !xmlPath.getFileExtension().equals("graphml")) {
+			xmlPath = xmlPath.addFileExtension("graphml");
+		}
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+		IFile iFile = workspace.getRoot().getFile(xmlPath);
+		try {
+			if (!iFile.exists()) {
+				iFile.create(null, false, new NullProgressMonitor());
+			}
+			exporter.export(clone, iFile.getRawLocation().toOSString());
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+
+		Activator.updateWorkspace();
+
 		return new HashMap<String, Object>();
 	}
 
@@ -81,6 +102,7 @@ public class ArchitectureExporter extends AbstractTaskImplementation {
 
 	@Override
 	public String monitorMessage() {
-		return "Exporting architecture.";
+		return "Exporting algorithm graph";
 	}
+
 }

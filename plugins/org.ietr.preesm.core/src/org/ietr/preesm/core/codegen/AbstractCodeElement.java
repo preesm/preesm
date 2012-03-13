@@ -42,7 +42,6 @@ import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 /**
  * Generated code within threads consists primarily in a succession of code
  * elements.

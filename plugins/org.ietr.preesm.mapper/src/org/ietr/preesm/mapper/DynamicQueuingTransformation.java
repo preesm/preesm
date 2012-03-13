@@ -59,6 +59,7 @@ import net.sf.dftools.architecture.slam.component.Operator;
 import net.sf.dftools.architecture.slam.link.Link;
 import net.sf.dftools.architecture.slam.link.LinkFactory;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -77,7 +78,6 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
-
 
 /**
  * Plug-in class for dynamic queuing scheduling
@@ -105,7 +105,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		Design architecture = (Design) inputs.get("architecture");
@@ -178,7 +178,7 @@ public class DynamicQueuingTransformation extends AbstractMapping {
 			}
 		}
 
-		super.execute(inputs, parameters, monitor, nodeName);
+		super.execute(inputs, parameters, monitor, nodeName, workflow);
 
 		AbcParameters abcParameters = new AbcParameters(parameters);
 

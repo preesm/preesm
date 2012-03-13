@@ -430,11 +430,12 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Search among the operators with same type than the prefered one
 			for (ComponentInstance op : opList) {
-				if (preferedOperator != null && op.getComponent()
-						.getVlnv()
-						.getName()
-						.equals(preferedOperator.getComponent().getVlnv()
-								.getName())) {
+				if (preferedOperator != null
+						&& op.getComponent()
+								.getVlnv()
+								.getName()
+								.equals(preferedOperator.getComponent()
+										.getVlnv().getName())) {
 					adequateOp = op;
 				}
 			}

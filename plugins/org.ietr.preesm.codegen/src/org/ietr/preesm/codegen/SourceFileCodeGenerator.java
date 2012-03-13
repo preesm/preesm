@@ -73,7 +73,6 @@ import org.ietr.preesm.core.codegen.threads.LaunchThread;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 /**
  * Generates code for a source file
  * 

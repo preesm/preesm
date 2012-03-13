@@ -70,7 +70,6 @@ import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 import org.jgrapht.alg.DirectedNeighborIndex;
 
-
 /**
  * Generates code for a computation thread
  * 
@@ -257,70 +256,6 @@ public class CompThreadCodeGenerator {
 		LinearCodeContainer beginningCode = thread.getBeginningCode();
 		ForLoop loopCode = thread.getLoopCode();
 		LinearCodeContainer endCode = thread.getEndCode();
-
-		// next section will need to be tested for multi-processor code
-		// generation. As communication involve protecting buffers, allocation
-		// explode, implode broadcast and roundBuffer as sub-buffers is not
-		// possible at this time to ensure buffers reliability
-
-		// Filtering special vertices (Fork , Broadcast...) from regular tasks
-		//
-		// List<SDFAbstractVertex> specialVertices = new
-		// ArrayList<SDFAbstractVertex>(vertices);
-		// List<SDFAbstractVertex> treatedVertices = new
-		// ArrayList<SDFAbstractVertex>();
-		// while(specialVertices.size() > 0){
-		// SDFAbstractVertex origin = specialVertices.get(0);
-		// if(origin instanceof CodeGenSDFForkVertex || origin instanceof
-		// CodeGenSDFBroadcastVertex ){
-		// boolean toBeTreated = true ;
-		// for(SDFEdge inEdge : origin.getBase().incomingEdgesOf(origin)){
-		// if(!treatedVertices.contains(inEdge.getSource()) &&
-		// (inEdge.getSource() instanceof CodeGenSDFJoinVertex ||
-		// inEdge.getSource() instanceof CodeGenSDFRoundBufferVertex)){
-		// specialVertices.remove(inEdge.getSource());
-		// specialVertices.add(0, inEdge.getSource());
-		// toBeTreated = false ;
-		// }
-		// }
-		// if(toBeTreated){
-		// CodeElementFactory.treatSpecialBehaviorVertex(origin
-		// .getName(), loopCode, origin);
-		// treatedVertices.add(origin);
-		// specialVertices.remove(origin);
-		// }
-		// }
-		// else if(origin instanceof CodeGenSDFJoinVertex || origin instanceof
-		// CodeGenSDFRoundBufferVertex){
-		// boolean toBeTreated = true ;
-		// for(SDFEdge outEdge : origin.getBase().outgoingEdgesOf(origin)){
-		// if(!treatedVertices.contains(outEdge.getTarget()) &&
-		// (outEdge.getTarget() instanceof CodeGenSDFJoinVertex ||
-		// outEdge.getTarget() instanceof CodeGenSDFRoundBufferVertex)){
-		// specialVertices.remove(outEdge.getTarget());
-		// specialVertices.add(0, outEdge.getTarget());
-		// toBeTreated = false ;
-		// }
-		// }
-		// if(toBeTreated){
-		// CodeElementFactory.treatSpecialBehaviorVertex(origin
-		// .getName(), loopCode, origin);
-		// treatedVertices.add(origin);
-		// specialVertices.remove(origin);
-		// }
-		// }else{
-		// specialVertices.remove(origin);
-		// }
-		// }
-		//
-		// for (SDFAbstractVertex vertex : vertices) {
-		// if(vertex instanceof CodeGenSDFForkVertex || vertex instanceof
-		// CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFBroadcastVertex
-		// || vertex instanceof CodeGenSDFRoundBufferVertex){
-		// CodeElementFactory.treatSpecialBehaviorVertex(vertex
-		// .getName(), loopCode, vertex);
-		// }
-		// }
 
 		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {

@@ -47,7 +47,6 @@ import org.ietr.preesm.core.codegen.buffer.BufferAllocation;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 /**
  * Each thread runs indefinitely. It contains a for loop. Thanks to SDF
  * transformation, for loops can be generated to reduce the overall length of

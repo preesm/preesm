@@ -70,7 +70,6 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
 
-
 /**
  * Routes the communications. Based on bridge design pattern. The processing is
  * delegated to implementers

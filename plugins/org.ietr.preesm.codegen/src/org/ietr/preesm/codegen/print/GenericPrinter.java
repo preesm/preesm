@@ -51,6 +51,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.codegen.SourceFile;
 import org.ietr.preesm.core.codegen.SourceFileList;
 import org.ietr.preesm.core.tools.XsltTransformer;
@@ -93,6 +94,8 @@ public class GenericPrinter {
 			print(iterator.next()); // Prints each source file
 		}
 
+		// Refresh workspace
+		Activator.updateWorkspace();
 	}
 
 	public static IFile createFile(String fileName, String pathName) {

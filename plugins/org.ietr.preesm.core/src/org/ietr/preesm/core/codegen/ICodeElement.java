@@ -40,7 +40,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 /**
  * Generated code within threads consists primarily in a succession of code
  * elements.

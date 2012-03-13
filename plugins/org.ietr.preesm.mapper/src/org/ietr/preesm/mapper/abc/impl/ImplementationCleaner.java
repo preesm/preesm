@@ -52,7 +52,6 @@ import org.ietr.preesm.mapper.model.impl.OverheadVertex;
 import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 
-
 /**
  * Class cleaning an implementation i.e. removing added transfers and edges.
  * 

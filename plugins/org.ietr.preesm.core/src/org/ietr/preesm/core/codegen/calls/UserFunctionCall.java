@@ -62,7 +62,6 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 /**
  * Generated code consists primarily in a succession of code elements. A User
  * Function Call is a call corresponding to an atomic vertex in the graph
@@ -117,20 +116,22 @@ public class UserFunctionCall extends AbstractCodeElement {
 					}
 				}
 			}
-		} else {
+		}
+		// Managing fifo
+		else {
 			AbstractBufferContainer globalContainer = parentContainer
 					.getGlobalContainer();
 
-			Variable delay = new Variable(vertex.getName(), new DataType(
-					"Delay"));
+			Variable delay = new Variable(vertex.getName(),
+					new DataType("Fifo"));
 			globalContainer.addVariable(delay);
 			vertex.setDelayVariable(delay);
-			this.setName("new_delay");
-			this.addArgument("delay", new PointerOn(delay));
-			this.addArgument("elt_size", new Constant("size", "sizeof("
+			this.setName("new_fifo");
+			this.addArgument("fifo", new PointerOn(delay));
+			this.addArgument("token_size", new Constant("size", "sizeof("
 					+ outEdge.getDataType().toString() + ")"));
-			this.addArgument("nb_delay",
-					new Constant("delay_size", vertex.getInitSize()));
+			this.addArgument("nb_fifo",
+					new Constant("fifo_size", vertex.getInitSize()));
 		}
 
 	}
@@ -162,6 +163,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 							call.getNbArgs());
 					for (CodeGenArgument arg : call.getArguments().keySet()) {
 						FunctionArgument funcArg = FunctionArgumentFactory
+								.createFunctionArgument(arg, vertex,
+										parentContainer);
+						funcArg = FunctionArgumentFactory
 								.createFunctionArgument(arg, vertex,
 										parentContainer);
 						if (funcArg != null) {
@@ -269,7 +273,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 	}
 
 	public void addArgument(FunctionArgument param) {
-		callParameters.add(param);
+		if (param == null)
+			WorkflowLogger.getLogger().log(Level.SEVERE, "null argument");
+		else {
+			callParameters.add(param);
+		}
 	}
 
 	/**
@@ -360,7 +368,12 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 			FunctionArgument param = iterator.next();
 
-			code += param.toString();
+			if (param == null) {
+				WorkflowLogger.getLogger().log(Level.SEVERE,
+						"buffer or parameter was not found...");
+			} else {
+				code += param.toString();
+			}
 		}
 
 		code += ");";

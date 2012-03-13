@@ -60,9 +60,7 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
-import org.ietr.preesm.mapper.algo.genetic.StandardGeneticAlgorithm;
 import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
-import org.ietr.preesm.mapper.algo.pgenetic.PGeneticAlgo;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -280,40 +278,6 @@ public class BestCostPlotter extends ApplicationFrame implements
 		if (o instanceof PFastAlgorithm) {
 			PFastAlgorithm pfast = (PFastAlgorithm) o;
 			pfast.countObservers();
-
-			if (arg instanceof Long) {
-
-				int i = 0;
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Long) arg).doubleValue();
-				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
-						this.lastValue[i]);
-
-			}
-		}
-
-		// Genetic algo
-		if (o instanceof StandardGeneticAlgorithm) {
-			StandardGeneticAlgorithm geneticAlgorithm = (StandardGeneticAlgorithm) o;
-			geneticAlgorithm.countObservers();
-
-			if (arg instanceof Long) {
-
-				int i = 0;
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Long) arg).doubleValue();
-				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
-						this.lastValue[i]);
-
-			}
-		}
-
-		// Pgenetic algo
-		if (o instanceof PGeneticAlgo) {
-			PGeneticAlgo geneticAlgorithm = (PGeneticAlgo) o;
-			geneticAlgorithm.countObservers();
 
 			if (arg instanceof Long) {
 

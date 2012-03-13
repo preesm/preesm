@@ -50,6 +50,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
@@ -59,7 +60,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
  * Exporting timings in an excel sheet

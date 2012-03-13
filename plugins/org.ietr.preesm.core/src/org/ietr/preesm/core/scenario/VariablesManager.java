@@ -5,7 +5,6 @@ import net.sf.dftools.algorithm.model.parameters.VariableSet;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
 
-
 /**
  * Handles graph variables which values are redefined in the scenario
  * 

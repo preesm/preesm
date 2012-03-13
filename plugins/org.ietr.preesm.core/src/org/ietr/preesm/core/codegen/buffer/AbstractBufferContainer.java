@@ -53,7 +53,6 @@ import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 import org.ietr.preesm.core.codegen.semaphore.SemaphoreContainer;
 import org.ietr.preesm.core.codegen.types.DataType;
 
-
 /**
  * A thread can contain buffer allocations as well as a source file (for static
  * allocations). They are both AbstractBufferContainer

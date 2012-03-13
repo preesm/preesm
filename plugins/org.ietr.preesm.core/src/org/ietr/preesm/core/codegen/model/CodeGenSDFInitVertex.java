@@ -18,7 +18,6 @@ import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
 import org.ietr.preesm.core.codegen.containers.CompoundCodeElement;
 import org.ietr.preesm.core.codegen.types.CodeSectionType;
 
-
 public class CodeGenSDFInitVertex extends PSDFInitVertex implements
 		ICodeGenSDFVertex {
 

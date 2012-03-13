@@ -41,6 +41,7 @@ import java.util.Map;
 
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -61,7 +62,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Design architecture = (Design) inputs.get("architecture");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -89,7 +90,6 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 		parameters.put("simulatorType", "LooselyTimed");
 		parameters.put("edgeSchedType", "Simple");
 		parameters.put("balanceLoads", "false");
-		parameters.put("dagExportPath", "");
 		return parameters;
 	}
 

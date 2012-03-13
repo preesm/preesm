@@ -12,7 +12,6 @@ import org.ietr.preesm.core.codegen.buffer.Buffer;
 import org.ietr.preesm.core.codegen.printer.CodeZoneId;
 import org.ietr.preesm.core.codegen.printer.IAbstractPrinter;
 
-
 public abstract class SpecialBehaviorCall extends AbstractCodeElement {
 
 	protected List<Buffer> inputBuffers;

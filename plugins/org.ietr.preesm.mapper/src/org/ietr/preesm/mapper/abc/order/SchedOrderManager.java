@@ -56,7 +56,6 @@ import org.ietr.preesm.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-
 /**
  * The scheduling order manager keeps a total order of the vertices and a
  * partial order in each schedule. It is used by the schedule edge adder to
