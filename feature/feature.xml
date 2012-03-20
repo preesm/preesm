@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.6.1"
+      version="0.6.2.v20120320"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">
@@ -53,7 +53,38 @@ terms.
    </url>
 
    <requires>
-      <import feature="net.sf.dftools.feature" version="0.0.1"/>
+      <import feature="net.sf.dftools.feature" version="0.0.2.v20120320"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.ui.navigator"/>
+      <import plugin="net.sf.dftools.workflow"/>
+      <import plugin="org.jgrapht" version="0.8.2" match="greaterOrEqual"/>
+      <import plugin="net.sf.dftools.architecture" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="net.sf.dftools.algorithm" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.ecore" version="2.6.0" match="greaterOrEqual"/>
+      <import plugin="org.ietr.preesm.core" version="0.6.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="net.sf.graphiti.ui"/>
+      <import plugin="net.sf.graphiti.model"/>
+      <import plugin="org.eclipse.ui.views.properties.tabbed"/>
+      <import plugin="org.eclipse.gef"/>
+      <import plugin="net.sf.dftools.ui" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="net.sf.dftools.workflow" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.console" version="3.5.100" match="greaterOrEqual"/>
+      <import plugin="org.ietr.preesm.core" version="0.0.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.workbench" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.ietr.preesm.core" version="0.0.4" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -78,13 +109,6 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.plugin.transforms"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
@@ -92,7 +116,14 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.archi"
+         id="org.ietr.preesm.algorithm"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.architecture"
          download-size="0"
          install-size="0"
          version="0.0.0"

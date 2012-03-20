@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.ietr.preesm.archi
 Bundle-SymbolicName: org.ietr.preesm.architecture;singleton:=true
-Bundle-Version: 0.6.1
+Bundle-Version: 0.6.2.v20120320
 Bundle-Activator: org.ietr.preesm.architecture.Activator
 Bundle-Vendor: IETR
 Require-Bundle: org.eclipse.core.runtime,

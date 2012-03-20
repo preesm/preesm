@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm graph transformation plug-in
-Bundle-SymbolicName: org.ietr.preesm.plugin.transforms;singleton:=true
-Bundle-Version: 0.6.1
+Bundle-SymbolicName: org.ietr.preesm.algorithm;singleton:=true
+Bundle-Version: 0.6.2.v20120320
 Bundle-Activator: org.ietr.preesm.algorithm.transforms.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core;bundle-version="0.0.1",
