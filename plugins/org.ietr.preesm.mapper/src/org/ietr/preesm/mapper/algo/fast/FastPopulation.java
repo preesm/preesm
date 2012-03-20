@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
@@ -150,7 +151,7 @@ public class FastPopulation {
 	 * @param MARGIN
 	 */
 	public void constructPopulation(MapperDAG dag, PreesmScenario scenario,
-			FastAlgoParameters fastParams) {
+			FastAlgoParameters fastParams) throws WorkflowException {
 
 		// create the population
 		List<MapperDAG> temp = new ArrayList<MapperDAG>();

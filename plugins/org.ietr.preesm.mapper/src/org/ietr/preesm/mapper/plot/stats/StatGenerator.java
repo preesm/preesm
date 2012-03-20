@@ -43,6 +43,7 @@ import java.util.Set;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -112,7 +113,7 @@ public class StatGenerator {
 	 * The work is the sum of all task lengths excluding vertices added by the
 	 * mapping.
 	 */
-	public long getDAGWorkLength() {
+	public long getDAGWorkLength() throws WorkflowException {
 
 		long work = 0;
 		MapperDAG dag = abc.getDAG();

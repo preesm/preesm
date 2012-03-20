@@ -108,7 +108,7 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public PreesmScenario parseXmlFile(IFile file) {
+	public PreesmScenario parseXmlFile(IFile file) throws InvalidModelException,FileNotFoundException {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -292,7 +292,7 @@ public class ScenarioParser {
 	/**
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
-	private void parseFileNames(Element filesElt) {
+	private void parseFileNames(Element filesElt) throws InvalidModelException,FileNotFoundException {
 
 		Node node = filesElt.getFirstChild();
 
@@ -376,7 +376,7 @@ public class ScenarioParser {
 		return design;
 	}
 
-	public static SDFGraph getAlgorithm(String path) {
+	public static SDFGraph getAlgorithm(String path) throws InvalidModelException,FileNotFoundException {
 		SDFGraph algorithm = null;
 		GMLSDFImporter importer = new GMLSDFImporter();
 
@@ -392,7 +392,7 @@ public class ScenarioParser {
 		} catch (InvalidModelException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			throw e;
 		}
 
 		return algorithm;

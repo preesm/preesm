@@ -39,6 +39,7 @@ package org.ietr.preesm.mapper.abc.impl.latency;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.component.ComNode;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -66,7 +67,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * Constructor
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			Design archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) throws WorkflowException {
 		this(params, dag, archi, TaskSchedType.Simple, scenario);
 	}
 
@@ -75,7 +76,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	 * vertex has not been mapped yet.
 	 */
 	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) {
+			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) throws WorkflowException {
 		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
 		this.getType().setTaskSchedType(taskSchedType);
 

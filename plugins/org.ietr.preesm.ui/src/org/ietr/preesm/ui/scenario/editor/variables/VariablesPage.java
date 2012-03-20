@@ -419,8 +419,12 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		if (active) {
 			// Setting the current graph when the variables tab is shown
-			currentGraph = ScenarioParser.getAlgorithm(scenario
-					.getAlgorithmURL());
+			try {
+				currentGraph = ScenarioParser.getAlgorithm(scenario
+						.getAlgorithmURL());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

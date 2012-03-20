@@ -48,6 +48,7 @@ import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -119,7 +120,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
-			Design archi, PreesmScenario scenario) {
+			Design archi, PreesmScenario scenario) throws WorkflowException {
 
 		AbstractAbc abc = null;
 		AbcType simulatorType = params.getSimulatorType();
@@ -295,7 +296,7 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	@Override
 	public final void map(MapperDAGVertex dagvertex,
-			ComponentInstance operator, boolean updateRank) {
+			ComponentInstance operator, boolean updateRank) throws WorkflowException {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		WorkflowLogger.getLogger().log(
@@ -350,7 +351,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * same type. If again none is found, looks for any other operator able to
 	 * execute the vertex.
 	 */
-	public final boolean mapAllVerticesOnOperator(ComponentInstance operator) {
+	public final boolean mapAllVerticesOnOperator(ComponentInstance operator) throws WorkflowException {
 
 		boolean possible = true;
 		MapperDAGVertex currentvertex;
@@ -386,8 +387,9 @@ public abstract class AbstractAbc implements IAbc {
 
 	/**
 	 * Looks for operators able to execute currentvertex
+	 * @throws WorkflowException 
 	 */
-	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex) {
+	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex) throws WorkflowException {
 
 		vertex = translateInImplementationVertex(vertex);
 
@@ -403,10 +405,12 @@ public abstract class AbstractAbc implements IAbc {
 		}
 
 		if (initOperators.isEmpty()) {
+			String message = "Empty operator set for a vertex: " + vertex.getName()
+					+ ". Consider relaxing constraints in scenario.";
 			WorkflowLogger.getLogger().log(
-					Level.SEVERE,
-					"Empty operator set for a vertex: " + vertex.getName()
-							+ ". Consider relaxing constraints in scenario.");
+					Level.SEVERE, message
+					);
+			throw new WorkflowException(message);
 		}
 
 		return initOperators;
@@ -419,7 +423,7 @@ public abstract class AbstractAbc implements IAbc {
 
 	@Override
 	public final ComponentInstance findOperator(MapperDAGVertex currentvertex,
-			ComponentInstance preferedOperator) {
+			ComponentInstance preferedOperator) throws WorkflowException {
 
 		ComponentInstance adequateOp = null;
 		List<ComponentInstance> opList = getCandidateOperators(currentvertex);
@@ -459,7 +463,7 @@ public abstract class AbstractAbc implements IAbc {
 
 	@Override
 	public final boolean isMapable(MapperDAGVertex vertex,
-			ComponentInstance operator) {
+			ComponentInstance operator) throws WorkflowException {
 
 		vertex = translateInImplementationVertex(vertex);
 

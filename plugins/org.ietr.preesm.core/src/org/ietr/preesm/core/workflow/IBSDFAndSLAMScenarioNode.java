@@ -44,11 +44,18 @@ public class IBSDFAndSLAMScenarioNode extends AbstractScenarioImplementation {
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 
-		PreesmScenario scenario = scenarioParser.parseXmlFile(file);
-
+		PreesmScenario scenario;
 		// Retrieving the algorithm
-		SDFGraph algorithm = ScenarioParser.getAlgorithm(scenario
-				.getAlgorithmURL());
+		SDFGraph algorithm;
+		
+		try {
+			scenario = scenarioParser.parseXmlFile(file);
+
+			algorithm = ScenarioParser.getAlgorithm(scenario
+					.getAlgorithmURL());
+		} catch (Exception e) {
+			throw new WorkflowException(e.getMessage());
+		}
 
 		// Retrieving the architecture
 		Design slamDesign = ScenarioParser.parseSlamDesign(scenario

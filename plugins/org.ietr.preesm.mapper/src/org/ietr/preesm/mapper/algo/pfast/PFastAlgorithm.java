@@ -53,6 +53,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -288,7 +289,7 @@ public class PFastAlgorithm extends Observable {
 			InitialLists initialLists, AbcParameters abcParams,
 			PFastAlgoParameters pFastParams, boolean population,
 			int populationsize, boolean isDisplaySolutions,
-			List<MapperDAG> populationList, AbstractTaskSched taskSched) {
+			List<MapperDAG> populationList, AbstractTaskSched taskSched) throws WorkflowException {
 
 		int i = 0;
 		if (populationsize < 1)

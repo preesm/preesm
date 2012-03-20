@@ -4,6 +4,7 @@
 package org.ietr.preesm.mapper.abc.impl.latency;
 
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
@@ -21,7 +22,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 	public static final String DAG_SPAN = "dag span length";
 
 	public SpanLengthCalculator(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) {
+			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) throws WorkflowException {
 		super(params, dag, archi, taskSchedType, scenario);
 
 		this.updateTimings();

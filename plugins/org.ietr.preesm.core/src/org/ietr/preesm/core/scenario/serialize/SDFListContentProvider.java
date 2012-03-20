@@ -36,10 +36,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.serialize;
 
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
@@ -63,13 +65,17 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 		if (inputElement instanceof PreesmScenario) {
 			PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
-			elementTable = getSortedVertices(inputScenario).toArray();
+			try {
+				elementTable = getSortedVertices(inputScenario).toArray();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return elementTable;
 	}
 
 	static public Set<SDFAbstractVertex> getSortedVertices(
-			PreesmScenario inputScenario) {
+			PreesmScenario inputScenario) throws InvalidModelException,FileNotFoundException {
 		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
 		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario

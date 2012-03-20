@@ -42,6 +42,7 @@ import java.util.Map;
 import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.resources.IFile;
@@ -58,7 +59,7 @@ public class SDF4JGMLExporter extends AbstractTaskImplementation {
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName) throws WorkflowException {
+			String nodeName, Workflow workflow) throws WorkflowException {
 
 		IPath xmlPath = new Path(parameters.get("path"));
 
@@ -97,5 +98,4 @@ public class SDF4JGMLExporter extends AbstractTaskImplementation {
 	public String monitorMessage() {
 		return "Exporting algorithm graph";
 	}
-
 }

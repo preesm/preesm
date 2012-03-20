@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.constraints;
 
+import java.io.FileNotFoundException;
+
+import net.sf.dftools.algorithm.importer.InvalidModelException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -219,7 +223,11 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text) e.getSource();
 
-				importData(text);
+				try {
+					importData(text);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 
 			}
 		});
@@ -230,7 +238,11 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.CR) {
 					Text text = (Text) e.getSource();
-					importData(text);
+					try {
+						importData(text);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
 
 			}
@@ -254,7 +266,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		toolkit.paintBordersFor(client);
 	}
 
-	private void importData(Text text) {
+	private void importData(Text text) throws InvalidModelException,FileNotFoundException {
 
 		scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
 		scenario.getConstraintGroupManager().importConstraints(scenario);

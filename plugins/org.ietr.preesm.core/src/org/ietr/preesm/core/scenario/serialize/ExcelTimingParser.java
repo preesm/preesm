@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.serialize;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +46,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
@@ -73,7 +75,7 @@ public class ExcelTimingParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url, Set<String> opDefIds) {
+	public void parse(String url, Set<String> opDefIds) throws InvalidModelException,FileNotFoundException {
 		WorkflowLogger
 				.getLogger()
 				.log(Level.INFO,

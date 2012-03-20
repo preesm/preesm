@@ -36,9 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
@@ -181,7 +183,7 @@ public class ConstraintGroupManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importConstraints(PreesmScenario currentScenario) {
+	public void importConstraints(PreesmScenario currentScenario) throws InvalidModelException,FileNotFoundException {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelConstraintsParser parser = new ExcelConstraintsParser(
 					currentScenario);

@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.mapper.abc.IAbc;
@@ -79,7 +80,7 @@ public class DynamicQueuingScheduler {
 	 * maps the vertices on the operator with lowest final cost (soonest
 	 * available)
 	 */
-	public void mapVertices(IAbc abc) {
+	public void mapVertices(IAbc abc) throws WorkflowException {
 
 		// Type of order to use while mapping/scheduling
 		String listType = textParameters.get("listType");
@@ -111,7 +112,7 @@ public class DynamicQueuingScheduler {
 		}
 	}
 
-	public void mapOnBestOp(IAbc abc, MapperDAGVertex currentvertex) {
+	public void mapOnBestOp(IAbc abc, MapperDAGVertex currentvertex) throws WorkflowException {
 
 		List<ComponentInstance> adequateOps = abc
 				.getCandidateOperators(currentvertex);

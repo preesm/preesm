@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.plot.stats;
 
+import net.sf.dftools.workflow.WorkflowException;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -95,9 +97,13 @@ public class PerformancePage extends FormPage {
 		 * Messages.getString("Performance.Explanation.title"),
 		 * Messages.getString("Performance.Explanation.description"));
 		 */
-		createChartSection(managedForm,
-				Messages.getString("Performance.Chart.title"),
-				Messages.getString("Performance.Chart.description"));
+		try {
+			createChartSection(managedForm,
+					Messages.getString("Performance.Chart.title"),
+					Messages.getString("Performance.Chart.description"));
+		} catch (WorkflowException e) {
+			e.printStackTrace();
+		}
 
 		managedForm.refresh();
 	}
@@ -164,7 +170,7 @@ public class PerformancePage extends FormPage {
 	 *            description of the section
 	 */
 	private void createChartSection(IManagedForm mform, String title,
-			String desc) {
+			String desc) throws WorkflowException {
 
 		long workLength = statGen.getDAGWorkLength();
 		long spanLength = statGen.getDAGSpanLength();

@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.swt.widgets.Composite;
@@ -129,7 +130,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * timings
 	 */
 	@Override
-	public void setDAG(MapperDAG dag) {
+	public void setDAG(MapperDAG dag) throws WorkflowException {
 
 		this.dag = dag;
 		this.implementation = dag.clone();

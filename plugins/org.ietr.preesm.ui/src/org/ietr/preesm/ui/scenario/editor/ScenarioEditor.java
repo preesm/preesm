@@ -101,7 +101,11 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		if (scenarioFile != null) {
 			scenario = new PreesmScenario();
 			ScenarioParser parser = new ScenarioParser();
-			scenario = parser.parseXmlFile(scenarioFile);
+			try {
+				scenario = parser.parseXmlFile(scenarioFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		}
 	}

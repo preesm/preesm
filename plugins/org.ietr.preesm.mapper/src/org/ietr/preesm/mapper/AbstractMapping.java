@@ -104,7 +104,7 @@ public abstract class AbstractMapping extends AbstractTaskImplementation {
 	 * transfer time to other operator)
 	 */
 	protected void calculateSpan(MapperDAG dag, Design archi,
-			PreesmScenario scenario, AbcParameters parameters) {
+			PreesmScenario scenario, AbcParameters parameters) throws WorkflowException {
 
 		SpanLengthCalculator spanCalc = new SpanLengthCalculator(parameters,
 				dag, archi, parameters.getSimulatorType().getTaskSchedType(),

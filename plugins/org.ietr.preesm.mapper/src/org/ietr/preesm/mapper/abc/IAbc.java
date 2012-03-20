@@ -40,6 +40,7 @@ import java.util.List;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 
 import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -137,22 +138,25 @@ public interface IAbc extends IMapperAbc {
 	 * current rank is maintained in simulator. User can choose to update the
 	 * rank to the current one or to keep the sank set during last
 	 * implementation
+	 * @throws WorkflowException 
 	 */
 	public void map(MapperDAGVertex vertex, ComponentInstance operator,
-			boolean updateRank);
+			boolean updateRank) throws WorkflowException;
 
 	public void unmap(MapperDAGVertex dagvertex);
 
 	/**
 	 * maps all the vertices on the given operator
+	 * @throws WorkflowException 
 	 */
-	public boolean mapAllVerticesOnOperator(ComponentInstance operator);
+	public boolean mapAllVerticesOnOperator(ComponentInstance operator) throws WorkflowException;
 
 	/**
 	 * Checks in the vertex implementation properties if it can be mapped on the
 	 * given operator
+	 * @throws WorkflowException 
 	 */
-	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator);
+	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator) throws WorkflowException;
 
 	/**
 	 * Plots the current implementation
@@ -172,8 +176,9 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Sets the DAG as current DAG and retrieves all implementation to calculate
 	 * timings
+	 * @throws WorkflowException 
 	 */
-	public void setDAG(MapperDAG dag);
+	public void setDAG(MapperDAG dag) throws WorkflowException;
 
 	/**
 	 * Sets the total orders in the dag
@@ -200,14 +205,16 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
 	 * operator)
+	 * @throws WorkflowException 
 	 */
 	public ComponentInstance findOperator(MapperDAGVertex currentvertex,
-			ComponentInstance preferedOperator);
+			ComponentInstance preferedOperator) throws WorkflowException;
 
 	/**
 	 * Looks for operators able to execute currentvertex
+	 * @throws WorkflowException 
 	 */
 	public List<ComponentInstance> getCandidateOperators(
-			MapperDAGVertex currentvertex);
+			MapperDAGVertex currentvertex) throws WorkflowException;
 
 }

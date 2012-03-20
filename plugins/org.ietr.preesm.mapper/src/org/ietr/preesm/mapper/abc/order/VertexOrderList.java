@@ -41,6 +41,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
@@ -99,7 +102,13 @@ public class VertexOrderList {
 	}
 
 	public int orderOf(String name) {
-		return nameMap.get(name).getOrder();
+		if(nameMap.get(name) == null){
+			WorkflowLogger.getLogger().log(Level.SEVERE,"Vertex could not be scheduled, check constraints: " + name);
+		}
+		else{
+			return nameMap.get(name).getOrder();
+		}
+		return -1;
 	}
 
 	public boolean contains(String name) {

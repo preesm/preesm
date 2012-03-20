@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.mapper.abc.IAbc;
@@ -72,7 +73,7 @@ public class KwokListScheduler {
 	 *            considered operator
 	 */
 	public long listImplementationCost(MapperDAG dag, MapperDAGVertex vertex,
-			ComponentInstance operator, IAbc simu, boolean minimizeVStartorOpEnd) {
+			ComponentInstance operator, IAbc simu, boolean minimizeVStartorOpEnd) throws WorkflowException {
 
 		// check the vertex is into the DAG
 		vertex = dag.getMapperDAGVertex(vertex.getName());
@@ -104,7 +105,7 @@ public class KwokListScheduler {
 
 	public MapperDAG schedule(MapperDAG dag, List<MapperDAGVertex> orderlist,
 			IAbc archisimu, ComponentInstance operatorfcp,
-			MapperDAGVertex fcpvertex) {
+			MapperDAGVertex fcpvertex) throws WorkflowException {
 
 		boolean minimizeVStartorOpEnd = false;
 

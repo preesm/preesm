@@ -75,11 +75,19 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(relativePath);
 
-			PreesmScenario scenario = parser.parseXmlFile(file);
-
+			PreesmScenario scenario;
 			// Retrieving the algorithm
-			SDFGraph algo = ScenarioParser.getAlgorithm(scenario
-					.getAlgorithmURL());
+			SDFGraph algo;
+			
+			try {
+				scenario = parser.parseXmlFile(file);
+
+				algo = ScenarioParser.getAlgorithm(scenario
+						.getAlgorithmURL());
+			} catch (Exception e) {
+				throw new WorkflowException(e.getMessage());
+			}
+			
 			if (algo == null) {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"cannot retrieve algorithm");

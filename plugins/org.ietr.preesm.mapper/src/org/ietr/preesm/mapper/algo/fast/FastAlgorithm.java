@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -98,7 +99,7 @@ public class FastAlgorithm extends Observable {
 	public MapperDAG map(String threadName, AbcParameters abcParams,
 			FastAlgoParameters fastParams, MapperDAG dag, Design archi,
 			boolean alreadyMapped, boolean pfastused, boolean displaySolutions,
-			IProgressMonitor monitor, AbstractTaskSched taskSched) {
+			IProgressMonitor monitor, AbstractTaskSched taskSched) throws WorkflowException {
 
 		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
 		List<MapperDAGVertex> blockingNodesList = initialLists
@@ -130,7 +131,7 @@ public class FastAlgorithm extends Observable {
 			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
 			List<MapperDAGVertex> blockingNodesList,
 			List<MapperDAGVertex> finalcriticalpathList,
-			AbstractTaskSched taskSched) {
+			AbstractTaskSched taskSched) throws WorkflowException {
 
 		Random randomGenerator = new Random(System.nanoTime());
 
@@ -374,7 +375,7 @@ public class FastAlgorithm extends Observable {
 	}
 
 	public void createEditor(IAbc abc, AbcParameters abcParams,
-			VertexOrderList bestTotalOrder, String name) {
+			VertexOrderList bestTotalOrder, String name) throws WorkflowException {
 
 		MapperDAG dag = abc.getDAG().clone();
 		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag,

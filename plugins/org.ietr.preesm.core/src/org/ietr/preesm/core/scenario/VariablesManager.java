@@ -52,7 +52,12 @@ public class VariablesManager {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelVariablesParser parser = new ExcelVariablesParser(
 					currentScenario);
-			parser.parse(excelFileURL);
+			
+			try {
+				parser.parse(excelFileURL);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

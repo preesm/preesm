@@ -137,8 +137,12 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 			PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
 			// Opening algorithm from file
-			currentGraph = ScenarioParser.getAlgorithm(inputScenario
-					.getAlgorithmURL());
+			try {
+				currentGraph = ScenarioParser.getAlgorithm(inputScenario
+						.getAlgorithmURL());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			table[0] = currentGraph;
 		}
 		return table;

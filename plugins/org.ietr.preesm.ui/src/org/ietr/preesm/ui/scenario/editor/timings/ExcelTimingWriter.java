@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.timings;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
@@ -50,6 +51,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
+import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.eclipse.jface.wizard.WizardDialog;
@@ -106,10 +108,7 @@ public class ExcelTimingWriter implements SelectionListener {
 			workbook.write();
 			workbook.close();
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (WriteException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -117,7 +116,7 @@ public class ExcelTimingWriter implements SelectionListener {
 	/**
 	 * Add timing cells to the newly created file
 	 */
-	private void addTimingCells(WritableSheet sheet) {
+	private void addTimingCells(WritableSheet sheet) throws InvalidModelException,FileNotFoundException {
 		if (sheet != null) {
 
 			int maxOpAbscissa = 1, maxVOrdinate = 1;

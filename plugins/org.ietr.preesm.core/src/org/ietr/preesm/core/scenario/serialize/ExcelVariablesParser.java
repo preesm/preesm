@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario.serialize;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -43,6 +44,7 @@ import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
@@ -68,7 +70,7 @@ public class ExcelVariablesParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url) {
+	public void parse(String url) throws InvalidModelException,FileNotFoundException {
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"Importing variables from an excel sheet.");
 
