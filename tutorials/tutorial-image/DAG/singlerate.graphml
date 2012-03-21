@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <graph edgedefault="directed" kind="sdf">
+        <data key="name"/>
+        <data key="kind">sdf</data>
+        <data key="variables">
+            <variable name="ysize" value="288"/>
+            <variable name="xsize" value="352"/>
+            <variable name="N" value="1"/>
+        </data>
+        <node id="Read_YUV">
+            <data key="graph_desc">../Code/IDL/readYuv.idl</data>
+            <data key="name">Read_YUV</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
+            </data>
+        </node>
+        <node id="display_pic">
+            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
+            <data key="name">display_pic</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="index" value="0"/>
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
+            </data>
+        </node>
+        <node id="substract_pic">
+            <data key="graph_desc">../Code/IDL/substractPic.idl</data>
+            <data key="name">substract_pic</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
+            </data>
+        </node>
+        <edge source="Read_YUV" sourceport="U" target="substract_pic" targetport="U1">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="V" target="substract_pic" targetport="V1">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="Y" target="substract_pic" targetport="Y1">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="Y" target="display_pic" targetport="Y">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="U" target="display_pic" targetport="U">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="V" target="display_pic" targetport="V">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="U1o"
+            target="substract_pic" targetport="U2">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="V1o"
+            target="substract_pic" targetport="V2">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="substract_pic" sourceport="Y1o"
+            target="substract_pic" targetport="Y2">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">101376</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+        </edge>
+    </graph>
+</graphml>

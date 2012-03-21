@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="SCHEDULE_COST" attr.type="int" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="time" attr.type="string" for="node"/>
+    <key attr.name="nb_repeat" attr.type="string" for="node"/>
+    <key attr.name="OperatorDef" attr.type="string" for="node"/>
+    <key attr.name="availableOperators" attr.type="string" for="node"/>
+    <key attr.name="originalId" attr.type="string" for="node"/>
+    <key attr.name="duration" attr.type="int" for="node"/>
+    <key attr.name="schedulingOrder" attr.type="int" for="node"/>
+    <key attr.name="Operator" attr.type="string" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
+    <graph edgedefault="directed" kind="sdf">
+        <data key="name"/>
+        <data key="kind">sdf</data>
+        <data key="SCHEDULE_COST">0</data>
+        <data key="variables">
+            <variable name="ysize" value="288"/>
+            <variable name="xsize" value="352"/>
+            <variable name="N" value="1"/>
+        </data>
+        <node id="Read_YUV" kind="vertex">
+            <data key="name">Read_YUV</data>
+            <data key="kind">dag_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">1c98b757-9548-4b91-9201-853deb455b7f</data>
+            <data key="duration">10000</data>
+            <data key="schedulingOrder">0</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="display_pic" kind="vertex">
+            <data key="name">display_pic</data>
+            <data key="kind">dag_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">e8fe1d2d-be33-404f-96f0-c286ea8fea0d</data>
+            <data key="duration">10000</data>
+            <data key="schedulingOrder">8</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic" kind="vertex">
+            <data key="name">substract_pic</data>
+            <data key="kind">dag_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">106d3e1f-d52d-4a68-9d80-0968392f8287</data>
+            <data key="duration">100</data>
+            <data key="schedulingOrder">4</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_init_U2" kind="vertex">
+            <data key="name">substract_pic_init_U2</data>
+            <data key="kind">dag_init_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">6bb7412f-7943-47f7-8ef8-20110894ed6e</data>
+            <data key="duration">10</data>
+            <data key="schedulingOrder">1</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_end_U1o" kind="vertex">
+            <data key="name">substract_pic_end_U1o</data>
+            <data key="kind">dag_end_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">f06322ac-b562-4841-8c6f-be03a5f66b36</data>
+            <data key="duration">0</data>
+            <data key="schedulingOrder">5</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_init_V2" kind="vertex">
+            <data key="name">substract_pic_init_V2</data>
+            <data key="kind">dag_init_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">87a0e73c-825e-4a3b-afd1-f120418ef04f</data>
+            <data key="duration">10</data>
+            <data key="schedulingOrder">2</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_end_V1o" kind="vertex">
+            <data key="name">substract_pic_end_V1o</data>
+            <data key="kind">dag_end_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">a2cbccf0-85ef-4766-8ebf-abb0bf019687</data>
+            <data key="duration">0</data>
+            <data key="schedulingOrder">6</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_init_Y2" kind="vertex">
+            <data key="name">substract_pic_init_Y2</data>
+            <data key="kind">dag_init_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">b4a15df9-3449-401e-8d98-3279a50b906c</data>
+            <data key="duration">10</data>
+            <data key="schedulingOrder">3</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="substract_pic_end_Y1o" kind="vertex">
+            <data key="name">substract_pic_end_Y1o</data>
+            <data key="kind">dag_end_vertex</data>
+            <data key="time">0</data>
+            <data key="nb_repeat">1</data>
+            <data key="OperatorDef">x86</data>
+            <data key="availableOperators">[net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl@62017d (instanceName: Core0)]</data>
+            <data key="originalId">0fd8fb8d-2114-4add-bc85-c64e8f468f1c</data>
+            <data key="duration">0</data>
+            <data key="schedulingOrder">7</data>
+            <data key="Operator">Core0</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <edge source="Read_YUV" sourceport="out" target="substract_pic" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">152064</data>
+            <data key="edge_prod">152064</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">152064</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic" sourceport="out"
+            target="display_pic" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">152064</data>
+            <data key="edge_prod">152064</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">152064</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic_init_U2" sourceport="out"
+            target="substract_pic" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">25344</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic" sourceport="out"
+            target="substract_pic_end_U1o" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">25344</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic_init_V2" sourceport="out"
+            target="substract_pic" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">25344</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic" sourceport="out"
+            target="substract_pic_end_V1o" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">25344</data>
+            <data key="edge_prod">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">25344</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic_init_Y2" sourceport="out"
+            target="substract_pic" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">101376</data>
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+        <edge source="substract_pic" sourceport="out"
+            target="substract_pic_end_Y1o" targetport="in">
+            <data key="edge_cons"/>
+            <data key="edge_delay"/>
+            <data key="edge_prod"/>
+            <data key="data_type"/>
+            <data key="Weight">101376</data>
+            <data key="edge_prod">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">101376</data>
+            <data key="data_type">memUnit</data>
+        </edge>
+    </graph>
+</graphml>

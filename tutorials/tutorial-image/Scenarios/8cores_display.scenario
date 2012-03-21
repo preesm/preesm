@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/tutorial-image/Algo/top_loop.graphml"/>
+        <algorithm url="/tutorial-image/Algo/top_display.graphml"/>
         <architecture url="/tutorial-image/Archi/8CoreX86.slam"/>
         <codegenDirectory url="/tutorial-image/Code/generated"/>
     </files>
     <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core1"/>
+        </constraintGroup>
+        <constraintGroup/>
         <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
+            <task name="display_pic3"/>
+            <task name="display_pic2"/>
             <task name="Read_YUV"/>
             <task name="display_pic"/>
-            <task name="substract_pic"/>
-        </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core1"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">

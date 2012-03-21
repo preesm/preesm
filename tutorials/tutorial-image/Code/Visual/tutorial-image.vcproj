@@ -3,8 +3,9 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="tutorial-image"
-	ProjectGUID="{6368D2F7-5EDA-4D39-9E16-0E58ED7E068B}"
+	ProjectGUID="{5FCA110C-C88C-45E9-8174-94DDDC5699E5}"
 	RootNamespace="tutorialimage"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -20,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -40,10 +41,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="_MVS;WIN_TCP;WIN32"
+				AdditionalIncludeDirectories="../include;../pthread/include;../SDL-1.2.15/include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WIN_TCP;_MVS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -58,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib winmm.lib kernel32.lib Ws2_32.lib"
+				AdditionalDependencies="vfw32.lib winmm.lib kernel32.lib Ws2_32.lib ../pthread/lib/pthreadVC2.lib ../SDL-1.2.15/lib/x86/SDL.lib"
+				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -89,7 +94,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="2"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -111,9 +116,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="_MVS;WIN_TCP;WIN32"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -128,8 +134,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib winmm.lib kernel32.lib Ws2_32.lib"
+				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -166,6 +173,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\communication.c"
+				>
+			</File>
+			<File
 				RelativePath="..\generated\Core0.c"
 				>
 			</File>
@@ -198,31 +209,31 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\delay.c"
+				RelativePath="..\src\fifo.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Display_YUV.c"
+				RelativePath="..\src\preesmFunctions.c"
 				>
 			</File>
 			<File
-				RelativePath=".\main.c"
+				RelativePath="..\src\readYUV.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\preesm_functions.c"
+				RelativePath="..\src\substractPic.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Read_YUV.c"
+				RelativePath="..\src\tcp.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\substract_pic.c"
+				RelativePath="..\src\tutorial-image.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\yuvrgb24.c"
+				RelativePath="..\src\yuvDisplay.c"
 				>
 			</File>
 		</Filter>
@@ -232,23 +243,33 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\src\Display_YUV.h"
+				RelativePath="..\include\communication.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\preesm_prototypes.h"
+				RelativePath="..\include\fifo.h"
 				>
 			</File>
 			<File
-				RelativePath=".\x86.h"
+				RelativePath="..\include\preesmPrototypes.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Fichiers de ressources"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath="..\include\substractPic.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\tcp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\x86.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\yuvDisplay.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
