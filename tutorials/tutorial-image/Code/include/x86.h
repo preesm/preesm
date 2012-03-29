@@ -13,9 +13,11 @@
 #include "../include/fifo.h"
 #include "../include/preesmPrototypes.h"
 #include "../include/substractPic.h"
+#include "yuvDisplay.h"
 
 // Defining posix semaphore type
 #define semaphore sem_t
+#define uchar unsigned char
 
 #define MEDIUM_SEND 0
 #define MEDIUM_RCV 1

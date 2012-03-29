@@ -9,8 +9,6 @@
         <constraintGroup>
             <operator name="Core1"/>
         </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
             <task name="display_pic3"/>
@@ -18,6 +16,8 @@
             <task name="Read_YUV"/>
             <task name="display_pic"/>
         </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
     </constraints>
     <timings excelUrl="">
         <timing opname="x86" time="10000" vertexname="Read_YUV"/>
@@ -27,7 +27,9 @@
         <mainCore>Core0</mainCore>
         <mainComNode>tcp</mainComNode>
         <averageDataSize>1000</averageDataSize>
-        <dataTypes/>
+        <dataTypes>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>
         </specialVertexOperators>

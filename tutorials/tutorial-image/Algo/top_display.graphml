@@ -15,7 +15,7 @@
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
-        <data key="name">top_loop</data>
+        <data key="name">top_display</data>
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
@@ -66,55 +66,55 @@
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="V" target="display_pic2" targetport="U">
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="Y" target="display_pic2" targetport="Y">
             <data key="edge_prod">xsize*ysize</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="U" target="display_pic" targetport="U">
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="V" target="display_pic" targetport="V">
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="Y" target="display_pic" targetport="Y">
             <data key="edge_prod">xsize*ysize</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="U" target="display_pic3" targetport="U">
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="V" target="display_pic3" targetport="V">
             <data key="edge_prod">xsize/2*ysize/2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="Y" target="display_pic3" targetport="Y">
             <data key="edge_prod">xsize*ysize</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
     </graph>
 </graphml>

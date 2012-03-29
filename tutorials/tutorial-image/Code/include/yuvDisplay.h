@@ -11,7 +11,6 @@
 #define DISPLAY_YUV
 
 #include <SDL.h>
-#include <SDL_thread.h>
 
 #define DISPLAY_W 1056
 #define DISPLAY_H 288
@@ -25,5 +24,26 @@ typedef struct YuvDisplay {
 	SDL_Surface *screen;					// SDL surface where to display
 	int currentXMin;						// Position for next display
 } YuvDisplay;
+
+
+/**
+* Initializes a display frame. Be careful, once a window size has been chosen,
+* all videos must share the same window size
+* 
+* @param id display unique identifier
+* @param xsize width
+* @param ysize heigth
+*/
+void yuvDisplayInit (int id, int xsize, int ysize);
+
+/**
+* Display one YUV frame
+* 
+* @param id display unique identifier
+* @param y luma
+* @param u chroma U
+* @param v chroma V
+*/
+void yuvDisplay(int id, unsigned char *y, unsigned char *u, unsigned char *v);
 
 #endif

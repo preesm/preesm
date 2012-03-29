@@ -3,14 +3,8 @@
 Functions enabling the use of Preesm calls with special arguments (argc, argv for example)
 
 */
-#include "displayYUV.h"
+#include "yuvDisplay.h"
 #include "preesmPrototypes.h"
-
-#ifdef WIN32
-// Table of display windows
-T_VDWINDOW_YUV   Window_YUV [2];
-int              NumberofWindows_YUV = 2;
-#endif
 
 
 // Ignored function

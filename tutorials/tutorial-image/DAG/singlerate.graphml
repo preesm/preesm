@@ -13,8 +13,9 @@
     <key attr.name="edge_delay" attr.type="string" for="edge"/>
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
     <graph edgedefault="directed" kind="sdf">
-        <data key="name"/>
+        <data key="name">top_display</data>
         <data key="kind">sdf</data>
         <data key="variables">
             <variable name="ysize" value="288"/>
@@ -31,6 +32,17 @@
                 <argument name="xsize" value="352"/>
             </data>
         </node>
+        <node id="display_pic2">
+            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
+            <data key="name">display_pic2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="index" value="1"/>
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
+            </data>
+        </node>
         <node id="display_pic">
             <data key="graph_desc">../Code/IDL/displayPic.idl</data>
             <data key="name">display_pic</data>
@@ -42,72 +54,124 @@
                 <argument name="xsize" value="352"/>
             </data>
         </node>
-        <node id="substract_pic">
-            <data key="graph_desc">../Code/IDL/substractPic.idl</data>
-            <data key="name">substract_pic</data>
+        <node id="display_pic3">
+            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
+            <data key="name">display_pic3</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="ysize" value="288"/>
+                <argument name="index" value="2"/>
+                <argument name="ysize" value="144"/>
                 <argument name="xsize" value="352"/>
             </data>
         </node>
-        <edge source="Read_YUV" sourceport="U" target="substract_pic" targetport="U1">
+        <node id="br_Read_YUV_V">
+            <data key="name">br_Read_YUV_V</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="br_Read_YUV_Y">
+            <data key="name">br_Read_YUV_Y</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="br_Read_YUV_U">
+            <data key="name">br_Read_YUV_U</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <edge source="Read_YUV" sourceport="V" target="br_Read_YUV_V" targetport="in">
             <data key="edge_cons">25344</data>
             <data key="edge_delay">0</data>
             <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
-        <edge source="Read_YUV" sourceport="V" target="substract_pic" targetport="V1">
+        <edge source="br_Read_YUV_V" sourceport="out"
+            target="display_pic2" targetport="U">
             <data key="edge_cons">25344</data>
             <data key="edge_delay">0</data>
             <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
-        <edge source="Read_YUV" sourceport="Y" target="substract_pic" targetport="Y1">
+        <edge source="br_Read_YUV_V" sourceport="out"
+            target="display_pic" targetport="V">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_V" sourceport="out"
+            target="display_pic3" targetport="V">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Read_YUV" sourceport="Y" target="br_Read_YUV_Y" targetport="in">
             <data key="edge_cons">101376</data>
             <data key="edge_delay">0</data>
             <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
-        <edge source="substract_pic" sourceport="Y" target="display_pic" targetport="Y">
+        <edge source="br_Read_YUV_Y" sourceport="out"
+            target="display_pic2" targetport="Y">
             <data key="edge_cons">101376</data>
             <data key="edge_delay">0</data>
             <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
-        <edge source="substract_pic" sourceport="U" target="display_pic" targetport="U">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="substract_pic" sourceport="V" target="display_pic" targetport="V">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="substract_pic" sourceport="U1o"
-            target="substract_pic" targetport="U2">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">25344</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="substract_pic" sourceport="V1o"
-            target="substract_pic" targetport="V2">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">25344</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="substract_pic" sourceport="Y1o"
-            target="substract_pic" targetport="Y2">
+        <edge source="br_Read_YUV_Y" sourceport="out"
+            target="display_pic" targetport="Y">
             <data key="edge_cons">101376</data>
-            <data key="edge_delay">101376</data>
+            <data key="edge_delay">0</data>
             <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_Y" sourceport="out"
+            target="display_pic3" targetport="Y">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Read_YUV" sourceport="U" target="br_Read_YUV_U" targetport="in">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_U" sourceport="out"
+            target="display_pic2" targetport="V">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_U" sourceport="out"
+            target="display_pic" targetport="U">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_U" sourceport="out"
+            target="display_pic3" targetport="U">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
     </graph>
 </graphml>

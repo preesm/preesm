@@ -7,7 +7,6 @@
 	Description :
 	============================================================================
 */
-#ifdef WIN32
 
 #include "yuvDisplay.h"
 
@@ -65,6 +64,7 @@ void yuvDisplayInit (int id, int xsize, int ysize)
 	
 	display.currentXMin += xsize;
 }
+
 /**
 * Display one YUV frame
 * 
@@ -75,6 +75,8 @@ void yuvDisplayInit (int id, int xsize, int ysize)
 */
 void yuvDisplay(int id, unsigned char *y, unsigned char *u, unsigned char *v)
 {
+    SDL_Event event;
+
 	SDL_Overlay* overlay = display.overlays[id];
 	SDL_Rect video_rect = {overlay->w*id,0,overlay->w, overlay->h};	// SDL frame position and size (x, y, w, h)
 
@@ -87,5 +89,22 @@ void yuvDisplay(int id, unsigned char *y, unsigned char *u, unsigned char *v)
 	SDL_UnlockYUVOverlay(overlay);
 
 	SDL_DisplayYUVOverlay(overlay, &video_rect);
+	
+	   /* Grab all the events off the queue. */
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+        case SDL_QUIT:
+            exit(0);
+            break;
+        default:
+            break;
+        }
+    }
 }
-#endif
+
+void yuvFinalize(int id)
+{
+    SDL_FreeYUVOverlay(display.overlays[id]);
+}

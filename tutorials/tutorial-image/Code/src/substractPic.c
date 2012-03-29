@@ -29,11 +29,6 @@ void substract_pic (unsigned char *y1, unsigned char *u1, unsigned char *v1,
 			temp = (y2[index] - y1[index]);
 			y[index] = (temp > 0)? temp:-temp;
 			y1o[index] = y1[index];
-			if(i==0 || i==ysize-1 || j==0 ||j==xsize-1 || i==ysize/2 || j== xsize/2)
-			{
-				//y[index] = 250;
-				//y1o[index] = 250;
-			}
 		}
 	}
 
@@ -46,13 +41,6 @@ void substract_pic (unsigned char *y1, unsigned char *u1, unsigned char *v1,
 			temp = (v2[index] - v1[index]);
 			v[index] = 0;//(temp > 0)? temp:-temp;
 			v1o[index] = v1[index];
-			if(i==0 || i==ysize/2-1 || j==0 ||j==xsize/2-1 || i==ysize/4 || j== xsize/4)
-			{
-				u[index] = 250;
-				//v[index] = 250;
-				//u1o[index] = 250;
-				//v1o[index] = 250;
-			}
 		}
 	}
 }

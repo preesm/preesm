@@ -9,6 +9,8 @@
 */
 #include "x86.h"
 
+#undef main
+
 extern void * computationThread_Core0( void *arg );
 extern void * computationThread_Core1( void *arg );
 extern void * computationThread_Core2( void *arg );

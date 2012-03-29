@@ -29,8 +29,6 @@
         <xsl:apply-templates select="sourceCode:bufferContainer">
             <xsl:with-param name="curIndent" select="$curIndent"/>
         </xsl:apply-templates>
-        <xsl:value-of select="concat($curIndent,'pthread_t comThread;',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
         
         <xsl:apply-templates select="sourceCode:threadDeclaration" mode="prototype"/>
         <xsl:value-of select="$new_line"/>
@@ -52,6 +50,7 @@
         <xsl:value-of select="concat($curIndent,'void *',@name,'_',$coreName,'(void *arg){',$new_line)"/>
         <xsl:apply-templates select="sourceCode:bufferContainer | sourceCode:linearCodeContainer | sourceCode:forLoop">
             <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
+            <xsl:with-param name="threadName" select="@name"/>
         </xsl:apply-templates>
         <xsl:value-of select="concat($curIndent,$sglIndent,'return 0;',$new_line)"/>
         <xsl:value-of select="concat($curIndent,'}//',@name,$new_line)"/>
@@ -62,7 +61,14 @@
     
     <xsl:template match="sourceCode:bufferContainer">
         <xsl:param name="curIndent"/>
+        <xsl:param name="threadName"/>
         <xsl:value-of select="concat($curIndent,'// Buffer declarations',$new_line)"/>
+        
+        <xsl:if test="$threadName='computationThread'">
+            <xsl:value-of select="concat($curIndent,'pthread_t comThread;',$new_line)"/>
+            <xsl:value-of select="$new_line"/>
+        </xsl:if>
+        
         <xsl:apply-templates select="sourceCode:bufferAllocation | sourceCode:variableAllocation | sourceCode:subBufferAllocation">
             <xsl:with-param name="curIndent" select="$curIndent"/> 
         </xsl:apply-templates>
