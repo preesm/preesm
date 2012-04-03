@@ -44,7 +44,7 @@ import net.sf.dftools.algorithm.model.parameters.Variable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.preesm.core.codegen.types.DataType;
+import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;

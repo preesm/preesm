@@ -41,10 +41,10 @@ import java.util.Iterator;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
+import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.codegen.model.main.SourceFile;
+import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**

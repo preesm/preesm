@@ -4,21 +4,21 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.preesm.mapper.plot.bestcost.BestCostEditor"
+            class="org.ietr.preesm.mapper.ui.bestcost.BestCostEditor"
             default="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.TimeEditor"
             name="TimeEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.mapper.plot.stats.StatEditor"
+            class="org.ietr.preesm.mapper.ui.stats.StatEditor"
             default="false"
             icon="icons/preesm2mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.stats.StatEditor"
             name="StatEditor">
       </editor>
       <editor
-            class="org.ietr.preesm.mapper.plot.gantt.GanttEditor"
+            class="org.ietr.preesm.mapper.ui.gantt.GanttEditor"
             default="true"
             icon="icons/preesm3mini.PNG"
             id="org.ietr.preesm.plugin.mapper.plot.GanttEditor"
@@ -145,7 +145,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.plot"
             name="Gantt plot transform"
-            type="org.ietr.preesm.mapper.plot.stats.StatEditorTransform">
+            type="org.ietr.preesm.mapper.ui.stats.StatEditorTransform">
          <inputs>
             <input
                   id="scenario"

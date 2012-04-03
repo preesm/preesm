@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  net.sf.dftools.workflow,
  org.jgrapht,
  net.sf.dftools.architecture;bundle-version="0.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.architecture.slam,
  org.ietr.preesm.architecture.transforms
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

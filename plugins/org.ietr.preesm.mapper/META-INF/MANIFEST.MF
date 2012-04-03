@@ -21,9 +21,9 @@ Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  lib/jetm-optional.jar,
  .
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.mapper,
  org.ietr.preesm.mapper.exporter,
- org.ietr.preesm.mapper.plot.stats,
- org.ietr.preesm.mapper.scenariogen
+ org.ietr.preesm.mapper.scenariogen,
+ org.ietr.preesm.mapper.ui.stats

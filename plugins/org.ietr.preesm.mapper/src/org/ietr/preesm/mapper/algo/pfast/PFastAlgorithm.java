@@ -69,8 +69,8 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
 import org.ietr.preesm.mapper.params.PFastAlgoParameters;
-import org.ietr.preesm.mapper.plot.BestCostPlotter;
-import org.ietr.preesm.mapper.plot.bestcost.BestCostEditor;
+import org.ietr.preesm.mapper.ui.BestCostPlotter;
+import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 
 /**
  * Task scheduling FAST algorithm multithread

@@ -11,12 +11,12 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
-import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
 
 /**
  * Given a route step, returns the correct communication code generator

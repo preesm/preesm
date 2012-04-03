@@ -10,21 +10,21 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.SourceFileCodeGenerator;
+import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
+import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
+import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
+import org.ietr.preesm.codegen.model.com.ReceiveInit;
+import org.ietr.preesm.codegen.model.com.ReceiveMsg;
+import org.ietr.preesm.codegen.model.com.SendInit;
+import org.ietr.preesm.codegen.model.com.SendMsg;
+import org.ietr.preesm.codegen.model.com.WaitForCore;
+import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
-import org.ietr.preesm.core.codegen.com.ReceiveInit;
-import org.ietr.preesm.core.codegen.com.ReceiveMsg;
-import org.ietr.preesm.core.codegen.com.SendInit;
-import org.ietr.preesm.core.codegen.com.SendMsg;
-import org.ietr.preesm.core.codegen.com.WaitForCore;
-import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.core.codegen.types.CodeSectionType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.jgrapht.alg.DirectedNeighborIndex;
 
 /**

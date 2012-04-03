@@ -59,23 +59,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFInitVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFReceiveVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSendVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSinkInterfaceVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSourceInterfaceVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFSubInitVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.core.codegen.model.VertexType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
 
 /**

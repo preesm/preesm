@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import org.ietr.preesm.core.codegen.model.FunctionCall;
 
 /**
  * @author jpiat

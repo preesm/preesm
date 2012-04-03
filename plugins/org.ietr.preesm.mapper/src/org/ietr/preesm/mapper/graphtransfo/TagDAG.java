@@ -51,11 +51,11 @@ import net.sf.dftools.architecture.slam.Design;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferAggregate;
-import org.ietr.preesm.core.codegen.sdfProperties.BufferProperties;
-import org.ietr.preesm.core.codegen.types.DataType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.core.types.BufferAggregate;
+import org.ietr.preesm.core.types.BufferProperties;
+import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;

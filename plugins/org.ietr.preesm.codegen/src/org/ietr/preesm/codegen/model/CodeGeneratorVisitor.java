@@ -42,7 +42,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.visitors.GraphVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
-import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
 
 /**
  * Visitor of a graph of type CodegenSDF

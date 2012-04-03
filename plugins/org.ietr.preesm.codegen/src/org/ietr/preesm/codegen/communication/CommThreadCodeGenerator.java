@@ -45,19 +45,19 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
+import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
+import org.ietr.preesm.codegen.model.main.ICodeElement;
+import org.ietr.preesm.codegen.model.semaphore.SemaphorePend;
+import org.ietr.preesm.codegen.model.semaphore.SemaphorePost;
+import org.ietr.preesm.codegen.model.semaphore.SemaphoreType;
+import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.ICodeElement;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.containers.AbstractCodeContainer;
-import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.codegen.semaphore.SemaphorePend;
-import org.ietr.preesm.core.codegen.semaphore.SemaphorePost;
-import org.ietr.preesm.core.codegen.semaphore.SemaphoreType;
-import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.core.codegen.types.CodeSectionType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 
 /**
  * Generates code for a communication thread

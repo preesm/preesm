@@ -52,26 +52,26 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
 import org.ietr.preesm.codegen.communication.CommThreadCodeGenerator;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.SchedulingOrderComparator;
-import org.ietr.preesm.core.codegen.SourceFile;
-import org.ietr.preesm.core.codegen.buffer.Buffer;
-import org.ietr.preesm.core.codegen.buffer.allocators.VirtualHeapAllocator;
-import org.ietr.preesm.core.codegen.model.CodeGenArgument;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.core.codegen.model.FunctionCall;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.core.codegen.model.VertexType;
-import org.ietr.preesm.core.codegen.semaphore.SemaphoreInit;
-import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.LaunchThread;
-import org.ietr.preesm.core.codegen.types.CodeSectionType;
-import org.ietr.preesm.core.codegen.types.DataType;
+import org.ietr.preesm.codegen.model.CodeGenArgument;
+import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
+import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
+import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
+import org.ietr.preesm.codegen.model.main.SourceFile;
+import org.ietr.preesm.codegen.model.semaphore.SemaphoreInit;
+import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.LaunchThread;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
+import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 
 /**
  * Generates code for a source file
@@ -340,14 +340,16 @@ public class SourceFileCodeGenerator {
 		if (call != null) {
 
 			switch (codeContainerType) {
-			case beginning:
-				call = call.getInitCall();
-				break;
-			case loop:
-				break;
-			case end:
-				call = call.getEndCall();
-				break;
+				case beginning:
+					call = call.getInitCall();
+					break;
+				case loop:
+					break;
+				case end:
+					call = call.getEndCall();
+					break;
+				default:
+					break;
 			}
 		}
 

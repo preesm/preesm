@@ -52,17 +52,14 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.codegen.jobposting.JobPostingCodeGenerator;
-import org.ietr.preesm.codegen.jobposting.JobPostingPrinter;
-import org.ietr.preesm.codegen.jobposting.JobPostingSource;
+import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraphFactory;
+import org.ietr.preesm.codegen.model.allocators.AllocationPolicy;
+import org.ietr.preesm.codegen.model.allocators.BufferAllocator;
 import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
-import org.ietr.preesm.codegen.print.GenericPrinter;
+import org.ietr.preesm.codegen.model.main.SourceFileList;
+import org.ietr.preesm.codegen.model.print.GenericPrinter;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.codegen.SourceFileList;
-import org.ietr.preesm.core.codegen.buffer.allocators.AllocationPolicy;
-import org.ietr.preesm.core.codegen.buffer.allocators.BufferAllocator;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.core.workflow.PreesmException;
@@ -117,8 +114,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		if (!Boolean.valueOf(parameters.get("jobPosting"))) {
+		
 			// Typical static code generation
 			SourceFileList list = new SourceFileList();
 			CodeGenerator codegen = new CodeGenerator(list);
@@ -132,18 +128,6 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			printerChooser.printList(list);
 
 			outputs.put("SourceFileList", list);
-		} else {
-			// Job posting code generation
-			boolean timedSimulation = Boolean.valueOf(parameters
-					.get("timedSimulation"));
-			JobPostingCodeGenerator jobGen = new JobPostingCodeGenerator(
-					codeGenSDFGraph, scenario, timedSimulation);
-			JobPostingSource source = jobGen.generate();
-			JobPostingPrinter printer = new JobPostingPrinter();
-			printer.addData(source);
-			printer.writeDom(GenericPrinter.createFile("jobList.xml",
-					sourcePath));
-		}
 
 		Activator.updateWorkspace();
 

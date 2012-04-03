@@ -42,8 +42,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.architecture.route.Route;
-import org.ietr.preesm.core.codegen.types.DataType;
 
 /**
  * Handles simulation parameters

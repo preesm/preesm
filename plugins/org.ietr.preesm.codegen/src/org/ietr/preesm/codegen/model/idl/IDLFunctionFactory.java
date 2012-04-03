@@ -39,10 +39,10 @@ package org.ietr.preesm.codegen.model.idl;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import org.ietr.preesm.codegen.model.CodeGenArgument;
+import org.ietr.preesm.codegen.model.CodeGenParameter;
+import org.ietr.preesm.codegen.model.FunctionCall;
 import org.ietr.preesm.codegen.model.IFunctionFactory;
-import org.ietr.preesm.core.codegen.model.CodeGenArgument;
-import org.ietr.preesm.core.codegen.model.CodeGenParameter;
-import org.ietr.preesm.core.codegen.model.FunctionCall;
 import org.jacorb.idl.AliasTypeSpec;
 import org.jacorb.idl.ConstrTypeSpec;
 import org.jacorb.idl.Declaration;

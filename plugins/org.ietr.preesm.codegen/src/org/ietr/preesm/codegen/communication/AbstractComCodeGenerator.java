@@ -10,19 +10,19 @@ import java.util.SortedSet;
 
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
+import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
+import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
+import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
+import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
+import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
+import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.core.codegen.buffer.AbstractBufferContainer;
-import org.ietr.preesm.core.codegen.com.CommunicationFunctionCall;
-import org.ietr.preesm.core.codegen.com.CommunicationFunctionInit;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFBroadcastVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.core.codegen.model.FunctionCall;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.core.codegen.threads.CommunicationThreadDeclaration;
-import org.ietr.preesm.core.codegen.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.core.codegen.types.CodeSectionType;
 
 /**
  * Generating communication code (initialization and calls) for a given type of

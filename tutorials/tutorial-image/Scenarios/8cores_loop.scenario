@@ -8,19 +8,21 @@
     <constraints excelUrl="">
         <constraintGroup/>
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="Read_YUV"/>
+            <operator name="Core1"/>
             <task name="display_pic"/>
             <task name="substract_pic"/>
         </constraintGroup>
-        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core1"/>
+            <operator name="Core0"/>
+            <task name="Read_YUV"/>
+            <task name="display_pic_orig"/>
         </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <timings excelUrl="">
-        <timing opname="x86" time="10000" vertexname="Read_YUV"/>
-        <timing opname="x86" time="10000" vertexname="display_pic"/>
+        <timing opname="x86" time="100" vertexname="Read_YUV"/>
+        <timing opname="x86" time="100" vertexname="display_pic"/>
+        <timing opname="x86" time="10000" vertexname="substract_pic"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>

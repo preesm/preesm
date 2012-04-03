@@ -71,10 +71,10 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
-import org.ietr.preesm.mapper.plot.GanttPlotter;
 import org.ietr.preesm.mapper.timekeeper.NewTimeKeeper;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
+import org.ietr.preesm.mapper.ui.GanttPlotter;
 
 /**
  * Abc that minimizes latency

@@ -10,7 +10,7 @@
          <outputs>
             <output
                   id="SourceFileList"
-                  object="org.ietr.preesm.core.codegen.SourceFileList"></output>
+                  object="org.ietr.preesm.codegen.model.main.SourceFileList"></output>
          </outputs>
          <inputs>
             <input

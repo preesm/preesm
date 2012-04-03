@@ -50,8 +50,6 @@ import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
@@ -65,11 +63,10 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.params.FastAlgoParameters;
-import org.ietr.preesm.mapper.plot.BestCostPlotter;
-import org.ietr.preesm.mapper.plot.bestcost.BestCostEditor;
-import org.ietr.preesm.mapper.plot.gantt.GanttEditorInput;
-import org.ietr.preesm.mapper.plot.gantt.GanttEditorRunnable;
 import org.ietr.preesm.mapper.tools.RandomIterator;
+import org.ietr.preesm.mapper.ui.BestCostPlotter;
+import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
+import org.ietr.preesm.mapper.ui.gantt.GanttEditorRunnable;
 
 /**
  * Fast Algorithm
@@ -191,7 +188,7 @@ public class FastAlgorithm extends Observable {
 		bestTotalOrder = simulator.getTotalOrder();
 
 		if (displaySolutions) {
-			createEditor(simulator, abcParams, getBestTotalOrder(), "Cost:"
+			launchEditor(simulator, abcParams, getBestTotalOrder(), "Cost:"
 					+ initial + " List");
 		}
 
@@ -320,7 +317,7 @@ public class FastAlgorithm extends Observable {
 				bestTotalOrder = simulator.getTotalOrder();
 
 				if (displaySolutions) {
-					createEditor(simulator, abcParams, getBestTotalOrder(),
+					launchEditor(simulator, abcParams, getBestTotalOrder(),
 							"Cost:" + bestSL + " Fast");
 				}
 
@@ -374,7 +371,7 @@ public class FastAlgorithm extends Observable {
 		return bestTotalOrder;
 	}
 
-	public void createEditor(IAbc abc, AbcParameters abcParams,
+	public void launchEditor(IAbc abc, AbcParameters abcParams,
 			VertexOrderList bestTotalOrder, String name) throws WorkflowException {
 
 		MapperDAG dag = abc.getDAG().clone();
@@ -384,10 +381,7 @@ public class FastAlgorithm extends Observable {
 		newAbc.reschedule(bestTotalOrder);
 		newAbc.updateFinalCosts();
 
-		IEditorInput input = new GanttEditorInput(newAbc, name);
-
-		PlatformUI.getWorkbench().getDisplay()
-				.asyncExec(new GanttEditorRunnable(input));
+		GanttEditorRunnable.run(newAbc, name);
 
 	}
 

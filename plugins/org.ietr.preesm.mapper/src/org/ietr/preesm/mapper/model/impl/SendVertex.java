@@ -38,7 +38,7 @@ package org.ietr.preesm.mapper.model.impl;
 
 import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**

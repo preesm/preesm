@@ -74,16 +74,8 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.preesm.core.codegen.ImplementationPropertyNames;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFEdge;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFForkVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFGraph;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFJoinVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenEndVertex;
-import org.ietr.preesm.core.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.core.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.core.codegen.model.VertexType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
 import org.jgrapht.alg.StrongConnectivityInspector;
 
