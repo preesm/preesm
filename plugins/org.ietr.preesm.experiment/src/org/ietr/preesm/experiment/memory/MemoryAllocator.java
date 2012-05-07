@@ -3,8 +3,8 @@ package org.ietr.preesm.experiment.memory;
 import java.util.HashMap;
 import net.sf.dftools.workflow.WorkflowException;
 
-import org.ietr.preesm.experiment.memoryBoundsEstimator.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memoryBoundsEstimator.MemoryExclusionVertex;
+import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionGraph;
+import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;

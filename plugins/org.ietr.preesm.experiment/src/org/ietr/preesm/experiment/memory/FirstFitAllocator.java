@@ -8,9 +8,9 @@ import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.experiment.memoryBoundsEstimator.AbstractMaximumWeightCliqueSolver;
 import org.ietr.preesm.experiment.memoryBoundsEstimator.HeuristicSolver;
-import org.ietr.preesm.experiment.memoryBoundsEstimator.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memoryBoundsEstimator.MemoryExclusionVertex;
 import org.ietr.preesm.experiment.memoryBoundsEstimator.OstergardSolver;
+import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionGraph;
+import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
