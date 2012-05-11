@@ -1,9 +1,0 @@
-module Display_pic {
-	typedef long parameter ;
-	interface init {
-		void Display_Y_init_nocomment ( in parameter Number, in parameter xsize, in parameter ysize);
-	};
-	interface loop{
-		void Display_Y ( in parameter Number,in char Y);
-	};
-};

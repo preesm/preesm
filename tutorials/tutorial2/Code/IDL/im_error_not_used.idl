@@ -1,6 +1,0 @@
-module im_error_not_used {
-	typedef long parameter ;
-	interface loop { 
-		void while(in parameter NULL);
-	};	
-};

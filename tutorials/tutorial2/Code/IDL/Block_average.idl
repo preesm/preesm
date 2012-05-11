@@ -1,7 +1,0 @@
-module Block_average {
-	typedef long parameter ;
-	interface loop { 
-	  void Create_im_average (in any Global, in parameter ratio, in char im_originale, in  char im_tailles_i, out char im_carres);
-	};
-	
-};

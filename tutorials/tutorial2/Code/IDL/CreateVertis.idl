@@ -1,6 +1,0 @@
-module CreateVertis {
-	typedef long parameter;
-	interface loop{
-	void Create_im_vertis ( in any Global, in parameter ratio, in char  im_tailles_i, out char im_sommets );	
-	};	
-};

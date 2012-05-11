@@ -1,7 +1,0 @@
-module Max2x2 {
-	typedef long parameter ;
-    interface loop{
-       void Max2x2 ( in any Global, in parameter k, in parameter ratio, in char im_i, out char im_o );
-    };
-	
-};
