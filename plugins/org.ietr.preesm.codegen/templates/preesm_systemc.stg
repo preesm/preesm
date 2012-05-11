@@ -1,0 +1,148 @@
+group simple ;
+
+actor_file(includes, actor, symbol)::=<<
+#ifndef <symbol>
+#define <symbol>
+
+#include"systemc.h"
+<includes:{inc|#include "<inc>.h"}; separator=" \n">
+
+<actor>
+
+#endif
+>>
+
+actor_declaration(name,ports, actor_declarations, actor_instanciations, edge_declarations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
+SC_MODULE(<name>){
+	
+	sc_out\<bool\> enable_port ;
+	sc_in\<bool\> invoke_port ; 
+	
+	<if(ports)><ports; separator="; \n">;<endif>
+	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
+	<if(actor_declarations)><actor_declarations; separator="; \n">;<endif>
+	
+	void enable(){ // check schedulability, and update enable_port value
+		bool isEnable ;
+		while(1){
+			 isEnable = true ;
+			enable_port.write(false);
+			wait(1, SC_NS);
+			<if(firing_rules_sensitivity)>
+			wait(100, SC_NS,<firing_rules_sensitivity; separator=" | ">);
+			<firing_rules:{f|isEnable &=<f>};separator=";\n">;
+			<endif>
+			enable_port.write(isEnable);
+			wait(1, SC_NS);
+		}
+	}
+	
+	<if(!edge_declarations)>
+	void actor_firing() ; // actor behavior
+	
+	void invoke(){ // runs one iteration of the actor
+		while(1){
+			wait(invoke_port.posedge_event());
+			actor_firing();
+		}
+	}
+	<else>
+	void invoke(){ // runs one iteration of the actor
+		while(1){
+			wait(invoke_port.posedge_event());
+			<edge_delay; separator="\n">;
+			//TODO:init delay edges
+		}
+	}
+	<endif>
+	
+	
+	SC_CTOR(<name>)<if(actor_instanciations)>:<actor_instanciations; separator=", "><endif>{
+		SC_THREAD(invoke);
+		SC_THREAD(enable);
+		<if(body)><body>;<endif>
+	}
+};
+
+>>
+
+
+test_bed(name,actor_declarations, edge_declarations, body)::=<<
+
+	
+	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
+	
+	
+	int sc_main(int argc, char* argv[]) {
+		<actor_declarations; separator=";\n">;
+		<if(body)><body>;<endif>
+		sc_start();
+		return 0 ;
+	}
+
+>>
+
+
+
+actor_body( edges_instanciations, connections)::=<<
+<connections; separator="; \n">;
+<edges_instanciations; separator="; \n">;
+>>
+
+vertex_declaration(name, type, type_template)::=<<
+<type><if(type_template)><type_template><endif> <name>
+>>
+
+vertex_instanciation(name)::=<<
+<name>("<name>")
+>>
+
+vertex_test_bed_instanciation(name, type, type_template)::=<<
+<type><if(type_template)><type_template><endif> <name>("<name>")
+>>
+
+template_attribute(attributes) ::=<<
+\<<attributes;separator=", ">\>
+>>
+
+
+
+input_port(name, type)::=<<
+sc_fifo_in\<<type>\> <name>
+>>
+
+output_port(name, type)::=<<
+sc_fifo_out\< <type> \> <name>
+>>
+
+edge_declaration(name, type)::=<<
+sc_fifo\< <type> \> <name>
+>>
+
+edge_instanciation(name, type, size)::=<<
+sc_fifo\< <type> \> <name>  ("<name>", <size>)
+>>
+
+edge_delay(fifo, delay_size, delay_value)::=<<
+	for( int <fifo>_index = 0 ; <fifo>_index \< <delay_size> ; <fifo>_index ++){
+		<fifo>.write(<delay_value>);
+	}
+>>
+
+signal_declaration(name, type)::=<<
+sc_signal\< <type> \> <name>
+>>
+
+connection(actor, port, edge) ::=<<
+<actor>.<port>( <edge> )
+>>
+
+sdf_firing_rule(port, nb_tokens) ::=<<
+	(<port>.num_available() >= <nb_tokens>)
+>>
+
+
+port_event(port) ::=<<
+<port>.data_written_event()
+>>
+
