@@ -16,7 +16,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,
  .,
- lib/idl.jar
+ lib/idl.jar,
+ lib/antlr-3.3-complete.jar,
+ lib/ST-4.0.4.jar
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.codegen,
  org.ietr.preesm.codegen.model.allocators,
