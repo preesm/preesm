@@ -38,6 +38,8 @@ package org.ietr.preesm.codegen.model;
 
 import jscl.math.Expression;
 import jscl.math.JSCLInteger;
+import net.sf.dftools.algorithm.model.CodeRefinement;
+import net.sf.dftools.algorithm.model.IRefinement;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
@@ -90,6 +92,32 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 
 	public String toString() {
 		return this.getName();
+	}
+	
+	public void setRefinement(IRefinement desc){
+		super.setRefinement(desc);
+		if(desc instanceof FunctionCall){
+			FunctionCall codeRef = (FunctionCall) desc ;
+			for(CodeGenArgument arg : codeRef.getArguments().keySet()){
+				if(arg.getDirection().equals(CodeGenArgument.INPUT)){
+					CodeGenSDFSourceInterfaceVertex src = (CodeGenSDFSourceInterfaceVertex) this.getInterface(arg.getName());
+					if(src == null){
+						src = new CodeGenSDFSourceInterfaceVertex();
+						src.setName(arg.getName());
+						this.addInterface(src);
+					}
+					src.setDataType(arg.getType());
+				}else if(arg.getDirection().equals(CodeGenArgument.OUTPUT)){
+					CodeGenSDFSinkInterfaceVertex snk = (CodeGenSDFSinkInterfaceVertex) this.getInterface(arg.getName());
+					if(snk == null){
+						snk = new CodeGenSDFSinkInterfaceVertex();
+						snk.setName(arg.getName());
+						this.addInterface(snk);
+					}
+					snk.setDataType(arg.getType());
+				}
+			}
+		}
 	}
 
 	@Override

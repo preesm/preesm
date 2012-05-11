@@ -36,6 +36,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,7 @@ import org.ietr.preesm.codegen.model.allocators.BufferAllocator;
 import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.print.GenericPrinter;
+import org.ietr.preesm.codegen.model.visitor.SystemCPrinterVisitor;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.PathTools;
@@ -114,20 +116,31 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-			// Typical static code generation
-			SourceFileList list = new SourceFileList();
-			CodeGenerator codegen = new CodeGenerator(list);
-			// Generate source files
-			codegen.generateSourceFiles(codeGenSDFGraph, architecture, scenario);
 
-			// Generates the code in xml and translates it to c using XSLT
-			// sheets
-			GenericPrinter printerChooser = new GenericPrinter(sourcePath,
-					xslPath);
-			printerChooser.printList(list);
+		if (parameters.get("printTemplate") != null) {
+			SystemCPrinterVisitor printer = new SystemCPrinterVisitor(
+					new File(
+							"/home/jpiat/development/Method/Dataflow/preesm-tools/preesm/trunk/plugins/org.ietr.preesm.codegen/templates/preesm_systemc.stg"),
+					sourcePath);
+			try {
+				codeGenSDFGraph.accept(printer);
+			} catch (SDF4JException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// Typical static code generation
+		SourceFileList list = new SourceFileList();
+		CodeGenerator codegen = new CodeGenerator(list);
+		// Generate source files
+		codegen.generateSourceFiles(codeGenSDFGraph, architecture, scenario);
 
-			outputs.put("SourceFileList", list);
+		// Generates the code in xml and translates it to c using XSLT
+		// sheets
+		GenericPrinter printerChooser = new GenericPrinter(sourcePath, xslPath);
+		printerChooser.printList(list);
+
+		outputs.put("SourceFileList", list);
 
 		Activator.updateWorkspace();
 
