@@ -1,0 +1,12 @@
+
+module substract_pic {
+	typedef long parameter ;
+	interface init {
+		void noCall ( ) ;
+	} ;
+	interface loop {
+		void substract_pic ( in char Y1 , in char U1 , in char V1 , in char Y2 , in
+		char U2 , in char V2 , out char Y , out char U , out char V , out char Y1o ,
+		out char U1o , out char V1o , in parameter xsize , in parameter ysize ) ;
+	} ;
+} ;

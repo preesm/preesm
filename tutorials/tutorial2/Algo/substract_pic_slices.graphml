@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">substract_pic_slices.graphml</data>
+        <data key="kind">sdf</data>
+        <data key="parameters">
+            <parameter name="ysize"/>
+            <parameter name="nb_slices"/>
+            <parameter name="xsize"/>
+        </data>
+        <node id="substract_pic">
+            <data key="graph_desc">../Code/IDL/substractPic.idl</data>
+            <data key="name">substract_pic</data>
+            <data key="kind">vertex</data>
+            <data key="arguments">
+                <argument name="ysize" value="ysize/nb_slices"/>
+                <argument name="xsize" value="xsize"/>
+            </data>
+        </node>
+        <node id="U1">
+            <data key="name">U1</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="U2">
+            <data key="name">U2</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="V1">
+            <data key="name">V1</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="V2">
+            <data key="name">V2</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Y1">
+            <data key="name">Y1</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Y2">
+            <data key="name">Y2</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Y1o">
+            <data key="name">Y1o</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="U1o">
+            <data key="name">U1o</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="V1o">
+            <data key="name">V1o</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="V">
+            <data key="name">V</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="Y">
+            <data key="name">Y</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="U">
+            <data key="name">U</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <edge source="U1" sourceport="" target="substract_pic" targetport="U1">
+            <data key="edge_cons">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="U2" sourceport="" target="substract_pic" targetport="U2">
+            <data key="edge_cons">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="V1" sourceport="" target="substract_pic" targetport="V1">
+            <data key="edge_cons">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="V2" sourceport="" target="substract_pic" targetport="V2">
+            <data key="edge_cons">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Y1" sourceport="" target="substract_pic" targetport="Y1">
+            <data key="edge_cons">(xsize*ysize)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize*ysize)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Y2" sourceport="" target="substract_pic" targetport="Y2">
+            <data key="edge_cons">(xsize*ysize)/nb_slices</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize*ysize)</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="U" target="U" targetport="">
+            <data key="edge_cons">(xsize/2*ysize/2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="U1o" target="U1o" targetport="">
+            <data key="edge_cons">(xsize/2*ysize/2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="V" target="V" targetport="">
+            <data key="edge_cons">(xsize/2*ysize/2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="V1o" target="V1o" targetport="">
+            <data key="edge_cons">(xsize/2*ysize/2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize/2*ysize/2)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="Y" target="Y" targetport="">
+            <data key="edge_cons">(xsize*ysize)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize*ysize)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="substract_pic" sourceport="Y1o" target="Y1o" targetport="">
+            <data key="edge_cons">(xsize*ysize)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">(xsize*ysize)/nb_slices</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>

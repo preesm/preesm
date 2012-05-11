@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="__algorithm" x="189" y="235"/>
+      <vertex id="__architecture" x="499" y="301"/>
+      <vertex id="__scenario" x="57" y="244"/>
+      <vertex id="DAG Plotter" x="813" y="70"/>
+      <vertex id="LIST scheduler" x="649" y="202"/>
+      <vertex id="HSDF" x="499" y="190"/>
+      <vertex id="HierarchyFlattening" x="323" y="214"/>
+      <vertex id="Exporter" x="649" y="91"/>
+   </vertices>
+</layout>
