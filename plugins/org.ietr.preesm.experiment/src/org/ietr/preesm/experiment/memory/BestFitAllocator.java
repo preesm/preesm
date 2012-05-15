@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionVertex;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;

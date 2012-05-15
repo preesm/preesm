@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import net.sf.dftools.workflow.WorkflowException;
 
-import org.ietr.preesm.experiment.memory.bounds.OstergardSolver;
-import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionVertex;
+import org.ietr.preesm.memory.bounds.OstergardSolver;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
