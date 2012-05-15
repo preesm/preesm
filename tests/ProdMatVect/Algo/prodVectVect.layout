@@ -8,6 +8,6 @@
       <vertex id="vectorFinal" x="543" y="273"/>
       <vertex id="brScal" x="469" y="210"/>
       <vertex id="ScalIn" x="243" y="315"/>
-      <vertex id="mux" x="325" y="340"/>
+      <vertex id="muxScal" x="325" y="340"/>
    </vertices>
 </layout>

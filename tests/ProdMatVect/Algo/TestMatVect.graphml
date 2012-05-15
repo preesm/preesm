@@ -1,53 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
-        <data key="name">testMatVect</data>
+        <data key="name">TestMatVect</data>
+        <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
             <variable name="size" value="3"/>
         </data>
-        <node id="outputMatrix" kind="vertex">
-            <data key="graph_desc">../IDL/generateMatrix.idl</data>
+        <node id="outputMatrix">
             <data key="name">outputMatrix</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../IDL/generateMatrix.idl</data>
             <data key="arguments">
                 <argument name="size" value="size*size"/>
             </data>
         </node>
-        <node id="outputVector" kind="vertex">
-            <data key="graph_desc">../IDL/generateVector.idl</data>
+        <node id="outputVector">
             <data key="name">outputVector</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../IDL/generateVector.idl</data>
             <data key="arguments">
                 <argument name="size" value="size"/>
             </data>
         </node>
-        <node id="displayResult" kind="vertex">
-            <data key="graph_desc">../IDL/displayResult.idl</data>
+        <node id="displayResult">
             <data key="name">displayResult</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../IDL/displayResult.idl</data>
             <data key="arguments">
                 <argument name="size" value="size"/>
             </data>
         </node>
-        <node id="ProdMatVect" kind="vertex">
-            <data key="graph_desc">matVect.graphml</data>
+        <node id="ProdMatVect">
             <data key="name">ProdMatVect</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">matVect.graphml</data>
             <data key="arguments">
                 <argument name="xsize" value="size"/>
                 <argument name="ysize" value="size"/>
@@ -72,7 +73,7 @@
             <data key="edge_prod">size*size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size*size</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
     </graph>
 </graphml>

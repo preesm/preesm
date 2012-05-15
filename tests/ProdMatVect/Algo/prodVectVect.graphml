@@ -1,43 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
-    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
-    <key attr.name="name" attr.type="string" for="graph" id="name"/>
-    <key attr.name="name" attr.type="string" for="node" id="name"/>
-    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
-    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
-    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
-    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
-    </key>
-    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
-    </key>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">prodVectVect</data>
+        <data key="kind">sdf</data>
         <data key="parameters">
             <parameter name="size"/>
         </data>
         <data key="variables"/>
-        <node id="vector1In" kind="port" port_direction="Input"/>
-        <node id="vectorOut" kind="port" port_direction="Output"/>
-        <node id="productScal" kind="vertex">
-            <data key="graph_desc">MAC.graphml</data>
+        <node id="vector1In">
+            <data key="name">vector1In</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="vectorOut">
+            <data key="name">vectorOut</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="productScal">
             <data key="name">productScal</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">mac_op.graphml</data>
             <data key="arguments"/>
         </node>
-        <node id="accIn" kind="port" port_direction="Input"/>
-        <node id="vectorFinal" kind="port" port_direction="Output"/>
-        <node id="brScal" kind="Broadcast"/>
-        <node id="ScalIn" kind="port" port_direction="Input"/>
-        <node id="mux" kind="vertex">
+        <node id="accIn">
+            <data key="name">accIn</data>
+            <data key="kind">port</data>
             <data key="graph_desc"/>
-            <data key="name">mux</data>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="vectorFinal">
+            <data key="name">vectorFinal</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Output</data>
+        </node>
+        <node id="brScal">
+            <data key="name">brScal</data>
+            <data key="kind">Broadcast</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="ScalIn">
+            <data key="name">ScalIn</data>
+            <data key="kind">port</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="muxScal">
+            <data key="name">muxScal</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../IDL/mux.idl</data>
             <data key="arguments"/>
         </node>
         <edge source="vector1In" sourceport="in" target="productScal" targetport="scal1">
@@ -56,37 +90,37 @@
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
         <edge source="brScal" sourceport="out" target="vectorOut" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
         <edge source="brScal" sourceport="out" target="vectorFinal" targetport="in">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
-        <edge source="ScalIn" sourceport="in" target="mux" targetport="in1">
+        <edge source="ScalIn" sourceport="in" target="muxScal" targetport="in1">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">int</data>
         </edge>
-        <edge source="productScal" sourceport="prScal" target="mux" targetport="in2">
+        <edge source="productScal" sourceport="prScal" target="muxScal" targetport="in2">
             <data key="edge_prod">1</data>
             <data key="edge_delay">1</data>
             <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
-        <edge source="mux" sourceport="out" target="productScal" targetport="scal2">
+        <edge source="muxScal" sourceport="out1" target="productScal" targetport="scal2">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
-            <data key="data_type">char</data>
+            <data key="data_type">int</data>
         </edge>
     </graph>
 </graphml>
