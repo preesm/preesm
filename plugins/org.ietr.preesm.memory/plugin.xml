@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="net.sf.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
+            name="Memory Bounds Estimator"
+            type="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator">
+         <outputs>
+            <output
+                  id="BoundMin"
+                  object="java.lang.Integer">
+            </output>
+            <output
+                  id="BoundMax"
+                  object="java.lang.Integer">
+            </output>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output></outputs>
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder"
+            name="Memory Exclusion Graph Builder"
+            type="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraphBuilder">
+         <inputs>
+            <input
+                  id="DAG"
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator"
+            name="Serial Memory Bounds Estimator"
+            type="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator">
+         <inputs>
+            <input
+                  id="MemExes"
+                  object="java.util.Map">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.memory.exclusiongraph.MemExUpdater"
+            name="MemEx Updater"
+            type="org.ietr.preesm.memory.exclusiongraph.MemExUpdater">
+         <inputs>
+            <input
+                  id="DAG"
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
+   </extension>
+
+</plugin>
