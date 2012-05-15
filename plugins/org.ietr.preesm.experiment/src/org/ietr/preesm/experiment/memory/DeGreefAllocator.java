@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionVertex;
+import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionVertex;
 
 import net.sf.dftools.workflow.WorkflowException;
 

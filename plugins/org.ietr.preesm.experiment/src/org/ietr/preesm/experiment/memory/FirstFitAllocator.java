@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import net.sf.dftools.workflow.WorkflowException;
 
-import org.ietr.preesm.experiment.memoryBoundsEstimator.AbstractMaximumWeightCliqueSolver;
-import org.ietr.preesm.experiment.memoryBoundsEstimator.HeuristicSolver;
-import org.ietr.preesm.experiment.memoryBoundsEstimator.OstergardSolver;
-import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionGraph;
-import org.ietr.preesm.experiment.memoryExclusionGraphBuilder.MemoryExclusionVertex;
+import org.ietr.preesm.experiment.memory.bounds.AbstractMaximumWeightCliqueSolver;
+import org.ietr.preesm.experiment.memory.bounds.HeuristicSolver;
+import org.ietr.preesm.experiment.memory.bounds.OstergardSolver;
+import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.experiment.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
