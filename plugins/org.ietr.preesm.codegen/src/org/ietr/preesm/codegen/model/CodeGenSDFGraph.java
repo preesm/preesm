@@ -41,9 +41,6 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 
 public class CodeGenSDFGraph extends SDFGraph {
 

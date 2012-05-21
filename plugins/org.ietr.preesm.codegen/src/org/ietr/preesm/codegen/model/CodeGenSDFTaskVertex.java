@@ -38,7 +38,6 @@ package org.ietr.preesm.codegen.model;
 
 import jscl.math.Expression;
 import jscl.math.JSCLInteger;
-import net.sf.dftools.algorithm.model.CodeRefinement;
 import net.sf.dftools.algorithm.model.IRefinement;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;

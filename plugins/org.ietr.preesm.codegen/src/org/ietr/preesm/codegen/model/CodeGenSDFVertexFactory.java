@@ -44,7 +44,6 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
 import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
