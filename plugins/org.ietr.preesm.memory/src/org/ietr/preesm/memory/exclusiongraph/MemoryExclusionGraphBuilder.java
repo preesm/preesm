@@ -47,6 +47,8 @@ import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.types.DataType;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -77,6 +79,10 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
 		boolean verbose;
 		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
+		
+		// Retrieve list of types and associated sizes in the scenario
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
 
 		// Make a copy of the Input DAG for treatment
 		// The DAG is altered when building the exclusion graph.
@@ -92,6 +98,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 			logger.log(Level.INFO, "Memory exclusion graph : start building");
 		MemoryExclusionGraph memEx = new MemoryExclusionGraph();
 		try {
+			memEx.setDataTypes(dataTypes);
 			memEx.buildGraph(localDAG);
 		} catch (InvalidExpressionException e) {
 			throw new WorkflowException(e.getLocalizedMessage());

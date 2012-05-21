@@ -14,3 +14,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.exclusiongraph
+Import-Package: org.ietr.preesm.core.scenario,
+ org.ietr.preesm.core.types

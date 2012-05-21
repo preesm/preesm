@@ -41,6 +41,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
@@ -51,6 +53,9 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.WorkflowException;
 
+import org.ietr.preesm.core.types.BufferAggregate;
+import org.ietr.preesm.core.types.BufferProperties;
+import org.ietr.preesm.core.types.DataType;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -97,7 +102,10 @@ public class MemoryExclusionGraph extends
 	public MemoryExclusionGraph() {
 		super(DefaultEdge.class);
 		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
+		dataTypes = new HashMap<String, DataType>();
 	}
+
+	private Map<String, DataType> dataTypes;
 
 	/**
 	 * This method add the node corresponding to the passed edge to the
@@ -122,6 +130,26 @@ public class MemoryExclusionGraph extends
 				&& edge.getTarget().getPropertyBean().getValue("vertexType")
 						.toString().equals("task")) {
 			newNode = new MemoryExclusionVertex(edge);
+
+			// if datatype is defined, correct the vertex weight
+			BufferAggregate buffers = (BufferAggregate) edge.getPropertyBean()
+					.getValue("bufferAggregate");
+			Iterator<BufferProperties> iter = buffers.iterator();
+			int vertexWeight = 0;
+			while (iter.hasNext()) {
+				BufferProperties properties = iter.next();
+
+				String dataType = properties.getDataType();
+				DataType type = this.dataTypes.get(dataType);
+
+				if (type != null) {
+					vertexWeight += type.getSize() * properties.getSize();
+				} else {
+					vertexWeight += properties.getSize();
+				}
+			}
+			
+			newNode.setWeight(vertexWeight);
 
 			this.addVertex(newNode);
 
@@ -693,5 +721,20 @@ public class MemoryExclusionGraph extends
 			}
 		}
 		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
+	}
+
+	/**
+	 * This method is used to associate a map of data types to the memex graph.
+	 * This map will be used when building the graph to give their weight to the
+	 * graph vertices.
+	 * 
+	 * @param dataTypes
+	 *            the map of DataType
+	 */
+	public void setDataTypes(Map<String, DataType> dataTypes) {
+		if (dataTypes != null) {
+			this.dataTypes = dataTypes;
+		}
+
 	}
 }

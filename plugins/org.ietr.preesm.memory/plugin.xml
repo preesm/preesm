@@ -36,6 +36,10 @@
                   id="DAG"
                   object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
          </inputs>
          <outputs>
             <output
