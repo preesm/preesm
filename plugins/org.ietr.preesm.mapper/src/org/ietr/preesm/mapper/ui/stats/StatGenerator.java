@@ -212,6 +212,13 @@ public class StatGenerator {
 				MapperDAGEdge me = (MapperDAGEdge) e;
 				MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
 				MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
+				
+				if(!e.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
+						|| !e.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")){
+					// Skip the edge if source or target is not a task
+					continue;
+				}
+					
 
 				if (!(me instanceof PrecedenceEdge)) {
 					ComponentInstance srcOp = scr
