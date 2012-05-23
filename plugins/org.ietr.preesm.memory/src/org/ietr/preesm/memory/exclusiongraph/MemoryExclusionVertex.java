@@ -36,22 +36,49 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.memory.exclusiongraph;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import net.sf.dftools.algorithm.model.AbstractEdge;
 import net.sf.dftools.algorithm.model.AbstractVertex;
 import net.sf.dftools.algorithm.model.PropertyFactory;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+
+import org.ietr.preesm.core.types.BufferAggregate;
+import org.ietr.preesm.core.types.BufferProperties;
+import org.ietr.preesm.core.types.DataType;
 
 /**
- * MemoryExclusionVertex is used to represent vertices in the Exclusion
- * graph.
+ * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
  * 
  * @author kdesnos
  * 
  */
-public class MemoryExclusionVertex extends
-		AbstractVertex<MemoryExclusionGraph> implements
-		IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
+		implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+
+	/**
+	 * This Map is used as a reference of dataTypes size when creating an vertex
+	 * from a DAGEdge
+	 */
+	static private Map<String, DataType> _dataTypes = new HashMap<String, DataType>();
+
+	/**
+	 * This method is used to associate a map of data types to the
+	 * MemoryExclusionVertex class. This map will be used when creating a MemEx
+	 * Vertex from a DAGEdge to give their real weight to the MemEx graph
+	 * vertices.
+	 * 
+	 * @param dataTypes
+	 *            the map of DataType
+	 */
+	static public void setDataTypes(Map<String, DataType> dataTypes) {
+		if (dataTypes != null) {
+			_dataTypes = dataTypes;
+		}
+	}
+
 	/**
 	 * unique identifier of vertex for user convenience
 	 */
@@ -71,14 +98,66 @@ public class MemoryExclusionVertex extends
 	 * ID of the task producing the memory.
 	 */
 	private String source;
+	
+	/**
+	 * ID of the explode/Implode dag vertex the memory belongs to
+	 */
+	private String explodeImplode;
 
 	/**
 	 * The edge in the DAG that corresponds to this vertex in the exclusion
-	 * graph. 
-	 * (This attribute is used only if the vertices corresponds to
-	 * an edge in the dag, i.e. a transfer between actors)
+	 * graph. (This attribute is used only if the vertices corresponds to an
+	 * edge in the dag, i.e. a transfer between actors)
 	 */
 	private DAGEdge edge;
+
+	/**
+	 * Constructor of the class
+	 * 
+	 * @param inputEdge
+	 *            the DAG edge corresponding to the constructed vertex
+	 */
+	public MemoryExclusionVertex(DAGEdge inputEdge) {
+		source = inputEdge.getSource().getName();
+		sink = inputEdge.getTarget().getName();
+		
+		if(inputEdge.getPropertyBean().getValue("explodeName") != null){
+			explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
+		} else {
+			explodeImplode ="";
+		}
+		
+//		try {
+//			size = inputEdge.getWeight().intValue();
+//		} catch (InvalidExpressionException e) {
+//			e.printStackTrace();
+//		}
+		// if datatype is defined, correct the vertex weight
+		BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
+				.getValue("bufferAggregate");
+		Iterator<BufferProperties> iter = buffers.iterator();
+		int vertexWeight = 0;
+		while (iter.hasNext()) {
+			BufferProperties properties = iter.next();
+
+			String dataType = properties.getDataType();
+			DataType type = _dataTypes.get(dataType);
+
+			if (type != null) {
+				vertexWeight += type.getSize() * properties.getSize();
+			} else {
+				vertexWeight += properties.getSize();
+			}
+		}
+		
+		size = vertexWeight;
+
+		if (vertexWeight == 0) {
+			System.out.println("Probable ERROR: Vertex weight is 0");
+		}
+
+		this.edge = inputEdge;
+	}
 
 	/**
 	 * Constructor of the class
@@ -90,36 +169,17 @@ public class MemoryExclusionVertex extends
 	 * @param sourceTask
 	 *            The size of the memory
 	 */
-	public MemoryExclusionVertex(String sourceTask, String sinkTask,
-			int sizeMem) {
+	public MemoryExclusionVertex(String sourceTask, String sinkTask, int sizeMem) {
 		source = sourceTask;
 		sink = sinkTask;
 		size = sizeMem;
+		explodeImplode = "";
 	}
 
-	public MemoryExclusionVertex getClone() {
-		MemoryExclusionVertex copy;
-		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
-		copy.setIdentifier(getIdentifier());
-		copy.edge = this.edge;
-		return copy;
-	}
-
-	/**
-	 * Constructor of the class
-	 * 
-	 * @param inputEdge
-	 *            the DAG edge corresponding to the constructed vertex
-	 */
-	public MemoryExclusionVertex(DAGEdge inputEdge) {
-		source = inputEdge.getSource().getName();
-		sink = inputEdge.getTarget().getName();
-		try {
-			size = inputEdge.getWeight().intValue();
-		} catch (InvalidExpressionException e) {
-			e.printStackTrace();
-		}
-		this.edge = inputEdge;
+	@Override
+	public AbstractVertex<MemoryExclusionGraph> clone() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -128,6 +188,18 @@ public class MemoryExclusionVertex extends
 	 */
 	public int compareTo(MemoryExclusionVertex o) {
 		return this.size - o.size;
+	}
+
+	@Override
+	public void connectionAdded(AbstractEdge<?, ?> e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void connectionRemoved(AbstractEdge<?, ?> e) {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
@@ -142,10 +214,33 @@ public class MemoryExclusionVertex extends
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink));
+					.equals(((MemoryExclusionVertex) o).sink) && this.explodeImplode
+					.equals(((MemoryExclusionVertex) o).explodeImplode));
 		} else {
 			return false;
 		}
+	}
+
+	public MemoryExclusionVertex getClone() {
+		MemoryExclusionVertex copy;
+		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
+		copy.setIdentifier(getIdentifier());
+		copy.edge = this.edge;
+		return copy;
+	}
+
+	/**
+	 * @return the edge of the DAG that correspond to this vertex in the
+	 *         exclusion Graph
+	 */
+	public DAGEdge getEdge() {
+		return edge;
+	}
+
+	@Override
+	public PropertyFactory getFactoryForProperty(String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -176,24 +271,12 @@ public class MemoryExclusionVertex extends
 		return size;
 	}
 
-	public void setWeight(Integer w) {
-		size = w.intValue();
-	}
-
-	/**
-	 * @return the edge of the DAG that correspond to this vertex in the
-	 *         exclusion Graph
-	 */
-	public DAGEdge getEdge() {
-		return edge;
-	}
-
 	/**
 	 * Method added to enable the use of contains() method in
 	 * Set<MemoryExclusionVertex>
 	 */
 	public int hashCode() {
-		return sink.hashCode() | source.hashCode();
+		return sink.hashCode() | source.hashCode() | explodeImplode.hashCode();
 	}
 
 	/**
@@ -204,31 +287,11 @@ public class MemoryExclusionVertex extends
 		this.identifier = identifier;
 	}
 
+	public void setWeight(Integer w) {
+		size = w.intValue();
+	}
+
 	public String toString() {
 		return source + "=>" + sink + ":" + size;
-	}
-
-	@Override
-	public PropertyFactory getFactoryForProperty(String propertyName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AbstractVertex<MemoryExclusionGraph> clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void connectionAdded(AbstractEdge<?, ?> e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void connectionRemoved(AbstractEdge<?, ?> e) {
-		// TODO Auto-generated method stub
-
 	}
 }

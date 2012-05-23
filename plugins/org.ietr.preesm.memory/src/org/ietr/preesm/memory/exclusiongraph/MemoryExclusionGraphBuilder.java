@@ -83,6 +83,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 		// Retrieve list of types and associated sizes in the scenario
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
+		MemoryExclusionVertex.setDataTypes(dataTypes);
 
 		// Make a copy of the Input DAG for treatment
 		// The DAG is altered when building the exclusion graph.
@@ -98,7 +99,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 			logger.log(Level.INFO, "Memory exclusion graph : start building");
 		MemoryExclusionGraph memEx = new MemoryExclusionGraph();
 		try {
-			memEx.setDataTypes(dataTypes);
 			memEx.buildGraph(localDAG);
 		} catch (InvalidExpressionException e) {
 			throw new WorkflowException(e.getLocalizedMessage());
