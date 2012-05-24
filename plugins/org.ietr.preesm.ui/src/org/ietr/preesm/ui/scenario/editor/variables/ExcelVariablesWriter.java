@@ -123,7 +123,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 			FileNotFoundException, RowsExceededException {
 		if (sheet != null) {
 
-			int maxVOrdinate = 1;
+			int maxVOrdinate = 0;
 
 			// Get variables of the graph
 			SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
