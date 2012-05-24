@@ -1,8 +1,8 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet, Karol Desnos
 
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet,kdesnos]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.ui.scenario.editor.timings;
+package org.ietr.preesm.ui.scenario.editor;
 
 import java.io.InputStream;
 
@@ -55,27 +55,34 @@ import org.ietr.preesm.core.Activator;
  * This class provides a save as excel sheet wizard
  * 
  * @author mpelcat
+ * @author kdesnos
  */
 public class SaveAsWizard extends Wizard implements INewWizard {
 
 	private IWorkbench workbench;
-	private ExcelTimingWriter writer;
+	private ExcelWriter writer;
+	
+	/**
+	 *  What is saved (Timings, Variables, ...)
+	 */
+	private String _savedObject;
 
 	/**
 	 * Constructor for {@link SaveAsWizard}.
 	 */
-	public SaveAsWizard(ExcelTimingWriter writer) {
+	public SaveAsWizard(ExcelWriter writer, String savedObject) {
 		super();
 		this.writer = writer;
+		this._savedObject = savedObject;
 		setNeedsProgressMonitor(true);
-		setWindowTitle("Save timings As...");
+		setWindowTitle("Save "+ _savedObject +" As...");
 	}
 
 	@Override
 	public void addPages() {
-		WizardSaveExcelPage page = new WizardSaveExcelPage();
+		WizardSaveExcelPage page = new WizardSaveExcelPage(_savedObject);
 		page.setWriter(writer);
-		page.setDescription("Save timings as.");
+		page.setDescription("Save "+ _savedObject +" As...");
 		addPage(page);
 	}
 
@@ -95,7 +102,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
 
 	@Override
 	public boolean performFinish() {
-		final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("saveTimings");
+		final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("save"+_savedObject);
 
 		InputStream in = page.getInitialContents();
 		if (in == null) {

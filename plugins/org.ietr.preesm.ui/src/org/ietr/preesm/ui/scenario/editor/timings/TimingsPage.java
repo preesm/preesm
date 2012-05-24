@@ -1,8 +1,8 @@
 /*********************************************************
 Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
+Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet, Karol Desnos
 
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet,kdesnos]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -84,6 +84,7 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
  * Timing editor within the implementation editor
  * 
  * @author mpelcat
+ * @author kdesnos
  */
 public class TimingsPage extends FormPage implements IPropertyListener {
 

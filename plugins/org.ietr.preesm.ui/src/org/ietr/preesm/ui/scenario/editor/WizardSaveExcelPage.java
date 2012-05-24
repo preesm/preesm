@@ -1,8 +1,8 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet, Karol Desnos
 
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet,kdesnos]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.ui.scenario.editor.timings;
+package org.ietr.preesm.ui.scenario.editor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,23 +42,23 @@ import java.io.InputStream;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.jgrapht.Graph;
 
 /**
  * This class provides a page for the save timings as excel sheet wizard.
  * 
  * @author mpelcat
+ * @author kdesnos
  */
 public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 
-	private ExcelTimingWriter writer;
-
+	private ExcelWriter writer;
+	
 	/**
 	 * Constructor for {@link WizardSaveExcelPage}.
 	 */
-	public WizardSaveExcelPage() {
-		super("saveTimings", new StructuredSelection());
+	public WizardSaveExcelPage(String savedObject) {
+		super("save"+savedObject, new StructuredSelection());	
 
 		setTitle(Messages.getString("Timings.timingExport.dialog"));
 	}
@@ -78,7 +78,7 @@ public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 	 * @param graph
 	 *            A {@link Graph}.
 	 */
-	public void setWriter(ExcelTimingWriter writer) {
+	public void setWriter(ExcelWriter writer) {
 		this.writer = writer;
 	}
 

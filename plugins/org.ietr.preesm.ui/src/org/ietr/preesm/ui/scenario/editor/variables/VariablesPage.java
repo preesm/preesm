@@ -1,8 +1,8 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet, Karol Desnos
 
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet,kdesnos]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -57,6 +57,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -88,6 +89,7 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
  * Variables values overriding editor within the scenario editor
  * 
  * @author mpelcat
+ * @author kdesnos
  */
 public class VariablesPage extends FormPage implements IPropertyListener {
 
@@ -358,7 +360,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 2, gridData);
+		Composite client = createSection(mform, title, desc, 3, gridData);
 
 		FormToolkit toolkit = mform.getToolkit();
 
@@ -403,12 +405,37 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
+		
+		// Add a "Refresh" button to the scenario editor
+		final Button refreshButton = toolkit.createButton(client,
+				Messages.getString("Variables.variablesFileRefresh"), SWT.PUSH);
+		refreshButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Cause scenario editor to import variables from excel sheet
+				scenario.getVariablesManager().importVariables(scenario);
+				tableViewer.refresh();
+				// Force the "file has changed" property of scenario.
+				// Variables changes will have no effects if the scenario
+				// is not saved.
+				firePropertyChange(PROP_DIRTY);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+		});
 
 		final Button browseButton = toolkit.createButton(client,
 				Messages.getString("Overview.browse"), SWT.PUSH);
 		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
 				client.getShell(), browseTitle, fileExtension);
 		browseButton.addSelectionListener(browseAdapter);
+		
+		final Button exportButton = toolkit.createButton(client,
+				Messages.getString("Variables.variablesExportExcel"), SWT.PUSH);
+		exportButton.addSelectionListener(new ExcelVariablesWriter(scenario));
 
 		toolkit.paintBordersFor(client);
 	}

@@ -1,8 +1,8 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet, Karol Desnos
+Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
+Karol Desnos
 
-[mwipliez,jpiat,mpelcat,jnezan,mraulet,kdesnos]@insa-rennes.fr
+[mpelcat,jnezan,kdesnos]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -34,13 +34,12 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.ui.scenario.editor.timings;
+package org.ietr.preesm.ui.scenario.editor.variables;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
-import java.util.Set;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -52,7 +51,11 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import net.sf.dftools.algorithm.importer.InvalidModelException;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.NoIntegerValueException;
+import net.sf.dftools.algorithm.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.parameters.VariableSet;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,7 +63,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.ui.scenario.editor.ExcelWriter;
 import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -68,12 +71,13 @@ import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
  * Exporting timings in an excel sheet
  * 
  * @author mpelcat
+ * @author kdesnos
  */
-public class ExcelTimingWriter extends ExcelWriter{
+public class ExcelVariablesWriter extends ExcelWriter {
 
 	private PreesmScenario scenario;
 
-	public ExcelTimingWriter(PreesmScenario scenario) {
+	public ExcelVariablesWriter(PreesmScenario scenario) {
 		super();
 		this.scenario = scenario;
 	}
@@ -87,7 +91,7 @@ public class ExcelTimingWriter extends ExcelWriter{
 
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		SaveAsWizard wizard = new SaveAsWizard(this, "Timings");
+		SaveAsWizard wizard = new SaveAsWizard(this, "Variables");
 		WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
 		dialog.open();
 	}
@@ -103,7 +107,7 @@ public class ExcelTimingWriter extends ExcelWriter{
 			WorkbookSettings ws = new WorkbookSettings();
 			ws.setLocale(new Locale("en", "EN"));
 			WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
-			WritableSheet sheet = workbook.createSheet("Timings", 0);
+			WritableSheet sheet = workbook.createSheet("Variables", 0);
 
 			addCells(sheet);
 			workbook.write();
@@ -114,51 +118,53 @@ public class ExcelTimingWriter extends ExcelWriter{
 		}
 	}
 
-	/**
-	 * Add timing cells to the newly created file
-	 */
-	protected void addCells(WritableSheet sheet) throws InvalidModelException,FileNotFoundException {
+	@Override
+	protected void addCells(WritableSheet sheet) throws InvalidModelException,
+			FileNotFoundException, RowsExceededException {
 		if (sheet != null) {
 
-			int maxOpAbscissa = 1, maxVOrdinate = 1;
+			int maxVOrdinate = 1;
 
-			Set<SDFAbstractVertex> vSet = SDFListContentProvider
-					.getSortedVertices(scenario);
+			// Get variables of the graph
+			SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
+					.getAlgorithmURL());
+			VariableSet variablesGraph = currentGraph.getVariables();
 
-			for (String opDefId : scenario.getOperatorDefinitionIds()) {
-				for (SDFAbstractVertex vertex : vSet) {
-					String vertexName = vertex.getName();
+			// Get variables of the scenario
+			VariableSet variablesScenario = scenario.getVariablesManager()
+					.getVariables();
+			;
 
-					int time = scenario.getTimingManager().getTimingOrDefault(
-							vertex.getName(), opDefId);
-
-					WritableCell opCell = (WritableCell) sheet
-							.findCell(opDefId), vCell = (WritableCell) sheet
-							.findCell(vertexName);
-
-					try {
-						if (opCell == null) {
-							opCell = new Label(maxOpAbscissa, 0, opDefId);
-							sheet.addCell(opCell);
-							maxOpAbscissa++;
-						}
-
-						if (vCell == null) {
-							vCell = new Label(0, maxVOrdinate, vertexName);
-							sheet.addCell(vCell);
-							maxVOrdinate++;
-						}
-
-						WritableCell timeCell = new Number(opCell.getColumn(),
-								vCell.getRow(), time);
-						sheet.addCell(timeCell);
-					} catch (RowsExceededException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (WriteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			for (String variableName : variablesGraph.keySet()) {
+				// Retrieve the cell (if it exists)
+				WritableCell varCell = (WritableCell) sheet
+						.findCell(variableName);
+				try {
+					// If the cell does not exists, create it
+					if (varCell == null) {
+						varCell = new Label(0, maxVOrdinate, variableName);
+						sheet.addCell(varCell);
+						maxVOrdinate++;
 					}
+
+					// Get the variable value from scenario
+					// if variable not defined in scenario, get value from graph
+					Variable variable = variablesScenario
+							.getVariable(variableName);
+					if (variable == null) {
+						variable = variablesGraph.getVariable(variableName);
+					}
+					int value = variable.intValue();
+
+					// Write the value in the cell
+					WritableCell valueCell = new Number(1, varCell.getRow(),
+							value);
+					sheet.addCell(valueCell);
+
+				} catch (WriteException | InvalidExpressionException
+						| NoIntegerValueException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
