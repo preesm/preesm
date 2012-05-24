@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -52,6 +52,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -319,7 +321,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 2, gridData);
+		Composite client = createSection(mform, title, desc, 3, gridData);
 
 		FormToolkit toolkit = mform.getToolkit();
 
@@ -364,6 +366,29 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
 
+		// Add a "Refresh" button to the scenario editor
+		final Button refreshButton = toolkit.createButton(client,
+				Messages.getString("Timings.timingFileRefresh"), SWT.PUSH);
+		refreshButton.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Cause scenario editor to import timings from excel sheet
+				scenario.getTimingManager().importTimings(scenario);
+				tableViewer.refresh();
+				// Force the "file has changed" property of scenario.
+				// Timing changes will have no effects if the scenario
+				// is not saved.
+				firePropertyChange(PROP_DIRTY);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+		});
+
+		toolkit.paintBordersFor(client);
+
 		final Button browseButton = toolkit.createButton(client,
 				Messages.getString("Overview.browse"), SWT.PUSH);
 		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
@@ -374,6 +399,5 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				Messages.getString("Timings.timingExportExcel"), SWT.PUSH);
 		exportButton.addSelectionListener(new ExcelTimingWriter(scenario));
 
-		toolkit.paintBordersFor(client);
 	}
 }
