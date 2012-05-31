@@ -36,11 +36,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.algorithm.transforms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.algorithm.iterators.SDFIterator;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
@@ -61,6 +68,121 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * 
  */
 public class HSDFTransformation extends AbstractTaskImplementation {
+	
+	@SuppressWarnings("unchecked")
+	private void supprImplodeExplode(SDFGraph hsdf) {
+		/*
+		 * Declarations & initializations
+		 */
+		SDFIterator iterSDFVertices;
+		try {
+			iterSDFVertices = new SDFIterator(hsdf);
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		} // Iterator on DAG vertices
+		
+		int nbEdgeBefore = hsdf.edgeSet().size();
+		// Be careful, DAGiterator does not seem to work well if dag is
+		// modified throughout the iteration.
+		// That's why we use first copy the ordered dag vertex set.
+		ArrayList<SDFAbstractVertex> sdfVertices = new ArrayList<SDFAbstractVertex>(hsdf
+				.vertexSet().size());
+		while (iterSDFVertices.hasNext()) {
+			SDFAbstractVertex vert =  iterSDFVertices.next();
+			sdfVertices.add(vert);
+		}
+
+		// Remove dag vertex of type implode explode
+		// And identify source vertices (vertices without predecessors)
+		HashSet<SDFAbstractVertex> nonTaskVertices = new HashSet<SDFAbstractVertex>(); // Set of
+																		// non-task
+																		// vertices
+
+		for (SDFAbstractVertex vert : sdfVertices) {
+			//boolean isTask = vert.getPropertyBean().getValue("vertexType")
+			//		.toString().equals("task");
+			String vertKind = "";
+
+			// Only task vertices have a kind
+			if (true) {
+				vertKind = vert.getKind();
+			}
+
+			// If the vertex is a task (an implode or explode vertex)
+			if (vertKind.equals("fork")
+					|| vertKind.equals("join") ) {
+								
+				if(vertKind.equals("fork") && (vert.getBase().incomingEdgesOf(vert).size() > 1)){
+					WorkflowLogger.getLogger().log(Level.SEVERE, "Skipped Fork vertex with multiple inputs ("+vert.getId()+")");
+					continue;
+				}
+				
+				if((vert.getBase().outgoingEdgesOf(vert).size() > 1) && (vert.getBase().incomingEdgesOf(vert).size() > 1)){
+					WorkflowLogger.getLogger().log(Level.SEVERE, "Skipped Fork/Join vertex with both multiple inputs and outputs ("+vert.getId()+")");
+					continue;
+				}
+
+				// Then link incoming/outgoing edges of the implode/explode
+				// directly to the target/source of explosion.
+				Set<SDFEdge> outgoingEdges = vert.getBase().outgoingEdgesOf(vert);
+				Set<SDFEdge> incomingEdges = vert.getBase().incomingEdgesOf(vert);
+				for (SDFEdge incomingEdge : incomingEdges) {
+					for (SDFEdge outgoingEdge : outgoingEdges) {
+						// One of this two nested loop will have only one
+						// iteration. Indeed, an implode vertex only has 1
+						// outgoing edge and a explode vertex only has 1
+						// incoming edge.
+
+//						// Check that the edge is linked to a task (we do
+//						// not
+//						// consider edges linked to send/receive)
+//						if (incomingEdge.getSource().getPropertyBean()
+//								.getValue("vertexType").toString()
+//								.equals("task")
+//								&& outgoingEdge.getTarget().getPropertyBean()
+//										.getValue("vertexType").toString()
+//										.equals("task")) {
+
+							// Select the edges whose properties must be
+							// copied to the new edge
+							SDFEdge edge ;
+							
+							
+							edge = (vertKind.equals("join")) ? incomingEdge
+										: outgoingEdge;
+							
+
+							// Create the new edge that bypass the
+							// explode/implode
+							SDFEdge newEdge = hsdf.addEdge(
+									incomingEdge.getSource(),
+									outgoingEdge.getTarget());
+
+							newEdge.copyProperties(edge);
+							newEdge.setSourceLabel(incomingEdge
+									.getSourceLabel());
+							newEdge.setTargetLabel(outgoingEdge
+									.getTargetLabel());
+							newEdge.setTargetInterface(outgoingEdge.getTargetInterface());
+							newEdge.setSourceInterface(incomingEdge.getSourceInterface());
+						
+						//}
+					}
+				}
+				nonTaskVertices.add(vert);
+			}
+
+		}
+		hsdf.removeAllVertices(nonTaskVertices);
+		if( nonTaskVertices.size() != (nbEdgeBefore - hsdf.edgeSet().size())){
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting " + nonTaskVertices.size() + "edges removed but got "+ (nbEdgeBefore - hsdf.edgeSet().size()) +" edges removed instead");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters");
+		}else {
+			WorkflowLogger.getLogger().log(Level.INFO, ""+ nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");
+		}	
+	}
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -69,9 +191,11 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-
+		
+		Logger logger = WorkflowLogger.getLogger();
+		
 		try {
-			Logger logger = WorkflowLogger.getLogger();
+			
 			logger.setLevel(Level.FINEST);
 			logger.log(Level.FINER,
 					"Transforming application " + algorithm.getName()
@@ -88,7 +212,19 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 					throw (new WorkflowException(e.getMessage()));
 				}
 				logger.log(Level.FINER, "HSDF transformation complete");
-				outputs.put("SDF", (SDFGraph) toHsdf.getOutput());
+				
+				SDFGraph hsdf = (SDFGraph) toHsdf.getOutput();
+				logger.log(Level.INFO,	"HSDF with "+ hsdf.vertexSet().size() +" vertices and "+ hsdf.edgeSet().size() + " edges.");
+				
+				String explImplSuppr;
+				if((explImplSuppr = parameters.get("ExplodeImplodeSuppr")) != null){
+					if(explImplSuppr.equals("true")){
+						logger.log(Level.INFO,	"Removing implode/explode ");
+						supprImplodeExplode(hsdf);
+					}
+				}
+
+				outputs.put("SDF", hsdf );
 			} else {
 				throw (new WorkflowException("Graph not valid, not schedulable"));
 			}
@@ -101,7 +237,9 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
-		return null;
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("ExplodeImplodeSuppr", "false");
+		return param;
 	}
 
 	@Override
