@@ -404,7 +404,9 @@ public class MemoryExclusionGraph extends
 			}
 
 			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex")) {
+					|| vertKind.equals("dag_broadcast_vertex")
+					|| vertKind.equals("dag_init_vertex")
+					|| vertKind.equals("dag_end_vertex")) {
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex

@@ -49,11 +49,29 @@
                   object="net.sf.dftools.architecture.slam.Design">
             </input>
          </inputs>
+         <outputs>
+            <output
+                  id="xml"
+                  object="java.lang.String">
+            </output>
+         </outputs>
       </task>
       <task
             id="org.ietr.preesm.XsltTransform"
             name="Xslt file transformation"
             type="org.ietr.preesm.mapper.exporter.XsltTransform">
+         <inputs>
+            <input
+                  id="xml"
+                  object="java.lang.String">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="xml"
+                  object="java.lang.String">
+            </output>
+         </outputs>
       </task>
       <task
             id="org.ietr.preesm.plugin.mapper.fast"

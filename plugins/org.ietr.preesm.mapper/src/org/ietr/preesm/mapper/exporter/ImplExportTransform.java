@@ -82,7 +82,9 @@ public class ImplExportTransform extends AbstractTaskImplementation {
 
 		Activator.updateWorkspace();
 
-		return new HashMap<String, Object>();
+		HashMap<String, Object> outputs = new HashMap<String, Object>();
+		outputs.put("xml", sGraphmlPath);
+		return outputs ;
 	}
 
 	@Override

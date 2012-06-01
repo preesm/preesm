@@ -38,15 +38,20 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Iterator;
 
 import net.sf.dftools.algorithm.exporter.GMLExporter;
+import net.sf.dftools.algorithm.exporter.Key;
 import net.sf.dftools.algorithm.model.AbstractGraph;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.architecture.slam.attributes.Parameter;
+import net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.impl.TransferVertex;
 import org.w3c.dom.Element;
 
@@ -72,7 +77,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	protected Element exportEdge(DAGEdge edge, Element parentELement) {
 		Element edgeElt = createEdge(parentELement, edge.getSource().getId(),
 				edge.getTarget().getId());
-		exportKeys(edge, "edge", edgeElt);
+		//exportKeys(edge, "edge", edgeElt);
 		return edgeElt;
 	}
 
@@ -101,6 +106,16 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 	@Override
 	protected Element exportNode(DAGVertex vertex, Element parentELement) {
+		// Pre modification for xml export
+		if(vertex.getPropertyBean().getValue("originalId") != null)
+		{
+			if(vertex instanceof MapperDAGVertex){
+				((MapperDAGVertex) vertex).getInitialVertexProperty().getParentVertex().setId(vertex.getPropertyBean().getValue("originalId").toString());
+			}
+		}
+		
+		vertex.setKind(vertex.getPropertyBean().getValue("vertexType").toString());
+				
 		Element vertexElt = createNode(parentELement, vertex.getId());
 		exportKeys(vertex, "vertex", vertexElt);
 
@@ -109,8 +124,28 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			AbstractRouteStep routeStep = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
 							ImplementationPropertyNames.SendReceive_routeStep);
-
+			// Add the Operator_address key
 			if (routeStep != null) {
+				String memAddress = null;
+				Element operatorAdress = this.domDocument.createElement("data");
+				Iterator<Parameter> iter = ((ComponentInstanceImpl)vertex.getPropertyBean().getValue("Operator")).getParameters().iterator();
+				while(iter.hasNext()){
+					Parameter param = iter.next();
+					if(param.getKey().equals("memoryAddress")){
+						memAddress = param.getValue();
+						break;
+					}					
+				}
+				
+				if(memAddress != null){
+					operatorAdress.setAttribute("key", "Operator_address");
+					operatorAdress.setTextContent(memAddress);
+					vertexElt.appendChild(operatorAdress);
+
+					this.addKey("Operator_address",
+							new Key("Operator_address", "vertex", "string", null));
+				}
+				
 				exportRouteStep(routeStep, vertexElt);
 			}
 

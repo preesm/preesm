@@ -49,6 +49,7 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.core.tools.XsltTransformer;
 
 /**
@@ -65,11 +66,23 @@ public class XsltTransform extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-
-		Path inputPath = new Path(parameters.get("inputFile"));
-		Path outputPath = new Path(parameters.get("outputFile"));
-		Path xslPath = new Path(parameters.get("xslFile"));
-
+		
+		String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"),
+				workflow.getProjectName());		
+		if(parameters.get("inputFile").equals("")){
+			sInputPath =  PathTools.getAbsolutePath((String)inputs.get("xml"),
+					workflow.getProjectName());
+		}		
+		Path inputPath = new Path(sInputPath);
+		
+		String sOutputPath = PathTools.getAbsolutePath(parameters.get("outputFile"),
+				workflow.getProjectName());		
+		Path outputPath = new Path(sOutputPath);
+		
+		String sxslPath = PathTools.getAbsolutePath(parameters.get("xslFile"),
+				workflow.getProjectName());		
+		Path xslPath = new Path(sxslPath);
+		
 		if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
 			try {
 				XsltTransformer xsltTransfo = new XsltTransformer();
@@ -86,8 +99,10 @@ public class XsltTransform extends AbstractTaskImplementation {
 				e.printStackTrace();
 			}
 		}
+		HashMap<String, Object> outputs = new HashMap<String, Object>();
+		outputs.put("xml", parameters.get("outputFile"));
 
-		return new HashMap<String, Object>();
+		return outputs;
 	}
 
 	@Override
