@@ -62,17 +62,17 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
- * Plug-in class for list scheduling
+ * List scheduling is a cheep, greedy, sequential mapping/scheduling method
  * 
  * @author pmenuet
  * @author mpelcat
  */
-public class ListSchedulingTransformation extends AbstractMapping {
+public class ListSchedulingMapping extends AbstractMapping {
 
 	/**
 	 * 
 	 */
-	public ListSchedulingTransformation() {
+	public ListSchedulingMapping() {
 	}
 
 	@Override

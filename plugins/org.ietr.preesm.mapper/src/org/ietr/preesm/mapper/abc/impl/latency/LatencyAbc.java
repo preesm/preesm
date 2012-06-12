@@ -71,7 +71,7 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
-import org.ietr.preesm.mapper.timekeeper.NewTimeKeeper;
+import org.ietr.preesm.mapper.timekeeper.TimeKeeper;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
@@ -88,7 +88,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * time tags in DAG
 	 */
 	// protected GraphTimeKeeper timeKeeper;
-	protected NewTimeKeeper nTimeKeeper;
+	protected TimeKeeper nTimeKeeper;
 
 	protected AbstractCommunicationRouter comRouter = null;
 
@@ -112,11 +112,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		this.params = params;
 
-		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
+		nTimeKeeper = new TimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-
-		// this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
-		// timeKeeper.resetTimings();
 
 		// The media simulator calculates the edges costs
 		edgeScheduler = AbstractEdgeSched.getInstance(
@@ -137,11 +134,8 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		orderManager.reconstructTotalOrderFromDAG(implementation);
 
-		nTimeKeeper = new NewTimeKeeper(implementation, orderManager);
+		nTimeKeeper = new TimeKeeper(implementation, orderManager);
 		nTimeKeeper.resetTimings();
-
-		// this.timeKeeper = new GraphTimeKeeper(implementation, nTimeKeeper);
-		// timeKeeper.resetTimings();
 
 		// Forces the unmapping process before the new mapping process
 		HashMap<MapperDAGVertex, ComponentInstance> operators = new HashMap<MapperDAGVertex, ComponentInstance>();
@@ -231,8 +225,6 @@ public abstract class LatencyAbc extends AbstractAbc {
 	 * Depending on the king of timings we want, calls the necessary updates.
 	 */
 	public void updateTimings() {
-
-		// timeKeeper.updateTLevels();
 		nTimeKeeper.updateTLevels();
 	}
 

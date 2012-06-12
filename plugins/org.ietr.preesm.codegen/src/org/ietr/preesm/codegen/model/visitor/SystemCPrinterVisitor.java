@@ -462,7 +462,7 @@ public class SystemCPrinterVisitor implements
 		StringTemplate template_attribute = group
 				.getInstanceOf("template_attribute");
 		List<String> attributes = new ArrayList<String>();
-		int nb_output = broadcastVertex.getBase()
+		int nb_output = ((CodeGenSDFGraph)broadcastVertex.getBase())
 				.outgoingEdgesOf(broadcastVertex).size();
 		int outputSize = 1;
 		String dataType = "char";
@@ -488,7 +488,7 @@ public class SystemCPrinterVisitor implements
 		StringTemplate template_attribute = group
 				.getInstanceOf("template_attribute");
 		List<String> attributes = new ArrayList<String>();
-		int nb_input = joinVertex.getBase().incomingEdgesOf(joinVertex).size();
+		int nb_input = ((CodeGenSDFGraph)joinVertex.getBase()).incomingEdgesOf(joinVertex).size();
 		int inputSize = 1;
 		String dataType = "char";
 		for (SDFEdge edge : ((SDFGraph) joinVertex.getBase())
@@ -513,7 +513,7 @@ public class SystemCPrinterVisitor implements
 		StringTemplate template_attribute = group
 				.getInstanceOf("template_attribute");
 		List<String> attributes = new ArrayList<String>();
-		int nb_output = forkVertex.getBase().outgoingEdgesOf(forkVertex).size();
+		int nb_output = ((CodeGenSDFGraph)forkVertex.getBase()).outgoingEdgesOf(forkVertex).size();
 		int inputSize = 1;
 		String dataType = "char";
 		for (SDFEdge edge : ((SDFGraph) forkVertex.getBase())

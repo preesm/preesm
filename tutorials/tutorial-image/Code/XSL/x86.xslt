@@ -77,10 +77,10 @@
     
     <xsl:template match="sourceCode:linearCodeContainer">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+        <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendDma | sourceCode:receiveDma | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit | sourceCode:linearCodeContainer">
             <xsl:value-of select="concat($curIndent,'{',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendDma | sourceCode:receiveDma | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit | sourceCode:linearCodeContainer">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -91,10 +91,10 @@
     
     <xsl:template match="sourceCode:forLoop">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost |  sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
+        <xsl:if test="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost |  sourceCode:sendDma | sourceCode:receiveDma | sourceCode:specialBehavior">
             <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
+            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:sendDma | sourceCode:receiveDma | sourceCode:specialBehavior">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -195,7 +195,7 @@
     </xsl:template>
     
     
-    <xsl:template match="sourceCode:sendMsg">
+    <xsl:template match="sourceCode:sendDma">
         <xsl:param name="curIndent"/>
         <xsl:choose>
             <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
@@ -213,7 +213,7 @@
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="sourceCode:receiveMsg">
+    <xsl:template match="sourceCode:receiveDma">
         <xsl:param name="curIndent"/>
         <xsl:choose>
             <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
@@ -271,7 +271,12 @@
     
     <xsl:template match="sourceCode:routeStep">
         <xsl:choose>
-            <xsl:when test="@type='dma'">dma</xsl:when>
+            <xsl:when test="@type='dma'">
+                <xsl:choose>
+                    <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>
+                    <xsl:otherwise>msg</xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
             <xsl:when test="@type='msg'">
                 <xsl:choose>
                     <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>

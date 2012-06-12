@@ -8,7 +8,7 @@
             <dftools:variable name="xslLibraryPath" value="Code/XSL"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="DAG Plotter">
+    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:task
@@ -27,7 +27,7 @@
             <dftools:variable name="simulatorType" value="ApproximatelyTimed"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="HSDF">
+    <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="srSDF">
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:task
@@ -56,7 +56,7 @@
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="DAG Plotter"/>
+        targetport="scenario" to="Gantt Plotter"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="codegen"/>
     <dftools:dataTransfer from="scenario" sourceport="SDF"
@@ -70,7 +70,7 @@
     <dftools:dataTransfer from="LIST scheduler" sourceport="DAG"
         targetport="DAG" to="ImplementationExporter"/>
     <dftools:dataTransfer from="LIST scheduler" sourceport="ABC"
-        targetport="ABC" to="DAG Plotter"/>
+        targetport="ABC" to="Gantt Plotter"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="LIST scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -78,9 +78,9 @@
     <dftools:dataTransfer from="scenario" sourceport="SDF"
         targetport="SDF" to="HierarchyFlattening"/>
     <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
-        targetport="SDF" to="HSDF"/>
-    <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
-    <dftools:dataTransfer from="HSDF" sourceport="SDF" targetport="SDF" to="LIST scheduler"/>
+        targetport="SDF" to="srSDF"/>
+    <dftools:dataTransfer from="srSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
+    <dftools:dataTransfer from="srSDF" sourceport="SDF" targetport="SDF" to="LIST scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="codegen"/>
     <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"

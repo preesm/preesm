@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -44,6 +44,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
@@ -279,10 +280,18 @@ public class FastAlgorithm extends Observable {
 
 				operatorprec = simulator.getEffectiveComponent(currentvertex);
 
-				// step 9 TODO: check if ok to use mapWithGroup
-				// simulator.map(currentvertex, operatortest, false);
+				if (operatortest == null){
+					WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
+				}
+				
+				// step 9 
 				simulator.map(currentvertex, operatortest, false);
 
+				
+				if(currentvertex.getImplementationVertexProperty().getEffectiveComponent() == null){
+					WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
+				}
+				
 				// step 10
 				simulator.updateFinalCosts();
 				long newSL = simulator.getFinalCost();
@@ -315,7 +324,7 @@ public class FastAlgorithm extends Observable {
 				bestSL = simulator.getFinalCost();
 
 				bestTotalOrder = simulator.getTotalOrder();
-
+				
 				if (displaySolutions) {
 					launchEditor(simulator, abcParams, getBestTotalOrder(),
 							"Cost:" + bestSL + " Fast");
@@ -381,6 +390,12 @@ public class FastAlgorithm extends Observable {
 		newAbc.reschedule(bestTotalOrder);
 		newAbc.updateFinalCosts();
 
+		for(DAGVertex vertex : dag.vertexSet()){
+			if(((MapperDAGVertex)vertex).getImplementationVertexProperty().getEffectiveComponent() == null){
+				WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + vertex);
+			}
+		}
+		
 		GanttEditorRunnable.run(newAbc, name);
 
 	}

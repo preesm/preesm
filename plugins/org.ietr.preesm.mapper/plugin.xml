@@ -76,7 +76,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.fast"
             name="Kwok FAST algorithm"
-            type="org.ietr.preesm.mapper.FASTTransformation">
+            type="org.ietr.preesm.mapper.FASTMapping">
          <inputs>
             <input
                   id="SDF"
@@ -105,7 +105,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.pfast"
             name="Kwok PFAST algorithm (parallel version of FAST)"
-            type="org.ietr.preesm.mapper.PFASTTransformation">
+            type="org.ietr.preesm.mapper.PFASTMapping">
          <inputs>
             <input
                   id="SDF"
@@ -134,7 +134,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.listscheduling"
             name="Kwok list scheduling algorithm"
-            type="org.ietr.preesm.mapper.ListSchedulingTransformation">
+            type="org.ietr.preesm.mapper.ListSchedulingMapping">
          <inputs>
             <input
                   id="SDF"
@@ -178,7 +178,7 @@
       <task
             id="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformation"
             name="Dynamic Queuing Scheduling"
-            type="org.ietr.preesm.mapper.DynamicQueuingTransformation">
+            type="org.ietr.preesm.mapper.DynamicQueuingMapping">
          <inputs>
             <input
                   id="SDF"

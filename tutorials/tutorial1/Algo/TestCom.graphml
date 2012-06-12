@@ -19,7 +19,7 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="size" value="1000"/>
+            <variable name="size" value="100"/>
         </data>
         <node id="Sensor">
             <data key="name">Sensor</data>

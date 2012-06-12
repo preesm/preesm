@@ -115,15 +115,15 @@ void actuator(char* i1,char* i2,char* i3, int size){
 	int bSuccess = 1;
 
 	for(i=0;i<size;i++){
-		if(i1[i] != (i + actuatorIncrement) %128){
+		if(i1[i] != (char)((i + actuatorIncrement) %128)){
 			bSuccess = 0;
 			break;
 		}
-		if(i2[i] != (i + actuatorIncrement) %128){
+		if(i2[i] != (char)((i + actuatorIncrement) %128)){
 			bSuccess = 0;
 			break;
 		}
-		if(i3[i] != -i%128){
+		if(i3[i] != (char)(-i%128)){
 			bSuccess = 0;
 			break;
 		}

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -47,9 +47,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -186,6 +188,7 @@ public class GanttPlotter extends ApplicationFrame implements
 						+ currentVertex.getInitialVertexProperty()
 								.getNbRepeat() + ")";
 				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
+
 				series.get(cmp.getInstanceName()).addSubtask(t);
 
 				// Updating the component final cost
@@ -193,6 +196,9 @@ public class GanttPlotter extends ApplicationFrame implements
 				if (finalCost < end) {
 					finalCosts.put(cmp.getInstanceName(), end);
 				}
+			}
+			else{
+				WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt element can not be displayed in Gantt because it has no component: " + currentVertex);
 			}
 		}
 

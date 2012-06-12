@@ -38,51 +38,53 @@ package org.ietr.preesm.mapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
-import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
-import org.ietr.preesm.mapper.algo.fast.FastAlgorithm;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
+import org.ietr.preesm.mapper.algo.pfast.PFastAlgorithm;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.params.AbcParameters;
-import org.ietr.preesm.mapper.params.FastAlgoParameters;
+import org.ietr.preesm.mapper.params.PFastAlgoParameters;
 
 /**
- * FAST Kwok algorithm
+ * PFAST is a parallel mapping/scheduling method based on list scheduling
+ * followed by a neighborhood search phase. It was invented by Y-K Kwok.
  * 
+ * @author mwipliez
  * @author pmenuet
- * @author mpelcat
  */
-public class FASTTransformation extends AbstractMapping {
+public class PFASTMapping extends AbstractMapping {
 
 	/**
 	 * 
 	 */
-	public FASTTransformation() {
+	public PFASTMapping() {
 	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = super.getDefaultParameters();
 
+		parameters.put("nodesMin", "5");
+		parameters.put("procNumber", "1");
 		parameters.put("displaySolutions", "false");
 		parameters.put("fastTime", "100");
 		parameters.put("fastLocalSearchTime", "10");
+		parameters.put("fastNumber", "100");
+
 		return parameters;
 	}
 
@@ -98,68 +100,58 @@ public class FASTTransformation extends AbstractMapping {
 
 		super.execute(inputs, parameters, monitor, nodeName, workflow);
 
-		FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
-		AbcParameters abcParams = new AbcParameters(parameters);
+		PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
+		AbcParameters abcParameters = new AbcParameters(parameters);
 
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
-
-		if (dag == null) {
-			throw (new WorkflowException(
-					" graph can't be scheduled, check console messages"));
-		}
 
 		// calculates the DAG span length on the architecture main operator (the
 		// tasks that can
 		// not be executed by the main operator are deported without transfer
 		// time to other operator
-		calculateSpan(dag, architecture, scenario, abcParams);
+		calculateSpan(dag, architecture, scenario, abcParameters);
 
-		IAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
-				abcParams.getSimulatorType().getTaskSchedType(), scenario);
+		IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag,
+				architecture, abcParameters.getSimulatorType()
+						.getTaskSchedType(), scenario);
 
-		InitialLists initialLists = new InitialLists();
-		if (!initialLists.constructInitialLists(dag, simu)) {
-			return outputs;
-		}
+		InitialLists initial = new InitialLists();
+
+		if (!initial.constructInitialLists(dag, simu))
+			return null;
 
 		TopologicalTaskSched taskSched = new TopologicalTaskSched(
 				simu.getTotalOrder());
 		simu.resetDAG();
 
-		FastAlgorithm fastAlgorithm = new FastAlgorithm(initialLists, scenario);
-
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping");
-
-		dag = fastAlgorithm.map("test", abcParams, fastParams, dag,
-				architecture, false, false, fastParams.isDisplaySolutions(),
-				monitor, taskSched);
-
-		WorkflowLogger.getLogger().log(Level.INFO, "Mapping finished");
-
-		IAbc simu2 = AbstractAbc.getInstance(abcParams, dag, architecture,
+		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
-		// Transfer vertices are automatically regenerated
+
+		PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
+
+		dag = pfastAlgorithm.map(dag, architecture, scenario, initial,
+				abcParameters, pFastParams, false, 0,
+				pFastParams.isDisplaySolutions(), null, taskSched);
+
 		simu2.setDAG(dag);
+
+		// simu2.plotImplementation();
 
 		// The transfers are reordered using the best found order during
 		// scheduling
-		simu2.reschedule(fastAlgorithm.getBestTotalOrder());
-		TagDAG tagDAG = new TagDAG();
+		simu2.reschedule(pfastAlgorithm.getBestTotalOrder());
+		TagDAG tagSDF = new TagDAG();
 
-		// The mapper dag properties are put in the property bean to be
-		// transfered to code generation
 		try {
-			tagDAG.tag(dag, architecture, scenario, simu2,
-					abcParams.getEdgeSchedType());
+			tagSDF.tag(dag, architecture, scenario, simu2,
+					abcParameters.getEdgeSchedType());
 		} catch (InvalidExpressionException e) {
+			e.printStackTrace();
 			throw (new WorkflowException(e.getMessage()));
 		}
 
 		outputs.put("DAG", dag);
-		// A simple task scheduler avoids new task swaps and ensures reuse of
-		// previous order.
-		simu2.setTaskScheduler(new SimpleTaskSched());
 		outputs.put("ABC", simu2);
 
 		super.clean(architecture, scenario);

@@ -14,6 +14,7 @@
 #include "../include/preesmPrototypes.h"
 #include "../include/substractPic.h"
 #include "yuvDisplay.h"
+#include "communication.h"
 
 // Defining posix semaphore type
 #define semaphore sem_t

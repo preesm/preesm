@@ -33,7 +33,7 @@ import org.jgrapht.alg.DirectedNeighborIndex;
  * 
  * @author mpelcat
  */
-public class NewTimeKeeper implements Observer {
+public class TimeKeeper implements Observer {
 
 	/**
 	 * Current implementation: the same as in the ABC
@@ -58,7 +58,7 @@ public class NewTimeKeeper implements Observer {
 	/**
 	 * Constructor
 	 */
-	public NewTimeKeeper(MapperDAG implementation,
+	public TimeKeeper(MapperDAG implementation,
 			SchedOrderManager orderManager) {
 
 		this.implementation = implementation;
@@ -509,30 +509,26 @@ public class NewTimeKeeper implements Observer {
 
 	public void updateTLevels() {
 
-		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		/*
-		 * dirtyTLevelElts.clear(); for(DAGVertex v :
-		 * implementation.vertexSet()) dirtyTLevelElts.add((MapperDAGVertex) v);
-		 */
+		// SynchronizedVertices and RelativeConstraints make dirty vertices mechanism obsolete. TODO: improve
+
+		dirtyTLevelElts.clear();
+		for (DAGVertex v : implementation.vertexSet())
+			dirtyTLevelElts.add((MapperDAGVertex) v);
 
 		calculateTLevel();
 		dirtyTLevelElts.clear();
-
-		// compareResults();
 	}
 
 	public void updateTandBLevels() {
 
-		// Mapping groups make dirty vertices mechanism obsolete. TODO: improve
-		/*
-		 * dirtyTLevelElts.clear(); for(DAGVertex v :
-		 * implementation.vertexSet()) dirtyTLevelElts.add((MapperDAGVertex) v);
-		 */
+		// SynchronizedVertices and RelativeConstraints make dirty vertices mechanism obsolete. TODO: improve
+
+		dirtyTLevelElts.clear();
+		for (DAGVertex v : implementation.vertexSet())
+			dirtyTLevelElts.add((MapperDAGVertex) v);
 
 		calculateTLevel();
-		dirtyTLevelElts.clear();
 		calculateBLevel();
-
-		// compareResults();
+		dirtyTLevelElts.clear();
 	}
 }

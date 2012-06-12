@@ -84,12 +84,12 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  * 
  * @author mpelcat
  */
-public class DynamicQueuingTransformation extends AbstractMapping {
+public class DynamicQueuingMapping extends AbstractMapping {
 
 	/**
 	 * 
 	 */
-	public DynamicQueuingTransformation() {
+	public DynamicQueuingMapping() {
 	}
 
 	@Override
