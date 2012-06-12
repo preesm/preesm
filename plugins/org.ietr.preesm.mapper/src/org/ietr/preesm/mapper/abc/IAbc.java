@@ -54,7 +54,9 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Clarifies the simulator API
+ * Abc (architecture benchmark computer) keeps an internal graph (implementation)
+ * and is assigned an external graph (dag). The internal graph receives dynamically
+ * special vertices (tansfers, overheads, send/receive...) to reflect graph simulation.
  * 
  * @author mpelcat
  */
