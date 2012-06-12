@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.ietr.preesm.ui
 Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
-Bundle-Version: 0.6.2.v20120320
+Bundle-Version: 0.6.3.v20120612
 Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA
 Require-Bundle: org.eclipse.ui,

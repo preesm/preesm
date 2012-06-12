@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Memory tools
 Bundle-SymbolicName: org.ietr.preesm.memory;singleton:=true
-Bundle-Version: 0.6.2.v20120515
+Bundle-Version: 0.6.3.v20120612
 Bundle-Activator: org.ietr.preesm.memory.Activator
 Require-Bundle: org.eclipse.core.runtime,
  net.sf.dftools.workflow;bundle-version="0.0.1",
