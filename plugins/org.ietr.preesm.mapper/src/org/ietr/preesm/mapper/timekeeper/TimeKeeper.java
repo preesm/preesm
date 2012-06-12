@@ -516,19 +516,11 @@ public class TimeKeeper implements Observer {
 			dirtyTLevelElts.add((MapperDAGVertex) v);
 
 		calculateTLevel();
-		dirtyTLevelElts.clear();
 	}
 
 	public void updateTandBLevels() {
 
-		// SynchronizedVertices and RelativeConstraints make dirty vertices mechanism obsolete. TODO: improve
-
-		dirtyTLevelElts.clear();
-		for (DAGVertex v : implementation.vertexSet())
-			dirtyTLevelElts.add((MapperDAGVertex) v);
-
 		calculateTLevel();
 		calculateBLevel();
-		dirtyTLevelElts.clear();
 	}
 }

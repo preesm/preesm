@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -42,6 +42,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.ui.GanttPlotter;
 
 /**
  * This page contains the gantt display
@@ -79,7 +80,7 @@ public class GanttPage extends FormPage {
 
 		IAbc abc = statGen.getAbc();
 
-		abc.plotImplementation(form.getBody());
+		GanttPlotter.plotDeployment(abc.getGanttData(),form.getBody());
 
 	}
 

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -42,7 +42,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.gantt.GanttData;
+import org.ietr.preesm.mapper.ui.GanttPlotter;
 
 /**
  * Editor displaying the gantt chart
@@ -51,22 +52,23 @@ import org.ietr.preesm.mapper.abc.IAbc;
  */
 public class GanttEditor extends EditorPart {
 
-	private IAbc abc = null;
+
+	/**
+	 * Data to be displayed
+	 */
+	private GanttData ganttData = null;
 
 	public GanttEditor() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -81,7 +83,7 @@ public class GanttEditor extends EditorPart {
 
 			if (input instanceof GanttEditorInput) {
 				GanttEditorInput implinput = (GanttEditorInput) input;
-				this.abc = implinput.getAbc();
+				this.ganttData = implinput.getGanttData();
 			}
 
 		} catch (Exception e) {
@@ -107,8 +109,8 @@ public class GanttEditor extends EditorPart {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		if (abc != null) {
-			abc.plotImplementation(parent);
+		if (ganttData != null) {
+			GanttPlotter.plotDeployment(ganttData,parent);
 		}
 
 	}

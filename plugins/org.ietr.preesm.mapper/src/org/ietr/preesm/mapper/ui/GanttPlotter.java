@@ -42,25 +42,15 @@ import java.awt.LinearGradientPaint;
 import java.awt.Paint;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.mapper.model.MapperDAG;
-import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
+import org.ietr.preesm.mapper.gantt.GanttComponent;
+import org.ietr.preesm.mapper.gantt.GanttData;
+import org.ietr.preesm.mapper.gantt.GanttTask;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -147,69 +137,36 @@ public class GanttPlotter extends ApplicationFrame implements
 	}
 
 	/**
-	 * Creates a dataset from a MapperDAGVertex.
+	 * Creates a dataset from a MapperDAGVertex. This dataset is used to prepare
+	 * display of a Gantt chart with one line per populated SLAM component.
 	 * 
 	 * @return The dataset.
 	 */
-	private static IntervalCategoryDataset createDataset(MapperDAG dag,
-			Design archi) {
+	private static IntervalCategoryDataset createDataset(GanttData ganttData) {
 
 		TaskSeries series = new TaskSeries("Scheduled");
-		Task currenttask;
-		Map<String, Long> finalCosts = new HashMap<String, Long>();
 
-		// Creating the Operator lines
-		List<ComponentInstance> cmps = new ArrayList<ComponentInstance>();
-		cmps.addAll(DesignTools.getComponentInstances(archi));
-		Collections.sort(cmps, new DesignTools.ComponentInstanceComparator());
+		// Creating the component lines (operator or communicator)
+		List<GanttComponent> components = ganttData.getComponents();
 
-		for (ComponentInstance cmp : cmps) {
-			currenttask = new Task(cmp.getInstanceName(), new SimpleTimePeriod(
+		for (GanttComponent cmp : components) {
+			Task currentJFreeCmp = new Task(cmp.getId(), new SimpleTimePeriod(
 					0, 1));
-			series.add(currenttask);
-			finalCosts.put(cmp.getInstanceName(), 0l);
-		}
+			series.add(currentJFreeCmp);
 
-		// Populating the Operator lines
-		TopologicalDAGIterator viterator = new TopologicalDAGIterator(dag);
+			// Setting the series length to the maximum end time of a task
+			long finalCost = cmp.getEndTime();
+			series.get(cmp.getId()).setDuration(
+					new SimpleTimePeriod(0, finalCost));
 
-		while (viterator.hasNext()) {
-			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-			ComponentInstance cmp = currentVertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+			for (GanttTask ganttTask : cmp.getTasks()) {
+				String taskName = ganttTask.getId();
+				long start = ganttTask.getStartTime();
+				long end = start + ganttTask.getDuration();
+				Task currentJFreeTask = new Task(taskName,
+						new SimpleTimePeriod(start, end));
 
-			if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
-				long start = currentVertex.getTimingVertexProperty()
-						.getNewtLevel();
-				long end = start
-						+ currentVertex.getTimingVertexProperty().getCost();
-				String taskName = currentVertex.getName()
-						+ " (x"
-						+ currentVertex.getInitialVertexProperty()
-								.getNbRepeat() + ")";
-				Task t = new Task(taskName, new SimpleTimePeriod(start, end));
-
-				series.get(cmp.getInstanceName()).addSubtask(t);
-
-				// Updating the component final cost
-				long finalCost = finalCosts.get(cmp.getInstanceName());
-				if (finalCost < end) {
-					finalCosts.put(cmp.getInstanceName(), end);
-				}
-			}
-			else{
-				WorkflowLogger.getLogger().log(Level.SEVERE, "Gantt element can not be displayed in Gantt because it has no component: " + currentVertex);
-			}
-		}
-
-		// Setting the series length to the maximum end time of a task
-		for (ComponentInstance cmp : cmps) {
-			long finalCost = finalCosts.get(cmp.getInstanceName());
-			if (finalCost > 0) {
-				series.get(cmp.getInstanceName()).setDuration(
-						new SimpleTimePeriod(0, finalCost));
-			} else {
-				series.remove(series.get(cmp.getInstanceName()));
+				currentJFreeCmp.addSubtask(currentJFreeTask);
 			}
 		}
 
@@ -220,15 +177,15 @@ public class GanttPlotter extends ApplicationFrame implements
 
 	}
 
-	public static void plotDeployment(MapperDAG dag, Design archi,
+	public static void plotDeployment(GanttData ganttData,
 			Composite delegateDisplay) {
 
-		GanttPlotter plotter = new GanttPlotter("Solution gantt", dag, archi);
+		GanttPlotter plotter = new GanttPlotter("Solution gantt", ganttData);
 
 		if (delegateDisplay == null) {
-			plotter.plot(dag, archi);
+			plotter.plot();
 		} else {
-			plotter.plotInComposite(dag, archi, delegateDisplay);
+			plotter.plotInComposite(delegateDisplay);
 		}
 	}
 
@@ -238,7 +195,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	 * @param args
 	 *            ignored.
 	 */
-	public void plot(MapperDAG dag, Design archi) {
+	public void plot() {
 
 		pack();
 		RefineryUtilities.centerFrameOnScreen(this);
@@ -249,7 +206,7 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Gantt chart plotting function in a given composite
 	 */
-	public void plotInComposite(MapperDAG dag, Design archi, Composite parent) {
+	public void plotInComposite(Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.EMBEDDED | SWT.FILL);
 		parent.setLayout(new FillLayout());
@@ -265,10 +222,10 @@ public class GanttPlotter extends ApplicationFrame implements
 	/**
 	 * Plotting a Gantt chart
 	 */
-	public GanttPlotter(String title, MapperDAG dag, Design archi) {
+	public GanttPlotter(String title, GanttData ganttData) {
 		super(title);
 
-		chart = createChart(createDataset(dag, archi));
+		chart = createChart(createDataset(ganttData));
 		chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		chartPanel.setMouseZoomable(true, true);

@@ -80,7 +80,9 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
- * Plug-in class for dynamic queuing scheduling
+ * Plug-in class for dynamic queuing scheduling.
+ * Dynamic queuing is a type of list scheduling that enables study
+ * of multiple graph iterations.
  * 
  * @author mpelcat
  */
@@ -96,6 +98,9 @@ public class DynamicQueuingMapping extends AbstractMapping {
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = super.getDefaultParameters();
 
+		// The graph is repeated iterationNr times and iterationPeriod
+		// defines the period of this repetition.
+		// The period is simulated by Virtual delays: specific actors.
 		parameters.put("iterationNr", "0");
 		parameters.put("iterationPeriod", "0");
 		parameters.put("listType", "optimised");

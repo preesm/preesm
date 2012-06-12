@@ -44,7 +44,6 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
@@ -60,6 +59,7 @@ import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.mapper.algo.list.InitialLists;
 import org.ietr.preesm.mapper.algo.list.KwokListScheduler;
+import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
@@ -189,7 +189,8 @@ public class FastAlgorithm extends Observable {
 		bestTotalOrder = simulator.getTotalOrder();
 
 		if (displaySolutions) {
-			launchEditor(simulator, abcParams, getBestTotalOrder(), "Cost:"
+			GanttData ganttData = simulator.getGanttData();
+			launchEditor(ganttData, "Cost:"
 					+ initial + " List");
 		}
 
@@ -326,8 +327,9 @@ public class FastAlgorithm extends Observable {
 				bestTotalOrder = simulator.getTotalOrder();
 				
 				if (displaySolutions) {
-					launchEditor(simulator, abcParams, getBestTotalOrder(),
-							"Cost:" + bestSL + " Fast");
+
+					GanttData ganttData = simulator.getGanttData();
+					launchEditor(ganttData, "Cost:" + bestSL + " Fast");
 				}
 
 				WorkflowLogger.getLogger().log(Level.INFO,
@@ -380,23 +382,9 @@ public class FastAlgorithm extends Observable {
 		return bestTotalOrder;
 	}
 
-	public void launchEditor(IAbc abc, AbcParameters abcParams,
-			VertexOrderList bestTotalOrder, String name) throws WorkflowException {
-
-		MapperDAG dag = abc.getDAG().clone();
-		IAbc newAbc = AbstractAbc.getInstance(abcParams, dag,
-				abc.getArchitecture(), abc.getScenario());
-		newAbc.setDAG(dag);
-		newAbc.reschedule(bestTotalOrder);
-		newAbc.updateFinalCosts();
-
-		for(DAGVertex vertex : dag.vertexSet()){
-			if(((MapperDAGVertex)vertex).getImplementationVertexProperty().getEffectiveComponent() == null){
-				WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + vertex);
-			}
-		}
+	public void launchEditor(GanttData ganttData, String name) throws WorkflowException {
 		
-		GanttEditorRunnable.run(newAbc, name);
+		GanttEditorRunnable.run(ganttData, name);
 
 	}
 

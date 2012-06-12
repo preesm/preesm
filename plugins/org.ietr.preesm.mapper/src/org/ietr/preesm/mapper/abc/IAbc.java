@@ -42,13 +42,13 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 
-import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.order.IScheduleElement;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
+import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -159,9 +159,9 @@ public interface IAbc extends IMapperAbc {
 	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator) throws WorkflowException;
 
 	/**
-	 * Plots the current implementation
+	 * Extracting from the Abc information the data to display in the Gantt chart
 	 */
-	public void plotImplementation(Composite delegateDisplay);
+	public GanttData getGanttData();
 
 	/**
 	 * Unmaps all vertices in internal implementation

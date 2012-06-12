@@ -23,9 +23,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
  * This class defines a method to load a new scenario and optionally change some

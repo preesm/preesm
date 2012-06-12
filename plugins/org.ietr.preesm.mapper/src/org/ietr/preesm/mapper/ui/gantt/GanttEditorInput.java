@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,8 +41,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.activator.Activator;
+import org.ietr.preesm.mapper.gantt.GanttData;
 
 /**
  * Input of the simple editor of implementation gantt chart
@@ -51,21 +51,21 @@ import org.ietr.preesm.mapper.activator.Activator;
  */
 public class GanttEditorInput implements IEditorInput {
 
-	private IAbc abc = null;
+	private GanttData ganttData = null;
 	private String name = null;
 
-	public GanttEditorInput(IAbc abc, String name) {
+	public GanttEditorInput(GanttData ganttData, String name) {
 		super();
-		this.abc = abc;
+		this.ganttData = ganttData;
 		this.name = name;
 	}
 
-	public IAbc getAbc() {
-		return abc;
+	public GanttData getGanttData() {
+		return ganttData;
 	}
 
-	public void setAbc(IAbc abc) {
-		this.abc = abc;
+	public void setGanttData(GanttData ganttData) {
+		this.ganttData = ganttData;
 	}
 
 	@Override

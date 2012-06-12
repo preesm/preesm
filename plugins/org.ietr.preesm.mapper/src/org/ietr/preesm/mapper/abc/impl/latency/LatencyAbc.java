@@ -50,7 +50,6 @@ import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.eclipse.swt.widgets.Composite;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
@@ -66,6 +65,7 @@ import org.ietr.preesm.mapper.abc.order.SynchronizedVertices;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
+import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -320,13 +320,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 	}
 
 	/**
-	 * Plots the current implementation. If delegatedisplay=false, the gantt is
-	 * displayed in a shell. Otherwise, it is displayed in Eclipse.
+	 * Extracting from the Abc information the data to display in the Gantt chart
 	 */
-	public final void plotImplementation(Composite delegateDisplay) {
-
-		GanttPlotter.plotDeployment(implementation, this.getArchitecture(),
-				delegateDisplay);
+	public GanttData getGanttData(){
+		GanttData ganttData = new GanttData();
+		ganttData.insertDag(implementation);
+		return ganttData;
 	}
 
 	public AbstractCommunicationRouter getComRouter() {
@@ -513,7 +512,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 			nTimeKeeper.update(null, implementation.vertexSet());
 			updateTimings();
-			this.plotImplementation(null);
+			GanttPlotter.plotDeployment(getGanttData(),null);
 
 			int index = 0;
 			TLevelIterator iterator = new TLevelIterator(implementation, true);

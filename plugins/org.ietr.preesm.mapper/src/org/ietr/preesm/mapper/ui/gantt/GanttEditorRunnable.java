@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,7 +41,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.preesm.mapper.abc.IAbc;
+import org.ietr.preesm.mapper.gantt.GanttData;
 
 /**
  * Class used by the editor displaying the gantt chart. Useful to run editor in
@@ -59,16 +59,17 @@ public class GanttEditorRunnable implements Runnable {
 	}
 
 	/**
-	 * Run a new editor in display thread to display the Gantt chart from given ABC
+	 * Run a new editor in display thread to display the Gantt chart from given
+	 * ABC
 	 */
-	public static void run(IAbc abc, String name){
+	public static void run(GanttData ganttData, String name) {
 
-		IEditorInput input = new GanttEditorInput(abc, name);
+		IEditorInput input = new GanttEditorInput(ganttData, name);
 
 		PlatformUI.getWorkbench().getDisplay()
 				.asyncExec(new GanttEditorRunnable(input));
 	}
-	
+
 	@Override
 	public void run() {
 
@@ -83,11 +84,9 @@ public class GanttEditorRunnable implements Runnable {
 						"org.ietr.preesm.plugin.mapper.plot.GanttEditor", false);
 
 			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 }
