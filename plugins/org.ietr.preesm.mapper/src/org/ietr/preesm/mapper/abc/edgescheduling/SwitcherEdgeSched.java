@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -40,9 +40,9 @@ import java.util.Random;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * An advanced edge scheduler. It looks for the largest free interval in
@@ -54,7 +54,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 
 	private IntervalFinder intervalFinder = null;
 
-	public SwitcherEdgeSched(SchedOrderManager orderManager) {
+	public SwitcherEdgeSched(OrderManager orderManager) {
 		super(orderManager);
 
 		intervalFinder = new IntervalFinder(orderManager);
@@ -71,7 +71,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		ComponentInstance component = vertex.getImplementationVertexProperty()
+		ComponentInstance component = vertex.getMapping()
 				.getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval largestInterval = intervalFinder.findLargestFreeInterval(

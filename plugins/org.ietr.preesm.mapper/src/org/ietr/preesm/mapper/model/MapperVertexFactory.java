@@ -77,7 +77,6 @@ public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
 
 	@Override
 	public IInterface createInterface(String name, int dir) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

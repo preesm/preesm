@@ -57,18 +57,18 @@ import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;
 import org.ietr.preesm.mapper.abc.route.impl.DmaComRouterImplementer;
 import org.ietr.preesm.mapper.abc.route.impl.MessageComRouterImplementer;
 import org.ietr.preesm.mapper.abc.route.impl.SharedRamRouterImplementer;
 import org.ietr.preesm.mapper.abc.transaction.Transaction;
 import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
-import org.ietr.preesm.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.property.VertexMapping;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 
 /**
  * Routes the communications. Based on bridge design pattern. The processing is
@@ -88,7 +88,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 	public CommunicationRouter(Design archi, PreesmScenario scenario,
 			MapperDAG implementation, IEdgeSched edgeScheduler,
-			SchedOrderManager orderManager) {
+			OrderManager orderManager) {
 		super(implementation, edgeScheduler, orderManager);
 		this.calculator = RouteCalculator.getInstance(archi, scenario);
 
@@ -114,11 +114,11 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 			MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
 
 			if (!(currentEdge instanceof PrecedenceEdge)
-					&& currentEdge.getInitialEdgeProperty().getDataSize() != 0) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) currentEdge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) currentEdge
-						.getTarget()).getImplementationVertexProperty();
+					&& currentEdge.getInit().getDataSize() != 0) {
+				VertexMapping currentSourceProp = ((MapperDAGVertex) currentEdge
+						.getSource()).getMapping();
+				VertexMapping currentDestProp = ((MapperDAGVertex) currentEdge
+						.getTarget()).getMapping();
 
 				if (currentSourceProp.hasEffectiveOperator()
 						&& currentDestProp.hasEffectiveOperator()) {
@@ -179,10 +179,10 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		for (DAGEdge edge : edges) {
 
 			if (!(edge instanceof PrecedenceEdge)) {
-				ImplementationVertexProperty currentSourceProp = ((MapperDAGVertex) edge
-						.getSource()).getImplementationVertexProperty();
-				ImplementationVertexProperty currentDestProp = ((MapperDAGVertex) edge
-						.getTarget()).getImplementationVertexProperty();
+				VertexMapping currentSourceProp = ((MapperDAGVertex) edge
+						.getSource()).getMapping();
+				VertexMapping currentDestProp = ((MapperDAGVertex) edge
+						.getTarget()).getMapping();
 
 				if (currentSourceProp.hasEffectiveOperator()
 						&& currentDestProp.hasEffectiveOperator()) {
@@ -228,10 +228,10 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	 */
 	public long evaluateTransferCost(MapperDAGEdge edge) {
 
-		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
-				.getSource()).getImplementationVertexProperty();
-		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
-				.getTarget()).getImplementationVertexProperty();
+		VertexMapping sourceimp = ((MapperDAGVertex) edge
+				.getSource()).getMapping();
+		VertexMapping destimp = ((MapperDAGVertex) edge
+				.getTarget()).getMapping();
 
 		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
 		ComponentInstance destOp = destimp.getEffectiveOperator();
@@ -241,7 +241,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		// Retrieving the route
 		if (sourceOp != null && destOp != null) {
 			Route route = calculator.getRoute(sourceOp, destOp);
-			cost = route.evaluateTransferCost(edge.getInitialEdgeProperty()
+			cost = route.evaluateTransferCost(edge.getInit()
 					.getDataSize());
 		} else {
 			WorkflowLogger

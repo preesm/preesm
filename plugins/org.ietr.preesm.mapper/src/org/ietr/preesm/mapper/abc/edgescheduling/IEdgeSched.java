@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,9 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Specification of the edgeScheduler interface
@@ -57,7 +57,7 @@ public interface IEdgeSched {
 	/**
 	 * Gets the internal order manager
 	 */
-	public SchedOrderManager getOrderManager();
+	public OrderManager getOrderManager();
 
 	/**
 	 * Gets the current edge scheduling type

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 
 /**
  * Transaction executing the addition of a {@link PrecedenceEdge}.
@@ -94,8 +94,8 @@ public class AddPrecedenceEdgeTransaction extends Transaction {
 	public void execute(List<Object> resultList) {
 		super.execute(resultList);
 
-		precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
+		precedenceEdge = new PrecedenceEdge(source, destination);
+		precedenceEdge.getTiming().setCost(0);
 		implementation.addEdge(source, destination, precedenceEdge);
 	}
 

@@ -38,6 +38,9 @@ package org.ietr.preesm.mapper.model;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
+import org.ietr.preesm.mapper.model.property.EdgeInit;
+import org.ietr.preesm.mapper.model.property.EdgeTiming;
+
 /**
  * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper
  * 
@@ -45,30 +48,30 @@ import net.sf.dftools.algorithm.model.dag.DAGEdge;
  */
 public class MapperDAGEdge extends DAGEdge {
 
-	protected InitialEdgeProperty initialEdgeProperty;
+	protected EdgeInit initialEdgeProperty;
 
-	protected TimingEdgeProperty timingEdgeProperty;
+	protected EdgeTiming timingEdgeProperty;
 
 	/**
 	 */
 	public MapperDAGEdge(MapperDAGVertex source, MapperDAGVertex destination) {
-		initialEdgeProperty = new InitialEdgeProperty();
-		timingEdgeProperty = new TimingEdgeProperty();
+		initialEdgeProperty = new EdgeInit();
+		timingEdgeProperty = new EdgeTiming();
 	}
 
-	public InitialEdgeProperty getInitialEdgeProperty() {
+	public EdgeInit getInit() {
 		return initialEdgeProperty;
 	}
 
-	public void setInitialEdgeProperty(InitialEdgeProperty initialEdgeProperty) {
+	public void setInit(EdgeInit initialEdgeProperty) {
 		this.initialEdgeProperty = initialEdgeProperty;
 	}
 
-	public TimingEdgeProperty getTimingEdgeProperty() {
+	public EdgeTiming getTiming() {
 		return timingEdgeProperty;
 	}
 
-	public void setTimingEdgeProperty(TimingEdgeProperty timingEdgeProperty) {
+	public void setTiming(EdgeTiming timingEdgeProperty) {
 		this.timingEdgeProperty = timingEdgeProperty;
 	}
 

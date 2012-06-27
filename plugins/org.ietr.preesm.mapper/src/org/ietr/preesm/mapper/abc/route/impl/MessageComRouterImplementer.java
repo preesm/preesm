@@ -11,8 +11,6 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.SimpleEdgeSched;
-import org.ietr.preesm.mapper.abc.impl.ImplementationCleaner;
-import org.ietr.preesm.mapper.abc.order.IScheduleElement;
 import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouterImplementer;
@@ -23,8 +21,7 @@ import org.ietr.preesm.mapper.abc.transaction.Transaction;
 import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Class responsible to generate the suited vertices while simulating a message
@@ -67,7 +64,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 			// All the transfers along the path have the same time: the time
 			// to transfer the data on the slowest contention node
 			long transferTime = messageStep.getWorstTransferTime(edge
-					.getInitialEdgeProperty().getDataSize());
+					.getInit().getDataSize());
 
 			// Adding the transfers of a message route step
 			if (type == CommunicationRouter.transferType) {
@@ -140,14 +137,14 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 					}
 				}
 
-				// Synchronizing the vertices in order manager (they will all
-				// have the same total order).
-				if (toSynchronize.size() > 1) {
+				// Synchronizing the vertices in order manager (they 
+				// have consecutive total order and be scheduled simultaneously).
+				/*if (toSynchronize.size() > 1) {
 					ImplementationCleaner cleaner = new ImplementationCleaner(
 							getOrderManager(), getImplementation());
 					PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(
 							getOrderManager(), getImplementation());
-					IScheduleElement last = null;
+					MapperDAGVertex last = null;
 					last = null;
 
 					for (MapperDAGVertex v : toSynchronize) {
@@ -156,7 +153,7 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
 						adder.scheduleVertex(v);
 					}
 
-				}
+				}*/
 			} else if (type == CommunicationRouter.sendReceiveType) {
 
 				Transaction transaction = new AddSendReceiveTransaction(

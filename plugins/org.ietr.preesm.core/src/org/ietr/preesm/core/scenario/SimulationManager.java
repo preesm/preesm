@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -42,8 +42,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.architecture.route.Route;
+import org.ietr.preesm.core.types.DataType;
 
 /**
  * Handles simulation parameters

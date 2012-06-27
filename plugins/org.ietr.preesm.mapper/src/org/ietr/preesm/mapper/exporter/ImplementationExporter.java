@@ -52,7 +52,7 @@ import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.w3c.dom.Element;
 
 /**
@@ -110,7 +110,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		if(vertex.getPropertyBean().getValue("originalId") != null)
 		{
 			if(vertex instanceof MapperDAGVertex){
-				((MapperDAGVertex) vertex).getInitialVertexProperty().getParentVertex().setId(vertex.getPropertyBean().getValue("originalId").toString());
+				((MapperDAGVertex) vertex).getInit().getParentVertex().setId(vertex.getPropertyBean().getValue("originalId").toString());
 			}
 		}
 		

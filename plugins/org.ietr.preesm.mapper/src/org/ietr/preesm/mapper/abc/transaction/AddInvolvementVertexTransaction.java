@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -43,14 +43,14 @@ import java.util.logging.Level;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.InvolvementVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.InvolvementVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Transaction executing the addition of an involvement vertex.
@@ -89,7 +89,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	/**
 	 * manager keeping scheduling orders
 	 */
-	private SchedOrderManager orderManager = null;
+	private OrderManager orderManager = null;
 
 	// Generated objects
 	/**
@@ -102,7 +102,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 	public AddInvolvementVertexTransaction(boolean isSender,
 			MapperDAGEdge edge, MapperDAG implementation,
 			AbstractRouteStep step, long involvementTime,
-			SchedOrderManager orderManager) {
+			OrderManager orderManager) {
 		super();
 		this.isSender = isSender;
 		this.edge = edge;
@@ -131,32 +131,33 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
 		if (involvementTime > 0) {
 			iVertex = new InvolvementVertex(ivertexID, implementation);
+			implementation.getTimings().dedicate(iVertex);
+			implementation.getMappings().dedicate(iVertex);
 
-			iVertex.getTimingVertexProperty().setCost(involvementTime);
+			implementation.addVertex(iVertex);
+			iVertex.getTiming().setCost(involvementTime);
 
 			if (isSender) {
-				iVertex.getImplementationVertexProperty().setEffectiveOperator(
+				iVertex.getMapping().setEffectiveOperator(
 						step.getSender());
 				((TransferVertex) currentTarget).setInvolvementVertex(iVertex);
 			} else {
-				iVertex.getImplementationVertexProperty().setEffectiveOperator(
+				iVertex.getMapping().setEffectiveOperator(
 						step.getReceiver());
 				((TransferVertex) currentSource).setInvolvementVertex(iVertex);
 			}
 
-			implementation.addVertex(iVertex);
-
 			if (isSender) {
 				MapperDAGEdge newInEdge = (MapperDAGEdge) implementation
 						.addEdge(currentSource, iVertex);
-				newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				newInEdge.setInit(edge.getInit()
 						.clone());
-				newInEdge.getTimingEdgeProperty().setCost(0);
+				newInEdge.getTiming().setCost(0);
 
 				MapperDAGVertex receiverVertex = currentTarget;
 				do {
 					Set<MapperDAGVertex> succs = receiverVertex
-							.getSuccessorSet(false);
+							.getSuccessors(false).keySet();
 					if (succs.isEmpty()
 							&& receiverVertex instanceof TransferVertex) {
 						WorkflowLogger.getLogger().log(
@@ -166,7 +167,7 @@ public class AddInvolvementVertexTransaction extends Transaction {
 					}
 
 					for (MapperDAGVertex next : receiverVertex
-							.getSuccessorSet(false)) {
+							.getSuccessors(false).keySet()) {
 						if (next != null) {
 							receiverVertex = next;
 						}
@@ -175,9 +176,9 @@ public class AddInvolvementVertexTransaction extends Transaction {
 
 				MapperDAGEdge newoutEdge = (MapperDAGEdge) implementation
 						.addEdge(iVertex, receiverVertex);
-				newoutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				newoutEdge.setInit(edge.getInit()
 						.clone());
-				newoutEdge.getTimingEdgeProperty().setCost(0);
+				newoutEdge.getTiming().setCost(0);
 
 				// TODO: Look at switching possibilities
 				/*
@@ -191,9 +192,9 @@ public class AddInvolvementVertexTransaction extends Transaction {
 			} else {
 				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation
 						.addEdge(iVertex, currentTarget);
-				newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+				newOutEdge.setInit(edge.getInit()
 						.clone());
-				newOutEdge.getTimingEdgeProperty().setCost(0);
+				newOutEdge.getTiming().setCost(0);
 
 				orderManager.insertAfter(currentSource, iVertex);
 			}

@@ -41,10 +41,10 @@ import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 
 /**
  * A transaction that removes one vertex in an implementation
@@ -66,10 +66,10 @@ public class RemoveVertexTransaction extends Transaction {
 	/**
 	 * Order manager
 	 */
-	private SchedOrderManager orderManager = null;
+	private OrderManager orderManager = null;
 
 	public RemoveVertexTransaction(MapperDAGVertex vertex,
-			MapperDAG implementation, SchedOrderManager orderManager) {
+			MapperDAG implementation, OrderManager orderManager) {
 		super();
 		this.vertex = vertex;
 		this.implementation = implementation;
@@ -102,9 +102,12 @@ public class RemoveVertexTransaction extends Transaction {
 			adder.addPrecedenceEdge(prev, next);
 		}
 
+		orderManager.remove(vertex, true);
+		
+		implementation.getTimings().remove(vertex);
+		implementation.getMappings().remove(vertex);
 		// Removing vertex
 		implementation.removeVertex(vertex);
-		orderManager.remove(vertex, true);
 	}
 
 	@Override

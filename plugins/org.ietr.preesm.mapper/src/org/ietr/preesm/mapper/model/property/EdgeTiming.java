@@ -34,40 +34,54 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model;
-
-import net.sf.dftools.algorithm.model.AbstractEdgePropertyType;
+package org.ietr.preesm.mapper.model.property;
 
 /**
- * Extending propertyType
+ * Property added to a DAG edge to give its timing properties. Only used within
+ * ABCs.
  * 
  * @author mpelcat
  */
-public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
+public class EdgeTiming {
+	static public final long UNAVAILABLE = -1;
 
-	int time;
+	/**
+	 * time to execute the edge
+	 */
+	private long cost;
 
-	public EdgePropertyType(int time) {
+	public EdgeTiming() {
 		super();
-		this.time = time;
-
+		reset();
 	}
 
-	@Override
-	public AbstractEdgePropertyType<Integer> clone() {
-		// TODO Auto-generated method stub
-		return null;
+	public EdgeTiming clone() {
+		EdgeTiming property = new EdgeTiming();
+		property.setCost(this.getCost());
+		return property;
 	}
 
-	@Override
-	public int intValue() {
-		// TODO Auto-generated method stub
-		return time;
+	public void reset() {
+		cost = UNAVAILABLE;
 	}
 
-	@Override
 	public String toString() {
-		return String.format("%d", time);
+		return "cost: " + cost;
 	}
 
+	public long getCost() {
+		return cost;
+	}
+
+	public void setCost(long cost) {
+		this.cost = cost;
+	}
+
+	public boolean hasCost() {
+		return (this.cost != UNAVAILABLE);
+	}
+
+	public void resetCost() {
+		setCost(UNAVAILABLE);
+	}
 }

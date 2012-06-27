@@ -53,12 +53,12 @@ import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.InvolvementVertex;
-import org.ietr.preesm.mapper.model.impl.OverheadVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
-import org.ietr.preesm.mapper.model.impl.SendVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.InvolvementVertex;
+import org.ietr.preesm.mapper.model.special.OverheadVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.ReceiveVertex;
+import org.ietr.preesm.mapper.model.special.SendVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Generating the statistics to be displayed in stat editor
@@ -133,7 +133,7 @@ public class StatGenerator {
 				ComponentInstance adequateOp = abc.findOperator(
 						(MapperDAGVertex) vertex, mainOp);
 
-				work += ((MapperDAGVertex) vertex).getInitialVertexProperty()
+				work += ((MapperDAGVertex) vertex).getInit()
 						.getTime(adequateOp);
 
 				/*
@@ -222,17 +222,17 @@ public class StatGenerator {
 
 				if (!(me instanceof PrecedenceEdge)) {
 					ComponentInstance srcOp = scr
-							.getImplementationVertexProperty()
+							.getMapping()
 							.getEffectiveComponent();
 					ComponentInstance tgtOp = tgt
-							.getImplementationVertexProperty()
+							.getMapping()
 							.getEffectiveComponent();
 
 					if (srcOp.getInstanceName().equals(
 							operator.getInstanceName())
 							|| tgtOp.getInstanceName().equals(
 									operator.getInstanceName())) {
-						mem += me.getInitialEdgeProperty().getDataSize();
+						mem += me.getInit().getDataSize();
 					}
 				}
 			}

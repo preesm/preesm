@@ -42,14 +42,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
  * Scheduling the tasks in topological order and alphabetical order
@@ -60,24 +58,6 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
 	private VertexOrderList initList = null;
 	private List<MapperDAGVertex> topolist = null;
-
-	private static class TopoComparator implements Comparator<MapperDAGVertex> {
-
-		@Override
-		public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
-			int compare;
-
-			compare = v0.getInitialVertexProperty().getTopologicalLevel()
-					- v1.getInitialVertexProperty().getTopologicalLevel();
-
-			if (compare == 0) {
-				compare = v0.getName().compareTo(v1.getName());
-			}
-
-			return compare;
-		}
-
-	}
 
 	private static class InitListComparator implements
 			Comparator<MapperDAGVertex> {
@@ -103,38 +83,6 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
 	public TopologicalTaskSched(VertexOrderList initlist) {
 		this.initList = initlist;
-	}
-
-	/**
-	 * Listing the vertices first in topological order and on one level in
-	 * alphabetical order
-	 */
-
-	public void createTopology2(MapperDAG dag) {
-		topolist = new ArrayList<MapperDAGVertex>();
-
-		TopologicalDAGIterator topoDAGIterator = new TopologicalDAGIterator(dag);
-
-		while (topoDAGIterator.hasNext()) {
-			MapperDAGVertex v = (MapperDAGVertex) topoDAGIterator.next();
-			topolist.add(v);
-			if (v.incomingEdges().isEmpty()) {
-				v.getInitialVertexProperty().setTopologicalLevel(0);
-			} else {
-				int precedentLevel = 0;
-				for (DAGEdge edge : v.incomingEdges()) {
-					MapperDAGVertex precVertex = (MapperDAGVertex) edge
-							.getSource();
-					precedentLevel = Math.max(precedentLevel, precVertex
-							.getInitialVertexProperty().getTopologicalLevel());
-					v.getInitialVertexProperty().setTopologicalLevel(
-							precedentLevel + 1);
-				}
-			}
-		}
-
-		Collections.sort(topolist, new TopoComparator());
-
 	}
 
 	/**
@@ -177,7 +125,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 				topoOrder--;
 			}
 
-			if (!inserted && vertex.getPredecessorSet(false).isEmpty()) {
+			if (!inserted && vertex.getPredecessors(false).isEmpty()) {
 				orderManager.addFirst(vertex);
 			}
 		} else {

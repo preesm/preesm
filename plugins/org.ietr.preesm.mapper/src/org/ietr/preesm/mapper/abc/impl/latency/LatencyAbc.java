@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
@@ -54,14 +53,10 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
-import org.ietr.preesm.mapper.abc.SpecialVertexManager;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.mapper.abc.edgescheduling.IntervalFinder;
 import org.ietr.preesm.mapper.abc.impl.ImplementationCleaner;
-import org.ietr.preesm.mapper.abc.order.IScheduleElement;
-import org.ietr.preesm.mapper.abc.order.SynchronizedVertices;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
@@ -69,12 +64,10 @@ import org.ietr.preesm.mapper.gantt.GanttData;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.timekeeper.TimeKeeper;
 import org.ietr.preesm.mapper.tools.SchedulingOrderIterator;
-import org.ietr.preesm.mapper.tools.TLevelIterator;
-import org.ietr.preesm.mapper.ui.GanttPlotter;
 
 /**
  * Abc that minimizes latency
@@ -142,12 +135,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		for (DAGVertex v : dag.vertexSet()) {
 			MapperDAGVertex mdv = (MapperDAGVertex) v;
-			operators.put(mdv, mdv.getImplementationVertexProperty()
+			operators.put(mdv, mdv.getMapping()
 					.getEffectiveOperator());
-			mdv.getImplementationVertexProperty().setEffectiveComponent(
+			mdv.getMapping().setEffectiveComponent(
 					DesignTools.NO_COMPONENT_INSTANCE);
 			implementation.getMapperDAGVertex(mdv.getName())
-					.getImplementationVertexProperty()
+					.getMapping()
 					.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
 			;
 		}
@@ -172,18 +165,18 @@ public abstract class LatencyAbc extends AbstractAbc {
 			boolean updateRank) {
 
 		ComponentInstance effectiveOp = vertex
-				.getImplementationVertexProperty().getEffectiveOperator();
+				.getMapping().getEffectiveOperator();
 
 		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 		} else {
 
-			long vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInit().getTime(
 					effectiveOp);
 
 			// Set costs
-			vertex.getTimingVertexProperty().setCost(vertextime);
+			vertex.getTiming().setCost(vertextime);
 
 			setEdgesCosts(vertex.incomingEdges());
 			setEdgesCosts(vertex.outgoingEdges());
@@ -214,7 +207,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 		// Keeps the total order
 		orderManager.remove(vertex, false);
 
-		vertex.getTimingVertexProperty().reset();
+		vertex.getTiming().reset();
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 
@@ -308,7 +301,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if (update)
 			updateTimings();
-		return vertex.getTimingVertexProperty().getNewtLevel();
+		return vertex.getTiming().getTLevel();
 	}
 
 	public final long getBLevel(MapperDAGVertex vertex, boolean update) {
@@ -316,7 +309,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		if (update)
 			updateTimings();
-		return vertex.getTimingVertexProperty().getNewbLevel();
+		return vertex.getTiming().getBLevel();
 	}
 
 	/**
@@ -477,14 +470,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 				MapperDAGVertex ImplVertex = (MapperDAGVertex) implementation
 						.getVertex(vP.getName());
 				if (ImplVertex != null)
-					ImplVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(vP.getOrder());
+					ImplVertex.setTotalOrder(vP.getOrder());
 
 				MapperDAGVertex dagVertex = (MapperDAGVertex) dag.getVertex(vP
 						.getName());
 				if (dagVertex != null)
-					dagVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(vP.getOrder());
+					dagVertex.setTotalOrder(vP.getOrder());
 
 			}
 
@@ -502,7 +493,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Reorders the implementation
 	 */
-	public void reschedule2() {
+	/*	public void reschedule2() {
 
 		if (implementation != null && dag != null) {
 			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
@@ -520,14 +511,12 @@ public abstract class LatencyAbc extends AbstractAbc {
 			while (iterator.hasNext()) {
 				MapperDAGVertex implVertex = iterator.next();
 				if (implVertex != null)
-					implVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(index);
+					implVertex.setTotalOrder(index);
 
 				MapperDAGVertex dagVertex = (MapperDAGVertex) dag
 						.getVertex(implVertex.getName());
 				if (dagVertex != null)
-					dagVertex.getImplementationVertexProperty()
-							.setSchedTotalOrder(index);
+					dagVertex.setTotalOrder(index);
 
 				index++;
 			}
@@ -538,37 +527,13 @@ public abstract class LatencyAbc extends AbstractAbc {
 			adder.addPrecedenceEdges();
 
 		}
-	}
-
-	private class ISchedTLevelComp implements Comparator<IScheduleElement> {
-
-		@Override
-		public int compare(IScheduleElement arg0, IScheduleElement arg1) {
-			MapperDAGVertex v0 = null;
-			MapperDAGVertex v1 = null;
-			if (arg0 instanceof MapperDAGVertex) {
-				v0 = (MapperDAGVertex) arg0;
-			} else if (arg0 instanceof SynchronizedVertices) {
-				v0 = ((SynchronizedVertices) arg0).vertices().get(0);
-			}
-
-			if (arg1 instanceof MapperDAGVertex) {
-				v1 = (MapperDAGVertex) arg1;
-			} else if (arg1 instanceof SynchronizedVertices) {
-				v1 = ((SynchronizedVertices) arg1).vertices().get(0);
-			}
-
-			return (int) (v0.getTimingVertexProperty().getNewtLevel() - v1
-					.getTimingVertexProperty().getNewtLevel());
-		}
-
-	}
+	}*/
 
 	/**
 	 * Reorders the implementation
 	 */
-	@Override
-	public void reschedule(List<IScheduleElement> alreadyRescheduled) {
+	/*	@Override
+	public void reschedule(List<MapperDAGVertex> alreadyRescheduled) {
 
 		if (implementation != null && dag != null) {
 
@@ -581,7 +546,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			// this.plotImplementation(null);
 
 			WorkflowLogger.getLogger().log(Level.INFO, "Reordering");
-			List<IScheduleElement> vList = new ArrayList<IScheduleElement>(
+			List<MapperDAGVertex> vList = new ArrayList<MapperDAGVertex>(
 					orderManager.getTotalOrder().getList());
 
 			Collections.sort(vList, new ISchedTLevelComp());
@@ -603,12 +568,11 @@ public abstract class LatencyAbc extends AbstractAbc {
 					index = finder.getIndexOfFirstBigEnoughHole(v, 0);
 				} else {
 					index = finder.getIndexOfFirstBigEnoughHole(v, v
-							.getTimingVertexProperty().getCost());
+							.getTiming().getCost());
 				}
 
 				if (index > -1
-						&& index < v.getImplementationVertexProperty()
-								.getSchedTotalOrder()) {
+						&& index < v.getTotalOrder()) {
 					IScheduleElement reference = orderManager.get(index);
 					refMap.put(elt, reference);
 					eltList.add(elt);
@@ -648,5 +612,5 @@ public abstract class LatencyAbc extends AbstractAbc {
 			reschedule(orderList);
 
 		}
-	}
+	}*/
 }

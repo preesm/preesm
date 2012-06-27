@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,9 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * An edge scheduler that simply adds the transfer as soon as possible after the
@@ -48,7 +48,7 @@ import org.ietr.preesm.mapper.model.impl.TransferVertex;
  */
 public class SimpleEdgeSched extends AbstractEdgeSched {
 
-	public SimpleEdgeSched(SchedOrderManager orderManager) {
+	public SimpleEdgeSched(OrderManager orderManager) {
 		super(orderManager);
 	}
 

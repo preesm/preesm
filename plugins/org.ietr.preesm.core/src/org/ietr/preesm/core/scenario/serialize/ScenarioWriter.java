@@ -44,10 +44,11 @@ import net.sf.dftools.algorithm.model.parameters.Variable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.types.DataType;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -95,6 +96,7 @@ public class ScenarioWriter {
 
 		addFiles(root);
 		addConstraints(root);
+		addRelativeConstraints(root);
 		addTimings(root);
 		addSimuParams(root);
 		addVariables(root);
@@ -252,6 +254,29 @@ public class ScenarioWriter {
 			constraintGroupElt.appendChild(vtxelt);
 			vtxelt.setAttribute("name", vtxId);
 		}
+	}
+	
+
+	private void addRelativeConstraints(Element parent) {
+
+		RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
+		Element timings = dom.createElement("relativeconstraints");
+		parent.appendChild(timings);
+
+		timings.setAttribute("excelUrl", manager
+				.getExcelFileURL());
+
+		for (String id : manager.getExplicitConstraintIds()) {
+			addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
+		}
+	}
+
+	private void addRelativeConstraint(Element parent, String id, int group) {
+
+		Element timingelt = dom.createElement("relativeconstraint");
+		parent.appendChild(timingelt);
+		timingelt.setAttribute("vertexname", id);
+		timingelt.setAttribute("group", Integer.toString(group));
 	}
 
 	private void addTimings(Element parent) {

@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.ui.scenario.editor.timings;
+package org.ietr.preesm.ui.scenario.editor.relativeconstraints;
 
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
@@ -46,10 +46,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
@@ -61,12 +58,9 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
  * 
  * @author mpelcat
  */
-public class SDFTableLabelProvider implements ITableLabelProvider,
-		SelectionListener {
+public class SDFTableLabelProvider implements ITableLabelProvider {
 
 	private PreesmScenario scenario = null;
-
-	private String currentOpDefId = null;
 
 	private TableViewer tableViewer = null;
 
@@ -98,10 +92,9 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 			if (columnIndex == 0)
 				text = vertex.getName();
-			else if (columnIndex == 1 && scenario != null
-					&& currentOpDefId != null) {
-				int time = scenario.getTimingManager().getTimingOrDefault(
-						vertex.getName(), currentOpDefId);
+			else if (columnIndex == 1 && scenario != null) {
+				int time = scenario.getRelativeconstraintManager()
+						.getConstraintOrDefault(vertex.getName());
 
 				text = Integer.toString(time);
 			}
@@ -134,26 +127,6 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	}
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
-
-	}
-
-	/**
-	 * Core combo box listener that selects the current core
-	 */
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() instanceof Combo) {
-			Combo combo = ((Combo) e.getSource());
-			String item = combo.getItem(combo.getSelectionIndex());
-
-			currentOpDefId = item;
-			tableViewer.refresh();
-		}
-
-	}
-
 	public void handleDoubleClick(IStructuredSelection selection) {
 
 		IInputValidator validator = new IInputValidator() {
@@ -165,27 +138,30 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 				try {
 					time = Integer.valueOf(newText);
 				} catch (NumberFormatException e) {
-					time = 0;
+					time = -2;
 				}
 
-				if (time == 0)
-					message = Messages
-							.getString("Timings.invalid");
+				if (time < -1) {
+					message = Messages.getString("RelativeConstraints.invalid");
+					time = -1;
+				}
 
 				return message;
 			}
 
 		};
 
-		if (selection.getFirstElement() instanceof SDFVertex
-				&& currentOpDefId != null) {
+		if (selection.getFirstElement() instanceof SDFVertex) {
 			SDFVertex vertex = (SDFVertex) selection.getFirstElement();
 
-			String title = Messages.getString("Timings.dialog.title");
-			String message = Messages.getString("Timings.dialog.message")
+			String title = Messages
+					.getString("RelativeConstraints.dialog.title");
+			String message = Messages
+					.getString("RelativeConstraints.dialog.message")
 					+ vertex.getName();
-			String init = String.valueOf(scenario.getTimingManager()
-					.getTimingOrDefault(vertex.getName(), currentOpDefId));
+			String init = String.valueOf(scenario
+					.getRelativeconstraintManager().getConstraintOrDefault(
+							vertex.getName()));
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,
@@ -193,8 +169,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			if (dialog.open() == Window.OK) {
 				String value = dialog.getValue();
 
-				scenario.getTimingManager().setTiming(vertex.getName(),
-						currentOpDefId, Integer.valueOf(value));
+				scenario.getRelativeconstraintManager().addConstraint(
+						vertex.getName(), Integer.valueOf(value));
 
 				tableViewer.refresh();
 				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

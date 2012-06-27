@@ -36,44 +36,35 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
-import org.ietr.preesm.mapper.abc.order.IScheduleElement;
-import org.ietr.preesm.mapper.model.impl.OverheadVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
-import org.ietr.preesm.mapper.model.impl.SendVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.property.VertexInit;
+import org.ietr.preesm.mapper.model.property.VertexMapping;
+import org.ietr.preesm.mapper.model.property.VertexTiming;
+import org.ietr.preesm.mapper.model.special.OverheadVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.ReceiveVertex;
+import org.ietr.preesm.mapper.model.special.SendVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Represents a vertex in a DAG of type {@link MapperDAG} used in the mapper
  * 
  * @author mpelcat
  */
-public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
-
-	/**
-	 * Properties set by mapper algorithm via architecture model
-	 */
-	// protected ImplementationVertexProperty implementationVertexProperty;
-	private static final String IMPLEMENTATION_PROPERTY = "IMPLEMENTATION_PROPERTY";
+public class MapperDAGVertex extends DAGVertex {
 
 	/**
 	 * Properties set when converting sdf to dag
 	 */
 	private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
 	// protected InitialVertexProperty initialVertexProperty;
-
-	/**
-	 * Properties set by timekeeper
-	 */
-	private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
-	// protected TimingVertexProperty timingVertexProperty;
 
 	static {
 		{
@@ -106,15 +97,9 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		super();
 
 		this.setName(name);
-		this.getPropertyBean().setValue(INITIAL_PROPERTY,
-				new InitialVertexProperty());
-		this.getInitialVertexProperty().setParentVertex(this);
-		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY,
-				new ImplementationVertexProperty(this));
-		this.getPropertyBean().setValue(TIMING_PROPERTY,
-				new TimingVertexProperty());
+		this.getPropertyBean().setValue(INITIAL_PROPERTY, new VertexInit());
+		this.getInit().setParentVertex(this);
 
-		this.setBase(base);
 	}
 
 	@Override
@@ -139,13 +124,7 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 					(MapperDAG) this.getBase());
 		}
 
-		ImplementationVertexProperty impProp = this
-				.getImplementationVertexProperty().clone();
-		result.setImplementationVertexProperty(impProp);
-
-		result.setInitialVertexProperty(this.getInitialVertexProperty().clone(
-				result));
-		result.setTimingVertexProperty(this.getTimingVertexProperty().clone());
+		result.setInit(this.getInit().clone(result));
 
 		for (String propertyKey : this.getPropertyBean().keys()) {
 			Object property = this.getPropertyBean().getValue(propertyKey);
@@ -155,36 +134,13 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 		return result;
 	}
 
-	public ImplementationVertexProperty getImplementationVertexProperty() {
-		return (ImplementationVertexProperty) this.getPropertyBean().getValue(
-				IMPLEMENTATION_PROPERTY);
+	public VertexInit getInit() {
+		return (VertexInit) this.getPropertyBean().getValue(INITIAL_PROPERTY);
 	}
 
-	public InitialVertexProperty getInitialVertexProperty() {
-		return (InitialVertexProperty) this.getPropertyBean().getValue(
-				INITIAL_PROPERTY);
-	}
-
-	public TimingVertexProperty getTimingVertexProperty() {
-		return (TimingVertexProperty) this.getPropertyBean().getValue(
-				TIMING_PROPERTY);
-	}
-
-	public void setImplementationVertexProperty(
-			ImplementationVertexProperty implementationVertexProperty) {
-		this.getPropertyBean().setValue(IMPLEMENTATION_PROPERTY,
-				implementationVertexProperty);
-	}
-
-	public void setInitialVertexProperty(
-			InitialVertexProperty initialVertexProperty) {
+	private void setInit(VertexInit initialVertexProperty) {
 		this.getPropertyBean()
 				.setValue(INITIAL_PROPERTY, initialVertexProperty);
-	}
-
-	public void setTimingVertexProperty(
-			TimingVertexProperty timingVertexProperty) {
-		this.getPropertyBean().setValue(TIMING_PROPERTY, timingVertexProperty);
 	}
 
 	@Override
@@ -201,71 +157,75 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 	public String toString() {
 
 		String toString = "";
-		if (this.getImplementationVertexProperty().hasEffectiveComponent()) {
+		if (this.getMapping().hasEffectiveComponent()) {
 			// If the vertex is mapped, displays its component and rank
-			toString = getName()
-					+ "("
-					+ this.getImplementationVertexProperty()
-							.getEffectiveComponent().toString()
-					+ ","
-					+ this.getImplementationVertexProperty()
-							.getSchedTotalOrder() + ")";
+			toString = getName() + "("
+					+ this.getMapping().getEffectiveComponent().toString()
+					+ "," + this.getTiming().getTotalOrder(this) + ")";
 		} else {
 			// If the vertex is not mapped, displays its weight
 			toString = getName() + "(" + this.getNbRepeat() + ")";
-		}
-
-		if (this.getInitialVertexProperty().getTopologicalLevel() != -1) {
-			toString += "["
-					+ this.getInitialVertexProperty().getTopologicalLevel()
-					+ "]";
 		}
 
 		return toString;
 	}
 
 	/**
-	 * Getting all predecessors, ignoring or not the precedence edges
+	 * Getting all predecessors, ignoring or not the precedence edges.
+	 * Predecessors are given as keys for a map containing corresponding edges.
 	 */
-	public Set<MapperDAGVertex> getPredecessorSet(boolean ignorePrecedence) {
+	public Map<MapperDAGVertex, MapperDAGEdge> getPredecessors(
+			boolean ignorePrecedence) {
 
-		Set<MapperDAGVertex> predSet = new HashSet<MapperDAGVertex>();
+		Map<MapperDAGVertex, MapperDAGEdge> preds = new HashMap<MapperDAGVertex, MapperDAGEdge>();
 		Set<DAGEdge> incomingSet = this.incomingEdges();
 
 		if (ignorePrecedence) {
 			for (DAGEdge edge : incomingSet) {
-				if (!(edge instanceof PrecedenceEdge)) {
-					predSet.add((MapperDAGVertex) edge.getSource());
+				if (!(edge instanceof PrecedenceEdge)
+						&& edge.getSource() != null) {
+					preds.put((MapperDAGVertex) edge.getSource(),
+							(MapperDAGEdge) edge);
 				}
 			}
 		} else {
 			for (DAGEdge edge : incomingSet) {
-				predSet.add((MapperDAGVertex) edge.getSource());
+				if (edge.getSource() != null) {
+					preds.put((MapperDAGVertex) edge.getSource(),
+							(MapperDAGEdge) edge);
+				}
 			}
 		}
-		return predSet;
+		return preds;
 	}
 
 	/**
-	 * Getting all successors, ignoring or not the precedence edges
+	 * Getting all successors, ignoring or not the precedence edges Successors
+	 * are given as keys for a map containing corresponding edges.
 	 */
-	public Set<MapperDAGVertex> getSuccessorSet(boolean ignorePrecedence) {
+	public Map<MapperDAGVertex, MapperDAGEdge> getSuccessors(
+			boolean ignorePrecedence) {
 
-		Set<MapperDAGVertex> succSet = new HashSet<MapperDAGVertex>();
+		Map<MapperDAGVertex, MapperDAGEdge> succs = new HashMap<MapperDAGVertex, MapperDAGEdge>();
 		Set<DAGEdge> outgoingSet = this.outgoingEdges();
 
 		if (ignorePrecedence) {
 			for (DAGEdge edge : outgoingSet) {
-				if (!(edge instanceof PrecedenceEdge)) {
-					succSet.add((MapperDAGVertex) edge.getTarget());
+				if (!(edge instanceof PrecedenceEdge)
+						&& edge.getTarget() != null) {
+					succs.put((MapperDAGVertex) edge.getTarget(),
+							(MapperDAGEdge) edge);
 				}
 			}
 		} else {
 			for (DAGEdge edge : outgoingSet) {
-				succSet.add((MapperDAGVertex) edge.getTarget());
+				if (edge.getTarget() != null) {
+					succs.put((MapperDAGVertex) edge.getTarget(),
+							(MapperDAGEdge) edge);
+				}
 			}
 		}
-		return succSet;
+		return succs;
 	}
 
 	@Override
@@ -282,28 +242,49 @@ public class MapperDAGVertex extends DAGVertex implements IScheduleElement {
 
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
-			return getImplementationVertexProperty().getEffectiveOperator()
-					.getComponent().getVlnv().getName();
+			return getMapping().getEffectiveOperator().getComponent().getVlnv()
+					.getName();
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
-			return getInitialVertexProperty().getInitialOperatorList()
-					.toString();
+			return getInit().getInitialOperatorList().toString();
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
-			return getInitialVertexProperty().getParentVertex().getId();
+			return getInit().getParentVertex().getId();
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Task_duration)) {
-			return String.valueOf(getTimingVertexProperty().getCost());
+			return String.valueOf(getTiming().getCost());
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
-			return String.valueOf(this.getImplementationVertexProperty()
-					.getSchedTotalOrder());
+			return String.valueOf(this.getTiming().getTotalOrder(this));
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_Operator)) {
-			return this.getImplementationVertexProperty()
-					.getEffectiveComponent().getInstanceName();
+			return this.getMapping().getEffectiveComponent().getInstanceName();
 		}
 		return super.getPropertyStringValue(propertyName);
+	}
+
+	public int getTotalOrder() {
+		return getTiming().getTotalOrder(this);
+	}
+
+	public void setTotalOrder(int schedulingTotalOrder) {
+		getTiming().setTotalOrder(this.getName(), schedulingTotalOrder);
+	}
+
+	/**
+	 * Timing properties are store in the graph and possibly shared with other
+	 * vertices.
+	 */
+	public VertexTiming getTiming() {
+		return ((MapperDAG) getBase()).getTimings().getTiming(getName());
+	}
+
+	/**
+	 * Mapping properties are store in the graph and possibly shared with other
+	 * vertices.
+	 */
+	public VertexMapping getMapping() {
+		return ((MapperDAG) getBase()).getMappings().getMapping(getName());
 	}
 
 }

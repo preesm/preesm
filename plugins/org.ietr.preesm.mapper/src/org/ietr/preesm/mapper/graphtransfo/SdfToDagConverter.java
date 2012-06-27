@@ -37,8 +37,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.graphtransfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -61,15 +64,16 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
-import org.ietr.preesm.mapper.model.InitialEdgeProperty;
-import org.ietr.preesm.mapper.model.InitialVertexProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
+import org.ietr.preesm.mapper.model.property.EdgeInit;
+import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
@@ -154,10 +158,48 @@ public class SdfToDagConverter {
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
 		addInitialConstraintsProperties(dag, architecture, scenario);
-
+		addInitialRelativeConstraintsProperties(dag, architecture, scenario);
+		addInitialTimingProperties(dag, architecture, scenario);
 		return null;
 	}
 
+	/**
+	 * Retrieves the relative constraints and adds them to the DAG initial properties.
+	 * It consists in sharing between vertices information stored in VertexMapping objects.
+	 */
+	public static void addInitialRelativeConstraintsProperties(MapperDAG dag,
+			Design architecture, PreesmScenario scenario) {
+		RelativeConstraintManager manager =  scenario.getRelativeconstraintManager();
+		Map<Integer,Set<MapperDAGVertex>> relativeConstraints = new HashMap<Integer,Set<MapperDAGVertex>>();
+		for(DAGVertex dv : dag.vertexSet()){
+			String sdfVName = dv.getCorrespondingSDFVertex().getId();
+			if(manager.hasRelativeConstraint(sdfVName)){
+				int group = manager.getConstraintOrDefault(sdfVName);
+				if(!relativeConstraints.containsKey(group)){
+					relativeConstraints.put(group, new HashSet<MapperDAGVertex>());
+				}
+				relativeConstraints.get(group).add((MapperDAGVertex)dv);
+			}
+			else{
+				dag.getMappings().dedicate((MapperDAGVertex)dv);
+			}
+		}
+		
+		for(int group : relativeConstraints.keySet()){
+			dag.getMappings().associate(relativeConstraints.get(group));
+		}
+	}
+
+	/**
+	 * Sets timing dependencies between vertices
+	 */
+	public static void addInitialTimingProperties(MapperDAG dag,
+			Design architecture, PreesmScenario scenario) {
+		for(DAGVertex v : dag.vertexSet()){
+			dag.getTimings().dedicate((MapperDAGVertex)v);
+		}
+	}
+	
 	/**
 	 * Retrieves the vertex timings and adds them to the DAG initial properties
 	 * 
@@ -175,8 +217,8 @@ public class SdfToDagConverter {
 		while (dagiterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) dagiterator
 					.next();
-			InitialVertexProperty currentVertexInit = currentVertex
-					.getInitialVertexProperty();
+			VertexInit currentVertexInit = currentVertex
+					.getInit();
 
 			// Setting repetition number
 			int nbRepeat = currentVertex.getNbRepeat().intValue();
@@ -225,8 +267,8 @@ public class SdfToDagConverter {
 
 		while (edgeiterator.hasNext()) {
 			MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
-			InitialEdgeProperty currentEdgeInit = currentEdge
-					.getInitialEdgeProperty();
+			EdgeInit currentEdgeInit = currentEdge
+					.getInit();
 
 			// Old version using directly the weights set by the SDF4J sdf2dag
 			/*
@@ -290,16 +332,16 @@ public class SdfToDagConverter {
 								.getComponentInstance(architecture, opId);
 						if (currentIOp.getComponent() instanceof Operator) {
 
-							if (!mv.getInitialVertexProperty().isMapable(
+							if (!mv.getInit().isMapable(
 									currentIOp)) {
 
-								mv.getInitialVertexProperty().addOperator(
+								mv.getInit().addOperator(
 										currentIOp);
 
 								Timing newTiming = new Timing(currentIOp
 										.getComponent().getVlnv().getName(),
 										mv.getName());
-								mv.getInitialVertexProperty().addTiming(
+								mv.getInit().addTiming(
 										newTiming);
 							}
 
@@ -325,7 +367,7 @@ public class SdfToDagConverter {
 				for (String id : specialOpIds) {
 					ComponentInstance o = DesignTools.getComponentInstance(
 							architecture, id);
-					((MapperDAGVertex) v).getInitialVertexProperty()
+					((MapperDAGVertex) v).getInit()
 							.addOperator(o);
 				}
 			}

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -44,13 +44,13 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * A transaction that adds one transfer vertex in an implementation and
@@ -79,7 +79,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	/**
 	 * Vertices order manager
 	 */
-	private SchedOrderManager orderManager;
+	private OrderManager orderManager;
 
 	/**
 	 * Implementation DAG to which the vertex is added
@@ -145,7 +145,7 @@ public class AddTransferVertexTransaction extends Transaction {
 	public AddTransferVertexTransaction(String transferType,
 			Transaction precedingTransaction, IEdgeSched edgeScheduler,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex, int nodeIndex,
+			OrderManager orderManager, int routeIndex, int nodeIndex,
 			AbstractRouteStep step, long transferTime,
 			ComponentInstance effectiveComponent, boolean scheduleVertex) {
 		super();
@@ -202,28 +202,28 @@ public class AddTransferVertexTransaction extends Transaction {
 			tVertex = new TransferVertex(tvertexID, implementation,
 					(MapperDAGVertex) edge.getSource(),
 					(MapperDAGVertex) edge.getTarget(), routeIndex, nodeIndex);
+			implementation.getTimings().dedicate(tVertex);
+			implementation.getMappings().dedicate(tVertex);
 
 			tVertex.setRouteStep(step);
 
-			tVertex.getTimingVertexProperty().setCost(transferTime);
-
-			tVertex.getImplementationVertexProperty().setEffectiveComponent(
-					effectiveComponent);
-
 			implementation.addVertex(tVertex);
+			tVertex.getTiming().setCost(transferTime);
+			tVertex.getMapping().setEffectiveComponent(
+					effectiveComponent);
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
 					tVertex);
 			newOutEdge = (MapperDAGEdge) implementation.addEdge(tVertex,
 					currentTarget);
 
-			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+			newInEdge.setInit(edge.getInit()
 					.clone());
-			newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+			newOutEdge.setInit(edge.getInit()
 					.clone());
 
-			newInEdge.getTimingEdgeProperty().setCost(0);
-			newOutEdge.getTimingEdgeProperty().setCost(0);
+			newInEdge.getTiming().setCost(0);
+			newOutEdge.getTiming().setCost(0);
 
 			newInEdge.setAggregate(edge.getAggregate());
 			newOutEdge.setAggregate(edge.getAggregate());

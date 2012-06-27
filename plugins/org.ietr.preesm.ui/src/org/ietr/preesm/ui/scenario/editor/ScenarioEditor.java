@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -54,6 +54,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.ui.scenario.editor.constraints.ConstraintsPage;
+import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
@@ -122,6 +123,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		IFormPage constraintsPage = new ConstraintsPage(scenario, this,
 				"Constraints", "Constraints");
 		constraintsPage.addPropertyListener(this);
+		IFormPage relativeConstraintsPage = new RelativeConstraintsPage(scenario, this,
+				"RelativeConstraints", "Relative Constraints");
+		constraintsPage.addPropertyListener(this);
 		IFormPage timingsPage = new TimingsPage(scenario, this, "Timings",
 				"Timings");
 		timingsPage.addPropertyListener(this);
@@ -138,6 +142,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		try {
 			addPage(overviewPage);
 			addPage(constraintsPage);
+			addPage(relativeConstraintsPage);
 			addPage(timingsPage);
 			addPage(simulationPage);
 			addPage(codegenPage);

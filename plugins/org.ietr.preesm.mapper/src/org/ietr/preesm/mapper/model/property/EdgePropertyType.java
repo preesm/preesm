@@ -34,31 +34,40 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.abc.order;
+package org.ietr.preesm.mapper.model.property;
 
-import java.util.Set;
-
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-
-import org.ietr.preesm.mapper.model.ImplementationVertexProperty;
-import org.ietr.preesm.mapper.model.InitialVertexProperty;
-import org.ietr.preesm.mapper.model.TimingVertexProperty;
+import net.sf.dftools.algorithm.model.AbstractEdgePropertyType;
 
 /**
- * Element containing either a simple vertex or a group of synchronized elements
- * that have the same total order.
+ * Extending propertyType
  * 
  * @author mpelcat
  */
-public interface IScheduleElement {
+public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
 
-	public String getName();
+	int time;
 
-	public TimingVertexProperty getTimingVertexProperty();
+	public EdgePropertyType(int time) {
+		super();
+		this.time = time;
 
-	public ImplementationVertexProperty getImplementationVertexProperty();
+	}
 
-	public InitialVertexProperty getInitialVertexProperty();
+	@Override
+	public AbstractEdgePropertyType<Integer> clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	public Set<DAGEdge> incomingEdges();
+	@Override
+	public int intValue() {
+		// TODO Auto-generated method stub
+		return time;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%d", time);
+	}
+
 }

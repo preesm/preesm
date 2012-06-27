@@ -73,10 +73,10 @@ import org.ietr.preesm.mapper.abc.taskscheduling.SimpleTaskSched;
 import org.ietr.preesm.mapper.algo.dynamic.DynamicQueuingScheduler;
 import org.ietr.preesm.mapper.graphtransfo.SdfToDagConverter;
 import org.ietr.preesm.mapper.graphtransfo.TagDAG;
-import org.ietr.preesm.mapper.model.InitialEdgeProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
@@ -211,18 +211,18 @@ public class DynamicQueuingMapping extends AbstractMapping {
 				v.setName("VirtualDelay" + "__@" + (i + 2));
 				v.setId("VirtualDelay" + "__@" + (i + 2));
 				v.setNbRepeat(new DAGDefaultVertexPropertyType(1));
-				v.getInitialVertexProperty().addOperator(virtualDelayManager);
+				v.getInit().addOperator(virtualDelayManager);
 				Timing timing = new Timing(virtualDelayManager.getComponent()
 						.getVlnv().getName(), sdfV.getName(), iterationPeriod);
-				v.getInitialVertexProperty().addTiming(timing);
+				v.getInit().addTiming(timing);
 				dag.addVertex(v);
 
 				// Edges between actors ensure the order of appearance
 				if (lastCreatedVertex != null) {
 					MapperDAGEdge e = (MapperDAGEdge) dag.addEdge(
 							lastCreatedVertex, v);
-					InitialEdgeProperty p = new InitialEdgeProperty(0);
-					e.setInitialEdgeProperty(p);
+					EdgeInit p = new EdgeInit(0);
+					e.setInit(p);
 				}
 				lastCreatedVertex = v;
 			}
@@ -249,8 +249,8 @@ public class DynamicQueuingMapping extends AbstractMapping {
 									correspondingVirtualVertex, v);
 
 							// 0 data edges will be ignored while routing
-							InitialEdgeProperty p = new InitialEdgeProperty(0);
-							e.setInitialEdgeProperty(p);
+							EdgeInit p = new EdgeInit(0);
+							e.setInit(p);
 						}
 					}
 				}

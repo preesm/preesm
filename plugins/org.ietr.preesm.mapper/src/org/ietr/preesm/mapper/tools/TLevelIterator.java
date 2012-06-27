@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -53,8 +53,8 @@ public class TLevelIterator extends ImplementationIterator {
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		long TLevelDifference = (arg0.getTimingVertexProperty().getNewtLevel() - arg1
-				.getTimingVertexProperty().getNewtLevel());
+		long TLevelDifference = (arg0.getTiming().getTLevel() - arg1
+				.getTiming().getTLevel());
 
 		if (!directOrder)
 			TLevelDifference = -TLevelDifference;

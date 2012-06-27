@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -37,7 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.abc.taskscheduling;
 
 import org.ietr.preesm.mapper.abc.edgescheduling.IntervalFinder;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
@@ -55,7 +55,7 @@ public class TaskSwitcher extends AbstractTaskSched {
 	}
 
 	@Override
-	public void setOrderManager(SchedOrderManager orderManager) {
+	public void setOrderManager(OrderManager orderManager) {
 		super.setOrderManager(orderManager);
 		intervalFinder = new IntervalFinder(orderManager);
 	}

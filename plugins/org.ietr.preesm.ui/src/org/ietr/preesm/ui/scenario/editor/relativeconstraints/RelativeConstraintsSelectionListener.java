@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,39 +34,21 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
+package org.ietr.preesm.ui.scenario.editor.relativeconstraints;
 
-import org.ietr.preesm.mapper.model.MapperDAGEdge;
-import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 
 /**
- * A precedence edge is automatically generated and expresses the sequential
- * execution of successive vertices in a single component
+ * Listener of core definition change and of table selection
  * 
  * @author mpelcat
  */
-public class PrecedenceEdge extends MapperDAGEdge {
+public class RelativeConstraintsSelectionListener implements ISelectionChangedListener {
 
 	@Override
-	public String toString() {
+	public void selectionChanged(SelectionChangedEvent event) {
 
-		String sourceName = "null", destName = "null";
-
-		if (getSource() != null)
-			sourceName = getSource().getName();
-		if (getSource() != null)
-			destName = getTarget().getName();
-
-		return "precedence(" + sourceName + "," + destName + ")";
 	}
 
-	public PrecedenceEdge() {
-		this(null, null);
-	}
-
-	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
-		super(source, destination);
-
-		getTimingEdgeProperty().setCost(0);
-	}
 }

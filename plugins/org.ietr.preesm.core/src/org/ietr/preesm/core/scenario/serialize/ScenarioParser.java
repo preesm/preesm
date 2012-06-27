@@ -64,11 +64,11 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.types.DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -146,6 +146,8 @@ public class ScenarioParser {
 						parseFileNames(elt);
 					} else if (type.equals("constraints")) {
 						parseConstraintGroups(elt);
+					} else if (type.equals("relativeconstraints")) {
+						parseRelativeConstraints(elt);
 					} else if (type.equals("timings")) {
 						parseTimings(elt);
 					} else if (type.equals("simuParams")) {
@@ -163,6 +165,56 @@ public class ScenarioParser {
 		return scenario;
 	}
 
+
+	/**
+	 * Retrieves the timings
+	 */
+	private void parseRelativeConstraints(Element relConsElt) {
+
+		String relConsFileUrl = relConsElt.getAttribute("excelUrl");
+		scenario.getTimingManager().setExcelFileURL(relConsFileUrl);
+
+		Node node = relConsElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("relativeconstraint")) {
+					parseRelativeConstraint(elt);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+	}
+
+	/**
+	 * Retrieves one timing
+	 */
+	private void parseRelativeConstraint(Element timingElt) {
+
+		int group = -1;
+
+		if (algo != null) {
+
+			String type = timingElt.getTagName();
+			if (type.equals("relativeconstraint")) {
+				String vertexpath = timingElt.getAttribute("vertexname");
+
+				try {
+					group = Integer.parseInt(timingElt.getAttribute("group"));
+				} catch (NumberFormatException e) {
+					group = -1;
+				}
+			
+				scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
+			}
+
+		}
+	}
+	
 	/**
 	 * Retrieves the timings
 	 */

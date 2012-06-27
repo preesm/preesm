@@ -53,7 +53,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
- * GanttData carries information for the whole data in a Gantt chart
+ * GanttData carries information that can be displayed in a Gantt chart
  * 
  * @author mpelcat
  */
@@ -93,16 +93,16 @@ public class GanttData {
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
 			ComponentInstance cmp = currentVertex
-					.getImplementationVertexProperty().getEffectiveComponent();
+					.getMapping().getEffectiveComponent();
 
 			if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
-				long startTime = currentVertex.getTimingVertexProperty()
-						.getNewtLevel();
-				long duration = currentVertex.getTimingVertexProperty()
+				long startTime = currentVertex.getTiming()
+						.getTLevel();
+				long duration = currentVertex.getTiming()
 						.getCost();
 				String id = currentVertex.getName()
 						+ " (x"
-						+ currentVertex.getInitialVertexProperty()
+						+ currentVertex.getInit()
 								.getNbRepeat() + ")";
 				if(!insertTask(id, cmp.getInstanceName(), startTime, duration)){
 					return false;

@@ -42,15 +42,15 @@ import java.util.Set;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.RemoveVertexTransaction;
 import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.InvolvementVertex;
-import org.ietr.preesm.mapper.model.impl.OverheadVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.InvolvementVertex;
+import org.ietr.preesm.mapper.model.special.OverheadVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Class cleaning an implementation i.e. removing added transfers and edges.
@@ -59,11 +59,11 @@ import org.ietr.preesm.mapper.model.impl.TransferVertex;
  */
 public class ImplementationCleaner {
 
-	private SchedOrderManager orderManager;
+	private OrderManager orderManager;
 	private MapperDAG implementation;
 	private TransactionManager transactionManager;
 
-	public ImplementationCleaner(SchedOrderManager orderManager,
+	public ImplementationCleaner(OrderManager orderManager,
 			MapperDAG implementation) {
 		super();
 		this.orderManager = orderManager;
@@ -177,7 +177,7 @@ public class ImplementationCleaner {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
-		for (MapperDAGVertex v : vertex.getPredecessorSet(true)) {
+		for (MapperDAGVertex v : vertex.getPredecessors(true).keySet()) {
 			if (v instanceof TransferVertex) {
 				transfers.add(v);
 				transfers.addAll(getPrecedingTransfers(v));
@@ -194,7 +194,7 @@ public class ImplementationCleaner {
 
 		Set<DAGVertex> transfers = new HashSet<DAGVertex>();
 
-		for (MapperDAGVertex v : vertex.getSuccessorSet(true)) {
+		for (MapperDAGVertex v : vertex.getSuccessors(true).keySet()) {
 			if (v instanceof TransferVertex) {
 				transfers.add(v);
 				transfers.addAll(getFollowingTransfers(v));

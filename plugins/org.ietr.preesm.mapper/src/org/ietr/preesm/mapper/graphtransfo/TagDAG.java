@@ -61,14 +61,14 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.AbstractEdgeSched;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
-import org.ietr.preesm.mapper.model.impl.SendVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.ReceiveVertex;
+import org.ietr.preesm.mapper.model.special.SendVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Tags an SDF with the implementation information necessary for code
@@ -122,7 +122,7 @@ public class TagDAG {
 	public void addSendReceive(MapperDAG dag, Design architecture,
 			PreesmScenario scenario) {
 
-		SchedOrderManager orderMgr = new SchedOrderManager(architecture);
+		OrderManager orderMgr = new OrderManager(architecture);
 		orderMgr.reconstructTotalOrderFromDAG(dag);
 
 		CommunicationRouter comRouter = new CommunicationRouter(architecture,
@@ -170,7 +170,7 @@ public class TagDAG {
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-						incomingEdge.getInitialEdgeProperty().getDataSize());
+						incomingEdge.getInit().getDataSize());
 
 				// Setting the name of the data sending vertex
 				bean.setValue(ImplementationPropertyNames.Send_senderGraphName,
@@ -212,7 +212,7 @@ public class TagDAG {
 
 				// Setting the size of the transmitted data
 				bean.setValue(ImplementationPropertyNames.SendReceive_dataSize,
-						outgoingEdge.getInitialEdgeProperty().getDataSize());
+						outgoingEdge.getInit().getDataSize());
 
 				// Setting the name of the data receiving vertex
 				bean.setValue(
@@ -234,7 +234,7 @@ public class TagDAG {
 
 				// Setting the operator on which vertex is executed
 				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-						currentVertex.getImplementationVertexProperty()
+						currentVertex.getMapping()
 								.getEffectiveOperator());
 
 				// Setting the vertex type
@@ -247,11 +247,11 @@ public class TagDAG {
 
 				// Setting the task duration
 				ComponentInstance effectiveOperator = currentVertex
-						.getImplementationVertexProperty()
+						.getMapping()
 						.getEffectiveOperator();
-				int singleRepeatTime = currentVertex.getInitialVertexProperty()
+				int singleRepeatTime = currentVertex.getInit()
 						.getTime(effectiveOperator);
-				int nbRepeat = currentVertex.getInitialVertexProperty()
+				int nbRepeat = currentVertex.getInit()
 						.getNbRepeat();
 				int totalTime = nbRepeat * singleRepeatTime;
 				bean.setValue(ImplementationPropertyNames.Task_duration,
@@ -268,8 +268,7 @@ public class TagDAG {
 
 			// Setting the scheduling total order
 			bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-					currentVertex.getImplementationVertexProperty()
-							.getSchedTotalOrder());
+					currentVertex.getTotalOrder());
 		}
 	}
 

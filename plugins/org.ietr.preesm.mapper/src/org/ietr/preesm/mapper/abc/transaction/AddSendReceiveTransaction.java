@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -43,14 +43,14 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.ReceiveVertex;
-import org.ietr.preesm.mapper.model.impl.SendVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.ReceiveVertex;
+import org.ietr.preesm.mapper.model.special.SendVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * A transaction that adds a send and a receive vertex in an implementation.
@@ -82,7 +82,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	/**
 	 * manager keeping scheduling orders
 	 */
-	private SchedOrderManager orderManager = null;
+	private OrderManager orderManager = null;
 
 	/**
 	 * Cost of the transfer to give to the transfer vertex
@@ -109,7 +109,7 @@ public class AddSendReceiveTransaction extends Transaction {
 	private MapperDAGEdge newEdge3 = null;
 
 	public AddSendReceiveTransaction(MapperDAGEdge edge,
-			MapperDAG implementation, SchedOrderManager orderManager,
+			MapperDAG implementation, OrderManager orderManager,
 			int routeIndex, AbstractRouteStep step, long transferCost) {
 		super();
 		this.precedingTransaction = null;
@@ -123,7 +123,7 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(Transaction precedingTransaction,
 			MapperDAGEdge edge, MapperDAG implementation,
-			SchedOrderManager orderManager, int routeIndex,
+			OrderManager orderManager, int routeIndex,
 			AbstractRouteStep step, long transferCost) {
 		super();
 		this.precedingTransaction = precedingTransaction;
@@ -169,20 +169,24 @@ public class AddSendReceiveTransaction extends Transaction {
 		ComponentInstance receiverOperator = step.getReceiver();
 
 		sendVertex = new SendVertex(sendVertexID, implementation);
+		implementation.getTimings().dedicate(sendVertex);
+		implementation.getMappings().dedicate(sendVertex);
 		sendVertex.setRouteStep(step);
-		sendVertex.getTimingVertexProperty().setCost(transferCost);
-		sendVertex.getImplementationVertexProperty().setEffectiveOperator(
+		implementation.addVertex(sendVertex);
+		sendVertex.getTiming().setCost(transferCost);
+		sendVertex.getMapping().setEffectiveOperator(
 				senderOperator);
 		orderManager.insertAfter(currentSource, sendVertex);
-		implementation.addVertex(sendVertex);
 
 		receiveVertex = new ReceiveVertex(receiveVertexID, implementation);
+		implementation.getTimings().dedicate(receiveVertex);
+		implementation.getMappings().dedicate(receiveVertex);
 		receiveVertex.setRouteStep(step);
-		receiveVertex.getTimingVertexProperty().setCost(transferCost);
-		receiveVertex.getImplementationVertexProperty().setEffectiveOperator(
+		implementation.addVertex(receiveVertex);
+		receiveVertex.getTiming().setCost(transferCost);
+		receiveVertex.getMapping().setEffectiveOperator(
 				receiverOperator);
 		orderManager.insertAfter(sendVertex, receiveVertex);
-		implementation.addVertex(receiveVertex);
 
 		newEdge1 = (MapperDAGEdge) implementation.addEdge(currentSource,
 				sendVertex);
@@ -191,13 +195,13 @@ public class AddSendReceiveTransaction extends Transaction {
 		newEdge3 = (MapperDAGEdge) implementation.addEdge(receiveVertex,
 				currentTarget);
 
-		newEdge1.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-		newEdge2.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
-		newEdge3.setInitialEdgeProperty(edge.getInitialEdgeProperty().clone());
+		newEdge1.setInit(edge.getInit().clone());
+		newEdge2.setInit(edge.getInit().clone());
+		newEdge3.setInit(edge.getInit().clone());
 
-		newEdge1.getTimingEdgeProperty().setCost(0);
-		newEdge2.getTimingEdgeProperty().setCost(0);
-		newEdge3.getTimingEdgeProperty().setCost(0);
+		newEdge1.getTiming().setCost(0);
+		newEdge2.getTiming().setCost(0);
+		newEdge3.getTiming().setCost(0);
 
 		newEdge1.setAggregate(edge.getAggregate());
 		newEdge2.setAggregate(edge.getAggregate());

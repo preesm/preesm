@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 
 /**
  * Methods common to every edge schedulers
@@ -48,9 +48,9 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	protected SchedOrderManager orderManager = null;
+	protected OrderManager orderManager = null;
 
-	public AbstractEdgeSched(SchedOrderManager orderManager) {
+	public AbstractEdgeSched(OrderManager orderManager) {
 		super();
 		this.orderManager = orderManager;
 	}
@@ -59,7 +59,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 	 * Gets the edge scheduler from an edge scheduler type
 	 */
 	public static IEdgeSched getInstance(EdgeSchedType edgeSchedType,
-			SchedOrderManager orderManager) {
+			OrderManager orderManager) {
 
 		AbstractEdgeSched edgeSched = null;
 
@@ -77,7 +77,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 		return edgeSched;
 	}
 
-	public SchedOrderManager getOrderManager() {
+	public OrderManager getOrderManager() {
 		return orderManager;
 	}
 }

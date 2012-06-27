@@ -34,34 +34,20 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
+package org.ietr.preesm.mapper.model.special;
 
-import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
-
-import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Vertex corresponding to sending a data. This vertex is mapped on the sender
- * of the corresponding route step.
+ * An involvement vertex represents a communication directly driven by a core
  * 
  * @author mpelcat
  */
-public class SendVertex extends TransferVertex {
+public class InvolvementVertex extends MapperDAGVertex {
 
-	static {
-		{
-			public_properties
-					.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-		}
-	};
-
-	public SendVertex(String id, MapperDAG base) {
-		super(id, base, null, null, 0, 0);
-	}
-
-	public DAGDefaultVertexPropertyType getNbRepeat() {
-		return new DAGDefaultVertexPropertyType(1);
+	public InvolvementVertex(String id, MapperDAG base) {
+		super(id, base);
 	}
 
 }

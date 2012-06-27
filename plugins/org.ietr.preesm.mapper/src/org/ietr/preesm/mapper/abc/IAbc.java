@@ -45,7 +45,6 @@ import net.sf.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.mapper.abc.order.IScheduleElement;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.gantt.GanttData;
@@ -123,7 +122,7 @@ public interface IAbc extends IMapperAbc {
 	 */
 	public void reschedule(VertexOrderList totalOrder);
 
-	public void reschedule(List<IScheduleElement> alreadyRescheduled);
+	//public void reschedule(List<MapperDAGVertex> alreadyRescheduled);
 
 	/**
 	 * Gets the cost of the given vertex in the implementation

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -43,11 +43,10 @@ import java.util.logging.Level;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.mapper.abc.order.IScheduleElement;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.TimingVertexProperty;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.property.VertexTiming;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * During edge scheduling, one needs to find intervals to fit the transfers.
@@ -60,7 +59,7 @@ public class IntervalFinder {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	private SchedOrderManager orderManager = null;
+	private OrderManager orderManager = null;
 	private Random random;
 
 	private static class FindType {
@@ -77,7 +76,7 @@ public class IntervalFinder {
 		}
 	}
 
-	public IntervalFinder(SchedOrderManager orderManager) {
+	public IntervalFinder(OrderManager orderManager) {
 		super();
 		this.orderManager = orderManager;
 		random = new Random(System.nanoTime());
@@ -87,7 +86,7 @@ public class IntervalFinder {
 	 * Finds the largest free interval in a schedule
 	 */
 	public Interval findLargestFreeInterval(ComponentInstance component,
-			IScheduleElement minVertex, IScheduleElement maxVertex) {
+			MapperDAGVertex minVertex, MapperDAGVertex maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.largestFreeInterval, 0);
@@ -95,7 +94,7 @@ public class IntervalFinder {
 	}
 
 	public Interval findEarliestNonNullInterval(ComponentInstance component,
-			IScheduleElement minVertex, IScheduleElement maxVertex) {
+			MapperDAGVertex minVertex, MapperDAGVertex maxVertex) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.earliestBigEnoughInterval, 0);
@@ -103,7 +102,7 @@ public class IntervalFinder {
 	}
 
 	public Interval findEarliestBigEnoughInterval(ComponentInstance component,
-			IScheduleElement minVertex, IScheduleElement maxVertex, long size) {
+			MapperDAGVertex minVertex, MapperDAGVertex maxVertex, long size) {
 
 		return findInterval(component, minVertex, maxVertex,
 				FindType.earliestBigEnoughInterval, size);
@@ -115,7 +114,7 @@ public class IntervalFinder {
 	 * maxVertex
 	 */
 	public Interval findInterval(ComponentInstance component,
-			IScheduleElement minVertex, IScheduleElement maxVertex,
+			MapperDAGVertex minVertex, MapperDAGVertex maxVertex,
 			FindType type, long data) {
 
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
@@ -126,9 +125,9 @@ public class IntervalFinder {
 		if (minVertex != null) {
 			minIndex = orderManager.totalIndexOf(minVertex);
 
-			TimingVertexProperty props = minVertex.getTimingVertexProperty();
-			if (props.getNewtLevel() >= 0) {
-				minIndexVertexEndTime = props.getNewtLevel() + props.getCost();
+			VertexTiming props = minVertex.getTiming();
+			if (props.getTLevel() >= 0) {
+				minIndexVertexEndTime = props.getTLevel() + props.getCost();
 			}
 		}
 
@@ -145,15 +144,15 @@ public class IntervalFinder {
 
 		if (schedule != null) {
 			for (MapperDAGVertex v : schedule) {
-				TimingVertexProperty props = v.getTimingVertexProperty();
+				VertexTiming props = v.getTiming();
 
 				// If we have the current vertex tLevel
-				if (props.getNewtLevel() >= 0) {
+				if (props.getTLevel() >= 0) {
 
 					// newInt is the interval corresponding to the execution of
 					// the vertex v: a non free interval
 					newInt = new Interval(props.getCost(),
-							props.getNewtLevel(), orderManager.totalIndexOf(v));
+							props.getTLevel(), orderManager.totalIndexOf(v));
 
 					// end of the preceding non free interval
 					long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
@@ -204,31 +203,31 @@ public class IntervalFinder {
 	public void displayCurrentSchedule(TransferVertex vertex,
 			MapperDAGVertex source) {
 
-		ComponentInstance component = vertex.getImplementationVertexProperty()
+		ComponentInstance component = vertex.getMapping()
 				.getEffectiveComponent();
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
-		TimingVertexProperty sourceProps = source.getTimingVertexProperty();
-		long availability = sourceProps.getNewtLevel() + sourceProps.getCost();
-		if (sourceProps.getNewtLevel() < 0)
+		VertexTiming sourceProps = source.getTiming();
+		long availability = sourceProps.getTLevel() + sourceProps.getCost();
+		if (sourceProps.getTLevel() < 0)
 			availability = -1;
 
 		String trace = "schedule of " + vertex.getName() + " available at "
 				+ availability + ": ";
 
 		if (schedule != null) {
-			for (IScheduleElement v : schedule) {
-				TimingVertexProperty props = v.getTimingVertexProperty();
-				if (props.getNewtLevel() >= 0)
-					trace += "<" + props.getNewtLevel() + ","
-							+ (props.getNewtLevel() + props.getCost()) + ">";
+			for (MapperDAGVertex v : schedule) {
+				VertexTiming props = v.getTiming();
+				if (props.getTLevel() >= 0)
+					trace += "<" + props.getTLevel() + ","
+							+ (props.getTLevel() + props.getCost()) + ">";
 			}
 		}
 
 		WorkflowLogger.getLogger().log(Level.INFO, trace);
 	}
 
-	public SchedOrderManager getOrderManager() {
+	public OrderManager getOrderManager() {
 		return orderManager;
 	}
 
@@ -240,11 +239,11 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		ComponentInstance op = vertex.getImplementationVertexProperty()
+		ComponentInstance op = vertex.getMapping()
 				.getEffectiveOperator();
-		IScheduleElement source = (latePred == -1) ? null : orderManager
+		MapperDAGVertex source = (latePred == -1) ? null : orderManager
 				.get(latePred);
-		IScheduleElement target = (earlySuc == -1) ? null : orderManager
+		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
 				.get(earlySuc);
 
 		// Finds the largest free hole after the latest predecessor
@@ -282,11 +281,11 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		ComponentInstance op = vertex.getImplementationVertexProperty()
+		ComponentInstance op = vertex.getMapping()
 				.getEffectiveOperator();
-		IScheduleElement source = (latePred == -1) ? null : orderManager
+		MapperDAGVertex source = (latePred == -1) ? null : orderManager
 				.get(latePred);
-		IScheduleElement target = (earlySuc == -1) ? null : orderManager
+		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
 				.get(earlySuc);
 
 		// Finds the largest free hole after the latest predecessor
@@ -324,7 +323,7 @@ public class IntervalFinder {
 	private int getLatestPredecessorIndex(MapperDAGVertex testVertex) {
 		int index = -1;
 
-		for (MapperDAGVertex v : testVertex.getPredecessorSet(true)) {
+		for (MapperDAGVertex v : testVertex.getPredecessors(true).keySet()) {
 			index = Math.max(index, orderManager.totalIndexOf(v));
 		}
 
@@ -337,7 +336,7 @@ public class IntervalFinder {
 	private int getEarliestsuccessorIndex(MapperDAGVertex testVertex) {
 		int index = Integer.MAX_VALUE;
 
-		for (MapperDAGVertex v : testVertex.getSuccessorSet(true)) {
+		for (MapperDAGVertex v : testVertex.getSuccessors(true).keySet()) {
 			index = Math.min(index, orderManager.totalIndexOf(v));
 		}
 

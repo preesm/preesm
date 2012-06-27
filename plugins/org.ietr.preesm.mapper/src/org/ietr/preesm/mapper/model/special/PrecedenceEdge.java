@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,20 +34,37 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
+package org.ietr.preesm.mapper.model.special;
 
-import org.ietr.preesm.mapper.model.MapperDAG;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+
+import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * An overhead vertex represents a dma setup time to schedule on a core
+ * A precedence edge is automatically generated and expresses the sequential
+ * execution of successive vertices in a single component
  * 
  * @author mpelcat
  */
-public class OverheadVertex extends MapperDAGVertex {
+public class PrecedenceEdge extends MapperDAGEdge {
 
-	public OverheadVertex(String id, MapperDAG base) {
-		super(id, base);
+	@Override
+	public String toString() {
+
+		String sourceName = "null", destName = "null";
+
+		if (getSource() != null)
+			sourceName = getSource().getName();
+		if (getSource() != null)
+			destName = getTarget().getName();
+
+		return "precedence(" + sourceName + "," + destName + ")";
 	}
 
+	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
+		super(source, destination);
+		setBase((DirectedAcyclicGraph)source.getBase());
+		getTiming().setCost(0);
+	}
 }

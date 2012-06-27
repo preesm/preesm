@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -50,7 +50,7 @@ import org.ietr.preesm.mapper.abc.route.CommunicationRouter;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
@@ -87,7 +87,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 		super.fireNewMappedVertex(vertex, updateRank);
 
 		ComponentInstance effectiveOp = vertex
-				.getImplementationVertexProperty().getEffectiveOperator();
+				.getMapping().getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			new PrecedenceEdgeAdder(orderManager, implementation)
@@ -102,7 +102,7 @@ public class AccuratelyTimedAbc extends LatencyAbc {
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		edge.getTimingEdgeProperty().setCost(0);
+		edge.getTiming().setCost(0);
 
 		// Setting edge costs for special types
 		// super.setEdgeCost(edge);

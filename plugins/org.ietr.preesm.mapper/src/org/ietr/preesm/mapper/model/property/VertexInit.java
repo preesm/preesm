@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model;
+package org.ietr.preesm.mapper.model.property;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,14 +46,16 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.MapperDAGEdge;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag
  * 
  * @author mpelcat
  */
-public class InitialVertexProperty {
+public class VertexInit {
 
 	/**
 	 * Corresponding vertex
@@ -75,22 +77,16 @@ public class InitialVertexProperty {
 	 */
 	private int nbRepeat;
 
-	/**
-	 * Level of the vertex in topological order
-	 */
-	private int topologicalLevel;
-
 	public int getNbRepeat() {
 		return nbRepeat;
 	}
 
-	public InitialVertexProperty() {
+	public VertexInit() {
 		super();
 		timings = new ArrayList<Timing>();
 		this.nbRepeat = 1;
 		parentVertex = null;
 		operators = new ArrayList<ComponentInstance>();
-		this.topologicalLevel = -1;
 	}
 
 	public void setNbRepeat(int nbRepeat) {
@@ -113,9 +109,9 @@ public class InitialVertexProperty {
 		}
 	}
 
-	public InitialVertexProperty clone(MapperDAGVertex parentVertex) {
+	public VertexInit clone(MapperDAGVertex parentVertex) {
 
-		InitialVertexProperty property = new InitialVertexProperty();
+		VertexInit property = new VertexInit();
 
 		if (parentVertex != null)
 			property.setParentVertex(parentVertex);
@@ -261,7 +257,7 @@ public class InitialVertexProperty {
 		for (DAGEdge e : parentVertex.incomingEdges()) {
 			MapperDAGEdge me = (MapperDAGEdge) e;
 			if (!(me.getSource() instanceof TransferVertex)) {
-				inputDataSize += me.getInitialEdgeProperty().getDataSize();
+				inputDataSize += me.getInit().getDataSize();
 			}
 		}
 
@@ -274,7 +270,7 @@ public class InitialVertexProperty {
 		for (DAGEdge e : v.outgoingEdges()) {
 			MapperDAGEdge me = (MapperDAGEdge) e;
 			if (!(me.getTarget() instanceof TransferVertex)) {
-				outputDataSize += me.getInitialEdgeProperty().getDataSize();
+				outputDataSize += me.getInit().getDataSize();
 			}
 		}
 
@@ -312,14 +308,14 @@ public class InitialVertexProperty {
 
 		boolean predMapable = false;
 
-		for (MapperDAGVertex pred : parentVertex.getPredecessorSet(true)) {
+		for (MapperDAGVertex pred : parentVertex.getPredecessors(true).keySet()) {
 			if (pred == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(pred)) {
-				predMapable |= pred.getInitialVertexProperty().isPredMapable(
+				predMapable |= pred.getInit().isPredMapable(
 						operator);
 			} else {
-				predMapable |= pred.getInitialVertexProperty().isMapable(
+				predMapable |= pred.getInit().isMapable(
 						operator);
 			}
 		}
@@ -335,14 +331,14 @@ public class InitialVertexProperty {
 
 		boolean succMapable = false;
 
-		for (MapperDAGVertex succ : parentVertex.getSuccessorSet(true)) {
+		for (MapperDAGVertex succ : parentVertex.getSuccessors(true).keySet()) {
 			if (succ == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(succ)) {
-				succMapable |= succ.getInitialVertexProperty().isSuccMapable(
+				succMapable |= succ.getInit().isSuccMapable(
 						operator);
 			} else {
-				succMapable |= succ.getInitialVertexProperty().isMapable(
+				succMapable |= succ.getInit().isMapable(
 						operator);
 			}
 		}
@@ -352,13 +348,5 @@ public class InitialVertexProperty {
 
 	public void setParentVertex(MapperDAGVertex parentVertex) {
 		this.parentVertex = parentVertex;
-	}
-
-	public int getTopologicalLevel() {
-		return topologicalLevel;
-	}
-
-	public void setTopologicalLevel(int topologicalLevel) {
-		this.topologicalLevel = topologicalLevel;
 	}
 }

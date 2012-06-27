@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -255,9 +255,9 @@ public class RouteCalculator {
 	public Route getRoute(MapperDAGEdge edge) {
 		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-		ComponentInstance sourceOp = source.getImplementationVertexProperty()
+		ComponentInstance sourceOp = source.getMapping()
 				.getEffectiveOperator();
-		ComponentInstance targetOp = target.getImplementationVertexProperty()
+		ComponentInstance targetOp = target.getMapping()
 				.getEffectiveOperator();
 		return getRoute(sourceOp, targetOp);
 	}

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,11 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.taskscheduling;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Scheduling the tasks when an algorithm maps a vertex
+ * Scheduling the tasks when a heuristic maps a vertex
  * 
  * @author mpelcat
  */
@@ -49,13 +49,13 @@ public abstract class AbstractTaskSched {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	protected SchedOrderManager orderManager = null;
+	protected OrderManager orderManager = null;
 
 	public AbstractTaskSched() {
 		super();
 	}
 
-	public void setOrderManager(SchedOrderManager orderManager) {
+	public void setOrderManager(OrderManager orderManager) {
 		this.orderManager = orderManager;
 	}
 

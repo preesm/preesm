@@ -34,6 +34,6 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
 	@Override
 	protected void setEdgeCost(MapperDAGEdge edge) {
-		edge.getTimingEdgeProperty().setCost(1);
+		edge.getTiming().setCost(1);
 	}
 }

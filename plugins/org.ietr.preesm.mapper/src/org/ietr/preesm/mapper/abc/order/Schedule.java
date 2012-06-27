@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -54,7 +54,7 @@ public class Schedule {
 	/**
 	 * The ordered list of vertices in this schedule
 	 */
-	private LinkedList<IScheduleElement> elementList;
+	private LinkedList<MapperDAGVertex> elementList;
 
 	/**
 	 * The total time of the schedule vertices
@@ -64,17 +64,17 @@ public class Schedule {
 	public Schedule() {
 
 		super();
-		this.elementList = new LinkedList<IScheduleElement>();
+		this.elementList = new LinkedList<MapperDAGVertex>();
 		resetBusyTime();
 	}
 
 	/**
 	 * Appends a vertex at the end of the schedule
 	 */
-	public void addLast(IScheduleElement vertex) {
+	public void addLast(MapperDAGVertex vertex) {
 		if (!contains(vertex)) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime += vertex.getTimingVertexProperty().getCost();
+			if (vertex.getTiming().hasCost()) {
+				busyTime += vertex.getTiming().getCost();
 			}
 			elementList.addLast(vertex);
 		}
@@ -83,10 +83,10 @@ public class Schedule {
 	/**
 	 * Inserts a vertex at the beginning of the schedule
 	 */
-	public void addFirst(IScheduleElement vertex) {
+	public void addFirst(MapperDAGVertex vertex) {
 		if (!contains(vertex)) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime += vertex.getTimingVertexProperty().getCost();
+			if (vertex.getTiming().hasCost()) {
+				busyTime += vertex.getTiming().getCost();
 			}
 			elementList.addFirst(vertex);
 		}
@@ -95,16 +95,16 @@ public class Schedule {
 	/**
 	 * Inserts a vertex after the given one
 	 */
-	public void insertAfter(IScheduleElement previous, IScheduleElement vertex) {
+	public void insertAfter(MapperDAGVertex previous, MapperDAGVertex vertex) {
 		if (!contains(vertex)) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime += vertex.getTimingVertexProperty().getCost();
+			if (vertex.getTiming().hasCost()) {
+				busyTime += vertex.getTiming().getCost();
 			}
 
 			int prevIndex = indexOf(previous);
 			if (prevIndex >= 0) {
 				if (prevIndex + 1 < elementList.size()) {
-					IScheduleElement next = elementList.get(prevIndex + 1);
+					MapperDAGVertex next = elementList.get(prevIndex + 1);
 					elementList.add(indexOf(next), vertex);
 				} else {
 					elementList.addLast(vertex);
@@ -116,10 +116,10 @@ public class Schedule {
 	/**
 	 * Inserts a vertex at the given index
 	 */
-	public void insertAtIndex(IScheduleElement vertex, int index) {
+	public void insertAtIndex(MapperDAGVertex vertex, int index) {
 		if (!contains(vertex)) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime += vertex.getTimingVertexProperty().getCost();
+			if (vertex.getTiming().hasCost()) {
+				busyTime += vertex.getTiming().getCost();
 			}
 
 			if (index >= 0) {
@@ -131,10 +131,10 @@ public class Schedule {
 	/**
 	 * Inserts a vertex before the given one
 	 */
-	public void insertBefore(IScheduleElement next, IScheduleElement vertex) {
+	public void insertBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
 		if (!contains(vertex)) {
-			if (vertex.getTimingVertexProperty().getCost() >= 0) {
-				busyTime += vertex.getTimingVertexProperty().getCost();
+			if (vertex.getTiming().hasCost()) {
+				busyTime += vertex.getTiming().getCost();
 			}
 
 			int nextIndex = indexOf(next);
@@ -154,10 +154,10 @@ public class Schedule {
 		busyTime = 0;
 	}
 
-	public void remove(IScheduleElement element) {
+	public void remove(MapperDAGVertex element) {
 		if (elementList.contains(element)) {
-			if (element.getTimingVertexProperty().getCost() >= 0) {
-				busyTime -= element.getTimingVertexProperty().getCost();
+			if (element.getTiming().hasCost()) {
+				busyTime -= element.getTiming().getCost();
 			}
 
 			elementList.remove(element);
@@ -166,18 +166,18 @@ public class Schedule {
 
 	// Access without modification
 
-	public IScheduleElement get(int i) {
+	public MapperDAGVertex get(int i) {
 		return elementList.get(i);
 	}
 
-	public IScheduleElement getLast() {
+	public MapperDAGVertex getLast() {
 		return elementList.getLast();
 	}
 
 	/**
 	 * Gets the previous vertex in the current schedule
 	 */
-	public IScheduleElement getPrevious(MapperDAGVertex vertex) {
+	public MapperDAGVertex getPrevious(MapperDAGVertex vertex) {
 		int index = indexOf(vertex);
 		if (index <= 0) {
 			return null;
@@ -189,7 +189,7 @@ public class Schedule {
 	/**
 	 * Gets the next vertex in the current schedule
 	 */
-	public IScheduleElement getNext(MapperDAGVertex vertex) {
+	public MapperDAGVertex getNext(MapperDAGVertex vertex) {
 		int currentIndex = indexOf(vertex);
 		if (currentIndex < 0 || (currentIndex >= elementList.size() - 1)) {
 			return null;
@@ -201,8 +201,8 @@ public class Schedule {
 	/**
 	 * Gets the next vertices in the current schedule
 	 */
-	public Set<IScheduleElement> getSuccessors(IScheduleElement vertex) {
-		Set<IScheduleElement> vSet = new HashSet<IScheduleElement>();
+	public Set<MapperDAGVertex> getSuccessors(MapperDAGVertex vertex) {
+		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
 		int currentIndex = indexOf(vertex);
 		if (currentIndex < 0 || currentIndex >= elementList.size()) {
 			return null;
@@ -215,29 +215,21 @@ public class Schedule {
 	}
 
 	/**
-	 * Giving the index of the vertex if present in the list or in a
-	 * synchronized vertex from the list
+	 * Giving the index of the vertex if present in the list
 	 */
-	public int indexOf(IScheduleElement v) {
+	public int indexOf(MapperDAGVertex v) {
 		return elementList.indexOf(getScheduleElt(v));
 	}
 
 	/**
-	 * Giving the vertex if present in the list or the synchro
+	 * Giving the vertex if present in the list
 	 */
-	public IScheduleElement getScheduleElt(IScheduleElement v) {
+	public MapperDAGVertex getScheduleElt(MapperDAGVertex v) {
 		int index = elementList.indexOf(v);
 
 		// Searching in synchronized vertices
 		if (index != -1) {
 			return v;
-		} else if (v instanceof MapperDAGVertex) {
-			for (IScheduleElement sElt : elementList) {
-				if (sElt instanceof SynchronizedVertices
-						&& ((SynchronizedVertices) sElt).vertices().contains(v)) {
-					return sElt;
-				}
-			}
 		}
 
 		return null;
@@ -246,7 +238,7 @@ public class Schedule {
 	/**
 	 * Looks into the synchronized vertices to extract the vertex
 	 */
-	public boolean contains(IScheduleElement v) {
+	public boolean contains(MapperDAGVertex v) {
 		return getScheduleElt(v) != null;
 	}
 
@@ -254,7 +246,7 @@ public class Schedule {
 		return elementList.isEmpty();
 	}
 
-	public List<IScheduleElement> getList() {
+	public List<MapperDAGVertex> getList() {
 		return Collections.unmodifiableList(elementList);
 	}
 
@@ -270,19 +262,12 @@ public class Schedule {
 
 		VertexOrderList order = new VertexOrderList();
 
-		for (IScheduleElement elt : elementList) {
+		for (MapperDAGVertex elt : elementList) {
 			if (elt instanceof MapperDAGVertex) {
 				MapperDAGVertex v = (MapperDAGVertex) elt;
 				VertexOrderList.OrderProperty op = order.new OrderProperty(
 						v.getName(), indexOf(v));
 				order.addLast(op);
-			} else if (elt instanceof SynchronizedVertices) {
-				for (MapperDAGVertex v : ((SynchronizedVertices) elt)
-						.vertices()) {
-					VertexOrderList.OrderProperty op = order.new OrderProperty(
-							v.getName(), indexOf(v));
-					order.addLast(op);
-				}
 			}
 		}
 

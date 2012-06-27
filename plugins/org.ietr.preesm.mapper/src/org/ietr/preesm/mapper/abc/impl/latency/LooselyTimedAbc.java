@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -43,11 +43,11 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
-import org.ietr.preesm.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.property.VertexMapping;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
@@ -76,7 +76,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 		super.fireNewMappedVertex(vertex, updateRank);
 
 		ComponentInstance effectiveOp = vertex
-				.getImplementationVertexProperty().getEffectiveOperator();
+				.getMapping().getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			// Adding precedence edges for an automatic graph timings
@@ -93,10 +93,10 @@ public class LooselyTimedAbc extends LatencyAbc {
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		ImplementationVertexProperty sourceimp = ((MapperDAGVertex) edge
-				.getSource()).getImplementationVertexProperty();
-		ImplementationVertexProperty destimp = ((MapperDAGVertex) edge
-				.getTarget()).getImplementationVertexProperty();
+		VertexMapping sourceimp = ((MapperDAGVertex) edge
+				.getSource()).getMapping();
+		VertexMapping destimp = ((MapperDAGVertex) edge
+				.getTarget()).getMapping();
 
 		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
 		ComponentInstance destOp = destimp.getEffectiveOperator();
@@ -104,11 +104,11 @@ public class LooselyTimedAbc extends LatencyAbc {
 		if (sourceOp != DesignTools.NO_COMPONENT_INSTANCE
 				&& destOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			if (sourceOp.getInstanceName().equals(destOp.getInstanceName())) {
-				edge.getTimingEdgeProperty().setCost(0);
+				edge.getTiming().setCost(0);
 			} else {
 
 				// The transfer evaluation takes into account the route
-				edge.getTimingEdgeProperty().setCost(
+				edge.getTiming().setCost(
 						comRouter.evaluateTransferCost(edge));
 			}
 		}

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -55,6 +55,11 @@ public class PreesmScenario {
 	private ConstraintGroupManager constraintgroupmanager = null;
 
 	/**
+	 * Manager of relative constraints
+	 */
+	private RelativeConstraintManager relativeconstraintmanager = null;
+
+	/**
 	 * Manager of timings
 	 */
 	private TimingManager timingmanager = null;
@@ -98,6 +103,7 @@ public class PreesmScenario {
 
 	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
+		relativeconstraintmanager = new RelativeConstraintManager();
 		timingmanager = new TimingManager();
 		simulationManager = new SimulationManager();
 		codegenManager = new CodegenManager();
@@ -110,6 +116,10 @@ public class PreesmScenario {
 
 	public ConstraintGroupManager getConstraintGroupManager() {
 		return constraintgroupmanager;
+	}
+
+	public RelativeConstraintManager getRelativeconstraintManager() {
+		return relativeconstraintmanager;
 	}
 
 	public TimingManager getTimingManager() {

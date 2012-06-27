@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,9 +38,9 @@ package org.ietr.preesm.mapper.abc.edgescheduling;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * A complex edge scheduler used for tests. Do not use it for the moment.
@@ -51,7 +51,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 
 	private IntervalFinder intervalFinder = null;
 
-	public AdvancedEdgeSched(SchedOrderManager orderManager) {
+	public AdvancedEdgeSched(OrderManager orderManager) {
 		super(orderManager);
 
 		intervalFinder = new IntervalFinder(orderManager);
@@ -68,7 +68,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		ComponentInstance component = vertex.getImplementationVertexProperty()
+		ComponentInstance component = vertex.getMapping()
 				.getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(

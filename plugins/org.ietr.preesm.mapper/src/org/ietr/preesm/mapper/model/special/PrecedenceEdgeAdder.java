@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
+package org.ietr.preesm.mapper.model.special;
 
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +45,7 @@ import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.mapper.abc.transaction.RemoveEdgeTransaction;
 import org.ietr.preesm.mapper.abc.transaction.Transaction;
@@ -63,11 +63,11 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  */
 public class PrecedenceEdgeAdder {
 
-	private SchedOrderManager orderManager;
+	private OrderManager orderManager;
 	private MapperDAG implementation;
 	private TransactionManager transactionManager;
 
-	public PrecedenceEdgeAdder(SchedOrderManager orderManager,
+	public PrecedenceEdgeAdder(OrderManager orderManager,
 			MapperDAG implementation) {
 		super();
 		this.orderManager = orderManager;
@@ -134,8 +134,8 @@ public class PrecedenceEdgeAdder {
 
 	public PrecedenceEdge addPrecedenceEdge(MapperDAGVertex v1,
 			MapperDAGVertex v2) {
-		PrecedenceEdge precedenceEdge = new PrecedenceEdge();
-		precedenceEdge.getTimingEdgeProperty().setCost(0);
+		PrecedenceEdge precedenceEdge = new PrecedenceEdge(v1, v2);
+		precedenceEdge.getTiming().setCost(0);
 		implementation.addEdge(v1, v2, precedenceEdge);
 		return precedenceEdge;
 	}

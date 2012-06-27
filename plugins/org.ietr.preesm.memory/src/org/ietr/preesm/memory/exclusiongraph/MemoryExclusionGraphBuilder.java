@@ -47,10 +47,10 @@ import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.types.DataType;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.types.DataType;
 
 /**
  * Workflow element that takes a DAG as input and Create its Memory Exclusion Graph.

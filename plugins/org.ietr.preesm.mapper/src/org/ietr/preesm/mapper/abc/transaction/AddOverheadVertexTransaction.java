@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -42,14 +42,14 @@ import java.util.logging.Level;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.impl.OverheadVertex;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdgeAdder;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.special.OverheadVertex;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Transaction executing the addition of an overhead (or set-up) vertex.
@@ -82,7 +82,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 	/**
 	 * manager keeping scheduling orders
 	 */
-	private SchedOrderManager orderManager = null;
+	private OrderManager orderManager = null;
 
 	// Generated objects
 	/**
@@ -98,7 +98,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 
 	public AddOverheadVertexTransaction(MapperDAGEdge edge,
 			MapperDAG implementation, AbstractRouteStep step,
-			long overheadTime, SchedOrderManager orderManager) {
+			long overheadTime, OrderManager orderManager) {
 		super();
 		this.edge = edge;
 		this.implementation = implementation;
@@ -126,11 +126,8 @@ public class AddOverheadVertexTransaction extends Transaction {
 
 		if (overheadTime > 0) {
 			oVertex = new OverheadVertex(overtexID, implementation);
-
-			oVertex.getTimingVertexProperty().setCost(overheadTime);
-
-			oVertex.getImplementationVertexProperty().setEffectiveOperator(
-					step.getSender());
+			implementation.getTimings().dedicate(oVertex);
+			implementation.getMappings().dedicate(oVertex);
 
 			if (!(currentTarget instanceof TransferVertex)) {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
@@ -138,19 +135,22 @@ public class AddOverheadVertexTransaction extends Transaction {
 			}
 
 			implementation.addVertex(oVertex);
+			oVertex.getTiming().setCost(overheadTime);
+			oVertex.getMapping().setEffectiveOperator(
+					step.getSender());
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,
 					oVertex);
 			newOutEdge = (MapperDAGEdge) implementation.addEdge(oVertex,
 					currentTarget);
 
-			newInEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+			newInEdge.setInit(edge.getInit()
 					.clone());
-			newOutEdge.setInitialEdgeProperty(edge.getInitialEdgeProperty()
+			newOutEdge.setInit(edge.getInit()
 					.clone());
 
-			newInEdge.getTimingEdgeProperty().setCost(0);
-			newOutEdge.getTimingEdgeProperty().setCost(0);
+			newInEdge.getTiming().setCost(0);
+			newOutEdge.getTiming().setCost(0);
 
 			// TODO: Look at switching possibilities
 			/*

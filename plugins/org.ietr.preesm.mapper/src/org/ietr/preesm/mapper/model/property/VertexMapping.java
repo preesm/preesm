@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,58 +34,43 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model;
+package org.ietr.preesm.mapper.model.property;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.component.Operator;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Properties of a mapped vertex
+ * Properties of a mapped vertex. Can be shared by multiple vertices that have
+ * the same relative constraints
  * 
  * @author mpelcat
  */
-public class ImplementationVertexProperty {
+public class VertexMapping extends GroupProperty {
 
 	/**
 	 * Operator to which the vertex has been affected by the mapping algorithm
 	 */
 	private ComponentInstance effectiveComponent;
 
-	/**
-	 * This object is shared between all vertices that share relative
-	 * constraints.
-	 */
-	private RelativeConstraint relativeConstraint = null;
-
-	/**
-	 * The order in the schedule of a processor is determined by the order of
-	 * the calls to map() method.
-	 */
-	private int schedulingTotalOrder;
-
-	public ImplementationVertexProperty(MapperDAGVertex parentVertex) {
+	public VertexMapping() {
 		super();
 		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
-		schedulingTotalOrder = -1;
-	}
-
-	public RelativeConstraint getRelativeConstraint() {
-		return relativeConstraint;
-	}
-
-	public void setRelativeConstraint(RelativeConstraint relativeConstraints) {
-		this.relativeConstraint = relativeConstraints;
 	}
 
 	@Override
-	public ImplementationVertexProperty clone() {
+	public VertexMapping clone() {
 
-		ImplementationVertexProperty property = new ImplementationVertexProperty(
-				null);
+		VertexMapping property = (VertexMapping) super.clone();
 		property.setEffectiveComponent(this.getEffectiveComponent());
-		property.setSchedTotalOrder(this.schedulingTotalOrder);
 		return property;
 	}
 
@@ -123,12 +108,54 @@ public class ImplementationVertexProperty {
 		this.effectiveComponent = component;
 	}
 
-	public int getSchedTotalOrder() {
-		return schedulingTotalOrder;
-	}
+	/**
+	 * Returns a list of components, computed from initial and relative
+	 * constraints
+	 */
+	public List<ComponentInstance> getCandidateComponents(MapperDAGVertex vertex) {
 
-	public void setSchedTotalOrder(int schedulingTotalOrder) {
-		this.schedulingTotalOrder = schedulingTotalOrder;
-	}
+		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
+		MapperDAG dag = (MapperDAG) vertex.getBase();
+		List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
+		if (relatedVertices.size() < 1) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"Relative constraint with no vertex.");
+
+			return operators;
+		}
+
+		MapperDAGVertex firstVertex = relatedVertices.get(0);
+		ComponentInstance op = firstVertex.getMapping().getEffectiveComponent();
+		if (op != null) {
+			// Forcing the mapper to put together related vertices
+			operators.add(op);
+		} else {
+			// Adding all candidate components of the first vertex
+			operators.addAll(firstVertex.getInit().getInitialOperatorList());
+		}
+
+		for (int i = 1; i < relatedVertices.size(); i++) {
+			MapperDAGVertex locVertex = relatedVertices.get(i);
+			op = locVertex.getMapping().getEffectiveOperator();
+			if (op != null) {
+				if (DesignTools.contains(operators, op)) {
+					operators.clear();
+					operators.add(op);
+				} else {
+					operators.clear();
+				}
+			} else {
+				DesignTools.retainAll(operators, locVertex.getInit()
+						.getInitialOperatorList());
+			}
+		}
+
+		if (operators.isEmpty()) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"Relative constraint with no operator." + relatedVertices);
+		}
+
+		return operators;
+	}
 }

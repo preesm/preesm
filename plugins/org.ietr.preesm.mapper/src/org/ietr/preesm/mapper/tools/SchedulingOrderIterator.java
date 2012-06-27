@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.tools;
 
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -69,7 +73,8 @@ public class SchedulingOrderIterator extends ImplementationIterator {
 
 		// Preventing equal scheduling order element discard
 		if (dif == 0) {
-			dif = 1;
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"Found two vertices with the same total order");
 		}
 		return (dif);
 	}

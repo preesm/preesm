@@ -34,34 +34,37 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
-
-import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
-
-import org.ietr.preesm.core.types.ImplementationPropertyNames;
-import org.ietr.preesm.mapper.model.MapperDAG;
+package org.ietr.preesm.mapper.model.property;
 
 /**
- * Vertex corresponding to receiving a data. This vertex is mapped on the
- * receiver of the corresponding route step.
+ * Properties of an edge set when converting dag to mapper dag
  * 
  * @author mpelcat
  */
-public class ReceiveVertex extends TransferVertex {
+public class EdgeInit {
 
-	static {
-		{
-			public_properties
-					.add(ImplementationPropertyNames.Receive_receiverGraphName);
-		}
-	};
+	private int dataSize = 0;
 
-	public ReceiveVertex(String id, MapperDAG base) {
-		super(id, base, null, null, 0, 0);
+	public EdgeInit() {
+		super();
 	}
 
-	public DAGDefaultVertexPropertyType getNbRepeat() {
-		return new DAGDefaultVertexPropertyType(1);
+	public EdgeInit(int dataSize) {
+		super();
+		this.dataSize = dataSize;
 	}
 
+	public EdgeInit clone() {
+		EdgeInit property = new EdgeInit();
+		property.setDataSize(getDataSize());
+		return property;
+	}
+
+	public int getDataSize() {
+		return dataSize;
+	}
+
+	public void setDataSize(int dataSize) {
+		this.dataSize = dataSize;
+	}
 }

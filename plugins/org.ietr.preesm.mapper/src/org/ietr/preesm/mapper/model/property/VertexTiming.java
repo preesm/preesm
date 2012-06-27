@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,39 +34,73 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model;
+package org.ietr.preesm.mapper.model.property;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Property added to a DAG edge to give its timing properties. Only used within
- * ABCs.
+ * Property added to a DAG vertex to give its timing properties.
+ * Can be shared by several synchronous vertices.
  * 
+ * @author pmenuet
  * @author mpelcat
  */
-public class TimingEdgeProperty {
+public class VertexTiming extends GroupProperty {
+
 	static public final long UNAVAILABLE = -1;
 
 	/**
-	 * time to execute the edge
+	 * time to execute the vertex
 	 */
 	private long cost;
 
-	public TimingEdgeProperty() {
+	/**
+	 * B Level is the time between the vertex start and the total end of
+	 * execution. Valid only with infinite homogeneous architecture simulator
+	 */
+	private long bLevel;
+
+	/**
+	 * T Level is the time between the start of execution and the vertex start
+	 */
+	private long tLevel;
+
+	/**
+	 * The total order range in the schedule.
+	 * Each vertex ID is associated to its total order
+	 * IDs must be consecutive to ensure possibility of synchronous scheduling!
+	 */
+	private Map<String,Integer> totalOrders;
+	
+	public VertexTiming() {
 		super();
 		reset();
 	}
 
-	public TimingEdgeProperty clone() {
-		TimingEdgeProperty property = new TimingEdgeProperty();
+	@Override
+	public VertexTiming clone() {
+		VertexTiming property = (VertexTiming)super.clone();
+		property.setBLevel(this.getBLevel());
+		property.setTLevel(this.getTLevel());
 		property.setCost(this.getCost());
+		for(String id : totalOrders.keySet()){
+			property.setTotalOrder(id, totalOrders.get(id));
+		}
 		return property;
 	}
 
 	public void reset() {
 		cost = UNAVAILABLE;
+		tLevel = UNAVAILABLE;
+		bLevel = UNAVAILABLE;
+		totalOrders = new HashMap<String,Integer>();
 	}
 
 	public String toString() {
-		return "cost: " + cost;
+		return "";
 	}
 
 	public long getCost() {
@@ -83,5 +117,45 @@ public class TimingEdgeProperty {
 
 	public void resetCost() {
 		setCost(UNAVAILABLE);
+	}
+
+	public long getBLevel() {
+		return bLevel;
+	}
+
+	public void setBLevel(long newbLevel) {
+		this.bLevel = newbLevel;
+	}
+
+	public void resetBLevel() {
+		bLevel = UNAVAILABLE;
+	}
+
+	public boolean hasBLevel() {
+		return bLevel != UNAVAILABLE;
+	}
+
+	public long getTLevel() {
+		return tLevel;
+	}
+
+	public void setTLevel(long newtLevel) {
+		this.tLevel = newtLevel;
+	}
+
+	public void resetTLevel() {
+		tLevel = UNAVAILABLE;
+	}
+
+	public boolean hasTLevel() {
+		return (tLevel != UNAVAILABLE);
+	}
+
+	public int getTotalOrder(MapperDAGVertex v) {
+		return this.totalOrders.get(v.getName());
+	}
+
+	public void setTotalOrder(String vertexId, int totalOrder) {
+		this.totalOrders.put(vertexId, totalOrder);
 	}
 }

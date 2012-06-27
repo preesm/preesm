@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model.impl;
+package org.ietr.preesm.mapper.model.special;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -147,7 +147,7 @@ public class TransferVertex extends MapperDAGVertex {
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName
 				.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
-			return getImplementationVertexProperty().getEffectiveOperator()
+			return getMapping().getEffectiveOperator()
 					.getComponent().getVlnv().getName();
 		}
 		return super.getPropertyStringValue(propertyName);

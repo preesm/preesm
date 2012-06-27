@@ -1,8 +1,8 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
-Karol Desnos
+Copyright or � or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
 
-[mpelcat,jnezan,kdesnos]@insa-rennes.fr
+[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
 This software is a computer program whose purpose is to prototype
 parallel applications.
@@ -34,44 +34,34 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.ui.scenario.editor;
+package org.ietr.preesm.mapper.model.special;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
+import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 
-import jxl.write.WritableSheet;
-import jxl.write.biff.RowsExceededException;
-import net.sf.dftools.algorithm.importer.InvalidModelException;
-
-import org.eclipse.swt.events.SelectionListener;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
- * Abstract class, must be implementing when exporting
- * Timings, or variables into an excel sheet
- * @author kdesnos
- *
+ * Vertex corresponding to receiving a data. This vertex is mapped on the
+ * receiver of the corresponding route step.
+ * 
+ * @author mpelcat
  */
-public abstract class ExcelWriter implements SelectionListener  {
+public class ReceiveVertex extends TransferVertex {
 
-	public ExcelWriter() {
-		super();
+	static {
+		{
+			public_properties
+					.add(ImplementationPropertyNames.Receive_receiverGraphName);
+		}
+	};
+
+	public ReceiveVertex(String id, MapperDAG base) {
+		super(id, base, null, null, 0, 0);
 	}
 
-	/**
-	 * Add timing cells to the newly created file
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void write(OutputStream os);
-	
-	/**
-	 * Add cells to the created excel sheet
-	 * @param sheet
-	 * @throws FileNotFoundException 
-	 * @throws InvalidModelException 
-	 * @throws RowsExceededException 
-	 */
-	protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException;
+	public DAGDefaultVertexPropertyType getNbRepeat() {
+		return new DAGDefaultVertexPropertyType(1);
+	}
 
 }

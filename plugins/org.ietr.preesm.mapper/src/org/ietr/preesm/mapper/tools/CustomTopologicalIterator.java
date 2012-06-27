@@ -36,11 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.tools;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
@@ -50,72 +47,66 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
 /**
- * Iterates the graph in ascending or descending order using the given compare
- * function that respects topological order
+ * Iterates the graph in ascending or descending topological order
  * 
  * @author mpelcat
  */
-public abstract class ImplementationIterator extends
-		AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> implements
-		Comparator<MapperDAGVertex> {
-
-	/**
-	 * Ordered vertex list parsed by the iterator
-	 */
-	private int currentIndex = -1;
+public class CustomTopologicalIterator extends
+		AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
 
 	protected boolean directOrder;
 
-	/**
-	 * Ordered vertex list parsed by the iterator
-	 */
-	private List<MapperDAGVertex> orderedlist;
+	MapperDAG dag;
 
-	public ImplementationIterator() {
-		super();
-	}
+	private Set<MapperDAGVertex> visitedVertices = null;
 
-	public ImplementationIterator(MapperDAG dag, boolean directOrder) {
-		super();
-		initParams(dag, directOrder);
-	}
-
-	public void initParams(MapperDAG dag, boolean directOrder) {
+	public CustomTopologicalIterator(MapperDAG dag, boolean directOrder) {
 		this.directOrder = directOrder;
-		createOrderedList(dag);
-		currentIndex = 0;
-	}
-
-	@Override
-	public abstract int compare(MapperDAGVertex arg0, MapperDAGVertex arg1);
-
-	public void createOrderedList(MapperDAG implementation) {
-		// Creating a sorted list using the current class as a comparator
-		SortedSet<MapperDAGVertex> vertexSet = new ConcurrentSkipListSet<MapperDAGVertex>(
-				this);
-
-		for (DAGVertex dv : implementation.vertexSet()) {
-			MapperDAGVertex currentvertex = (MapperDAGVertex) dv;
-			vertexSet.add(currentvertex);
-		}
-
-		orderedlist = new ArrayList<MapperDAGVertex>(vertexSet);
-	}
-
-	public List<MapperDAGVertex> getOrderedlist() {
-		return orderedlist;
+		this.dag = dag;
+		visitedVertices = new HashSet<MapperDAGVertex>();
 	}
 
 	@Override
 	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return (currentIndex < orderedlist.size());
+		return (visitedVertices.size() < dag.vertexSet().size());
 	}
 
 	@Override
 	public MapperDAGVertex next() {
-		// TODO Auto-generated method stub
-		return orderedlist.get(currentIndex++);
+		if (directOrder) {
+			for (DAGVertex v : dag.vertexSet()) {
+				MapperDAGVertex mv = (MapperDAGVertex) v;
+				if (mv.incomingEdges().isEmpty()
+						&& !visitedVertices.contains(mv)) {
+					visitedVertices.add(mv);
+					return mv;
+				} else {
+					Set<MapperDAGVertex> preds = mv.getPredecessors(true)
+							.keySet();
+					if (visitedVertices.containsAll(preds) && ! visitedVertices.contains(mv)) {
+						visitedVertices.add(mv);
+						return mv;
+					}
+				}
+			}
+		} else {
+			for (DAGVertex v : dag.vertexSet()) {
+				MapperDAGVertex mv = (MapperDAGVertex) v;
+				if (mv.outgoingEdges().isEmpty()
+						&& !visitedVertices.contains(mv)) {
+					visitedVertices.add(mv);
+					return mv;
+				} else {
+					Set<MapperDAGVertex> succs = mv.getSuccessors(true)
+							.keySet();
+					if (visitedVertices.containsAll(succs) && !visitedVertices.contains(mv)) {
+						visitedVertices.add(mv);
+						return mv;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

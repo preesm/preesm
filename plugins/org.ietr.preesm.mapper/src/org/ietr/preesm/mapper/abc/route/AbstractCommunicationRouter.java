@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -72,10 +72,10 @@ public abstract class AbstractCommunicationRouter {
 	/**
 	 * manager of the vertices order in general
 	 */
-	protected SchedOrderManager orderManager = null;
+	protected OrderManager orderManager = null;
 
 	public AbstractCommunicationRouter(MapperDAG implementation,
-			IEdgeSched edgeScheduler, SchedOrderManager orderManager) {
+			IEdgeSched edgeScheduler, OrderManager orderManager) {
 		super();
 		this.implementers = new HashMap<String, CommunicationRouterImplementer>();
 		setManagers(implementation, edgeScheduler, orderManager);
@@ -98,12 +98,12 @@ public abstract class AbstractCommunicationRouter {
 		return edgeScheduler;
 	}
 
-	public SchedOrderManager getOrderManager() {
+	public OrderManager getOrderManager() {
 		return orderManager;
 	}
 
 	public void setManagers(MapperDAG implementation, IEdgeSched edgeScheduler,
-			SchedOrderManager orderManager) {
+			OrderManager orderManager) {
 		this.implementation = implementation;
 		this.edgeScheduler = edgeScheduler;
 		this.orderManager = orderManager;

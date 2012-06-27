@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,37 +34,64 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.mapper.model;
+package org.ietr.preesm.core.scenario;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Properties of an edge set when converting dag to mapper dag
+ * Manager of the relative constraints
  * 
  * @author mpelcat
+ * 
  */
-public class InitialEdgeProperty {
+public class RelativeConstraintManager {
 
-	private int dataSize = 0;
+	public static final int NONE = -1;
+	
+	/**
+	 * List of all timings
+	 */
+	private Map<String, Integer> relativeConstraints;
 
-	public InitialEdgeProperty() {
-		super();
+	/**
+	 * Path to a file containing relative constraints
+	 */
+	private String excelFileURL = "";
+
+	public RelativeConstraintManager() {
+		relativeConstraints = new HashMap<String, Integer>();
 	}
 
-	public InitialEdgeProperty(int dataSize) {
-		super();
-		this.dataSize = dataSize;
+	public void addConstraint(String sdfVertexId, int groupId) {
+		if(groupId != NONE){
+			relativeConstraints.put(sdfVertexId, groupId);
+		}
 	}
 
-	public InitialEdgeProperty clone() {
-		InitialEdgeProperty property = new InitialEdgeProperty();
-		property.setDataSize(getDataSize());
-		return property;
+	public int getConstraintOrDefault(String sdfVertexId){
+		if(relativeConstraints.keySet().contains(sdfVertexId)){
+			return relativeConstraints.get(sdfVertexId);
+		}
+		else{
+			return NONE;
+		}
+	}
+	
+	public boolean hasRelativeConstraint(String sdfVertexId){
+		return relativeConstraints.keySet().contains(sdfVertexId);
+	}
+	
+	public Set<String> getExplicitConstraintIds() {
+		return relativeConstraints.keySet();
 	}
 
-	public int getDataSize() {
-		return dataSize;
+	public String getExcelFileURL() {
+		return excelFileURL;
 	}
 
-	public void setDataSize(int dataSize) {
-		this.dataSize = dataSize;
+	public void setExcelFileURL(String excelFileURL) {
+		this.excelFileURL = excelFileURL;
 	}
 }

@@ -36,10 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
@@ -48,14 +46,26 @@ import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 
-import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
+import org.ietr.preesm.mapper.model.property.DAGMappings;
+import org.ietr.preesm.mapper.model.property.DAGTimings;
 
 /**
  * @author mpelcat
  * 
- *         This class represents a Directed Acyclic Graph in the mapper
+ *         This class represents a Directed Acyclic Graph in the mapper. It
+ *         holds mapping and scheduling information
  */
 public class MapperDAG extends DirectedAcyclicGraph {
+
+	/**
+	 * Properties of mapped vertices
+	 */
+	private static final String MAPPING_PROPERTY = "MAPPING_PROPERTY";
+
+	/**
+	 * Properties of scheduled vertices
+	 */
+	private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
 
 	/**
 	 * 
@@ -63,7 +73,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	private static final long serialVersionUID = -6757893466692519433L;
 
 	/**
-	 * Corresponding vertex in the input SDF graph
+	 * Corresponding SDF graph
 	 */
 	private SDFGraph sdfGraph;
 
@@ -85,6 +95,10 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		super(factory);
 		this.sdfGraph = graph;
 		this.setScheduleCost(0L);
+
+		this.getPropertyBean().setValue(MAPPING_PROPERTY, new DAGMappings());
+		this.getPropertyBean().setValue(TIMING_PROPERTY, new DAGTimings());
+
 	}
 
 	/**
@@ -153,14 +167,33 @@ public class MapperDAG extends DirectedAcyclicGraph {
 			String targetName = target.getName();
 			MapperDAGEdge newEdge = (MapperDAGEdge) newDAG.addEdge(
 					newDAG.getVertex(sourceName), newDAG.getVertex(targetName));
-			newEdge.setInitialEdgeProperty(origEdge.getInitialEdgeProperty()
-					.clone());
-			newEdge.setTimingEdgeProperty(origEdge.getTimingEdgeProperty()
-					.clone());
+			newEdge.setInit(origEdge.getInit().clone());
+			newEdge.setTiming(origEdge.getTiming().clone());
 			newEdge.copyProperties(origEdge);
 		}
 		newDAG.copyProperties(this);
+
+		newDAG.setMappings((DAGMappings) this.getMappings().clone());
+		newDAG.setTimings((DAGTimings) this.getTimings().clone());
+
 		return newDAG;
+	}
+
+	public DAGMappings getMappings() {
+		return (DAGMappings) this.getPropertyBean().getValue(MAPPING_PROPERTY);
+	}
+
+	private void setMappings(DAGMappings implementationVertexProperty) {
+		this.getPropertyBean().setValue(MAPPING_PROPERTY,
+				implementationVertexProperty);
+	}
+
+	public DAGTimings getTimings() {
+		return (DAGTimings) this.getPropertyBean().getValue(TIMING_PROPERTY);
+	}
+
+	private void setTimings(DAGTimings timingVertexProperty) {
+		this.getPropertyBean().setValue(TIMING_PROPERTY, timingVertexProperty);
 	}
 
 	/**
@@ -200,21 +233,8 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	}
 
 	/**
-	 * Give a list of vertices in topological order
+	 * Returns all vertices corresponding to a set of names
 	 */
-	public List<MapperDAGVertex> getVertexTopologicalList() {
-
-		TopologicalDAGIterator iter = new TopologicalDAGIterator(this);
-		List<MapperDAGVertex> list = new ArrayList<MapperDAGVertex>();
-		MapperDAGVertex currentvertex = null;
-		while (iter.hasNext()) {
-			currentvertex = (MapperDAGVertex) iter.next();
-			if (!list.contains(currentvertex))
-				list.add(currentvertex);
-		}
-		return list;
-	}
-
 	public Set<MapperDAGVertex> getVertexSet(Set<String> nameSet) {
 		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
 
@@ -230,8 +250,25 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		return vSet;
 	}
 
+	/**
+	 * Returns all vertices with no incoming edges
+	 */
+	public Set<MapperDAGVertex> getSources() {
+		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
+
+		for (DAGVertex v : vertexSet()) {
+			if (incomingEdgesOf(v).isEmpty()) {
+				vSet.add((MapperDAGVertex) v);
+			}
+
+		}
+
+		return vSet;
+	}
+
 	public MapperDAGVertex getMapperDAGVertex(String name) {
 
 		return (MapperDAGVertex) super.getVertex(name);
 	}
+
 }

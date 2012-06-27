@@ -112,7 +112,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 			boolean updateRank) {
 
 		ComponentInstance effectiveOp = vertex
-				.getImplementationVertexProperty().getEffectiveOperator();
+				.getMapping().getEffectiveOperator();
 
 		/*
 		 * mapping a vertex sets the cost of the current vertex and its edges
@@ -124,14 +124,14 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 			WorkflowLogger.getLogger().severe(
 					"implementation of " + vertex.getName() + " failed");
 
-			vertex.getTimingVertexProperty().setCost(0);
+			vertex.getTiming().setCost(0);
 
 		} else {
 
 			// Setting vertex time
-			long vertextime = vertex.getInitialVertexProperty().getTime(
+			long vertextime = vertex.getInit().getTime(
 					effectiveOp);
-			vertex.getTimingVertexProperty().setCost(vertextime);
+			vertex.getTiming().setCost(vertextime);
 
 			// Setting edges times
 
@@ -157,7 +157,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		// Keeps the total order
 		orderManager.remove(vertex, false);
 
-		vertex.getTimingVertexProperty().reset();
+		vertex.getTiming().reset();
 		resetCost(vertex.incomingEdges());
 		resetCost(vertex.outgoingEdges());
 
@@ -175,7 +175,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 	@Override
 	protected void setEdgeCost(MapperDAGEdge edge) {
 
-		long edgesize = edge.getInitialEdgeProperty().getDataSize();
+		long edgesize = edge.getInit().getDataSize();
 
 		/**
 		 * In a Infinite Homogeneous Architecture, each communication is
@@ -192,11 +192,11 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 			long cost = (long) (edgesize / ((ComNode) mainCom.getComponent())
 					.getSpeed());
 
-			edge.getTimingEdgeProperty().setCost(cost);
+			edge.getTiming().setCost(cost);
 		} else {
 			Float speed = 1f;
 			speed = edgesize * speed;
-			edge.getTimingEdgeProperty().setCost(speed.intValue());
+			edge.getTiming().setCost(speed.intValue());
 		}
 	}
 

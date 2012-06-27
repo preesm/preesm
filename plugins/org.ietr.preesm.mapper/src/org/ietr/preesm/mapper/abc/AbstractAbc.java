@@ -57,18 +57,17 @@ import org.ietr.preesm.mapper.abc.impl.latency.AccuratelyTimedAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.ApproximatelyTimedAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LooselyTimedAbc;
-import org.ietr.preesm.mapper.abc.order.SchedOrderManager;
+import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.ietr.preesm.mapper.abc.taskscheduling.TaskSwitcher;
 import org.ietr.preesm.mapper.abc.taskscheduling.TopologicalTaskSched;
-import org.ietr.preesm.mapper.model.ImplementationVertexProperty;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.RelativeConstraint;
-import org.ietr.preesm.mapper.model.impl.PrecedenceEdge;
-import org.ietr.preesm.mapper.model.impl.TransferVertex;
+import org.ietr.preesm.mapper.model.property.VertexMapping;
+import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
@@ -88,7 +87,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Contains the rank list of all the vertices in an implementation
 	 */
-	protected SchedOrderManager orderManager = null;
+	protected OrderManager orderManager = null;
 
 	/**
 	 * Current directed acyclic graph. It is the external dag graph
@@ -148,7 +147,7 @@ public abstract class AbstractAbc implements IAbc {
 			PreesmScenario scenario) {
 
 		this.abcType = abcType;
-		orderManager = new SchedOrderManager(archi);
+		orderManager = new OrderManager(archi);
 
 		this.dag = dag;
 
@@ -193,19 +192,7 @@ public abstract class AbstractAbc implements IAbc {
 			verticesToAssociate.add(end);
 		}
 
-		RelativeConstraint currentConstraint = new RelativeConstraint();
-
-		for (MapperDAGVertex v : verticesToAssociate) {
-			RelativeConstraint newC = v.getImplementationVertexProperty()
-					.getRelativeConstraint();
-			if (newC == null) {
-				currentConstraint.addVertex(v);
-			} else {
-				currentConstraint.merge(newC);
-			}
-			v.getImplementationVertexProperty().setRelativeConstraint(
-					currentConstraint);
-		}
+		((MapperDAG)vertex.getBase()).getMappings().associate(verticesToAssociate);
 	}
 
 	public final MapperDAG getDAG() {
@@ -240,7 +227,7 @@ public abstract class AbstractAbc implements IAbc {
 	@Override
 	public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
-		return vertex.getImplementationVertexProperty().getEffectiveComponent();
+		return vertex.getMapping().getEffectiveComponent();
 	}
 
 	/**
@@ -305,11 +292,11 @@ public abstract class AbstractAbc implements IAbc {
 						+ operator.toString());
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
-			ImplementationVertexProperty dagprop = dagvertex
-					.getImplementationVertexProperty();
+			VertexMapping dagprop = dagvertex
+					.getMapping();
 
-			ImplementationVertexProperty impprop = impvertex
-					.getImplementationVertexProperty();
+			VertexMapping impprop = impvertex
+					.getMapping();
 
 			if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
 				// Unmapping if necessary before mapping
@@ -394,13 +381,12 @@ public abstract class AbstractAbc implements IAbc {
 		vertex = translateInImplementationVertex(vertex);
 
 		List<ComponentInstance> initOperators = null;
-		RelativeConstraint rc = vertex.getImplementationVertexProperty()
-				.getRelativeConstraint();
+		VertexMapping vm = vertex.getMapping();
 
-		if (rc != null) {
-			initOperators = rc.getOperatorsIntersection();
+		if (vm != null) {
+			initOperators = vm.getCandidateComponents(vertex);
 		} else {
-			initOperators = vertex.getInitialVertexProperty()
+			initOperators = vertex.getInit()
 					.getInitialOperatorList();
 		}
 
@@ -484,7 +470,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			MapperDAGEdge edge = (MapperDAGEdge) iterator.next();
 			if (!(edge instanceof PrecedenceEdge))
-				edge.getTimingEdgeProperty().resetCost();
+				edge.getTiming().resetCost();
 		}
 	}
 
@@ -550,7 +536,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex v = (MapperDAGVertex) iterator.next();
-			if (v.getImplementationVertexProperty().hasEffectiveComponent()) {
+			if (v.getMapping().hasEffectiveComponent()) {
 				unmap(v);
 			}
 		}
@@ -569,10 +555,10 @@ public abstract class AbstractAbc implements IAbc {
 
 		fireNewUnmappedVertex(impvertex);
 
-		dagvertex.getImplementationVertexProperty().setEffectiveOperator(
+		dagvertex.getMapping().setEffectiveOperator(
 				DesignTools.NO_COMPONENT_INSTANCE);
 
-		impvertex.getImplementationVertexProperty().setEffectiveOperator(
+		impvertex.getMapping().setEffectiveOperator(
 				DesignTools.NO_COMPONENT_INSTANCE);
 	}
 
@@ -582,7 +568,7 @@ public abstract class AbstractAbc implements IAbc {
 	@Override
 	public final long getCost(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
-		return vertex.getTimingVertexProperty().getCost();
+		return vertex.getTiming().getCost();
 	}
 
 	/**
@@ -591,7 +577,7 @@ public abstract class AbstractAbc implements IAbc {
 	@Override
 	public final long getCost(MapperDAGEdge edge) {
 		edge = translateInImplementationEdge(edge);
-		return edge.getTimingEdgeProperty().getCost();
+		return edge.getTiming().getCost();
 
 	}
 

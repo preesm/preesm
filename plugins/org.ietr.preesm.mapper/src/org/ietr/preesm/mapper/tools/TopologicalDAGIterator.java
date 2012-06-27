@@ -43,7 +43,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /**
- * Just parameterizing TopologicalOrderIterator
+ * Topological DAG Iterator respecting synchronized vertices
  * 
  * @author mpelcat
  */
