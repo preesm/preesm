@@ -75,7 +75,7 @@ public class CommunicationIdentifierVisitor implements
 
 	@Override
 	public void visit(DAGVertex dagVertex) throws SDF4JException {
-		// TODO Auto-generated method stub
+		// Nothing to do here for this visitor
 
 	}
 
