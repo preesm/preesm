@@ -161,8 +161,13 @@ public class ExcelVariablesWriter extends ExcelWriter {
 							value);
 					sheet.addCell(valueCell);
 
-				} catch (WriteException | InvalidExpressionException
-						| NoIntegerValueException e) {
+				} catch (WriteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidExpressionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoIntegerValueException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
