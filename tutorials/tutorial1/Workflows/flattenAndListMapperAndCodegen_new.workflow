@@ -28,7 +28,9 @@
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="org.ietr.preesm.plugin.transforms.sdf2hsdf" taskId="srSDF">
-        <dftools:data key="variables"/>
+        <dftools:data key="variables">
+            <dftools:variable name="ExplodeImplodeSuppr" value="false"/>
+        </dftools:data>
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
