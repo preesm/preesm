@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -263,7 +263,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 		combo.setVisibleItemCount(20);
 		combo.setToolTipText(Messages
 				.getString("Constraints.coreSelectionTooltip"));
-
+		comboDataInit(combo);
 		combo.addFocusListener(new FocusListener() {
 
 			@Override
