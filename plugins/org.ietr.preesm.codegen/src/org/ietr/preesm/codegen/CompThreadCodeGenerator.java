@@ -36,8 +36,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen;
 
-import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
@@ -47,28 +45,25 @@ import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
 import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
+import org.ietr.preesm.codegen.communication.IComCodeGenerator;
 import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.codegen.model.FunctionCall;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.containers.ForLoop;
 import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePend;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePost;
-import org.ietr.preesm.codegen.model.semaphore.SemaphoreType;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
-import org.jgrapht.alg.DirectedNeighborIndex;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
  * Generates code for a computation thread
@@ -84,154 +79,29 @@ public class CompThreadCodeGenerator {
 		this.thread = thread;
 	}
 
+
 	/**
-	 * Adds semaphores to protect the data transmitted in this thread. Iterates
-	 * the task vertices in direct order and adds semaphore pending functions
+	 * Adds send and receive functions from vertices allocated on the current
+	 * core. Vertices are already in the correct order. The code thread com
+	 * generator delegates com creation to each route step appropriate generator
 	 */
-	@SuppressWarnings("unchecked")
-	public void addSemaphoreFunctions(
-			SortedSet<SDFAbstractVertex> taskVertices,
-			CodeSectionType codeContainerType) {
-		AbstractBufferContainer container = thread.getGlobalContainer();
-		AbstractCodeContainer codeContainer = null;
+	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
+			AbstractBufferContainer bufferContainer) {
 
-		if (codeContainerType.equals(CodeSectionType.beginning)) {
-			codeContainer = thread.getBeginningCode();
-		} else if (codeContainerType.equals(CodeSectionType.loop)) {
-			codeContainer = thread.getLoopCode();
-		} else if (codeContainerType.equals(CodeSectionType.end)) {
-			codeContainer = thread.getEndCode();
-		}
+		// a com code generator factory always outputs the com coded generator
+		// that will add communication primitives into the code
+		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(
+				thread, vertices);
+		for (SDFAbstractVertex vertex : vertices) {
+			AbstractRouteStep step = (AbstractRouteStep) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.SendReceive_routeStep);
 
-		for (SDFAbstractVertex task : taskVertices) {
-			// Getting incoming receive operations
-			SortedSet<SDFAbstractVertex> ownComVertices = thread
-					.getComVertices(task, true);
+			// Delegates the com creation to the appropriate generator
+			IComCodeGenerator generator = factory.getCodeGenerator(step);
 
-			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> taskElements = codeContainer
-						.getCodeElements(task);
-				if (taskElements.size() != 1) {
-					WorkflowLogger.getLogger().log(
-							Level.FINE,
-							"Not one single function call for function: "
-									+ task.getName() + " in section "
-									+ codeContainerType.toString());
-				} else {
-					ICodeElement taskElement = taskElements.get(0);
-
-					for (SDFAbstractVertex com : ownComVertices) {
-						// Creates the semaphore if necessary ; retrieves it
-						// otherwise from global declaration and creates the
-						// pending
-						// function
-						Set<SDFEdge> outEdges = (com.getBase()
-								.outgoingEdgesOf(com));
-						List<Buffer> buffers = container.getBuffers(outEdges);
-
-						DirectedNeighborIndex<SDFAbstractVertex, SDFEdge> neighborindex = new DirectedNeighborIndex<SDFAbstractVertex, SDFEdge>(
-								task.getBase());
-
-						SDFAbstractVertex send = (SDFAbstractVertex) (neighborindex
-								.predecessorListOf(com).get(0));
-						SDFAbstractVertex senderVertex = (SDFAbstractVertex) (neighborindex
-								.predecessorListOf(send).get(0));
-
-						if (SourceFileCodeGenerator
-								.usesBuffersInCodeContainerType(senderVertex,
-										codeContainerType, buffers, "output")) {
-							SemaphorePend pend = new SemaphorePend(container,
-									buffers, com, SemaphoreType.full,
-									codeContainerType);
-							codeContainer.addCodeElementBefore(taskElement,
-									pend);
-
-							if (codeContainerType.equals(CodeSectionType.loop)) {
-								// Creates the semaphore if necessary and
-								// creates
-								// the
-								// posting function
-								SemaphorePost post = new SemaphorePost(
-										container, buffers, com,
-										SemaphoreType.empty, codeContainerType);
-								codeContainer.addCodeElementAfter(taskElement,
-										post);
-							}
-						}
-					}
-				}
-			}
-
-			// Getting outgoing send operations
-			ownComVertices = thread.getComVertices(task, false);
-
-			if (!ownComVertices.isEmpty()) {
-				List<ICodeElement> loopElements = codeContainer
-						.getCodeElements(task);
-				if (loopElements.size() != 1) {
-					WorkflowLogger.getLogger().log(
-							Level.FINE,
-							"Not one single function call for function: "
-									+ task.getName() + " in section "
-									+ codeContainerType.toString());
-				} else {
-					ICodeElement taskElement = loopElements.get(0); // error if
-					// the array
-					// size is
-					// equal to
-					// 0
-
-					for (SDFAbstractVertex com : ownComVertices) {
-						// A first token must initialize the semaphore pend due
-						// to
-						// a sending operation
-						Set<SDFEdge> inEdges = (com.getBase()
-								.incomingEdgesOf(com));
-						List<Buffer> buffers = container.getBuffers(inEdges);
-
-						if (SourceFileCodeGenerator
-								.usesBuffersInCodeContainerType(task,
-										codeContainerType, buffers, "output")) {
-							// If the semaphore is generated for the loop, a
-							// first
-							// post is done in initialization and then a loop
-							// pending and posting. In beginning and end cases,
-							// only
-							// a post is generated when the send is ready to be
-							// called.
-							if (codeContainerType.equals(CodeSectionType.loop)) {
-								SemaphorePost initPost = new SemaphorePost(
-										container, buffers, com,
-										SemaphoreType.empty, codeContainerType);
-
-								thread.getBeginningCode().addCodeElementBefore(
-										taskElement, initPost);
-
-								// Creates the semaphore if necessary ;
-								// retrieves it
-								// otherwise from global declaration and creates
-								// the
-								// pending function
-								SemaphorePend pend = new SemaphorePend(
-										container, buffers, com,
-										SemaphoreType.empty, codeContainerType);
-								codeContainer.addCodeElementBefore(taskElement,
-										pend);
-							}
-
-							// Creates the semaphore if necessary and creates
-							// the
-							// posting function
-							SemaphorePost post = new SemaphorePost(container,
-									buffers, com, SemaphoreType.full,
-									codeContainerType);
-
-							codeContainer
-									.addCodeElementAfter(taskElement, post);
-						}
-					}
-				}
-			}
+			// Creates all functions and buffers related to the given vertex
+			generator.createComs(vertex);
 		}
 	}
 

@@ -51,7 +51,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
-import org.ietr.preesm.codegen.communication.CommThreadCodeGenerator;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
@@ -64,10 +63,7 @@ import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
-import org.ietr.preesm.codegen.model.semaphore.SemaphoreInit;
-import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
-import org.ietr.preesm.codegen.model.threads.LaunchThread;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -206,48 +202,12 @@ public class SourceFileCodeGenerator {
 		// including graph parameters
 		compCodegen.addDynamicParameter(algorithm.getParameters());
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
-		compCodegen.addSemaphoreFunctions(ownTaskVertices,
-				CodeSectionType.beginning);
-		compCodegen.addSemaphoreFunctions(ownTaskVertices, CodeSectionType.end);
-		compCodegen
-				.addSemaphoreFunctions(ownTaskVertices, CodeSectionType.loop);
 
-		// Creating communication where communication processes are launched
-		if (!ownCommunicationVertices.isEmpty()) {
-			CommunicationThreadDeclaration communicationThread = new CommunicationThreadDeclaration(
-					file);
-			file.addThread(communicationThread);
-
-			// Launching the communication thread in the computation thread
-			LaunchThread launchThread = new LaunchThread(
-					file.getGlobalContainer(), communicationThread.getName(),
-					8000, 1);
-			computationThread.getBeginningCode().addCodeElementFirst(
-					launchThread);
-
-			CommThreadCodeGenerator commCodeGen = new CommThreadCodeGenerator(
-					computationThread, communicationThread);
-
-			// Inserts the communication function calls, the communication
-			// thread semaphore post and pends and the communication
-			// initializations
-			commCodeGen.addSendsAndReceives(ownCommunicationVertices,
-					file.getGlobalContainer());
-			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
-					CodeSectionType.beginning);
-			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
-					CodeSectionType.end);
-			commCodeGen.addSemaphoreFunctions(ownCommunicationVertices,
-					CodeSectionType.loop);
-
-			// Allocates the semaphores globally
-			Buffer semBuf = file.getSemaphoreContainer().allocateSemaphores();
-
-			// Initializing the semaphores
-			SemaphoreInit semInit = new SemaphoreInit(
-					file.getGlobalContainer(), semBuf);
-			computationThread.getBeginningCode().addCodeElementFirst(semInit);
-		}
+		// Inserts the communication function calls, the communication
+		// thread semaphore post and pends and the communication
+		// initializations
+		compCodegen.addSendsAndReceives(ownCommunicationVertices,
+				file.getGlobalContainer());
 	}
 
 	/**
@@ -257,6 +217,7 @@ public class SourceFileCodeGenerator {
 	public SortedSet<SDFAbstractVertex> getOwnVertices(
 			CodeGenSDFGraph algorithm, VertexType currentType) {
 
+		// Iterating tasks in their scheduling order
 		ConcurrentSkipListSet<SDFAbstractVertex> schedule = new ConcurrentSkipListSet<SDFAbstractVertex>(
 				new SchedulingOrderComparator());
 		Iterator<SDFAbstractVertex> iterator = algorithm.vertexSet().iterator();

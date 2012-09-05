@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -55,9 +55,7 @@ import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
-import org.ietr.preesm.codegen.model.com.ReceiveDma;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
-import org.ietr.preesm.codegen.model.com.SendDma;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.com.WaitForCore;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
@@ -71,10 +69,6 @@ import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.semaphore.Semaphore;
-import org.ietr.preesm.codegen.model.semaphore.SemaphoreInit;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePend;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePost;
 import org.ietr.preesm.codegen.model.threads.LaunchThread;
 import org.ietr.preesm.codegen.model.threads.ThreadDeclaration;
 import org.w3c.dom.DOMImplementation;
@@ -359,61 +353,6 @@ public class XMLPrinter implements IAbstractPrinter {
 		return currentLocation;
 	}
 
-	// Synchro
-
-	@Override
-	public Object visit(Semaphore domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			((Element) currentLocation).setAttribute("number",
-					Integer.toString(domElt.getSemaphoreNumber()));
-			((Element) currentLocation).setAttribute("type", domElt
-					.getSemaphoreType().toString());
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(SemaphorePend domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element semaphorePend = dom.createElement("semaphorePend");
-			((Element) currentLocation).appendChild(semaphorePend);
-			currentLocation = semaphorePend;
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(SemaphorePost domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element semaphorePost = dom.createElement("semaphorePost");
-			((Element) currentLocation).appendChild(semaphorePost);
-			currentLocation = semaphorePost;
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(SemaphoreInit domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element semaphoreInit = dom.createElement("semaphoreInit");
-			((Element) currentLocation).appendChild(semaphoreInit);
-			currentLocation = semaphoreInit;
-		}
-
-		return currentLocation;
-	}
-
 	// File and threads
 
 	@Override
@@ -514,47 +453,6 @@ public class XMLPrinter implements IAbstractPrinter {
 			domElt.getRouteStep().appendRouteStep(dom, receive);
 
 			receive.setAttribute("source", domElt.getSource().getInstanceName());
-			currentLocation = receive;
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(SendDma domElt, CodeZoneId index, Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element send = dom.createElement("sendDma");
-			((Element) currentLocation).appendChild(send);
-			domElt.getRouteStep().appendRouteStep(dom, send);
-
-			send.setAttribute("target", domElt.getTarget().getInstanceName());
-
-			Element addressBuffer = dom.createElement("addressBuffer");
-			send.appendChild(addressBuffer);
-			this.visit(domElt.getAddressBuffer(), CodeZoneId.body,
-					addressBuffer);
-
-			int callIndex = domElt.getCallIndex();
-			send.setAttribute("index", String.valueOf(callIndex));
-			currentLocation = send;
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(ReceiveDma domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element receive = dom.createElement("receiveDma");
-			((Element) currentLocation).appendChild(receive);
-			domElt.getRouteStep().appendRouteStep(dom, receive);
-
-			receive.setAttribute("source", domElt.getSource().getInstanceName());
-			int callIndex = domElt.getCallIndex();
-			receive.setAttribute("index", String.valueOf(callIndex));
 			currentLocation = receive;
 		}
 

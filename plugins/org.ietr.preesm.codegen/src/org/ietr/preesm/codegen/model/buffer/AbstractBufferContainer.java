@@ -50,7 +50,6 @@ import org.ietr.preesm.codegen.model.expression.VariableExpression;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.semaphore.SemaphoreContainer;
 import org.ietr.preesm.core.types.DataType;
 
 /**
@@ -74,12 +73,6 @@ public abstract class AbstractBufferContainer {
 	 * parent container. Buffers can be looked for in all ancestor containers
 	 */
 	private AbstractBufferContainer parentContainer;
-
-	/**
-	 * A buffer container contains a semaphore container to allocate semaphores
-	 */
-	private SemaphoreContainer semaphoreContainer;
-
 	/**
 	 * Contained variables
 	 */
@@ -102,7 +95,6 @@ public abstract class AbstractBufferContainer {
 		allocs = new ArrayList<BufferAllocation>();
 		this.variables = new ArrayList<VariableAllocation>();
 		this.parentContainer = parentContainer;
-		this.semaphoreContainer = new SemaphoreContainer(this);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -282,10 +274,6 @@ public abstract class AbstractBufferContainer {
 
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;
-	}
-
-	public SemaphoreContainer getSemaphoreContainer() {
-		return semaphoreContainer;
 	}
 
 	public List<VariableAllocation> getVariables() {

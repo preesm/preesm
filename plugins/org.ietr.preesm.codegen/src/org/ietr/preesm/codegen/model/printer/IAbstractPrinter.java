@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -49,9 +49,7 @@ import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
-import org.ietr.preesm.codegen.model.com.ReceiveDma;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
-import org.ietr.preesm.codegen.model.com.SendDma;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.com.WaitForCore;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
@@ -63,10 +61,6 @@ import org.ietr.preesm.codegen.model.main.AbstractCodeElement;
 import org.ietr.preesm.codegen.model.main.Assignment;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
-import org.ietr.preesm.codegen.model.semaphore.Semaphore;
-import org.ietr.preesm.codegen.model.semaphore.SemaphoreInit;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePend;
-import org.ietr.preesm.codegen.model.semaphore.SemaphorePost;
 import org.ietr.preesm.codegen.model.threads.LaunchThread;
 import org.ietr.preesm.codegen.model.threads.ThreadDeclaration;
 
@@ -127,28 +121,10 @@ public interface IAbstractPrinter {
 	public Object visit(CompoundCodeElement element, CodeZoneId index,
 			Object currentLocation);
 
-	public Object visit(Semaphore element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(SemaphorePend element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(SemaphorePost element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(SemaphoreInit element, CodeZoneId index,
-			Object currentLocation);
-
 	public Object visit(SendMsg element, CodeZoneId index,
 			Object currentLocation);
 
 	public Object visit(ReceiveMsg element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(SendDma element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(ReceiveDma element, CodeZoneId index,
 			Object currentLocation);
 
 	public Object visit(SourceFile element, CodeZoneId index,

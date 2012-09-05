@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.codegen.model.threads.CommunicationThreadDeclaration;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
@@ -26,7 +25,6 @@ import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 public class ComCodeGeneratorFactory {
 
 	private Map<AbstractRouteStep, IComCodeGenerator> generators = null;
-	private CommunicationThreadDeclaration comThread;
 	private ComputationThreadDeclaration compThread;
 
 	/**
@@ -35,11 +33,9 @@ public class ComCodeGeneratorFactory {
 	private SortedSet<SDFAbstractVertex> vertices;
 
 	public ComCodeGeneratorFactory(ComputationThreadDeclaration compThread,
-			CommunicationThreadDeclaration thread,
 			SortedSet<SDFAbstractVertex> vertices) {
 		super();
 		this.generators = new HashMap<AbstractRouteStep, IComCodeGenerator>();
-		this.comThread = thread;
 		this.vertices = vertices;
 		this.compThread = compThread;
 	}
@@ -56,15 +52,10 @@ public class ComCodeGeneratorFactory {
 	private IComCodeGenerator createCodeGenerator(AbstractRouteStep step) {
 		IComCodeGenerator generator = null;
 
-		if (step.getType() == DmaRouteStep.type) {
-			generator = new DmaComCodeGenerator(compThread, comThread,
-					vertices, step);
-		} else if (step.getType() == MessageRouteStep.type) {
-			generator = new MessageComCodeGenerator(compThread, comThread,
-					vertices, step);
-		} else if (step.getType() == MemRouteStep.type) {
-			generator = new RamComCodeGenerator(compThread, comThread,
-					vertices, step);
+		if (step.getType() == DmaRouteStep.type
+				|| step.getType() == MessageRouteStep.type
+				|| step.getType() == MemRouteStep.type) {
+			generator = new GenericComCodeGenerator(compThread, vertices, step);
 		} else {
 			WorkflowLogger.getLogger().log(
 					Level.SEVERE,

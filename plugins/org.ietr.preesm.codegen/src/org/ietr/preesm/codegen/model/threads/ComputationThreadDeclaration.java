@@ -50,7 +50,7 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
 /**
- * Declaration of a communication thread for code generation. A computation
+ * Declaration of a computation thread for code generation. A computation
  * thread calls the functions corresponding to the dag tasks.
  * 
  * @author mpelcat

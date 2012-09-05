@@ -74,6 +74,9 @@ import org.ietr.preesm.core.workflow.PreesmException;
  */
 public class CodeGenerationTransformation extends AbstractTaskImplementation {
 
+	/**
+	 * Execution of the code generation workflow task.
+	 */
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
@@ -129,6 +132,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 				e.printStackTrace();
 			}
 		}
+		
 		// Typical static code generation
 		SourceFileList list = new SourceFileList();
 		CodeGenerator codegen = new CodeGenerator(list);
@@ -179,12 +183,6 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 				new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
 		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
-
-		// Displays the DAG
-		/*
-		 * SDFAdapterDemo applet2 = new SDFAdapterDemo();
-		 * applet2.init(sdfGraph);
-		 */
 
 		return sdfGraph;
 	}
