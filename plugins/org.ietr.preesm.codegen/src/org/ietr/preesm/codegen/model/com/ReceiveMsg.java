@@ -48,7 +48,8 @@ import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
- * A receive function receives a message from another core
+ * A receive function receives a message from another core.
+ * It can be broken up into two phases: starting and ending communication.
  * 
  * @author mpelcat
  */
@@ -61,8 +62,8 @@ public class ReceiveMsg extends CommunicationFunctionCall {
 
 	public ReceiveMsg(AbstractBufferContainer parentContainer,
 			SDFAbstractVertex vertex, List<Buffer> bufferSet,
-			AbstractRouteStep routeStep, ComponentInstance source) {
-		super("receive", parentContainer, bufferSet, routeStep, vertex, 0);
+			AbstractRouteStep routeStep, ComponentInstance source, int comID, Phase phase) {
+		super("receive", parentContainer, bufferSet, routeStep, vertex, comID, phase);
 
 		this.source = source;
 	}

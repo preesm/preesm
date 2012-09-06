@@ -70,7 +70,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 
 	public CodeGenSDFForkVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
-		FunctionCall forkCall = new FunctionCall("fork");
+		FunctionPrototype forkCall = new FunctionPrototype("fork");
 		this.setRefinement(forkCall);
 	}
 

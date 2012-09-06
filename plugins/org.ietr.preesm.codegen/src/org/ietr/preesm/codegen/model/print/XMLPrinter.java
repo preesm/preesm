@@ -437,6 +437,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			domElt.getRouteStep().appendRouteStep(dom, send);
 
 			send.setAttribute("target", domElt.getTarget().getInstanceName());
+			send.setAttribute("phase", domElt.getPhase().toString());
+			send.setAttribute("ID", String.valueOf(domElt.getComID()));
 			currentLocation = send;
 		}
 
@@ -453,6 +455,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			domElt.getRouteStep().appendRouteStep(dom, receive);
 
 			receive.setAttribute("source", domElt.getSource().getInstanceName());
+			receive.setAttribute("phase", domElt.getPhase().toString());
+			receive.setAttribute("ID", String.valueOf(domElt.getComID()));
 			currentLocation = receive;
 		}
 

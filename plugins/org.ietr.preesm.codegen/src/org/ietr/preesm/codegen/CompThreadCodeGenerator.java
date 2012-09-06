@@ -50,7 +50,7 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
 import org.ietr.preesm.codegen.communication.IComCodeGenerator;
 import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
@@ -88,7 +88,7 @@ public class CompThreadCodeGenerator {
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
 			AbstractBufferContainer bufferContainer) {
 
-		// a com code generator factory always outputs the com coded generator
+		// a com code generator factory outputs the commmunication generator
 		// that will add communication primitives into the code
 		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(
 				thread, vertices);
@@ -101,10 +101,13 @@ public class CompThreadCodeGenerator {
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
 
 			// Creates all functions and buffers related to the given vertex
-			generator.createComs(vertex);
+			generator.insertComs(vertex);
 		}
 	}
 
+	/**
+	 * Adding variables for PSDF parameters
+	 */
 	public void addDynamicParameter(ParameterSet params) {
 		if (params != null) {
 			for (Parameter param : params.values()) {
@@ -131,7 +134,7 @@ public class CompThreadCodeGenerator {
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {
-				FunctionCall vertexCall = (FunctionCall) vertex.getRefinement();
+				FunctionPrototype vertexCall = (FunctionPrototype) vertex.getRefinement();
 				if (vertex instanceof CodeGenSDFTokenInitVertex) {
 					ICodeElement beginningCall = new UserFunctionCall(
 							(CodeGenSDFTokenInitVertex) vertex, thread,

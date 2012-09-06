@@ -31,7 +31,7 @@ import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.FunctionPrototype;
 
 public class SystemCPrinterVisitor implements
 		IGraphVisitor<CodeGenSDFGraph, SDFAbstractVertex, CodeGenSDFEdge> {
@@ -328,8 +328,8 @@ public class SystemCPrinterVisitor implements
 		if (sdfVertex instanceof CodeGenSDFTaskVertex) {
 			String refinementName = null;
 			if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
-					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof FunctionCall) {
-				refinementName = ((FunctionCall) ((CodeGenSDFTaskVertex) sdfVertex)
+					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof FunctionPrototype) {
+				refinementName = ((FunctionPrototype) ((CodeGenSDFTaskVertex) sdfVertex)
 						.getRefinement()).getFunctionName();
 				includes.add(refinementName);
 				exportAtomicActor((CodeGenSDFTaskVertex) sdfVertex);
@@ -410,7 +410,7 @@ public class SystemCPrinterVisitor implements
 		List<StringTemplate> atomicFiringRules = new ArrayList<StringTemplate>();
 		List<StringTemplate> atomicFiringRulesSensitivityList = new ArrayList<StringTemplate>();
 
-		String functionName = ((FunctionCall) actomicActor.getRefinement())
+		String functionName = ((FunctionPrototype) actomicActor.getRefinement())
 				.getFunctionName();
 
 		for (IInterface port : actomicActor.getInterfaces()) {

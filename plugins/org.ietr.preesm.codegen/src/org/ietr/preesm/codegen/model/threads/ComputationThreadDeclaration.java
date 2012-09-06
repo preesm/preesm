@@ -36,18 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.threads;
 
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-
-import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
-import org.ietr.preesm.core.types.ImplementationPropertyNames;
-import org.ietr.preesm.core.types.VertexType;
 
 /**
  * Declaration of a computation thread for code generation. A computation
@@ -57,60 +46,27 @@ import org.ietr.preesm.core.types.VertexType;
  */
 public class ComputationThreadDeclaration extends ThreadDeclaration {
 
-	VirtualHeapAllocator heap;
-
+	/**
+	 * Number of communications present in the thread
+	 */
+	private int comNumber;
+	
 	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
 		super("computationThread", parentContainer);
-	}
-
-	public void setVirtualHeap(VirtualHeapAllocator heap) {
-		this.heap = heap;
+		comNumber = 0;
 	}
 
 	/**
-	 * Gets the communication vertices preceding or following the vertex vertex.
-	 * If preceding = true, returns the communication vertices preceding the
-	 * vertex, otherwise, returns the communication vertices following the
-	 * vertex. The communication vertices are returned in scheduling order
+	 * Get number of communications present in the thread
 	 */
-	@SuppressWarnings("unchecked")
-	public SortedSet<SDFAbstractVertex> getComVertices(
-			SDFAbstractVertex vertex, boolean preceding) {
-		SDFAbstractVertex currentVertex = null;
-
-		ConcurrentSkipListSet<SDFAbstractVertex> schedule = new ConcurrentSkipListSet<SDFAbstractVertex>(
-				new SchedulingOrderComparator());
-
-		Iterator<SDFEdge> iterator = null;
-
-		if (preceding) {
-			iterator = vertex.getBase().incomingEdgesOf(vertex).iterator();
-		} else {
-			iterator = vertex.getBase().outgoingEdgesOf(vertex).iterator();
-		}
-
-		while (iterator.hasNext()) {
-			SDFEdge edge = iterator.next();
-
-			if (preceding) {
-				currentVertex = edge.getSource();
-			} else {
-				currentVertex = edge.getTarget();
-			}
-
-			// retrieving the type of the vertex
-			VertexType vertexType = (VertexType) currentVertex
-					.getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_vertexType);
-
-			if (vertexType != null
-					&& (vertexType.equals(VertexType.send) || vertexType
-							.equals(VertexType.receive))
-					&& !schedule.contains(currentVertex)) {
-				schedule.add(currentVertex);
-			}
-		}
-
-		return schedule;
+	public int getComNumber() {
+		return comNumber;
+	}
+	
+	/**
+	 * Increment number of communications present in the thread
+	 */
+	public int incrementComNumber() {
+		return comNumber = comNumber + 1;
 	}
 }

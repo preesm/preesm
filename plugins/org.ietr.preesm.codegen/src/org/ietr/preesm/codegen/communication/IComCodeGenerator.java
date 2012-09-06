@@ -12,5 +12,5 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
  * @author mpelcat
  */
 public interface IComCodeGenerator {
-	public void createComs(SDFAbstractVertex vertex);
+	public void insertComs(SDFAbstractVertex vertex);
 }

@@ -90,7 +90,7 @@ public class Buffer extends FunctionArgument {
 	/**
 	 * Maximal size of a reduced name
 	 */
-	private static final int maxReducedNameSize = 20;
+	private static final int maxReducedNameSize = 12;
 
 	public Buffer(String name, Integer size, DataType type, SDFEdge edge,
 			AbstractBufferContainer container) {

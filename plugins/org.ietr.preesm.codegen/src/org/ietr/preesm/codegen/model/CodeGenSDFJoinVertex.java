@@ -69,7 +69,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 
 	public CodeGenSDFJoinVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
-		FunctionCall joinCall = new FunctionCall("join");
+		FunctionPrototype joinCall = new FunctionPrototype("join");
 		this.setRefinement(joinCall);
 	}
 

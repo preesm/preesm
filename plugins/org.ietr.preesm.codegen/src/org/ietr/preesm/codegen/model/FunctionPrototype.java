@@ -41,25 +41,25 @@ import java.util.Map;
 
 import net.sf.dftools.algorithm.model.IRefinement;
 
-public class FunctionCall implements IRefinement {
+public class FunctionPrototype implements IRefinement {
 
 	private String functionName;
-	public FunctionCall initCall = null;
-	public FunctionCall endCall = null;
+	public FunctionPrototype initCall = null;
+	public FunctionPrototype endCall = null;
 	private int nbArgs;
 
 	private Map<CodeGenArgument, Integer> arguments;
 
 	private Map<CodeGenParameter, Integer> parameters;
 
-	public FunctionCall() {
+	public FunctionPrototype() {
 		functionName = "";
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
 		nbArgs = 0;
 	}
 
-	public FunctionCall(String name) {
+	public FunctionPrototype(String name) {
 		functionName = name;
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
@@ -84,19 +84,19 @@ public class FunctionCall implements IRefinement {
 		nbArgs++;
 	}
 
-	public FunctionCall getInitCall() {
+	public FunctionPrototype getInitCall() {
 		return initCall;
 	}
 
-	public FunctionCall getEndCall() {
+	public FunctionPrototype getEndCall() {
 		return endCall;
 	}
 
-	public void setInitCall(FunctionCall init) {
+	public void setInitCall(FunctionPrototype init) {
 		initCall = init;
 	}
 
-	public void setEndCall(FunctionCall end) {
+	public void setEndCall(FunctionPrototype end) {
 		endCall = end;
 	}
 

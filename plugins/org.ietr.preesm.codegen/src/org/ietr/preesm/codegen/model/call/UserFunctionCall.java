@@ -51,7 +51,7 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
@@ -153,7 +153,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			FunctionCall call = getFunctionCall(vertex, section);
+			FunctionPrototype call = getFunctionCall(vertex, section);
 			if (call != null) {
 
 				// Filters and orders the buffers to fit the prototype
@@ -209,9 +209,9 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
-	private FunctionCall getFunctionCall(SDFAbstractVertex vertex,
+	private FunctionPrototype getFunctionCall(SDFAbstractVertex vertex,
 			CodeSectionType section) {
-		FunctionCall call = ((FunctionCall) vertex.getRefinement());
+		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
 		if (call != null) {
 
 			switch (section) {

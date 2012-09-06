@@ -57,7 +57,7 @@ import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
@@ -74,6 +74,7 @@ import org.ietr.preesm.core.types.VertexType;
  * 
  * @author Matthieu Wipliez
  * @author mpelcat
+ * @author jpiat
  */
 public class SourceFileCodeGenerator {
 
@@ -193,13 +194,13 @@ public class SourceFileCodeGenerator {
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
-		heap = new VirtualHeapAllocator(computationThread);
-		computationThread.setVirtualHeap(heap);
 		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
 				computationThread);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
+		
+		// PSDF code
 		compCodegen.addDynamicParameter(algorithm.getParameters());
 		compCodegen.addUserFunctionCalls(ownTaskVertices);
 
@@ -248,6 +249,9 @@ public class SourceFileCodeGenerator {
 		return schedule;
 	}
 
+	/**
+	 * Removing edges that are redundant information with send/receive.
+	 */
 	public void removeInterEdges(Set<SDFEdge> edgeSet) {
 		Iterator<SDFEdge> eIterator = edgeSet.iterator();
 
@@ -269,7 +273,7 @@ public class SourceFileCodeGenerator {
 
 	/**
 	 * Returns true if the vertex function prototype of the given
-	 * codeContainerType uses buf
+	 * codeContainerType uses the buffer buf
 	 */
 	public static boolean usesBufferInCodeContainerType(
 			SDFAbstractVertex vertex, CodeSectionType codeContainerType,
@@ -283,7 +287,7 @@ public class SourceFileCodeGenerator {
 			return true;
 		}
 
-		if (!(vertex.getRefinement() instanceof FunctionCall)) { // TODO : treat
+		if (!(vertex.getRefinement() instanceof FunctionPrototype)) { // TODO : treat
 																	// when the
 																	// vertex
 																	// has a
@@ -293,11 +297,13 @@ public class SourceFileCodeGenerator {
 		}
 
 		if (vertex.getRefinement() == null
-				|| !(vertex.getRefinement() instanceof FunctionCall)) {
+				|| !(vertex.getRefinement() instanceof FunctionPrototype)) {
 			return true;
 		}
 
-		FunctionCall call = ((FunctionCall) vertex.getRefinement());
+		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
+		
+		// loop call references its init and end calls
 		if (call != null) {
 
 			switch (codeContainerType) {

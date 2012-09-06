@@ -49,11 +49,24 @@ import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 
 /**
- * code Element used to launch inter-core communication send or receive
+ * code Element used to launch inter-core communication send or receive.
+ * Each communication can be broken up into two phases: starting and ending call.
  * 
  * @author mpelcat
  */
 public class CommunicationFunctionCall extends AbstractCodeElement {
+	
+	public enum Phase {
+
+		START, // Visit of the code element body
+		END;
+
+		@Override
+		public String toString() {
+			if(this == START) return "Start";
+			else return "End";
+		}
+	}
 
 	/**
 	 * Transmitted buffers
@@ -66,21 +79,24 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	private AbstractRouteStep routeStep;
 
 	/**
-	 * index of the function call within the calls of same type and route step
+	 * index of the function call on current core
 	 */
-	private int callIndex = -1;
+	private int comID = -1;
+	
+	private Phase phase = Phase.START;
 
 	public CommunicationFunctionCall(String name,
 			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
 			AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex,
-			int callIndex) {
+			int comID, Phase phase) {
 
 		super(name, parentContainer, correspondingVertex);
 
 		this.bufferSet = bufferSet;
 
 		this.routeStep = routeStep;
-		this.callIndex = callIndex;
+		this.comID = comID;
+		this.phase = phase;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -108,8 +124,12 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		return routeStep;
 	}
 
-	public int getCallIndex() {
-		return callIndex;
+	public int getComID() {
+		return comID;
+	}
+
+	public Phase getPhase() {
+		return phase;
 	}
 
 	@Override
@@ -131,5 +151,4 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 
 		return code;
 	}
-
 }

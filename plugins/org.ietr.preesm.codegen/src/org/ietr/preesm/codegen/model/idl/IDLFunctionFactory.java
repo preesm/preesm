@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,7 +41,7 @@ import java.util.HashMap;
 
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.codegen.model.FunctionCall;
+import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.IFunctionFactory;
 import org.jacorb.idl.AliasTypeSpec;
 import org.jacorb.idl.ConstrTypeSpec;
@@ -76,9 +76,9 @@ import org.jacorb.idl.parser;
  */
 public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 
-	public HashMap<String, FunctionCall> createdIdl;
-	private FunctionCall finalCall;
-	private FunctionCall currentCall;
+	public HashMap<String, FunctionPrototype> createdIdl;
+	private FunctionPrototype finalCall;
+	private FunctionPrototype currentCall;
 
 	public static IDLFunctionFactory instance = null;
 
@@ -94,17 +94,17 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	}
 
 	public void resetPrototypes() {
-		createdIdl = new HashMap<String, FunctionCall>();
+		createdIdl = new HashMap<String, FunctionPrototype>();
 	}
 
 	@Override
-	public FunctionCall create(String idlPath) {
+	public FunctionPrototype create(String idlPath) {
 		if (createdIdl.get(idlPath) == null) {
 			currentCall = null;
 			parser.setGenerator(this);
 
 			try {
-				finalCall = new FunctionCall();
+				finalCall = new FunctionPrototype();
 				IDLParser.parse(idlPath, this);
 				createdIdl.put(idlPath, finalCall);
 			} catch (Exception e) {
@@ -156,14 +156,14 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	@Override
 	public void visitInterface(Interface arg0) {
 		if (arg0.name().equals("init")) {
-			currentCall = new FunctionCall();
+			currentCall = new FunctionPrototype();
 			arg0.body.accept(this);
 			finalCall.setInitCall(currentCall);
 		} else if (arg0.name().equals("loop")) {
 			currentCall = finalCall;
 			arg0.body.accept(this);
 		} else if (arg0.name().equals("end")) {
-			currentCall = new FunctionCall();
+			currentCall = new FunctionPrototype();
 			arg0.body.accept(this);
 			finalCall.setEndCall(currentCall);
 		}
@@ -282,7 +282,7 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 		}
 		IDLFunctionFactory factory = new IDLFunctionFactory();
 		@SuppressWarnings("unused")
-		FunctionCall call = factory.create(args[0]);
+		FunctionPrototype call = factory.create(args[0]);
 		System.out.println("creation done");
 	}
 

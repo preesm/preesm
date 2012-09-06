@@ -95,8 +95,8 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 	
 	public void setRefinement(IRefinement desc){
 		super.setRefinement(desc);
-		if(desc instanceof FunctionCall){
-			FunctionCall codeRef = (FunctionCall) desc ;
+		if(desc instanceof FunctionPrototype){
+			FunctionPrototype codeRef = (FunctionPrototype) desc ;
 			for(CodeGenArgument arg : codeRef.getArguments().keySet()){
 				if(arg.getDirection().equals(CodeGenArgument.INPUT)){
 					CodeGenSDFSourceInterfaceVertex src = (CodeGenSDFSourceInterfaceVertex) this.getInterface(arg.getName());
